@@ -278,4 +278,69 @@ describe('Code Generation Tests', () => {
         const inheritanceWarnings = result.warnings.filter(w => w.includes('extends'));
         expect(inheritanceWarnings.length).toBeGreaterThanOrEqual(0);
     });
+
+    // 阶段6复杂类型测试
+    test('should map union types correctly', () => {
+        const { TypeMapper } = require('../src/parser/typeMapper');
+        
+        // 测试联合类型映射
+        expect(TypeMapper.mapType('string | number')).toBe('string');
+        expect(TypeMapper.mapType('Resource | string')).toBe('IntPtr');
+        expect(TypeMapper.mapType('string | null')).toBe('string');
+        expect(TypeMapper.mapType('number | undefined')).toBe('double?');
+    });
+
+    test('should map intersection types correctly', () => {
+        const { TypeMapper } = require('../src/parser/typeMapper');
+        
+        // 测试交叉类型映射
+        expect(TypeMapper.mapType('A & B')).toBe('A');
+        expect(TypeMapper.mapType('ClassA & InterfaceB')).toBe('ClassA');
+    });
+
+    test('should map conditional types to dynamic', () => {
+        const { TypeMapper } = require('../src/parser/typeMapper');
+        
+        // 测试条件类型映射
+        expect(TypeMapper.mapType('T extends string ? string : number')).toBe('dynamic');
+    });
+
+    test('should map mapped types to dynamic', () => {
+        const { TypeMapper } = require('../src/parser/typeMapper');
+        
+        // 测试映射类型映射
+        expect(TypeMapper.mapType('keyof T')).toBe('dynamic');
+        expect(TypeMapper.mapType('[K in keyof T]')).toBe('dynamic');
+    });
+
+    test('should map readonly types', () => {
+        const { TypeMapper } = require('../src/parser/typeMapper');
+        
+        // 测试 readonly 类型映射
+        expect(TypeMapper.mapType('readonly string[]')).toBe('string[]');
+        expect(TypeMapper.mapType('readonly number')).toBe('double');
+    });
+
+    test('should detect complex types', () => {
+        const { TypeMapper } = require('../src/parser/typeMapper');
+        
+        // 测试类型检测
+        expect(TypeMapper.isUnionType('string | number')).toBe(true);
+        expect(TypeMapper.isIntersectionType('A & B')).toBe(true);
+        expect(TypeMapper.isConditionalType('T extends string ? string : number')).toBe(true);
+        expect(TypeMapper.isMappedType('keyof T')).toBe(true);
+    });
+
+    test('should handle optional union types in fixtures', () => {
+        const parser = new ArkTsParser();
+        const columnFixturePath = path.join(__dirname, 'fixtures/column.d.ts');
+        
+        const result = parser.parseFile(columnFixturePath);
+        
+        // 应该能解析出组件
+        expect(result.component.name).toBe('Column');
+        // 可选参数应该有正确的处理
+        const methods = result.component.methods;
+        expect(methods.length).toBeGreaterThan(0);
+    });
 });

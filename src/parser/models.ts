@@ -78,3 +78,31 @@ export interface ParseResult {
     imports: ImportInfo[];
     warnings: string[];
 }
+
+export interface UnionTypeInfo {
+    types: string[];                  // 联合类型列表
+    isNullable: boolean;              // 是否可空 (包含 null/undefined)
+}
+
+export interface IntersectionTypeInfo {
+    types: string[];                  // 交叉类型列表
+}
+
+export interface ConditionalTypeInfo {
+    checkType: string;                // 检查类型
+    extendsType: string;              // extends 类型
+    trueType: string;                 // 条件为真时的类型
+    falseType: string;                // 条件为假时的类型
+}
+
+export interface MappedTypeInfo {
+    keyType: string;                  // 键类型
+    valueType: string;                // 值类型
+    readOnly: boolean;                // 是否只读
+    optional: boolean;                // 是否可选
+}
+
+export interface ArrayTypeInfo {
+    elementType: string;              // 元素类型
+    dimensions: number;               // 数组维度
+}

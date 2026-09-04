@@ -29,6 +29,13 @@ export class TypeMapper {
         'TextOptions': { typescript: 'TextOptions', csharp: 'IntPtr', isNative: true },
         'ButtonOptions': { typescript: 'ButtonOptions', csharp: 'IntPtr', isNative: true },
         'ImageOptions': { typescript: 'ImageOptions', csharp: 'IntPtr', isNative: true },
+        // 特殊类型映射
+        'object': { typescript: 'object', csharp: 'object', isNative: false },
+        'any': { typescript: 'any', csharp: 'object', isNative: false },
+        'unknown': { typescript: 'unknown', csharp: 'object', isNative: false },
+        'never': { typescript: 'never', csharp: 'void', isNative: false },
+        'null': { typescript: 'null', csharp: 'null', isNative: false },
+        'undefined': { typescript: 'undefined', csharp: 'null', isNative: false },
     };
 
     static mapType(typescriptType: string): string {
@@ -47,12 +54,37 @@ export class TypeMapper {
             return this.mapUnionType(typescriptType);
         }
         
-        // 4. 处理数组类型 (Array<T>)
+        // 4. 处理交叉类型 (A & B)
+        if (typescriptType.includes('&')) {
+            return this.mapIntersectionType(typescriptType);
+        }
+        
+        // 5. 处理数组类型 (Array<T>)
         if (typescriptType.includes('Array<')) {
             return this.mapArrayType(typescriptType);
         }
         
-        // 5. 直接映射
+        // 6. 处理元组类型 (T1, T2, ...)
+        if (typescriptType.startsWith('(') && !typescriptType.includes('=>')) {
+            return this.mapTupleType(typescriptType);
+        }
+        
+        // 7. 处理条件类型 (T extends U ? X : Y)
+        if (typescriptType.includes('extends') && typescriptType.includes('?') && typescriptType.includes(':')) {
+            return this.mapConditionalType(typescriptType);
+        }
+        
+        // 8. 处理映射类型 ([K in keyof T])
+        if (typescriptType.includes('[K in keyof') || typescriptType.includes('keyof')) {
+            return 'dynamic';
+        }
+        
+        // 9. 处理 readonly 类型
+        if (typescriptType.startsWith('readonly ')) {
+            return this.mapType(typescriptType.slice(9));
+        }
+        
+        // 10. 直接映射
         const mapping = this.TYPE_MAP[typescriptType];
         return mapping ? mapping.csharp : typescriptType;
     }
@@ -131,6 +163,31 @@ export class TypeMapper {
         return 'IntPtr';
     }
 
+    private static mapIntersectionType(intersectionType: string): string {
+        const parts = intersectionType.split('&').map(p => p.trim());
+        
+        // 对于交叉类型，返回第一个类型的映射
+        // 在 C# 中可以使用接口实现
+        if (parts.length > 0) {
+            return this.mapType(parts[0]);
+        }
+        
+        return 'IntPtr';
+    }
+
+    private static mapTupleType(tupleType: string): string {
+        // 移除外层括号
+        const content = tupleType.slice(1, -1);
+        const types = content.split(',').map(t => this.mapType(t.trim()));
+        return `(${types.join(', ')})`;
+    }
+
+    private static mapConditionalType(conditionalType: string): string {
+        // 条件类型映射为 dynamic
+        // 在 C# 中可以使用泛型约束或运行时类型判断
+        return 'dynamic';
+    }
+
     private static mapArrayType(arrayType: string): string {
         const match = arrayType.match(/Array<(.+)>/);
         if (match) {
@@ -170,5 +227,21 @@ export class TypeMapper {
             }
         }
         return typeStr.replace('?', '').replace(' | undefined', '').trim();
+    }
+
+    static isUnionType(typeStr: string): boolean {
+        return typeStr.includes('|') && !typeStr.includes('=>');
+    }
+
+    static isIntersectionType(typeStr: string): boolean {
+        return typeStr.includes('&') && !typeStr.includes('=>');
+    }
+
+    static isConditionalType(typeStr: string): boolean {
+        return typeStr.includes('extends') && typeStr.includes('?') && typeStr.includes(':');
+    }
+
+    static isMappedType(typeStr: string): boolean {
+        return typeStr.includes('[K in keyof') || typeStr.includes('keyof');
     }
 }

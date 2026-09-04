@@ -434,8 +434,18 @@ export class AstParser {
         const typeName = node.name.getText();
         const typeNode = node.type;
         
+        // 记录类型别名（用于复杂类型处理）
         if (ts.isUnionTypeNode(typeNode)) {
-            // Could be used for enum generation
+            const types = typeNode.types.map(t => this.getTypeName(t));
+            // 检查是否可空
+            const isNullable = types.some(t => t === 'null' || t === 'undefined');
+        } else if (ts.isIntersectionTypeNode(typeNode)) {
+            const types = typeNode.types.map(t => this.getTypeName(t));
+        } else if (ts.isConditionalTypeNode(typeNode)) {
+            const checkType = this.getTypeName(typeNode.checkType);
+            const extendsType = this.getTypeName(typeNode.extendsType);
+            const trueType = this.getTypeName(typeNode.trueType);
+            const falseType = this.getTypeName(typeNode.falseType);
         }
     }
 
@@ -455,11 +465,41 @@ export class AstParser {
 
         if (ts.isUnionTypeNode(typeNode)) {
             const types = typeNode.types.map(t => this.getTypeName(t));
+            // 过滤掉 null 和 undefined，单独处理可空性
+            const nonNullTypes = types.filter(t => t !== 'null' && t !== 'undefined');
+            const isNullable = types.length !== nonNullTypes.length;
+            
+            if (nonNullTypes.length === 1) {
+                return isNullable ? `${nonNullTypes[0]}?` : nonNullTypes[0];
+            }
             return types.join(' | ');
+        }
+
+        if (ts.isIntersectionTypeNode(typeNode)) {
+            const types = typeNode.types.map(t => this.getTypeName(t));
+            return types.join(' & ');
+        }
+
+        if (ts.isConditionalTypeNode(typeNode)) {
+            const checkType = this.getTypeName(typeNode.checkType);
+            const extendsType = this.getTypeName(typeNode.extendsType);
+            const trueType = this.getTypeName(typeNode.trueType);
+            const falseType = this.getTypeName(typeNode.falseType);
+            // 映射为 C# 的条件类型或动态类型
+            return `dynamic /* ${checkType} extends ${extendsType} ? ${trueType} : ${falseType} */`;
+        }
+
+        if (ts.isMappedTypeNode(typeNode)) {
+            return 'dynamic /* MappedType */';
         }
 
         if (ts.isArrayTypeNode(typeNode)) {
             return `${this.getTypeName(typeNode.elementType)}[]`;
+        }
+
+        if (ts.isTupleTypeNode(typeNode)) {
+            const elements = typeNode.elements.map(e => this.getTypeName(e));
+            return `(${elements.join(', ')})`;
         }
 
         if (ts.isLiteralTypeNode(typeNode)) {
@@ -483,6 +523,26 @@ export class AstParser {
 
         if (ts.isConstructorTypeNode(typeNode)) {
             return 'IntPtr';
+        }
+
+        if (ts.isTypeOperatorNode(typeNode)) {
+            const operator = typeNode.operator;
+            const typeName = this.getTypeName(typeNode.type);
+            if (operator === ts.SyntaxKind.ReadonlyKeyword) {
+                return `readonly ${typeName}`;
+            }
+            if (operator === ts.SyntaxKind.KeyOfKeyword) {
+                return `keyof ${typeName}`;
+            }
+            if (operator === ts.SyntaxKind.UniqueKeyword) {
+                return `unique ${typeName}`;
+            }
+        }
+
+        if (ts.isIndexedAccessTypeNode(typeNode)) {
+            const objectType = this.getTypeName(typeNode.objectType);
+            const indexType = this.getTypeName(typeNode.indexType);
+            return `${objectType}[${indexType}]`;
         }
 
         return typeNode.getText();
