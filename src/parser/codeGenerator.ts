@@ -1,0 +1,177 @@
+import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload } from './models';
+import { TypeMapper } from './typeMapper';
+
+export class CodeGenerator {
+    generate(component: ComponentInfo): string {
+        const lines: string[] = [];
+        
+        lines.push('using System;');
+        lines.push('using System.Runtime.InteropServices;');
+        lines.push('');
+        lines.push(`namespace ${component.namespace};`);
+        lines.push('');
+        
+        this.generateClass(component, lines);
+        
+        return lines.join('\n');
+    }
+
+    private generateClass(component: ComponentInfo, lines: string[]): void {
+        lines.push(`/// <summary>`);
+        lines.push(`/// ${component.name} 组件的 C# 绑定`);
+        lines.push(`/// </summary>`);
+        lines.push(`public partial class ${component.name}`);
+        lines.push('{');
+        
+        lines.push('    /// <summary>');
+        lines.push('    /// JS对象指针');
+        lines.push('    /// </summary>');
+        lines.push('    private IntPtr _jsObject;');
+        lines.push('');
+        
+        this.generateConstructors(component, lines);
+        this.generateMethods(component, lines);
+        
+        lines.push('}');
+    }
+
+    private generateConstructors(component: ComponentInfo, lines: string[]): void {
+        // 始终生成无参构造函数
+        lines.push(`    /// <summary>`);
+        lines.push(`    /// 创建 ${component.name} 组件`);
+        lines.push(`    /// </summary>`);
+        lines.push(`    public ${component.name}()`);
+        lines.push('    {');
+        lines.push(`        _jsObject = NodeApi.CreateComponent("${component.name}");`);
+        lines.push('    }');
+        lines.push('');
+        
+        // 用于去重的集合
+        const generatedSignatures = new Set<string>();
+        
+        // 为每个重载生成构造函数
+        if (component.constructorOverloads && component.constructorOverloads.length > 0) {
+            component.constructorOverloads.forEach((overload) => {
+                if (overload.parameters.length > 0) {
+                    this.generateConstructorOverloadIfUnique(component.name, overload.parameters, lines, generatedSignatures);
+                }
+            });
+        } else if (component.constructorParams.length > 0) {
+            // 兼容旧的解析方式
+            this.generateConstructorOverloadIfUnique(component.name, component.constructorParams, lines, generatedSignatures);
+        }
+    }
+
+    private generateConstructorOverloadIfUnique(className: string, params: ParameterInfo[], lines: string[], generatedSignatures: Set<string>): void {
+        // 生成签名用于去重检查
+        const signature = params.map(p => {
+            const cleanType = TypeMapper.cleanOptional(p.type);
+            return TypeMapper.mapType(cleanType);
+        }).join(', ');
+        
+        // 检查是否已生成相同的签名
+        if (generatedSignatures.has(signature)) {
+            return;
+        }
+        
+        generatedSignatures.add(signature);
+        this.generateConstructorOverload(className, params, lines);
+    }
+
+    private generateConstructorOverload(className: string, params: ParameterInfo[], lines: string[]): void {
+        const processedParams = params.map(p => this.formatParameter(p));
+        const paramStr = processedParams.join(', ');
+        
+        // 参数名列表（用于方法体）
+        const paramNames = params.map(p => p.name).join(', ');
+        
+        lines.push(`    /// <summary>`);
+        lines.push(`    /// 创建 ${className} 组件`);
+        lines.push(`    /// </summary>`);
+        lines.push(`    public ${className}(${paramStr})`);
+        lines.push('    {');
+        lines.push(`        _jsObject = NodeApi.CreateComponent("${className}", ${paramNames});`);
+        lines.push('    }');
+        lines.push('');
+    }
+
+    private formatParameter(param: ParameterInfo): string {
+        const cleanType = TypeMapper.cleanOptional(param.type);
+        const type = TypeMapper.mapType(cleanType);
+        const optionalMark = TypeMapper.isOptional(param.type) ? '?' : '';
+        const defaultVal = param.defaultValue ? ` = ${param.defaultValue}` : 
+                          (TypeMapper.isOptional(param.type) ? ' = null' : '');
+        return `${type}${optionalMark} ${param.name}${defaultVal}`;
+    }
+
+    private generateMethods(component: ComponentInfo, lines: string[]): void {
+        component.methods.forEach(method => {
+            this.generateMethod(method, component.attributeName, lines);
+        });
+    }
+
+    private generateMethod(method: MethodInfo, attributeName: string, lines: string[]): void {
+        const params = method.parameters.map(p => this.formatParameter(p));
+        
+        const paramStr = params.join(', ');
+        const returnTypeName = method.isChained ? attributeName : method.returnType;
+        
+        lines.push(`    /// <summary>`);
+        lines.push(`    /// 设置 ${method.name} 属性`);
+        lines.push(`    /// </summary>`);
+        lines.push(`    public ${returnTypeName} ${this.capitalizeFirst(method.name)}(${paramStr})`);
+        lines.push('    {');
+        
+        if (method.isChained) {
+            const paramNames = method.parameters.map(p => p.name).join(', ');
+            lines.push(`        NodeApi.SetAttribute(_jsObject, "${method.name}", ${paramNames});`);
+            lines.push(`        return new ${attributeName}(_jsObject);`);
+        } else {
+            const paramNames = method.parameters.map(p => p.name).join(', ');
+            lines.push(`        return NodeApi.CallMethod<${returnTypeName}>(_jsObject, "${method.name}", ${paramNames});`);
+        }
+        
+        lines.push('    }');
+        lines.push('');
+    }
+
+    private capitalizeFirst(str: string): string {
+        if (!str) return str;
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    generateEnum(name: string, values: string[]): string {
+        const lines: string[] = [];
+        
+        lines.push(`/// <summary>`);
+        lines.push(`/// ${name} 枚举`);
+        lines.push(`/// </summary>`);
+        lines.push(`public enum ${name}`);
+        lines.push('{');
+        
+        values.forEach((value, index) => {
+            const comma = index < values.length - 1 ? ',' : '';
+            lines.push(`    ${value}${comma}`);
+        });
+        
+        lines.push('}');
+        
+        return lines.join('\n');
+    }
+
+    generateRecord(name: string, fields: { name: string; type: string }[]): string {
+        const lines: string[] = [];
+        
+        const fieldStr = fields.map(f => {
+            const type = TypeMapper.mapType(f.type);
+            return `${type} ${this.capitalizeFirst(f.name)}`;
+        }).join(', ');
+        
+        lines.push(`/// <summary>`);
+        lines.push(`/// ${name} 数据类`);
+        lines.push(`/// </summary>`);
+        lines.push(`public record ${name}(${fieldStr});`);
+        
+        return lines.join('\n');
+    }
+}
