@@ -266,7 +266,8 @@ export class AstParser {
         
         if (node.parameters) {
             node.parameters.forEach((param) => {
-                const paramType = this.getTypeName(param.type);
+                const rawType = this.getTypeName(param.type);
+                const paramType = TypeMapper.mapType(rawType);
                 parameters.push({
                     name: param.name.getText(),
                     type: paramType,
@@ -335,7 +336,8 @@ export class AstParser {
             return paramsStr.split(',').map((p, index) => {
                 const parts = p.trim().split(':');
                 const paramName = parts[0]?.trim() || `param${index}`;
-                const paramType = parts.length > 1 ? parts[1].trim() : 'IntPtr';
+                const rawType = parts.length > 1 ? parts[1].trim() : 'IntPtr';
+                const paramType = TypeMapper.mapType(rawType);
                 return {
                     name: paramName,
                     type: paramType,
@@ -543,6 +545,10 @@ export class AstParser {
             const objectType = this.getTypeName(typeNode.objectType);
             const indexType = this.getTypeName(typeNode.indexType);
             return `${objectType}[${indexType}]`;
+        }
+
+        if (ts.isTypeLiteralNode(typeNode)) {
+            return 'IntPtr';
         }
 
         return typeNode.getText();

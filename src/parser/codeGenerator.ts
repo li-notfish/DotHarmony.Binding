@@ -14,8 +14,11 @@ export class CodeGenerator {
         lines.push(`namespace ${component.namespace};`);
         lines.push('');
         
-        // 生成类（带继承支持）
+        // 生成组件类（带继承支持）
         this.generateClass(component, lines);
+        
+        // 生成 *Attribute 类
+        this.generateAttributeClass(component, lines);
         
         return lines.join('\n');
     }
@@ -51,6 +54,60 @@ export class CodeGenerator {
         this.generateEvents(component, lines);
         this.generateDisposePattern(component.name, lines);
         
+        lines.push('}');
+    }
+
+    private generateAttributeClass(component: ComponentInfo, lines: string[]): void {
+        const attrName = component.attributeName;
+        if (!attrName) return;
+        
+        lines.push('');
+        lines.push(`/// <summary>`);
+        lines.push(`/// ${component.name} 属性设置器`);
+        lines.push(`/// </summary>`);
+        lines.push(`public partial class ${attrName} : IDisposable`);
+        lines.push('{');
+        lines.push('    private IntPtr _jsObject;');
+        lines.push('    private bool _disposed = false;');
+        lines.push('');
+        lines.push(`    internal ${attrName}(IntPtr jsObject)`);
+        lines.push('    {');
+        lines.push('        _jsObject = jsObject;');
+        lines.push('    }');
+        lines.push('');
+        lines.push('    /// <summary>');
+        lines.push('    /// 释放原生 JS 对象资源');
+        lines.push('    /// </summary>');
+        lines.push('    public void Dispose()');
+        lines.push('    {');
+        lines.push('        Dispose(true);');
+        lines.push('        GC.SuppressFinalize(this);');
+        lines.push('    }');
+        lines.push('');
+        lines.push('    /// <summary>');
+        lines.push('    /// 受保护的释放实现');
+        lines.push('    /// </summary>');
+        lines.push('    protected virtual void Dispose(bool disposing)');
+        lines.push('    {');
+        lines.push('        if (!_disposed)');
+        lines.push('        {');
+        lines.push('            if (disposing)');
+        lines.push('            {');
+        lines.push('                // Dispose managed resources');
+        lines.push('            }');
+        lines.push('');
+        lines.push('            _jsObject = IntPtr.Zero;');
+        lines.push('            _disposed = true;');
+        lines.push('        }');
+        lines.push('    }');
+        lines.push('');
+        lines.push('    /// <summary>');
+        lines.push('    /// 析构函数');
+        lines.push('    /// </summary>');
+        lines.push(`    ~${attrName}()`);
+        lines.push('    {');
+        lines.push('        Dispose(false);');
+        lines.push('    }');
         lines.push('}');
     }
 
@@ -203,7 +260,7 @@ export class CodeGenerator {
     }
 
     private generateEventMethod(event: EventInfo, lines: string[]): void {
-        const paramName = event.parameters.length > 0 ? 'handler' : 'handler';
+        const paramName = 'handler';
         
         lines.push(`    /// <summary>`);
         lines.push(`    /// ${event.description || '设置 ' + event.name + ' 事件处理器'}`);
@@ -211,7 +268,9 @@ export class CodeGenerator {
         lines.push(`    public ${event.returnType} ${this.capitalizeFirst(event.name)}(${event.delegateName} ${paramName})`);
         lines.push('    {');
         lines.push(`        NodeApi.SetEventHandler(_jsObject, "${event.name}", ${paramName});`);
-        lines.push(`        return this;`);
+        if (event.returnType !== 'void') {
+            lines.push(`        return this;`);
+        }
         lines.push('    }');
         lines.push('');
     }

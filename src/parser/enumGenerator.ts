@@ -41,11 +41,13 @@ export class EnumGenerator {
             lines.push(`    [Description("${member.description}")]`);
         }
         
-        if (member.value !== undefined) {
-            // 有显式值
-            const valueStr = typeof member.value === 'number' 
-                ? member.value.toString() 
-                : `"${member.value}"`;
+        if (enumInfo.isStringEnum && typeof member.value === 'string') {
+            // 字符串枚举：不使用显式值，依赖 [Description] 存储字符串
+            // C# 枚举必须使用整数值
+            lines.push(`    ${member.name}${comma}`);
+        } else if (member.value !== undefined) {
+            // 有显式值（数值）
+            const valueStr = member.value.toString();
             lines.push(`    ${member.name} = ${valueStr}${comma}`);
         } else {
             // 无显式值

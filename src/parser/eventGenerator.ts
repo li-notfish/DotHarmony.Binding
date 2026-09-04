@@ -51,7 +51,7 @@ export class EventGenerator {
         });
         
         const paramStr = params.join(', ');
-        const paramName = event.parameters.length > 0 ? event.parameters[0].name : 'handler';
+        const paramName = 'handler';
         
         lines.push(`    /// <summary>`);
         lines.push(`    /// ${event.description || '设置 ' + event.name + ' 事件处理器'}`);
@@ -59,7 +59,9 @@ export class EventGenerator {
         lines.push(`    public ${event.returnType} ${this.capitalizeFirst(event.name)}(${event.delegateName} ${paramName})`);
         lines.push('    {');
         lines.push(`        NodeApi.SetEventHandler(_jsObject, "${event.name}", ${paramName});`);
-        lines.push(`        return this;`);
+        if (event.returnType !== 'void') {
+            lines.push(`        return this;`);
+        }
         lines.push('    }');
         lines.push('');
     }

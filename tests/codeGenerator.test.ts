@@ -116,10 +116,13 @@ describe('Code Generation Tests', () => {
         const enumsCsPath = path.join(outputDir, 'enums.Enums.cs');
         const content = fs.readFileSync(enumsCsPath, 'utf-8');
         
-        // 验证字符串枚举
+        // 验证字符串枚举 - 使用 [Description] 而不是字符串值
         expect(content).toContain('public enum ColoringStrategy');
         expect(content).toContain('[Description("invert")]');
-        expect(content).toContain('INVERT = "invert"');
+        // 字符串枚举不再使用 = "value" 语法（C# 枚举不支持）
+        expect(content).toContain('INVERT,');
+        expect(content).toContain('[Description("average")]');
+        expect(content).toContain('AVERAGE,');
     });
 
     test('should generate enums without explicit values', () => {
@@ -379,7 +382,13 @@ describe('Code Generation Tests', () => {
         expect(cachedCount2).not.toBeNull();
     });
 
-    test('should create generation cache file', () => {
+    test('should create generation cache file', async () => {
+        const parser = new ArkTsParser();
+        const inputDir = path.join(__dirname, 'fixtures');
+        
+        // 使用 processDirectory 来创建缓存文件
+        await parser.processDirectory(inputDir, outputDir);
+        
         const cachePath = path.join(outputDir, '.generation-cache.json');
         expect(fs.existsSync(cachePath)).toBe(true);
         
