@@ -1,16 +1,20 @@
-import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EventInfo, DelegateInfo } from './models';
+import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EventInfo, DelegateInfo, InheritanceInfo, ImportInfo, ParseResult } from './models';
 import { TypeMapper } from './typeMapper';
 
 export class CodeGenerator {
-    generate(component: ComponentInfo): string {
+    generate(result: ParseResult): string {
+        const { component, imports, warnings } = result;
         const lines: string[] = [];
         
         lines.push('using System;');
         lines.push('using System.Runtime.InteropServices;');
         lines.push('');
+        
+        // 生成命名空间
         lines.push(`namespace ${component.namespace};`);
         lines.push('');
         
+        // 生成类（带继承支持）
         this.generateClass(component, lines);
         
         return lines.join('\n');
@@ -20,7 +24,15 @@ export class CodeGenerator {
         lines.push(`/// <summary>`);
         lines.push(`/// ${component.name} 组件的 C# 绑定`);
         lines.push(`/// </summary>`);
-        lines.push(`public partial class ${component.name}`);
+        
+        // 支持继承（目前暂不支持基类，只记录信息）
+        const baseClass = this.getBaseClass(component);
+        if (baseClass) {
+            lines.push(`public partial class ${component.name} : ${baseClass}`);
+        } else {
+            lines.push(`public partial class ${component.name}`);
+        }
+        
         lines.push('{');
         
         lines.push('    /// <summary>');
@@ -34,6 +46,12 @@ export class CodeGenerator {
         this.generateEvents(component, lines);
         
         lines.push('}');
+    }
+
+    private getBaseClass(component: ComponentInfo): string | null {
+        // 目前暂不支持自动生成基类
+        // 未来可以添加 CommonMethod<T> 基类支持
+        return null;
     }
 
     private generateConstructors(component: ComponentInfo, lines: string[]): void {

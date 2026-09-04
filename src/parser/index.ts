@@ -3,7 +3,7 @@ import * as path from 'path';
 import { AstParser } from './astParser';
 import { CodeGenerator } from './codeGenerator';
 import { EnumGenerator } from './enumGenerator';
-import { ComponentInfo, EnumInfo } from './models';
+import { ComponentInfo, EnumInfo, ParseResult } from './models';
 
 export class ArkTsParser {
     private parser: AstParser;
@@ -16,7 +16,7 @@ export class ArkTsParser {
         this.enumGenerator = new EnumGenerator();
     }
 
-    parseFile(inputPath: string): ComponentInfo {
+    parseFile(inputPath: string): ParseResult {
         if (!fs.existsSync(inputPath)) {
             throw new Error(`File not found: ${inputPath}`);
         }
@@ -32,8 +32,8 @@ export class ArkTsParser {
         return this.parser.parseEnums(inputPath);
     }
 
-    generateCode(component: ComponentInfo): string {
-        return this.generator.generate(component);
+    generateCode(result: ParseResult): string {
+        return this.generator.generate(result);
     }
 
     generateEnumCode(enumInfo: EnumInfo): string {
@@ -48,11 +48,16 @@ export class ArkTsParser {
         console.log(`Processing: ${inputPath}`);
         
         // 解析组件
-        const component = this.parseFile(inputPath);
+        const result = this.parseFile(inputPath);
+        
+        // 输出警告
+        if (result.warnings.length > 0) {
+            result.warnings.forEach(w => console.log(`  Warning: ${w}`));
+        }
         
         // 如果有组件内容，生成组件代码
-        if (component.name) {
-            const csharpCode = this.generateCode(component);
+        if (result.component.name) {
+            const csharpCode = this.generateCode(result);
             
             const outputDir = path.dirname(outputPath);
             if (!fs.existsSync(outputDir)) {

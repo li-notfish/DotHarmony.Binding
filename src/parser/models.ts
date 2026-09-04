@@ -60,3 +60,21 @@ export interface DelegateInfo {
     parameters: ParameterInfo[];     // 参数列表
     returnType: string;              // 返回类型
 }
+
+export interface InheritanceInfo {
+    baseType: string;                // 基类名称
+    typeArguments: string[];         // 泛型参数
+}
+
+export interface ImportInfo {
+    module: string;                  // 导入模块路径
+    imports: string[];               // 导入的类型列表
+    isTypeOnly: boolean;             // 是否是类型导入
+}
+
+export interface ParseResult {
+    component: ComponentInfo;
+    enums: EnumInfo[];
+    imports: ImportInfo[];
+    warnings: string[];
+}

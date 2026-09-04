@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import * as path from 'path';
-import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EnumInfo, EnumMemberInfo, EventInfo, DelegateInfo } from './models';
+import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EnumInfo, EnumMemberInfo, EventInfo, DelegateInfo, InheritanceInfo, ImportInfo, ParseResult } from './models';
 import { TypeMapper } from './typeMapper';
 
 export class AstParser {
@@ -12,7 +12,7 @@ export class AstParser {
         this.checker = this.program.getTypeChecker();
     }
 
-    parse(filePath: string): ComponentInfo {
+    parse(filePath: string): ParseResult {
         const sourceFile = ts.createSourceFile(
             filePath,
             require('fs').readFileSync(filePath, 'utf-8'),
@@ -32,17 +32,36 @@ export class AstParser {
             namespace: 'HarmonyOS.ArkUI'
         };
 
+        const enums: EnumInfo[] = [];
+        const imports: ImportInfo[] = [];
+        const warnings: string[] = [];
+
         ts.forEachChild(sourceFile, (node) => {
-            if (ts.isInterfaceDeclaration(node)) {
-                this.parseInterface(node, component);
+            if (ts.isImportDeclaration(node)) {
+                const importInfo = this.parseImport(node);
+                if (importInfo) {
+                    imports.push(importInfo);
+                }
+            } else if (ts.isInterfaceDeclaration(node)) {
+                this.parseInterface(node, component, warnings);
             } else if (ts.isClassDeclaration(node)) {
-                this.parseClass(node, component);
+                this.parseClass(node, component, warnings);
             } else if (ts.isTypeAliasDeclaration(node)) {
                 this.parseTypeAlias(node, component);
+            } else if (ts.isEnumDeclaration(node)) {
+                const enumInfo = this.parseEnum(node);
+                if (enumInfo) {
+                    enums.push(enumInfo);
+                }
             }
         });
 
-        return component;
+        return {
+            component,
+            enums,
+            imports,
+            warnings
+        };
     }
 
     parseEnums(filePath: string): EnumInfo[] {
@@ -67,99 +86,57 @@ export class AstParser {
         return enums;
     }
 
-    private parseEnum(node: ts.EnumDeclaration): EnumInfo | null {
-        const enumName = node.name.text;
+    private parseImport(node: ts.ImportDeclaration): ImportInfo | null {
+        const modulePath = node.moduleSpecifier.getText().replace(/['"]/g, '');
         
-        // 跳过内部枚举
-        if (enumName.startsWith('_')) {
+        // 跳过系统导入
+        if (modulePath.startsWith('@ohos.') || modulePath.startsWith('.')) {
             return null;
         }
 
-        const members: EnumMemberInfo[] = [];
-        let isStringEnum = false;
-        let hasExplicitValues = false;
+        const imports: string[] = [];
+        let isTypeOnly = !!node.importClause?.isTypeOnly;
 
-        node.members.forEach((member) => {
-            const memberName = member.name.getText();
-            
-            if (member.initializer) {
-                hasExplicitValues = true;
-                const value = this.getEnumValue(member.initializer);
-                if (typeof value === 'string') {
-                    isStringEnum = true;
-                    members.push({
-                        name: memberName,
-                        value: value,
-                        description: value  // 对于字符串枚举，description 就是值
-                    });
-                } else {
-                    members.push({
-                        name: memberName,
-                        value: value
-                    });
-                }
-            } else {
-                members.push({
-                    name: memberName
+        if (node.importClause?.namedBindings) {
+            if (ts.isNamedImports(node.importClause.namedBindings)) {
+                node.importClause.namedBindings.elements.forEach(element => {
+                    imports.push(element.name.getText());
                 });
             }
-        });
+        }
 
-        // 检测是否是位标志枚举（包含位运算）
-        const isFlags = this.detectFlagsEnum(node);
+        if (imports.length === 0) {
+            return null;
+        }
 
         return {
-            name: enumName,
-            members: members,
-            isFlags: isFlags,
-            isStringEnum: isStringEnum
+            module: modulePath,
+            imports,
+            isTypeOnly
         };
     }
 
-    private getEnumValue(initializer: ts.Expression): string | number {
-        if (ts.isNumericLiteral(initializer)) {
-            return parseInt(initializer.text, 10);
-        }
-        
-        if (ts.isStringLiteral(initializer)) {
-            return initializer.text;
-        }
-        
-        // 处理位运算: 1 << 0, 1 << 1 等
-        if (ts.isBinaryExpression(initializer)) {
-            const text = initializer.getText();
-            // 简单的位运算评估
-            if (text.includes('<<')) {
-                const match = text.match(/(\d+)\s*<<\s*(\d+)/);
-                if (match) {
-                    return parseInt(match[1], 10) << parseInt(match[2], 10);
-                }
-            }
-        }
-        
-        // 对于其他复杂表达式，返回文本
-        return initializer.getText();
-    }
-
-    private detectFlagsEnum(node: ts.EnumDeclaration): boolean {
-        // 检查是否有位运算或特定的值模式
-        for (const member of node.members) {
-            if (member.initializer) {
-                const text = member.initializer.getText();
-                if (text.includes('<<') || text.includes('|')) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private parseInterface(node: ts.InterfaceDeclaration, component: ComponentInfo): void {
+    private parseInterface(node: ts.InterfaceDeclaration, component: ComponentInfo, warnings: string[]): void {
         const interfaceName = node.name.text;
         
         if (interfaceName.endsWith('Interface')) {
             component.interfaceName = interfaceName;
             component.name = interfaceName.replace('Interface', '');
+            
+            // 解析继承
+            if (node.heritageClauses) {
+                node.heritageClauses.forEach(clause => {
+                    if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
+                        clause.types.forEach(type => {
+                            const inheritance = this.parseInheritance(type);
+                            if (inheritance) {
+                                // 存储继承信息（目前只记录警告）
+                                warnings.push(`${interfaceName} extends ${inheritance.baseType}`);
+                            }
+                        });
+                    }
+                });
+            }
             
             node.members.forEach((member) => {
                 if (ts.isCallSignatureDeclaration(member)) {
@@ -169,8 +146,55 @@ export class AstParser {
         }
     }
 
+    private parseInheritance(node: ts.ExpressionWithTypeArguments): InheritanceInfo | null {
+        if (ts.isIdentifier(node.expression)) {
+            const baseType = node.expression.text;
+            const typeArguments: string[] = [];
+            
+            if (node.typeArguments) {
+                node.typeArguments.forEach(arg => {
+                    typeArguments.push(arg.getText());
+                });
+            }
+            
+            return {
+                baseType,
+                typeArguments
+            };
+        }
+        return null;
+    }
+
+    private parseClass(node: ts.ClassDeclaration, component: ComponentInfo, warnings: string[]): void {
+        const className = node.name?.getText() || '';
+        
+        if (className.endsWith('Attribute')) {
+            component.attributeName = className;
+            
+            // 解析继承
+            if (node.heritageClauses) {
+                node.heritageClauses.forEach(clause => {
+                    if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
+                        clause.types.forEach(type => {
+                            const inheritance = this.parseInheritance(type);
+                            if (inheritance) {
+                                // 存储继承信息（目前只记录警告）
+                                warnings.push(`${className} extends ${inheritance.baseType}`);
+                            }
+                        });
+                    }
+                });
+            }
+            
+            node.members.forEach((member) => {
+                if (ts.isMethodDeclaration(member)) {
+                    this.parseMethod(member, component, warnings);
+                }
+            });
+        }
+    }
+
     private parseCallSignature(node: ts.CallSignatureDeclaration, component: ComponentInfo): void {
-        // 每个 CallSignature 创建一个新的重载
         const overload: ConstructorOverload = {
             parameters: []
         };
@@ -188,8 +212,6 @@ export class AstParser {
         
         component.constructorOverloads.push(overload);
         
-        // 同时更新 constructorParams 以保持兼容性（将所有参数合并）
-        // 注意：这里只添加新的参数，避免重复
         overload.parameters.forEach(param => {
             const exists = component.constructorParams.some(p => p.name === param.name);
             if (!exists) {
@@ -198,21 +220,7 @@ export class AstParser {
         });
     }
 
-    private parseClass(node: ts.ClassDeclaration, component: ComponentInfo): void {
-        const className = node.name?.getText() || '';
-        
-        if (className.endsWith('Attribute')) {
-            component.attributeName = className;
-            
-            node.members.forEach((member) => {
-                if (ts.isMethodDeclaration(member)) {
-                    this.parseMethod(member, component);
-                }
-            });
-        }
-    }
-
-    private parseMethod(node: ts.MethodDeclaration, component: ComponentInfo): void {
+    private parseMethod(node: ts.MethodDeclaration, component: ComponentInfo, warnings: string[]): void {
         const methodName = node.name.getText();
         const returnType = this.getTypeName(node.type);
         
@@ -248,12 +256,10 @@ export class AstParser {
     }
 
     private isEventMethod(methodName: string): boolean {
-        // 事件方法通常以 "on" 开头
         return methodName.startsWith('on') && methodName.length > 2 && methodName[2] === methodName[2].toUpperCase();
     }
 
     private parseEventMethod(node: ts.MethodDeclaration, methodName: string, component: ComponentInfo): EventInfo | null {
-        // 从方法名生成委托名称
         const delegateName = `${this.capitalizeFirst(methodName.slice(2))}Handler`;
         
         const parameters: ParameterInfo[] = [];
@@ -269,11 +275,9 @@ export class AstParser {
             });
         }
         
-        // 如果参数是函数类型，提取其参数作为事件参数
         if (parameters.length === 1 && parameters[0].type.startsWith('(') && parameters[0].type.includes('=>')) {
             const extractedParams = this.extractFunctionParams(parameters[0].type);
             if (extractedParams.length > 0) {
-                // 创建委托
                 const delegate: DelegateInfo = {
                     name: delegateName,
                     parameters: extractedParams,
@@ -281,7 +285,6 @@ export class AstParser {
                 };
                 component.delegates.push(delegate);
                 
-                // 创建事件信息
                 return {
                     name: methodName,
                     delegateName: delegateName,
@@ -292,7 +295,6 @@ export class AstParser {
             }
         }
         
-        // 如果参数不是函数类型，创建简单的委托
         if (parameters.length > 0) {
             const delegate: DelegateInfo = {
                 name: delegateName,
@@ -310,7 +312,6 @@ export class AstParser {
             };
         }
         
-        // 无参数的事件
         const simpleDelegate: DelegateInfo = {
             name: delegateName,
             parameters: [],
@@ -328,7 +329,6 @@ export class AstParser {
     }
 
     private extractFunctionParams(funcType: string): ParameterInfo[] {
-        // 解析 "(param1: type1, param2: type2) => returnType"
         const match = funcType.match(/\(([^)]*)\)\s*=>\s*(.+)/);
         if (match) {
             const paramsStr = match[1];
@@ -341,7 +341,7 @@ export class AstParser {
                     type: paramType,
                     optional: false
                 };
-            }).filter(p => p.name); // 过滤空参数
+            }).filter(p => p.name);
         }
         return [];
     }
@@ -351,8 +351,86 @@ export class AstParser {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    private parseEnum(node: ts.EnumDeclaration): EnumInfo | null {
+        const enumName = node.name.text;
+        
+        if (enumName.startsWith('_')) {
+            return null;
+        }
+
+        const members: EnumMemberInfo[] = [];
+        let isStringEnum = false;
+
+        node.members.forEach((member) => {
+            const memberName = member.name.getText();
+            
+            if (member.initializer) {
+                const value = this.getEnumValue(member.initializer);
+                if (typeof value === 'string') {
+                    isStringEnum = true;
+                    members.push({
+                        name: memberName,
+                        value: value,
+                        description: value
+                    });
+                } else {
+                    members.push({
+                        name: memberName,
+                        value: value
+                    });
+                }
+            } else {
+                members.push({
+                    name: memberName
+                });
+            }
+        });
+
+        const isFlags = this.detectFlagsEnum(node);
+
+        return {
+            name: enumName,
+            members: members,
+            isFlags: isFlags,
+            isStringEnum: isStringEnum
+        };
+    }
+
+    private getEnumValue(initializer: ts.Expression): string | number {
+        if (ts.isNumericLiteral(initializer)) {
+            return parseInt(initializer.text, 10);
+        }
+        
+        if (ts.isStringLiteral(initializer)) {
+            return initializer.text;
+        }
+        
+        if (ts.isBinaryExpression(initializer)) {
+            const text = initializer.getText();
+            if (text.includes('<<')) {
+                const match = text.match(/(\d+)\s*<<\s*(\d+)/);
+                if (match) {
+                    return parseInt(match[1], 10) << parseInt(match[2], 10);
+                }
+            }
+        }
+        
+        return initializer.getText();
+    }
+
+    private detectFlagsEnum(node: ts.EnumDeclaration): boolean {
+        for (const member of node.members) {
+            if (member.initializer) {
+                const text = member.initializer.getText();
+                if (text.includes('<<') || text.includes('|')) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private parseTypeAlias(node: ts.TypeAliasDeclaration, component: ComponentInfo): void {
-        // Handle union types like: type FlexDirection = 'Row' | 'Column'
         const typeName = node.name.getText();
         const typeNode = node.type;
         
@@ -368,7 +446,6 @@ export class AstParser {
 
         if (ts.isTypeReferenceNode(typeNode)) {
             const typeName = typeNode.typeName.getText();
-            // 处理泛型类型，如 Optional<boolean>
             if (typeNode.typeArguments && typeNode.typeArguments.length > 0) {
                 const typeArgs = typeNode.typeArguments.map(arg => this.getTypeName(arg)).join(', ');
                 return `${typeName}<${typeArgs}>`;
@@ -393,7 +470,6 @@ export class AstParser {
             return this.getTypeName(typeNode.type);
         }
 
-        // 处理函数类型: (param: type) => returnType
         if (ts.isFunctionTypeNode(typeNode)) {
             const params = typeNode.parameters.map(p => this.getTypeName(p.type));
             const returnType = this.getTypeName(typeNode.type);
@@ -405,7 +481,6 @@ export class AstParser {
             }
         }
 
-        // 处理构造签名: new (param: type) => returnType
         if (ts.isConstructorTypeNode(typeNode)) {
             return 'IntPtr';
         }
