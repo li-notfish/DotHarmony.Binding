@@ -1,0 +1,35 @@
+{
+  "dependencies": {
+    "@types/node": "^26.4.1",
+    "typescript": "^5.9.3"
+  },
+  "name": "arktsbinding",
+  "version": "1.0.0",
+  "description": "ArkTS to C# binding generator",
+  "main": "dist/parser/index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "tsc",
+    "generate": "ts-node src/parser/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "arkts",
+    "harmonyos",
+    "binding",
+    "csharp"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.12",
+    "ts-node": "^10.9.2"
+  }
+}
