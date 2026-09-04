@@ -1,4 +1,4 @@
-import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload } from './models';
+import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EventInfo, DelegateInfo } from './models';
 import { TypeMapper } from './typeMapper';
 
 export class CodeGenerator {
@@ -31,6 +31,7 @@ export class CodeGenerator {
         
         this.generateConstructors(component, lines);
         this.generateMethods(component, lines);
+        this.generateEvents(component, lines);
         
         lines.push('}');
     }
@@ -131,6 +132,48 @@ export class CodeGenerator {
             lines.push(`        return NodeApi.CallMethod<${returnTypeName}>(_jsObject, "${method.name}", ${paramNames});`);
         }
         
+        lines.push('    }');
+        lines.push('');
+    }
+
+    private generateEvents(component: ComponentInfo, lines: string[]): void {
+        // 先生成委托定义
+        component.delegates.forEach(delegate => {
+            this.generateDelegate(delegate, lines);
+        });
+        
+        // 生成事件方法
+        component.events.forEach(event => {
+            this.generateEventMethod(event, lines);
+        });
+    }
+
+    private generateDelegate(delegate: DelegateInfo, lines: string[]): void {
+        const params = delegate.parameters.map(p => {
+            const type = TypeMapper.mapType(p.type);
+            return `${type} ${p.name}`;
+        });
+        
+        const paramStr = params.join(', ');
+        const returnType = TypeMapper.mapType(delegate.returnType);
+        
+        lines.push(`    /// <summary>`);
+        lines.push(`    /// ${delegate.name} 委托`);
+        lines.push(`    /// </summary>`);
+        lines.push(`    public delegate ${returnType} ${delegate.name}(${paramStr});`);
+        lines.push('');
+    }
+
+    private generateEventMethod(event: EventInfo, lines: string[]): void {
+        const paramName = event.parameters.length > 0 ? 'handler' : 'handler';
+        
+        lines.push(`    /// <summary>`);
+        lines.push(`    /// ${event.description || '设置 ' + event.name + ' 事件处理器'}`);
+        lines.push(`    /// </summary>`);
+        lines.push(`    public ${event.returnType} ${this.capitalizeFirst(event.name)}(${event.delegateName} ${paramName})`);
+        lines.push('    {');
+        lines.push(`        NodeApi.SetEventHandler(_jsObject, "${event.name}", ${paramName});`);
+        lines.push(`        return this;`);
         lines.push('    }');
         lines.push('');
     }

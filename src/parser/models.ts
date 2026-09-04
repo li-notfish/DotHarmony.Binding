@@ -5,6 +5,8 @@ export interface ComponentInfo {
     constructorParams: ParameterInfo[];
     constructorOverloads: ConstructorOverload[];
     methods: MethodInfo[];
+    events: EventInfo[];
+    delegates: DelegateInfo[];
     namespace: string;               // "HarmonyOS.ArkUI"
 }
 
@@ -43,4 +45,18 @@ export interface EnumMemberInfo {
     name: string;
     value?: string | number;         // 枚举值（可选）
     description?: string;            // 描述（用于字符串枚举）
+}
+
+export interface EventInfo {
+    name: string;                    // 事件名称，如 "onClick"
+    delegateName: string;            // 委托名称，如 "ClickEventHandler"
+    parameters: ParameterInfo[];     // 事件参数
+    returnType: string;              // 返回类型（通常是 void）
+    description?: string;            // 事件描述
+}
+
+export interface DelegateInfo {
+    name: string;                    // 委托名称
+    parameters: ParameterInfo[];     // 参数列表
+    returnType: string;              // 返回类型
 }

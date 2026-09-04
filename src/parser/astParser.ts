@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import * as path from 'path';
-import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EnumInfo, EnumMemberInfo } from './models';
+import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EnumInfo, EnumMemberInfo, EventInfo, DelegateInfo } from './models';
 import { TypeMapper } from './typeMapper';
 
 export class AstParser {
@@ -27,6 +27,8 @@ export class AstParser {
             constructorParams: [],
             constructorOverloads: [],
             methods: [],
+            events: [],
+            delegates: [],
             namespace: 'HarmonyOS.ArkUI'
         };
 
@@ -214,6 +216,15 @@ export class AstParser {
         const methodName = node.name.getText();
         const returnType = this.getTypeName(node.type);
         
+        // 检测是否是事件方法（以 "on" 开头）
+        if (this.isEventMethod(methodName)) {
+            const eventInfo = this.parseEventMethod(node, methodName, component);
+            if (eventInfo) {
+                component.events.push(eventInfo);
+            }
+            return;
+        }
+        
         const method: MethodInfo = {
             name: methodName,
             returnType: TypeMapper.mapType(returnType),
@@ -234,6 +245,110 @@ export class AstParser {
         }
 
         component.methods.push(method);
+    }
+
+    private isEventMethod(methodName: string): boolean {
+        // 事件方法通常以 "on" 开头
+        return methodName.startsWith('on') && methodName.length > 2 && methodName[2] === methodName[2].toUpperCase();
+    }
+
+    private parseEventMethod(node: ts.MethodDeclaration, methodName: string, component: ComponentInfo): EventInfo | null {
+        // 从方法名生成委托名称
+        const delegateName = `${this.capitalizeFirst(methodName.slice(2))}Handler`;
+        
+        const parameters: ParameterInfo[] = [];
+        
+        if (node.parameters) {
+            node.parameters.forEach((param) => {
+                const paramType = this.getTypeName(param.type);
+                parameters.push({
+                    name: param.name.getText(),
+                    type: paramType,
+                    optional: !!param.questionToken
+                });
+            });
+        }
+        
+        // 如果参数是函数类型，提取其参数作为事件参数
+        if (parameters.length === 1 && parameters[0].type.startsWith('(') && parameters[0].type.includes('=>')) {
+            const extractedParams = this.extractFunctionParams(parameters[0].type);
+            if (extractedParams.length > 0) {
+                // 创建委托
+                const delegate: DelegateInfo = {
+                    name: delegateName,
+                    parameters: extractedParams,
+                    returnType: 'void'
+                };
+                component.delegates.push(delegate);
+                
+                // 创建事件信息
+                return {
+                    name: methodName,
+                    delegateName: delegateName,
+                    parameters: extractedParams,
+                    returnType: 'void',
+                    description: `${methodName} 事件处理器`
+                };
+            }
+        }
+        
+        // 如果参数不是函数类型，创建简单的委托
+        if (parameters.length > 0) {
+            const delegate: DelegateInfo = {
+                name: delegateName,
+                parameters: parameters,
+                returnType: 'void'
+            };
+            component.delegates.push(delegate);
+            
+            return {
+                name: methodName,
+                delegateName: delegateName,
+                parameters: parameters,
+                returnType: 'void',
+                description: `${methodName} 事件处理器`
+            };
+        }
+        
+        // 无参数的事件
+        const simpleDelegate: DelegateInfo = {
+            name: delegateName,
+            parameters: [],
+            returnType: 'void'
+        };
+        component.delegates.push(simpleDelegate);
+        
+        return {
+            name: methodName,
+            delegateName: delegateName,
+            parameters: [],
+            returnType: 'void',
+            description: `${methodName} 事件处理器`
+        };
+    }
+
+    private extractFunctionParams(funcType: string): ParameterInfo[] {
+        // 解析 "(param1: type1, param2: type2) => returnType"
+        const match = funcType.match(/\(([^)]*)\)\s*=>\s*(.+)/);
+        if (match) {
+            const paramsStr = match[1];
+            return paramsStr.split(',').map((p, index) => {
+                const parts = p.trim().split(':');
+                const paramName = parts[0]?.trim() || `param${index}`;
+                const paramType = parts.length > 1 ? parts[1].trim() : 'IntPtr';
+                return {
+                    name: paramName,
+                    type: paramType,
+                    optional: false
+                };
+            }).filter(p => p.name); // 过滤空参数
+        }
+        return [];
+    }
+
+    private capitalizeFirst(str: string): string {
+        if (!str) return str;
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
     private parseTypeAlias(node: ts.TypeAliasDeclaration, component: ComponentInfo): void {
