@@ -106,3 +106,65 @@ export interface ArrayTypeInfo {
     elementType: string;              // 元素类型
     dimensions: number;               // 数组维度
 }
+
+export interface InterfaceInfo {
+    name: string;                     // 接口名称
+    properties: PropertyInfo[];       // 属性列表
+    methods: MethodInfo[];            // 方法列表
+    typeParameters?: string[];        // 泛型参数
+    extends?: string[];               // 继承的接口
+    sourceFile?: string;              // 来源文件
+}
+
+export interface PropertyInfo {
+    name: string;                     // 属性名称
+    type: string;                     // 属性类型
+    optional: boolean;                // 是否可选
+    readonly: boolean;                // 是否只读
+    description?: string;             // 描述
+    defaultValue?: string;            // 默认值
+}
+
+export interface ClassInfo {
+    name: string;                     // 类名
+    properties: PropertyInfo[];       // 属性列表
+    methods: MethodInfo[];            // 方法列表
+    constructors: ConstructorOverload[]; // 构造函数重载
+    typeParameters?: string[];        // 泛型参数
+    extends?: string;                 // 继承的类
+    implements?: string[];            // 实现的接口
+    isAbstract?: boolean;             // 是否抽象类
+    sourceFile?: string;              // 来源文件
+}
+
+export interface ModuleInfo {
+    name: string;                     // 模块名称
+    path: string;                     // 文件路径
+    exports: string[];                // 导出的类型名称
+    interfaces: InterfaceInfo[];      // 导出的接口
+    classes: ClassInfo[];             // 导出的类
+    enums: EnumInfo[];                // 导出的枚举
+    typeAliases: Record<string, string>; // 类型别名
+    reExports?: Record<string, string>; // 重导出映射
+}
+
+export interface ParseContext {
+    modules: Map<string, ModuleInfo>; // 模块名称 -> 模块信息
+    types: Map<string, string>;       // 类型名称 -> C# 类型
+    enums: Map<string, EnumInfo>;     // 枚举名称 -> 枚举信息
+    interfaces: Map<string, InterfaceInfo>; // 接口名称 -> 接口信息
+    classes: Map<string, ClassInfo>;   // 类名 -> 类信息
+    commonMethodInterface?: InterfaceInfo; // CommonMethod 接口
+    warnings: string[];               // 解析警告
+}
+
+export function createParseContext(): ParseContext {
+    return {
+        modules: new Map(),
+        types: new Map(),
+        enums: new Map(),
+        interfaces: new Map(),
+        classes: new Map(),
+        warnings: []
+    };
+}

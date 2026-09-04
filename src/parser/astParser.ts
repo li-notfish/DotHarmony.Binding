@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import * as path from 'path';
-import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EnumInfo, EnumMemberInfo, EventInfo, DelegateInfo, InheritanceInfo, ImportInfo, ParseResult } from './models';
+import * as fs from 'fs';
+import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EnumInfo, EnumMemberInfo, EventInfo, DelegateInfo, InheritanceInfo, ImportInfo, ParseResult, ParseContext, createParseContext, ModuleInfo, InterfaceInfo, PropertyInfo, ClassInfo } from './models';
 import { TypeMapper } from './typeMapper';
 
 export class AstParser {
@@ -56,12 +57,84 @@ export class AstParser {
             }
         });
 
+        // 如果没有找到标准 Interface 模式，尝试解析 API 格式
+        if (!component.name) {
+            this.parseApiFile(sourceFile, component, warnings);
+        }
+
         return {
             component,
             enums,
             imports,
             warnings
         };
+    }
+
+    private parseApiFile(sourceFile: ts.SourceFile, component: ComponentInfo, warnings: string[]): void {
+        ts.forEachChild(sourceFile, (node) => {
+            if (ts.isClassDeclaration(node) && node.name) {
+                const className = node.name.text;
+                if (!component.name) {
+                    component.name = className;
+                    component.interfaceName = className + 'Interface';
+                }
+                
+                node.members.forEach(member => {
+                    if (ts.isMethodDeclaration(member)) {
+                        const method: MethodInfo = {
+                            name: member.name.getText(),
+                            returnType: TypeMapper.mapType(this.getTypeName(member.type)),
+                            parameters: member.parameters.map(p => ({
+                                name: p.name.getText(),
+                                type: TypeMapper.mapType(this.getTypeName(p.type)),
+                                optional: !!p.questionToken,
+                                defaultValue: p.initializer ? p.initializer.getText() : undefined
+                            })),
+                            isChained: false
+                        };
+                        component.methods.push(method);
+                    } else if (ts.isConstructorDeclaration(member)) {
+                        const ctor: ConstructorOverload = {
+                            parameters: member.parameters.map(p => ({
+                                name: p.name.getText(),
+                                type: TypeMapper.mapType(this.getTypeName(p.type)),
+                                optional: !!p.questionToken,
+                                defaultValue: p.initializer ? p.initializer.getText() : undefined
+                            }))
+                        };
+                        component.constructorOverloads.push(ctor);
+                    }
+                });
+            } else if (ts.isInterfaceDeclaration(node) && node.name) {
+                const interfaceName = node.name.text;
+                if (!component.name) {
+                    component.name = interfaceName;
+                    component.interfaceName = interfaceName;
+                }
+                
+                node.members.forEach(member => {
+                    if (ts.isMethodSignature(member)) {
+                        const method: MethodInfo = {
+                            name: member.name.getText(),
+                            returnType: TypeMapper.mapType(this.getTypeName(member.type)),
+                            parameters: member.parameters.map(p => ({
+                                name: p.name.getText(),
+                                type: TypeMapper.mapType(this.getTypeName(p.type)),
+                                optional: !!p.questionToken,
+                                defaultValue: p.initializer ? p.initializer.getText() : undefined
+                            })),
+                            isChained: false
+                        };
+                        component.methods.push(method);
+                    }
+                });
+            } else if (ts.isExportAssignment(node)) {
+                const exportName = node.expression?.getText();
+                if (exportName) {
+                    component.name = exportName;
+                }
+            }
+        });
     }
 
     parseEnums(filePath: string): EnumInfo[] {
@@ -568,5 +641,315 @@ export class AstParser {
         }
 
         return typeNode.getText();
+    }
+
+    parseModule(filePath: string, context: ParseContext): ModuleInfo | null {
+        const sourceFile = ts.createSourceFile(
+            filePath,
+            fs.readFileSync(filePath, 'utf-8'),
+            ts.ScriptTarget.Latest,
+            true
+        );
+
+        const moduleName = path.basename(filePath, '.d.ts');
+        const moduleInfo: ModuleInfo = {
+            name: moduleName,
+            path: filePath,
+            exports: [],
+            interfaces: [],
+            classes: [],
+            enums: [],
+            typeAliases: {}
+        };
+
+        ts.forEachChild(sourceFile, (node) => {
+            if (ts.isInterfaceDeclaration(node)) {
+                const iface = this.parseInterfaceFull(node, filePath);
+                if (iface) {
+                    moduleInfo.interfaces.push(iface);
+                    moduleInfo.exports.push(iface.name);
+                    context.interfaces.set(iface.name, iface);
+                }
+            } else if (ts.isClassDeclaration(node)) {
+                const cls = this.parseClassFull(node, filePath);
+                if (cls) {
+                    moduleInfo.classes.push(cls);
+                    moduleInfo.exports.push(cls.name);
+                    context.classes.set(cls.name, cls);
+                }
+            } else if (ts.isEnumDeclaration(node)) {
+                const enumInfo = this.parseEnum(node);
+                if (enumInfo) {
+                    moduleInfo.enums.push(enumInfo);
+                    moduleInfo.exports.push(enumInfo.name);
+                    context.enums.set(enumInfo.name, enumInfo);
+                }
+            } else if (ts.isTypeAliasDeclaration(node)) {
+                const typeName = node.name.getText();
+                const typeStr = this.getTypeName(node.type);
+                moduleInfo.typeAliases[typeName] = typeStr;
+                context.types.set(typeName, typeStr);
+            } else if (ts.isVariableStatement(node)) {
+                node.declarationList.declarations.forEach(decl => {
+                    const varName = decl.name.getText();
+                    if (decl.type && ts.isTypeLiteralNode(decl.type)) {
+                        const props = this.parsePropertySignatures([...decl.type.members]);
+                        const iface: InterfaceInfo = {
+                            name: varName,
+                            properties: props,
+                            methods: [],
+                            sourceFile: filePath
+                        };
+                        moduleInfo.interfaces.push(iface);
+                        moduleInfo.exports.push(iface.name);
+                        context.interfaces.set(iface.name, iface);
+                    }
+                });
+            }
+        });
+
+        context.modules.set(moduleName, moduleInfo);
+        return moduleInfo;
+    }
+
+    parseCommonMethod(filePath: string, context: ParseContext): InterfaceInfo | null {
+        const sourceFile = ts.createSourceFile(
+            filePath,
+            fs.readFileSync(filePath, 'utf-8'),
+            ts.ScriptTarget.Latest,
+            true
+        );
+
+        let commonMethod: InterfaceInfo | null = null;
+
+        ts.forEachChild(sourceFile, (node) => {
+            if (ts.isClassDeclaration(node) && node.name?.text === 'CommonMethod') {
+                commonMethod = this.parseClassAsInterface(node, filePath);
+                if (commonMethod) {
+                    context.commonMethodInterface = commonMethod;
+                    context.interfaces.set('CommonMethod', commonMethod);
+                }
+            }
+        });
+
+        return commonMethod;
+    }
+
+    mergeCommonMethod(component: ComponentInfo, context: ParseContext): void {
+        if (!context.commonMethodInterface) {
+            return;
+        }
+
+        const commonMethod = context.commonMethodInterface;
+        const attrName = component.attributeName;
+
+        commonMethod.methods.forEach(method => {
+            const exists = component.methods.some(m => m.name === method.name);
+            if (!exists) {
+                const mappedMethod: MethodInfo = {
+                    name: method.name,
+                    returnType: method.returnType === 'CommonMethod<T>' ? attrName : TypeMapper.mapType(method.returnType),
+                    parameters: method.parameters.map(p => ({
+                        name: p.name,
+                        type: TypeMapper.mapType(p.type),
+                        optional: p.optional,
+                        defaultValue: p.defaultValue
+                    })),
+                    isChained: method.returnType.includes('CommonMethod') || method.returnType.includes('this')
+                };
+                component.methods.push(mappedMethod);
+            }
+        });
+    }
+
+    private parseInterfaceFull(node: ts.InterfaceDeclaration, sourceFile: string): InterfaceInfo {
+        const name = node.name.text;
+        const properties: PropertyInfo[] = [];
+        const methods: MethodInfo[] = [];
+        const typeParameters = node.typeParameters?.map(tp => tp.name.text);
+        const extendsList: string[] = [];
+
+        if (node.heritageClauses) {
+            node.heritageClauses.forEach(clause => {
+                if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
+                    clause.types.forEach(type => {
+                        extendsList.push(type.expression.getText());
+                    });
+                }
+            });
+        }
+
+        node.members.forEach(member => {
+            if (ts.isPropertySignature(member)) {
+                const prop: PropertyInfo = {
+                    name: member.name.getText(),
+                    type: this.getTypeName(member.type),
+                    optional: !!member.questionToken,
+                    readonly: !!member.modifiers?.some(m => m.kind === ts.SyntaxKind.ReadonlyKeyword)
+                };
+                properties.push(prop);
+            } else if (ts.isMethodSignature(member)) {
+                const method: MethodInfo = {
+                    name: member.name.getText(),
+                    returnType: TypeMapper.mapType(this.getTypeName(member.type)),
+                    parameters: member.parameters.map(p => ({
+                        name: p.name.getText(),
+                        type: TypeMapper.mapType(this.getTypeName(p.type)),
+                        optional: !!p.questionToken,
+                        defaultValue: p.initializer ? p.initializer.getText() : undefined
+                    })),
+                    isChained: false
+                };
+                methods.push(method);
+            } else if (ts.isCallSignatureDeclaration(member)) {
+                const method: MethodInfo = {
+                    name: '__call__',
+                    returnType: TypeMapper.mapType(this.getTypeName(member.type)),
+                    parameters: member.parameters.map(p => ({
+                        name: p.name.getText(),
+                        type: TypeMapper.mapType(this.getTypeName(p.type)),
+                        optional: !!p.questionToken,
+                        defaultValue: p.initializer ? p.initializer.getText() : undefined
+                    })),
+                    isChained: false
+                };
+                methods.push(method);
+            }
+        });
+
+        return {
+            name,
+            properties,
+            methods,
+            typeParameters,
+            extends: extendsList.length > 0 ? extendsList : undefined,
+            sourceFile
+        };
+    }
+
+    private parseClassFull(node: ts.ClassDeclaration, sourceFile: string): ClassInfo {
+        const name = node.name?.getText() || '';
+        const properties: PropertyInfo[] = [];
+        const methods: MethodInfo[] = [];
+        const constructors: ConstructorOverload[] = [];
+        const typeParameters = node.typeParameters?.map(tp => tp.name.text);
+        let extendsClass: string | undefined;
+        const implementsList: string[] = [];
+        const isAbstract = !!node.modifiers?.some(m => m.kind === ts.SyntaxKind.AbstractKeyword);
+
+        if (node.heritageClauses) {
+            node.heritageClauses.forEach(clause => {
+                if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
+                    clause.types.forEach(type => {
+                        extendsClass = type.expression.getText();
+                    });
+                } else if (clause.token === ts.SyntaxKind.ImplementsKeyword) {
+                    clause.types.forEach(type => {
+                        implementsList.push(type.expression.getText());
+                    });
+                }
+            });
+        }
+
+        node.members.forEach(member => {
+            if (ts.isPropertyDeclaration(member)) {
+                const prop: PropertyInfo = {
+                    name: member.name?.getText() || '',
+                    type: this.getTypeName(member.type),
+                    optional: !!member.questionToken,
+                    readonly: !!(member.modifiers && member.modifiers.some(m => !ts.isDecorator(m) && m.kind === ts.SyntaxKind.ReadonlyKeyword))
+                };
+                properties.push(prop);
+            } else if (ts.isMethodDeclaration(member)) {
+                const method: MethodInfo = {
+                    name: member.name.getText(),
+                    returnType: TypeMapper.mapType(this.getTypeName(member.type)),
+                    parameters: member.parameters.map(p => ({
+                        name: p.name.getText(),
+                        type: TypeMapper.mapType(this.getTypeName(p.type)),
+                        optional: !!p.questionToken,
+                        defaultValue: p.initializer ? p.initializer.getText() : undefined
+                    })),
+                    isChained: false
+                };
+                methods.push(method);
+            } else if (ts.isConstructorDeclaration(member)) {
+                const ctor: ConstructorOverload = {
+                    parameters: member.parameters.map(p => ({
+                        name: p.name.getText(),
+                        type: TypeMapper.mapType(this.getTypeName(p.type)),
+                        optional: !!p.questionToken,
+                        defaultValue: p.initializer ? p.initializer.getText() : undefined
+                    }))
+                };
+                constructors.push(ctor);
+            }
+        });
+
+        return {
+            name,
+            properties,
+            methods,
+            constructors,
+            typeParameters,
+            extends: extendsClass,
+            implements: implementsList.length > 0 ? implementsList : undefined,
+            isAbstract,
+            sourceFile
+        };
+    }
+
+    private parsePropertySignatures(members: ts.TypeElement[]): PropertyInfo[] {
+        const properties: PropertyInfo[] = [];
+        members.forEach(member => {
+            if (ts.isPropertySignature(member)) {
+                properties.push({
+                    name: member.name.getText(),
+                    type: this.getTypeName(member.type),
+                    optional: !!member.questionToken,
+                    readonly: !!member.modifiers?.some(m => m.kind === ts.SyntaxKind.ReadonlyKeyword)
+                });
+            }
+        });
+        return properties;
+    }
+
+    private parseClassAsInterface(node: ts.ClassDeclaration, sourceFile: string): InterfaceInfo {
+        const name = node.name?.getText() || 'CommonMethod';
+        const properties: PropertyInfo[] = [];
+        const methods: MethodInfo[] = [];
+        const typeParameters = node.typeParameters?.map(tp => tp.name.text);
+
+        node.members.forEach(member => {
+            if (ts.isMethodDeclaration(member)) {
+                const method: MethodInfo = {
+                    name: member.name.getText(),
+                    returnType: TypeMapper.mapType(this.getTypeName(member.type)),
+                    parameters: member.parameters.map(p => ({
+                        name: p.name.getText(),
+                        type: TypeMapper.mapType(this.getTypeName(p.type)),
+                        optional: !!p.questionToken,
+                        defaultValue: p.initializer ? p.initializer.getText() : undefined
+                    })),
+                    isChained: false
+                };
+                methods.push(method);
+            } else if (ts.isPropertyDeclaration(member)) {
+                properties.push({
+                    name: member.name?.getText() || '',
+                    type: this.getTypeName(member.type),
+                    optional: !!member.questionToken,
+                    readonly: !!(member.modifiers && member.modifiers.some(m => !ts.isDecorator(m) && m.kind === ts.SyntaxKind.ReadonlyKeyword))
+                });
+            }
+        });
+
+        return {
+            name,
+            properties,
+            methods,
+            typeParameters,
+            sourceFile
+        };
     }
 }
