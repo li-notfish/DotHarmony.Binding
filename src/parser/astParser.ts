@@ -276,23 +276,39 @@ export class AstParser {
             });
         }
         
-        if (parameters.length === 1 && parameters[0].type.startsWith('(') && parameters[0].type.includes('=>')) {
-            const extractedParams = this.extractFunctionParams(parameters[0].type);
-            if (extractedParams.length > 0) {
-                const delegate: DelegateInfo = {
-                    name: delegateName,
-                    parameters: extractedParams,
-                    returnType: 'void'
-                };
-                component.delegates.push(delegate);
+        // 尝试提取函数类型参数的内部参数
+        // 注意：getTypeName 已将 (param: type) => returnType 转换为 Action<type> 或 Func<type, R>
+        // 对于这种情况，我们需要从原始 TypeScript AST 重新提取
+        if (parameters.length === 1) {
+            const firstParam = node.parameters?.[0];
+            if (firstParam && firstParam.type && ts.isFunctionTypeNode(firstParam.type)) {
+                // 从原始 AST 提取函数参数并递归映射
+                const extractedParams = firstParam.type.parameters.map((p, index) => {
+                    const innerRawType = this.getTypeName(p.type);
+                    const innerParamType = TypeMapper.mapType(innerRawType);
+                    return {
+                        name: p.name.getText() || `param${index}`,
+                        type: innerParamType,
+                        optional: !!p.questionToken
+                    };
+                });
                 
-                return {
-                    name: methodName,
-                    delegateName: delegateName,
-                    parameters: extractedParams,
-                    returnType: 'void',
-                    description: `${methodName} 事件处理器`
-                };
+                if (extractedParams.length > 0) {
+                    const delegate: DelegateInfo = {
+                        name: delegateName,
+                        parameters: extractedParams,
+                        returnType: 'void'
+                    };
+                    component.delegates.push(delegate);
+                    
+                    return {
+                        name: methodName,
+                        delegateName: delegateName,
+                        parameters: extractedParams,
+                        returnType: 'void',
+                        description: `${methodName} 事件处理器`
+                    };
+                }
             }
         }
         

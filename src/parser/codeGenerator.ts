@@ -244,13 +244,14 @@ export class CodeGenerator {
     }
 
     private generateDelegate(delegate: DelegateInfo, lines: string[]): void {
+        // delegate.parameters 中的 type 已在 AST 解析器中映射，直接使用
         const params = delegate.parameters.map(p => {
-            const type = TypeMapper.mapType(p.type);
-            return `${type} ${p.name}`;
+            return `${p.type} ${p.name}`;
         });
         
         const paramStr = params.join(', ');
-        const returnType = TypeMapper.mapType(delegate.returnType);
+        // delegate.returnType 已在 AST 解析器中映射，直接使用
+        const returnType = delegate.returnType;
         
         lines.push(`    /// <summary>`);
         lines.push(`    /// ${delegate.name} 委托`);

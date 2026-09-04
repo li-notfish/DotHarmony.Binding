@@ -64,27 +64,32 @@ export class TypeMapper {
             return this.mapArrayType(typescriptType);
         }
         
-        // 6. 处理元组类型 (T1, T2, ...)
+        // 6. 处理泛型类型 (Callback<T1, T2>, Action<T>, Func<T, R>)
+        if (typescriptType.includes('<') && typescriptType.includes('>')) {
+            return this.mapGenericType(typescriptType);
+        }
+        
+        // 7. 处理元组类型 (T1, T2, ...)
         if (typescriptType.startsWith('(') && !typescriptType.includes('=>')) {
             return this.mapTupleType(typescriptType);
         }
         
-        // 7. 处理条件类型 (T extends U ? X : Y)
+        // 8. 处理条件类型 (T extends U ? X : Y)
         if (typescriptType.includes('extends') && typescriptType.includes('?') && typescriptType.includes(':')) {
             return this.mapConditionalType(typescriptType);
         }
         
-        // 8. 处理映射类型 ([K in keyof T])
+        // 9. 处理映射类型 ([K in keyof T])
         if (typescriptType.includes('[K in keyof') || typescriptType.includes('keyof')) {
             return 'dynamic';
         }
         
-        // 9. 处理 readonly 类型
+        // 10. 处理 readonly 类型
         if (typescriptType.startsWith('readonly ')) {
             return this.mapType(typescriptType.slice(9));
         }
         
-        // 10. 直接映射
+        // 11. 直接映射
         const mapping = this.TYPE_MAP[typescriptType];
         return mapping ? mapping.csharp : typescriptType;
     }
@@ -195,6 +200,79 @@ export class TypeMapper {
             return `${elementType}[]`;
         }
         return 'IntPtr[]';
+    }
+
+    private static mapGenericType(genericType: string): string {
+        // 匹配泛型类型，如 Callback<string, boolean>, Action<number>, Func<number, boolean>
+        const match = genericType.match(/^([^(]+)<(.+)>$/);
+        if (match) {
+            const baseType = match[1].trim();
+            const typeArgsStr = match[2];
+            
+            // 递归映射每个类型参数
+            const typeArgs = this.splitTypeArguments(typeArgsStr).map(t => this.mapType(t.trim()));
+            
+            // 检查基础类型是否有映射
+            const mapping = this.TYPE_MAP[baseType];
+            if (mapping) {
+                // 对于已映射的泛型类型，需要区分两种情况：
+                // 1. 需要递归映射内部参数的类型（如 Action<T>, Func<T, R>）
+                // 2. 直接映射为 IntPtr 的类型（如 Callback<T>, Optional<T>）
+                
+                // Action 和 Func 需要递归映射内部参数
+                if (baseType === 'Action' || baseType === 'Func') {
+                    if (typeArgs.length === 0) {
+                        return baseType;
+                    } else if (baseType === 'Action') {
+                        return `Action<${typeArgs.join(', ')}>`;
+                    } else {
+                        // Func<T, R> 或 Func<T1, T2, ..., R>
+                        return `Func<${typeArgs.join(', ')}>`;
+                    }
+                }
+                
+                // Array 需要递归映射
+                if (baseType === 'Array' || baseType === 'array') {
+                    return `${typeArgs[0]}[]`;
+                }
+                
+                // 其他泛型类型（如 Callback, Optional）直接返回 IntPtr
+                return mapping.csharp;
+            }
+            
+            // 对于未映射的泛型类型，尝试保持结构
+            // 例如 MyType<number, boolean> → MyType<double, bool>
+            return `${baseType}<${typeArgs.join(', ')}>`;
+        }
+        return 'IntPtr';
+    }
+
+    private static splitTypeArguments(typeArgsStr: string): string[] {
+        // 按逗号分割，但要考虑嵌套的尖括号
+        const result: string[] = [];
+        let depth = 0;
+        let current = '';
+        
+        for (const char of typeArgsStr) {
+            if (char === '<') {
+                depth++;
+                current += char;
+            } else if (char === '>') {
+                depth--;
+                current += char;
+            } else if (char === ',' && depth === 0) {
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        if (current.trim()) {
+            result.push(current);
+        }
+        
+        return result;
     }
 
     static isNativeType(typescriptType: string): boolean {
