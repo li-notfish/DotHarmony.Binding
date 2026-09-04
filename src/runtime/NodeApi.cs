@@ -113,32 +113,32 @@ public static class NodeApi
     }
 
     /// <summary>
-    /// 注册事件处理器
+    /// 注册事件处理器（AOT 兼容版本）
     /// </summary>
     /// <param name="jsObject">组件句柄</param>
     /// <param name="eventName">事件名称</param>
     /// <param name="handler">事件处理委托</param>
-    public static void SetEventHandler(IntPtr jsObject, string eventName, Delegate handler)
+    /// <param name="trampolinePtr">预编译的跳板函数指针（[UnmanagedCallersOnly]）</param>
+    public static void SetEventHandler(IntPtr jsObject, string eventName, Delegate handler, IntPtr trampolinePtr)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
             throw new ArgumentNullException(nameof(jsObject));
         if (handler == null)
             throw new ArgumentNullException(nameof(handler));
+        if (trampolinePtr == IntPtr.Zero)
+            throw new ArgumentException("Trampoline pointer must not be zero", nameof(trampolinePtr));
 
         var env = NapiEnv.Current;
 
         // 固定委托，防止 GC 回收
         var gch = GCHandle.Alloc(handler);
 
-        // 获取委托的函数指针
-        var funcPtr = Marshal.GetFunctionPointerForDelegate(handler);
-
-        // 创建 JS 函数
+        // 使用预编译的跳板函数指针（AOT 兼容）
         var nameBytes = Encoding.UTF8.GetBytes(eventName);
         NativeNodeApi.napi_create_function(
             env, nameBytes, (IntPtr)nameBytes.Length,
-            funcPtr, GCHandle.ToIntPtr(gch), out var jsFunc);
+            trampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc);
 
         // 设置为属性
         NativeNodeApi.napi_set_named_property(env, jsObject, nameBytes, jsFunc);

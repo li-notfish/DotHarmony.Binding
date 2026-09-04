@@ -168,8 +168,8 @@ describe('Code Generation Tests', () => {
         const content = fs.readFileSync(textCsPath, 'utf-8');
         
         // 验证事件处理实现
-        expect(content).toContain('NodeApi.SetEventHandler(_jsObject, "onCopy", handler)');
-        expect(content).toContain('NodeApi.SetEventHandler(_jsObject, "onTextSelectionChange", handler)');
+        expect(content).toContain('NodeApi.SetEventHandler(_jsObject, "onCopy", handler, CopyHandlerTrampoline_Ptr.Ptr)');
+        expect(content).toContain('NodeApi.SetEventHandler(_jsObject, "onTextSelectionChange", handler, TextSelectionChangeHandlerTrampoline_Ptr.Ptr)');
     });
 
     // 阶段4组件测试

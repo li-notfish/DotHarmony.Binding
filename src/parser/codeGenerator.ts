@@ -241,6 +241,11 @@ export class CodeGenerator {
         component.events.forEach(event => {
             this.generateEventMethod(event, lines);
         });
+        
+        // 生成 AOT 兼容的跳板类（如果有事件）
+        if (component.delegates.length > 0) {
+            this.generateTrampolineClass(component, lines);
+        }
     }
 
     private generateDelegate(delegate: DelegateInfo, lines: string[]): void {
@@ -268,7 +273,7 @@ export class CodeGenerator {
         lines.push(`    /// </summary>`);
         lines.push(`    public ${event.returnType} ${this.capitalizeFirst(event.name)}(${event.delegateName} ${paramName})`);
         lines.push('    {');
-        lines.push(`        NodeApi.SetEventHandler(_jsObject, "${event.name}", ${paramName});`);
+        lines.push(`        NodeApi.SetEventHandler(_jsObject, "${event.name}", ${paramName}, ${event.delegateName}Trampoline_Ptr.Ptr);`);
         if (event.returnType !== 'void') {
             lines.push(`        return this;`);
         }
@@ -317,6 +322,78 @@ export class CodeGenerator {
     private capitalizeFirst(str: string): string {
         if (!str) return str;
         return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    private generateTrampolineClass(component: ComponentInfo, lines: string[]): void {
+        const componentName = component.name;
+        
+        // 生成每个委托的跳板类
+        component.delegates.forEach(delegate => {
+            this.generateSingleTrampolineClass(componentName, delegate, lines);
+        });
+    }
+
+    private generateSingleTrampolineClass(componentName: string, delegate: DelegateInfo, lines: string[]): void {
+        const className = `${delegate.name}Trampoline_Ptr`;
+        const callbackName = `Callback`;
+        
+        lines.push('');
+        lines.push(`    internal static class ${className}`);
+        lines.push('    {');
+        lines.push(`        [System.Runtime.InteropServices.UnmanagedCallersOnly]`);
+        lines.push(`        internal static IntPtr ${callbackName}(IntPtr env, IntPtr info)`);
+        lines.push('        {');
+        lines.push('            NativeNodeApi.napi_get_cb_info(env, info, out _, out var argv, out _, out var data);');
+        lines.push(`            var handler = (${delegate.name})System.Runtime.InteropServices.GCHandle.FromIntPtr(data).Target!;`);
+        
+        // 根据参数类型生成解包代码
+        delegate.parameters.forEach((param, index) => {
+            const readExpr = `Marshal.ReadIntPtr(argv, ${index} * IntPtr.Size)`;
+            switch (param.type) {
+                case 'double':
+                    lines.push(`            double arg${index} = NativeValue.ToDouble(${readExpr});`);
+                    break;
+                case 'bool':
+                    lines.push(`            bool arg${index} = NativeValue.ToBool(${readExpr});`);
+                    break;
+                case 'int':
+                    lines.push(`            int arg${index} = NativeValue.ToInt(${readExpr});`);
+                    break;
+                case 'string':
+                    lines.push(`            string arg${index} = NativeValue.ToString(${readExpr})!;`);
+                    break;
+                case 'IntPtr':
+                    lines.push(`            IntPtr arg${index} = ${readExpr};`);
+                    break;
+                default:
+                    lines.push(`            IntPtr arg${index} = ${readExpr};`);
+                    break;
+            }
+        });
+        
+        // 调用委托
+        const argNames = delegate.parameters.map((_, i) => `arg${i}`).join(', ');
+        if (delegate.returnType === 'void') {
+            lines.push(`            handler(${argNames});`);
+        } else {
+            lines.push(`            var result = handler(${argNames});`);
+        }
+        
+        lines.push('            NativeNodeApi.napi_get_undefined(env, out var undefined);');
+        lines.push('            return undefined;');
+        lines.push('        }');
+        lines.push('');
+        lines.push(`        internal static readonly IntPtr Ptr = GetPtr();`);
+        lines.push('');
+        lines.push(`        private static IntPtr GetPtr()`);
+        lines.push(`        {`);
+        lines.push(`            unsafe`);
+        lines.push(`            {`);
+        lines.push(`                return (IntPtr)(delegate*<IntPtr, IntPtr, IntPtr>)(&${callbackName});`);
+        lines.push(`            }`);
+        lines.push(`        }`);
+        lines.push('    }');
+        lines.push('');
     }
 
     generateEnum(name: string, values: string[]): string {

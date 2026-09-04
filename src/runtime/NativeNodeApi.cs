@@ -154,6 +154,15 @@ internal static partial class NativeNodeApi
         IntPtr[] argv,
         out napi_value result);
 
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_get_cb_info(
+        napi_env env,
+        napi_callback_info info,
+        out IntPtr argc,
+        out IntPtr argv,
+        out IntPtr thisArg,
+        out IntPtr data);
+
     #endregion
 
     #region 引用操作
@@ -262,6 +271,18 @@ internal static partial class NativeNodeApi
         public static implicit operator napi_ref(IntPtr handle) => new(handle);
         public bool Equals(napi_ref other) => _handle == other._handle;
         public override bool Equals(object? obj) => obj is napi_ref other && Equals(other);
+        public override int GetHashCode() => _handle.GetHashCode();
+        public override string ToString() => _handle.ToString("X");
+    }
+
+    internal readonly struct napi_callback_info : IEquatable<napi_callback_info>
+    {
+        private readonly IntPtr _handle;
+        public napi_callback_info(IntPtr handle) => _handle = handle;
+        public static implicit operator IntPtr(napi_callback_info info) => info._handle;
+        public static implicit operator napi_callback_info(IntPtr handle) => new(handle);
+        public bool Equals(napi_callback_info other) => _handle == other._handle;
+        public override bool Equals(object? obj) => obj is napi_callback_info other && Equals(other);
         public override int GetHashCode() => _handle.GetHashCode();
         public override string ToString() => _handle.ToString("X");
     }
