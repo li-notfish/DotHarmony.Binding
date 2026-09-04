@@ -28,9 +28,9 @@ export class CodeGenerator {
         // 支持继承（目前暂不支持基类，只记录信息）
         const baseClass = this.getBaseClass(component);
         if (baseClass) {
-            lines.push(`public partial class ${component.name} : ${baseClass}`);
+            lines.push(`public partial class ${component.name} : ${baseClass}, IDisposable`);
         } else {
-            lines.push(`public partial class ${component.name}`);
+            lines.push(`public partial class ${component.name} : IDisposable`);
         }
         
         lines.push('{');
@@ -40,10 +40,16 @@ export class CodeGenerator {
         lines.push('    /// </summary>');
         lines.push('    private IntPtr _jsObject;');
         lines.push('');
+        lines.push('    /// <summary>');
+        lines.push('    /// 指示是否已释放资源');
+        lines.push('    /// </summary>');
+        lines.push('    private bool _disposed = false;');
+        lines.push('');
         
         this.generateConstructors(component, lines);
         this.generateMethods(component, lines);
         this.generateEvents(component, lines);
+        this.generateDisposePattern(component.name, lines);
         
         lines.push('}');
     }
@@ -124,7 +130,21 @@ export class CodeGenerator {
     }
 
     private generateMethods(component: ComponentInfo, lines: string[]): void {
+        const generatedSignatures = new Set<string>();
+        
         component.methods.forEach(method => {
+            // Build C# signature for dedup (name + mapped param types, ignoring param names)
+            const paramTypes = method.parameters.map(p => {
+                const cleanType = TypeMapper.cleanOptional(p.type);
+                return TypeMapper.mapType(cleanType);
+            }).join(', ');
+            const signature = `${method.name}(${paramTypes})`;
+            
+            if (generatedSignatures.has(signature)) {
+                return; // Skip duplicate method
+            }
+            generatedSignatures.add(signature);
+            
             this.generateMethod(method, component.attributeName, lines);
         });
     }
@@ -192,6 +212,44 @@ export class CodeGenerator {
         lines.push('    {');
         lines.push(`        NodeApi.SetEventHandler(_jsObject, "${event.name}", ${paramName});`);
         lines.push(`        return this;`);
+        lines.push('    }');
+        lines.push('');
+    }
+
+    private generateDisposePattern(className: string, lines: string[]): void {
+        lines.push('    /// <summary>');
+        lines.push('    /// 释放原生 JS 对象资源');
+        lines.push('    /// </summary>');
+        lines.push('    public void Dispose()');
+        lines.push('    {');
+        lines.push('        Dispose(true);');
+        lines.push('        GC.SuppressFinalize(this);');
+        lines.push('    }');
+        lines.push('');
+        lines.push('    /// <summary>');
+        lines.push('    /// 受保护的释放实现');
+        lines.push('    /// </summary>');
+        lines.push('    protected virtual void Dispose(bool disposing)');
+        lines.push('    {');
+        lines.push('        if (!_disposed)');
+        lines.push('        {');
+        lines.push('            if (disposing)');
+        lines.push('            {');
+        lines.push('                // Dispose managed resources');
+        lines.push('            }');
+        lines.push('');
+        lines.push('            NodeApi.DestroyComponent(_jsObject);');
+        lines.push('            _jsObject = IntPtr.Zero;');
+        lines.push('            _disposed = true;');
+        lines.push('        }');
+        lines.push('    }');
+        lines.push('');
+        lines.push('    /// <summary>');
+        lines.push('    /// 析构函数');
+        lines.push('    /// </summary>');
+        lines.push(`    ~${className}()`);
+        lines.push('    {');
+        lines.push('        Dispose(false);');
         lines.push('    }');
         lines.push('');
     }

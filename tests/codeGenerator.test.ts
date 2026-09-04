@@ -343,4 +343,69 @@ describe('Code Generation Tests', () => {
         const methods = result.component.methods;
         expect(methods.length).toBeGreaterThan(0);
     });
+
+    // 阶段7优化测试
+    test('should have IDisposable pattern in generated code', () => {
+        const buttonCsPath = path.join(outputDir, 'button.cs');
+        const content = fs.readFileSync(buttonCsPath, 'utf-8');
+        
+        // 验证 IDisposable 实现
+        expect(content).toContain(': IDisposable');
+        expect(content).toContain('private bool _disposed = false');
+        expect(content).toContain('public void Dispose()');
+        expect(content).toContain('protected virtual void Dispose(bool disposing)');
+        expect(content).toContain('GC.SuppressFinalize(this)');
+        expect(content).toContain('NodeApi.DestroyComponent(_jsObject)');
+        expect(content).toContain('_disposed = true');
+        expect(content).toContain('~Button()');
+    });
+
+    test('should not have duplicate methods in list.cs', () => {
+        const listCsPath = path.join(outputDir, 'list.cs');
+        const content = fs.readFileSync(listCsPath, 'utf-8');
+        
+        // 检查 Lanes 方法只有一个（之前有重复）
+        const lanesMatches = content.match(/public ListAttribute Lanes\(/g);
+        expect(lanesMatches).toHaveLength(1);
+        
+        // CachedCount 有两个不同的重载（1个参数 vs 2个参数），这是正确的
+        const cachedCountMatches = content.match(/public ListAttribute CachedCount\(/g);
+        expect(cachedCountMatches).toHaveLength(2);
+        
+        // 检查这两个重载有不同的参数数量
+        const cachedCount1 = content.match(/public ListAttribute CachedCount\(double value\)/);
+        const cachedCount2 = content.match(/public ListAttribute CachedCount\(double count, bool show\)/);
+        expect(cachedCount1).not.toBeNull();
+        expect(cachedCount2).not.toBeNull();
+    });
+
+    test('should create generation cache file', () => {
+        const cachePath = path.join(outputDir, '.generation-cache.json');
+        expect(fs.existsSync(cachePath)).toBe(true);
+        
+        const cache = JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
+        expect(cache.version).toBe(1);
+        expect(Object.keys(cache.files).length).toBeGreaterThan(0);
+    });
+
+    test('should support incremental generation', async () => {
+        const parser = new ArkTsParser();
+        const textFixturePath = path.join(__dirname, 'fixtures/text.d.ts');
+        const outputPath = path.join(outputDir, 'text.cs');
+        
+        // 获取当前文件内容的 hash
+        const beforeContent = fs.readFileSync(outputPath, 'utf-8');
+        const beforeHash = require('crypto').createHash('sha256').update(beforeContent).digest('hex');
+        
+        // processFile 不检查缓存（它总是重新生成）
+        // 但 processDirectory 会检查缓存
+        // 这里验证 processFile 生成的内容与之前相同
+        await parser.processFile(textFixturePath, outputPath);
+        
+        const afterContent = fs.readFileSync(outputPath, 'utf-8');
+        const afterHash = require('crypto').createHash('sha256').update(afterContent).digest('hex');
+        
+        // 内容应该相同（因为源文件未修改）
+        expect(afterHash).toBe(beforeHash);
+    });
 });
