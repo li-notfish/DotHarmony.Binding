@@ -2,7 +2,24 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ArkTsParser } from '../src/parser/index';
 
-const outputDir = path.join(__dirname, '../output');
+const outputDir = path.join(__dirname, '../tests-output');
+
+// 创建测试输出目录并生成所有文件
+beforeAll(async () => {
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+    const parser = new ArkTsParser();
+    const inputDir = path.join(__dirname, 'fixtures');
+    await parser.processDirectory(inputDir, outputDir);
+});
+
+// 清理测试输出目录
+afterAll(() => {
+    if (fs.existsSync(outputDir)) {
+        fs.rmSync(outputDir, { recursive: true, force: true });
+    }
+});
 
 describe('Code Generation Tests', () => {
     test('should generate Text.cs', () => {
@@ -11,10 +28,10 @@ describe('Code Generation Tests', () => {
         
         const content = fs.readFileSync(textCsPath, 'utf-8');
         expect(content).toContain('public partial class Text');
-        expect(content).toContain('private IntPtr _jsObject');
+        expect(content).toContain('ArkUIComponentBase');
         expect(content).toContain('public Text()');
-        expect(content).toContain('public TextAttribute Font(Font value)');
-        expect(content).toContain('public TextAttribute FontSize(double value)');
+        expect(content).toContain('public Font Font');
+        expect(content).toContain('public double FontSize');
     });
 
     test('should generate Column.cs', () => {
@@ -23,10 +40,10 @@ describe('Code Generation Tests', () => {
         
         const content = fs.readFileSync(columnCsPath, 'utf-8');
         expect(content).toContain('public partial class Column');
-        expect(content).toContain('private IntPtr _jsObject');
+        expect(content).toContain('ArkUIComponentBase');
         expect(content).toContain('public Column()');
-        expect(content).toContain('public ColumnAttribute AlignItems(HorizontalAlign value)');
-        expect(content).toContain('public ColumnAttribute JustifyContent(FlexAlign value)');
+        expect(content).toContain('public HorizontalAlign AlignItems');
+        expect(content).toContain('public FlexAlign JustifyContent');
     });
 
     test('should have correct namespace', () => {
@@ -59,8 +76,8 @@ describe('Code Generation Tests', () => {
         
         // 验证有两个构造函数（无参和有参）
         expect(content).toContain('public Column()');
-        // ColumnOptions 被映射为 IntPtr
-        expect(content).toContain('public Column(IntPtr options)');
+        // ColumnOptions 现在被生成为真正的 C# record
+        expect(content).toContain('public Column(ColumnOptions options)');
     });
 
     test('should handle optional types correctly', () => {
@@ -181,7 +198,7 @@ describe('Code Generation Tests', () => {
         expect(content).toContain('public partial class Row');
         expect(content).toContain('public Row()');
         expect(content).toContain('public Row(RowOptions options)');
-        expect(content).toContain('public RowAttribute AlignItems(VerticalAlign value)');
+        expect(content).toContain('public VerticalAlign AlignItems');
     });
 
     test('should generate Button.cs', () => {
@@ -191,16 +208,17 @@ describe('Code Generation Tests', () => {
         const content = fs.readFileSync(buttonCsPath, 'utf-8');
         expect(content).toContain('public partial class Button');
         expect(content).toContain('public Button()');
-        expect(content).toContain('public ButtonAttribute Type(ButtonType value)');
+        expect(content).toContain('public ButtonType Type');
     });
 
     test('should generate Image.cs', () => {
         const imageCsPath = path.join(outputDir, 'image.cs');
         expect(fs.existsSync(imageCsPath)).toBe(true);
-        
+
         const content = fs.readFileSync(imageCsPath, 'utf-8');
         expect(content).toContain('public partial class Image');
-        expect(content).toContain('public Image(IntPtr src)');
+        // src 类型是 PixelMap | ResourceStr | DrawableDescriptor，取第一个具体类型
+        expect(content).toContain('public Image(PixelMap src)');
     });
 
     test('should generate List.cs with events', () => {
@@ -288,7 +306,8 @@ describe('Code Generation Tests', () => {
         
         // 测试联合类型映射
         expect(TypeMapper.mapType('string | number')).toBe('string');
-        expect(TypeMapper.mapType('Resource | string')).toBe('IntPtr');
+        // Resource | string 取第一个具体类型（string）
+        expect(TypeMapper.mapType('Resource | string')).toBe('string');
         expect(TypeMapper.mapType('string | null')).toBe('string');
         expect(TypeMapper.mapType('number | undefined')).toBe('double?');
     });
@@ -348,36 +367,31 @@ describe('Code Generation Tests', () => {
     });
 
     // 阶段7优化测试
-    test('should have IDisposable pattern in generated code', () => {
+    test('should have ArkUIComponentBase pattern in generated code', () => {
         const buttonCsPath = path.join(outputDir, 'button.cs');
         const content = fs.readFileSync(buttonCsPath, 'utf-8');
         
-        // 验证 IDisposable 实现
-        expect(content).toContain(': IDisposable');
-        expect(content).toContain('private bool _disposed = false');
-        expect(content).toContain('public void Dispose()');
-        expect(content).toContain('protected virtual void Dispose(bool disposing)');
-        expect(content).toContain('GC.SuppressFinalize(this)');
-        expect(content).toContain('NodeApi.DestroyComponent(_jsObject)');
-        expect(content).toContain('_disposed = true');
-        expect(content).toContain('~Button()');
+        // 验证继承自 ArkUIComponentBase
+        expect(content).toContain('ArkUIComponentBase');
+        expect(content).toContain(': base(NodeApi.CreateComponent("Button"))');
+        expect(content).toContain('using HarmonyOS.Bindings.Runtime;');
     });
 
     test('should not have duplicate methods in list.cs', () => {
         const listCsPath = path.join(outputDir, 'list.cs');
         const content = fs.readFileSync(listCsPath, 'utf-8');
         
-        // 检查 Lanes 方法只有一个（之前有重复）
-        const lanesMatches = content.match(/public ListAttribute Lanes\(/g);
+        // 检查 SetLanes 方法只有一个（之前有重复）
+        const lanesMatches = content.match(/public ListAttribute SetLanes\(/g);
         expect(lanesMatches).toHaveLength(1);
         
-        // CachedCount 有两个不同的重载（1个参数 vs 2个参数），这是正确的
-        const cachedCountMatches = content.match(/public ListAttribute CachedCount\(/g);
+        // SetCachedCount 有两个不同的重载（1个参数 vs 2个参数），这是正确的
+        const cachedCountMatches = content.match(/public ListAttribute SetCachedCount\(/g);
         expect(cachedCountMatches).toHaveLength(2);
         
         // 检查这两个重载有不同的参数数量
-        const cachedCount1 = content.match(/public ListAttribute CachedCount\(double value\)/);
-        const cachedCount2 = content.match(/public ListAttribute CachedCount\(double count, bool show\)/);
+        const cachedCount1 = content.match(/public ListAttribute SetCachedCount\(double value\)/);
+        const cachedCount2 = content.match(/public ListAttribute SetCachedCount\(double count, bool show\)/);
         expect(cachedCount1).not.toBeNull();
         expect(cachedCount2).not.toBeNull();
     });

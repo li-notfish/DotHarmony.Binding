@@ -1,4 +1,4 @@
-import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EventInfo, DelegateInfo, InheritanceInfo, ImportInfo, ParseResult } from './models';
+import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EventInfo, DelegateInfo, InheritanceInfo, ImportInfo, ParseResult, InterfaceInfo } from './models';
 import { TypeMapper } from './typeMapper';
 
 export class CodeGenerator {
@@ -8,6 +8,7 @@ export class CodeGenerator {
         
         lines.push('using System;');
         lines.push('using System.Runtime.InteropServices;');
+        lines.push('using HarmonyOS.Bindings.Runtime;');
         lines.push('');
         
         // 生成命名空间
@@ -28,31 +29,23 @@ export class CodeGenerator {
         lines.push(`/// ${component.name} 组件的 C# 绑定`);
         lines.push(`/// </summary>`);
         
-        // 支持继承（目前暂不支持基类，只记录信息）
+        // AOT 防裁剪标注
+        lines.push(`[System.Diagnostics.CodeAnalysis.DynamicDependency(`);
+        lines.push(`    System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All,`);
+        lines.push(`    typeof(${component.name}))]`);
+        
         const baseClass = this.getBaseClass(component);
         if (baseClass) {
-            lines.push(`public partial class ${component.name} : ${baseClass}, IDisposable`);
+            lines.push(`public partial class ${component.name} : ${baseClass}, ArkUIComponentBase`);
         } else {
-            lines.push(`public partial class ${component.name} : IDisposable`);
+            lines.push(`public partial class ${component.name} : ArkUIComponentBase`);
         }
         
         lines.push('{');
         
-        lines.push('    /// <summary>');
-        lines.push('    /// JS对象指针');
-        lines.push('    /// </summary>');
-        lines.push('    private IntPtr _jsObject;');
-        lines.push('');
-        lines.push('    /// <summary>');
-        lines.push('    /// 指示是否已释放资源');
-        lines.push('    /// </summary>');
-        lines.push('    private bool _disposed = false;');
-        lines.push('');
-        
         this.generateConstructors(component, lines);
         this.generateMethods(component, lines);
         this.generateEvents(component, lines);
-        this.generateDisposePattern(component.name, lines);
         
         lines.push('}');
     }
@@ -65,49 +58,9 @@ export class CodeGenerator {
         lines.push(`/// <summary>`);
         lines.push(`/// ${component.name} 属性设置器`);
         lines.push(`/// </summary>`);
-        lines.push(`public partial class ${attrName} : IDisposable`);
+        lines.push(`public partial class ${attrName} : ArkUIAttributeBase`);
         lines.push('{');
-        lines.push('    private IntPtr _jsObject;');
-        lines.push('    private bool _disposed = false;');
-        lines.push('');
-        lines.push(`    internal ${attrName}(IntPtr jsObject)`);
-        lines.push('    {');
-        lines.push('        _jsObject = jsObject;');
-        lines.push('    }');
-        lines.push('');
-        lines.push('    /// <summary>');
-        lines.push('    /// 释放原生 JS 对象资源');
-        lines.push('    /// </summary>');
-        lines.push('    public void Dispose()');
-        lines.push('    {');
-        lines.push('        Dispose(true);');
-        lines.push('        GC.SuppressFinalize(this);');
-        lines.push('    }');
-        lines.push('');
-        lines.push('    /// <summary>');
-        lines.push('    /// 受保护的释放实现');
-        lines.push('    /// </summary>');
-        lines.push('    protected virtual void Dispose(bool disposing)');
-        lines.push('    {');
-        lines.push('        if (!_disposed)');
-        lines.push('        {');
-        lines.push('            if (disposing)');
-        lines.push('            {');
-        lines.push('                // Dispose managed resources');
-        lines.push('            }');
-        lines.push('');
-        lines.push('            _jsObject = IntPtr.Zero;');
-        lines.push('            _disposed = true;');
-        lines.push('        }');
-        lines.push('    }');
-        lines.push('');
-        lines.push('    /// <summary>');
-        lines.push('    /// 析构函数');
-        lines.push('    /// </summary>');
-        lines.push(`    ~${attrName}()`);
-        lines.push('    {');
-        lines.push('        Dispose(false);');
-        lines.push('    }');
+        lines.push(`    internal ${attrName}(IntPtr jsObject) : base(jsObject) { }`);
         lines.push('}');
     }
 
@@ -122,10 +75,7 @@ export class CodeGenerator {
         lines.push(`    /// <summary>`);
         lines.push(`    /// 创建 ${component.name} 组件`);
         lines.push(`    /// </summary>`);
-        lines.push(`    public ${component.name}()`);
-        lines.push('    {');
-        lines.push(`        _jsObject = NodeApi.CreateComponent("${component.name}");`);
-        lines.push('    }');
+        lines.push(`    public ${component.name}() : base(NodeApi.CreateComponent("${component.name}")) { }`);
         lines.push('');
         
         // 用于去重的集合
@@ -164,16 +114,12 @@ export class CodeGenerator {
         const processedParams = params.map(p => this.formatParameter(p));
         const paramStr = processedParams.join(', ');
         
-        // 参数名列表（用于方法体）
         const paramNames = params.map(p => p.name).join(', ');
         
         lines.push(`    /// <summary>`);
         lines.push(`    /// 创建 ${className} 组件`);
         lines.push(`    /// </summary>`);
-        lines.push(`    public ${className}(${paramStr})`);
-        lines.push('    {');
-        lines.push(`        _jsObject = NodeApi.CreateComponent("${className}", ${paramNames});`);
-        lines.push('    }');
+        lines.push(`    public ${className}(${paramStr}) : base(NodeApi.CreateComponent("${className}", ${paramNames})) { }`);
         lines.push('');
     }
 
@@ -187,10 +133,25 @@ export class CodeGenerator {
     }
 
     private generateMethods(component: ComponentInfo, lines: string[]): void {
-        const generatedSignatures = new Set<string>();
+        const propNames = new Set<string>();
         
+        // 收集所有唯一的属性名
         component.methods.forEach(method => {
-            // Build C# signature for dedup (name + mapped param types, ignoring param names)
+            propNames.add(method.name);
+        });
+
+        // 生成 UTF8 字节数组常量
+        if (propNames.size > 0) {
+            for (const name of propNames) {
+                const varName = `_${name}`;
+                lines.push(`    private static readonly byte[] ${varName} = "${name}"u8.ToArray();`);
+            }
+            lines.push('');
+        }
+        
+        // 生成属性 + 方法（带去重）
+        const generatedSignatures = new Set<string>();
+        component.methods.forEach(method => {
             const paramTypes = method.parameters.map(p => {
                 const cleanType = TypeMapper.cleanOptional(p.type);
                 return TypeMapper.mapType(cleanType);
@@ -198,7 +159,7 @@ export class CodeGenerator {
             const signature = `${method.name}(${paramTypes})`;
             
             if (generatedSignatures.has(signature)) {
-                return; // Skip duplicate method
+                return;
             }
             generatedSignatures.add(signature);
             
@@ -208,27 +169,83 @@ export class CodeGenerator {
 
     private generateMethod(method: MethodInfo, attributeName: string, lines: string[]): void {
         const params = method.parameters.map(p => this.formatParameter(p));
-        
         const paramStr = params.join(', ');
-        const returnTypeName = method.isChained ? attributeName : method.returnType;
+        const propNameVar = `_${method.name}`;
+        const pascalName = this.capitalizeFirst(method.name);
         
-        lines.push(`    /// <summary>`);
-        lines.push(`    /// 设置 ${method.name} 属性`);
-        lines.push(`    /// </summary>`);
-        lines.push(`    public ${returnTypeName} ${this.capitalizeFirst(method.name)}(${paramStr})`);
-        lines.push('    {');
-        
-        if (method.isChained) {
-            const paramNames = method.parameters.map(p => p.name).join(', ');
-            lines.push(`        NodeApi.SetAttribute(_jsObject, "${method.name}", ${paramNames});`);
+        if (method.isChained && method.parameters.length === 1) {
+            // 单参数链式方法 → 生成属性 + SetXxx 方法
+            const param = method.parameters[0];
+            const cleanType = TypeMapper.cleanOptional(param.type);
+            const propType = TypeMapper.mapType(cleanType);
+            const getterExpr = this.generateGetterExpression(propType, propNameVar);
+            const setterExpr = this.generateSetterExpression(propType, param.name);
+            
+            lines.push(`    /// <summary>`);
+            lines.push(`    /// 获取或设置 ${method.name} 属性`);
+            lines.push(`    /// </summary>`);
+            lines.push(`    public ${propType} ${pascalName}`);
+            lines.push('    {');
+            lines.push(`        get => ${getterExpr};`);
+            lines.push(`        set => SetProperty(${propNameVar}, ${setterExpr});`);
+            lines.push('    }');
+            lines.push('');
+            
+            // SetXxx 链式方法
+            lines.push(`    /// <summary>`);
+            lines.push(`    /// 设置 ${method.name} 属性（链式调用）`);
+            lines.push(`    /// </summary>`);
+            lines.push(`    public ${attributeName} Set${pascalName}(${paramStr})`);
+            lines.push('    {');
+            lines.push(`        ${pascalName} = ${param.name};`);
             lines.push(`        return new ${attributeName}(_jsObject);`);
-        } else {
+            lines.push('    }');
+            lines.push('');
+        } else if (method.isChained) {
+            // 多参数链式方法 → 只生成 SetXxx 方法
+            lines.push(`    /// <summary>`);
+            lines.push(`    /// 设置 ${method.name} 属性（链式调用）`);
+            lines.push(`    /// </summary>`);
+            lines.push(`    public ${attributeName} Set${pascalName}(${paramStr})`);
+            lines.push('    {');
             const paramNames = method.parameters.map(p => p.name).join(', ');
-            lines.push(`        return NodeApi.CallMethod<${returnTypeName}>(_jsObject, "${method.name}", ${paramNames});`);
+            lines.push(`        NodeApi.SetAttribute(_jsObject, ${propNameVar}, ${paramNames});`);
+            lines.push(`        return new ${attributeName}(_jsObject);`);
+            lines.push('    }');
+            lines.push('');
+        } else {
+            // 非链式方法 → 保持原样
+            const returnTypeName = method.returnType;
+            lines.push(`    /// <summary>`);
+            lines.push(`    /// 设置 ${method.name} 属性`);
+            lines.push(`    /// </summary>`);
+            lines.push(`    public ${returnTypeName} ${pascalName}(${paramStr})`);
+            lines.push('    {');
+            const paramNames = method.parameters.map(p => p.name).join(', ');
+            lines.push(`        return NodeApi.CallMethod<${returnTypeName}>(_jsObject, ${propNameVar}, ${paramNames});`);
+            lines.push('    }');
+            lines.push('');
         }
-        
-        lines.push('    }');
-        lines.push('');
+    }
+
+    private generateGetterExpression(csharpType: string, propNameVar: string): string {
+        switch (csharpType) {
+            case 'bool':
+                return `NativeValue.ToBool(GetProperty(${propNameVar}))`;
+            case 'double':
+                return `NativeValue.ToDouble(GetProperty(${propNameVar}))`;
+            case 'string':
+                return `NativeValue.ToString(GetProperty(${propNameVar}))`;
+            case 'IntPtr':
+                return `GetProperty(${propNameVar})`;
+            default:
+                // 枚举或复杂类型：用 ToInt 转换
+                return `(${csharpType})NativeValue.ToInt(GetProperty(${propNameVar}))`;
+        }
+    }
+
+    private generateSetterExpression(csharpType: string, paramName: string): string {
+        return `NativeValue.From(${paramName})`;
     }
 
     private generateEvents(component: ComponentInfo, lines: string[]): void {
@@ -429,5 +446,69 @@ export class CodeGenerator {
         lines.push(`public record ${name}(${fieldStr});`);
         
         return lines.join('\n');
+    }
+
+    generateOptionsRecord(optionsInfo: InterfaceInfo, allInterfaces: Map<string, InterfaceInfo> = new Map()): string {
+        const lines: string[] = [];
+
+        lines.push('namespace HarmonyOS.ArkUI;');
+        lines.push('');
+
+        const mergedProps = this.mergeInheritedProperties(optionsInfo, allInterfaces);
+
+        const params = mergedProps.map(p => {
+            const type = TypeMapper.mapType(p.type);
+            const pascalName = this.capitalizeFirst(p.name);
+            if (p.optional) {
+                return `    ${type}? ${pascalName} = null`;
+            }
+            return `    ${type} ${pascalName}`;
+        }).join(',\n');
+
+        lines.push(`/// <summary>`);
+        lines.push(`/// ${optionsInfo.name} 配置选项`);
+        lines.push(`/// </summary>`);
+        lines.push(`public record ${optionsInfo.name}(`);
+        lines.push(params);
+        lines.push(');');
+
+        return lines.join('\n');
+    }
+
+    private mergeInheritedProperties(
+        optionsInfo: InterfaceInfo,
+        allInterfaces: Map<string, InterfaceInfo>
+    ): { name: string; type: string; optional: boolean }[] {
+        const visited = new Set<string>();
+        const result: { name: string; type: string; optional: boolean }[] = [];
+        const seenNames = new Set<string>();
+
+        const visit = (iface: InterfaceInfo) => {
+            if (visited.has(iface.name)) return;
+            visited.add(iface.name);
+
+            if (iface.extends) {
+                for (const parentName of iface.extends) {
+                    const parent = allInterfaces.get(parentName);
+                    if (parent) {
+                        visit(parent);
+                    }
+                }
+            }
+
+            for (const prop of iface.properties) {
+                if (!seenNames.has(prop.name)) {
+                    seenNames.add(prop.name);
+                    result.push({
+                        name: prop.name,
+                        type: prop.type,
+                        optional: prop.optional
+                    });
+                }
+            }
+        };
+
+        visit(optionsInfo);
+        return result;
     }
 }

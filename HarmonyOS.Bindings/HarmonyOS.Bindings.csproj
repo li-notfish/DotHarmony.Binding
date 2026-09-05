@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>HARMONYOS</DefineConstants>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsTrimmable>true</IsTrimmable>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+
+    <PackageId>HarmonyOS.Bindings</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>ArkTsBinding</Authors>
+    <Description>C# bindings for HarmonyOS ArkTS components and APIs</Description>
+    <PackageTags>harmonyos;arkui;arkts;bindings;dotnet</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="HarmonyOS.Bindings" />
+    <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
+  </ItemGroup>
+
+</Project>

@@ -4,7 +4,7 @@ import * as crypto from 'crypto';
 import { AstParser } from './astParser';
 import { CodeGenerator } from './codeGenerator';
 import { EnumGenerator } from './enumGenerator';
-import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext } from './models';
+import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo } from './models';
 
 interface CacheEntry {
     hash: string;
@@ -89,12 +89,22 @@ export class ArkTsParser {
             await fs.promises.writeFile(enumOutputPath, enumCode);
             console.log(`Generated: ${enumOutputPath}`);
         }
+        
+        // 收集并生成 Options record
+        const optionsInterfaces = this.parser.collectOptionsInterfaces(inputPath);
+        for (const optionsInfo of optionsInterfaces) {
+            const optionsCode = this.generator.generateOptionsRecord(optionsInfo);
+            const optionsOutputPath = outputPath.replace('.cs', `.${optionsInfo.name}.cs`);
+            await fs.promises.writeFile(optionsOutputPath, optionsCode);
+            console.log(`Generated: ${optionsOutputPath}`);
+        }
     }
 
     async processFileWithContext(
         inputPath: string, 
         outputPath: string, 
-        context: ParseContext
+        context: ParseContext,
+        namespace?: string
     ): Promise<void> {
         console.log(`Processing: ${inputPath}`);
         
@@ -103,6 +113,11 @@ export class ArkTsParser {
         
         // 合并 CommonMethod<T>
         this.parser.mergeCommonMethod(result.component, context);
+        
+        // 设置命名空间
+        if (namespace) {
+            result.component.namespace = namespace;
+        }
         
         // 输出警告
         if (result.warnings.length > 0) {
@@ -130,6 +145,74 @@ export class ArkTsParser {
             await fs.promises.writeFile(enumOutputPath, enumCode);
             console.log(`Generated: ${enumOutputPath}`);
         }
+        
+        // 收集并生成 Options record
+        const optionsInterfaces = this.parser.collectOptionsInterfaces(inputPath);
+
+        // 收集所有接口定义（用于解析嵌套引用和继承）
+        const allInterfaces = this.parser.collectAllInterfaces(inputPath);
+        const interfaceMap = new Map<string, InterfaceInfo>();
+        for (const iface of allInterfaces) {
+            interfaceMap.set(iface.name, iface);
+            context.interfaces.set(iface.name, iface);
+        }
+
+        // 递归收集被 Options 引用的所有类型
+        const referencedTypes = this.parser.extractReferencedTypes(optionsInterfaces);
+        for (const typeName of referencedTypes) {
+            if (!interfaceMap.has(typeName)) {
+                const ref = allInterfaces.find(i => i.name === typeName);
+                if (ref) {
+                    interfaceMap.set(ref.name, ref);
+                    context.interfaces.set(ref.name, ref);
+                }
+            }
+        }
+
+        // 先生成被引用的接口
+        const generatedRecords = new Set<string>();
+        for (const optionsInfo of optionsInterfaces) {
+            // 递归展开继承链
+            const chain = this.collectInheritanceChain(optionsInfo, interfaceMap);
+            for (const item of chain) {
+                if (!generatedRecords.has(item.name)) {
+                    generatedRecords.add(item.name);
+                    const recordCode = this.generator.generateOptionsRecord(item, interfaceMap);
+                    const outputFile = outputPath.replace('.cs', `.${item.name}.cs`);
+                    await fs.promises.writeFile(outputFile, recordCode);
+                    console.log(`Generated: ${outputFile}`);
+                }
+            }
+        }
+    }
+
+    private collectInheritanceChain(
+        optionsInfo: InterfaceInfo,
+        interfaceMap: Map<string, InterfaceInfo>
+    ): InterfaceInfo[] {
+        const visited = new Set<string>();
+        const result: InterfaceInfo[] = [];
+
+        const visit = (iface: InterfaceInfo) => {
+            if (visited.has(iface.name)) return;
+            visited.add(iface.name);
+
+            if (iface.extends) {
+                for (const parentName of iface.extends) {
+                    const parent = interfaceMap.get(parentName);
+                    if (parent && parent.name.endsWith('Options')) {
+                        visit(parent);
+                    }
+                }
+            }
+
+            if (iface.name.endsWith('Options')) {
+                result.push(iface);
+            }
+        };
+
+        visit(optionsInfo);
+        return result;
     }
 
     private loadCache(outputDir: string): GenerationCache {
@@ -258,7 +341,7 @@ export class ArkTsParser {
                 continue;
             }
             
-            await this.processFileWithContext(inputPath, outputPath, ctx);
+            await this.processFileWithContext(inputPath, outputPath, ctx, 'HarmonyOS.ArkUI');
             
             // 更新缓存
             const stat = fs.statSync(inputPath);
@@ -294,13 +377,15 @@ export async function processFullSDK(): Promise<void> {
     const parser = new ArkTsParser();
     const context = createParseContext();
     
-    // HarmonyOS SDK 组件目录
+    // HarmonyOS SDK 目录
     const sdkBase = 'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony';
     const componentDir = path.join(sdkBase, 'ets', 'component');
     const apiDir = path.join(sdkBase, 'ets', 'api');
-    const outputBase = path.join(__dirname, '../../output');
-    const componentOutputDir = path.join(outputBase, 'components');
-    const apiOutputDir = path.join(outputBase, 'api');
+    
+    // 输出到 HarmonyOS.Bindings 项目
+    const bindingsDir = path.join(__dirname, '../../HarmonyOS.Bindings');
+    const componentOutputDir = path.join(bindingsDir, 'Components');
+    const apiOutputDir = path.join(bindingsDir, 'Api');
     
     console.log('=== Processing HarmonyOS SDK ===');
     
@@ -315,26 +400,73 @@ export async function processFullSDK(): Promise<void> {
     
     await parser.processDirectoryWithContext(componentDir, componentOutputDir, context);
     
-    // 2. 处理核心 API
-    console.log('\n--- Core APIs ---');
-    const coreApis = [
-        '@ohos.animator.d.ts',
-        '@ohos.curves.d.ts',
-        '@ohos.window.d.ts',
-        '@ohos.promptAction.d.ts',
-        '@ohos.arkui.observer.d.ts',
-        '@ohos.arkui.dragController.d.ts'
-    ];
+    // 2. 处理全部 API
+    console.log('\n--- APIs ---');
+    console.log(`Input: ${apiDir}`);
+    console.log(`Output: ${apiOutputDir}`);
     
-    for (const apiFile of coreApis) {
-        const apiPath = path.join(apiDir, apiFile);
-        if (fs.existsSync(apiPath)) {
-            await parser.processFileWithContext(apiPath, path.join(apiOutputDir, apiFile.replace('.d.ts', '.cs')), context);
+    if (!fs.existsSync(apiOutputDir)) {
+        fs.mkdirSync(apiOutputDir, { recursive: true });
+    }
+    
+    const apiFiles = fs.readdirSync(apiDir).filter(f => f.endsWith('.d.ts'));
+    let apiSuccess = 0;
+    let apiSkipped = 0;
+    
+    for (const file of apiFiles) {
+        const apiPath = path.join(apiDir, file);
+        // 文件名转换: @ohos.ability.ability.d.ts → Ability.Ability.cs
+        const csFileName = convertApiFileName(file);
+        const csPath = path.join(apiOutputDir, csFileName);
+        
+        try {
+            const result = parser.parseFile(apiPath);
+            if (result.component.name) {
+                result.component.namespace = 'HarmonyOS.Bindings.Api';
+                const code = parser.generateCode(result);
+                fs.mkdirSync(path.dirname(csPath), { recursive: true });
+                fs.writeFileSync(csPath, code);
+                apiSuccess++;
+            } else {
+                apiSkipped++;
+            }
+            const enums = parser.parseEnums(apiPath);
+            if (enums.length > 0) {
+                const enumCsPath = csFileName.replace('.cs', '.Enums.cs');
+                const enumCode = parser.generateEnumsCode(enums);
+                fs.writeFileSync(path.join(apiOutputDir, enumCsPath), enumCode);
+            }
+        } catch (e: any) {
+            console.error(`  Error: ${file} - ${e.message}`);
         }
     }
     
+    console.log(`  Generated: ${apiSuccess}, Skipped: ${apiSkipped}`);
     console.log('');
     console.log('=== SDK Processing Complete ===');
+}
+
+function convertApiFileName(dtsFileName: string): string {
+    // @ohos.ability.ability.d.ts → Ability.Ability.cs
+    // @ohos.animator.d.ts → Animator.cs
+    // @ohos.arkui.dragController.d.ts → Arkui.DragController.cs
+    let name = dtsFileName.replace('.d.ts', '');
+    
+    // 去掉 @ohos. 前缀
+    if (name.startsWith('@ohos.')) {
+        name = name.substring(6); // 去掉 "@ohos." (6个字符)
+    } else if (name.startsWith('@')) {
+        name = name.substring(1);
+    }
+    
+    // 按 . 分割并转换每一段
+    const parts = name.split('.');
+    const converted = parts.map(part => {
+        // 首字母大写，其余小写
+        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+    });
+    
+    return converted.join('.') + '.cs';
 }
 
 if (require.main === module) {
