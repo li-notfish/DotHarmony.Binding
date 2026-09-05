@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linker>
+  <assembly fullname="HarmonyOS.Bindings" preserve="all">
+    <namespace fullname="HarmonyOS.ArkUI" />
+    <namespace fullname="HarmonyOS.Bindings.Runtime" />
+  </assembly>
+</linker>
