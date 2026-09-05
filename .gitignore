@@ -3,8 +3,12 @@ node_modules/
 dist/
 *.js.map
 
-# Output
-output/
+# 生成的绑定代码（在 HarmonyOS.Bindings/ 下）
+HarmonyOS.Bindings/Components/
+HarmonyOS.Bindings/Api/
+
+# 但保留 Runtime（手写代码）
+!HarmonyOS.Bindings/Runtime/
 
 # IDE
 .vscode/
@@ -19,6 +23,15 @@ Thumbs.db
 # Coverage
 coverage/
 
+# Tests output
+tests-output/
+
 # Logs
 *.log
 npm-debug.log*
+
+# Unity
+UnityHarmony/
+
+# CodeGraph
+.codegraph/

@@ -952,4 +952,73 @@ export class AstParser {
             sourceFile
         };
     }
+
+    collectOptionsInterfaces(filePath: string): InterfaceInfo[] {
+        const sourceFile = ts.createSourceFile(
+            filePath,
+            fs.readFileSync(filePath, 'utf-8'),
+            ts.ScriptTarget.Latest,
+            true
+        );
+
+        const options: InterfaceInfo[] = [];
+        ts.forEachChild(sourceFile, (node) => {
+            if (ts.isInterfaceDeclaration(node) && node.name.text.endsWith('Options')) {
+                options.push(this.parseInterfaceFull(node, filePath));
+            }
+        });
+        return options;
+    }
+
+    collectAllInterfaces(filePath: string): InterfaceInfo[] {
+        const sourceFile = ts.createSourceFile(
+            filePath,
+            fs.readFileSync(filePath, 'utf-8'),
+            ts.ScriptTarget.Latest,
+            true
+        );
+
+        const interfaces: InterfaceInfo[] = [];
+        ts.forEachChild(sourceFile, (node) => {
+            if (ts.isInterfaceDeclaration(node)) {
+                interfaces.push(this.parseInterfaceFull(node, filePath));
+            }
+        });
+        return interfaces;
+    }
+
+    extractReferencedTypes(interfaces: InterfaceInfo[]): string[] {
+        const referenced = new Set<string>();
+
+        for (const iface of interfaces) {
+            for (const prop of iface.properties) {
+                const types = this.extractTypeNames(prop.type);
+                types.forEach(t => referenced.add(t));
+            }
+            if (iface.extends) {
+                iface.extends.forEach(e => referenced.add(e));
+            }
+        }
+
+        referenced.delete('string');
+        referenced.delete('number');
+        referenced.delete('boolean');
+        referenced.delete('void');
+        referenced.delete('object');
+        referenced.delete('any');
+        referenced.delete('unknown');
+        referenced.delete('undefined');
+        referenced.delete('null');
+
+        return Array.from(referenced);
+    }
+
+    private extractTypeNames(typeStr: string): string[] {
+        const cleaned = typeStr.replace(/Optional<(.+)>/g, '$1')
+                               .replace(/\(\s*\)\s*=>\s*.+/g, '')
+                               .replace(/\([^)]*\)\s*=>\s*.+/g, '');
+
+        const matches = cleaned.match(/[A-Z][a-zA-Z0-9_]*/g);
+        return matches ? matches.filter(m => m.length > 1) : [];
+    }
 }

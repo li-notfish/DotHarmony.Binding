@@ -23,12 +23,6 @@ export class TypeMapper {
         'Function': { typescript: 'Function', csharp: 'IntPtr', isNative: true },
         'Action': { typescript: 'Action', csharp: 'Action', isNative: false },
         'Func': { typescript: 'Func', csharp: 'Func', isNative: false },
-        // 选项类型映射
-        'ColumnOptions': { typescript: 'ColumnOptions', csharp: 'IntPtr', isNative: true },
-        'ColumnOptionsV2': { typescript: 'ColumnOptionsV2', csharp: 'IntPtr', isNative: true },
-        'TextOptions': { typescript: 'TextOptions', csharp: 'IntPtr', isNative: true },
-        'ButtonOptions': { typescript: 'ButtonOptions', csharp: 'IntPtr', isNative: true },
-        'ImageOptions': { typescript: 'ImageOptions', csharp: 'IntPtr', isNative: true },
         // 特殊类型映射
         'object': { typescript: 'object', csharp: 'object', isNative: false },
         'any': { typescript: 'any', csharp: 'object', isNative: false },
@@ -59,37 +53,55 @@ export class TypeMapper {
             return this.mapIntersectionType(typescriptType);
         }
         
-        // 5. 处理数组类型 (Array<T>)
+        // 5. 处理数组类型 (Array<T>) 和 (T[])
         if (typescriptType.includes('Array<')) {
             return this.mapArrayType(typescriptType);
         }
+        if (/\w+\[\]$/.test(typescriptType)) {
+            const baseType = typescriptType.replace('[]', '');
+            const mapped = this.mapType(baseType);
+            return `${mapped}[]`;
+        }
         
-        // 6. 处理泛型类型 (Callback<T1, T2>, Action<T>, Func<T, R>)
+        // 6. 处理映射类型 ([K in keyof T]) - 必须在泛型检测之前
+        if (typescriptType.includes('[K in keyof') || typescriptType.includes('keyof')) {
+            return 'dynamic';
+        }
+
+        // 7. 处理泛型类型 (Callback<T1, T2>, Action<T>, Func<T, R>)
         if (typescriptType.includes('<') && typescriptType.includes('>')) {
             return this.mapGenericType(typescriptType);
         }
-        
-        // 7. 处理元组类型 (T1, T2, ...)
+
+        // 8. 处理元组类型 (T1, T2, ...) 和 [T1, T2, ...]
         if (typescriptType.startsWith('(') && !typescriptType.includes('=>')) {
             return this.mapTupleType(typescriptType);
         }
-        
-        // 8. 处理条件类型 (T extends U ? X : Y)
-        if (typescriptType.includes('extends') && typescriptType.includes('?') && typescriptType.includes(':')) {
-            return this.mapConditionalType(typescriptType);
+        if (typescriptType.startsWith('[') && typescriptType.endsWith(']')) {
+            return this.mapTupleType(typescriptType);
         }
         
-        // 9. 处理映射类型 ([K in keyof T])
-        if (typescriptType.includes('[K in keyof') || typescriptType.includes('keyof')) {
-            return 'dynamic';
+        // 9. 处理条件类型 (T extends U ? X : Y)
+        if (typescriptType.includes('extends') && typescriptType.includes('?') && typescriptType.includes(':')) {
+            return this.mapConditionalType(typescriptType);
         }
         
         // 10. 处理 readonly 类型
         if (typescriptType.startsWith('readonly ')) {
             return this.mapType(typescriptType.slice(9));
         }
+
+        // 11. 处理内联对象字面量 { ... } → fallback 为 object
+        if (typescriptType.trim().startsWith('{') && typescriptType.trim().endsWith('}')) {
+            return 'object';
+        }
         
-        // 11. 直接映射
+        // 11. 处理 Options 类型（直接返回类名，会生成真实的 C# record）
+        if (this.isOptionsType(typescriptType)) {
+            return typescriptType;
+        }
+        
+        // 12. 直接映射
         const mapping = this.TYPE_MAP[typescriptType];
         return mapping ? mapping.csharp : typescriptType;
     }
@@ -133,17 +145,17 @@ export class TypeMapper {
 
     private static mapUnionType(unionType: string): string {
         const parts = unionType.split('|').map(p => p.trim());
-        
+
         // 特殊处理：如果包含 Optional，优先处理
         const optionalPart = parts.find(p => p.startsWith('Optional<'));
         if (optionalPart) {
             return this.mapOptionalType(optionalPart);
         }
-        
+
         // 特殊处理：如果包含 undefined 或 null，生成可空类型
         const hasUndefined = parts.some(p => p === 'undefined' || p === 'null');
         const nonNullParts = parts.filter(p => p !== 'undefined' && p !== 'null');
-        
+
         if (nonNullParts.length === 1) {
             const mappedType = this.mapType(nonNullParts[0]);
             if (hasUndefined && (mappedType === 'double' || mappedType === 'bool' || mappedType === 'int')) {
@@ -151,20 +163,16 @@ export class TypeMapper {
             }
             return mappedType;
         }
-        
-        // 找到第一个有映射的类型
+
+        // 多个分支时，对每个分支递归 mapType，然后选择第一个非 IntPtr 的结果
         for (const part of nonNullParts) {
-            const mapping = this.TYPE_MAP[part];
-            if (mapping) {
-                return mapping.csharp;
+            const mapped = this.mapType(part);
+            if (mapped !== 'IntPtr') {
+                return mapped;
             }
         }
-        
-        // 如果都没有映射，返回第一个非空类型
-        if (nonNullParts.length > 0) {
-            return this.mapType(nonNullParts[0]);
-        }
-        
+
+        // 所有分支都是 IntPtr，返回 IntPtr
         return 'IntPtr';
     }
 
@@ -181,10 +189,8 @@ export class TypeMapper {
     }
 
     private static mapTupleType(tupleType: string): string {
-        // 移除外层括号
-        const content = tupleType.slice(1, -1);
-        const types = content.split(',').map(t => this.mapType(t.trim()));
-        return `(${types.join(', ')})`;
+        // 元组类型 fallback 为 object（record 字段不支持内联元组）
+        return 'object';
     }
 
     private static mapConditionalType(conditionalType: string): string {
@@ -321,5 +327,9 @@ export class TypeMapper {
 
     static isMappedType(typeStr: string): boolean {
         return typeStr.includes('[K in keyof') || typeStr.includes('keyof');
+    }
+
+    static isOptionsType(typeStr: string): boolean {
+        return typeStr.endsWith('Options') && !typeStr.includes('|') && !typeStr.includes('<');
     }
 }
