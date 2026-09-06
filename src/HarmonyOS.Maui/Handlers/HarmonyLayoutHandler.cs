@@ -68,6 +68,18 @@ public class HarmonyLayoutHandler : ViewHandler<MControlsLayout, ArkUINode>
         handler.SetVirtualView(view);
         if (handler.PlatformView is ArkUINode node)
         {
+            // MAUI 布局默认 HorizontalOptions=Fill → 子节点宽度撑满父容器
+            if (view.HorizontalLayoutAlignment == Microsoft.Maui.Primitives.LayoutAlignment.Fill)
+            {
+                node.SetWidthPercent(1.0f);
+            }
+
+            // MAUI StackLayout.Spacing → 子节点下边距（最后一个子节点略多余，视觉可接受）
+            if (VirtualView is Microsoft.Maui.Controls.StackLayout sl && sl.Spacing > 0)
+            {
+                node.SetMarginEdges(0, 0, (float)sl.Spacing, 0);
+            }
+
             PlatformView.AddChild(node);
             _children[view] = handler;
         }

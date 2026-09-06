@@ -24,6 +24,9 @@ public static class MauiHarmonyHost
             handler.SetVirtualView(root);
             if (handler.PlatformView is ArkUINodeBase platformRoot)
             {
+                // MAUI 根布局 Fill 语义：撑满宿主可用区域（ContentSlot 的父容器）
+                platformRoot.SetWidthPercent(1.0f);
+                platformRoot.SetHeightPercent(1.0f);
                 Host.AttachRoot(contentHandle, platformRoot);
             }
             else

@@ -67,6 +67,25 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BACKGROUND_COLOR, ArkUIValue.U(argb));
     }
 
+    /// <summary>宽度百分比（1.0 = 100%，NODE_WIDTH_PERCENT）——MAUI Fill 语义的 ArkUI 翻译</summary>
+    public void SetWidthPercent(float fraction)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_WIDTH_PERCENT, ArkUIValue.F(fraction));
+    }
+
+    /// <summary>高度百分比（1.0 = 100%，NODE_HEIGHT_PERCENT）</summary>
+    public void SetHeightPercent(float fraction)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_HEIGHT_PERCENT, ArkUIValue.F(fraction));
+    }
+
+    /// <summary>四边外边距（NODE_MARGIN，单位 vp）</summary>
+    public void SetMarginEdges(float top, float right, float bottom, float left)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_MARGIN,
+            ArkUIValue.F(top), ArkUIValue.F(right), ArkUIValue.F(bottom), ArkUIValue.F(left));
+    }
+
     /// <summary>是否可见（NODE_VISIBILITY：0 = Visible）</summary>
     public bool Visible
     {

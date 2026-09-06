@@ -228,9 +228,10 @@ internal static class NativeValue
         var env = NapiEnv.Current;
         NativeNodeApi.napi_get_value_string_utf8(env, value, null, IntPtr.Zero, out var length).ThrowIfFailed();
         if (length == IntPtr.Zero) return string.Empty;
-        var buf = new byte[(int)length];
+        // napi 第二次调用写入的字符串含 null 终止符空间：缓冲区必须 length+1，否则末字节被裁剪
+        var buf = new byte[(int)length + 1];
         NativeNodeApi.napi_get_value_string_utf8(env, value, buf, (IntPtr)buf.Length, out length).ThrowIfFailed();
-        return Encoding.UTF8.GetString(buf);
+        return Encoding.UTF8.GetString(buf, 0, (int)length);
     }
 }
 #endif
