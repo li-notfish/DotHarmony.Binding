@@ -7,13 +7,16 @@ namespace HarmonyOS.Maui.Handlers;
 
 public static class HarmonyHandlerFactory
 {
-    public static IElementHandler Create(IView view) => view switch
+    public static IElementHandler Create(IView view) => Create((Microsoft.Maui.Controls.Element)view);
+
+    public static IElementHandler Create(Microsoft.Maui.Controls.Element element) => element switch
     {
+        Microsoft.Maui.Controls.ContentPage => new HarmonyContentPageHandler(),
         Microsoft.Maui.Controls.Button => new HarmonyButtonHandler(),
         Microsoft.Maui.Controls.Label => new HarmonyLabelHandler(),
         Microsoft.Maui.Controls.StackLayout => new HarmonyLayoutHandler(),
         Microsoft.Maui.Controls.Layout => new HarmonyLayoutHandler(),
         _ => throw new NotSupportedException(
-            $"No HarmonyOS handler registered for {view.GetType().Name} (extend HarmonyHandlerFactory)")
+            $"No HarmonyOS handler registered for {element.GetType().Name} (extend HarmonyHandlerFactory)")
     };
 }

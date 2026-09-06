@@ -15,12 +15,12 @@ public static class MauiHarmonyHost
     /// 注册 MAUI 根视图工厂。rootFactory 在 UI 主线程（HarmonyBuildUI 时序）被调用，
     /// 返回的控件树由 HarmonyHandlerFactory 装配 handler 并挂载上屏。
     /// </summary>
-    public static void Run(Func<View> rootFactory)
+    public static void Run(Func<Microsoft.Maui.Controls.Page> rootFactory)
     {
         Host.RootBuilder = contentHandle =>
         {
             var root = rootFactory();
-            var handler = HarmonyHandlerFactory.Create(root);
+            var handler = HarmonyHandlerFactory.Create((Microsoft.Maui.Controls.Element)root);
             handler.SetVirtualView(root);
             if (handler.PlatformView is ArkUINodeBase platformRoot)
             {

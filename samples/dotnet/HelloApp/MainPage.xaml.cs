@@ -5,7 +5,7 @@ using Microsoft.Maui.Controls;
 
 namespace HelloApp;
 
-public partial class MainPage : StackLayout
+public partial class MainPage : ContentPage
 {
     private int _clicks;
 

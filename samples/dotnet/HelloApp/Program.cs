@@ -7,6 +7,7 @@ using HarmonyDeviceInfo = HarmonyOS.Bindings.Api.DeviceInfo;
 using HarmonyOS.Bindings.Hosting;
 using HarmonyOS.Maui.Hosting;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls;
 
 namespace HelloApp;
 

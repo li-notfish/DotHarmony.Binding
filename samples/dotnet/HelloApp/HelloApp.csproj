@@ -25,6 +25,11 @@
 
     <!-- 本工程即应用入口：ModuleInitializer 在宿主 dlopen 后、任何导出调用前注册 RootBuilder，CA2255 不适用 -->
     <NoWarn>$(NoWarn);CA2255</NoWarn>
+
+    <!-- XAML：启用 Controls 包 buildTransitive targets（XamlC/SourceGen/自动 xaml 收集） -->
+    <EnableDefaultMauiItems>true</EnableDefaultMauiItems>
+    <!-- 单一生成器：SourceGen 产出编译期 InitializeComponent（AOT 安全），避免与 XamlC IL 织入重复生成字段 -->
+    <MauiXamlInflator>SourceGen</MauiXamlInflator>
   </PropertyGroup>
 
   <ItemGroup>
