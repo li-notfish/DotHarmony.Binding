@@ -5,7 +5,7 @@ dist/
 
 # 生成的绑定代码（在 HarmonyOS.Bindings/ 下）
 HarmonyOS.Bindings/Components/
-HarmonyOS.Bindings/Api/
+# HarmonyOS.Bindings/Api/ 为 @ohos.* 服务绑定（手写+生成），已入库
 
 # 但保留 Runtime（手写代码）
 !HarmonyOS.Bindings/Runtime/

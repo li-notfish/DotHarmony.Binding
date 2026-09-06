@@ -10,7 +10,8 @@ namespace HarmonyOS.Bindings.Runtime;
 /// </summary>
 internal static partial class NativeNodeApi
 {
-    private const string NApiLib = "libnapi.so";
+    // Node-API 实现库：系统里不存在 libnapi.so，真实名字是 libace_napi.z.so
+    private const string NApiLib = "libace_napi.z.so";
 
     #region 字符串操作
 
@@ -239,6 +240,22 @@ internal static partial class NativeNodeApi
         napi_env env,
         napi_value value,
         out napi_valuetype result);
+
+    [LibraryImport(NApiLib)]
+    internal static unsafe partial napi_status napi_open_handle_scope(napi_env env, out IntPtr scope);
+
+    [LibraryImport(NApiLib)]
+    internal static unsafe partial napi_status napi_close_handle_scope(napi_env env, IntPtr scope);
+
+    [LibraryImport(NApiLib)]
+    internal static unsafe partial napi_status napi_load_module(napi_env env, byte* path, out napi_value result);
+
+    /// <summary>
+    /// 清除挂起的 ArkTS 异常。可能抛出 ArkTS 异常的 napi 调用（如 napi_load_module）
+    /// 失败后必须调用，否则异常会在控制流返回宿主时 rethrow 导致应用崩溃。
+    /// </summary>
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_get_and_clear_last_exception(napi_env env, out napi_value result);
 
     #endregion
 

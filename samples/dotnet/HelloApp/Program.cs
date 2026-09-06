@@ -2,6 +2,7 @@
 // 构建产物 libapp.so 由 HarmonyHost 的 C shim dlopen 并调用 HarmonyInit / HarmonyBuildUI。
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using HarmonyOS.Bindings.Api;
 using HarmonyOS.Bindings.Hosting;
 using HarmonyOS.Bindings.NativeNode;
 using HarmonyOS.ArkUI;
@@ -38,6 +39,17 @@ public static class Program
 
         Host.RootBuilder = contentHandle =>
         {
+            // M0 验证：经 napi 服务通道读取 @ohos.deviceInfo（失败时把诊断写上屏）
+            string deviceLine;
+            try
+            {
+                deviceLine = $"{DeviceInfo.Brand} {DeviceInfo.ProductModel} · {DeviceInfo.OsFullName}";
+            }
+            catch (Exception ex)
+            {
+                deviceLine = "deviceInfo FAILED: " + ex.Message;
+            }
+
             var root = new Column
             {
                 JustifyContent = ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_CENTER,
@@ -57,6 +69,15 @@ public static class Program
             title.Margin = 8;
             title.Padding = 8;
 
+            var deviceText = new Text
+            {
+                Content = deviceLine,
+                TextAlign = ArkUI_TextAlignment.ARKUI_TEXT_ALIGNMENT_CENTER,
+            };
+            deviceText.SetBackgroundColor(255, 255, 255);
+            deviceText.Margin = 8;
+            deviceText.Padding = 8;
+
             var button = new Button
             {
                 Label = "Tap me (from .NET)",
@@ -69,6 +90,7 @@ public static class Program
             };
 
             root.AddChild(title);
+            root.AddChild(deviceText);
             root.AddChild(button);
 
             // 挂载到 ArkTS ContentSlot 提供的 NodeContent

@@ -1,5 +1,10 @@
 import { NodeContent } from '@kit.ArkUI';
+import deviceInfo from '@ohos.deviceInfo';
 import native from 'libentry.so';
+
+// 注意：native 侧经 napi_load_module 动态加载的 @ohos.* 系统模块，
+// 必须在此显式 import（编入 HAP 模块表）后才能被运行时解析。
+// 当前被 .NET 绑定使用的模块：@ohos.deviceInfo（aboutToAppear 中真实引用）
 
 /**
  * .NET 宿主页：上方为 ArkTS 声明式区域（对照用），
@@ -13,6 +18,8 @@ struct Index {
   private nodeContent: NodeContent = new NodeContent();
 
   aboutToAppear(): void {
+    // ArkTS 侧对照读取（与 .NET 侧经 napi_load_module 的读取结果应一致）
+    console.info(`[host] arkts deviceInfo: ${deviceInfo.brand} ${deviceInfo.productModel} os=${deviceInfo.osFullName}`);
     // 1. 初始化 .NET 运行时（dlopen libapp.so + env 注入）
     native.initDotnet();
     // 2. 把 NodeContent 交给 .NET 侧，由其用 ArkUI C API 命令式构建 UI
