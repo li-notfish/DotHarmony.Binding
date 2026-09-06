@@ -1,16 +1,29 @@
-# ArkTsBinding
+# ArkTsBinding / DotHarmony.Binding
 
-.NET (NativeAOT) 与 HarmonyOS (ArkUI) 的高性能绑定库 —— 为 .NET MAUI 鸿蒙 Handler 提供 platform view 层。
+一个**模仿 .NET MAUI 平台绑定层逻辑**（Mono.Android / Microsoft.iOS 的思路）的鸿蒙试验项目：
+用 .NET (NativeAOT) 绑定 HarmonyOS (ArkUI/ArkTS)，并让 .NET MAUI 控件经 Handler 机制渲染为 ArkUI 原生节点。
 
-**当前状态：端到端验证通过。** C# (NativeAOT) 在鸿蒙模拟器/真机上完成：运行时初始化 → 创建原生 ArkUI 节点树上屏 → 属性设置 → 点击事件回调 → 回写 UI，全链路闭环。
+**当前状态：核心链路已在模拟器端到端验证** —— 运行时初始化 → 原生节点树上屏 → 属性/事件闭环 →
+`@ohos.*` 服务调用 → **XAML 声明式 UI → 鸿蒙原生渲染**。距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 ## 这是什么
 
-对标 Mono.Android（Java 绑定）与 Microsoft.iOS（ObjC 绑定）的平台绑定库：为上层 UI 框架（dotnet/maui fork 的 HarmonyOS Handler，下一里程碑）提供**可命令式创建、持稳定句柄、可挂载、可响应事件**的平台视图类型。
+本项目在逻辑上模仿 Mono.Android / Microsoft.iOS 的分层思路（平台绑定库 + Handler 适配 + 工具链），
+**并非其量级的实现**——那两者背后是微软与三星的专职团队。本项目的对应物：
+
+| 官方生态 | 本项目 |
+|---|---|
+| Mono.Android（Java API 绑定） | `HarmonyOS.Bindings`（ArkUI C API / napi 绑定，生成器产出） |
+| 各平台 Handler（Android/iOS/...） | `HarmonyOS.Maui`（MAUI 控件 → ArkUI 原生节点，不 fork dotnet/maui） |
+| Android/iOS head 工程 | `HarmonyHost`（ArkTS 宿主 + C shim，固定模板） |
+| workload / msbuild 集成 | `scripts/`（远程 NativeAOT + hvigor + hdc 一键脚本）
 
 ```
-[MAUI HarmonyOS Handler —— 下一里程碑]
-    │ 消费 platformView
+[MAUI 应用] XAML / C# 控件树（Microsoft.Maui.Controls VirtualView）
+    ↓
+[HarmonyOS.Maui]  HarmonyButtonHandler / HarmonyLabelHandler / HarmonyLayoutHandler /
+                  HarmonyContentPageHandler（ViewHandler<,> + PropertyMapper/CommandMapper 协议）
+    ↓ PlatformView
 [HarmonyOS.Bindings]
     ├─ Nodes/       ArkUINodeBase : { ArkUI_NodeHandle } 包装类（解析器自动生成）
     ├─ NativeNode/  ArkUI NDK C API 互操作（ArkUI_NativeNodeAPI_1 函数表镜像、事件总线）
@@ -101,29 +114,27 @@ HarmonyOS.Bindings/          绑定库（net10.0, AOT/trim 友好）
   ├─ Nodes/                  生成的组件包装类 + native-gaps.json
   ├─ Runtime/                napi 互操作（env 注入、INapiRecord、HiLog）
   └─ Hosting/Host.cs         libapp.so 导出入口
-samples/HarmonyHost/         鸿蒙宿主工程（ArkTS + C shim + CMake）
-samples/dotnet/HelloApp/     .NET 样例应用（NativeAOT → libapp.so）
+src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/ContentPage → ArkUI 节点）
+samples/HarmonyHost/         鸿蒙宿主工程（ArkTS + C shim + CMake + ohosImports.ets 模块登记）
+samples/dotnet/HelloApp/     .NET 样例应用（XAML + NativeAOT → libapp.so）
 scripts/                     remote-build / build-hap / deploy-hap 一键工具链
 tests/                       jest（解析器/生成器 45 用例）
 ```
 
-## 已知限制 / 下一步
+## 已知限制（当前真实状态）
 
-- [ ] fork dotnet/maui：HarmonyOS Handler 基础设施（IViewHandler → ArkUINodeBase）
-- [ ] `object` 型复杂属性（ArkUI_TextStyle 等）需头文件结构体提取后再开放（禁止猜测 ABI）
-- [ ] 组件覆盖面扩展（按 native-gaps.json 与 shape 表逐步放开）
-- [ ] 触摸事件详细解析（ui_input_event.h 访问器）、ThreadSafeFunction（后台线程 → UI 线程）
-- [ ] 真机（arm64）验证
+- **布局语义**：ArkUI flex 托管布局——MAUI 的 measure/arrange 引擎未实现，`WidthRequest/HeightRequest` 等约束暂不生效（Fill/Spacing/Margin 已对齐）
+- **Brush 体系未映射**：`Background` 等画刷类属性暂缓（SolidColorBrush/SolidPaint 类型树平行，需统一转换助手）
+- **异步 API 未支持**：`Promise<T>` 映射为 `IntPtr` 占位，TSFN（ThreadSafeFunction）异步层未实现——这是 M2 核心难点
+- **单页面**：无 Window/Navigation/Shell，多页面导航未实现
+- **控件覆盖**：仅 Button/Label/StackLayout/ContentPage 四个 Handler（共 ~1182 条属性 gap 待逐步登记）
+- **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
+- **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
+- **权限模型未接**：需要权限的 @ohos.* 模块（位置/相机等）未生成 `module.json5` 联动
 
-## 致谢 / Acknowledgements
+## 路线图
 
-本项目的交叉编译方案与运行时移植实践，建立在以下开源工作的基础上：
-
-- **[PublishAotCross](https://github.com/MichalStrehovsky/PublishAotCross)**（Michal Strehovsky）——
-  用 zig cc 作为 NativeAOT 自定义链接驱动以实现 linux-musl 交叉编译的开创性方案。
-  本项目 x64 目标的链接驱动即此思路的手写实现（针对鸿蒙场景增加了
-  `-Wl,--gc-sections` 过滤等适配），未直接引用其 NuGet 包，特此声明并致谢。
-- **[musl.cc](https://musl.cc/)** —— aarch64-linux-musl 交叉工具链（arm64 构建使用）。
-- **[OpenHarmony.Avalonia](https://github.com/CeSun/OpenHarmony.Avalonia)**（CeSun）——
-  .NET 运行时鸿蒙移植的先行实践，本项目采用的 GC 堆上限与 ICU 引导参数配方源自其公开的移植记录。
-- **OpenHarmony / HarmonyOS** —— ArkUI NDK（ArkUI_NativeNodeAPI_1）与 Node-API 的官方能力支撑。
+详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
+- M1 尾巴：Brush 助手、布局对齐（两套布局引擎取舍）、Window/Navigation、真机验证
+- M2：TSFN 异步层（核心难点）、codeGenerator 缺陷修复、@ohos.* 批量绑定
+- M3：NuGet 打包、单项目体验、CI

@@ -1,0 +1,126 @@
+# ROADMAP —— 后续路线、实现方案与难点留档
+
+> 本文档记录项目当前状态之后的开发路线。每个阶段给出：做什么、怎么做、难点在哪。
+> 文中的"平台铁律"均为实测结论（模拟器 x86_64 / API 26），是后续实现的边界条件。
+
+## 当前基线（已完成，详见 README）
+
+- ✅ UI 通道：ArkUI NDK C API（`ArkUI_NativeNodeAPI_1`）→ `ArkUINodeBase` 稳定句柄
+- ✅ 服务通道：napi（`napi_load_module("=@ohos.xxx")`）→ `@ohos.deviceInfo` 端到端
+- ✅ MAUI Handler 包：Button/Label/StackLayout/ContentPage 四个 Handler + XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）
+- ✅ 工具链：`remote-build.sh`（远程 NativeAOT）→ `build-hap.cmd`（hvigor）→ `deploy-hap.sh`（hdc）
+
+---
+
+## M1 尾巴 —— MAUI 基本面补齐
+
+### 1.1 Brush→ARGB 转换助手（小）
+
+**做什么**：统一 `Controls 的 Background/TextColor` 等属性的取色逻辑，接通 `HarmonyContentPageHandler` 的 Background 映射（当前显式暂缓）。
+
+**怎么做**：Controls 的 `VisualElement.Background` 为 **Brush 体系**（`SolidColorBrush`/`GradientBrush`/`ImageBrush`，与 `Graphics.SolidPaint` 平行，注意两者不互相继承——`is SolidPaint` 模式对 Brush 表达式会编译报错 CS8121）。写一个 `static Color? ToArgb(this Brush brush)`：匹配 `SolidColorBrush`（取 Color）、忽略其余并记录 gap。
+
+**难点**：Gradient（多 stop）、ImageBrush 需要真正的 ArkUI 渐变/图片属性封装，一期只做纯色。
+
+### 1.2 布局对齐 —— 两套布局引擎的取舍（中，最重要的语义缺口）
+
+**做什么**：让 MAUI 的 `WidthRequest/HeightRequest/Margin` 生效；为 Grid/AbsoluteLayout 做准备。
+
+**怎么做**：维持当前 **ArkUI flex 托管**模型（StackLayout→Column/Row 自治布局），在此之上：
+- `WidthRequest/HeightRequest` → `NODE_WIDTH/NODE_HEIGHT`（vp）
+- `Margin` → `NODE_MARGIN`（已实现四边版 `SetMarginEdges`）
+- `HorizontalOptions/VerticalOptions` 非 Fill 值 → 容器级对齐折衷（ArkUI 的 alignItems 是容器级，MAUI 是 per-child；一期对 Fill 全宽、非 Fill wrap+容器居中）
+- `Grid/AbsoluteLayout` → **MAUI 托管**：用布局管理器算 frame，然后 `setLayoutPosition + NODE_SIZE` 绝对定位（C API 原语已就绪：`measureNode/layoutNode/setMeasuredSize`）
+
+**难点**：
+1. **MAUI 托管路径需要子节点的期望尺寸**（measure 往返）。ArkUI 节点的固有尺寸可通过 `getAttribute(NODE_SIZE)` 读取，但需要在节点完成一次布局后取值——存在先有鸡还是先有蛋的时序问题，需要实测 `markDirty` 后的回调时序。
+2. 两套引擎混用时（flex 容器内嵌 MAUI 绝对定位子树），尺寸约定要严格（内层根用固定 px），否则约束传播会乱。建议内层根设 `NODE_SIZE` 固定值。
+
+### 1.3 Window / Navigation（中）
+
+**做什么**：支持多页面与导航（MAUI 开发的第二基本操作）。
+
+**怎么做**（自建轻量栈，不对齐 NavigationPage/Shell 全语义）：
+- `HarmonyWindow`：包装现有 ContentSlot 挂载点，持有 Page 栈
+- `Navigation.PushAsync(page)`：当前根 `removeChild` 暂存 → 新根 `AddNode`（节点树保留，仅切换挂载）；`PopAsync` 反向
+- 页面切换动画暂略（ArkUI 有 `nativeAnimate`，后续可选）
+
+**难点**：
+1. **Page 与 Window 的生命周期映射**：MAUI `IWindow/IPageHandler` 协议重（Appearing/Disappearing、模态、toolbar）；一期只做 `ContentPage` 的显示/隐藏事件透传
+2. 暂存的已挂载页面在 ArkUI 侧是"从树摘除但句柄保留"——验证 `removeChild` 后再 `addNode` 的节点状态恢复是否完整（属性是否保留）
+3. Shell/NavigationPage 官方类型**不在支持计划内**（协议太重），文档需明确开发者不要使用
+
+### 1.4 更多控件 Handler（持续）
+
+Image（需要图片服务/Resizetizer 联动，难）、Entry/Editor（键盘/焦点/输入法事件，中）、ScrollView（`NODE_SCROLL_*` 属性族，中）、CheckBox/Switch（简单）。按需插入。
+
+### 1.5 真机 arm64 验证（小）
+
+工具链已就绪（arm64 libapp.so 一直同步产出）。难点只有签名物料与真机性能观测（AOT 启动时间、GC 表现——`DOTNET_GCHeapHardLimit` 可能需要按真机内存调参）。
+
+---
+
+## M2 —— 服务层完备（异步是核心）
+
+### 2.1 TSFN 异步层（大，M2 的核心难点）
+
+**做什么**：让 `@ohos.*` 的 `Promise<T>` / callback 风格 API 在 C# 里以 `Task<T>` 可用。当前全部映射为 `IntPtr` 占位。
+
+**怎么做**：
+1. `napi_create_threadsafe_function` 封装（`Runtime/ThreadSafeFunction.cs`）：
+   - C# 发起调用 → 拿到 Promise → 注册 TSFN（经 `napi_resolve` 在 JS 线程桥接）
+   - C# 侧返回 `TaskCompletionSource<napi_value>` 包装的 `Task<T>`
+2. Promise 完成时（JS 线程）→ TSFN 回调 C#（线程安全排队）→ TCS.SetResult → `await` 继续
+3. 生成器把 `Promise<T>` 映射从 `IntPtr` 改为 `Task<T>`（或 `Task<string>` 等具体类型，按 T 递归）
+
+**难点**：
+1. **TSFN 生命周期**：`napi_release_threadsafe_function` 的调用时机（完成/取消/异常三路径）错一处就泄漏或 UAF
+2. **线程模型**：`napi_env` 线程绑定（已在 `NapiEnv` 文档化）；TSFN 回调在任意线程进入 C#，回调内**不得**直接调 ArkUI 节点 API（需回 UI 线程——需要为 .NET 侧建一个 UI 线程调度器，宿主主线程跑一个 .NET SynchronizationContext）
+3. **AOT 下的泛型封送**：TSFN 的 callback data 用 `GCHandle`，泛型 T 的收尾需要具体类型跳板（每个 T 一个 `[UnmanagedCallersOnly]`，生成器产出或限于常用类型集）
+4. **ArkTS 异常**：Promise reject → C# 侧应 `Task.FromException`，同样要清 pending exception（M0 铁律）
+
+### 2.2 codeGenerator 缺陷修复（小，TSFN 的前置）
+
+- `CallMethod<void>` 非法 C# → 无参/void 方法（白皮书"泛型 void 清洁重载"）
+- using 生成缺失（产物缺 `using HarmonyOS.Bindings.Runtime`）
+- 方法重载折叠保留全部签名
+- `Promise<T>` 映射接 2.1 的 `Task<T>`
+
+**难点**：老产物（Api/ 561 文件）当年就是这些缺陷的产物；修复后需小批量重出验证再全量。
+
+### 2.3 @ohos.* 批量绑定（机械，但有两道闸）
+
+**做什么**：`--sdk` 全量生成 143 模块。
+
+**两道闸**（已验证的平台事实）：
+1. `ohosImports.ets` 自动登记 ✅（已实现）；但**每个被用到的模块是否需要权限**（位置/相机/蓝牙等）需要生成器顺带产出 `module.json5` 的 `requestPermissions` 清单，否则运行时才爆
+2. 全量产物先以"生成但不进编译"姿态评审（恢复 `Compile Remove` 灰度策略），按模块逐个转正
+
+### 2.4 Essentials 平台实现（可选，价值高）
+
+`Microsoft.Maui.Essentials` 的 `IDeviceInfo/IDisplay/IClipboard` 等接口做鸿蒙实现，让 MAUI 生态的标准 API 直接可用（M1 中已出现与 Essentials 的 DeviceInfo 撞名——说明生态对接是真实需求）。
+
+---
+
+## M3 —— 工程化（远期）
+
+- **NuGet 打包**：Bindings / HarmonyOS.Maui / 宿主工程模板三件套分发
+- **单项目体验**：MSBuild targets 让用户工程 `dotnet build` 直出 HAP（自动跑远程 AOT 或本机 WSL）
+- **CI**：Linux runner 出 libapp.so + 签名 + 模拟器回归
+- **性能**：XamlC 产物 AOT 体积、启动时间、TSFN 吞吐基线
+
+---
+
+## 平台铁律速查（实测沉淀，实现前必读）
+
+| # | 铁律 | 出处 |
+|---|---|---|
+| 1 | Node-API 实现库是 `libace_napi.z.so`，`libnapi.so` 不存在 | M0 |
+| 2 | `napi_load_module("=@ohos.xxx")` 要求宿主 ArkTS 已 import 该模块（`ohosImports.ets` 登记） | M0 |
+| 3 | 可能抛 ArkTS 异常的 napi 调用后必须 `napi_get_and_clear_last_exception`，否则宿主闪退 | M0 |
+| 4 | 模块 `napi_value` 须在 handle scope 内转 `napi_ref` 再跨 P/Invoke 持有 | M0 |
+| 5 | 两段式 `napi_get_value_string_utf8` 缓冲区必须 `length+1`，否则末字节被裁 | M1 |
+| 6 | NODE_ON_CLICK 的参数经 `GetNodeComponentEvent().data[]` 直读，`GetNumberValue` 返回 106108 | M1 |
+| 7 | Background 属性是 Brush 体系，与 Graphics.SolidPaint 平行不可混用 | M1 |
+| 8 | `IViewHandler` 导出/生成只认入口程序集；`--gc-sections` 会收割 ILC 的 `__modules` section | M1 |
+| 9 | Controls 与 Graphics 的颜色类型树平行（SolidColorBrush vs SolidPaint），转换需显式助手 | M1 |
