@@ -5,11 +5,36 @@ using System.Text;
 namespace HarmonyOS.Bindings.Runtime;
 
 /// <summary>
-/// ArkUI 组件操作的高层 API
-/// 提供类型安全的方法，内部处理类型转换和多值属性分发
+/// ArkUI 组件操作的高层 API（napi 路径）
+/// 提供类型安全的方法，内部处理类型转换和多值属性分发。
+/// 注意：UI 组件的主路径是 NativeNode（ArkUI C API）；本类服务非 UI 的 ArkTS 对象操作。
 /// </summary>
 public static class NodeApi
 {
+    /// <summary>
+    /// 宿主 ArkTS 侧注入到 globalThis 的胶水模块名，其上须提供
+    /// createComponent(componentName, ...args) 分发函数（由宿主工程提供）。
+    /// </summary>
+    internal const string GlueGlobalName = "ArkUI";
+
+    /// <summary>
+    /// 获取宿主注入的 ArkUI 胶水模块
+    /// </summary>
+    private static NativeNodeApi.napi_value GetGlueModule(NativeNodeApi.napi_env env)
+    {
+        NativeNodeApi.napi_get_global(env, out var global).ThrowIfFailed();
+        var globalName = Encoding.UTF8.GetBytes(GlueGlobalName);
+        NativeNodeApi.napi_get_named_property(env, global, globalName, out var arkuiModule).ThrowIfFailed();
+        NativeNodeApi.napi_typeof(env, arkuiModule, out var valueType).ThrowIfFailed();
+        if (valueType != NativeNodeApi.napi_valuetype.napi_object &&
+            valueType != NativeNodeApi.napi_valuetype.napi_function)
+        {
+            throw new InvalidOperationException(
+                $"globalThis.{GlueGlobalName} is not defined. The host ArkTS page must inject the glue module before creating components.");
+        }
+        return arkuiModule;
+    }
+
     /// <summary>
     /// 创建无参组件
     /// </summary>
@@ -19,19 +44,15 @@ public static class NodeApi
     {
 #if HARMONYOS
         var env = NapiEnv.Current;
-        var nameBytes = Encoding.UTF8.GetBytes(componentName);
-
-        // 获取全局的 ArkUI 模块
-        var globalName = Encoding.UTF8.GetBytes("ArkUI");
-        NativeNodeApi.napi_get_named_property(env, env, globalName, out var arkuiModule);
+        var arkuiModule = GetGlueModule(env);
 
         // 调用创建组件的函数
         var createFuncName = Encoding.UTF8.GetBytes("createComponent");
-        NativeNodeApi.napi_get_named_property(env, arkuiModule, createFuncName, out var createFunc);
+        NativeNodeApi.napi_get_named_property(env, arkuiModule, createFuncName, out var createFunc).ThrowIfFailed();
 
         var componentNameValue = NativeValue.From(componentName);
         var argv = new IntPtr[] { componentNameValue };
-        NativeNodeApi.napi_call_function(env, arkuiModule, createFunc, 1, argv, out var result);
+        NativeNodeApi.napi_call_function(env, arkuiModule, createFunc, 1, argv, out var result).ThrowIfFailed();
 
         return result;
 #else
@@ -49,15 +70,11 @@ public static class NodeApi
     {
 #if HARMONYOS
         var env = NapiEnv.Current;
-        var nameBytes = Encoding.UTF8.GetBytes(componentName);
-
-        // 获取全局的 ArkUI 模块
-        var globalName = Encoding.UTF8.GetBytes("ArkUI");
-        NativeNodeApi.napi_get_named_property(env, env, globalName, out var arkuiModule);
+        var arkuiModule = GetGlueModule(env);
 
         // 调用创建组件的函数
         var createFuncName = Encoding.UTF8.GetBytes("createComponent");
-        NativeNodeApi.napi_get_named_property(env, arkuiModule, createFuncName, out var createFunc);
+        NativeNodeApi.napi_get_named_property(env, arkuiModule, createFuncName, out var createFunc).ThrowIfFailed();
 
         // 构建参数数组：[componentName, arg1, arg2, ...]
         var argv = new IntPtr[args.Length + 1];
@@ -67,7 +84,7 @@ public static class NodeApi
             argv[i + 1] = NativeValue.From(args[i]);
         }
 
-        NativeNodeApi.napi_call_function(env, arkuiModule, createFunc, argv.Length, argv, out var result);
+        NativeNodeApi.napi_call_function(env, arkuiModule, createFunc, argv.Length, argv, out var result).ThrowIfFailed();
 
         return result;
 #else
@@ -93,21 +110,19 @@ public static class NodeApi
         if (values.Length == 1)
         {
             // 单值：直接设置属性
-            // 适用于: scrollSnap(options), nestedScroll(options), divider(options)
             var napiValue = NativeValue.From(values[0]);
-            NativeNodeApi.napi_set_named_property(env, jsObject, nameBytes, napiValue);
+            NativeNodeApi.napi_set_named_property(env, jsObject, nameBytes, napiValue).ThrowIfFailed();
         }
         else if (values.Length > 1)
         {
             // 多值：创建数组
-            // 适用于: edgeEffect(effect, options), cachedCount(count, show)
-            NativeNodeApi.napi_create_array_with_length(env, values.Length, out var array);
+            NativeNodeApi.napi_create_array_with_length(env, values.Length, out var array).ThrowIfFailed();
             for (int i = 0; i < values.Length; i++)
             {
                 var elem = NativeValue.From(values[i]);
-                NativeNodeApi.napi_set_element(env, array, (uint)i, elem);
+                NativeNodeApi.napi_set_element(env, array, (uint)i, elem).ThrowIfFailed();
             }
-            NativeNodeApi.napi_set_named_property(env, jsObject, nameBytes, array);
+            NativeNodeApi.napi_set_named_property(env, jsObject, nameBytes, array).ThrowIfFailed();
         }
 #endif
     }
@@ -126,17 +141,17 @@ public static class NodeApi
         if (values.Length == 1)
         {
             var napiValue = NativeValue.From(values[0]);
-            NativeNodeApi.napi_set_named_property(env, jsObject, attributeName, napiValue);
+            NativeNodeApi.napi_set_named_property(env, jsObject, attributeName, napiValue).ThrowIfFailed();
         }
         else if (values.Length > 1)
         {
-            NativeNodeApi.napi_create_array_with_length(env, values.Length, out var array);
+            NativeNodeApi.napi_create_array_with_length(env, values.Length, out var array).ThrowIfFailed();
             for (int i = 0; i < values.Length; i++)
             {
                 var elem = NativeValue.From(values[i]);
-                NativeNodeApi.napi_set_element(env, array, (uint)i, elem);
+                NativeNodeApi.napi_set_element(env, array, (uint)i, elem).ThrowIfFailed();
             }
-            NativeNodeApi.napi_set_named_property(env, jsObject, attributeName, array);
+            NativeNodeApi.napi_set_named_property(env, jsObject, attributeName, array).ThrowIfFailed();
         }
 #endif
     }
@@ -148,7 +163,8 @@ public static class NodeApi
     /// <param name="eventName">事件名称</param>
     /// <param name="handler">事件处理委托</param>
     /// <param name="trampolinePtr">预编译的跳板函数指针（[UnmanagedCallersOnly]）</param>
-    public static void SetEventHandler(IntPtr jsObject, string eventName, Delegate handler, IntPtr trampolinePtr)
+    /// <returns>为固定委托而分配的 GCHandle；组件 Dispose 时必须经 <see cref="FreeEventHandle"/> 释放</returns>
+    public static GCHandle SetEventHandler(IntPtr jsObject, string eventName, Delegate handler, IntPtr trampolinePtr)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
@@ -160,18 +176,31 @@ public static class NodeApi
 
         var env = NapiEnv.Current;
 
-        // 固定委托，防止 GC 回收
+        // 固定委托，防止 GC 回收；句柄由调用方在组件生命周期结束时释放
         var gch = GCHandle.Alloc(handler);
 
         // 使用预编译的跳板函数指针（AOT 兼容）
         var nameBytes = Encoding.UTF8.GetBytes(eventName);
         NativeNodeApi.napi_create_function(
             env, nameBytes, (IntPtr)nameBytes.Length,
-            trampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc);
+            trampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc).ThrowIfFailed();
 
         // 设置为属性
-        NativeNodeApi.napi_set_named_property(env, jsObject, nameBytes, jsFunc);
+        NativeNodeApi.napi_set_named_property(env, jsObject, nameBytes, jsFunc).ThrowIfFailed();
+
+        return gch;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif
+    }
+
+    /// <summary>
+    /// 释放事件委托的 GCHandle（组件 Dispose 时调用）
+    /// </summary>
+    public static void FreeEventHandle(GCHandle gch)
+    {
+        if (gch.IsAllocated)
+            gch.Free();
     }
 
     /// <summary>
@@ -192,7 +221,7 @@ public static class NodeApi
 
         // 获取方法函数
         var nameBytes = Encoding.UTF8.GetBytes(methodName);
-        NativeNodeApi.napi_get_named_property(env, jsObject, nameBytes, out var jsFunc);
+        NativeNodeApi.napi_get_named_property(env, jsObject, nameBytes, out var jsFunc).ThrowIfFailed();
 
         // 构建参数数组
         var argv = new IntPtr[args.Length];
@@ -202,7 +231,7 @@ public static class NodeApi
         }
 
         // 调用方法
-        NativeNodeApi.napi_call_function(env, jsObject, jsFunc, argv.Length, argv, out var result);
+        NativeNodeApi.napi_call_function(env, jsObject, jsFunc, argv.Length, argv, out var result).ThrowIfFailed();
 
         // 转换返回值
         return ConvertResult<T>(result);
@@ -212,16 +241,14 @@ public static class NodeApi
     }
 
     /// <summary>
-    /// 销毁组件
+    /// 销毁组件（napi 路径：对象生命周期由 ArkTS GC 管理，无显式销毁语义）
     /// </summary>
     /// <param name="jsObject">组件句柄</param>
     public static void DestroyComponent(IntPtr jsObject)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero) return;
-
         // napi_value 会被 GC 回收，不需要显式销毁
-        // 这里可以添加清理逻辑，如释放关联的 GCHandle
 #endif
     }
 

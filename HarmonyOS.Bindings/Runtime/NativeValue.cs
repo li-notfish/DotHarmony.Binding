@@ -1,6 +1,5 @@
 #if HARMONYOS
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -19,7 +18,7 @@ internal static class NativeValue
         if (value == null) return IntPtr.Zero;
         var env = NapiEnv.Current;
         var utf8 = Encoding.UTF8.GetBytes(value);
-        NativeNodeApi.napi_create_string_utf8(env, utf8, (IntPtr)utf8.Length, out var result);
+        NativeNodeApi.napi_create_string_utf8(env, utf8, (IntPtr)utf8.Length, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -29,7 +28,7 @@ internal static class NativeValue
     public static IntPtr From(double value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_create_double(env, value, out var result);
+        NativeNodeApi.napi_create_double(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -44,7 +43,7 @@ internal static class NativeValue
     public static IntPtr From(int value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_create_int32(env, value, out var result);
+        NativeNodeApi.napi_create_int32(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -54,7 +53,7 @@ internal static class NativeValue
     public static IntPtr From(uint value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_create_uint32(env, value, out var result);
+        NativeNodeApi.napi_create_uint32(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -64,7 +63,7 @@ internal static class NativeValue
     public static IntPtr From(long value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_create_int64(env, value, out var result);
+        NativeNodeApi.napi_create_int64(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -74,7 +73,7 @@ internal static class NativeValue
     public static IntPtr From(ulong value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_create_uint64(env, value, out var result);
+        NativeNodeApi.napi_create_uint64(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -84,7 +83,7 @@ internal static class NativeValue
     public static IntPtr From(bool value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_get_boolean(env, value, out var result);
+        NativeNodeApi.napi_get_boolean(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -128,21 +127,28 @@ internal static class NativeValue
         var parameters = method.GetParameters();
         var gch = GCHandle.Alloc(del);
         var nameBytes = Encoding.UTF8.GetBytes(method.Name);
+        var fnPtr = (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr>)&NativeCallbacks.Action_Ptr;
         NativeNodeApi.napi_create_function(
             env, nameBytes, (IntPtr)nameBytes.Length,
-            NativeCallbacks.Action_Ptr, GCHandle.ToIntPtr(gch), out var result);
+            fnPtr, GCHandle.ToIntPtr(gch), out var result).ThrowIfFailed();
         return result;
     }
 
     /// <summary>
-    /// 将 record 对象（如 Options）序列化为 JS 对象
-    /// 使用反射读取所有非空属性，逐个序列化到 JS 对象
+    /// 将 record 对象（如 Options）序列化为 JS 对象。
+    /// AOT 安全：生成器为每个 record 产出 INapiRecord 显式实现；
+    /// IDictionary 走动态路径；其余类型显式失败（而不是被裁剪静默吞掉属性）。
     /// </summary>
     private static IntPtr FromRecord(object value)
     {
-        var type = value.GetType();
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_create_object(env, out var obj);
+        NativeNodeApi.napi_create_object(env, out var obj).ThrowIfFailed();
+
+        if (value is INapiRecord serializable)
+        {
+            serializable.WriteTo(env, obj);
+            return obj;
+        }
 
         if (value is System.Collections.Generic.IDictionary<string, object?> dict)
         {
@@ -152,36 +158,15 @@ internal static class NativeValue
                 var napiValue = From(kvp.Value);
                 if (napiValue == IntPtr.Zero) continue;
                 var utf8 = Encoding.UTF8.GetBytes(kvp.Key);
-                NativeNodeApi.napi_set_named_property(env, obj, utf8, napiValue);
+                NativeNodeApi.napi_set_named_property(env, obj, utf8, napiValue).ThrowIfFailed();
             }
             return obj;
         }
 
-        var isRecord = type.GetCustomAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute>() != null;
-
-        foreach (var prop in type.GetProperties())
-        {
-            var propValue = prop.GetValue(value);
-            if (propValue == null) continue;
-
-            var napiValue = From(propValue);
-            if (napiValue == IntPtr.Zero) continue;
-
-            var name = ToCamelCase(prop.Name);
-            var utf8 = Encoding.UTF8.GetBytes(name);
-            NativeNodeApi.napi_set_named_property(env, obj, utf8, napiValue);
-        }
-
-        return obj;
-    }
-
-    /// <summary>
-    /// 将 PascalCase 转换为 camelCase（JS 属性命名约定）
-    /// </summary>
-    private static string ToCamelCase(string name)
-    {
-        if (string.IsNullOrEmpty(name)) return name;
-        return char.ToLowerInvariant(name[0]) + name.Substring(1);
+        throw new NotSupportedException(
+            $"Type '{value.GetType().Name}' cannot be marshaled to a JS object. " +
+            "Records must implement INapiRecord (generated by the binding generator), " +
+            "or pass an IDictionary<string, object?>.");
     }
 
     /// <summary>
@@ -190,7 +175,7 @@ internal static class NativeValue
     public static bool ToBool(IntPtr value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_get_value_bool(env, value, out var result);
+        NativeNodeApi.napi_get_value_bool(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -200,7 +185,7 @@ internal static class NativeValue
     public static double ToDouble(IntPtr value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_get_value_double(env, value, out var result);
+        NativeNodeApi.napi_get_value_double(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -210,7 +195,7 @@ internal static class NativeValue
     public static int ToInt(IntPtr value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_get_value_int32(env, value, out var result);
+        NativeNodeApi.napi_get_value_int32(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -220,7 +205,7 @@ internal static class NativeValue
     public static uint ToUInt(IntPtr value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_get_value_uint32(env, value, out var result);
+        NativeNodeApi.napi_get_value_uint32(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -230,7 +215,7 @@ internal static class NativeValue
     public static long ToLong(IntPtr value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_get_value_int64(env, value, out var result);
+        NativeNodeApi.napi_get_value_int64(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
@@ -241,10 +226,10 @@ internal static class NativeValue
     {
         if (value == IntPtr.Zero) return null;
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_get_value_string_utf8(env, value, null, IntPtr.Zero, out var length);
+        NativeNodeApi.napi_get_value_string_utf8(env, value, null, IntPtr.Zero, out var length).ThrowIfFailed();
         if (length == IntPtr.Zero) return string.Empty;
         var buf = new byte[(int)length];
-        NativeNodeApi.napi_get_value_string_utf8(env, value, buf, (IntPtr)buf.Length, out length);
+        NativeNodeApi.napi_get_value_string_utf8(env, value, buf, (IntPtr)buf.Length, out length).ThrowIfFailed();
         return Encoding.UTF8.GetString(buf);
     }
 }

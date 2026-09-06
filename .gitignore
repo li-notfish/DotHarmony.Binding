@@ -36,3 +36,19 @@ UnityHarmony/
 # CodeGraph
 .codegraph/
 output/
+
+bin/
+obj/
+*.user
+
+# .NET 构建产物
+samples/dotnet/HelloApp/bin/
+samples/dotnet/HelloApp/obj/
+
+# HarmonyHost 构建产物
+samples/HarmonyHost/entry/build/
+samples/HarmonyHost/entry/.cxx/
+samples/HarmonyHost/.hvigor/
+
+# libapp.so 为远程 NativeAOT 构建产物（scripts/remote-build.sh 生成）
+samples/HarmonyHost/entry/libs/*/libapp.so

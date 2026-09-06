@@ -1,0 +1,7094 @@
+[
+  {
+    "component": "Text",
+    "member": "font",
+    "kind": "attribute",
+    "reason": "FONT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "font",
+    "kind": "attribute",
+    "reason": "FONT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "minFontSize",
+    "kind": "attribute",
+    "reason": "MIN_FONT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "maxFontSize",
+    "kind": "attribute",
+    "reason": "MAX_FONT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "minFontScale",
+    "kind": "attribute",
+    "reason": "MIN_FONT_SCALE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "maxFontScale",
+    "kind": "attribute",
+    "reason": "MAX_FONT_SCALE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "fontStyle",
+    "kind": "attribute",
+    "reason": "FONT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "fontWeight",
+    "kind": "attribute",
+    "reason": "FONT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "fontWeight",
+    "kind": "attribute",
+    "reason": "FONT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "lineSpacing",
+    "kind": "attribute",
+    "reason": "LINE_SPACING exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "lineSpacing",
+    "kind": "attribute",
+    "reason": "LINE_SPACING exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "textVerticalAlign",
+    "kind": "attribute",
+    "reason": "TEXT_VERTICAL_ALIGN exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "textContentAlign",
+    "kind": "attribute",
+    "reason": "TEXT_CONTENT_ALIGN exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "lineHeight",
+    "kind": "attribute",
+    "reason": "LINE_HEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "minLineHeight",
+    "kind": "attribute",
+    "reason": "MIN_LINE_HEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "maxLineHeight",
+    "kind": "attribute",
+    "reason": "MAX_LINE_HEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "lineHeightMultiple",
+    "kind": "attribute",
+    "reason": "LINE_HEIGHT_MULTIPLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "textOverflow",
+    "kind": "attribute",
+    "reason": "TEXT_OVERFLOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "fontFamily",
+    "kind": "attribute",
+    "reason": "FONT_FAMILY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "maxLines",
+    "kind": "attribute",
+    "reason": "MAX_LINES exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "minLines",
+    "kind": "attribute",
+    "reason": "MIN_LINES exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "decoration",
+    "kind": "attribute",
+    "reason": "DECORATION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "letterSpacing",
+    "kind": "attribute",
+    "reason": "LETTER_SPACING exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "textCase",
+    "kind": "attribute",
+    "reason": "TEXT_CASE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "baselineOffset",
+    "kind": "attribute",
+    "reason": "BASELINE_OFFSET exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "copyOption",
+    "kind": "attribute",
+    "reason": "COPY_OPTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "draggable",
+    "kind": "attribute",
+    "reason": "DRAGGABLE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "textShadow",
+    "kind": "attribute",
+    "reason": "TEXT_SHADOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "heightAdaptivePolicy",
+    "kind": "attribute",
+    "reason": "HEIGHT_ADAPTIVE_POLICY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "textIndent",
+    "kind": "attribute",
+    "reason": "TEXT_INDENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "tailIndents",
+    "kind": "attribute",
+    "reason": "TAIL_INDENTS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "wordBreak",
+    "kind": "attribute",
+    "reason": "WORD_BREAK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "lineBreakStrategy",
+    "kind": "attribute",
+    "reason": "LINE_BREAK_STRATEGY not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "selection",
+    "kind": "attribute",
+    "reason": "SELECTION not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "caretColor",
+    "kind": "attribute",
+    "reason": "CARET_COLOR not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "selectedBackgroundColor",
+    "kind": "attribute",
+    "reason": "SELECTED_BACKGROUND_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "shaderStyle",
+    "kind": "attribute",
+    "reason": "SHADER_STYLE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "ellipsisMode",
+    "kind": "attribute",
+    "reason": "ELLIPSIS_MODE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "enableDataDetector",
+    "kind": "attribute",
+    "reason": "ENABLE_DATA_DETECTOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "dataDetectorConfig",
+    "kind": "attribute",
+    "reason": "DATA_DETECTOR_CONFIG not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "enableSelectedDataDetector",
+    "kind": "attribute",
+    "reason": "ENABLE_SELECTED_DATA_DETECTOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "bindSelectionMenu",
+    "kind": "attribute",
+    "reason": "BIND_SELECTION_MENU exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "fontFeature",
+    "kind": "attribute",
+    "reason": "FONT_FEATURE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "marqueeOptions",
+    "kind": "attribute",
+    "reason": "MARQUEE_OPTIONS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "privacySensitive",
+    "kind": "attribute",
+    "reason": "PRIVACY_SENSITIVE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "textSelectable",
+    "kind": "attribute",
+    "reason": "TEXT_SELECTABLE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "editMenuOptions",
+    "kind": "attribute",
+    "reason": "EDIT_MENU_OPTIONS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "halfLeading",
+    "kind": "attribute",
+    "reason": "HALF_LEADING exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "enableHapticFeedback",
+    "kind": "attribute",
+    "reason": "ENABLE_HAPTIC_FEEDBACK not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "enableAutoSpacing",
+    "kind": "attribute",
+    "reason": "ENABLE_AUTO_SPACING not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "optimizeTrailingSpace",
+    "kind": "attribute",
+    "reason": "OPTIMIZE_TRAILING_SPACE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "contentTransition",
+    "kind": "attribute",
+    "reason": "CONTENT_TRANSITION not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "selectedDragPreviewStyle",
+    "kind": "attribute",
+    "reason": "SELECTED_DRAG_PREVIEW_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "textDirection",
+    "kind": "attribute",
+    "reason": "TEXT_DIRECTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "includeFontPadding",
+    "kind": "attribute",
+    "reason": "INCLUDE_FONT_PADDING exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "fallbackLineSpacing",
+    "kind": "attribute",
+    "reason": "FALLBACK_LINE_SPACING exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "compressLeadingPunctuation",
+    "kind": "attribute",
+    "reason": "COMPRESS_LEADING_PUNCTUATION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "orphanCharOptimization",
+    "kind": "attribute",
+    "reason": "ORPHAN_CHAR_OPTIMIZATION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "fontVariations",
+    "kind": "attribute",
+    "reason": "FONT_VARIATIONS not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "incrementalUpdatePolicy",
+    "kind": "attribute",
+    "reason": "INCREMENTAL_UPDATE_POLICY not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "punctuationOverflow",
+    "kind": "attribute",
+    "reason": "PUNCTUATION_OVERFLOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "drawModifier",
+    "kind": "attribute",
+    "reason": "DRAW_MODIFIER not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "customProperty",
+    "kind": "attribute",
+    "reason": "CUSTOM_PROPERTY not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "expandSafeArea",
+    "kind": "attribute",
+    "reason": "EXPAND_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "ignoreLayoutSafeArea",
+    "kind": "attribute",
+    "reason": "IGNORE_LAYOUT_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "responseRegion",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "mouseResponseRegion",
+    "kind": "attribute",
+    "reason": "MOUSE_RESPONSE_REGION not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "responseRegionList",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION_LIST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "size",
+    "kind": "attribute",
+    "reason": "SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "constraintSize",
+    "kind": "attribute",
+    "reason": "CONSTRAINT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "touchable",
+    "kind": "attribute",
+    "reason": "TOUCHABLE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "hitTestBehavior",
+    "kind": "attribute",
+    "reason": "HIT_TEST_BEHAVIOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "layoutWeight",
+    "kind": "attribute",
+    "reason": "LAYOUT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "chainWeight",
+    "kind": "attribute",
+    "reason": "CHAIN_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "safeAreaPadding",
+    "kind": "attribute",
+    "reason": "SAFE_AREA_PADDING not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "background",
+    "kind": "attribute",
+    "reason": "BACKGROUND not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "pixelRound",
+    "kind": "attribute",
+    "reason": "PIXEL_ROUND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "backgroundImage",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "backgroundImageSize",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "backgroundImagePosition",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "backgroundBlurStyle",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "backgroundEffect",
+    "kind": "attribute",
+    "reason": "BACKGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "backgroundImageResizable",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_RESIZABLE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "foregroundEffect",
+    "kind": "attribute",
+    "reason": "FOREGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "visualEffect",
+    "kind": "attribute",
+    "reason": "VISUAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "backgroundFilter",
+    "kind": "attribute",
+    "reason": "BACKGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "foregroundFilter",
+    "kind": "attribute",
+    "reason": "FOREGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "compositingFilter",
+    "kind": "attribute",
+    "reason": "COMPOSITING_FILTER not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "materialFilter",
+    "kind": "attribute",
+    "reason": "MATERIAL_FILTER not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "foregroundBlurStyle",
+    "kind": "attribute",
+    "reason": "FOREGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "border",
+    "kind": "attribute",
+    "reason": "BORDER not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "borderStyle",
+    "kind": "attribute",
+    "reason": "BORDER_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "borderWidth",
+    "kind": "attribute",
+    "reason": "BORDER_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "borderColor",
+    "kind": "attribute",
+    "reason": "BORDER_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "borderRadius",
+    "kind": "attribute",
+    "reason": "BORDER_RADIUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "borderImage",
+    "kind": "attribute",
+    "reason": "BORDER_IMAGE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "outline",
+    "kind": "attribute",
+    "reason": "OUTLINE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "outlineStyle",
+    "kind": "attribute",
+    "reason": "OUTLINE_STYLE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "outlineWidth",
+    "kind": "attribute",
+    "reason": "OUTLINE_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "outlineColor",
+    "kind": "attribute",
+    "reason": "OUTLINE_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "outlineRadius",
+    "kind": "attribute",
+    "reason": "OUTLINE_RADIUS not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "foregroundColor",
+    "kind": "attribute",
+    "reason": "FOREGROUND_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "hoverEffect",
+    "kind": "attribute",
+    "reason": "HOVER_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "focusable",
+    "kind": "attribute",
+    "reason": "FOCUSABLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "nextFocus",
+    "kind": "attribute",
+    "reason": "NEXT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "tabStop",
+    "kind": "attribute",
+    "reason": "TAB_STOP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "tabIndex",
+    "kind": "attribute",
+    "reason": "TAB_INDEX not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "defaultFocus",
+    "kind": "attribute",
+    "reason": "DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "groupDefaultFocus",
+    "kind": "attribute",
+    "reason": "GROUP_DEFAULT_FOCUS not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "focusOnTouch",
+    "kind": "attribute",
+    "reason": "FOCUS_ON_TOUCH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "focusBox",
+    "kind": "attribute",
+    "reason": "FOCUS_BOX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "focusScopeId",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "focusScopePriority",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "animation",
+    "kind": "attribute",
+    "reason": "ANIMATION not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "transition",
+    "kind": "attribute",
+    "reason": "TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "gesture",
+    "kind": "attribute",
+    "reason": "GESTURE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "priorityGesture",
+    "kind": "attribute",
+    "reason": "PRIORITY_GESTURE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "parallelGesture",
+    "kind": "attribute",
+    "reason": "PARALLEL_GESTURE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "blur",
+    "kind": "attribute",
+    "reason": "BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "linearGradientBlur",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT_BLUR not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "motionBlur",
+    "kind": "attribute",
+    "reason": "MOTION_BLUR not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "brightness",
+    "kind": "attribute",
+    "reason": "BRIGHTNESS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "contrast",
+    "kind": "attribute",
+    "reason": "CONTRAST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "grayscale",
+    "kind": "attribute",
+    "reason": "GRAYSCALE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "colorBlend",
+    "kind": "attribute",
+    "reason": "COLOR_BLEND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "saturate",
+    "kind": "attribute",
+    "reason": "SATURATE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "sepia",
+    "kind": "attribute",
+    "reason": "SEPIA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "invert",
+    "kind": "attribute",
+    "reason": "INVERT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "systemBarEffect",
+    "kind": "attribute",
+    "reason": "SYSTEM_BAR_EFFECT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "hueRotate",
+    "kind": "attribute",
+    "reason": "HUE_ROTATE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "useShadowBatching",
+    "kind": "attribute",
+    "reason": "USE_SHADOW_BATCHING not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "useEffect",
+    "kind": "attribute",
+    "reason": "USE_EFFECT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "backdropBlur",
+    "kind": "attribute",
+    "reason": "BACKDROP_BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "renderGroup",
+    "kind": "attribute",
+    "reason": "RENDER_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "freeze",
+    "kind": "attribute",
+    "reason": "FREEZE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "translate",
+    "kind": "attribute",
+    "reason": "TRANSLATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "scale",
+    "kind": "attribute",
+    "reason": "SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "gridSpan",
+    "kind": "attribute",
+    "reason": "GRID_SPAN not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "gridOffset",
+    "kind": "attribute",
+    "reason": "GRID_OFFSET not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "rotate",
+    "kind": "attribute",
+    "reason": "ROTATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "transform",
+    "kind": "attribute",
+    "reason": "TRANSFORM exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "transform3D",
+    "kind": "attribute",
+    "reason": "TRANSFORM3_D not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "flexGrow",
+    "kind": "attribute",
+    "reason": "FLEX_GROW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "flexShrink",
+    "kind": "attribute",
+    "reason": "FLEX_SHRINK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "flexBasis",
+    "kind": "attribute",
+    "reason": "FLEX_BASIS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "alignSelf",
+    "kind": "attribute",
+    "reason": "ALIGN_SELF exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "layoutGravity",
+    "kind": "attribute",
+    "reason": "LAYOUT_GRAVITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "displayPriority",
+    "kind": "attribute",
+    "reason": "DISPLAY_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "zIndex",
+    "kind": "attribute",
+    "reason": "Z_INDEX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "sharedTransition",
+    "kind": "attribute",
+    "reason": "SHARED_TRANSITION not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "direction",
+    "kind": "attribute",
+    "reason": "DIRECTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "position",
+    "kind": "attribute",
+    "reason": "POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "markAnchor",
+    "kind": "attribute",
+    "reason": "MARK_ANCHOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "offset",
+    "kind": "attribute",
+    "reason": "OFFSET exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "useSizeType",
+    "kind": "attribute",
+    "reason": "USE_SIZE_TYPE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "alignRules",
+    "kind": "attribute",
+    "reason": "ALIGN_RULES exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "chainMode",
+    "kind": "attribute",
+    "reason": "CHAIN_MODE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "aspectRatio",
+    "kind": "attribute",
+    "reason": "ASPECT_RATIO exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "clickEffect",
+    "kind": "attribute",
+    "reason": "CLICK_EFFECT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "enableClickSoundEffect",
+    "kind": "attribute",
+    "reason": "ENABLE_CLICK_SOUND_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "allowDrop",
+    "kind": "attribute",
+    "reason": "ALLOW_DROP not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "dragPreview",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "dragPreviewOptions",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW_OPTIONS not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "overlay",
+    "kind": "attribute",
+    "reason": "OVERLAY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "toolbar",
+    "kind": "attribute",
+    "reason": "TOOLBAR not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "linearGradient",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "sweepGradient",
+    "kind": "attribute",
+    "reason": "SWEEP_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "radialGradient",
+    "kind": "attribute",
+    "reason": "RADIAL_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "motionPath",
+    "kind": "attribute",
+    "reason": "MOTION_PATH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "shadow",
+    "kind": "attribute",
+    "reason": "SHADOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "blendMode",
+    "kind": "attribute",
+    "reason": "BLEND_MODE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "clip",
+    "kind": "attribute",
+    "reason": "CLIP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "clipShape",
+    "kind": "attribute",
+    "reason": "CLIP_SHAPE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "mask",
+    "kind": "attribute",
+    "reason": "MASK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "maskShape",
+    "kind": "attribute",
+    "reason": "MASK_SHAPE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "key",
+    "kind": "attribute",
+    "reason": "KEY not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "id",
+    "kind": "attribute",
+    "reason": "ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "geometryTransition",
+    "kind": "attribute",
+    "reason": "GEOMETRY_TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "bindTips",
+    "kind": "attribute",
+    "reason": "BIND_TIPS not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "bindPopup",
+    "kind": "attribute",
+    "reason": "BIND_POPUP not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "bindMenu",
+    "kind": "attribute",
+    "reason": "BIND_MENU not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "bindContextMenu",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "bindContextMenuByResponseType",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_RESPONSE_TYPE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "bindContextMenuWithResponse",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_WITH_RESPONSE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "bindContextMenuByIsShow",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_IS_SHOW not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "bindContentCover",
+    "kind": "attribute",
+    "reason": "BIND_CONTENT_COVER not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "bindSheet",
+    "kind": "attribute",
+    "reason": "BIND_SHEET not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "stateStyles",
+    "kind": "attribute",
+    "reason": "STATE_STYLES not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "restoreId",
+    "kind": "attribute",
+    "reason": "RESTORE_ID not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "sphericalEffect",
+    "kind": "attribute",
+    "reason": "SPHERICAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "lightUpEffect",
+    "kind": "attribute",
+    "reason": "LIGHT_UP_EFFECT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "pixelStretchEffect",
+    "kind": "attribute",
+    "reason": "PIXEL_STRETCH_EFFECT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "keyboardShortcut",
+    "kind": "attribute",
+    "reason": "KEYBOARD_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityGroup",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityText",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityNextFocusId",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_NEXT_FOCUS_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityDefaultFocus",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityUseSamePage",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_USE_SAME_PAGE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityScrollTriggerable",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SCROLL_TRIGGERABLE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityRole",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ROLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityTextHint",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT_HINT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DESCRIPTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_LEVEL not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityVirtualNode",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_VIRTUAL_NODE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityChecked",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CHECKED not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilitySelected",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SELECTED not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "obscured",
+    "kind": "attribute",
+    "reason": "OBSCURED not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "reuseId",
+    "kind": "attribute",
+    "reason": "REUSE_ID not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "reuse",
+    "kind": "attribute",
+    "reason": "REUSE not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "renderFit",
+    "kind": "attribute",
+    "reason": "RENDER_FIT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "attributeModifier",
+    "kind": "attribute",
+    "reason": "ATTRIBUTE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "gestureModifier",
+    "kind": "attribute",
+    "reason": "GESTURE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "backgroundBrightness",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BRIGHTNESS not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "shouldBuiltInRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_BUILT_IN_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "shouldRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "monopolizeEvents",
+    "kind": "attribute",
+    "reason": "MONOPOLIZE_EVENTS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityFocusDrawLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_FOCUS_DRAW_LEVEL not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "allowForceDark",
+    "kind": "attribute",
+    "reason": "ALLOW_FORCE_DARK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "systemMaterial",
+    "kind": "attribute",
+    "reason": "SYSTEM_MATERIAL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityStateDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_STATE_DESCRIPTION not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityActionOptions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ACTION_OPTIONS not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "accessibilityCustomActions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CUSTOM_ACTIONS not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "smartGestureShortcut",
+    "kind": "attribute",
+    "reason": "SMART_GESTURE_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "inspectorLabel",
+    "kind": "attribute",
+    "reason": "INSPECTOR_LABEL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Text",
+    "member": "doubleSided",
+    "kind": "attribute",
+    "reason": "DOUBLE_SIDED not present in C API"
+  },
+  {
+    "component": "Text",
+    "member": "onCopy",
+    "kind": "event",
+    "reason": "NODE_ON_COPY not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onWillCopy",
+    "kind": "event",
+    "reason": "NODE_ON_WILL_COPY not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onTextSelectionChange",
+    "kind": "event",
+    "reason": "NODE_ON_TEXT_SELECTION_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onMarqueeStateChange",
+    "kind": "event",
+    "reason": "NODE_ON_MARQUEE_STATE_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onAccessibilityHover",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onAccessibilityHoverTransparent",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER_TRANSPARENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onKeyEventDispatch",
+    "kind": "event",
+    "reason": "NODE_ON_KEY_EVENT_DISPATCH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onFocusAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_FOCUS_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onAppear",
+    "kind": "event",
+    "reason": "NODE_ON_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onDisAppear",
+    "kind": "event",
+    "reason": "NODE_ON_DIS_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onAttach",
+    "kind": "event",
+    "reason": "NODE_ON_ATTACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onDetach",
+    "kind": "event",
+    "reason": "NODE_ON_DETACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onVisibleAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onVisibleAreaApproximateChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_APPROXIMATE_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onAccessibilityFocus",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_FOCUS not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onAccessibilityActionIntercept",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_ACTION_INTERCEPT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onGestureJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onGestureRecognizerJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onTouchTestDone",
+    "kind": "event",
+    "reason": "NODE_ON_TOUCH_TEST_DONE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Text",
+    "member": "onDragSpringLoading",
+    "kind": "event",
+    "reason": "NODE_ON_DRAG_SPRING_LOADING not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "stateEffect",
+    "kind": "attribute",
+    "reason": "STATE_EFFECT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "buttonStyle",
+    "kind": "attribute",
+    "reason": "BUTTON_STYLE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "controlSize",
+    "kind": "attribute",
+    "reason": "CONTROL_SIZE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "role",
+    "kind": "attribute",
+    "reason": "ROLE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "fontWeight",
+    "kind": "attribute",
+    "reason": "FONT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "fontStyle",
+    "kind": "attribute",
+    "reason": "FONT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "fontFamily",
+    "kind": "attribute",
+    "reason": "FONT_FAMILY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "contentModifier",
+    "kind": "attribute",
+    "reason": "CONTENT_MODIFIER not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "labelStyle",
+    "kind": "attribute",
+    "reason": "LABEL_STYLE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "minFontScale",
+    "kind": "attribute",
+    "reason": "MIN_FONT_SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "maxFontScale",
+    "kind": "attribute",
+    "reason": "MAX_FONT_SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "drawModifier",
+    "kind": "attribute",
+    "reason": "DRAW_MODIFIER not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "customProperty",
+    "kind": "attribute",
+    "reason": "CUSTOM_PROPERTY not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "expandSafeArea",
+    "kind": "attribute",
+    "reason": "EXPAND_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "ignoreLayoutSafeArea",
+    "kind": "attribute",
+    "reason": "IGNORE_LAYOUT_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "responseRegion",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "mouseResponseRegion",
+    "kind": "attribute",
+    "reason": "MOUSE_RESPONSE_REGION not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "responseRegionList",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION_LIST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "size",
+    "kind": "attribute",
+    "reason": "SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "constraintSize",
+    "kind": "attribute",
+    "reason": "CONSTRAINT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "touchable",
+    "kind": "attribute",
+    "reason": "TOUCHABLE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "hitTestBehavior",
+    "kind": "attribute",
+    "reason": "HIT_TEST_BEHAVIOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "layoutWeight",
+    "kind": "attribute",
+    "reason": "LAYOUT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "chainWeight",
+    "kind": "attribute",
+    "reason": "CHAIN_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "safeAreaPadding",
+    "kind": "attribute",
+    "reason": "SAFE_AREA_PADDING not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "background",
+    "kind": "attribute",
+    "reason": "BACKGROUND not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "pixelRound",
+    "kind": "attribute",
+    "reason": "PIXEL_ROUND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "backgroundImage",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "backgroundImageSize",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "backgroundImagePosition",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "backgroundBlurStyle",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "backgroundEffect",
+    "kind": "attribute",
+    "reason": "BACKGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "backgroundImageResizable",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_RESIZABLE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "foregroundEffect",
+    "kind": "attribute",
+    "reason": "FOREGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "visualEffect",
+    "kind": "attribute",
+    "reason": "VISUAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "backgroundFilter",
+    "kind": "attribute",
+    "reason": "BACKGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "foregroundFilter",
+    "kind": "attribute",
+    "reason": "FOREGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "compositingFilter",
+    "kind": "attribute",
+    "reason": "COMPOSITING_FILTER not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "materialFilter",
+    "kind": "attribute",
+    "reason": "MATERIAL_FILTER not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "foregroundBlurStyle",
+    "kind": "attribute",
+    "reason": "FOREGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "border",
+    "kind": "attribute",
+    "reason": "BORDER not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "borderStyle",
+    "kind": "attribute",
+    "reason": "BORDER_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "borderWidth",
+    "kind": "attribute",
+    "reason": "BORDER_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "borderColor",
+    "kind": "attribute",
+    "reason": "BORDER_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "borderRadius",
+    "kind": "attribute",
+    "reason": "BORDER_RADIUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "borderImage",
+    "kind": "attribute",
+    "reason": "BORDER_IMAGE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "outline",
+    "kind": "attribute",
+    "reason": "OUTLINE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "outlineStyle",
+    "kind": "attribute",
+    "reason": "OUTLINE_STYLE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "outlineWidth",
+    "kind": "attribute",
+    "reason": "OUTLINE_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "outlineColor",
+    "kind": "attribute",
+    "reason": "OUTLINE_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "outlineRadius",
+    "kind": "attribute",
+    "reason": "OUTLINE_RADIUS not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "foregroundColor",
+    "kind": "attribute",
+    "reason": "FOREGROUND_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "hoverEffect",
+    "kind": "attribute",
+    "reason": "HOVER_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "focusable",
+    "kind": "attribute",
+    "reason": "FOCUSABLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "nextFocus",
+    "kind": "attribute",
+    "reason": "NEXT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "tabStop",
+    "kind": "attribute",
+    "reason": "TAB_STOP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "tabIndex",
+    "kind": "attribute",
+    "reason": "TAB_INDEX not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "defaultFocus",
+    "kind": "attribute",
+    "reason": "DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "groupDefaultFocus",
+    "kind": "attribute",
+    "reason": "GROUP_DEFAULT_FOCUS not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "focusOnTouch",
+    "kind": "attribute",
+    "reason": "FOCUS_ON_TOUCH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "focusBox",
+    "kind": "attribute",
+    "reason": "FOCUS_BOX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "focusScopeId",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "focusScopePriority",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "animation",
+    "kind": "attribute",
+    "reason": "ANIMATION not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "transition",
+    "kind": "attribute",
+    "reason": "TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "gesture",
+    "kind": "attribute",
+    "reason": "GESTURE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "priorityGesture",
+    "kind": "attribute",
+    "reason": "PRIORITY_GESTURE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "parallelGesture",
+    "kind": "attribute",
+    "reason": "PARALLEL_GESTURE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "blur",
+    "kind": "attribute",
+    "reason": "BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "linearGradientBlur",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT_BLUR not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "motionBlur",
+    "kind": "attribute",
+    "reason": "MOTION_BLUR not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "brightness",
+    "kind": "attribute",
+    "reason": "BRIGHTNESS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "contrast",
+    "kind": "attribute",
+    "reason": "CONTRAST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "grayscale",
+    "kind": "attribute",
+    "reason": "GRAYSCALE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "colorBlend",
+    "kind": "attribute",
+    "reason": "COLOR_BLEND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "saturate",
+    "kind": "attribute",
+    "reason": "SATURATE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "sepia",
+    "kind": "attribute",
+    "reason": "SEPIA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "invert",
+    "kind": "attribute",
+    "reason": "INVERT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "systemBarEffect",
+    "kind": "attribute",
+    "reason": "SYSTEM_BAR_EFFECT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "hueRotate",
+    "kind": "attribute",
+    "reason": "HUE_ROTATE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "useShadowBatching",
+    "kind": "attribute",
+    "reason": "USE_SHADOW_BATCHING not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "useEffect",
+    "kind": "attribute",
+    "reason": "USE_EFFECT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "backdropBlur",
+    "kind": "attribute",
+    "reason": "BACKDROP_BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "renderGroup",
+    "kind": "attribute",
+    "reason": "RENDER_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "freeze",
+    "kind": "attribute",
+    "reason": "FREEZE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "translate",
+    "kind": "attribute",
+    "reason": "TRANSLATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "scale",
+    "kind": "attribute",
+    "reason": "SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "gridSpan",
+    "kind": "attribute",
+    "reason": "GRID_SPAN not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "gridOffset",
+    "kind": "attribute",
+    "reason": "GRID_OFFSET not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "rotate",
+    "kind": "attribute",
+    "reason": "ROTATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "transform",
+    "kind": "attribute",
+    "reason": "TRANSFORM exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "transform3D",
+    "kind": "attribute",
+    "reason": "TRANSFORM3_D not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "flexGrow",
+    "kind": "attribute",
+    "reason": "FLEX_GROW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "flexShrink",
+    "kind": "attribute",
+    "reason": "FLEX_SHRINK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "flexBasis",
+    "kind": "attribute",
+    "reason": "FLEX_BASIS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "alignSelf",
+    "kind": "attribute",
+    "reason": "ALIGN_SELF exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "layoutGravity",
+    "kind": "attribute",
+    "reason": "LAYOUT_GRAVITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "displayPriority",
+    "kind": "attribute",
+    "reason": "DISPLAY_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "zIndex",
+    "kind": "attribute",
+    "reason": "Z_INDEX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "sharedTransition",
+    "kind": "attribute",
+    "reason": "SHARED_TRANSITION not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "direction",
+    "kind": "attribute",
+    "reason": "DIRECTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "align",
+    "kind": "attribute",
+    "reason": "ALIGN not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "position",
+    "kind": "attribute",
+    "reason": "POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "markAnchor",
+    "kind": "attribute",
+    "reason": "MARK_ANCHOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "offset",
+    "kind": "attribute",
+    "reason": "OFFSET exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "useSizeType",
+    "kind": "attribute",
+    "reason": "USE_SIZE_TYPE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "alignRules",
+    "kind": "attribute",
+    "reason": "ALIGN_RULES exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "chainMode",
+    "kind": "attribute",
+    "reason": "CHAIN_MODE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "aspectRatio",
+    "kind": "attribute",
+    "reason": "ASPECT_RATIO exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "clickEffect",
+    "kind": "attribute",
+    "reason": "CLICK_EFFECT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "enableClickSoundEffect",
+    "kind": "attribute",
+    "reason": "ENABLE_CLICK_SOUND_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "allowDrop",
+    "kind": "attribute",
+    "reason": "ALLOW_DROP not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "draggable",
+    "kind": "attribute",
+    "reason": "DRAGGABLE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "dragPreview",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "dragPreviewOptions",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW_OPTIONS not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "overlay",
+    "kind": "attribute",
+    "reason": "OVERLAY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "toolbar",
+    "kind": "attribute",
+    "reason": "TOOLBAR not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "linearGradient",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "sweepGradient",
+    "kind": "attribute",
+    "reason": "SWEEP_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "radialGradient",
+    "kind": "attribute",
+    "reason": "RADIAL_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "motionPath",
+    "kind": "attribute",
+    "reason": "MOTION_PATH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "shadow",
+    "kind": "attribute",
+    "reason": "SHADOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "blendMode",
+    "kind": "attribute",
+    "reason": "BLEND_MODE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "clip",
+    "kind": "attribute",
+    "reason": "CLIP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "clipShape",
+    "kind": "attribute",
+    "reason": "CLIP_SHAPE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "mask",
+    "kind": "attribute",
+    "reason": "MASK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "maskShape",
+    "kind": "attribute",
+    "reason": "MASK_SHAPE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "key",
+    "kind": "attribute",
+    "reason": "KEY not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "id",
+    "kind": "attribute",
+    "reason": "ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "geometryTransition",
+    "kind": "attribute",
+    "reason": "GEOMETRY_TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "bindTips",
+    "kind": "attribute",
+    "reason": "BIND_TIPS not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "bindPopup",
+    "kind": "attribute",
+    "reason": "BIND_POPUP not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "bindMenu",
+    "kind": "attribute",
+    "reason": "BIND_MENU not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "bindContextMenu",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "bindContextMenuByResponseType",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_RESPONSE_TYPE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "bindContextMenuWithResponse",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_WITH_RESPONSE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "bindContextMenuByIsShow",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_IS_SHOW not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "bindContentCover",
+    "kind": "attribute",
+    "reason": "BIND_CONTENT_COVER not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "bindSheet",
+    "kind": "attribute",
+    "reason": "BIND_SHEET not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "stateStyles",
+    "kind": "attribute",
+    "reason": "STATE_STYLES not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "restoreId",
+    "kind": "attribute",
+    "reason": "RESTORE_ID not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "sphericalEffect",
+    "kind": "attribute",
+    "reason": "SPHERICAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "lightUpEffect",
+    "kind": "attribute",
+    "reason": "LIGHT_UP_EFFECT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "pixelStretchEffect",
+    "kind": "attribute",
+    "reason": "PIXEL_STRETCH_EFFECT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "keyboardShortcut",
+    "kind": "attribute",
+    "reason": "KEYBOARD_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityGroup",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityText",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityNextFocusId",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_NEXT_FOCUS_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityDefaultFocus",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityUseSamePage",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_USE_SAME_PAGE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityScrollTriggerable",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SCROLL_TRIGGERABLE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityRole",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ROLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityTextHint",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT_HINT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DESCRIPTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_LEVEL not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityVirtualNode",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_VIRTUAL_NODE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityChecked",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CHECKED not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilitySelected",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SELECTED not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "obscured",
+    "kind": "attribute",
+    "reason": "OBSCURED not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "reuseId",
+    "kind": "attribute",
+    "reason": "REUSE_ID not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "reuse",
+    "kind": "attribute",
+    "reason": "REUSE not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "renderFit",
+    "kind": "attribute",
+    "reason": "RENDER_FIT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "attributeModifier",
+    "kind": "attribute",
+    "reason": "ATTRIBUTE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "gestureModifier",
+    "kind": "attribute",
+    "reason": "GESTURE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "backgroundBrightness",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BRIGHTNESS not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "shouldBuiltInRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_BUILT_IN_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "shouldRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "monopolizeEvents",
+    "kind": "attribute",
+    "reason": "MONOPOLIZE_EVENTS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityFocusDrawLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_FOCUS_DRAW_LEVEL not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "allowForceDark",
+    "kind": "attribute",
+    "reason": "ALLOW_FORCE_DARK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "systemMaterial",
+    "kind": "attribute",
+    "reason": "SYSTEM_MATERIAL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityStateDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_STATE_DESCRIPTION not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityActionOptions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ACTION_OPTIONS not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "accessibilityCustomActions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CUSTOM_ACTIONS not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "smartGestureShortcut",
+    "kind": "attribute",
+    "reason": "SMART_GESTURE_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "inspectorLabel",
+    "kind": "attribute",
+    "reason": "INSPECTOR_LABEL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Button",
+    "member": "doubleSided",
+    "kind": "attribute",
+    "reason": "DOUBLE_SIDED not present in C API"
+  },
+  {
+    "component": "Button",
+    "member": "onAccessibilityHover",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onAccessibilityHoverTransparent",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER_TRANSPARENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onKeyEventDispatch",
+    "kind": "event",
+    "reason": "NODE_ON_KEY_EVENT_DISPATCH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onFocusAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_FOCUS_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onAppear",
+    "kind": "event",
+    "reason": "NODE_ON_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onDisAppear",
+    "kind": "event",
+    "reason": "NODE_ON_DIS_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onAttach",
+    "kind": "event",
+    "reason": "NODE_ON_ATTACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onDetach",
+    "kind": "event",
+    "reason": "NODE_ON_DETACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onVisibleAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onVisibleAreaApproximateChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_APPROXIMATE_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onAccessibilityFocus",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_FOCUS not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onAccessibilityActionIntercept",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_ACTION_INTERCEPT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onGestureJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onGestureRecognizerJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onTouchTestDone",
+    "kind": "event",
+    "reason": "NODE_ON_TOUCH_TEST_DONE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Button",
+    "member": "onDragSpringLoading",
+    "kind": "event",
+    "reason": "NODE_ON_DRAG_SPRING_LOADING not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "reverse",
+    "kind": "attribute",
+    "reason": "REVERSE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "drawModifier",
+    "kind": "attribute",
+    "reason": "DRAW_MODIFIER not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "customProperty",
+    "kind": "attribute",
+    "reason": "CUSTOM_PROPERTY not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "expandSafeArea",
+    "kind": "attribute",
+    "reason": "EXPAND_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "ignoreLayoutSafeArea",
+    "kind": "attribute",
+    "reason": "IGNORE_LAYOUT_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "responseRegion",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "mouseResponseRegion",
+    "kind": "attribute",
+    "reason": "MOUSE_RESPONSE_REGION not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "responseRegionList",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION_LIST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "size",
+    "kind": "attribute",
+    "reason": "SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "constraintSize",
+    "kind": "attribute",
+    "reason": "CONSTRAINT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "touchable",
+    "kind": "attribute",
+    "reason": "TOUCHABLE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "hitTestBehavior",
+    "kind": "attribute",
+    "reason": "HIT_TEST_BEHAVIOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "layoutWeight",
+    "kind": "attribute",
+    "reason": "LAYOUT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "chainWeight",
+    "kind": "attribute",
+    "reason": "CHAIN_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "safeAreaPadding",
+    "kind": "attribute",
+    "reason": "SAFE_AREA_PADDING not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "background",
+    "kind": "attribute",
+    "reason": "BACKGROUND not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "pixelRound",
+    "kind": "attribute",
+    "reason": "PIXEL_ROUND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "backgroundImage",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "backgroundImageSize",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "backgroundImagePosition",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "backgroundBlurStyle",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "backgroundEffect",
+    "kind": "attribute",
+    "reason": "BACKGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "backgroundImageResizable",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_RESIZABLE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "foregroundEffect",
+    "kind": "attribute",
+    "reason": "FOREGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "visualEffect",
+    "kind": "attribute",
+    "reason": "VISUAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "backgroundFilter",
+    "kind": "attribute",
+    "reason": "BACKGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "foregroundFilter",
+    "kind": "attribute",
+    "reason": "FOREGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "compositingFilter",
+    "kind": "attribute",
+    "reason": "COMPOSITING_FILTER not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "materialFilter",
+    "kind": "attribute",
+    "reason": "MATERIAL_FILTER not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "foregroundBlurStyle",
+    "kind": "attribute",
+    "reason": "FOREGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "border",
+    "kind": "attribute",
+    "reason": "BORDER not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "borderStyle",
+    "kind": "attribute",
+    "reason": "BORDER_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "borderWidth",
+    "kind": "attribute",
+    "reason": "BORDER_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "borderColor",
+    "kind": "attribute",
+    "reason": "BORDER_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "borderRadius",
+    "kind": "attribute",
+    "reason": "BORDER_RADIUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "borderImage",
+    "kind": "attribute",
+    "reason": "BORDER_IMAGE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "outline",
+    "kind": "attribute",
+    "reason": "OUTLINE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "outlineStyle",
+    "kind": "attribute",
+    "reason": "OUTLINE_STYLE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "outlineWidth",
+    "kind": "attribute",
+    "reason": "OUTLINE_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "outlineColor",
+    "kind": "attribute",
+    "reason": "OUTLINE_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "outlineRadius",
+    "kind": "attribute",
+    "reason": "OUTLINE_RADIUS not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "foregroundColor",
+    "kind": "attribute",
+    "reason": "FOREGROUND_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "hoverEffect",
+    "kind": "attribute",
+    "reason": "HOVER_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "focusable",
+    "kind": "attribute",
+    "reason": "FOCUSABLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "nextFocus",
+    "kind": "attribute",
+    "reason": "NEXT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "tabStop",
+    "kind": "attribute",
+    "reason": "TAB_STOP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "tabIndex",
+    "kind": "attribute",
+    "reason": "TAB_INDEX not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "defaultFocus",
+    "kind": "attribute",
+    "reason": "DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "groupDefaultFocus",
+    "kind": "attribute",
+    "reason": "GROUP_DEFAULT_FOCUS not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "focusOnTouch",
+    "kind": "attribute",
+    "reason": "FOCUS_ON_TOUCH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "focusBox",
+    "kind": "attribute",
+    "reason": "FOCUS_BOX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "focusScopeId",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "focusScopePriority",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "animation",
+    "kind": "attribute",
+    "reason": "ANIMATION not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "transition",
+    "kind": "attribute",
+    "reason": "TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "gesture",
+    "kind": "attribute",
+    "reason": "GESTURE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "priorityGesture",
+    "kind": "attribute",
+    "reason": "PRIORITY_GESTURE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "parallelGesture",
+    "kind": "attribute",
+    "reason": "PARALLEL_GESTURE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "blur",
+    "kind": "attribute",
+    "reason": "BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "linearGradientBlur",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT_BLUR not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "motionBlur",
+    "kind": "attribute",
+    "reason": "MOTION_BLUR not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "brightness",
+    "kind": "attribute",
+    "reason": "BRIGHTNESS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "contrast",
+    "kind": "attribute",
+    "reason": "CONTRAST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "grayscale",
+    "kind": "attribute",
+    "reason": "GRAYSCALE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "colorBlend",
+    "kind": "attribute",
+    "reason": "COLOR_BLEND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "saturate",
+    "kind": "attribute",
+    "reason": "SATURATE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "sepia",
+    "kind": "attribute",
+    "reason": "SEPIA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "invert",
+    "kind": "attribute",
+    "reason": "INVERT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "systemBarEffect",
+    "kind": "attribute",
+    "reason": "SYSTEM_BAR_EFFECT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "hueRotate",
+    "kind": "attribute",
+    "reason": "HUE_ROTATE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "useShadowBatching",
+    "kind": "attribute",
+    "reason": "USE_SHADOW_BATCHING not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "useEffect",
+    "kind": "attribute",
+    "reason": "USE_EFFECT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "backdropBlur",
+    "kind": "attribute",
+    "reason": "BACKDROP_BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "renderGroup",
+    "kind": "attribute",
+    "reason": "RENDER_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "freeze",
+    "kind": "attribute",
+    "reason": "FREEZE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "translate",
+    "kind": "attribute",
+    "reason": "TRANSLATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "scale",
+    "kind": "attribute",
+    "reason": "SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "gridSpan",
+    "kind": "attribute",
+    "reason": "GRID_SPAN not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "gridOffset",
+    "kind": "attribute",
+    "reason": "GRID_OFFSET not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "rotate",
+    "kind": "attribute",
+    "reason": "ROTATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "transform",
+    "kind": "attribute",
+    "reason": "TRANSFORM exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "transform3D",
+    "kind": "attribute",
+    "reason": "TRANSFORM3_D not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "flexGrow",
+    "kind": "attribute",
+    "reason": "FLEX_GROW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "flexShrink",
+    "kind": "attribute",
+    "reason": "FLEX_SHRINK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "flexBasis",
+    "kind": "attribute",
+    "reason": "FLEX_BASIS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "alignSelf",
+    "kind": "attribute",
+    "reason": "ALIGN_SELF exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "layoutGravity",
+    "kind": "attribute",
+    "reason": "LAYOUT_GRAVITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "displayPriority",
+    "kind": "attribute",
+    "reason": "DISPLAY_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "zIndex",
+    "kind": "attribute",
+    "reason": "Z_INDEX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "sharedTransition",
+    "kind": "attribute",
+    "reason": "SHARED_TRANSITION not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "direction",
+    "kind": "attribute",
+    "reason": "DIRECTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "align",
+    "kind": "attribute",
+    "reason": "ALIGN not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "position",
+    "kind": "attribute",
+    "reason": "POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "markAnchor",
+    "kind": "attribute",
+    "reason": "MARK_ANCHOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "offset",
+    "kind": "attribute",
+    "reason": "OFFSET exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "useSizeType",
+    "kind": "attribute",
+    "reason": "USE_SIZE_TYPE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "alignRules",
+    "kind": "attribute",
+    "reason": "ALIGN_RULES exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "chainMode",
+    "kind": "attribute",
+    "reason": "CHAIN_MODE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "aspectRatio",
+    "kind": "attribute",
+    "reason": "ASPECT_RATIO exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "clickEffect",
+    "kind": "attribute",
+    "reason": "CLICK_EFFECT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "enableClickSoundEffect",
+    "kind": "attribute",
+    "reason": "ENABLE_CLICK_SOUND_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "allowDrop",
+    "kind": "attribute",
+    "reason": "ALLOW_DROP not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "draggable",
+    "kind": "attribute",
+    "reason": "DRAGGABLE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "dragPreview",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "dragPreviewOptions",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW_OPTIONS not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "overlay",
+    "kind": "attribute",
+    "reason": "OVERLAY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "toolbar",
+    "kind": "attribute",
+    "reason": "TOOLBAR not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "linearGradient",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "sweepGradient",
+    "kind": "attribute",
+    "reason": "SWEEP_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "radialGradient",
+    "kind": "attribute",
+    "reason": "RADIAL_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "motionPath",
+    "kind": "attribute",
+    "reason": "MOTION_PATH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "shadow",
+    "kind": "attribute",
+    "reason": "SHADOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "blendMode",
+    "kind": "attribute",
+    "reason": "BLEND_MODE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "clip",
+    "kind": "attribute",
+    "reason": "CLIP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "clipShape",
+    "kind": "attribute",
+    "reason": "CLIP_SHAPE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "mask",
+    "kind": "attribute",
+    "reason": "MASK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "maskShape",
+    "kind": "attribute",
+    "reason": "MASK_SHAPE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "key",
+    "kind": "attribute",
+    "reason": "KEY not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "id",
+    "kind": "attribute",
+    "reason": "ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "geometryTransition",
+    "kind": "attribute",
+    "reason": "GEOMETRY_TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "bindTips",
+    "kind": "attribute",
+    "reason": "BIND_TIPS not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "bindPopup",
+    "kind": "attribute",
+    "reason": "BIND_POPUP not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "bindMenu",
+    "kind": "attribute",
+    "reason": "BIND_MENU not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "bindContextMenu",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "bindContextMenuByResponseType",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_RESPONSE_TYPE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "bindContextMenuWithResponse",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_WITH_RESPONSE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "bindContextMenuByIsShow",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_IS_SHOW not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "bindContentCover",
+    "kind": "attribute",
+    "reason": "BIND_CONTENT_COVER not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "bindSheet",
+    "kind": "attribute",
+    "reason": "BIND_SHEET not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "stateStyles",
+    "kind": "attribute",
+    "reason": "STATE_STYLES not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "restoreId",
+    "kind": "attribute",
+    "reason": "RESTORE_ID not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "sphericalEffect",
+    "kind": "attribute",
+    "reason": "SPHERICAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "lightUpEffect",
+    "kind": "attribute",
+    "reason": "LIGHT_UP_EFFECT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "pixelStretchEffect",
+    "kind": "attribute",
+    "reason": "PIXEL_STRETCH_EFFECT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "keyboardShortcut",
+    "kind": "attribute",
+    "reason": "KEYBOARD_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityGroup",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityText",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityNextFocusId",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_NEXT_FOCUS_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityDefaultFocus",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityUseSamePage",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_USE_SAME_PAGE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityScrollTriggerable",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SCROLL_TRIGGERABLE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityRole",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ROLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityTextHint",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT_HINT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DESCRIPTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_LEVEL not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityVirtualNode",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_VIRTUAL_NODE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityChecked",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CHECKED not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilitySelected",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SELECTED not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "obscured",
+    "kind": "attribute",
+    "reason": "OBSCURED not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "reuseId",
+    "kind": "attribute",
+    "reason": "REUSE_ID not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "reuse",
+    "kind": "attribute",
+    "reason": "REUSE not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "renderFit",
+    "kind": "attribute",
+    "reason": "RENDER_FIT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "attributeModifier",
+    "kind": "attribute",
+    "reason": "ATTRIBUTE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "gestureModifier",
+    "kind": "attribute",
+    "reason": "GESTURE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "backgroundBrightness",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BRIGHTNESS not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "shouldBuiltInRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_BUILT_IN_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "shouldRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "monopolizeEvents",
+    "kind": "attribute",
+    "reason": "MONOPOLIZE_EVENTS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityFocusDrawLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_FOCUS_DRAW_LEVEL not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "allowForceDark",
+    "kind": "attribute",
+    "reason": "ALLOW_FORCE_DARK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "systemMaterial",
+    "kind": "attribute",
+    "reason": "SYSTEM_MATERIAL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityStateDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_STATE_DESCRIPTION not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityActionOptions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ACTION_OPTIONS not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "accessibilityCustomActions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CUSTOM_ACTIONS not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "smartGestureShortcut",
+    "kind": "attribute",
+    "reason": "SMART_GESTURE_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "inspectorLabel",
+    "kind": "attribute",
+    "reason": "INSPECTOR_LABEL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Column",
+    "member": "doubleSided",
+    "kind": "attribute",
+    "reason": "DOUBLE_SIDED not present in C API"
+  },
+  {
+    "component": "Column",
+    "member": "onAccessibilityHover",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onAccessibilityHoverTransparent",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER_TRANSPARENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onKeyEventDispatch",
+    "kind": "event",
+    "reason": "NODE_ON_KEY_EVENT_DISPATCH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onFocusAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_FOCUS_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onAppear",
+    "kind": "event",
+    "reason": "NODE_ON_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onDisAppear",
+    "kind": "event",
+    "reason": "NODE_ON_DIS_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onAttach",
+    "kind": "event",
+    "reason": "NODE_ON_ATTACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onDetach",
+    "kind": "event",
+    "reason": "NODE_ON_DETACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onVisibleAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onVisibleAreaApproximateChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_APPROXIMATE_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onAccessibilityFocus",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_FOCUS not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onAccessibilityActionIntercept",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_ACTION_INTERCEPT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onGestureJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onGestureRecognizerJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onTouchTestDone",
+    "kind": "event",
+    "reason": "NODE_ON_TOUCH_TEST_DONE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Column",
+    "member": "onDragSpringLoading",
+    "kind": "event",
+    "reason": "NODE_ON_DRAG_SPRING_LOADING not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "reverse",
+    "kind": "attribute",
+    "reason": "REVERSE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "drawModifier",
+    "kind": "attribute",
+    "reason": "DRAW_MODIFIER not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "customProperty",
+    "kind": "attribute",
+    "reason": "CUSTOM_PROPERTY not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "expandSafeArea",
+    "kind": "attribute",
+    "reason": "EXPAND_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "ignoreLayoutSafeArea",
+    "kind": "attribute",
+    "reason": "IGNORE_LAYOUT_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "responseRegion",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "mouseResponseRegion",
+    "kind": "attribute",
+    "reason": "MOUSE_RESPONSE_REGION not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "responseRegionList",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION_LIST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "size",
+    "kind": "attribute",
+    "reason": "SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "constraintSize",
+    "kind": "attribute",
+    "reason": "CONSTRAINT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "touchable",
+    "kind": "attribute",
+    "reason": "TOUCHABLE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "hitTestBehavior",
+    "kind": "attribute",
+    "reason": "HIT_TEST_BEHAVIOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "layoutWeight",
+    "kind": "attribute",
+    "reason": "LAYOUT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "chainWeight",
+    "kind": "attribute",
+    "reason": "CHAIN_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "safeAreaPadding",
+    "kind": "attribute",
+    "reason": "SAFE_AREA_PADDING not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "background",
+    "kind": "attribute",
+    "reason": "BACKGROUND not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "pixelRound",
+    "kind": "attribute",
+    "reason": "PIXEL_ROUND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "backgroundImage",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "backgroundImageSize",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "backgroundImagePosition",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "backgroundBlurStyle",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "backgroundEffect",
+    "kind": "attribute",
+    "reason": "BACKGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "backgroundImageResizable",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_RESIZABLE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "foregroundEffect",
+    "kind": "attribute",
+    "reason": "FOREGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "visualEffect",
+    "kind": "attribute",
+    "reason": "VISUAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "backgroundFilter",
+    "kind": "attribute",
+    "reason": "BACKGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "foregroundFilter",
+    "kind": "attribute",
+    "reason": "FOREGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "compositingFilter",
+    "kind": "attribute",
+    "reason": "COMPOSITING_FILTER not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "materialFilter",
+    "kind": "attribute",
+    "reason": "MATERIAL_FILTER not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "foregroundBlurStyle",
+    "kind": "attribute",
+    "reason": "FOREGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "border",
+    "kind": "attribute",
+    "reason": "BORDER not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "borderStyle",
+    "kind": "attribute",
+    "reason": "BORDER_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "borderWidth",
+    "kind": "attribute",
+    "reason": "BORDER_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "borderColor",
+    "kind": "attribute",
+    "reason": "BORDER_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "borderRadius",
+    "kind": "attribute",
+    "reason": "BORDER_RADIUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "borderImage",
+    "kind": "attribute",
+    "reason": "BORDER_IMAGE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "outline",
+    "kind": "attribute",
+    "reason": "OUTLINE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "outlineStyle",
+    "kind": "attribute",
+    "reason": "OUTLINE_STYLE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "outlineWidth",
+    "kind": "attribute",
+    "reason": "OUTLINE_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "outlineColor",
+    "kind": "attribute",
+    "reason": "OUTLINE_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "outlineRadius",
+    "kind": "attribute",
+    "reason": "OUTLINE_RADIUS not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "foregroundColor",
+    "kind": "attribute",
+    "reason": "FOREGROUND_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "hoverEffect",
+    "kind": "attribute",
+    "reason": "HOVER_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "focusable",
+    "kind": "attribute",
+    "reason": "FOCUSABLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "nextFocus",
+    "kind": "attribute",
+    "reason": "NEXT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "tabStop",
+    "kind": "attribute",
+    "reason": "TAB_STOP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "tabIndex",
+    "kind": "attribute",
+    "reason": "TAB_INDEX not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "defaultFocus",
+    "kind": "attribute",
+    "reason": "DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "groupDefaultFocus",
+    "kind": "attribute",
+    "reason": "GROUP_DEFAULT_FOCUS not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "focusOnTouch",
+    "kind": "attribute",
+    "reason": "FOCUS_ON_TOUCH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "focusBox",
+    "kind": "attribute",
+    "reason": "FOCUS_BOX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "focusScopeId",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "focusScopePriority",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "animation",
+    "kind": "attribute",
+    "reason": "ANIMATION not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "transition",
+    "kind": "attribute",
+    "reason": "TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "gesture",
+    "kind": "attribute",
+    "reason": "GESTURE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "priorityGesture",
+    "kind": "attribute",
+    "reason": "PRIORITY_GESTURE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "parallelGesture",
+    "kind": "attribute",
+    "reason": "PARALLEL_GESTURE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "blur",
+    "kind": "attribute",
+    "reason": "BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "linearGradientBlur",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT_BLUR not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "motionBlur",
+    "kind": "attribute",
+    "reason": "MOTION_BLUR not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "brightness",
+    "kind": "attribute",
+    "reason": "BRIGHTNESS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "contrast",
+    "kind": "attribute",
+    "reason": "CONTRAST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "grayscale",
+    "kind": "attribute",
+    "reason": "GRAYSCALE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "colorBlend",
+    "kind": "attribute",
+    "reason": "COLOR_BLEND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "saturate",
+    "kind": "attribute",
+    "reason": "SATURATE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "sepia",
+    "kind": "attribute",
+    "reason": "SEPIA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "invert",
+    "kind": "attribute",
+    "reason": "INVERT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "systemBarEffect",
+    "kind": "attribute",
+    "reason": "SYSTEM_BAR_EFFECT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "hueRotate",
+    "kind": "attribute",
+    "reason": "HUE_ROTATE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "useShadowBatching",
+    "kind": "attribute",
+    "reason": "USE_SHADOW_BATCHING not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "useEffect",
+    "kind": "attribute",
+    "reason": "USE_EFFECT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "backdropBlur",
+    "kind": "attribute",
+    "reason": "BACKDROP_BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "renderGroup",
+    "kind": "attribute",
+    "reason": "RENDER_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "freeze",
+    "kind": "attribute",
+    "reason": "FREEZE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "translate",
+    "kind": "attribute",
+    "reason": "TRANSLATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "scale",
+    "kind": "attribute",
+    "reason": "SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "gridSpan",
+    "kind": "attribute",
+    "reason": "GRID_SPAN not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "gridOffset",
+    "kind": "attribute",
+    "reason": "GRID_OFFSET not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "rotate",
+    "kind": "attribute",
+    "reason": "ROTATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "transform",
+    "kind": "attribute",
+    "reason": "TRANSFORM exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "transform3D",
+    "kind": "attribute",
+    "reason": "TRANSFORM3_D not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "flexGrow",
+    "kind": "attribute",
+    "reason": "FLEX_GROW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "flexShrink",
+    "kind": "attribute",
+    "reason": "FLEX_SHRINK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "flexBasis",
+    "kind": "attribute",
+    "reason": "FLEX_BASIS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "alignSelf",
+    "kind": "attribute",
+    "reason": "ALIGN_SELF exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "layoutGravity",
+    "kind": "attribute",
+    "reason": "LAYOUT_GRAVITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "displayPriority",
+    "kind": "attribute",
+    "reason": "DISPLAY_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "zIndex",
+    "kind": "attribute",
+    "reason": "Z_INDEX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "sharedTransition",
+    "kind": "attribute",
+    "reason": "SHARED_TRANSITION not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "direction",
+    "kind": "attribute",
+    "reason": "DIRECTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "align",
+    "kind": "attribute",
+    "reason": "ALIGN not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "position",
+    "kind": "attribute",
+    "reason": "POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "markAnchor",
+    "kind": "attribute",
+    "reason": "MARK_ANCHOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "offset",
+    "kind": "attribute",
+    "reason": "OFFSET exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "useSizeType",
+    "kind": "attribute",
+    "reason": "USE_SIZE_TYPE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "alignRules",
+    "kind": "attribute",
+    "reason": "ALIGN_RULES exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "chainMode",
+    "kind": "attribute",
+    "reason": "CHAIN_MODE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "aspectRatio",
+    "kind": "attribute",
+    "reason": "ASPECT_RATIO exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "clickEffect",
+    "kind": "attribute",
+    "reason": "CLICK_EFFECT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "enableClickSoundEffect",
+    "kind": "attribute",
+    "reason": "ENABLE_CLICK_SOUND_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "allowDrop",
+    "kind": "attribute",
+    "reason": "ALLOW_DROP not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "draggable",
+    "kind": "attribute",
+    "reason": "DRAGGABLE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "dragPreview",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "dragPreviewOptions",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW_OPTIONS not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "overlay",
+    "kind": "attribute",
+    "reason": "OVERLAY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "toolbar",
+    "kind": "attribute",
+    "reason": "TOOLBAR not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "linearGradient",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "sweepGradient",
+    "kind": "attribute",
+    "reason": "SWEEP_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "radialGradient",
+    "kind": "attribute",
+    "reason": "RADIAL_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "motionPath",
+    "kind": "attribute",
+    "reason": "MOTION_PATH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "shadow",
+    "kind": "attribute",
+    "reason": "SHADOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "blendMode",
+    "kind": "attribute",
+    "reason": "BLEND_MODE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "clip",
+    "kind": "attribute",
+    "reason": "CLIP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "clipShape",
+    "kind": "attribute",
+    "reason": "CLIP_SHAPE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "mask",
+    "kind": "attribute",
+    "reason": "MASK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "maskShape",
+    "kind": "attribute",
+    "reason": "MASK_SHAPE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "key",
+    "kind": "attribute",
+    "reason": "KEY not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "id",
+    "kind": "attribute",
+    "reason": "ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "geometryTransition",
+    "kind": "attribute",
+    "reason": "GEOMETRY_TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "bindTips",
+    "kind": "attribute",
+    "reason": "BIND_TIPS not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "bindPopup",
+    "kind": "attribute",
+    "reason": "BIND_POPUP not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "bindMenu",
+    "kind": "attribute",
+    "reason": "BIND_MENU not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "bindContextMenu",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "bindContextMenuByResponseType",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_RESPONSE_TYPE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "bindContextMenuWithResponse",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_WITH_RESPONSE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "bindContextMenuByIsShow",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_IS_SHOW not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "bindContentCover",
+    "kind": "attribute",
+    "reason": "BIND_CONTENT_COVER not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "bindSheet",
+    "kind": "attribute",
+    "reason": "BIND_SHEET not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "stateStyles",
+    "kind": "attribute",
+    "reason": "STATE_STYLES not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "restoreId",
+    "kind": "attribute",
+    "reason": "RESTORE_ID not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "sphericalEffect",
+    "kind": "attribute",
+    "reason": "SPHERICAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "lightUpEffect",
+    "kind": "attribute",
+    "reason": "LIGHT_UP_EFFECT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "pixelStretchEffect",
+    "kind": "attribute",
+    "reason": "PIXEL_STRETCH_EFFECT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "keyboardShortcut",
+    "kind": "attribute",
+    "reason": "KEYBOARD_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityGroup",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityText",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityNextFocusId",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_NEXT_FOCUS_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityDefaultFocus",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityUseSamePage",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_USE_SAME_PAGE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityScrollTriggerable",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SCROLL_TRIGGERABLE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityRole",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ROLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityTextHint",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT_HINT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DESCRIPTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_LEVEL not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityVirtualNode",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_VIRTUAL_NODE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityChecked",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CHECKED not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilitySelected",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SELECTED not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "obscured",
+    "kind": "attribute",
+    "reason": "OBSCURED not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "reuseId",
+    "kind": "attribute",
+    "reason": "REUSE_ID not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "reuse",
+    "kind": "attribute",
+    "reason": "REUSE not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "renderFit",
+    "kind": "attribute",
+    "reason": "RENDER_FIT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "attributeModifier",
+    "kind": "attribute",
+    "reason": "ATTRIBUTE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "gestureModifier",
+    "kind": "attribute",
+    "reason": "GESTURE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "backgroundBrightness",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BRIGHTNESS not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "shouldBuiltInRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_BUILT_IN_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "shouldRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "monopolizeEvents",
+    "kind": "attribute",
+    "reason": "MONOPOLIZE_EVENTS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityFocusDrawLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_FOCUS_DRAW_LEVEL not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "allowForceDark",
+    "kind": "attribute",
+    "reason": "ALLOW_FORCE_DARK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "systemMaterial",
+    "kind": "attribute",
+    "reason": "SYSTEM_MATERIAL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityStateDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_STATE_DESCRIPTION not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityActionOptions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ACTION_OPTIONS not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "accessibilityCustomActions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CUSTOM_ACTIONS not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "smartGestureShortcut",
+    "kind": "attribute",
+    "reason": "SMART_GESTURE_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "inspectorLabel",
+    "kind": "attribute",
+    "reason": "INSPECTOR_LABEL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Row",
+    "member": "doubleSided",
+    "kind": "attribute",
+    "reason": "DOUBLE_SIDED not present in C API"
+  },
+  {
+    "component": "Row",
+    "member": "onAccessibilityHover",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onAccessibilityHoverTransparent",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER_TRANSPARENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onKeyEventDispatch",
+    "kind": "event",
+    "reason": "NODE_ON_KEY_EVENT_DISPATCH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onFocusAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_FOCUS_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onAppear",
+    "kind": "event",
+    "reason": "NODE_ON_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onDisAppear",
+    "kind": "event",
+    "reason": "NODE_ON_DIS_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onAttach",
+    "kind": "event",
+    "reason": "NODE_ON_ATTACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onDetach",
+    "kind": "event",
+    "reason": "NODE_ON_DETACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onVisibleAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onVisibleAreaApproximateChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_APPROXIMATE_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onAccessibilityFocus",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_FOCUS not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onAccessibilityActionIntercept",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_ACTION_INTERCEPT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onGestureJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onGestureRecognizerJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onTouchTestDone",
+    "kind": "event",
+    "reason": "NODE_ON_TOUCH_TEST_DONE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Row",
+    "member": "onDragSpringLoading",
+    "kind": "event",
+    "reason": "NODE_ON_DRAG_SPRING_LOADING not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "alignContent",
+    "kind": "attribute",
+    "reason": "ALIGN_CONTENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "syncLoad",
+    "kind": "attribute",
+    "reason": "SYNC_LOAD not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "drawModifier",
+    "kind": "attribute",
+    "reason": "DRAW_MODIFIER not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "customProperty",
+    "kind": "attribute",
+    "reason": "CUSTOM_PROPERTY not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "expandSafeArea",
+    "kind": "attribute",
+    "reason": "EXPAND_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "ignoreLayoutSafeArea",
+    "kind": "attribute",
+    "reason": "IGNORE_LAYOUT_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "responseRegion",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "mouseResponseRegion",
+    "kind": "attribute",
+    "reason": "MOUSE_RESPONSE_REGION not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "responseRegionList",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION_LIST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "size",
+    "kind": "attribute",
+    "reason": "SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "constraintSize",
+    "kind": "attribute",
+    "reason": "CONSTRAINT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "touchable",
+    "kind": "attribute",
+    "reason": "TOUCHABLE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "hitTestBehavior",
+    "kind": "attribute",
+    "reason": "HIT_TEST_BEHAVIOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "layoutWeight",
+    "kind": "attribute",
+    "reason": "LAYOUT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "chainWeight",
+    "kind": "attribute",
+    "reason": "CHAIN_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "safeAreaPadding",
+    "kind": "attribute",
+    "reason": "SAFE_AREA_PADDING not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "background",
+    "kind": "attribute",
+    "reason": "BACKGROUND not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "pixelRound",
+    "kind": "attribute",
+    "reason": "PIXEL_ROUND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "backgroundImage",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "backgroundImageSize",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "backgroundImagePosition",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "backgroundBlurStyle",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "backgroundEffect",
+    "kind": "attribute",
+    "reason": "BACKGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "backgroundImageResizable",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_RESIZABLE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "foregroundEffect",
+    "kind": "attribute",
+    "reason": "FOREGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "visualEffect",
+    "kind": "attribute",
+    "reason": "VISUAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "backgroundFilter",
+    "kind": "attribute",
+    "reason": "BACKGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "foregroundFilter",
+    "kind": "attribute",
+    "reason": "FOREGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "compositingFilter",
+    "kind": "attribute",
+    "reason": "COMPOSITING_FILTER not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "materialFilter",
+    "kind": "attribute",
+    "reason": "MATERIAL_FILTER not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "foregroundBlurStyle",
+    "kind": "attribute",
+    "reason": "FOREGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "border",
+    "kind": "attribute",
+    "reason": "BORDER not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "borderStyle",
+    "kind": "attribute",
+    "reason": "BORDER_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "borderWidth",
+    "kind": "attribute",
+    "reason": "BORDER_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "borderColor",
+    "kind": "attribute",
+    "reason": "BORDER_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "borderRadius",
+    "kind": "attribute",
+    "reason": "BORDER_RADIUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "borderImage",
+    "kind": "attribute",
+    "reason": "BORDER_IMAGE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "outline",
+    "kind": "attribute",
+    "reason": "OUTLINE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "outlineStyle",
+    "kind": "attribute",
+    "reason": "OUTLINE_STYLE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "outlineWidth",
+    "kind": "attribute",
+    "reason": "OUTLINE_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "outlineColor",
+    "kind": "attribute",
+    "reason": "OUTLINE_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "outlineRadius",
+    "kind": "attribute",
+    "reason": "OUTLINE_RADIUS not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "foregroundColor",
+    "kind": "attribute",
+    "reason": "FOREGROUND_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "hoverEffect",
+    "kind": "attribute",
+    "reason": "HOVER_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "focusable",
+    "kind": "attribute",
+    "reason": "FOCUSABLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "nextFocus",
+    "kind": "attribute",
+    "reason": "NEXT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "tabStop",
+    "kind": "attribute",
+    "reason": "TAB_STOP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "tabIndex",
+    "kind": "attribute",
+    "reason": "TAB_INDEX not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "defaultFocus",
+    "kind": "attribute",
+    "reason": "DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "groupDefaultFocus",
+    "kind": "attribute",
+    "reason": "GROUP_DEFAULT_FOCUS not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "focusOnTouch",
+    "kind": "attribute",
+    "reason": "FOCUS_ON_TOUCH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "focusBox",
+    "kind": "attribute",
+    "reason": "FOCUS_BOX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "focusScopeId",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "focusScopePriority",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "animation",
+    "kind": "attribute",
+    "reason": "ANIMATION not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "transition",
+    "kind": "attribute",
+    "reason": "TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "gesture",
+    "kind": "attribute",
+    "reason": "GESTURE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "priorityGesture",
+    "kind": "attribute",
+    "reason": "PRIORITY_GESTURE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "parallelGesture",
+    "kind": "attribute",
+    "reason": "PARALLEL_GESTURE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "blur",
+    "kind": "attribute",
+    "reason": "BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "linearGradientBlur",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT_BLUR not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "motionBlur",
+    "kind": "attribute",
+    "reason": "MOTION_BLUR not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "brightness",
+    "kind": "attribute",
+    "reason": "BRIGHTNESS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "contrast",
+    "kind": "attribute",
+    "reason": "CONTRAST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "grayscale",
+    "kind": "attribute",
+    "reason": "GRAYSCALE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "colorBlend",
+    "kind": "attribute",
+    "reason": "COLOR_BLEND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "saturate",
+    "kind": "attribute",
+    "reason": "SATURATE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "sepia",
+    "kind": "attribute",
+    "reason": "SEPIA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "invert",
+    "kind": "attribute",
+    "reason": "INVERT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "systemBarEffect",
+    "kind": "attribute",
+    "reason": "SYSTEM_BAR_EFFECT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "hueRotate",
+    "kind": "attribute",
+    "reason": "HUE_ROTATE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "useShadowBatching",
+    "kind": "attribute",
+    "reason": "USE_SHADOW_BATCHING not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "useEffect",
+    "kind": "attribute",
+    "reason": "USE_EFFECT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "backdropBlur",
+    "kind": "attribute",
+    "reason": "BACKDROP_BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "renderGroup",
+    "kind": "attribute",
+    "reason": "RENDER_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "freeze",
+    "kind": "attribute",
+    "reason": "FREEZE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "translate",
+    "kind": "attribute",
+    "reason": "TRANSLATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "scale",
+    "kind": "attribute",
+    "reason": "SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "gridSpan",
+    "kind": "attribute",
+    "reason": "GRID_SPAN not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "gridOffset",
+    "kind": "attribute",
+    "reason": "GRID_OFFSET not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "rotate",
+    "kind": "attribute",
+    "reason": "ROTATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "transform",
+    "kind": "attribute",
+    "reason": "TRANSFORM exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "transform3D",
+    "kind": "attribute",
+    "reason": "TRANSFORM3_D not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "flexGrow",
+    "kind": "attribute",
+    "reason": "FLEX_GROW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "flexShrink",
+    "kind": "attribute",
+    "reason": "FLEX_SHRINK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "flexBasis",
+    "kind": "attribute",
+    "reason": "FLEX_BASIS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "alignSelf",
+    "kind": "attribute",
+    "reason": "ALIGN_SELF exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "layoutGravity",
+    "kind": "attribute",
+    "reason": "LAYOUT_GRAVITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "displayPriority",
+    "kind": "attribute",
+    "reason": "DISPLAY_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "zIndex",
+    "kind": "attribute",
+    "reason": "Z_INDEX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "sharedTransition",
+    "kind": "attribute",
+    "reason": "SHARED_TRANSITION not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "direction",
+    "kind": "attribute",
+    "reason": "DIRECTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "align",
+    "kind": "attribute",
+    "reason": "ALIGN not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "position",
+    "kind": "attribute",
+    "reason": "POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "markAnchor",
+    "kind": "attribute",
+    "reason": "MARK_ANCHOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "offset",
+    "kind": "attribute",
+    "reason": "OFFSET exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "useSizeType",
+    "kind": "attribute",
+    "reason": "USE_SIZE_TYPE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "alignRules",
+    "kind": "attribute",
+    "reason": "ALIGN_RULES exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "chainMode",
+    "kind": "attribute",
+    "reason": "CHAIN_MODE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "aspectRatio",
+    "kind": "attribute",
+    "reason": "ASPECT_RATIO exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "clickEffect",
+    "kind": "attribute",
+    "reason": "CLICK_EFFECT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "enableClickSoundEffect",
+    "kind": "attribute",
+    "reason": "ENABLE_CLICK_SOUND_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "allowDrop",
+    "kind": "attribute",
+    "reason": "ALLOW_DROP not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "draggable",
+    "kind": "attribute",
+    "reason": "DRAGGABLE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "dragPreview",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "dragPreviewOptions",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW_OPTIONS not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "overlay",
+    "kind": "attribute",
+    "reason": "OVERLAY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "toolbar",
+    "kind": "attribute",
+    "reason": "TOOLBAR not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "linearGradient",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "sweepGradient",
+    "kind": "attribute",
+    "reason": "SWEEP_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "radialGradient",
+    "kind": "attribute",
+    "reason": "RADIAL_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "motionPath",
+    "kind": "attribute",
+    "reason": "MOTION_PATH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "shadow",
+    "kind": "attribute",
+    "reason": "SHADOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "blendMode",
+    "kind": "attribute",
+    "reason": "BLEND_MODE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "clip",
+    "kind": "attribute",
+    "reason": "CLIP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "clipShape",
+    "kind": "attribute",
+    "reason": "CLIP_SHAPE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "mask",
+    "kind": "attribute",
+    "reason": "MASK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "maskShape",
+    "kind": "attribute",
+    "reason": "MASK_SHAPE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "key",
+    "kind": "attribute",
+    "reason": "KEY not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "id",
+    "kind": "attribute",
+    "reason": "ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "geometryTransition",
+    "kind": "attribute",
+    "reason": "GEOMETRY_TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "bindTips",
+    "kind": "attribute",
+    "reason": "BIND_TIPS not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "bindPopup",
+    "kind": "attribute",
+    "reason": "BIND_POPUP not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "bindMenu",
+    "kind": "attribute",
+    "reason": "BIND_MENU not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "bindContextMenu",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "bindContextMenuByResponseType",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_RESPONSE_TYPE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "bindContextMenuWithResponse",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_WITH_RESPONSE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "bindContextMenuByIsShow",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_IS_SHOW not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "bindContentCover",
+    "kind": "attribute",
+    "reason": "BIND_CONTENT_COVER not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "bindSheet",
+    "kind": "attribute",
+    "reason": "BIND_SHEET not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "stateStyles",
+    "kind": "attribute",
+    "reason": "STATE_STYLES not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "restoreId",
+    "kind": "attribute",
+    "reason": "RESTORE_ID not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "sphericalEffect",
+    "kind": "attribute",
+    "reason": "SPHERICAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "lightUpEffect",
+    "kind": "attribute",
+    "reason": "LIGHT_UP_EFFECT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "pixelStretchEffect",
+    "kind": "attribute",
+    "reason": "PIXEL_STRETCH_EFFECT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "keyboardShortcut",
+    "kind": "attribute",
+    "reason": "KEYBOARD_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityGroup",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityText",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityNextFocusId",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_NEXT_FOCUS_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityDefaultFocus",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityUseSamePage",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_USE_SAME_PAGE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityScrollTriggerable",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SCROLL_TRIGGERABLE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityRole",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ROLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityTextHint",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT_HINT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DESCRIPTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_LEVEL not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityVirtualNode",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_VIRTUAL_NODE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityChecked",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CHECKED not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilitySelected",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SELECTED not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "obscured",
+    "kind": "attribute",
+    "reason": "OBSCURED not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "reuseId",
+    "kind": "attribute",
+    "reason": "REUSE_ID not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "reuse",
+    "kind": "attribute",
+    "reason": "REUSE not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "renderFit",
+    "kind": "attribute",
+    "reason": "RENDER_FIT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "attributeModifier",
+    "kind": "attribute",
+    "reason": "ATTRIBUTE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "gestureModifier",
+    "kind": "attribute",
+    "reason": "GESTURE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "backgroundBrightness",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BRIGHTNESS not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "shouldBuiltInRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_BUILT_IN_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "shouldRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "monopolizeEvents",
+    "kind": "attribute",
+    "reason": "MONOPOLIZE_EVENTS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityFocusDrawLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_FOCUS_DRAW_LEVEL not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "allowForceDark",
+    "kind": "attribute",
+    "reason": "ALLOW_FORCE_DARK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "systemMaterial",
+    "kind": "attribute",
+    "reason": "SYSTEM_MATERIAL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityStateDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_STATE_DESCRIPTION not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityActionOptions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ACTION_OPTIONS not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "accessibilityCustomActions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CUSTOM_ACTIONS not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "smartGestureShortcut",
+    "kind": "attribute",
+    "reason": "SMART_GESTURE_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "inspectorLabel",
+    "kind": "attribute",
+    "reason": "INSPECTOR_LABEL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Stack",
+    "member": "doubleSided",
+    "kind": "attribute",
+    "reason": "DOUBLE_SIDED not present in C API"
+  },
+  {
+    "component": "Stack",
+    "member": "onAccessibilityHover",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onAccessibilityHoverTransparent",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER_TRANSPARENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onKeyEventDispatch",
+    "kind": "event",
+    "reason": "NODE_ON_KEY_EVENT_DISPATCH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onFocusAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_FOCUS_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onAppear",
+    "kind": "event",
+    "reason": "NODE_ON_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onDisAppear",
+    "kind": "event",
+    "reason": "NODE_ON_DIS_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onAttach",
+    "kind": "event",
+    "reason": "NODE_ON_ATTACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onDetach",
+    "kind": "event",
+    "reason": "NODE_ON_DETACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onVisibleAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onVisibleAreaApproximateChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_APPROXIMATE_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onAccessibilityFocus",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_FOCUS not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onAccessibilityActionIntercept",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_ACTION_INTERCEPT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onGestureJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onGestureRecognizerJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onTouchTestDone",
+    "kind": "event",
+    "reason": "NODE_ON_TOUCH_TEST_DONE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Stack",
+    "member": "onDragSpringLoading",
+    "kind": "event",
+    "reason": "NODE_ON_DRAG_SPRING_LOADING not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "drawModifier",
+    "kind": "attribute",
+    "reason": "DRAW_MODIFIER not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "customProperty",
+    "kind": "attribute",
+    "reason": "CUSTOM_PROPERTY not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "expandSafeArea",
+    "kind": "attribute",
+    "reason": "EXPAND_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "ignoreLayoutSafeArea",
+    "kind": "attribute",
+    "reason": "IGNORE_LAYOUT_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "responseRegion",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "mouseResponseRegion",
+    "kind": "attribute",
+    "reason": "MOUSE_RESPONSE_REGION not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "responseRegionList",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION_LIST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "size",
+    "kind": "attribute",
+    "reason": "SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "constraintSize",
+    "kind": "attribute",
+    "reason": "CONSTRAINT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "touchable",
+    "kind": "attribute",
+    "reason": "TOUCHABLE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "hitTestBehavior",
+    "kind": "attribute",
+    "reason": "HIT_TEST_BEHAVIOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "layoutWeight",
+    "kind": "attribute",
+    "reason": "LAYOUT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "chainWeight",
+    "kind": "attribute",
+    "reason": "CHAIN_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "safeAreaPadding",
+    "kind": "attribute",
+    "reason": "SAFE_AREA_PADDING not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "background",
+    "kind": "attribute",
+    "reason": "BACKGROUND not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "pixelRound",
+    "kind": "attribute",
+    "reason": "PIXEL_ROUND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "backgroundImage",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "backgroundImageSize",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "backgroundImagePosition",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "backgroundBlurStyle",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "backgroundEffect",
+    "kind": "attribute",
+    "reason": "BACKGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "backgroundImageResizable",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_RESIZABLE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "foregroundEffect",
+    "kind": "attribute",
+    "reason": "FOREGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "visualEffect",
+    "kind": "attribute",
+    "reason": "VISUAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "backgroundFilter",
+    "kind": "attribute",
+    "reason": "BACKGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "foregroundFilter",
+    "kind": "attribute",
+    "reason": "FOREGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "compositingFilter",
+    "kind": "attribute",
+    "reason": "COMPOSITING_FILTER not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "materialFilter",
+    "kind": "attribute",
+    "reason": "MATERIAL_FILTER not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "foregroundBlurStyle",
+    "kind": "attribute",
+    "reason": "FOREGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "border",
+    "kind": "attribute",
+    "reason": "BORDER not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "borderStyle",
+    "kind": "attribute",
+    "reason": "BORDER_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "borderWidth",
+    "kind": "attribute",
+    "reason": "BORDER_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "borderColor",
+    "kind": "attribute",
+    "reason": "BORDER_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "borderRadius",
+    "kind": "attribute",
+    "reason": "BORDER_RADIUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "borderImage",
+    "kind": "attribute",
+    "reason": "BORDER_IMAGE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "outline",
+    "kind": "attribute",
+    "reason": "OUTLINE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "outlineStyle",
+    "kind": "attribute",
+    "reason": "OUTLINE_STYLE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "outlineWidth",
+    "kind": "attribute",
+    "reason": "OUTLINE_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "outlineColor",
+    "kind": "attribute",
+    "reason": "OUTLINE_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "outlineRadius",
+    "kind": "attribute",
+    "reason": "OUTLINE_RADIUS not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "foregroundColor",
+    "kind": "attribute",
+    "reason": "FOREGROUND_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "hoverEffect",
+    "kind": "attribute",
+    "reason": "HOVER_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "focusable",
+    "kind": "attribute",
+    "reason": "FOCUSABLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "nextFocus",
+    "kind": "attribute",
+    "reason": "NEXT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "tabStop",
+    "kind": "attribute",
+    "reason": "TAB_STOP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "tabIndex",
+    "kind": "attribute",
+    "reason": "TAB_INDEX not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "defaultFocus",
+    "kind": "attribute",
+    "reason": "DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "groupDefaultFocus",
+    "kind": "attribute",
+    "reason": "GROUP_DEFAULT_FOCUS not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "focusOnTouch",
+    "kind": "attribute",
+    "reason": "FOCUS_ON_TOUCH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "focusBox",
+    "kind": "attribute",
+    "reason": "FOCUS_BOX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "focusScopeId",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "focusScopePriority",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "animation",
+    "kind": "attribute",
+    "reason": "ANIMATION not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "transition",
+    "kind": "attribute",
+    "reason": "TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "gesture",
+    "kind": "attribute",
+    "reason": "GESTURE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "priorityGesture",
+    "kind": "attribute",
+    "reason": "PRIORITY_GESTURE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "parallelGesture",
+    "kind": "attribute",
+    "reason": "PARALLEL_GESTURE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "blur",
+    "kind": "attribute",
+    "reason": "BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "linearGradientBlur",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT_BLUR not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "motionBlur",
+    "kind": "attribute",
+    "reason": "MOTION_BLUR not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "brightness",
+    "kind": "attribute",
+    "reason": "BRIGHTNESS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "contrast",
+    "kind": "attribute",
+    "reason": "CONTRAST exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "grayscale",
+    "kind": "attribute",
+    "reason": "GRAYSCALE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "colorBlend",
+    "kind": "attribute",
+    "reason": "COLOR_BLEND exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "saturate",
+    "kind": "attribute",
+    "reason": "SATURATE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "sepia",
+    "kind": "attribute",
+    "reason": "SEPIA exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "invert",
+    "kind": "attribute",
+    "reason": "INVERT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "systemBarEffect",
+    "kind": "attribute",
+    "reason": "SYSTEM_BAR_EFFECT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "hueRotate",
+    "kind": "attribute",
+    "reason": "HUE_ROTATE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "useShadowBatching",
+    "kind": "attribute",
+    "reason": "USE_SHADOW_BATCHING not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "useEffect",
+    "kind": "attribute",
+    "reason": "USE_EFFECT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "backdropBlur",
+    "kind": "attribute",
+    "reason": "BACKDROP_BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "renderGroup",
+    "kind": "attribute",
+    "reason": "RENDER_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "freeze",
+    "kind": "attribute",
+    "reason": "FREEZE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "translate",
+    "kind": "attribute",
+    "reason": "TRANSLATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "scale",
+    "kind": "attribute",
+    "reason": "SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "gridSpan",
+    "kind": "attribute",
+    "reason": "GRID_SPAN not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "gridOffset",
+    "kind": "attribute",
+    "reason": "GRID_OFFSET not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "rotate",
+    "kind": "attribute",
+    "reason": "ROTATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "transform",
+    "kind": "attribute",
+    "reason": "TRANSFORM exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "transform3D",
+    "kind": "attribute",
+    "reason": "TRANSFORM3_D not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "flexGrow",
+    "kind": "attribute",
+    "reason": "FLEX_GROW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "flexShrink",
+    "kind": "attribute",
+    "reason": "FLEX_SHRINK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "flexBasis",
+    "kind": "attribute",
+    "reason": "FLEX_BASIS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "alignSelf",
+    "kind": "attribute",
+    "reason": "ALIGN_SELF exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "layoutGravity",
+    "kind": "attribute",
+    "reason": "LAYOUT_GRAVITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "displayPriority",
+    "kind": "attribute",
+    "reason": "DISPLAY_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "zIndex",
+    "kind": "attribute",
+    "reason": "Z_INDEX exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "sharedTransition",
+    "kind": "attribute",
+    "reason": "SHARED_TRANSITION not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "direction",
+    "kind": "attribute",
+    "reason": "DIRECTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "align",
+    "kind": "attribute",
+    "reason": "ALIGN not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "position",
+    "kind": "attribute",
+    "reason": "POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "markAnchor",
+    "kind": "attribute",
+    "reason": "MARK_ANCHOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "offset",
+    "kind": "attribute",
+    "reason": "OFFSET exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "useSizeType",
+    "kind": "attribute",
+    "reason": "USE_SIZE_TYPE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "alignRules",
+    "kind": "attribute",
+    "reason": "ALIGN_RULES exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "chainMode",
+    "kind": "attribute",
+    "reason": "CHAIN_MODE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "aspectRatio",
+    "kind": "attribute",
+    "reason": "ASPECT_RATIO exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "clickEffect",
+    "kind": "attribute",
+    "reason": "CLICK_EFFECT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "enableClickSoundEffect",
+    "kind": "attribute",
+    "reason": "ENABLE_CLICK_SOUND_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "allowDrop",
+    "kind": "attribute",
+    "reason": "ALLOW_DROP not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "draggable",
+    "kind": "attribute",
+    "reason": "DRAGGABLE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "dragPreview",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "dragPreviewOptions",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW_OPTIONS not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "overlay",
+    "kind": "attribute",
+    "reason": "OVERLAY exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "toolbar",
+    "kind": "attribute",
+    "reason": "TOOLBAR not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "linearGradient",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "sweepGradient",
+    "kind": "attribute",
+    "reason": "SWEEP_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "radialGradient",
+    "kind": "attribute",
+    "reason": "RADIAL_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "motionPath",
+    "kind": "attribute",
+    "reason": "MOTION_PATH exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "shadow",
+    "kind": "attribute",
+    "reason": "SHADOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "blendMode",
+    "kind": "attribute",
+    "reason": "BLEND_MODE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "clip",
+    "kind": "attribute",
+    "reason": "CLIP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "clipShape",
+    "kind": "attribute",
+    "reason": "CLIP_SHAPE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "mask",
+    "kind": "attribute",
+    "reason": "MASK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "maskShape",
+    "kind": "attribute",
+    "reason": "MASK_SHAPE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "key",
+    "kind": "attribute",
+    "reason": "KEY not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "id",
+    "kind": "attribute",
+    "reason": "ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "geometryTransition",
+    "kind": "attribute",
+    "reason": "GEOMETRY_TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "bindTips",
+    "kind": "attribute",
+    "reason": "BIND_TIPS not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "bindPopup",
+    "kind": "attribute",
+    "reason": "BIND_POPUP not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "bindMenu",
+    "kind": "attribute",
+    "reason": "BIND_MENU not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "bindContextMenu",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "bindContextMenuByResponseType",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_RESPONSE_TYPE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "bindContextMenuWithResponse",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_WITH_RESPONSE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "bindContextMenuByIsShow",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_IS_SHOW not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "bindContentCover",
+    "kind": "attribute",
+    "reason": "BIND_CONTENT_COVER not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "bindSheet",
+    "kind": "attribute",
+    "reason": "BIND_SHEET not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "stateStyles",
+    "kind": "attribute",
+    "reason": "STATE_STYLES not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "restoreId",
+    "kind": "attribute",
+    "reason": "RESTORE_ID not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "sphericalEffect",
+    "kind": "attribute",
+    "reason": "SPHERICAL_EFFECT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "lightUpEffect",
+    "kind": "attribute",
+    "reason": "LIGHT_UP_EFFECT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "pixelStretchEffect",
+    "kind": "attribute",
+    "reason": "PIXEL_STRETCH_EFFECT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "keyboardShortcut",
+    "kind": "attribute",
+    "reason": "KEYBOARD_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityGroup",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityText",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityNextFocusId",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_NEXT_FOCUS_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityDefaultFocus",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityUseSamePage",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_USE_SAME_PAGE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityScrollTriggerable",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SCROLL_TRIGGERABLE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityRole",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ROLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityTextHint",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT_HINT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DESCRIPTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_LEVEL not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityVirtualNode",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_VIRTUAL_NODE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityChecked",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CHECKED not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilitySelected",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SELECTED not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "obscured",
+    "kind": "attribute",
+    "reason": "OBSCURED not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "reuseId",
+    "kind": "attribute",
+    "reason": "REUSE_ID not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "reuse",
+    "kind": "attribute",
+    "reason": "REUSE not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "renderFit",
+    "kind": "attribute",
+    "reason": "RENDER_FIT exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "attributeModifier",
+    "kind": "attribute",
+    "reason": "ATTRIBUTE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "gestureModifier",
+    "kind": "attribute",
+    "reason": "GESTURE_MODIFIER not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "backgroundBrightness",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BRIGHTNESS not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "shouldBuiltInRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_BUILT_IN_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "shouldRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "monopolizeEvents",
+    "kind": "attribute",
+    "reason": "MONOPOLIZE_EVENTS exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityFocusDrawLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_FOCUS_DRAW_LEVEL not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "allowForceDark",
+    "kind": "attribute",
+    "reason": "ALLOW_FORCE_DARK exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "systemMaterial",
+    "kind": "attribute",
+    "reason": "SYSTEM_MATERIAL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityStateDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_STATE_DESCRIPTION not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityActionOptions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ACTION_OPTIONS not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "accessibilityCustomActions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CUSTOM_ACTIONS not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "smartGestureShortcut",
+    "kind": "attribute",
+    "reason": "SMART_GESTURE_SHORTCUT not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "inspectorLabel",
+    "kind": "attribute",
+    "reason": "INSPECTOR_LABEL exists in C API but shape is not registered"
+  },
+  {
+    "component": "Flex",
+    "member": "doubleSided",
+    "kind": "attribute",
+    "reason": "DOUBLE_SIDED not present in C API"
+  },
+  {
+    "component": "Flex",
+    "member": "onAccessibilityHover",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onAccessibilityHoverTransparent",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_HOVER_TRANSPARENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onKeyEventDispatch",
+    "kind": "event",
+    "reason": "NODE_ON_KEY_EVENT_DISPATCH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onFocusAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_FOCUS_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onAxisEvent",
+    "kind": "event",
+    "reason": "NODE_ON_AXIS_EVENT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onAppear",
+    "kind": "event",
+    "reason": "NODE_ON_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onDisAppear",
+    "kind": "event",
+    "reason": "NODE_ON_DIS_APPEAR not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onAttach",
+    "kind": "event",
+    "reason": "NODE_ON_ATTACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onDetach",
+    "kind": "event",
+    "reason": "NODE_ON_DETACH not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onVisibleAreaChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onVisibleAreaApproximateChange",
+    "kind": "event",
+    "reason": "NODE_ON_VISIBLE_AREA_APPROXIMATE_CHANGE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onAccessibilityFocus",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_FOCUS not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onAccessibilityActionIntercept",
+    "kind": "event",
+    "reason": "NODE_ON_ACCESSIBILITY_ACTION_INTERCEPT not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onGestureJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onGestureRecognizerJudgeBegin",
+    "kind": "event",
+    "reason": "NODE_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onTouchTestDone",
+    "kind": "event",
+    "reason": "NODE_ON_TOUCH_TEST_DONE not present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "Flex",
+    "member": "onDragSpringLoading",
+    "kind": "event",
+    "reason": "NODE_ON_DRAG_SPRING_LOADING not present in ArkUI_NodeEventType"
+  }
+]

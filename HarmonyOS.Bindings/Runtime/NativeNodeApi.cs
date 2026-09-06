@@ -17,7 +17,7 @@ internal static partial class NativeNodeApi
     [LibraryImport(NApiLib)]
     internal static partial napi_status napi_create_string_utf8(
         napi_env env,
-        [MarshalAs(UnmanagedType.LPStr)] byte[] str,
+        byte[] str,
         IntPtr length,
         out napi_value result);
 
@@ -25,7 +25,7 @@ internal static partial class NativeNodeApi
     internal static partial napi_status napi_get_value_string_utf8(
         napi_env env,
         napi_value value,
-        [MarshalAs(UnmanagedType.LPStr)] byte[]? buf,
+        byte[]? buf,
         IntPtr bufsize,
         out IntPtr result);
 
@@ -119,17 +119,22 @@ internal static partial class NativeNodeApi
         out napi_value result);
 
     [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_get_global(
+        napi_env env,
+        out napi_value result);
+
+    [LibraryImport(NApiLib)]
     internal static partial napi_status napi_get_named_property(
         napi_env env,
         napi_value obj,
-        [MarshalAs(UnmanagedType.LPStr)] byte[] name,
+        byte[] name,
         out napi_value result);
 
     [LibraryImport(NApiLib)]
     internal static partial napi_status napi_set_named_property(
         napi_env env,
         napi_value obj,
-        [MarshalAs(UnmanagedType.LPStr)] byte[] name,
+        byte[] name,
         napi_value value);
 
     #endregion
@@ -139,7 +144,7 @@ internal static partial class NativeNodeApi
     [LibraryImport(NApiLib)]
     internal static partial napi_status napi_create_function(
         napi_env env,
-        [MarshalAs(UnmanagedType.LPStr)] byte[] name,
+        byte[] name,
         IntPtr length,
         IntPtr cb,
         IntPtr data,
@@ -158,8 +163,8 @@ internal static partial class NativeNodeApi
     internal static partial napi_status napi_get_cb_info(
         napi_env env,
         napi_callback_info info,
-        out IntPtr argc,
-        out IntPtr argv,
+        ref IntPtr argc,
+        IntPtr[]? argv,
         out IntPtr thisArg,
         out IntPtr data);
 
@@ -237,7 +242,30 @@ internal static partial class NativeNodeApi
 
     #endregion
 
+    #region 状态检查
+
+    /// <summary>
+    /// napi 调用失败时抛出异常。任何 napi_* 返回值都不允许静默忽略。
+    /// </summary>
+    internal static void ThrowIfFailed(this napi_status status, [System.Runtime.CompilerServices.CallerMemberName] string op = "")
+    {
+        if (status != napi_status.napi_ok)
+            throw new NapiException(status, op);
+    }
+
+    #endregion
+
     #region 类型定义
+
+    /// <summary>
+    /// Node-API 调用失败异常，携带 napi_status
+    /// </summary>
+    internal sealed class NapiException(napi_status status, string op)
+        : Exception($"NAPI call '{op}' failed with status {status} ({(int)status})")
+    {
+        public napi_status Status { get; } = status;
+        public string Operation { get; } = op;
+    }
 
     internal readonly struct napi_env : IEquatable<napi_env>
     {

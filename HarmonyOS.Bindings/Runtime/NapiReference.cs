@@ -20,7 +20,8 @@ internal class NapiReference : IDisposable
             throw new ArgumentNullException(nameof(napiValue));
 
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_create_reference(env, napiValue, 1, out _ref);
+        NativeNodeApi.napi_create_reference(env, napiValue, 1, out var napiRef);
+        _ref = napiRef;
     }
 
     /// <summary>
