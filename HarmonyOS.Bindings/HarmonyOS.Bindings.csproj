@@ -17,14 +17,9 @@
     <PackageTags>harmonyos;arkui;arkts;bindings;dotnet</PackageTags>
   </PropertyGroup>
 
-  <!-- 旧版生成器产物：缺 using、含非法 CallMethod<void>、`event` 等保留字未转义，待解析器 C API 模式重出后恢复编译 -->
-  <ItemGroup>
-    <Compile Remove="Api/**/*.cs" />
-    <Compile Remove="Components/**/*.cs" />
-    <None Include="Api/**/*.cs" />
-    <None Include="Components/**/*.cs" />
-  </ItemGroup>
-
+  <!-- 旧 napi 路线的过期产物（Api/、Components/）已删除；
+       @ohos.* 服务层生成器（src/parser/codeGenerator.ts 路线）重出产物时，
+       若产物尚不可编译，需在此重新加入 Compile Remove -->
   <ItemGroup>
     <TrimmerRootAssembly Include="HarmonyOS.Bindings" />
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />

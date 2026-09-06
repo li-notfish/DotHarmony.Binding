@@ -1,3 +1,11 @@
+/**
+ * napi 目标生成器（@ohos.* 服务层路线）。
+ *
+ * 注意：UI 组件的生成走 nativeCodeGenerator.ts（ArkUI C API 路线）；
+ * 本文件服务于架构决策中的「非 UI 的 @ohos.* 服务走 napi」路线
+ * （传感器/定位/文件等系统能力调用），产物输出至 HarmonyOS.Bindings/Api/。
+ * 2026-09 清理时移除了过期产物，重出前需先修复 Void 泛型与 using 缺失问题。
+ */
 import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EventInfo, DelegateInfo, InheritanceInfo, ImportInfo, ParseResult, InterfaceInfo } from './models';
 import { TypeMapper } from './typeMapper';
 
