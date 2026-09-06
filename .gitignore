@@ -52,3 +52,4 @@ samples/HarmonyHost/.hvigor/
 
 # libapp.so 为远程 NativeAOT 构建产物（scripts/remote-build.sh 生成）
 samples/HarmonyHost/entry/libs/*/libapp.so
+samples/HarmonyHost/oh_modules/

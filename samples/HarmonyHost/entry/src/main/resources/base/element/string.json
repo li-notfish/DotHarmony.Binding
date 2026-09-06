@@ -1,0 +1,7 @@
+{
+  "string": [
+    { "name": "module_desc", "value": "module description" },
+    { "name": "ability_desc", "value": ".NET NativeAOT host" },
+    { "name": "EntryAbility_label", "value": "HarmonyHost" }
+  ]
+}
