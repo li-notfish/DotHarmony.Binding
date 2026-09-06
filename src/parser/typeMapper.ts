@@ -246,6 +246,16 @@ export class TypeMapper {
                 return mapping.csharp;
             }
             
+            // Promise<T>：映射为 napi promise 句柄；async/await 级支持待 ThreadSafeFunction 层
+            if (baseType === 'Promise' || baseType === 'promise') {
+                return 'IntPtr';
+            }
+
+            // Record/Map/Set 等 JS 运行时容器没有对应 C# 泛型映射，统一封送为对象句柄
+            if (baseType === 'Record' || baseType === 'Map' || baseType === 'Set') {
+                return 'IntPtr';
+            }
+
             // 对于未映射的泛型类型，尝试保持结构
             // 例如 MyType<number, boolean> → MyType<double, bool>
             return `${baseType}<${typeArgs.join(', ')}>`;

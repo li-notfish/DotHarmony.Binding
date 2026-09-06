@@ -4,6 +4,7 @@ import * as crypto from 'crypto';
 import { AstParser } from './astParser';
 import { CodeGenerator } from './codeGenerator';
 import { EnumGenerator } from './enumGenerator';
+import { NativeCodeGenerator, EnumMetadata, NativeGap } from './nativeCodeGenerator';
 import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo } from './models';
 
 interface CacheEntry {
@@ -22,11 +23,16 @@ export class ArkTsParser {
     private parser: AstParser;
     private generator: CodeGenerator;
     private enumGenerator: EnumGenerator;
+    private nativeGenerator: NativeCodeGenerator | null = null;
+    private nativeGaps: NativeGap[] = [];
 
-    constructor() {
+    constructor(enumMetadata?: EnumMetadata) {
         this.parser = new AstParser();
         this.generator = new CodeGenerator();
         this.enumGenerator = new EnumGenerator();
+        if (enumMetadata) {
+            this.nativeGenerator = new NativeCodeGenerator(enumMetadata);
+        }
     }
 
     parseFile(inputPath: string): ParseResult {
@@ -41,8 +47,18 @@ export class ArkTsParser {
         if (!fs.existsSync(inputPath)) {
             throw new Error(`File not found: ${inputPath}`);
         }
-        
+
         return this.parser.parseEnums(inputPath);
+    }
+
+    /** 解析 CommonMethod<T> 共享接口到上下文（--native 模式用） */
+    parseCommonMethodInto(commonPath: string, context: ParseContext): void {
+        this.parser.parseCommonMethod(commonPath, context);
+    }
+
+    /** 将 CommonMethod<T> 的方法内联合并进组件（--native 模式用） */
+    mergeCommonMethodInto(component: ComponentInfo, context: ParseContext): void {
+        this.parser.mergeCommonMethod(component, context);
     }
 
     generateCode(result: ParseResult): string {
@@ -51,6 +67,20 @@ export class ArkTsParser {
 
     generateEnumCode(enumInfo: EnumInfo): string {
         return this.enumGenerator.generate(enumInfo);
+    }
+
+    /** C API（Native Node）目标生成；返回 null 表示该组件无 C API 节点类型 */
+    generateNativeCode(result: ParseResult): { csharp: string | null; gaps: NativeGap[] } {
+        if (!this.nativeGenerator) {
+            throw new Error('NativeCodeGenerator not initialized (missing enum metadata)');
+        }
+        const r = this.nativeGenerator.generate(result);
+        this.nativeGaps.push(...r.gaps);
+        return { csharp: r.csharp, gaps: r.gaps };
+    }
+
+    getNativeGaps(): NativeGap[] {
+        return this.nativeGaps;
     }
 
     generateEnumsCode(enums: EnumInfo[]): string {
@@ -363,14 +393,77 @@ export class ArkTsParser {
 
 export async function main(): Promise<void> {
     const parser = new ArkTsParser();
-    
+
     // 测试 fixtures 目录
     const inputDir = path.join(__dirname, '../../tests/fixtures');
     const outputDir = path.join(__dirname, '../../output');
-    
+
     await parser.processDirectory(inputDir, outputDir);
-    
+
     console.log('Done!');
+}
+
+/**
+ * C API（Native Node）模式：从 SDK 组件 .d.ts 生成 NodeHandle 包装类。
+ * 产出 HarmonyOS.Bindings/Nodes/*.cs 与 native-gaps.json（C API 覆盖缺口清单）。
+ */
+export async function processNativeSDK(): Promise<void> {
+    const enumMetaPath = path.join(__dirname, '../../HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json');
+    if (!fs.existsSync(enumMetaPath)) {
+        throw new Error(`enum metadata not found: ${enumMetaPath}（先运行 extract_arkui_types.py --dump-json）`);
+    }
+    const enumMetadata = JSON.parse(fs.readFileSync(enumMetaPath, 'utf-8')) as EnumMetadata;
+    const parser = new ArkTsParser(enumMetadata);
+    const context = createParseContext();
+
+    const sdkBase = 'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony';
+    const componentDir = path.join(sdkBase, 'ets', 'component');
+    const outputDir = path.join(__dirname, '../../HarmonyOS.Bindings/Nodes');
+
+    // 试点组件集合：shape 表覆盖范围内先跑通，扩展组件随 shape 表成长
+    const pilotFiles = ['text.d.ts', 'button.d.ts', 'column.d.ts', 'row.d.ts', 'stack.d.ts', 'flex.d.ts'];
+
+    console.log('=== Native (C API) Generation ===');
+    console.log(`Input:  ${componentDir}`);
+    console.log(`Output: ${outputDir}`);
+
+    // common.d.ts 先解析（CommonMethod 内联）
+    const commonPath = path.join(componentDir, 'common.d.ts');
+    if (fs.existsSync(commonPath)) {
+        parser.parseCommonMethodInto(commonPath, context);
+    }
+
+    fs.mkdirSync(outputDir, { recursive: true });
+    let generated = 0;
+    let skipped = 0;
+
+    for (const file of pilotFiles) {
+        const inputPath = path.join(componentDir, file);
+        if (!fs.existsSync(inputPath)) {
+            console.log(`  (missing in SDK: ${file})`);
+            skipped++;
+            continue;
+        }
+        const result = parser.parseFile(inputPath);
+        parser.mergeCommonMethodInto(result.component, context);
+        result.component.namespace = 'HarmonyOS.ArkUI';
+
+        const { csharp } = parser.generateNativeCode(result);
+        if (csharp) {
+            const outPath = path.join(outputDir, file.replace('.d.ts', '.cs'));
+            fs.writeFileSync(outPath, csharp);
+            console.log(`  Generated: ${outPath}`);
+            generated++;
+        } else {
+            console.log(`  Skipped (no native node): ${file}`);
+            skipped++;
+        }
+    }
+
+    const gapsPath = path.join(outputDir, 'native-gaps.json');
+    fs.writeFileSync(gapsPath, JSON.stringify(parser.getNativeGaps(), null, 2));
+    console.log(`Generated: ${generated}, Skipped: ${skipped}, Gaps: ${parser.getNativeGaps().length} -> ${gapsPath}`);
+    console.log('=== Native Generation Complete ===');
 }
 
 export async function processFullSDK(): Promise<void> {
@@ -471,7 +564,9 @@ function convertApiFileName(dtsFileName: string): string {
 
 if (require.main === module) {
     const args = process.argv.slice(2);
-    if (args.includes('--sdk')) {
+    if (args.includes('--native')) {
+        processNativeSDK().catch(console.error);
+    } else if (args.includes('--sdk')) {
         processFullSDK().catch(console.error);
     } else {
         main().catch(console.error);
