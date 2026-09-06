@@ -171,6 +171,15 @@ public abstract unsafe class ArkUINodeBase : IDisposable
             throw new InvalidOperationException($"RemoveChild failed: {status}");
     }
 
+    /// <summary>移除全部子节点</summary>
+    public void RemoveAllChildren()
+    {
+        ThrowIfDisposed();
+        var status = ArkUINativeApi.RemoveAllChildren(_handle);
+        if (status != 0)
+            throw new InvalidOperationException($"RemoveAllChildren failed: {status}");
+    }
+
     /// <summary>在指定兄弟节点后插入子节点</summary>
     public void InsertChildAfter(ArkUINodeBase child, ArkUINodeBase? sibling)
     {

@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
   </ItemGroup>
 
 </Project>

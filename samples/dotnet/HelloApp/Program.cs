@@ -1,11 +1,12 @@
-// HelloApp：.NET (NativeAOT) 在鸿蒙上的最小 UI 应用
-// 构建产物 libapp.so 由 HarmonyHost 的 C shim dlopen 并调用 HarmonyInit / HarmonyBuildUI。
+// HelloApp (M1)：MAUI 控件树（StackLayout/Label/Button）在鸿蒙上的端到端
+// 控件全部来自 Microsoft.Maui.Controls（netstandard VirtualView），
+// 渲染经 HarmonyOS.Maui 的 Handler 映射到 ArkUI 原生节点（ArkUINodeBase）。
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using HarmonyOS.Bindings.Api;
+using HarmonyDeviceInfo = HarmonyOS.Bindings.Api.DeviceInfo;
 using HarmonyOS.Bindings.Hosting;
-using HarmonyOS.Bindings.NativeNode;
-using HarmonyOS.ArkUI;
+using HarmonyOS.Maui.Hosting;
+using Microsoft.Maui.Controls;
 
 namespace HelloApp;
 
@@ -37,64 +38,51 @@ public static class Program
     {
         int clicks = 0;
 
-        Host.RootBuilder = contentHandle =>
+        // M1：纯 MAUI 控件树——没有任何手写 ArkUI 节点代码
+        MauiHarmonyHost.Run(() =>
         {
-            // M0 验证：经 napi 服务通道读取 @ohos.deviceInfo（失败时把诊断写上屏）
             string deviceLine;
             try
             {
-                deviceLine = $"{DeviceInfo.Brand} {DeviceInfo.ProductModel} · {DeviceInfo.OsFullName}";
+                deviceLine = $"{HarmonyDeviceInfo.Brand} {HarmonyDeviceInfo.ProductModel} · {HarmonyDeviceInfo.OsFullName}";
             }
             catch (Exception ex)
             {
                 deviceLine = "deviceInfo FAILED: " + ex.Message;
             }
 
-            var root = new Column
+            var title = new Label
             {
-                JustifyContent = ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_CENTER,
-                AlignItems = ArkUI_HorizontalAlignment.ARKUI_HORIZONTAL_ALIGNMENT_CENTER,
-                Width = 320,
-                Height = 240,
-                Padding = 12,
+                Text = "Hello MAUI on HarmonyOS!",
+                HorizontalTextAlignment = TextAlignment.Center,
+                BackgroundColor = Colors.White,
+                Padding = 8,
             };
-            root.SetBackgroundColor(245, 246, 248);
 
-            var title = new Text
+            var device = new Label
             {
-                Content = "Hello .NET on HarmonyOS!",
-                TextAlign = ArkUI_TextAlignment.ARKUI_TEXT_ALIGNMENT_CENTER,
+                Text = deviceLine,
+                HorizontalTextAlignment = TextAlignment.Center,
+                BackgroundColor = Colors.White,
+                Padding = 8,
             };
-            title.SetBackgroundColor(255, 255, 255);
-            title.Margin = 8;
-            title.Padding = 8;
 
-            var deviceText = new Text
-            {
-                Content = deviceLine,
-                TextAlign = ArkUI_TextAlignment.ARKUI_TEXT_ALIGNMENT_CENTER,
-            };
-            deviceText.SetBackgroundColor(255, 255, 255);
-            deviceText.Margin = 8;
-            deviceText.Padding = 8;
+            var button = new Button { Text = "Tap me (MAUI)" };
 
-            var button = new Button
-            {
-                Label = "Tap me (from .NET)",
-            };
-            button.Click += ev =>
+            button.Clicked += (_, _) =>
             {
                 clicks++;
-                title.Content = $"Click@({ev.ClickX:F1},{ev.ClickY:F1})vp device={ev.ClickDevice}";
-                button.Label = $"Clicked {clicks}x";
+                button.Text = $"MAUI clicked {clicks}x";
             };
 
-            root.AddChild(title);
-            root.AddChild(deviceText);
-            root.AddChild(button);
-
-            // 挂载到 ArkTS ContentSlot 提供的 NodeContent
-            Host.AttachRoot(contentHandle, root);
-        };
+            return new StackLayout
+            {
+                Orientation = StackOrientation.Vertical,
+                Spacing = 12,
+                Padding = 12,
+                BackgroundColor = Colors.LightGray,
+                Children = { title, device, button },
+            };
+        });
     }
 }

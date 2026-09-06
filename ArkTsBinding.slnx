@@ -3,5 +3,8 @@
   <Folder Name="/samples/dotnet/">
     <Project Path="samples/dotnet/HelloApp/HelloApp.csproj" />
   </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/HarmonyOS.Maui/HarmonyOS.Maui.csproj" />
+  </Folder>
   <Project Path="HarmonyOS.Bindings/HarmonyOS.Bindings.csproj" />
 </Solution>
