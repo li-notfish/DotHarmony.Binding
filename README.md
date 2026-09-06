@@ -79,7 +79,7 @@ bash scripts/deploy-hap.sh
 
 ## 运行时工具链要点（踩坑记录）
 
-- **musl 交叉**：arm64 用 musl.cc gcc（`naot-driver` wrapper 过滤 clang 风格 `--target`）；
+- **musl 交叉**（方案借鉴 [PublishAotCross](https://github.com/MichalStrehovsky/PublishAotCross)，见文末致谢）：arm64 用 musl.cc gcc（`naot-driver` wrapper 过滤 clang 风格 `--target`）；
   x64 用 zig cc（wrapper 需过滤 `-Wl,--gc-sections`——它会收割 ILC 的 `__modules` section，
   导致 dlopen 时 `__start___modules` 重定位失败）。
 - **符号分离**：arm64 用工具链 objcopy；x64 用 `zig objcopy` 的 GNU 兼容 wrapper（`objcopy-gnu`）。
@@ -114,3 +114,16 @@ tests/                       jest（解析器/生成器 45 用例）
 - [ ] 组件覆盖面扩展（按 native-gaps.json 与 shape 表逐步放开）
 - [ ] 触摸事件详细解析（ui_input_event.h 访问器）、ThreadSafeFunction（后台线程 → UI 线程）
 - [ ] 真机（arm64）验证
+
+## 致谢 / Acknowledgements
+
+本项目的交叉编译方案与运行时移植实践，建立在以下开源工作的基础上：
+
+- **[PublishAotCross](https://github.com/MichalStrehovsky/PublishAotCross)**（Michal Strehovsky）——
+  用 zig cc 作为 NativeAOT 自定义链接驱动以实现 linux-musl 交叉编译的开创性方案。
+  本项目 x64 目标的链接驱动即此思路的手写实现（针对鸿蒙场景增加了
+  `-Wl,--gc-sections` 过滤等适配），未直接引用其 NuGet 包，特此声明并致谢。
+- **[musl.cc](https://musl.cc/)** —— aarch64-linux-musl 交叉工具链（arm64 构建使用）。
+- **[OpenHarmony.Avalonia](https://github.com/CeSun/OpenHarmony.Avalonia)**（CeSun）——
+  .NET 运行时鸿蒙移植的先行实践，本项目采用的 GC 堆上限与 ICU 引导参数配方源自其公开的移植记录。
+- **OpenHarmony / HarmonyOS** —— ArkUI NDK（ArkUI_NativeNodeAPI_1）与 Node-API 的官方能力支撑。
