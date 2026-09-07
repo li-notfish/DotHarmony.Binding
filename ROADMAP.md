@@ -14,7 +14,9 @@
 
 ## M1 尾巴 —— MAUI 基本面补齐
 
-### 1.1 Brush→ARGB 转换助手（小）
+### 1.1 Brush→ARGB 转换助手（✅ 已完成）
+
+已实现 `BrushHelper`（SolidColorBrush→ARGB，Gradient/Image 静默透明）并接通四个 Handler 的 Background/BackgroundColor。剩余：渐变/图片画刷需要 ArkUI 渐变属性封装。
 
 **做什么**：统一 `Controls 的 Background/TextColor` 等属性的取色逻辑，接通 `HarmonyContentPageHandler` 的 Background 映射（当前显式暂缓）。
 
@@ -24,7 +26,7 @@
 
 ### 1.2 布局对齐 —— 两套布局引擎的取舍（中，最重要的语义缺口）
 
-**做什么**：让 MAUI 的 `WidthRequest/HeightRequest/Margin` 生效；为 Grid/AbsoluteLayout 做准备。
+**做什么**：`WidthRequest/HeightRequest`（✅ 已映射 NODE_WIDTH/HEIGHT）已生效；剩余 Grid/AbsoluteLayout。
 
 **怎么做**：维持当前 **ArkUI flex 托管**模型（StackLayout→Column/Row 自治布局），在此之上：
 - `WidthRequest/HeightRequest` → `NODE_WIDTH/NODE_HEIGHT`（vp）
@@ -36,7 +38,9 @@
 1. **MAUI 托管路径需要子节点的期望尺寸**（measure 往返）。ArkUI 节点的固有尺寸可通过 `getAttribute(NODE_SIZE)` 读取，但需要在节点完成一次布局后取值——存在先有鸡还是先有蛋的时序问题，需要实测 `markDirty` 后的回调时序。
 2. 两套引擎混用时（flex 容器内嵌 MAUI 绝对定位子树），尺寸约定要严格（内层根用固定 px），否则约束传播会乱。建议内层根设 `NODE_SIZE` 固定值。
 
-### 1.3 Window / Navigation（中）
+### 1.3 Window / Navigation（✅ 轻量版已完成 / 中）
+
+已实现 `HarmonyNavigation.Push/Pop`（宿主根容器 + 节点保留式切换），四步实测通过：Push→Pop（主页状态完整恢复）→再 Push（计数延续）。**原"摘除-恢复"难点已实测排除**。剩余：页面动画、Appearing/Disappearing 事件、模态。
 
 **做什么**：支持多页面与导航（MAUI 开发的第二基本操作）。
 
