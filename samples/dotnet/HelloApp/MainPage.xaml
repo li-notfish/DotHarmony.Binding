@@ -15,5 +15,7 @@
                 Clicked="OnTapClicked" />
         <Button Text="Open second page"
                 Clicked="OnOpenSecondClicked" />
+        <Button Text="Layout demo (Grid + Absolute)"
+                Clicked="OnOpenLayoutDemoClicked" />
     </StackLayout>
 </ContentPage>

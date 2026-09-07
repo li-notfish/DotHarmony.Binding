@@ -1,0 +1,25 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HelloApp.LayoutDemoPage"
+             BackgroundColor="White">
+    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*,*">
+        <Label Grid.ColumnSpan="2"
+               Text="Managed layout demo: Grid + AbsoluteLayout"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <AbsoluteLayout Grid.Row="1" Grid.ColumnSpan="2" BackgroundColor="LightBlue">
+            <Button AbsoluteLayout.LayoutBounds="0.05,0.08,0.4,0.18"
+                    AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional"
+                    Text="Top-Left" />
+            <Button AbsoluteLayout.LayoutBounds="0.95,0.5,0.4,0.18"
+                    AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional"
+                    Text="Mid-Right" />
+            <Button AbsoluteLayout.LayoutBounds="0.5,0.92,0.4,0.18"
+                    AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional"
+                    Text="Bottom-Center" />
+        </AbsoluteLayout>
+        <Button Grid.Row="2" Grid.ColumnSpan="2"
+                Text="Pop back"
+                Clicked="OnPopClicked" />
+    </Grid>
+</ContentPage>

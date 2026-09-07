@@ -15,6 +15,8 @@ public static class HarmonyHandlerFactory
         Microsoft.Maui.Controls.Button => new HarmonyButtonHandler(),
         Microsoft.Maui.Controls.Label => new HarmonyLabelHandler(),
         Microsoft.Maui.Controls.StackLayout => new HarmonyLayoutHandler(),
+        Microsoft.Maui.Controls.Grid => new HarmonyManagedLayoutHandler(),
+        Microsoft.Maui.Controls.AbsoluteLayout => new HarmonyManagedLayoutHandler(),
         Microsoft.Maui.Controls.Layout => new HarmonyLayoutHandler(),
         _ => throw new NotSupportedException(
             $"No HarmonyOS handler registered for {element.GetType().Name} (extend HarmonyHandlerFactory)")

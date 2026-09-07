@@ -91,6 +91,12 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_HEIGHT_PERCENT, ArkUIValue.F(fraction));
     }
 
+    /// <summary>绝对定位（vp，NODE_POSITION）—— 相对父容器左上角，托管布局的定位原语</summary>
+    public void SetPosition(float x, float y)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_POSITION, ArkUIValue.F(x), ArkUIValue.F(y));
+    }
+
     /// <summary>四边外边距（NODE_MARGIN，单位 vp）</summary>
     public void SetMarginEdges(float top, float right, float bottom, float left)
     {

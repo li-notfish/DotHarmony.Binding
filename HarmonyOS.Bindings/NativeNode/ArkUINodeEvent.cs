@@ -47,7 +47,7 @@ public readonly unsafe struct ArkUINodeEvent
     // data[4..5]=窗口坐标 data[6..7]=屏幕坐标
     // （OH_ArkUI_NodeEvent_GetNumberValue 对 click 事件返回 106108，不可用）
 
-    private ref readonly ArkUI_NumberValue ClickData(int index)
+    private ref readonly ArkUI_NumberValue ComponentData(int index)
     {
         var p = ArkUINativeApi.GetNodeComponentEvent(_ptr);
         if (p == IntPtr.Zero)
@@ -56,28 +56,37 @@ public readonly unsafe struct ArkUINodeEvent
     }
 
     /// <summary>点击 X 坐标（相对组件左上角，vp）</summary>
-    public float ClickX => ClickData(0).f32;
+    public float ClickX => ComponentData(0).f32;
 
     /// <summary>点击 Y 坐标（相对组件左上角，vp）</summary>
-    public float ClickY => ClickData(1).f32;
+    public float ClickY => ComponentData(1).f32;
 
     /// <summary>事件时间戳（相对系统启动，微秒）</summary>
-    public long ClickTimestamp => (long)ClickData(2).f32;
+    public long ClickTimestamp => (long)ComponentData(2).f32;
 
     /// <summary>输入设备：1=鼠标，2=触摸屏，4=按键</summary>
-    public int ClickDevice => ClickData(3).i32;
+    public int ClickDevice => ComponentData(3).i32;
 
     /// <summary>点击 X 坐标（相对应用窗口，vp）</summary>
-    public float ClickWindowX => ClickData(4).f32;
+    public float ClickWindowX => ComponentData(4).f32;
 
     /// <summary>点击 Y 坐标（相对应用窗口，vp）</summary>
-    public float ClickWindowY => ClickData(5).f32;
+    public float ClickWindowY => ComponentData(5).f32;
 
     /// <summary>点击 X 坐标（相对屏幕，vp）</summary>
-    public float ClickScreenX => ClickData(6).f32;
+    public float ClickScreenX => ComponentData(6).f32;
 
     /// <summary>点击 Y 坐标（相对屏幕，vp）</summary>
-    public float ClickScreenY => ClickData(7).f32;
+    public float ClickScreenY => ComponentData(7).f32;
+
+    // ───────────── 尺寸变化事件（NODE_ON_SIZE_CHANGE）data[] 布局访问器 ─────────────
+    // data[0]=新宽度(vp) data[1]=新高度(vp)
+
+    /// <summary>尺寸变化后的新宽度（vp）</summary>
+    public float SizeChangeWidth => ComponentData(0).f32;
+
+    /// <summary>尺寸变化后的新高度（vp）</summary>
+    public float SizeChangeHeight => ComponentData(1).f32;
 
     internal static string? Utf8ToString(byte* p)
     {

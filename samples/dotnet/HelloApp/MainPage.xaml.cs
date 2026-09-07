@@ -34,4 +34,9 @@ public partial class MainPage : ContentPage
         // 传参验证页面状态：每次进入自增，Pop 回来再进应延续（节点保留语义）
         HarmonyOS.Maui.Hosting.HarmonyNavigation.Push(new SecondPage(++_visits));
     }
+
+    private void OnOpenLayoutDemoClicked(object? sender, EventArgs e)
+    {
+        HarmonyOS.Maui.Hosting.HarmonyNavigation.Push(new LayoutDemoPage());
+    }
 }
