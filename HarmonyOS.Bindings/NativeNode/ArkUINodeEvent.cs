@@ -47,7 +47,8 @@ public readonly unsafe struct ArkUINodeEvent
     // data[4..5]=窗口坐标 data[6..7]=屏幕坐标
     // （OH_ArkUI_NodeEvent_GetNumberValue 对 click 事件返回 106108，不可用）
 
-    private ref readonly ArkUI_NumberValue ComponentData(int index)
+    /// <summary>读取 NodeComponentEvent 附加数值数组第 index 项（各事件的 data 布局见 native_node.h 注释）</summary>
+    public ref readonly ArkUI_NumberValue ComponentData(int index)
     {
         var p = ArkUINativeApi.GetNodeComponentEvent(_ptr);
         if (p == IntPtr.Zero)

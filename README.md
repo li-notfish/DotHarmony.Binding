@@ -127,7 +127,7 @@ tests/                       jest（解析器/生成器 45 用例）
 - **画刷**：仅 SolidColorBrush 映射，Gradient/ImageBrush 静默透明
 - **导航**：轻量 Page 栈（HarmonyNavigation.Push/Pop，节点保留式切换已实测）；Shell/NavigationPage 官方类型与页面动画未支持
 - **异步 API 未支持**：`Promise<T>` 映射为 `IntPtr` 占位，TSFN（ThreadSafeFunction）异步层未实现——这是 M2 核心难点
-- **控件覆盖**：仅 Button/Label/StackLayout/ContentPage 四个 Handler（共 ~1182 条属性 gap 待逐步登记）
+- **控件覆盖**：Button/Label/StackLayout/Grid/AbsoluteLayout/ContentPage 六个 Handler（共 ~1182 条属性 gap 待逐步登记）；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
 - **权限模型未接**：需要权限的 @ohos.* 模块（位置/相机等）未生成 `module.json5` 联动
@@ -135,7 +135,7 @@ tests/                       jest（解析器/生成器 45 用例）
 ## 路线图
 
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
-- M1 尾巴（大部分完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~；剩 Grid/AbsoluteLayout、真机验证
+- M1 尾巴（完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~、~~Grid/AbsoluteLayout（MAUI 托管布局）~~；剩真机验证
 - M2：TSFN 异步层（核心难点）、codeGenerator 缺陷修复、@ohos.* 批量绑定
 - M3：NuGet 打包、单项目体验、CI
 
