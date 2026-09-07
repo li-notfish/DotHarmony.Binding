@@ -1,19 +1,16 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="HelloApp.MainPage"
-             BackgroundColor="LightGray">
+             x:Class="HelloApp.SecondPage"
+             BackgroundColor="#EAF2FB">
     <StackLayout Spacing="12" Padding="12">
-        <Label x:Name="TitleLabel"
-               Text="Hello XAML on HarmonyOS!"
+        <Label Text="This is the SECOND page"
                HorizontalTextAlignment="Center"
                BackgroundColor="White" Padding="8" />
-        <Label x:Name="DeviceLabel"
+        <Label x:Name="VisitLabel"
+               Text="not visited yet"
                HorizontalTextAlignment="Center"
                BackgroundColor="White" Padding="8" />
-        <Button x:Name="TapButton"
-                Text="Tap me (XAML)"
-                Clicked="OnTapClicked" />
-        <Button Text="Open second page"
-                Clicked="OnOpenSecondClicked" />
+        <Button Text="&lt; Back to Main"
+                Clicked="OnBackClicked" />
     </StackLayout>
 </ContentPage>

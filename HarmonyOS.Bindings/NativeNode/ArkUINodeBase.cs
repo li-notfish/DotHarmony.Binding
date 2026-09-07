@@ -67,6 +67,18 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BACKGROUND_COLOR, ArkUIValue.U(argb));
     }
 
+    /// <summary>固定宽度（vp，NODE_WIDTH）——MAUI WidthRequest 的 ArkUI 翻译</summary>
+    public void SetWidth(float vp)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_WIDTH, ArkUIValue.F(vp));
+    }
+
+    /// <summary>固定高度（vp，NODE_HEIGHT）——MAUI HeightRequest 的 ArkUI 翻译</summary>
+    public void SetHeight(float vp)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_HEIGHT, ArkUIValue.F(vp));
+    }
+
     /// <summary>宽度百分比（1.0 = 100%，NODE_WIDTH_PERCENT）——MAUI Fill 语义的 ArkUI 翻译</summary>
     public void SetWidthPercent(float fraction)
     {

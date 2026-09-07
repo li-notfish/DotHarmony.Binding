@@ -8,6 +8,7 @@ namespace HelloApp;
 public partial class MainPage : ContentPage
 {
     private int _clicks;
+    private int _visits;
 
     public MainPage()
     {
@@ -26,5 +27,11 @@ public partial class MainPage : ContentPage
     {
         _clicks++;
         TapButton.Text = $"XAML clicked {_clicks}x";
+    }
+
+    private void OnOpenSecondClicked(object? sender, EventArgs e)
+    {
+        // 传参验证页面状态：每次进入自增，Pop 回来再进应延续（节点保留语义）
+        HarmonyOS.Maui.Hosting.HarmonyNavigation.Push(new SecondPage(++_visits));
     }
 }

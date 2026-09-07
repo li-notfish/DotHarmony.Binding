@@ -6,6 +6,7 @@
 // （Add/Remove/Clear/Insert/Update/UpdateZIndex），子 handler 由 HarmonyHandlerFactory 装配。
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
+using HarmonyOS.Bindings.NativeNode;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 using MControlsLayout = Microsoft.Maui.Controls.Layout;
 
@@ -68,10 +69,19 @@ public class HarmonyLayoutHandler : ViewHandler<MControlsLayout, ArkUINode>
         handler.SetVirtualView(view);
         if (handler.PlatformView is ArkUINode node)
         {
-            // MAUI 布局默认 HorizontalOptions=Fill → 子节点宽度撑满父容器
-            if (view.HorizontalLayoutAlignment == Microsoft.Maui.Primitives.LayoutAlignment.Fill)
+            // MAUI 显式 WidthRequest/HeightRequest 优先（vp）；否则默认 Fill → 宽度撑满父容器
+            if (view.Width is double w && w >= 0)
+            {
+                node.SetWidth((float)w);
+            }
+            else if (view.HorizontalLayoutAlignment == Microsoft.Maui.Primitives.LayoutAlignment.Fill)
             {
                 node.SetWidthPercent(1.0f);
+            }
+
+            if (view.Height is double hgt && hgt >= 0)
+            {
+                node.SetHeight((float)hgt);
             }
 
             // MAUI StackLayout.Spacing → 子节点下边距（最后一个子节点略多余，视觉可接受）

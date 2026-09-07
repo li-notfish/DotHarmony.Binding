@@ -15,8 +15,8 @@ public class HarmonyContentPageHandler : ViewHandler<Microsoft.Maui.Controls.Con
         {
             [nameof(IContentView.Content)] = MapContent,
             [nameof(ITitledElement.Title)] = (h, v) => { /* 鸿蒙标题栏由宿主 UIAbility 承担，M1 忽略 */ },
-            // Background 映射暂缓：Controls 的 Background 为 Brush 体系（与 Graphics.SolidPaint 平行），
-            // 待统一 Brush→ARGB 转换工具后一并接入
+            [nameof(IContentView.Background)] = (h, v) =>
+                BrushHelper.ApplyBackground(h.PlatformView, v.Background),
         };
 
     public HarmonyContentPageHandler() : base(Mapper) { }
