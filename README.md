@@ -138,3 +138,15 @@ tests/                       jest（解析器/生成器 45 用例）
 - M1 尾巴（大部分完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~；剩 Grid/AbsoluteLayout、真机验证
 - M2：TSFN 异步层（核心难点）、codeGenerator 缺陷修复、@ohos.* 批量绑定
 - M3：NuGet 打包、单项目体验、CI
+
+## 致谢 / Acknowledgements
+
+本项目的交叉编译方案与运行时移植实践，建立在以下开源工作的基础上：
+- **[PublishAotCross](https://github.com/MichalStrehovsky/PublishAotCross)**（Michal Strehovsky）——
+  用 zig cc 作为 NativeAOT 自定义链接驱动以实现 linux-musl 交叉编译的开创性方案。
+  本项目 x64 目标的链接驱动即此思路的手写实现（针对鸿蒙场景增加了
+  `-Wl,--gc-sections` 过滤等适配），未直接引用其 NuGet 包，特此声明并致谢。
+- **[musl.cc](https://musl.cc/)** —— aarch64-linux-musl 交叉工具链（arm64 构建使用）。
+- **[OpenHarmony.Avalonia](https://github.com/CeSun/OpenHarmony.Avalonia)**（CeSun）——
+  .NET 运行时鸿蒙移植的先行实践，本项目采用的 GC 堆上限与 ICU 引导参数配方源自其公开的移植记录。
+- **OpenHarmony / HarmonyOS** —— ArkUI NDK（ArkUI_NativeNodeAPI_1）与 Node-API 的官方能力支撑。
