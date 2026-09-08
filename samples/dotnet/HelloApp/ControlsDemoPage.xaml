@@ -1,0 +1,48 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HelloApp.ControlsDemoPage"
+             BackgroundColor="White">
+    <ScrollView>
+        <StackLayout Spacing="12" Padding="12">
+            <!-- Entry in Border -->
+            <Border BackgroundColor="LightBlue" Padding="8">
+                <Entry x:Name="TestEntry"
+                       Placeholder="Type single-line..."
+                       TextColor="Black"
+                       PlaceholderColor="Gray" />
+            </Border>
+
+            <!-- Editor (multi-line) -->
+            <Editor x:Name="TestEditor"
+                    Placeholder="Type multi-line..."
+                    HeightRequest="80"
+                    TextColor="Black" />
+
+            <!-- Stateful controls row -->
+            <StackLayout Orientation="Horizontal" Spacing="8">
+                <Label Text="Switch:" VerticalTextAlignment="Center" />
+                <Switch x:Name="TestSwitch" />
+                <Label Text="Check:" VerticalTextAlignment="Center" />
+                <CheckBox x:Name="TestCheck" />
+            </StackLayout>
+
+            <!-- Radio group -->
+            <StackLayout Orientation="Horizontal" Spacing="8">
+                <RadioButton x:Name="RadioA" Content="Option A" GroupName="demo" Value="A" />
+                <RadioButton x:Name="RadioB" Content="Option B" GroupName="demo" Value="B" />
+                <RadioButton x:Name="RadioC" Content="Option C" GroupName="demo" Value="C" />
+            </StackLayout>
+
+            <!-- Slider + ProgressBar (decoupled for M1) -->
+            <Slider x:Name="TestSlider" Minimum="0" Maximum="100" Value="40"
+                    MinimumTrackColor="Blue" MaximumTrackColor="LightGray" />
+            <ProgressBar Progress="0.4" ProgressColor="Green" HeightRequest="20" />
+
+            <!-- Image (network URL) -->
+            <Image Source="https://picsum.photos/200/100" HeightRequest="100" Aspect="AspectFit" />
+
+            <!-- Back -->
+            <Button Text="Pop back" Clicked="OnPopClicked" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

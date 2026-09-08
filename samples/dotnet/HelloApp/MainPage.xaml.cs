@@ -39,4 +39,9 @@ public partial class MainPage : ContentPage
     {
         HarmonyOS.Maui.Hosting.HarmonyNavigation.Push(new LayoutDemoPage());
     }
+
+    private void OnOpenControlsDemoClicked(object? sender, EventArgs e)
+    {
+        HarmonyOS.Maui.Hosting.HarmonyNavigation.Push(new ControlsDemoPage());
+    }
 }

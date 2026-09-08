@@ -9,6 +9,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>HARMONYOS</DefineConstants>
+    <!-- CS8766: ViewHandler.PlatformView nullable vs I*Handler.PlatformView non-null (MAUI 官方做法同)
+         CS0618: Controls.Frame 在 .NET 9+ 已弃用，推荐 Border，但我们仍需要支持旧 XAML -->
+    <NoWarn>$(NoWarn);CS8766;CS0618</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -21,8 +21,13 @@ public static class HarmonyHandlerFactory
         Microsoft.Maui.Controls.CheckBox => new HarmonyCheckBoxHandler(),
         Microsoft.Maui.Controls.RadioButton => new HarmonyRadioButtonHandler(),
         Microsoft.Maui.Controls.Entry => new HarmonyEntryHandler(),
+        Microsoft.Maui.Controls.Editor => new HarmonyEditorHandler(),
+        Microsoft.Maui.Controls.Slider => new HarmonySliderHandler(),
+        Microsoft.Maui.Controls.ProgressBar => new HarmonyProgressBarHandler(),
         Microsoft.Maui.Controls.Image => new HarmonyImageHandler(),
         Microsoft.Maui.Controls.ScrollView => new HarmonyScrollViewHandler(),
+        Microsoft.Maui.Controls.Frame => new HarmonyFrameHandler(),
+        Microsoft.Maui.Controls.Border => new HarmonyFrameHandler(),
         Microsoft.Maui.Controls.Layout => new HarmonyLayoutHandler(),
         _ => throw new NotSupportedException(
             $"No HarmonyOS handler registered for {element.GetType().Name} (extend HarmonyHandlerFactory)")

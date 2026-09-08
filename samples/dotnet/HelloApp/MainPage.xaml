@@ -17,5 +17,7 @@
                 Clicked="OnOpenSecondClicked" />
         <Button Text="Layout demo (Grid + Absolute)"
                 Clicked="OnOpenLayoutDemoClicked" />
+        <Button Text="Controls demo (10 widgets)"
+                Clicked="OnOpenControlsDemoClicked" />
     </StackLayout>
 </ContentPage>
