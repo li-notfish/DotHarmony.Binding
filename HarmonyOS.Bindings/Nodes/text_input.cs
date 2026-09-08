@@ -46,6 +46,24 @@ public unsafe class TextInput : ArkUINodeBase
             ArkUIValue.U((uint)((a << 24) | (r << 16) | (g << 8) | b)));
     }
 
+    /// <summary>最大输入长度（NODE_TEXT_INPUT_MAX_LENGTH，i32）</summary>
+    public int MaxLength
+    {
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_INPUT_MAX_LENGTH, ArkUIValue.I(value));
+    }
+
+    /// <summary>回车键类型（NODE_TEXT_INPUT_ENTER_KEY_TYPE，ArkUI_EnterKeyType）</summary>
+    public ArkUI_EnterKeyType EnterKeyType
+    {
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_INPUT_ENTER_KEY_TYPE, ArkUIValue.I((int)value));
+    }
+
+    /// <summary>是否可编辑（NODE_TEXT_INPUT_EDITING，i32：true=可编辑 false=只读）</summary>
+    public bool ReadOnly
+    {
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_INPUT_EDITING, ArkUIValue.I(value ? 0 : 1));
+    }
+
     /// <summary>onChange 事件（NODE_TEXT_INPUT_ON_CHANGE，pStr=新文本）</summary>
     public event Action<ArkUINodeEvent>? TextChange
     {

@@ -22,6 +22,25 @@ public unsafe class Scroll : ArkUINodeBase
         set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_SCROLL_EDGE_EFFECT, ArkUIValue.I(value));
     }
 
+    /// <summary>滚动偏移（NODE_SCROLL_OFFSET，双值 f32：水平 vp + 垂直 vp）</summary>
+    public void SetOffset(float horizontal, float vertical)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_SCROLL_OFFSET,
+            ArkUIValue.F(horizontal), ArkUIValue.F(vertical));
+
+    /// <summary>滚动中事件（NODE_SCROLL_EVENT_ON_SCROLL：data[0]=水平偏移 data[1]=垂直偏移）</summary>
+    public event Action<ArkUINodeEvent>? ScrollUpdate
+    {
+        add => On(ArkUI_NodeEventType.NODE_SCROLL_EVENT_ON_SCROLL, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SCROLL_EVENT_ON_SCROLL);
+    }
+
+    /// <summary>滚动开始事件（NODE_SCROLL_EVENT_ON_SCROLL_START，无参数）</summary>
+    public event Action<ArkUINodeEvent>? ScrollStart
+    {
+        add => On(ArkUI_NodeEventType.NODE_SCROLL_EVENT_ON_SCROLL_START, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SCROLL_EVENT_ON_SCROLL_START);
+    }
+
     /// <summary>滚动结束事件（NODE_SCROLL_EVENT_ON_SCROLL_STOP）</summary>
     public event Action<ArkUINodeEvent>? ScrollStop
     {
