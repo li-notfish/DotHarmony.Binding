@@ -1,16 +1,18 @@
-// HarmonySliderHandler：MAUI Controls.Slider → HarmonyOS.ArkUI.Slider
+using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
+using HarmonyOS.Bindings.NativeNode;
 using ArkSlider = HarmonyOS.ArkUI.Slider;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonySliderHandler : ViewHandler<Microsoft.Maui.Controls.Slider, ArkSlider>
+/// <summary>MAUI Slider 的 HarmonyOS Handler（ArkUI Slider 节点）。</summary>
+public class HarmonySliderHandler : ViewHandler<ISlider, ArkSlider>
 {
-    public static PropertyMapper<Microsoft.Maui.Controls.Slider, HarmonySliderHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<ISlider, HarmonySliderHandler> Mapper = new(ViewMapper)
     {
-        [nameof(Microsoft.Maui.Controls.Slider.Minimum)] = MapRange,
-        [nameof(Microsoft.Maui.Controls.Slider.Maximum)] = MapRange,
-        [nameof(Microsoft.Maui.Controls.Slider.Value)] = MapValue,
+        [nameof(ISlider.Minimum)] = MapMinimum,
+        [nameof(ISlider.Maximum)] = MapMaximum,
+        [nameof(ISlider.Value)] = MapValue,
     };
 
     public HarmonySliderHandler() : base(Mapper) { }
@@ -29,27 +31,26 @@ public class HarmonySliderHandler : ViewHandler<Microsoft.Maui.Controls.Slider, 
         base.DisconnectHandler(platformView);
     }
 
-    public static void MapRange(HarmonySliderHandler h, Microsoft.Maui.Controls.Slider v)
+    public static void MapMinimum(HarmonySliderHandler h, ISlider v)
     {
-        // ArkUI Slider 需要单独设置 min/max/value，顺序由 Mapper 决定；
-        // Minimum/Maximum 任一变化都重刷范围
         h.PlatformView.MinValue = (float)v.Minimum;
+    }
+
+    public static void MapMaximum(HarmonySliderHandler h, ISlider v)
+    {
         h.PlatformView.MaxValue = (float)v.Maximum;
-        // 重新应用 Value（避免超出新范围）
+    }
+
+    public static void MapValue(HarmonySliderHandler h, ISlider v)
+    {
         var clamped = Math.Clamp(v.Value, v.Minimum, v.Maximum);
-        if (clamped != v.Value) v.Value = clamped;
         h.PlatformView.Value = (float)clamped;
     }
 
-    public static void MapValue(HarmonySliderHandler h, Microsoft.Maui.Controls.Slider v)
-        => h.PlatformView.Value = (float)Math.Clamp(v.Value, v.Minimum, v.Maximum);
-
-    private void OnValueChange(HarmonyOS.Bindings.NativeNode.ArkUINodeEvent e)
+    private void OnValueChange(ArkUINodeEvent e)
     {
-        // data[0].f32 = current value（见 NODE_SLIDER_EVENT_ON_CHANGE 注释）
         var value = (double)e.ComponentData(0).f32;
         if (VirtualView.Value == value) return;
-        // 属性 setter 触发 ValueChanged 事件
         VirtualView.Value = value;
     }
 }

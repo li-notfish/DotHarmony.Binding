@@ -6,6 +6,7 @@ using MImage = Microsoft.Maui.IImage;
 
 namespace HarmonyOS.Maui.Handlers;
 
+/// <summary>MAUI Image 的 HarmonyOS Handler（ArkUI Image 节点）。</summary>
 public class HarmonyImageHandler : ViewHandler<MImage, ArkImage>
 {
     public static PropertyMapper<MImage, HarmonyImageHandler> Mapper = new(ViewMapper)
@@ -30,16 +31,16 @@ public class HarmonyImageHandler : ViewHandler<MImage, ArkImage>
         base.DisconnectHandler(platformView);
     }
 
-    public static void MapSource(HarmonyImageHandler handler, MImage view)
+    public static void MapSource(HarmonyImageHandler h, MImage v)
     {
-        var src = ResolveImageSource(view.Source);
+        var src = ResolveImageSource(v.Source);
         if (src is not null)
-            handler.PlatformView.Src = src;
+            h.PlatformView.Src = src;
     }
 
-    public static void MapAspect(HarmonyImageHandler handler, MImage view)
+    public static void MapAspect(HarmonyImageHandler h, MImage v)
     {
-        handler.PlatformView.ObjectFit = view.Aspect switch
+        h.PlatformView.ObjectFit = v.Aspect switch
         {
             Aspect.AspectFit => ArkUI_ObjectFit.ARKUI_OBJECT_FIT_CONTAIN,
             Aspect.AspectFill => ArkUI_ObjectFit.ARKUI_OBJECT_FIT_COVER,

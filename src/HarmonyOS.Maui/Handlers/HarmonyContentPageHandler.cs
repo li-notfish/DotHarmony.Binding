@@ -1,46 +1,68 @@
-// HarmonyContentPageHandler：MAUI ContentPage → ArkUI Column（100%×100% 容器 + 单 Content 子节点）
-// 协议对齐官方：IPageHandler : IContentViewHandler : IViewHandler；
-// Content 经 PropertyMapper（nameof(IContentView.Content)）自动增量派发。
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using ArkColumn = HarmonyOS.ArkUI.Column;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonyContentPageHandler : ViewHandler<Microsoft.Maui.Controls.ContentPage, ArkColumn>
+/// <summary>MAUI ContentPage 的 HarmonyOS Handler（ArkUI Column 容器 + 单 Content 子节点）。</summary>
+public class HarmonyContentPageHandler : ViewHandler<ContentPage, ArkColumn>
 {
-    public static PropertyMapper<Microsoft.Maui.Controls.ContentPage, HarmonyContentPageHandler> Mapper =
-        new(ViewHandler.ViewMapper)
-        {
-            [nameof(IContentView.Content)] = MapContent,
-            [nameof(ITitledElement.Title)] = (h, v) => { /* 鸿蒙标题栏由宿主 UIAbility 承担，M1 忽略 */ },
-            [nameof(IContentView.Background)] = (h, v) =>
-                BrushHelper.ApplyBackground(h.PlatformView, v.Background),
-        };
+    public static PropertyMapper<ContentPage, HarmonyContentPageHandler> Mapper = new(ViewMapper)
+    {
+        [nameof(IContentView.Content)] = MapContent,
+        [nameof(IContentView.Background)] = MapBackground,
+        [nameof(ITitledElement.Title)] = MapTitle,
+    };
 
     public HarmonyContentPageHandler() : base(Mapper) { }
 
     protected override ArkColumn CreatePlatformView()
     {
         var column = new ArkColumn();
-        // Page 语义：铺满窗口
         column.SetWidthPercent(1.0f);
         column.SetHeightPercent(1.0f);
         return column;
     }
 
-    private static void MapContent(HarmonyContentPageHandler handler, IContentView page)
+    public static void MapContent(HarmonyContentPageHandler handler, ContentPage page)
     {
         if (page.Content is not IView content) return;
-        var childHandler = HarmonyHandlerFactory.Create(content);
-        childHandler.SetVirtualView(content);
+        handler.UpdateContent(content);
+    }
+
+    public static void MapBackground(HarmonyContentPageHandler h, ContentPage v)
+    {
+        BrushHelper.ApplyBackground(h.PlatformView, v.Background);
+    }
+
+    public static void MapTitle(HarmonyContentPageHandler h, ContentPage v)
+    {
+        // HarmonyOS 标题栏由宿主 UIAbility 承担，M1 忽略
+    }
+
+    private IElementHandler? _contentHandler;
+
+    private void UpdateContent(object? content)
+    {
+        if (_contentHandler is not null)
+        {
+            PlatformView.RemoveAllChildren();
+            _contentHandler = null;
+        }
+
+        if (content is not IView view) return;
+
+        var childHandler = HarmonyHandlerFactory.Create(view);
+        childHandler.SetVirtualView(view);
+        _contentHandler = childHandler;
+
         if (childHandler.PlatformView is ArkUINode node)
         {
-            // Content 填满 Page
             node.SetWidthPercent(1.0f);
             node.SetHeightPercent(1.0f);
-            handler.PlatformView.AddChild(node);
+            PlatformView.AddChild(node);
         }
     }
 }
