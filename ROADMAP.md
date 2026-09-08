@@ -7,7 +7,7 @@
 
 - ✅ UI 通道：ArkUI NDK C API（`ArkUI_NativeNodeAPI_1`）→ `ArkUINodeBase` 稳定句柄
 - ✅ 服务通道：napi（`napi_load_module("=@ohos.xxx")`）→ `@ohos.deviceInfo` 端到端
-- ✅ MAUI Handler 包：Button/Label/StackLayout/ContentPage 四个 Handler + XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）
+- ✅ MAUI Handler 包：16 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame）+ XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）；代码风格已统一为官方 handler 模式
 - ✅ 工具链：`remote-build.sh`（远程 NativeAOT）→ `build-hap.cmd`（hvigor）→ `deploy-hap.sh`（hdc）
 
 ---
@@ -54,9 +54,9 @@
 2. 暂存的已挂载页面在 ArkUI 侧是"从树摘除但句柄保留"——验证 `removeChild` 后再 `addNode` 的节点状态恢复是否完整（属性是否保留）
 3. Shell/NavigationPage 官方类型**不在支持计划内**（协议太重），文档需明确开发者不要使用
 
-### 1.4 更多控件 Handler（持续）
+### 1.4 更多控件 Handler（✅ 已完成 16 个）
 
-Image（需要图片服务/Resizetizer 联动，难）、Entry/Editor（键盘/焦点/输入法事件，中）、ScrollView（`NODE_SCROLL_*` 属性族，中）、CheckBox/Switch（简单）。按需插入。
+已完成 16 个 Handler（见 README 已知限制），覆盖官方 MAUI 控件集的大部分基础控件。代码风格已统一为官方 handler 模式（`ViewHandler<TVirtualView, TPlatformView>` + 命名 Map 方法 + `I*Handler` 接口）。剩余低优先级控件（CollectionView/CarouselView/Picker/RefreshView/Shape）按需插入。
 
 ### 1.5 真机 arm64 验证（小）
 
