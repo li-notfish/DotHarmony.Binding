@@ -343,3 +343,7 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | 类名冲突编译错 | `Stack`/`AbsoluteLayout` 与 BCL/MAUI 类型撞名 | using 别名（`ArkStack`/`MAbsolute` 模式） |
 | MapRange 改 VirtualView.Value 导致无限循环 | Map 方法里直接改 VirtualView 会触发 PropertyChanged，又回 Map | **不要在 Map 方法里改 VirtualView**，只读属性取 clamp 值 |
 | 事件取消订阅无效 | `Click -= _ => { }` lambda 不等于 `Click += _ => { }` 的 lambda | 用**命名方法**订阅和取消订阅 |
+| `view.Date.ToString("格式")` 编译错 CS1501 | MAUI 10 的 DatePicker.Date/TimePicker.Time 是**可空类型**（`DateTime?`/`TimeSpan?`） | 先 `?? 默认值` 再取字段插值（`$"{d.Year:d4}-..."`） |
+| 核心接口缺成员（GroupName/Refreshing 等） | MAUI 核心接口（IRadioButton/IRefreshView）比 Controls 类型瘦 | 按官方风格回退 Controls 具体类型，虚拟视图泛型直接用 Controls 类（Picker 先例） |
+| 生成器重跑覆盖 curated 节点类 | 9 个旧版节点类（radio/scroll/slider 等）API 面与 handler 强耦合，与新 NativeCodeGenerator 输出不兼容 | index.ts `LEGACY_CURATED` 排除清单挡住；迁移前勿移除 |
+| 连续 uitest 手势后 hdc 挂死 | 模拟器 UI/uitest 过载 | `hdc kill` → `tconn 127.0.0.1:5555` → 重试；快照用 `timeout` 包裹 |

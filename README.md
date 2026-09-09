@@ -4,7 +4,7 @@
 用 .NET (NativeAOT) 绑定 HarmonyOS (ArkUI/ArkTS)，并让 .NET MAUI 控件经 Handler 机制渲染为 ArkUI 原生节点。
 
 **当前状态：核心链路已在模拟器端到端验证** —— 运行时初始化 → 原生节点树上屏 → 属性/事件闭环 →
-`@ohos.*` 服务调用 → **XAML 声明式 UI → 鸿蒙原生渲染**。**16 个 MAUI 控件 Handler** 已适配并统一为官方 handler 风格。距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
+`@ohos.*` 服务调用 → **XAML 声明式 UI → 鸿蒙原生渲染**。**21 个 MAUI 控件 Handler** 已适配并统一为官方 handler 风格。距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 ## 这是什么
 
@@ -127,7 +127,7 @@ tests/                       jest（解析器/生成器 45 用例）
 - **画刷**：仅 SolidColorBrush 映射，Gradient/ImageBrush 静默透明
 - **导航**：轻量 Page 栈（HarmonyNavigation.Push/Pop，节点保留式切换已实测）；Shell/NavigationPage 官方类型与页面动画未支持
 - **异步 API 未支持**：`Promise<T>` 映射为 `IntPtr` 占位，TSFN（ThreadSafeFunction）异步层未实现——这是 M2 核心难点
-- **控件覆盖**：16 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
+- **控件覆盖**：21 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/RefreshView/Picker/DatePicker/TimePicker + CollectionView/CarouselView M1 物化版），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
 - **权限模型未接**：需要权限的 @ohos.* 模块（位置/相机等）未生成 `module.json5` 联动
