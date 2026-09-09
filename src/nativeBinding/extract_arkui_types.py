@@ -20,7 +20,24 @@ if SDK_HOME is None:
     # 回退默认值
     SDK_HOME = r"C:/Program Files/Huawei/DevEco Studio/sdk/default"
 
-DEFAULT_SDK = os.path.join(SDK_HOME, "openharmony/native/sysroot/usr/include/arkui")
+
+def _default_sdk() -> str:
+    """按优先级探测 ArkUI 头文件目录：OHSDK_HOME/版本号 → OHSDK_HOME/openharmony → DevEco 内置"""
+    candidates = []
+    if SDK_HOME:
+        candidates += [
+            os.path.join(SDK_HOME, "26.0.0", "native", "sysroot", "usr", "include", "arkui"),
+            os.path.join(SDK_HOME, "openharmony", "native", "sysroot", "usr", "include", "arkui"),
+            os.path.join(SDK_HOME, "native", "sysroot", "usr", "include", "arkui"),
+        ]
+    candidates.append("C:/Program Files/Huawei/DevEco Studio/sdk/default/openharmony/native/sysroot/usr/include/arkui")
+    for c in candidates:
+        if os.path.isfile(os.path.join(c, "native_node.h")):
+            return c
+    return candidates[0]
+
+
+DEFAULT_SDK = _default_sdk()
 
 DEFAULT_OUT = "HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.g.cs"
 
