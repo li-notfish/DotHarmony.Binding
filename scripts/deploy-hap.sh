@@ -6,7 +6,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-HDC="$OHSDK_HOME/openharmony/toolchains/hdc.exe"
+HDC="$OHSDK_HOME/26.0.0/toolchains/hdc.exe"
 HAP="${PROJECT_ROOT}/samples/HarmonyHost/entry/build/default/outputs/default/entry-default-unsigned.hap"
 
 echo "=== 1. 清空 hilog ==="

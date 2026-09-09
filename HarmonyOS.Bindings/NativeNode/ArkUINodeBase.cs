@@ -53,6 +53,13 @@ public abstract unsafe class ArkUINodeBase : IDisposable
             ArkUIValue.F(value), ArkUIValue.F(value), ArkUIValue.F(value), ArkUIValue.F(value));
     }
 
+    /// <summary>内边距（四边独立，vp）</summary>
+    public void SetPaddingEdges(float top, float right, float bottom, float left)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_PADDING,
+            ArkUIValue.F(top), ArkUIValue.F(right), ArkUIValue.F(bottom), ArkUIValue.F(left));
+    }
+
     /// <summary>外边距（四边同值，vp）</summary>
     public float Margin
     {

@@ -14,6 +14,7 @@ public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
     public static PropertyMapper<MLAYOUT, HarmonyLayoutHandler> Mapper = new(ViewMapper)
     {
         [nameof(MLAYOUT.Background)] = MapBackground,
+        [nameof(MLAYOUT.Padding)] = MapPadding,
     };
 
     // Controls 布局的子树变更协议（字符串命令，经 Handler.Invoke 派发）
@@ -50,6 +51,16 @@ public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
     public static void MapBackground(HarmonyLayoutHandler h, MLAYOUT v)
     {
         BrushHelper.ApplyBackground(h.PlatformView, v.Background);
+    }
+
+    public static void MapPadding(HarmonyLayoutHandler h, MLAYOUT v)
+    {
+        var p = v.Padding;
+        if (p.Top > 0 || p.Right > 0 || p.Bottom > 0 || p.Left > 0)
+        {
+            h.PlatformView.SetPaddingEdges(
+                (float)p.Top, (float)p.Right, (float)p.Bottom, (float)p.Left);
+        }
     }
 
     public static void MapAdd(HarmonyLayoutHandler h, MLAYOUT v, object? args)
@@ -97,12 +108,14 @@ public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
         handler.SetVirtualView(view);
         if (handler.PlatformView is ArkUINode node)
         {
-            // MAUI 显式 WidthRequest/HeightRequest 优先（vp）；否则默认 Fill → 宽度撑满父容器
+            // MAUI 显式 WidthRequest/HeightRequest 优先（vp）
             if (view.Width is double w && w >= 0)
             {
                 node.SetWidth((float)w);
             }
-            else if (view.HorizontalLayoutAlignment == MALIGNMENT.Fill)
+            // 水平 StackLayout 不设 SetWidthPercent——子节点用自然宽度，防止溢出屏幕
+            else if (view.HorizontalLayoutAlignment == MALIGNMENT.Fill
+                && VirtualView is not StackLayout { Orientation: StackOrientation.Horizontal })
             {
                 node.SetWidthPercent(1.0f);
             }

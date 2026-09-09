@@ -14,7 +14,14 @@ public class HarmonySwitchHandler : ViewHandler<ISwitch, ArkSwitch>, ISwitchHand
 
     public HarmonySwitchHandler() : base(Mapper) { }
 
-    protected override ArkSwitch CreatePlatformView() => new();
+    protected override ArkSwitch CreatePlatformView()
+    {
+        var toggle = new ArkSwitch();
+        // ArkUI Toggle 节点需要显式尺寸约束，否则在 Row/Column 中会异常放大
+        toggle.SetWidth(50);
+        toggle.SetHeight(26);
+        return toggle;
+    }
 
     protected override void ConnectHandler(ArkSwitch platformView)
     {

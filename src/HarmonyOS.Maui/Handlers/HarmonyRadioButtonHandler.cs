@@ -5,6 +5,11 @@ using ArkRadio = HarmonyOS.ArkUI.RadioButton;
 
 namespace HarmonyOS.Maui.Handlers;
 
+/// <summary>
+/// IRadioButton → ArkUI RadioButton handler.
+/// M1 限制：ArkUI RadioButton（ARKUI_NODE_RADIO）不支持 Content 文本属性（SDK 无 NODE_RADIO_CONTENT），
+/// 仅显示圆点。Content 文本需等 SDK 补充或改用 Row+Text 包装方案。
+/// </summary>
 public class HarmonyRadioButtonHandler : ViewHandler<IRadioButton, ArkRadio>, IRadioButtonHandler
 {
     public static PropertyMapper<IRadioButton, IRadioButtonHandler> Mapper = new(ViewMapper)
@@ -14,7 +19,14 @@ public class HarmonyRadioButtonHandler : ViewHandler<IRadioButton, ArkRadio>, IR
 
     public HarmonyRadioButtonHandler() : base(Mapper) { }
 
-    protected override ArkRadio CreatePlatformView() => new();
+    protected override ArkRadio CreatePlatformView()
+    {
+        var radio = new ArkRadio();
+        // ArkUI RadioButton 节点需要显式尺寸约束
+        radio.SetWidth(24);
+        radio.SetHeight(24);
+        return radio;
+    }
 
     protected override void ConnectHandler(ArkRadio platformView)
     {

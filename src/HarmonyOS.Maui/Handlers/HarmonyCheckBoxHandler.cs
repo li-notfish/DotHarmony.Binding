@@ -14,7 +14,14 @@ public class HarmonyCheckBoxHandler : ViewHandler<ICheckBox, ArkCheckBox>, IChec
 
     public HarmonyCheckBoxHandler() : base(Mapper) { }
 
-    protected override ArkCheckBox CreatePlatformView() => new();
+    protected override ArkCheckBox CreatePlatformView()
+    {
+        var cb = new ArkCheckBox();
+        // ArkUI CheckBox 节点需要显式尺寸约束，否则在 Row/Column 中不可见
+        cb.SetWidth(24);
+        cb.SetHeight(24);
+        return cb;
+    }
 
     protected override void ConnectHandler(ArkCheckBox platformView)
     {

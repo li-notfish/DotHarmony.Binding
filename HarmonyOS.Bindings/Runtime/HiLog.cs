@@ -9,7 +9,7 @@ namespace HarmonyOS.Bindings.Runtime;
 /// OH_LOG_Print 是 C 变参函数；对 %{public}s 单字符串场景，
 /// arm64/x64 上以固定签名调用变参函数是安全的（前几个参数均走整型/指针寄存器）。
 /// </summary>
-internal static unsafe partial class HiLog
+public static unsafe partial class HiLog
 {
     private const string Lib = "libhilog_ndk.z.so";
 
@@ -17,13 +17,13 @@ internal static unsafe partial class HiLog
     [LibraryImport(Lib)]
     private static partial void OH_LOG_Print(int type, int level, uint domain, byte* tag, byte* fmt, byte* value);
 
-    internal static void Debug(string tag, string message) => Write(3, tag, message);
+    public static void Debug(string tag, string message) => Write(3, tag, message);
 
-    internal static void Info(string tag, string message) => Write(4, tag, message);
+    public static void Info(string tag, string message) => Write(4, tag, message);
 
-    internal static void Warn(string tag, string message) => Write(5, tag, message);
+    public static void Warn(string tag, string message) => Write(5, tag, message);
 
-    internal static void Error(string tag, string message) => Write(6, tag, message);
+    public static void Error(string tag, string message) => Write(6, tag, message);
 
     private static void Write(int level, string tag, string message)
     {

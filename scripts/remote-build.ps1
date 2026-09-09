@@ -6,11 +6,17 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent $scriptDir
 Set-Location $projectRoot
 
+# 在项目根目录下创建 tmp 目录
+$tmpDir = Join-Path $projectRoot "tmp"
+New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
+
 # 从环境变量读取配置，若未设置则使用默认值
 $REMOTE = if ($env:REMOTE) { $env:REMOTE } else { "wsl_auzrelinux" }
 $BUILD  = if ($env:BUILD)  { $env:BUILD  } else { "/tmp/arktsbinding" }
 
 Write-Host "=== 1. 打包源码 ==="
+$tempArchive = Join-Path $tmpDir "arkts-src.tgz"
+
 $tarExcludes = @(
     "--exclude=node_modules",
     "--exclude=.git",
@@ -19,17 +25,18 @@ $tarExcludes = @(
     "--exclude=bin",
     "--exclude=obj",
     "--exclude=output",
-    "--exclude=UnityHarmony"
+    "--exclude=UnityHarmony",
+    "--exclude=tmp"
 )
 $filesToTar = @("src", "HarmonyOS.Bindings", "samples", "scripts", "ArkTsBinding.slnx")
-& tar czf /tmp/arkts-src.tgz $tarExcludes $filesToTar
+& tar czf $tempArchive $tarExcludes $filesToTar
 if ($LASTEXITCODE -ne 0) { throw "打包失败" }
 
 Write-Host "=== 2. 上传并解压 ==="
 & ssh $REMOTE "rm -rf $BUILD && mkdir -p $BUILD"
 if ($LASTEXITCODE -ne 0) { throw "远程创建目录失败" }
 
-& scp -q /tmp/arkts-src.tgz "$($REMOTE):$BUILD/src.tgz"
+& scp -q $tempArchive "$($REMOTE):$BUILD/src.tgz"
 if ($LASTEXITCODE -ne 0) { throw "上传源码包失败" }
 
 & ssh $REMOTE "cd $BUILD && tar xzf src.tgz"

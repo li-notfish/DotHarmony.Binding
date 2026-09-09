@@ -58,5 +58,6 @@ public class HarmonyImageHandler : ViewHandler<MImage, ArkImage>
 
     private void OnImageError(ArkUINodeEvent e)
     {
+        System.Diagnostics.Debug.WriteLine($"[Image] Failed to load: {VirtualView.Source}");
     }
 }

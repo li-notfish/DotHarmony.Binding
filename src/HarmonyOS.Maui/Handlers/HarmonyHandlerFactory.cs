@@ -26,7 +26,6 @@ public static class HarmonyHandlerFactory
         Microsoft.Maui.Controls.ProgressBar => new HarmonyProgressBarHandler(),
         Microsoft.Maui.Controls.Image => new HarmonyImageHandler(),
         Microsoft.Maui.Controls.ScrollView => new HarmonyScrollViewHandler(),
-        Microsoft.Maui.Controls.Frame => new HarmonyFrameHandler(),
         Microsoft.Maui.Controls.Border => new HarmonyFrameHandler(),
         Microsoft.Maui.Controls.Layout => new HarmonyLayoutHandler(),
         _ => throw new NotSupportedException(

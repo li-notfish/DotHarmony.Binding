@@ -10,7 +10,7 @@ if (-not $env:OHSDK_HOME) {
     Write-Error "请先设置环境变量 OHSDK_HOME"
     exit 1
 }
-$HDC = Join-Path $env:OHSDK_HOME "openharmony\toolchains\hdc.exe"
+$HDC = Join-Path $env:OHSDK_HOME "26.0.0\toolchains\hdc.exe"
 if (-not (Test-Path $HDC)) {
     Write-Error "找不到 hdc.exe，请检查 OHSDK_HOME 是否指向正确的 toolchains 目录"
     exit 1
@@ -30,4 +30,4 @@ Write-Host "=== 3. 启动应用 ==="
 
 Write-Host "=== 4. 等待后抓取日志 ==="
 Start-Sleep -Seconds 6
-& $HDC shell "hilog -x" | Select-String -Pattern 'A00000/HarmonyHost|dlopen|libapp|dotnet|DOTNET' | Select-Object -Last 25
+& $HDC shell "hilog -x" | Select-String -Pattern 'A00000/HarmonyHost|dlopen|libapp|dotnet|DOTNET' 

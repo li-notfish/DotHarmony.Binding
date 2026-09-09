@@ -13,6 +13,9 @@ public class HarmonySliderHandler : ViewHandler<ISlider, ArkSlider>
         [nameof(ISlider.Minimum)] = MapMinimum,
         [nameof(ISlider.Maximum)] = MapMaximum,
         [nameof(ISlider.Value)] = MapValue,
+        [nameof(ISlider.MinimumTrackColor)] = MapMinimumTrackColor,
+        [nameof(ISlider.MaximumTrackColor)] = MapMaximumTrackColor,
+        [nameof(ISlider.ThumbColor)] = MapThumbColor,
     };
 
     public HarmonySliderHandler() : base(Mapper) { }
@@ -45,6 +48,30 @@ public class HarmonySliderHandler : ViewHandler<ISlider, ArkSlider>
     {
         var clamped = Math.Clamp(v.Value, v.Minimum, v.Maximum);
         h.PlatformView.Value = (float)clamped;
+    }
+
+    public static void MapMinimumTrackColor(HarmonySliderHandler h, ISlider v)
+    {
+        if (v.MinimumTrackColor is { } c)
+            h.PlatformView.SetSelectedColor(
+                (byte)(c.Red * 255), (byte)(c.Green * 255),
+                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+    }
+
+    public static void MapMaximumTrackColor(HarmonySliderHandler h, ISlider v)
+    {
+        if (v.MaximumTrackColor is { } c)
+            h.PlatformView.SetTrackColor(
+                (byte)(c.Red * 255), (byte)(c.Green * 255),
+                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+    }
+
+    public static void MapThumbColor(HarmonySliderHandler h, ISlider v)
+    {
+        if (v.ThumbColor is { } c)
+            h.PlatformView.SetBlockColor(
+                (byte)(c.Red * 255), (byte)(c.Green * 255),
+                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
     }
 
     private void OnValueChange(ArkUINodeEvent e)

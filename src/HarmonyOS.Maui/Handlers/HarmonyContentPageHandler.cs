@@ -13,6 +13,7 @@ public class HarmonyContentPageHandler : ViewHandler<ContentPage, ArkColumn>
     {
         [nameof(IContentView.Content)] = MapContent,
         [nameof(IContentView.Background)] = MapBackground,
+        [nameof(VisualElement.BackgroundColor)] = MapBackgroundColor,
         [nameof(ITitledElement.Title)] = MapTitle,
     };
 
@@ -33,6 +34,11 @@ public class HarmonyContentPageHandler : ViewHandler<ContentPage, ArkColumn>
     }
 
     public static void MapBackground(HarmonyContentPageHandler h, ContentPage v)
+    {
+        BrushHelper.ApplyBackground(h.PlatformView, v.Background);
+    }
+
+    public static void MapBackgroundColor(HarmonyContentPageHandler h, ContentPage v)
     {
         BrushHelper.ApplyBackground(h.PlatformView, v.Background);
     }
