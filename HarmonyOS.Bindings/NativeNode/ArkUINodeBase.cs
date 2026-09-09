@@ -193,6 +193,18 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         }
     }
 
+    /// <summary>
+    /// 通用事件订阅入口。组件生成类只包装了 .d.ts 声明的事件子集；
+    /// ArkUI_NodeEventType 枚举为 NDK 头文件全量（含 NODE_EVENT_ON_APPEAR / NODE_EVENT_ON_AREA_CHANGE 等），
+    /// 可经此直接使用。覆盖式注册语义与 On() 一致：同类型事件后注册者替换先注册者。
+    /// </summary>
+    public void SubscribeEvent(ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
+        => On(eventType, handler);
+
+    /// <summary>注销通用订阅（同类型覆盖式注册语义，见 SubscribeEvent）</summary>
+    public void UnsubscribeEvent(ArkUI_NodeEventType eventType)
+        => Off(eventType);
+
     // ───────────────────────── 树操作 ─────────────────────────
 
     /// <summary>追加子节点</summary>
