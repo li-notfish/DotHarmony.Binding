@@ -178,6 +178,7 @@ Microsoft.Maui.Controls.Slider => new HarmonySliderHandler(),
 | MAUI 概念 | ArkUI 翻译 | 备注 |
 |---|---|---|
 | `Color` / `Brush` | `(byte)r,(byte)g,(byte)b,(byte)a` → `0xAARRGGBB` | 纯色走 `BrushHelper.TryGetColor`；渐变 M1 静默降级透明 |
+| `BackgroundColor`（XAML 属性） | 直接读 `v.BackgroundColor` 纯色路径 | **勿**在 BackgroundColor 映射里读 `v.Background`——XAML 只设 `VisualElement.BackgroundColor`，与 `Background`（Brush）不互通，读到 null 静默丢色 |
 | `FontSize` | `NODE_FONT_SIZE`（f32，vp） | |
 | `WidthRequest`/`HeightRequest` | `SetWidth/SetHeight`（vp） | 负值 = 未设置，跳过 |
 | 水平 Fill | `SetWidthPercent(1.0f)` | 见 `HarmonyLayoutHandler.AttachChild` |
@@ -285,16 +286,19 @@ deviceInfo 只有属性读取；带方法的模块（如 `vibrator.start()`）�
 
 | 项 | 规范 | 反例 |
 |---|---|---|
-| `ViewHandler` 泛型 | `ViewHandler<Button, ArkButton>`（核心接口或具体类均可，核心接口优先） | `ViewHandler<Microsoft.Maui.Controls.Button, ...>`（冗长） |
+| `ViewHandler` 泛型 | 核心接口优先（`ISlider`/`IEntry`）；**接口缺属性时回退具体类型**（`Label.HorizontalTextAlignment` 不在 `ILabel` 上） | `ViewHandler<Microsoft.Maui.Controls.Button, ...>`（冗长） |
 | PropertyMapper | `new(ViewMapper)` | `new(ViewHandler.ViewMapper)`（过时写法） |
 | Mapper key | `[nameof(Button.Text)]` | `[("Text")]`（字符串硬编码） |
 | Mapper value | 命名静态方法 `MapText` | 内联 lambda `(h, v) => ...`（不利于测试和堆栈） |
 | Map 方法签名 | `MapText(HarmonyButtonHandler h, Button v)` | `MapText(IButtonHandler h, IButton v)`（接口不存在的属性访问不到） |
 | 颜色转换 | `(byte)(c.Red * 255), ...` | `new Color(r, g, b)`（与 ArkUI 值域不一致） |
-| Background | `BrushHelper.ApplyBackground(h.PlatformView, v.Background)` | 直接取 `v.BackgroundColor`（漏掉 Brush 体系） |
+| Background（Brush） | `BrushHelper.ApplyBackground(h.PlatformView, v.Background)` | 只处理 Brush 忘了 BackgroundColor |
+| **BackgroundColor（Color）** | **直接读 `v.BackgroundColor` 走纯色路径**——XAML `BackgroundColor="X"` 只设置 `VisualElement.BackgroundColor`，**不会**同步到 `Background`（两者是独立 BindableProperty，读 `v.Background` 会拿到 null 静默丢色） | `BrushHelper.ApplyBackground(h.PlatformView, v.Background)`（BackgroundColor 映射里读 Brush） |
+| 日志 | `HiLog.Debug/Warn("Tag", ...)`（模拟器 hilog 可见） | `System.Diagnostics.Debug.WriteLine`（release 上不可见）；常规路径用 Info 级刷屏 |
 | 事件订阅 | `platformView.Click += OnClick` | `platformView.Click += _ => ...`（匿名委托无法取消订阅） |
 | 事件取消 | `platformView.Click -= OnClick`（同名方法） | `platformView.Click -= _ => { }`（lambda 不是同一个委托，取消无效） |
 | 事件命令 | `VirtualView.SendClicked()` / `VirtualView.SendCompleted()` | `VirtualView.Clicked()`（事件不能当方法调用） |
+| 无固有尺寸的控件 | Toggle/CheckBox/Radio 等在 Row 中无约束会异常放大，`CreatePlatformView` 里显式 `SetWidth/SetHeight`（Switch 50×26、CheckBox/Radio 24×24） | 依赖 flex 自然约束（ArkUI 不给默认尺寸） |
 
 ---
 
@@ -313,7 +317,7 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★★☆ | `ProgressBar` | `ARKUI_NODE_PROGRESS` | 直线进度 | ✅ 已完成 |
 | ★★☆ | `Slider` | `ARKUI_NODE_SLIDER` | — | ✅ 已完成 |
 | ★★☆ | `Editor` | `ARKUI_NODE_TEXT_AREA` | 同 Entry | ✅ 已完成 |
-| ★★☆ | `Frame` | `ARKUI_NODE_STACK` | flex 托管 | ✅ 已完成 |
+| ★★☆ | `Border`（含废弃的 `Frame`） | `ARKUI_NODE_STACK` | flex 托管；工厂只注册 `Border`（Frame 已废弃，XAML 用 Border） | ✅ 已完成 |
 | ★☆☆ | `CollectionView`/`ListView` | `ARKUI_NODE_LIST` + `ARKUI_NODE_LIST_ITEM` | 虚拟化、复用、模板实例化、滚动定位 | ⏳ 待做 |
 | ★☆☆ | `CarouselView` | `ARKUI_NODE_SWIPER` | | ⏳ 待做 |
 | ★☆☆ | `Picker`/`DatePicker`/`TimePicker` | `ARKUI_NODE_TEXT_PICKER`/`DATE_PICKER`/`TIME_PICKER` | ArkUI 是内嵌节点非弹窗，视觉与 MAUI 弹窗 Picker 有差异 | ⏳ 待做 |

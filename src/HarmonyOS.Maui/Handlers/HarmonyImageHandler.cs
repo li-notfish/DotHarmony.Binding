@@ -1,6 +1,7 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
+using HarmonyOS.Bindings.Runtime;
 using ArkImage = HarmonyOS.ArkUI.Image;
 using MImage = Microsoft.Maui.IImage;
 
@@ -58,6 +59,6 @@ public class HarmonyImageHandler : ViewHandler<MImage, ArkImage>
 
     private void OnImageError(ArkUINodeEvent e)
     {
-        System.Diagnostics.Debug.WriteLine($"[Image] Failed to load: {VirtualView.Source}");
+        HiLog.Warn("Image", $"Failed to load: {VirtualView.Source}");
     }
 }

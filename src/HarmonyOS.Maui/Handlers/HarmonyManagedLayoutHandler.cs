@@ -68,7 +68,7 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
         // 让 Stack 填满父容器（Column），确保 ArkUI 给它真实尺寸，SizeChange 能触发
         platformView.SetWidthPercent(1.0f);
         platformView.SetHeightPercent(1.0f);
-        HiLog.Info("Grid", $"ConnectHandler: Stack W%+H% set, children={VirtualView.Children.Count}");
+        HiLog.Debug("Grid", $"ConnectHandler: Stack W%+H% set, children={VirtualView.Children.Count}");
         // 连接时全量同步已存在的 Children（Controls 侧在 Handler 连接前添加的子节点不会发 Add 命令）
         foreach (var child in VirtualView.Children)
         {
@@ -80,7 +80,7 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
     {
         _containerW = e.SizeChangeWidth;
         _containerH = e.SizeChangeHeight;
-        HiLog.Info("Grid", $"SizeChange: W={_containerW} H={_containerH}");
+        HiLog.Debug("Grid", $"SizeChange: W={_containerW} H={_containerH}");
         Arrange();
     }
 
@@ -137,7 +137,7 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
     private void Arrange()
     {
         if (_containerW <= 0 || _containerH <= 0) return;
-        HiLog.Info("Grid", $"Arrange: containerW={_containerW} containerH={_containerH}");
+        HiLog.Debug("Grid", $"Arrange: containerW={_containerW} containerH={_containerH}");
         if (VirtualView is Grid grid)
             ArrangeGrid(grid, GetDensity());
         else if (VirtualView is MAbsolute absolute)
@@ -208,12 +208,12 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
                 };
         }
 
-        HiLog.Info("Grid", $"Auto rows: [{string.Join(",", rowAuto.Select(x => x.ToString("F0")))}] cols: [{string.Join(",", colAuto.Select(x => x.ToString("F0")))}]");
+        HiLog.Debug("Grid", $"Auto rows: [{string.Join(",", rowAuto.Select(x => x.ToString("F0")))}] cols: [{string.Join(",", colAuto.Select(x => x.ToString("F0")))}]");
 
         var widths = ResolveTracks(colUnit, colValue, colAuto, _containerW);
         var heights = ResolveTracks(rowUnit, rowValue, rowAuto, _containerH);
 
-        HiLog.Info("Grid", $"Tracks: widths=[{string.Join(",", widths.Select(x => x.ToString("F0")))}] heights=[{string.Join(",", heights.Select(x => x.ToString("F0")))}]");
+        HiLog.Debug("Grid", $"Tracks: widths=[{string.Join(",", widths.Select(x => x.ToString("F0")))}] heights=[{string.Join(",", heights.Select(x => x.ToString("F0")))}]");
 
         foreach (var (view, handler) in _children)
         {

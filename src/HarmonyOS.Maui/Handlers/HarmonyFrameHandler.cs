@@ -39,7 +39,11 @@ public class HarmonyFrameHandler : ViewHandler<Border, ArkStack>
 
     public static void MapBackgroundColor(HarmonyFrameHandler h, Border v)
     {
-        BrushHelper.ApplyBackground(h.PlatformView, v.Background);
+        // XAML BackgroundColor 设置的是 VisualElement.BackgroundColor（Color），与 Background（Brush）不互通
+        if (v.BackgroundColor is { } c)
+            h.PlatformView.SetBackgroundColor(
+                (byte)(c.Red * 255), (byte)(c.Green * 255),
+                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
     }
 
     public static void MapBackground(HarmonyFrameHandler h, Border v)
