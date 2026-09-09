@@ -68,7 +68,7 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
         // 让 Stack 填满父容器（Column），确保 ArkUI 给它真实尺寸，SizeChange 能触发
         platformView.SetWidthPercent(1.0f);
         platformView.SetHeightPercent(1.0f);
-        HiLog.Debug("Grid", $"ConnectHandler: Stack W%+H% set, children={VirtualView.Children.Count}");
+        HiLog.Debug("Grid", $"ConnectHandler#{GetHashCode():X}: Stack W%+H% set, children={VirtualView.Children.Count}");
         // 连接时全量同步已存在的 Children（Controls 侧在 Handler 连接前添加的子节点不会发 Add 命令）
         foreach (var child in VirtualView.Children)
         {

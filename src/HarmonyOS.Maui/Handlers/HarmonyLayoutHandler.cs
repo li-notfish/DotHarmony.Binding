@@ -108,10 +108,11 @@ public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
         handler.SetVirtualView(view);
         if (handler.PlatformView is ArkUINode node)
         {
-            // MAUI 显式 WidthRequest/HeightRequest 优先（vp）
-            if (view.Width is double w && w >= 0)
+            // MAUI 显式 WidthRequest/HeightRequest 优先（vp）；view.Width/Height 是布局后的
+            // 实测值（未布局时为 -1），不能用来判断显式尺寸
+            if (view is VisualElement ve && ve.WidthRequest >= 0)
             {
-                node.SetWidth((float)w);
+                node.SetWidth((float)ve.WidthRequest);
             }
             // 水平 StackLayout 不设 SetWidthPercent——子节点用自然宽度，防止溢出屏幕
             else if (view.HorizontalLayoutAlignment == MALIGNMENT.Fill
@@ -120,9 +121,9 @@ public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
                 node.SetWidthPercent(1.0f);
             }
 
-            if (view.Height is double hgt && hgt >= 0)
+            if (view is VisualElement vep && vep.HeightRequest >= 0)
             {
-                node.SetHeight((float)hgt);
+                node.SetHeight((float)vep.HeightRequest);
             }
 
             // MAUI StackLayout.Spacing → 子节点下边距（最后一个子节点略多余，视觉可接受）

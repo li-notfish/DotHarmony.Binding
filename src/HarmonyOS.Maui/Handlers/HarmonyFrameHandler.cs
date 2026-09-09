@@ -31,8 +31,8 @@ public class HarmonyFrameHandler : ViewHandler<Border, ArkStack>
         childHandler.SetVirtualView(content);
         if (childHandler.PlatformView is ArkUINode node)
         {
+            // 内容宽度填满 Border；高度随内容自适应（百分比高度会把内容撑满整个容器）
             node.SetWidthPercent(1.0f);
-            node.SetHeightPercent(1.0f);
             h.PlatformView.AddChild(node);
         }
     }
