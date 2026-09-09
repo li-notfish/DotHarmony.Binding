@@ -50,6 +50,24 @@
             <Image Source="https://picsum.photos/200/100" HeightRequest="100" Aspect="AspectFit" />
             <Image x:Name="TestStreamImage" HeightRequest="40" Aspect="Fill" />
 
+            <!-- Brush: linear / radial / image background -->
+            <Border x:Name="TestLinearGradient" HeightRequest="60">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#FF3B82F6" Offset="0.0" />
+                        <GradientStop Color="#FFEF4444" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border x:Name="TestRadialGradient" HeightRequest="60">
+                <Border.Background>
+                    <RadialGradientBrush Center="0.5,0.5" Radius="0.6">
+                        <GradientStop Color="#FF22C55E" Offset="0.0" />
+                        <GradientStop Color="#FF052E16" Offset="1.0" />
+                    </RadialGradientBrush>
+                </Border.Background>
+            </Border>
+
             <!-- Back -->
             <Button Text="Pop back" Clicked="OnPopClicked" />
         </StackLayout>

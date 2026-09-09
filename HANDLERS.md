@@ -177,7 +177,7 @@ Microsoft.Maui.Controls.Slider => new HarmonySliderHandler(),
 
 | MAUI 概念 | ArkUI 翻译 | 备注 |
 |---|---|---|
-| `Color` / `Brush` | `(byte)r,(byte)g,(byte)b,(byte)a` → `0xAARRGGBB` | 纯色走 `BrushHelper.TryGetColor`；渐变 M1 静默降级透明 |
+| `Color` / `Brush` | `(byte)r,(byte)g,(byte)b,(byte)a` → `0xAARRGGBB` | 纯色走 `BrushHelper.TryGetColor`；背景画刷走 `BrushHelper.ApplyBackground`（LinearGradient→NODE_LINEAR_GRADIENT、RadialGradient→NODE_RADIAL_GRADIENT；ImageBrush 为 MAUI internal 类型不映射） |
 | `BackgroundColor`（XAML 属性） | 直接读 `v.BackgroundColor` 纯色路径 | **勿**在 BackgroundColor 映射里读 `v.Background`——XAML 只设 `VisualElement.BackgroundColor`，与 `Background`（Brush）不互通，读到 null 静默丢色 |
 | `FontSize` | `NODE_FONT_SIZE`（f32，vp） | |
 | `WidthRequest`/`HeightRequest` | `SetWidth/SetHeight`（vp） | 负值 = 未设置，跳过 |

@@ -14,15 +14,13 @@
 
 ## M1 尾巴 —— MAUI 基本面补齐
 
-### 1.1 Brush→ARGB 转换助手（✅ 已完成）
+### 1.1 Brush→ArkUI 背景翻译（✅ 已完成，含渐变/图片画刷）
 
-已实现 `BrushHelper`（SolidColorBrush→ARGB，Gradient/Image 静默透明）并接通四个 Handler 的 Background/BackgroundColor。剩余：渐变/图片画刷需要 ArkUI 渐变属性封装。
+`BrushHelper` 已支持 SolidColorBrush 与全部公开的渐变画刷：`LinearGradientBrush`→`NODE_LINEAR_GRADIENT`（StartPoint/EndPoint 方向向量转 CSS 角度，方向固定 CUSTOM(9)）；`RadialGradientBrush`→`NODE_RADIAL_GRADIENT`（Center 相对坐标 × 实测尺寸，Radius 相对半对角线；节点未布局时经 `NODE_ON_SIZE_CHANGE` 以独立 targetId 重算，不占用用户订阅槽）。渐变色标经 `ArkUI_ColorStop` 对象入参（native_type.h @since 12），GradientStop Offset 全 0 时按 MAUI 语义均匀分布。已接通 ContentPage/Frame(Border)/Label/Layout 四类 Handler，ControlsDemoPage 含两种渐变验证项。
 
-**做什么**：统一 `Controls 的 Background/TextColor` 等属性的取色逻辑，接通 `HarmonyContentPageHandler` 的 Background 映射（当前显式暂缓）。
+**ImageBrush 上游缺口**：MAUI 10 将 `ImageBrush` 保持为 internal 类型（用户代码无法构造/XAML 无法声明），属上游 API 限制；节点层 `SetBackgroundImage`（NODE_BACKGROUND_IMAGE + ArkUI_ImageRepeat）原语已就位，上游公开后即可在 BrushHelper 接线。
 
-**怎么做**：Controls 的 `VisualElement.Background` 为 **Brush 体系**（`SolidColorBrush`/`GradientBrush`/`ImageBrush`，与 `Graphics.SolidPaint` 平行，注意两者不互相继承——`is SolidPaint` 模式对 Brush 表达式会编译报错 CS8121）。写一个 `static Color? ToArgb(this Brush brush)`：匹配 `SolidColorBrush`（取 Color）、忽略其余并记录 gap。
-
-**难点**：Gradient（多 stop）、ImageBrush 需要真正的 ArkUI 渐变/图片属性封装，一期只做纯色。
+**历史说明**：一期只做纯色（Gradient/Image 静默透明）；渐变/图片画刷已于本阶段补齐。
 
 ### 1.2 布局对齐 —— 两套布局引擎的取舍（中，最重要的语义缺口）
 
