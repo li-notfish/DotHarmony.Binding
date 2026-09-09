@@ -47,6 +47,18 @@ public static class HarmonyNavigation
         _container.AddChild(_currentPage);
     }
 
+    /// <summary>
+    /// 系统返回键/返回手势请求（由宿主 onBackPress 转入）。
+    /// 栈内有上一页则 Pop 并消费该请求（返回 true）；已在根页返回 false 交还系统默认行为。
+    /// </summary>
+    public static bool OnBackRequested()
+    {
+        if (!CanPop)
+            return false;
+        Pop();
+        return true;
+    }
+
     /// <summary>返回上一页（当前页被移除并释放，上一页恢复挂载）</summary>
     public static void Pop()
     {

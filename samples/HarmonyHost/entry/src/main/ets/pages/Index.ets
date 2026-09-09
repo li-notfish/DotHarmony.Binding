@@ -27,6 +27,11 @@ struct Index {
     this.dotnetStatus = '.NET UI mounted below';
   }
 
+  // 返回键/返回手势：交 .NET 页面栈处理；根页时返回 false 走系统默认
+  onBackPress(): boolean {
+    return native.popPage();
+  }
+
   build() {
     Column() {
       Text(this.message)
