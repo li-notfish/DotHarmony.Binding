@@ -27,6 +27,13 @@
                 <CheckBox x:Name="TestCheck" />
             </StackLayout>
 
+            <!-- Picker (inline wheel) -->
+            <Picker x:Name="TestPicker" Title="选一个" TextColor="Black" />
+            <DatePicker x:Name="TestDatePicker" TextColor="Black" />
+            <TimePicker x:Name="TestTimePicker" TextColor="Black" />
+            <CollectionView x:Name="TestCollection" HeightRequest="120" />
+            <CarouselView x:Name="TestCarousel" HeightRequest="150" />
+
             <!-- Radio group -->
             <StackLayout Orientation="Horizontal" Spacing="8">
                 <RadioButton x:Name="RadioA" Content="Option A" GroupName="demo" Value="A" />

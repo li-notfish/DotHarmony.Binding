@@ -318,9 +318,9 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★★☆ | `Slider` | `ARKUI_NODE_SLIDER` | — | ✅ 已完成 |
 | ★★☆ | `Editor` | `ARKUI_NODE_TEXT_AREA` | 同 Entry | ✅ 已完成 |
 | ★★☆ | `Border`（含废弃的 `Frame`） | `ARKUI_NODE_STACK` | flex 托管；工厂只注册 `Border`（Frame 已废弃，XAML 用 Border） | ✅ 已完成 |
-| ★☆☆ | `CollectionView`/`ListView` | `ARKUI_NODE_LIST` + `ARKUI_NODE_LIST_ITEM` | 虚拟化、复用、模板实例化、滚动定位 | ⏳ 待做 |
-| ★☆☆ | `CarouselView` | `ARKUI_NODE_SWIPER` | | ⏳ 待做 |
-| ★☆☆ | `Picker`/`DatePicker`/`TimePicker` | `ARKUI_NODE_TEXT_PICKER`/`DATE_PICKER`/`TIME_PICKER` | ArkUI 是内嵌节点非弹窗，视觉与 MAUI 弹窗 Picker 有差异 | ⏳ 待做 |
+| ★☆☆ | `CollectionView`/`ListView` | Scroll+Column 全量物化 | M1 无虚拟化（NodeAdapter 虚拟化后续做）；纵向；ItemsSource 变更全量重建；ItemTemplate 经 CreateContent 物化（AOT 安全） | ✅ M1 已完成 |
+| ★☆☆ | `CarouselView` | `ARKUI_NODE_SWIPER` | 全量物化子视图；需显式高度（HeightRequest）；Loop/位置回传暂略 | ✅ M1 已完成 |
+| ★☆☆ | `Picker`/`DatePicker`/`TimePicker` | `ARKUI_NODE_TEXT_PICKER`/`DATE_PICKER`/`TIME_PICKER` | ArkUI 是内嵌滚轮非弹窗，视觉有差异；节点类为手写补充（PickerManual/TextPickerManual.cs）；MAUI 10 的 Date/Time 为可空类型 | ✅ 已完成 |
 | ★☆☆ | `RefreshView` | `ARKUI_NODE_REFRESH` | 下拉经 NODE_REFRESH_ON_REFRESH 置 IsRefreshing；刷新态 setter 为手写 RefreshNode 子类（d.ts Evo 属性包构造参数，解析器未展开） | ✅ 已完成 |
 | ☆ | `Shape`/自绘 | `ARKUI_NODE_CUSTOM` + `NODE_ON_DRAW` | 等价于 iOS `Draw`；需 MAUI Graphics 前端 | ⏳ 待做 |
 

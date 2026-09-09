@@ -56,7 +56,7 @@
 
 ### 1.4 更多控件 Handler（✅ 已完成 16 个）
 
-已完成 17 个 Handler（16 基础 + RefreshView；RadioButton 的 Content 经 Row+Text 包装呈现，GroupName 已接通）。代码风格已统一为官方 handler 模式（`ViewHandler<TVirtualView, TPlatformView>` + 命名 Map 方法 + `I*Handler` 接口）。剩余低优先级控件（CollectionView/CarouselView/Picker/Shape）按需插入。
+已完成 21 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker + CollectionView/CarouselView M1 版；RadioButton 的 Content 经 Row+Text 包装呈现，GroupName 已接通）。代码风格已统一为官方 handler 模式（`ViewHandler<TVirtualView, TPlatformView>` + 命名 Map 方法）。注意 MAUI 10 核心/Controls 接口差异：DatePicker.Date 等为可空类型，GroupName 仅在 Controls 类型上——虚拟视图类型按 Picker 先例直接用 Controls 具体类型。剩余：Shape/自绘（需 MAUI Graphics 前端）与 CollectionView 虚拟化（NodeAdapter）按需插入。
 
 ### 1.5 真机 arm64 验证（小）
 

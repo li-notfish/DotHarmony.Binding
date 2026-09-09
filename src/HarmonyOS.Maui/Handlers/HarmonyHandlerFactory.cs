@@ -27,6 +27,11 @@ public static class HarmonyHandlerFactory
         Microsoft.Maui.Controls.Image => new HarmonyImageHandler(),
         Microsoft.Maui.Controls.ScrollView => new HarmonyScrollViewHandler(),
         Microsoft.Maui.Controls.RefreshView => new HarmonyRefreshViewHandler(),
+        Microsoft.Maui.Controls.Picker => new HarmonyPickerHandler(),
+        Microsoft.Maui.Controls.DatePicker => new HarmonyDatePickerHandler(),
+        Microsoft.Maui.Controls.TimePicker => new HarmonyTimePickerHandler(),
+        Microsoft.Maui.Controls.CollectionView => new HarmonyCollectionViewHandler(),
+        Microsoft.Maui.Controls.CarouselView => new HarmonyCarouselViewHandler(),
         Microsoft.Maui.Controls.Border => new HarmonyFrameHandler(),
         Microsoft.Maui.Controls.Layout => new HarmonyLayoutHandler(),
         _ => throw new NotSupportedException(
