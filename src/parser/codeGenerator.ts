@@ -17,6 +17,12 @@ export class CodeGenerator {
         lines.push('using System;');
         lines.push('using System.Runtime.InteropServices;');
         lines.push('using HarmonyOS.Bindings.Runtime;');
+        if (component.methods.some(m => /Promise/.test(m.returnType || ''))) {
+            lines.push('using System.Threading.Tasks;');
+        }
+        if (component.namespace !== 'HarmonyOS.ArkUI') {
+            lines.push('using HarmonyOS.ArkUI;');
+        }
         lines.push('');
         
         // 生成命名空间
@@ -37,11 +43,8 @@ export class CodeGenerator {
         lines.push(`/// ${component.name} 组件的 C# 绑定`);
         lines.push(`/// </summary>`);
         
-        // AOT 防裁剪标注
-        lines.push(`[System.Diagnostics.CodeAnalysis.DynamicDependency(`);
-        lines.push(`    System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All,`);
-        lines.push(`    typeof(${component.name}))]`);
-        
+        // AOT 防裁剪：经 TrimmerRootAssembly（Bindings 程序集级根）保证；
+        // DynamicDependency 特性对 class 声明非法（CS0592），不可标注在类上。
         const baseClass = this.getBaseClass(component);
         if (baseClass) {
             lines.push(`public partial class ${component.name} : ${baseClass}, ArkUIComponentBase`);
@@ -222,15 +225,25 @@ export class CodeGenerator {
             lines.push('    }');
             lines.push('');
         } else {
-            // 非链式方法 → 保持原样
-            const returnTypeName = method.returnType;
+            // 非链式方法：返回类型经 TypeMapper 映射（旧产物曾直接内插原始 TS 类型，
+            // 且 void 会产出非法的 CallMethod<void>——void 走 CallMethodVoid）
+            const cleanRet = TypeMapper.cleanOptional(method.returnType || 'void');
+            const isVoid = !cleanRet || cleanRet === 'void';
+            const returnTypeName = isVoid ? 'void' : TypeMapper.mapType(cleanRet);
             lines.push(`    /// <summary>`);
-            lines.push(`    /// 设置 ${method.name} 属性`);
+            lines.push(`    /// 调用 ${method.name} 方法`);
             lines.push(`    /// </summary>`);
             lines.push(`    public ${returnTypeName} ${pascalName}(${paramStr})`);
             lines.push('    {');
             const paramNames = method.parameters.map(p => p.name).join(', ');
-            lines.push(`        return NodeApi.CallMethod<${returnTypeName}>(_jsObject, ${propNameVar}, ${paramNames});`);
+            const callArgs = paramNames
+                ? `_jsObject, ${propNameVar}, ${paramNames}`
+                : `_jsObject, ${propNameVar}`;
+            if (isVoid) {
+                lines.push(`        NodeApi.CallMethodVoid(${callArgs});`);
+            } else {
+                lines.push(`        return NodeApi.CallMethod<${returnTypeName}>(${callArgs});`);
+            }
             lines.push('    }');
             lines.push('');
         }

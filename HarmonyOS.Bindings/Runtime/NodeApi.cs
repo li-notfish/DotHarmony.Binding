@@ -212,16 +212,59 @@ public static class NodeApi
     /// <param name="args">方法参数</param>
     /// <returns>方法返回值</returns>
     public static T CallMethod<T>(IntPtr jsObject, string methodName, params object[] args)
+#if HARMONYOS
+        => CallMethod<T>(jsObject, Encoding.UTF8.GetBytes(methodName), args);
+#else
+    {
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+    }
+#endif
+
+    /// <summary>
+    /// 调用组件方法（byte[] 方法名重载：生成器以 "name"u8 常量携带，免每次 UTF8 编码）
+    /// </summary>
+    public static T CallMethod<T>(IntPtr jsObject, byte[] methodName, params object[] args)
     {
 #if HARMONYOS
+        var result = InvokeMethod(jsObject, methodName, args);
+        return ConvertResult<T>(result);
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>
+    /// 调用组件方法（无返回值/void 返回：C# 泛型不支持 CallMethod&lt;void&gt;，void 调用走此重载）
+    /// </summary>
+    public static void CallMethodVoid(IntPtr jsObject, string methodName, params object[] args)
+#if HARMONYOS
+        => CallMethodVoid(jsObject, Encoding.UTF8.GetBytes(methodName), args);
+#else
+    {
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+    }
+#endif
+
+    /// <summary>调用组件方法（byte[] 方法名，void 返回）</summary>
+    public static void CallMethodVoid(IntPtr jsObject, byte[] methodName, params object[] args)
+    {
+#if HARMONYOS
+        _ = InvokeMethod(jsObject, methodName, args);
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+#if HARMONYOS
+    private static IntPtr InvokeMethod(IntPtr jsObject, byte[] methodName, object[] args)
+    {
         if (jsObject == IntPtr.Zero)
             throw new ArgumentNullException(nameof(jsObject));
 
         var env = NapiEnv.Current;
 
         // 获取方法函数
-        var nameBytes = Encoding.UTF8.GetBytes(methodName);
-        NativeNodeApi.napi_get_named_property(env, jsObject, nameBytes, out var jsFunc).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, jsObject, methodName, out var jsFunc).ThrowIfFailed();
 
         // 构建参数数组
         var argv = new IntPtr[args.Length];
@@ -232,13 +275,9 @@ public static class NodeApi
 
         // 调用方法
         NativeNodeApi.napi_call_function(env, jsObject, jsFunc, argv.Length, argv, out var result).ThrowIfFailed();
-
-        // 转换返回值
-        return ConvertResult<T>(result);
-#else
-        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
-#endif
+        return result;
     }
+#endif
 
     /// <summary>
     /// 销毁组件（napi 路径：对象生命周期由 ArkTS GC 管理，无显式销毁语义）
