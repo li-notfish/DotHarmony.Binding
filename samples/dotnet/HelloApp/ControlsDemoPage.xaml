@@ -2,8 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HelloApp.ControlsDemoPage"
              BackgroundColor="White">
-    <ScrollView>
-        <StackLayout Spacing="12" Padding="12">
+    <RefreshView x:Name="TestRefresh">
+        <ScrollView>
+            <StackLayout Spacing="12" Padding="12">
             <!-- Entry in Border -->
             <Border BackgroundColor="LightBlue" Padding="8">
                 <Entry x:Name="TestEntry"
@@ -44,5 +45,6 @@
             <!-- Back -->
             <Button Text="Pop back" Clicked="OnPopClicked" />
         </StackLayout>
-    </ScrollView>
+        </ScrollView>
+    </RefreshView>
 </ContentPage>

@@ -2,48 +2,77 @@ using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
 using ArkRadio = HarmonyOS.ArkUI.RadioButton;
+using ArkRow = HarmonyOS.ArkUI.Row;
+using ArkText = HarmonyOS.ArkUI.Text;
+using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>
 /// IRadioButton → ArkUI RadioButton handler.
-/// M1 限制：ArkUI RadioButton（ARKUI_NODE_RADIO）不支持 Content 文本属性（SDK 无 NODE_RADIO_CONTENT），
-/// 仅显示圆点。Content 文本需等 SDK 补充或改用 Row+Text 包装方案。
+/// ArkUI RadioButton（ARKUI_NODE_RADIO）不支持 Content 文本属性（SDK 无 NODE_RADIO_CONTENT），
+/// 平台视图为 Row（Radio 圆点 + Text），Content 文本由 Text 节点呈现。
 /// </summary>
-public class HarmonyRadioButtonHandler : ViewHandler<IRadioButton, ArkRadio>, IRadioButtonHandler
+public class HarmonyRadioButtonHandler : ViewHandler<IRadioButton, ArkRow>, IRadioButtonHandler
 {
     public static PropertyMapper<IRadioButton, IRadioButtonHandler> Mapper = new(ViewMapper)
     {
         [nameof(IRadioButton.IsChecked)] = MapIsChecked,
+        [nameof(IRadioButton.Content)] = MapContent,
+        [nameof(Microsoft.Maui.Controls.RadioButton.GroupName)] = MapGroupName,
     };
+
+    private ArkRadio? _radio;
+    private ArkText? _label;
 
     public HarmonyRadioButtonHandler() : base(Mapper) { }
 
-    protected override ArkRadio CreatePlatformView()
+    protected override ArkRow CreatePlatformView()
     {
-        var radio = new ArkRadio();
+        var row = new ArkRow();
         // ArkUI RadioButton 节点需要显式尺寸约束
-        radio.SetWidth(24);
-        radio.SetHeight(24);
-        return radio;
+        _radio = new ArkRadio();
+        _radio.SetWidth(24);
+        _radio.SetHeight(24);
+        _label = new ArkText();
+        _label.SetMarginEdges(0, 0, 0, 8);
+        row.AddChild(_radio);
+        row.AddChild(_label);
+        return row;
     }
 
-    protected override void ConnectHandler(ArkRadio platformView)
+    protected override void ConnectHandler(ArkRow platformView)
     {
         base.ConnectHandler(platformView);
-        platformView.IsOnChange += OnRadioChanged;
+        if (_radio is not null)
+            _radio.IsOnChange += OnRadioChanged;
     }
 
-    protected override void DisconnectHandler(ArkRadio platformView)
+    protected override void DisconnectHandler(ArkRow platformView)
     {
-        platformView.IsOnChange -= OnRadioChanged;
+        if (_radio is not null)
+            _radio.IsOnChange -= OnRadioChanged;
         base.DisconnectHandler(platformView);
     }
 
     public static void MapIsChecked(IRadioButtonHandler handler, IRadioButton view)
     {
-        if (handler is HarmonyRadioButtonHandler h)
-            h.PlatformView.IsChecked = view.IsChecked;
+        if (handler is HarmonyRadioButtonHandler h && h._radio is not null)
+            h._radio.IsChecked = view.IsChecked;
+    }
+
+    public static void MapContent(IRadioButtonHandler handler, IRadioButton view)
+    {
+        if (handler is HarmonyRadioButtonHandler h && h._label is not null)
+            h._label.Content = view.Content?.ToString() ?? string.Empty;
+    }
+
+    public static void MapGroupName(IRadioButtonHandler handler, IRadioButton view)
+    {
+        // GroupName 在 Controls 类型上（核心接口 IRadioButton 未暴露），Controls 回退
+        if (handler is HarmonyRadioButtonHandler h && h._radio is not null
+            && view is Microsoft.Maui.Controls.RadioButton rb)
+            h._radio.Group = rb.GroupName ?? string.Empty;
     }
 
     private void OnRadioChanged(ArkUINodeEvent e)

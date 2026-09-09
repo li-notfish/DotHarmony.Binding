@@ -10,6 +10,27 @@ public unsafe class Refresh : ArkUINodeBase
 {
     public Refresh() : base(ArkUI_NodeType.ARKUI_NODE_REFRESH) { }
 
+    /// <summary>onStateChange 事件（NODE_REFRESH_STATE_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? StateChange
+    {
+        add => On(ArkUI_NodeEventType.NODE_REFRESH_STATE_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_STATE_CHANGE);
+    }
+
+    /// <summary>onRefreshing 事件（NODE_REFRESH_ON_REFRESH）</summary>
+    public event Action<ArkUINodeEvent>? Refreshing
+    {
+        add => On(ArkUI_NodeEventType.NODE_REFRESH_ON_REFRESH, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_ON_REFRESH);
+    }
+
+    /// <summary>onOffsetChange 事件（NODE_REFRESH_ON_OFFSET_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? OffsetChange
+    {
+        add => On(ArkUI_NodeEventType.NODE_REFRESH_ON_OFFSET_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_ON_OFFSET_CHANGE);
+    }
+
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>
     public event Action<ArkUINodeEvent>? ChildTouchTest
     {

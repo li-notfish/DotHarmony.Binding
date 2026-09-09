@@ -10,6 +10,62 @@ public unsafe class Grid : ArkUINodeBase
 {
     public Grid() : base(ArkUI_NodeType.ARKUI_NODE_GRID) { }
 
+    /// <summary>onScrollBarUpdate 事件（NODE_GRID_ON_SCROLL_BAR_UPDATE）</summary>
+    public event Action<ArkUINodeEvent>? ScrollBarUpdate
+    {
+        add => On(ArkUI_NodeEventType.NODE_GRID_ON_SCROLL_BAR_UPDATE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_GRID_ON_SCROLL_BAR_UPDATE);
+    }
+
+    /// <summary>onScrollIndex 事件（NODE_GRID_ON_SCROLL_INDEX）</summary>
+    public event Action<ArkUINodeEvent>? ScrollIndex
+    {
+        add => On(ArkUI_NodeEventType.NODE_GRID_ON_SCROLL_INDEX, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_GRID_ON_SCROLL_INDEX);
+    }
+
+    /// <summary>onItemDragStart 事件（NODE_GRID_ON_ITEM_DRAG_START）</summary>
+    public event Action<ArkUINodeEvent>? ItemDragStart
+    {
+        add => On(ArkUI_NodeEventType.NODE_GRID_ON_ITEM_DRAG_START, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_GRID_ON_ITEM_DRAG_START);
+    }
+
+    /// <summary>onItemDragEnter 事件（NODE_GRID_ON_ITEM_DRAG_ENTER）</summary>
+    public event Action<ArkUINodeEvent>? ItemDragEnter
+    {
+        add => On(ArkUI_NodeEventType.NODE_GRID_ON_ITEM_DRAG_ENTER, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_GRID_ON_ITEM_DRAG_ENTER);
+    }
+
+    /// <summary>onItemDragMove 事件（NODE_GRID_ON_ITEM_DRAG_MOVE）</summary>
+    public event Action<ArkUINodeEvent>? ItemDragMove
+    {
+        add => On(ArkUI_NodeEventType.NODE_GRID_ON_ITEM_DRAG_MOVE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_GRID_ON_ITEM_DRAG_MOVE);
+    }
+
+    /// <summary>onItemDragLeave 事件（NODE_GRID_ON_ITEM_DRAG_LEAVE）</summary>
+    public event Action<ArkUINodeEvent>? ItemDragLeave
+    {
+        add => On(ArkUI_NodeEventType.NODE_GRID_ON_ITEM_DRAG_LEAVE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_GRID_ON_ITEM_DRAG_LEAVE);
+    }
+
+    /// <summary>onItemDrop 事件（NODE_GRID_ON_ITEM_DROP）</summary>
+    public event Action<ArkUINodeEvent>? ItemDrop
+    {
+        add => On(ArkUI_NodeEventType.NODE_GRID_ON_ITEM_DROP, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_GRID_ON_ITEM_DROP);
+    }
+
+    /// <summary>onEditModeChange 事件（NODE_GRID_ON_EDIT_MODE_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? EditModeChange
+    {
+        add => On(ArkUI_NodeEventType.NODE_GRID_ON_EDIT_MODE_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_GRID_ON_EDIT_MODE_CHANGE);
+    }
+
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>
     public event Action<ArkUINodeEvent>? ChildTouchTest
     {

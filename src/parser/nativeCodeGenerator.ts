@@ -49,6 +49,8 @@ export const DEFAULT_SHAPES: ShapeTable = {
     // 全局通用属性段
     NODE_FONT_COLOR: { kind: 'color' },
     NODE_FONT_SIZE: { kind: 'float' },
+    // Refresh（RefreshView）
+    NODE_REFRESH_REFRESHING: { kind: 'int' },
 };
 
 /** CommonMethod 内联展开后与基类公开成员重名的属性，生成器跳过 */
@@ -60,6 +62,11 @@ const BASE_CLASS_MEMBERS = new Set([
 const EVENT_NAME_OVERRIDES: Record<string, string> = {
     onTouch: 'TOUCH_EVENT',
     onClick: 'ON_CLICK',
+    // ArkUI 部分组件事件名与 d.ts Evo 方法名不同构（NODE_REFRESH_ON_REFRESH 无 ING、
+    // NODE_REFRESH_STATE_CHANGE 无 ON_），逐一登记：
+    onRefreshing: 'ON_REFRESH',
+    onStateChange: 'STATE_CHANGE',
+    onOffsetChange: 'ON_OFFSET_CHANGE',
 };
 
 function toSnakeUpper(name: string): string {
@@ -252,12 +259,15 @@ export class NativeCodeGenerator {
 
     private generateEvent(componentName: string, evt: EventInfo, gaps: NativeGap[]): string | null {
         const suffix = EVENT_NAME_OVERRIDES[evt.name] || toSnakeUpper(evt.name);
-        const evtKey = `NODE_${suffix}`;
+        // 候选枚举键：全局事件（NODE_ON_CLICK）与组件专属事件（NODE_REFRESH_ON_REFRESH）双形态
+        const compPrefix = componentName.toUpperCase();
+        const candidateKeys = [`NODE_${suffix}`, `NODE_${compPrefix}_${suffix}`];
         const eventTypes = this.enumMetadata['ArkUI_NodeEventType'] || {};
-        if (!(evtKey in eventTypes)) {
+        const evtKey = candidateKeys.find(key => key in eventTypes);
+        if (!evtKey) {
             gaps.push({
                 component: componentName, member: evt.name, kind: 'event',
-                reason: `${evtKey} not present in ArkUI_NodeEventType`,
+                reason: `none of ${candidateKeys.join('/')} present in ArkUI_NodeEventType`,
             });
             return null;
         }

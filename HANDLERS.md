@@ -313,7 +313,7 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★★★ | `ScrollView` | `ARKUI_NODE_SCROLL` | 单 Content 子节点 | ✅ 已完成 |
 | ★★☆ | `Switch` | `ARKUI_NODE_TOGGLE` | CHANGE 事件回流 | ✅ 已完成 |
 | ★★☆ | `CheckBox` | `ARKUI_NODE_CHECKBOX` | CHANGE 事件回流 | ✅ 已完成 |
-| ★★☆ | `RadioButton` | `ARKUI_NODE_RADIO` | CHANGE 事件回流 | ✅ 已完成 |
+| ★★☆ | `RadioButton` | `ARKUI_NODE_RADIO` | SDK 无 NODE_RADIO_CONTENT：平台视图为 Row（圆点+Text）呈现 Content | ✅ 已完成 |
 | ★★☆ | `ProgressBar` | `ARKUI_NODE_PROGRESS` | 直线进度 | ✅ 已完成 |
 | ★★☆ | `Slider` | `ARKUI_NODE_SLIDER` | — | ✅ 已完成 |
 | ★★☆ | `Editor` | `ARKUI_NODE_TEXT_AREA` | 同 Entry | ✅ 已完成 |
@@ -321,7 +321,7 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★☆☆ | `CollectionView`/`ListView` | `ARKUI_NODE_LIST` + `ARKUI_NODE_LIST_ITEM` | 虚拟化、复用、模板实例化、滚动定位 | ⏳ 待做 |
 | ★☆☆ | `CarouselView` | `ARKUI_NODE_SWIPER` | | ⏳ 待做 |
 | ★☆☆ | `Picker`/`DatePicker`/`TimePicker` | `ARKUI_NODE_TEXT_PICKER`/`DATE_PICKER`/`TIME_PICKER` | ArkUI 是内嵌节点非弹窗，视觉与 MAUI 弹窗 Picker 有差异 | ⏳ 待做 |
-| ★☆☆ | `RefreshView` | `ARKUI_NODE_REFRESH` | 下拉刷新状态同步 | ⏳ 待做 |
+| ★☆☆ | `RefreshView` | `ARKUI_NODE_REFRESH` | 下拉经 NODE_REFRESH_ON_REFRESH 置 IsRefreshing；刷新态 setter 为手写 RefreshNode 子类（d.ts Evo 属性包构造参数，解析器未展开） | ✅ 已完成 |
 | ☆ | `Shape`/自绘 | `ARKUI_NODE_CUSTOM` + `NODE_ON_DRAW` | 等价于 iOS `Draw`；需 MAUI Graphics 前端 | ⏳ 待做 |
 
 **查询属性枚举值**：SDK 头文件

@@ -10,6 +10,27 @@ public unsafe class List : ArkUINodeBase
 {
     public List() : base(ArkUI_NodeType.ARKUI_NODE_LIST) { }
 
+    /// <summary>onEditModeChange 事件（NODE_LIST_ON_EDIT_MODE_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? EditModeChange
+    {
+        add => On(ArkUI_NodeEventType.NODE_LIST_ON_EDIT_MODE_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_LIST_ON_EDIT_MODE_CHANGE);
+    }
+
+    /// <summary>onScrollIndex 事件（NODE_LIST_ON_SCROLL_INDEX）</summary>
+    public event Action<ArkUINodeEvent>? ScrollIndex
+    {
+        add => On(ArkUI_NodeEventType.NODE_LIST_ON_SCROLL_INDEX, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_LIST_ON_SCROLL_INDEX);
+    }
+
+    /// <summary>onScrollVisibleContentChange 事件（NODE_LIST_ON_SCROLL_VISIBLE_CONTENT_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? ScrollVisibleContentChange
+    {
+        add => On(ArkUI_NodeEventType.NODE_LIST_ON_SCROLL_VISIBLE_CONTENT_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_LIST_ON_SCROLL_VISIBLE_CONTENT_CHANGE);
+    }
+
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>
     public event Action<ArkUINodeEvent>? ChildTouchTest
     {
