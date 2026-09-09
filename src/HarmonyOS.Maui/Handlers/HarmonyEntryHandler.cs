@@ -12,6 +12,7 @@ public class HarmonyEntryHandler : ViewHandler<IEntry, ArkTextInput>, IEntryHand
         [nameof(IEntry.Text)] = MapText,
         [nameof(IEntry.Placeholder)] = MapPlaceholder,
         [nameof(IEntry.TextColor)] = MapTextColor,
+        [nameof(Microsoft.Maui.Controls.Entry.FontSize)] = MapFontSize,
         [nameof(IEntry.PlaceholderColor)] = MapPlaceholderColor,
         [nameof(IEntry.IsPassword)] = MapIsPassword,
         [nameof(IEntry.IsReadOnly)] = MapIsReadOnly,
@@ -35,6 +36,13 @@ public class HarmonyEntryHandler : ViewHandler<IEntry, ArkTextInput>, IEntryHand
         platformView.TextChange -= OnTextChange;
         platformView.Submit -= OnSubmit;
         base.DisconnectHandler(platformView);
+    }
+
+    public static void MapFontSize(IEntryHandler handler, IEntry view)
+    {
+        // FontSize 在 Controls 类型上（核心接口 IEntry 未暴露）
+        if (handler is HarmonyEntryHandler h && view is Microsoft.Maui.Controls.Entry entry && entry.FontSize > 0)
+            h.PlatformView.FontSize = (float)entry.FontSize;
     }
 
     public static void MapText(IEntryHandler handler, IEntry view)

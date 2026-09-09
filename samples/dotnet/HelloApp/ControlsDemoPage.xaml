@@ -48,6 +48,7 @@
 
             <!-- Image (network URL) -->
             <Image Source="https://picsum.photos/200/100" HeightRequest="100" Aspect="AspectFit" />
+            <Image x:Name="TestStreamImage" HeightRequest="40" Aspect="Fill" />
 
             <!-- Back -->
             <Button Text="Pop back" Clicked="OnPopClicked" />

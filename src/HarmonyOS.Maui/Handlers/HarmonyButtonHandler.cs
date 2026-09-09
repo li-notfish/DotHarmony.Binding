@@ -12,10 +12,13 @@ public class HarmonyButtonHandler : ViewHandler<Button, ArkButton>
     {
         [nameof(Button.Text)] = MapText,
         [nameof(Button.TextColor)] = MapTextColor,
+        [nameof(Button.FontSize)] = MapFontSize,
+        [nameof(Button.FontFamily)] = MapFontFamily,
         [nameof(Button.BackgroundColor)] = MapBackgroundColor,
     };
 
     public HarmonyButtonHandler() : base(Mapper) { }
+
 
     protected override ArkButton CreatePlatformView() => new();
 
@@ -34,6 +37,17 @@ public class HarmonyButtonHandler : ViewHandler<Button, ArkButton>
     public static void MapText(HarmonyButtonHandler h, Button v)
     {
         h.PlatformView.Label = v.Text ?? string.Empty;
+    }
+
+    public static void MapFontSize(HarmonyButtonHandler h, Button v)
+    {
+        if (v.FontSize > 0)
+            h.PlatformView.FontSize = (float)v.FontSize;
+    }
+
+    public static void MapFontFamily(HarmonyButtonHandler h, Button v)
+    {
+        // ArkUI C API 字体族需 NODE_FONT_FAMILY 通用属性，节点类未封装（gap：随 shape 表补齐）
     }
 
     public static void MapTextColor(HarmonyButtonHandler h, Button v)

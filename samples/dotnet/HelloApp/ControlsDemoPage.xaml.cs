@@ -13,6 +13,10 @@ public partial class ControlsDemoPage : ContentPage
         TestPicker.SelectedIndex = 0;
         TestCollection.ItemsSource = new List<string> { "条目一", "条目二", "条目三", "条目四" };
         TestCarousel.ItemsSource = new List<string> { "第 1 页", "第 2 页", "第 3 页" };
+        // 流式图片（1x1 红 PNG → MemoryStream → 落盘 file://）
+        const string redPng = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+        TestStreamImage.Source = Microsoft.Maui.Controls.ImageSource.FromStream(
+            () => new MemoryStream(Convert.FromBase64String(redPng)));
         // RefreshView 演示：下拉触发后 1.5s 复位（经 PropertyChanged，不依赖 Controls 内部事件流）
         TestRefresh.PropertyChanged += async (sender, e) =>
         {

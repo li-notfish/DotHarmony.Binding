@@ -34,9 +34,11 @@ public class HarmonyImageHandler : ViewHandler<MImage, ArkImage>
 
     public static void MapSource(HarmonyImageHandler h, MImage v)
     {
-        var src = ResolveImageSource(v.Source);
+        var src = ImageSourceResolver.Resolve(v.Source);
         if (src is not null)
             h.PlatformView.Src = src;
+        else
+            HiLog.Warn("Image", $"Unsupported image source: {v.Source?.GetType().Name ?? "null"}");
     }
 
     public static void MapAspect(HarmonyImageHandler h, MImage v)
@@ -49,13 +51,6 @@ public class HarmonyImageHandler : ViewHandler<MImage, ArkImage>
             _ => ArkUI_ObjectFit.ARKUI_OBJECT_FIT_CONTAIN,
         };
     }
-
-    private static string? ResolveImageSource(IImageSource? source) => source switch
-    {
-        UriImageSource uri => uri.Uri?.ToString(),
-        FileImageSource file => $"file://{file.File}",
-        _ => null,
-    };
 
     private void OnImageError(ArkUINodeEvent e)
     {
