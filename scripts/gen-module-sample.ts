@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { ArkTsParser } from './src/parser/index';
-import { ParseResult } from './src/parser/models';
+import { ArkTsParser } from '../src/parser/index';
+import { ParseResult } from '../src/parser/models';
 
 const p = new ArkTsParser();
 // 合成 ParseResult：验证 void / Promise<string> / Promise<number> 的产出

@@ -242,7 +242,13 @@ export class CodeGenerator {
             if (isVoid) {
                 lines.push(`        NodeApi.CallMethodVoid(${callArgs});`);
             } else {
-                lines.push(`        return NodeApi.CallMethod<${returnTypeName}>(${callArgs});`);
+                // Task<T> 返回（Promise<T> 映射）：经 CallMethodAsync 接为 Task（2.1 异步层）
+                const taskMatch = /^Task<(.+)>$/.exec(returnTypeName);
+                if (taskMatch) {
+                    lines.push(`        return NodeApi.CallMethodAsync<${taskMatch[1]}>(${callArgs});`);
+                } else {
+                    lines.push(`        return NodeApi.CallMethod<${returnTypeName}>(${callArgs});`);
+                }
             }
             lines.push('    }');
             lines.push('');

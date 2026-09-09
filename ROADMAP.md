@@ -66,6 +66,13 @@
 
 ## M2 —— 服务层完备（异步是核心）
 
+> **2026-09-10 进度**：2.2 四项缺陷已修复并端到端验证（合成模块 void/Promise<string>/Promise<number>
+> 生成 → 编译通过）；2.1 最小切片已落地——`PromiseTaskBridge`（napi then + 原生 trampoline + TCS，
+> 续体调度线程池）+ `NodeApi.CallMethodAsync<T>`，生成器对 `Promise<T>` 返回发射 `CallMethodAsync`。
+> 已知边界：仅覆盖 Promise 风格；AsyncCallback 风格与任意线程→JS 线程的完整 TSFN 通道（含生命周期三路径）
+> 仍待做；设备端到端验证依赖模块级函数生成（解析器尚未支持顶层 `declare function` 导出）。
+
+
 ### 2.1 TSFN 异步层（大，M2 的核心难点）
 
 **做什么**：让 `@ohos.*` 的 `Promise<T>` / callback 风格 API 在 C# 里以 `Task<T>` 可用。当前全部映射为 `IntPtr` 占位。
