@@ -46,21 +46,23 @@
 - Auto 轨道依赖子节点上一帧自量测（首帧有按控件类型的兜底估算，收敛需 1~2 帧）；内容自身变化不触发重排
 - 两套布局的 ZIndex 均按 addChild 顺序，UpdateZIndex 忽略
 
-### 1.3 Window / Navigation（✅ 轻量版已完成 / 中）
+### 1.3 Window / Navigation（✅ 已完成：轻量栈 + NavigationPage 转接层 / 中）
 
-已实现 `HarmonyNavigation.Push/Pop`（宿主根容器 + 节点保留式切换），四步实测通过：Push→Pop（主页状态完整恢复）→再 Push（计数延续）。**原"摘除-恢复"难点已实测排除**。剩余：页面动画、Appearing/Disappearing 事件、模态。
+两级导航均已实测通过（HelloApp，模拟器）：
 
-**做什么**：支持多页面与导航（MAUI 开发的第二基本操作）。
+**① 轻量栈 `HarmonyNavigation.Push/Pop`**（宿主根容器 + 节点保留式切换）：Push→Pop（主页状态完整恢复）→再 Push（计数延续）。原"摘除-恢复"难点已实测排除。
 
-**怎么做**（自建轻量栈，不对齐 NavigationPage/Shell 全语义）：
-- `HarmonyWindow`：包装现有 ContentSlot 挂载点，持有 Page 栈
-- `Navigation.PushAsync(page)`：当前根 `removeChild` 暂存 → 新根 `AddNode`（节点树保留，仅切换挂载）；`PopAsync` 反向
-- 页面切换动画暂略（ArkUI 有 `nativeAnimate`，后续可选）
+**② NavigationPage 官方协议转接层 `HarmonyNavigationPageHandler`**：根页改为 `new NavigationPage(new MainPage())` 后，业务代码用 MAUI 标准 `Navigation.PushAsync/PopAsync` 即可。实测：PushAsync→visit #1、PopAsync→回主页、再 Push→visit #2（MainPage 实例跨 push/pop 保留）、系统返回键消费 NavigationPage 内栈而非退出应用。
 
-**难点**：
-1. **Page 与 Window 的生命周期映射**：MAUI `IWindow/IPageHandler` 协议重（Appearing/Disappearing、模态、toolbar）；一期只做 `ContentPage` 的显示/隐藏事件透传
-2. 暂存的已挂载页面在 ArkUI 侧是"从树摘除但句柄保留"——验证 `removeChild` 后再 `addNode` 的节点状态恢复是否完整（属性是否保留）
-3. Shell/NavigationPage 官方类型**不在支持计划内**（协议太重），文档需明确开发者不要使用
+**原理**（对 MAUI 10.0.11 源码取证）：
+- 子页 `NavigationProxy.Inner` 由 `NavigableElement.OnParentSet()` 沿父链自动接到 NavigationPage 的 `MauiNavigationImpl`——业务代码零改动
+- NavigationPage 把整包导航栈打包为 `NavigationRequest`，经 `Handler.Invoke(nameof(IStackNavigation.RequestNavigation))` 到达 handler
+- handler 把 ArkUI 节点栈同步成请求的栈（仅栈顶挂入 ArkStack，低层摘除保留句柄），完成后**必须**回调 `IStackNavigation.NavigationFinished`，否则 `SendHandlerUpdateAsync` 内 await 永久挂起（PushAsync 不返回）
+- 无 NavigationPage 时 MAUI 官方语义即抛 "PushAsync is not supported, please use a NavigationPage."（`Window.NavigationImpl`）——宿主返回键先消费 NavigationPage 内栈，再退到根级轻量栈
+
+**剩余**：页面切换动画（ArkUI `nativeAnimate` 可选）、Appearing/Disappearing 透传、模态（PushModalAsync 需接 Window 层，当前为 no-op）。
+
+**Shell 转接结论**：Shell 不在支持计划内（flyout/tab/URI 路由协议太重）。多平台 Shell 应用做鸿蒙适配时，入口改为 NavigationPage/TabbedPage 结构（`MauiHarmonyHost.Run(() => new NavigationPage(...))`）——这正是 NavigationPage 转接层存在的意义；TabbedPage（底部页签）为后续候选。
 
 ### 1.4 更多控件 Handler（✅ 已完成 21 个）
 

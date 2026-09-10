@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 // LayoutDemoPage 的 code-behind：验证 MAUI 托管布局（Grid + AbsoluteLayout）
 using Microsoft.Maui.Controls;
 
@@ -12,6 +13,7 @@ public partial class LayoutDemoPage : ContentPage
 
     private void OnPopClicked(object? sender, EventArgs e)
     {
-        HarmonyOS.Maui.Hosting.HarmonyNavigation.Pop();
+        // NavigationPage 协议内返回（与 Navigation.PushAsync 配对）
+        Navigation.PopAsync().FireAndForgetNavigation();
     }
 }

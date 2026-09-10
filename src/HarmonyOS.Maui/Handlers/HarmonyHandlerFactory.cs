@@ -11,6 +11,7 @@ public static class HarmonyHandlerFactory
 
     public static IElementHandler Create(Microsoft.Maui.Controls.Element element) => element switch
     {
+        Microsoft.Maui.Controls.NavigationPage => new HarmonyNavigationPageHandler(),
         Microsoft.Maui.Controls.ContentPage => new HarmonyContentPageHandler(),
         Microsoft.Maui.Controls.Button => new HarmonyButtonHandler(),
         Microsoft.Maui.Controls.Label => new HarmonyLabelHandler(),

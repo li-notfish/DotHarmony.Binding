@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 
 namespace HelloApp;
@@ -15,6 +16,7 @@ public partial class SecondPage : ContentPage
 
     private void OnBackClicked(object? sender, EventArgs e)
     {
-        HarmonyOS.Maui.Hosting.HarmonyNavigation.Pop();
+        // NavigationPage 协议内返回（与 Navigation.PushAsync 配对）
+        Navigation.PopAsync().FireAndForgetNavigation();
     }
 }

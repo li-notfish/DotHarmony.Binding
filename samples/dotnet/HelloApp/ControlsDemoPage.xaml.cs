@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 // ControlsDemoPage 的 code-behind：展示新加的 10 种 MAUI 控件在鸿蒙上的渲染
 using Microsoft.Maui.Controls;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ public partial class ControlsDemoPage : ContentPage
 
     private void OnPopClicked(object? sender, EventArgs e)
     {
-        HarmonyOS.Maui.Hosting.HarmonyNavigation.Pop();
+        // NavigationPage 协议内返回（与 Navigation.PushAsync 配对）
+        Navigation.PopAsync().FireAndForgetNavigation();
     }
 }
