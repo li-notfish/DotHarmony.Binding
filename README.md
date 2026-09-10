@@ -88,7 +88,7 @@ bash scripts/deploy-hap.sh
 | 未映射属性 | —— | 记入 `Nodes/native-gaps.json` |
 
 生成器不猜属性形态：只有登记在 `nativeCodeGenerator.ts` shape 表中的属性才生成代码，
-其余进入 **gap 清单**（当前 1182 条），这是 C API 覆盖度的实时地图，也是扩展组件的待办清单。
+其余进入 **gap 清单**（当前 3851 条），这是 C API 覆盖度的实时地图，也是扩展组件的待办清单。
 
 ## 运行时工具链要点（踩坑记录）
 

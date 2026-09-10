@@ -74,7 +74,7 @@ public unsafe class Slider : ArkUINodeBase
     }
 
     /// <summary>onChange 事件（NODE_SLIDER_EVENT_ON_CHANGE：data[0].f32=当前值 data[1].i32=触发状态）</summary>
-    public event Action<ArkUINodeEvent>? ValueChange
+    public event Action<ArkUINodeEvent>? ValueChanged
     {
         add => On(ArkUI_NodeEventType.NODE_SLIDER_EVENT_ON_CHANGE, value!);
         remove => Off(ArkUI_NodeEventType.NODE_SLIDER_EVENT_ON_CHANGE);
@@ -119,12 +119,12 @@ public class HarmonySliderHandler : ViewHandler<Microsoft.Maui.Controls.Slider, 
     protected override void ConnectHandler(ArkSlider platformView)
     {
         base.ConnectHandler(platformView);
-        platformView.ValueChange += OnValueChange;
+        platformView.ValueChanged += OnValueChanged;
     }
 
     protected override void DisconnectHandler(ArkSlider platformView)
     {
-        platformView.ValueChange -= OnValueChange;
+        platformView.ValueChanged -= OnValueChanged;
         base.DisconnectHandler(platformView);
     }
 
@@ -144,7 +144,7 @@ public class HarmonySliderHandler : ViewHandler<Microsoft.Maui.Controls.Slider, 
         h.PlatformView.Value = (float)clamped;
     }
 
-    private void OnValueChange(ArkUINodeEvent e)
+    private void OnValueChanged(ArkUINodeEvent e)
     {
         // data[0].f32 = current value（见 NODE_SLIDER_EVENT_ON_CHANGE 注释）
         var value = (double)e.ComponentData(0).f32;
@@ -345,5 +345,5 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | 事件取消订阅无效 | `Click -= _ => { }` lambda 不等于 `Click += _ => { }` 的 lambda | 用**命名方法**订阅和取消订阅 |
 | `view.Date.ToString("格式")` 编译错 CS1501 | MAUI 10 的 DatePicker.Date/TimePicker.Time 是**可空类型**（`DateTime?`/`TimeSpan?`） | 先 `?? 默认值` 再取字段插值（`$"{d.Year:d4}-..."`） |
 | 核心接口缺成员（GroupName/Refreshing 等） | MAUI 核心接口（IRadioButton/IRefreshView）比 Controls 类型瘦 | 按官方风格回退 Controls 具体类型，虚拟视图泛型直接用 Controls 类（Picker 先例） |
-| 生成器重跑覆盖 curated 节点类 | 9 个旧版节点类（radio/scroll/slider 等）API 面与 handler 强耦合，与新 NativeCodeGenerator 输出不兼容 | index.ts `LEGACY_CURATED` 排除清单挡住；迁移前勿移除 |
+| 生成器重跑覆盖 curated 节点类 | 旧版节点类（radio/scroll/slider 等）API 面与 handler 强耦合，与新 NativeCodeGenerator 输出不兼容 | `CLASS_NAME_FIXES` / `NODE_TYPE_NAME_FIXES` 保证生成类名与 handler 别名一致；`ATTR_ALIASES` / `DEFAULT_SHAPES` 覆盖常用属性 |
 | 连续 uitest 手势后 hdc 挂死 | 模拟器 UI/uitest 过载 | `hdc kill` → `tconn 127.0.0.1:5555` → 重试；快照用 `timeout` 包裹 |
