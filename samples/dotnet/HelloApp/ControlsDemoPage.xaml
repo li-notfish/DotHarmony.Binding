@@ -27,6 +27,16 @@
                 <CheckBox x:Name="TestCheck" />
             </StackLayout>
 
+            <!-- Layout alignment: per-child cross-axis options in vertical StackLayout -->
+            <Button Text="Align Start" HorizontalOptions="Start" />
+            <Button Text="Align Center" HorizontalOptions="Center" />
+            <Button Text="Align End" HorizontalOptions="End" />
+            <Label Text="Margin 40/8 demo" Margin="40,8" TextColor="Black" />
+            <StackLayout Orientation="Horizontal" HeightRequest="48">
+                <Button Text="V-Center" VerticalOptions="Center" />
+                <Button Text="V-End" VerticalOptions="End" />
+            </StackLayout>
+
             <!-- Picker (inline wheel) -->
             <Picker x:Name="TestPicker" Title="选一个" TextColor="Black" />
             <DatePicker x:Name="TestDatePicker" TextColor="Black" />

@@ -5,41 +5,47 @@ using HarmonyOS.Bindings.NativeNode;
 
 namespace HarmonyOS.ArkUI;
 
-/// <summary>Image 组件（ARKUI_NODE_IMAGE）</summary>
-public unsafe partial class Image : ArkUINodeBase
+/// <summary>DatePicker 组件（ARKUI_NODE_DATE_PICKER）</summary>
+public unsafe partial class DatePicker : ArkUINodeBase
 {
-    public Image() : base(ArkUI_NodeType.ARKUI_NODE_IMAGE) { }
+    public DatePicker() : base(ArkUI_NodeType.ARKUI_NODE_DATE_PICKER) { }
 
-    /// <summary>fillColor（NODE_IMAGE_FILL_COLOR，单值 u32，0xAARRGGBB 格式）</summary>
-    public void SetFillColor(byte r, byte g, byte b, byte a = 255)
+    /// <summary>lunar（NODE_DATE_PICKER_LUNAR，i32 0/1）</summary>
+    public bool Lunar
     {
-        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_IMAGE_FILL_COLOR, ArkUIValue.U((uint)((a << 24) | (r << 16) | (g << 8) | b)));
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_DATE_PICKER_LUNAR, ArkUIValue.I(value ? 1 : 0));
     }
 
-    /// <summary>objectFit（NODE_IMAGE_OBJECT_FIT）</summary>
-    public ArkUI_ObjectFit ObjectFit
+    /// <summary>selecteddate（构造选项，NODE_DATE_PICKER_SELECTED，string）</summary>
+    public string SelectedDate
     {
-        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_IMAGE_OBJECT_FIT, ArkUIValue.I((int)value));
+        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_DATE_PICKER_SELECTED, value);
     }
 
-    /// <summary>Src（构造参数映射，NODE_IMAGE_SRC）</summary>
-    public string Src
+    /// <summary>startdate（构造选项，NODE_DATE_PICKER_START，string）</summary>
+    public string StartDate
     {
-        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_IMAGE_SRC, value);
+        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_DATE_PICKER_START, value);
     }
 
-    /// <summary>onComplete 事件（NODE_IMAGE_ON_COMPLETE）</summary>
-    public event Action<ArkUINodeEvent>? Complete
+    /// <summary>enddate（构造选项，NODE_DATE_PICKER_END，string）</summary>
+    public string EndDate
     {
-        add => On(ArkUI_NodeEventType.NODE_IMAGE_ON_COMPLETE, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_IMAGE_ON_COMPLETE);
+        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_DATE_PICKER_END, value);
     }
 
-    /// <summary>onError 事件（NODE_IMAGE_ON_ERROR）</summary>
-    public event Action<ArkUINodeEvent>? Error
+    /// <summary>onChange 事件（NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? OnDateChange
     {
-        add => On(ArkUI_NodeEventType.NODE_IMAGE_ON_ERROR, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_IMAGE_ON_ERROR);
+        add => On(ArkUI_NodeEventType.NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE);
+    }
+
+    /// <summary>onDateChange 事件（NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? DateChange
+    {
+        add => On(ArkUI_NodeEventType.NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE);
     }
 
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>

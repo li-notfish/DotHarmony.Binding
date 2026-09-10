@@ -55,7 +55,7 @@ DevEco Studio（内置 HarmonyOS SDK/NDK/hvigor）、可 SSH 的 Linux（NativeA
 # 1. 解析器构建 + 测试（45 用例）
 npm install && npm test
 
-# 2. 从 NDK 头文件生成 C# 枚举（ArkUINodeTypes.g.cs + .json 元数据）
+# 2. 从 NDK 头文件生成 C# 枚举（ArkUINodeTypes.g.cs + .json 元数据；SDK 探测顺序 --sdk → OHOS_SDK_BASE → OHSDK_HOME → 默认路径，找不到报错退出）
 python src/nativeBinding/extract_arkui_types.py --dump-json HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json
 
 # 3. 从 SDK 组件 .d.ts 生成 NodeHandle 包装类 → HarmonyOS.Bindings/Nodes/
@@ -64,15 +64,39 @@ npx ts-node src/parser/index.ts --native
 # 4. Windows 上构建绑定库 + 样例
 dotnet build ArkTsBinding.slnx
 
-# 5. 远程交叉编译 libapp.so（双架构），配置见 scripts/remote-build.sh 顶部
+# 5. 交叉编译 libapp.so（双架构）。LOCAL=true 走本地 WSL（上传式构建），默认经 SSH 远程
 bash scripts/remote-build.sh
 
-# 6. 打 HAP（使用 DevEco 内置 hvigor，签名需在 DevEco 中配置自动签名一次）
+# 6. 打 HAP（hvigor；DevEco 路径自动探测，或用 DEVECO_HOME 指定）
 cmd //c scripts\build-hap.cmd
 
-# 7. 部署到模拟器/真机并抓取日志
+# 7. 部署到模拟器/真机并抓取日志（hdc 自动探测；PowerShell 版为 deploy-hap.ps1）
 bash scripts/deploy-hap.sh
 ```
+
+## 脚本工具链（scripts/）
+
+| 脚本 | 用途 | 说明 |
+|---|---|---|
+| `remote-build.ps1` / `remote-build.sh` | 交叉编译 libapp.so（arm64 + x64 双架构） | `LOCAL=true`：本地 WSL 构建——**上传式**（打包 → 解压到 WSL 原生文件系统 → 构建 → 取回），勿在 `/mnt/*` 上直接构建（9p I/O 慢一个数量级）；默认经 SSH 远程构建（别名 `wsl_auzrelinux`，构建机 IP 漂移先跑 `resolve-remote.ps1`） |
+| `build-hap.cmd` | hvigor 打 HAP | DevEco Studio 路径自动探测，`DEVECO_HOME` 可覆盖；签名需在 DevEco 中配置一次自动签名 |
+| `deploy-hap.sh` / `deploy-hap.ps1` | 重装 HAP → 启动 → 抓取 HarmonyHost 日志 | hdc 自动探测；无设备 / 缺 HAP / 安装失败即报错停止；启动前 `aa force-stop` 防 install 竞争 |
+| `build-files.txt` | remote-build 打包清单（含 excludes） | ps1/sh 共用的唯一来源，改一处即可 |
+| `build-libapp.sh` | 构建机内部的 NativeAOT 发布 | 由 remote-build 调用，不必手动跑；musl.cc gcc（arm64）+ zig cc（x64）wrapper 幂等生成 |
+| `resolve-remote.ps1` | 定位 SSH 构建机并回写 `~/.ssh/config` | 仅 SSH 远程模式需要 |
+| `smoke-aot.sh` | NativeAOT + zig cc 工具链冒烟探针 | 工具链问题排查用 |
+| `gen-module-sample.ts` | @ohos.* 模块绑定样例生成 | napi 路线（ROADMAP 2.3） |
+
+环境变量（全部可选，脚本内置默认探测链）：
+
+| 变量 | 作用 | 探测顺序 |
+|---|---|---|
+| `OHOS_SDK_BASE` | OpenHarmony SDK 根目录（含 `26.0.0/toolchains`） | → `OHSDK_HOME` → `D:\Harmony\OpenHarmony\Sdk` → DevEco 内置 sdk |
+| `DEVECO_HOME` | DevEco Studio 安装目录 | → `D:\Program Files\Huawei\DevEco Studio` → C 盘同名 |
+| `LOCAL` | `true` 时 remote-build 在本地 WSL 构建 | 否则走 SSH 远程 |
+| `REMOTE` / `BUILD` | SSH 别名 / 构建目录 | `wsl_auzrelinux` / `/tmp/arktsbinding` |
+
+> 约定：`.gitattributes` 强制 `*.sh` 为 LF（WSL bash 无法执行 CRLF 脚本）、`*.cmd/*.ps1` 为 CRLF；新增脚本请沿用"路径自动探测 + 前置检查失败即停"的风格。
 
 ## 类型映射（Native 模式）
 
@@ -123,10 +147,10 @@ tests/                       jest（解析器/生成器 45 用例）
 
 ## 已知限制（当前真实状态）
 
-- **布局语义**：ArkUI flex 托管布局——MAUI 的 measure/arrange 引擎未实现（Fill/Spacing/Margin/WidthRequest/HeightRequest 已对齐；Grid/AbsoluteLayout 未支持）
+- **布局语义**：ArkUI flex 托管（StackLayout→Column/Row）+ Grid/AbsoluteLayout MAUI 托管（HarmonyManagedLayoutHandler 绝对定位）。已对齐：WidthRequest/HeightRequest、Margin、StackLayout.Spacing、HorizontalOptions/VerticalOptions 交叉轴对齐（Fill/Start/Center/End 经 NODE_ALIGN_SELF）；未支持：Stack 主轴方向 Options、Grid 单元内非 Fill 对齐、ZIndex
 - **画刷**：SolidColorBrush/LinearGradientBrush/RadialGradientBrush 全支持；ImageBrush 为 MAUI internal 类型无法声明（节点层 SetBackgroundImage 原语已就位）
-- **导航**：轻量 Page 栈（HarmonyNavigation.Push/Pop，节点保留式切换已实测）；Shell/NavigationPage 官方类型与页面动画未支持
-- **异步 API 未支持**：`Promise<T>` 映射为 `IntPtr` 占位，TSFN（ThreadSafeFunction）异步层未实现——这是 M2 核心难点
+- **导航**：根页用 `new NavigationPage(...)` 即可走 MAUI 标准 `Navigation.PushAsync/PopAsync`（HarmonyNavigationPageHandler 转接 IStackNavigation 协议，已实测）；另有轻量 Page 栈与系统返回键（优先级：模态 → NavigationPage 内栈 → 轻量栈）。**模态** `PushModalAsync/PopModalAsync` 标准可用（ArkStack 覆盖 + RootNavigationAdapter 转接）；**生命周期** Appearing/Disappearing 已透传（宿主建最小 Window/Application 逻辑链放行 MAUI 的 SendAppearing 守卫）；页面推入有 250ms 淡入（animateTo）。未支持：Shell（多平台 Shell 应用请把入口改写为 NavigationPage 结构）、返回方向的过渡动画
+- **异步 API**：`Promise<T>`→`Task<T>` 已接通（TypeMapper + 生成器 + `CallMethodAsync`/`CallMethodAsyncVoid`）；AsyncCallback 风格 `(result: T, err?: Error) => void` → `Task<T>` 已支持（parser AST 检测）；TSFN 完整生命周期三路径已封装（`ThreadSafeFunction.cs` + `HarmonySynchronizationContext.cs`）
 - **控件覆盖**：21 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/RefreshView/Picker/DatePicker/TimePicker + CollectionView/CarouselView M1 物化版），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
@@ -136,7 +160,7 @@ tests/                       jest（解析器/生成器 45 用例）
 
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
 - M1 尾巴（完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~、~~Grid/AbsoluteLayout（MAUI 托管布局）~~；剩真机验证
-- M2：TSFN 异步层（核心难点）、codeGenerator 缺陷修复、@ohos.* 批量绑定
+- M2：~~TSFN 异步层（2.1 完成）~~、~~codeGenerator 缺陷修复（2.2 完成）~~、@ohos.* 批量绑定
 - M3：NuGet 打包、单项目体验、CI
 
 ## 致谢 / Acknowledgements

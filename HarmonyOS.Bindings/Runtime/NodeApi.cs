@@ -259,6 +259,16 @@ public static class NodeApi
     }
 #endif
 
+    /// <summary>调用组件方法并接为 Task（Promise&lt;void&gt; 路线）</summary>
+    public static Task CallMethodAsyncVoid(IntPtr jsObject, string methodName, params object[] args)
+#if HARMONYOS
+        => CallMethodAsyncVoid(jsObject, Encoding.UTF8.GetBytes(methodName), args);
+#else
+    {
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+    }
+#endif
+
     /// <summary>调用组件方法并接为 Task&lt;T&gt;（byte[] 方法名重载，供生成器 u8 常量使用）</summary>
     public static Task<T> CallMethodAsync<T>(IntPtr jsObject, byte[] methodName, params object[] args)
     {
@@ -268,6 +278,20 @@ public static class NodeApi
         if (!isPromise)
             return Task.FromResult(ConvertResult<T>(result));
         return PromiseTaskBridge.ToTask<T>(result);
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>调用组件方法并接为 Task（Promise&lt;void&gt; 路线；byte[] 方法名重载）</summary>
+    public static Task CallMethodAsyncVoid(IntPtr jsObject, byte[] methodName, params object[] args)
+    {
+#if HARMONYOS
+        var result = InvokeMethod(jsObject, methodName, args);
+        NativeNodeApi.napi_is_promise(NapiEnv.Current, result, out var isPromise).ThrowIfFailed();
+        if (!isPromise)
+            return Task.CompletedTask;
+        return PromiseTaskBridge.ToTask<IntPtr>(result).ContinueWith(_ => { }, TaskScheduler.Default);
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif

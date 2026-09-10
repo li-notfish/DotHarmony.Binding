@@ -4,7 +4,7 @@
 用法:
     python src/nativeBinding/extract_arkui_types.py [--sdk <path>] [--out <path>]
 
-默认 SDK 路径为 DevEco Studio 内置 NDK。
+SDK 探测顺序: --sdk 参数 → OHOS_SDK_BASE → OHSDK_HOME → 本机默认路径。
 仅提取枚举；结构体与函数表镜像手工维护（需要精确布局控制）。
 """
 
@@ -15,14 +15,14 @@ import sys
 import os
 from pathlib import Path
 
-SDK_HOME = os.getenv("OHSDK_HOME")
+SDK_HOME = os.getenv("OHOS_SDK_BASE") or os.getenv("OHSDK_HOME")
 if SDK_HOME is None:
     # 回退默认值
-    SDK_HOME = r"C:/Program Files/Huawei/DevEco Studio/sdk/default"
+    SDK_HOME = r"D:/Harmony/OpenHarmony/Sdk"
 
 
 def _default_sdk() -> str:
-    """按优先级探测 ArkUI 头文件目录：OHSDK_HOME/版本号 → OHSDK_HOME/openharmony → DevEco 内置"""
+    """按优先级探测 ArkUI 头文件目录：SDK_HOME/版本号 → SDK_HOME/openharmony → SDK_HOME 根 → DevEco 内置"""
     candidates = []
     if SDK_HOME:
         candidates += [
@@ -34,14 +34,16 @@ def _default_sdk() -> str:
     for c in candidates:
         if os.path.isfile(os.path.join(c, "native_node.h")):
             return c
-    return candidates[0]
+    raise SystemExit(
+        "error: ArkUI headers not found. Set --sdk / OHOS_SDK_BASE / OHSDK_HOME "
+        f"(tried: {', '.join(candidates)})")
 
 
 DEFAULT_SDK = _default_sdk()
 
 DEFAULT_OUT = "HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.g.cs"
 
-# node 层核心枚举（native_node.h / native_node_napi.h）
+# node 层核心枚举（native_node.h / native_node_napi.h / native_animate.h / native_type_visual.h）
 CORE_ENUMS = [
     "ArkUI_NodeType",
     "ArkUI_NodeAttributeType",
@@ -50,9 +52,13 @@ CORE_ENUMS = [
     "ArkUI_NodeAdapterEventType",
     "ArkUI_NodeContentEventType",
     "ArkUI_LengthMetricUnit",
+    # 动画层（ArkUIAnimateApi.cs 手工函数表消费）
+    "ArkUI_AnimationCurve",
+    "ArkUI_FinishCallbackType",
 ]
 
-HEADER_FILES = ["native_node.h", "native_type.h", "native_node_napi.h", "common_type.h"]
+HEADER_FILES = ["native_node.h", "native_type.h", "native_node_napi.h", "common_type.h",
+                "native_animate.h", "native_type_visual.h"]
 ATTRIBUTES_SUBDIR = "node_attributes"
 
 ENUM_RE = re.compile(r"typedef\s+enum\s*(?::\s*\w+)?\s*\{(.*?)\}\s*(\w+)\s*;", re.S)

@@ -110,27 +110,71 @@ public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
         {
             // MAUI 显式 WidthRequest/HeightRequest 优先（vp）；view.Width/Height 是布局后的
             // 实测值（未布局时为 -1），不能用来判断显式尺寸
+            bool isHorizontalStack = VirtualView is StackLayout { Orientation: StackOrientation.Horizontal };
             if (view is VisualElement ve && ve.WidthRequest >= 0)
             {
                 node.SetWidth((float)ve.WidthRequest);
             }
-            // 水平 StackLayout 不设 SetWidthPercent——子节点用自然宽度，防止溢出屏幕
-            else if (view.HorizontalLayoutAlignment == MALIGNMENT.Fill
-                && VirtualView is not StackLayout { Orientation: StackOrientation.Horizontal })
+            else if (!isHorizontalStack)
             {
-                node.SetWidthPercent(1.0f);
+                // 竖直 Stack（Column）交叉轴 = 水平：HorizontalOptions 逐子项生效
+                // （ArkUI alignItems 是容器级，per-child 用 alignSelf/NODE_ALIGN_SELF 折衷）
+                switch (view.HorizontalLayoutAlignment)
+                {
+                    case MALIGNMENT.Fill:
+                        node.SetWidthPercent(1.0f);
+                        break;
+                    case MALIGNMENT.Start:
+                        node.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_START);
+                        break;
+                    case MALIGNMENT.Center:
+                        node.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_CENTER);
+                        break;
+                    case MALIGNMENT.End:
+                        node.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_END);
+                        break;
+                }
             }
 
             if (view is VisualElement vep && vep.HeightRequest >= 0)
             {
                 node.SetHeight((float)vep.HeightRequest);
             }
+            else if (isHorizontalStack)
+            {
+                // 水平 Stack（Row）交叉轴 = 垂直：VerticalOptions 逐子项生效。
+                // Fill 落成百分比高仅当 Row 自身高度受约束（显式 HeightRequest）——
+                // auto 高 Row 的子项百分比会退化为 0/未定义，Row 高度本应由内容决定
+                bool rowHeightBounded = VirtualView is VisualElement rve && rve.HeightRequest >= 0;
+                switch (view.VerticalLayoutAlignment)
+                {
+                    case MALIGNMENT.Fill:
+                        if (rowHeightBounded)
+                            node.SetHeightPercent(1.0f);
+                        break;
+                    case MALIGNMENT.Start:
+                        node.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_START);
+                        break;
+                    case MALIGNMENT.Center:
+                        node.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_CENTER);
+                        break;
+                    case MALIGNMENT.End:
+                        node.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_END);
+                        break;
+                }
+            }
 
-            // MAUI StackLayout.Spacing → 子节点下边距（最后一个子节点略多余，视觉可接受）
+            // 子节点自身 Margin（四边）；StackLayout.Spacing 以同侧外边距叠加
+            var margin = view.Margin;
+            float mTop = (float)margin.Top, mRight = (float)margin.Right,
+                  mBottom = (float)margin.Bottom, mLeft = (float)margin.Left;
             if (VirtualView is StackLayout sl && sl.Spacing > 0)
             {
-                node.SetMarginEdges(0, 0, (float)sl.Spacing, 0);
+                if (isHorizontalStack) mRight += (float)sl.Spacing;
+                else mBottom += (float)sl.Spacing;
             }
+            if (mTop > 0 || mRight > 0 || mBottom > 0 || mLeft > 0)
+                node.SetMarginEdges(mTop, mRight, mBottom, mLeft);
 
             PlatformView.AddChild(node);
             _children[view] = handler;

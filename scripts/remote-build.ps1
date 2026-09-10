@@ -14,23 +14,45 @@ New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
 $REMOTE = if ($env:REMOTE) { $env:REMOTE } else { "wsl_auzrelinux" }
 $BUILD  = if ($env:BUILD)  { $env:BUILD  } else { "/tmp/arktsbinding" }
 
-Write-Host "=== 1. 打包源码 ==="
-$tempArchive = Join-Path $tmpDir "arkts-src.tgz"
+# 打包清单与 remote-build.sh 共用（scripts/build-files.txt）
+$tarArgs = Get-Content (Join-Path $scriptDir "build-files.txt") |
+    Where-Object { $_ -notmatch '^\s*(#|$)' }
 
-$tarExcludes = @(
-    "--exclude=node_modules",
-    "--exclude=.git",
-    "--exclude=dist",
-    "--exclude=coverage",
-    "--exclude=bin",
-    "--exclude=obj",
-    "--exclude=output",
-    "--exclude=UnityHarmony",
-    "--exclude=tmp"
-)
-$filesToTar = @("src", "HarmonyOS.Bindings", "samples", "scripts", "ArkTsBinding.slnx")
-& tar czf $tempArchive $tarExcludes $filesToTar
+# LOCAL 模式——仍走"打包 → 复制进 WSL 原生文件系统 → 构建 → 取回"。
+# 不要直接在 /mnt/*（9p 挂载）上构建：海量小文件 I/O 会慢一个数量级以上。
+if ($env:LOCAL -eq "true") {
+    # wsl.exe 会把参数交给 Linux shell 解析，反斜杠会被当转义符吃掉——必须换成正斜杠
+    $wslRoot = (& wsl wslpath -a ($projectRoot -replace '\\', '/')).Trim()
+    if ($LASTEXITCODE -ne 0) { throw "wslpath 转换失败" }
+
+    Write-Host "=== 1. 打包源码 ==="
+    # 归档名用相对路径：GNU tar 会把含盘符冒号的路径当远程主机（"Cannot connect to D:"）
+    & tar czf "tmp/arkts-src.tgz" @tarArgs
+    if ($LASTEXITCODE -ne 0) { throw "打包失败" }
+
+    Write-Host "=== 2. 复制进 WSL 原生文件系统 ($BUILD) ==="
+    $wslArchive = "$wslRoot/tmp/arkts-src.tgz"
+    & wsl bash -c "rm -rf '$BUILD' && mkdir -p '$BUILD' && tar xzf '$wslArchive' -C '$BUILD'"
+    if ($LASTEXITCODE -ne 0) { throw "WSL 解压失败" }
+
+    Write-Host "=== 3. WSL 原生文件系统构建 ==="
+    & wsl bash -c "bash '$BUILD/scripts/build-libapp.sh'"
+    if ($LASTEXITCODE -ne 0) { throw "本地 WSL 构建失败" }
+
+    Write-Host "=== 4. 取回 libapp.so（双架构） ==="
+    & wsl bash -c "mkdir -p '$wslRoot/samples/HarmonyHost/entry/libs/arm64-v8a' '$wslRoot/samples/HarmonyHost/entry/libs/x86_64' && cp '$BUILD/samples/dotnet/HelloApp/bin/Release/net10.0/linux-musl-arm64/publish/app.so' '$wslRoot/samples/HarmonyHost/entry/libs/arm64-v8a/libapp.so' && cp '$BUILD/samples/dotnet/HelloApp/bin/Release/net10.0/linux-musl-x64/publish/app.so' '$wslRoot/samples/HarmonyHost/entry/libs/x86_64/libapp.so'"
+    if ($LASTEXITCODE -ne 0) { throw "复制 libapp.so 失败" }
+
+    Get-ChildItem "samples\HarmonyHost\entry\libs\arm64-v8a\libapp.so", "samples\HarmonyHost\entry\libs\x86_64\libapp.so" | Format-Table -AutoSize
+    Write-Host "=== 完成 ==="
+    exit 0
+}
+
+Write-Host "=== 1. 打包源码 ==="
+# 归档名用相对路径：GNU tar 会把含盘符冒号的路径当远程主机（"Cannot connect to D:"）
+& tar czf "tmp/arkts-src.tgz" @tarArgs
 if ($LASTEXITCODE -ne 0) { throw "打包失败" }
+$tempArchive = "tmp/arkts-src.tgz"
 
 Write-Host "=== 2. 上传并解压 ==="
 & ssh $REMOTE "rm -rf $BUILD && mkdir -p $BUILD"

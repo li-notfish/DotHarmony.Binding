@@ -43,7 +43,7 @@ public class HarmonySwitchHandler : ViewHandler<ISwitch, ArkSwitch>, ISwitchHand
 
     private void OnToggleChanged(ArkUINodeEvent e)
     {
-        var isOn = e.GetNumber(0).i32 == 1;
+        var isOn = e.ComponentData(0).i32 == 1;
         if (VirtualView.IsOn == isOn)
             return;
         VirtualView.IsOn = isOn;

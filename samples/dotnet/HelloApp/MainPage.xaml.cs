@@ -9,6 +9,21 @@ public partial class MainPage : ContentPage
 {
     private int _clicks;
     private int _visits;
+    private int _appearing;
+    private int _disappearing;
+
+    protected override void OnAppearing()
+    {
+        _appearing++;
+        LifecycleLabel.Text = $"Main: {_appearing}A / {_disappearing}D";
+    }
+
+    protected override void OnDisappearing()
+    {
+        _disappearing++;
+        // 页面已不可见，仅留痕迹；下一页的 LifecycleLabel 验证模态/导航切换时序
+        System.Diagnostics.Debug.WriteLine($"Main disappearing #{_disappearing}");
+    }
 
     public MainPage()
     {
@@ -32,16 +47,36 @@ public partial class MainPage : ContentPage
     private void OnOpenSecondClicked(object? sender, EventArgs e)
     {
         // 传参验证页面状态：每次进入自增，Pop 回来再进应延续（节点保留语义）
-        HarmonyOS.Maui.Hosting.HarmonyNavigation.Push(new SecondPage(++_visits));
+        // 走 MAUI 标准 INavigation API（NavigationPage 协议）
+        Navigation.PushAsync(new SecondPage(++_visits)).FireAndForgetNavigation();
     }
 
     private void OnOpenLayoutDemoClicked(object? sender, EventArgs e)
     {
-        HarmonyOS.Maui.Hosting.HarmonyNavigation.Push(new LayoutDemoPage());
+        Navigation.PushAsync(new LayoutDemoPage()).FireAndForgetNavigation();
     }
 
     private void OnOpenControlsDemoClicked(object? sender, EventArgs e)
     {
-        HarmonyOS.Maui.Hosting.HarmonyNavigation.Push(new ControlsDemoPage());
+        Navigation.PushAsync(new ControlsDemoPage()).FireAndForgetNavigation();
+    }
+
+    private void OnOpenModalClicked(object? sender, EventArgs e)
+    {
+        // 模态：标准 INavigation API（经 RootNavigationAdapter 转接到宿主模态层）
+        Navigation.PushModalAsync(new ModalPage()).FireAndForgetNavigation();
+    }
+}
+
+internal static class NavigationFireAndForget
+{
+    /// <summary>PushAsync 未观察异常的兜底（导航失败时打到 hilog 而非静默）</summary>
+    public static void FireAndForgetNavigation(this Task task)
+    {
+        task.ContinueWith(t =>
+        {
+            if (t.Exception is not null)
+                System.Diagnostics.Debug.WriteLine($"navigation failed: {t.Exception.InnerException}");
+        }, TaskScheduler.Default);
     }
 }

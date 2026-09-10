@@ -1,0 +1,17 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HelloApp.ModalPage"
+             BackgroundColor="#33000000">
+    <StackLayout VerticalOptions="Center" Spacing="16" Padding="24">
+        <Label Text="This is a MODAL page"
+               FontSize="22"
+               HorizontalTextAlignment="Center"
+               TextColor="White" />
+        <Label x:Name="LifecycleLabel"
+               Text="Modal: -A / -D"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Close modal (PopModalAsync)"
+                Clicked="OnCloseClicked" />
+    </StackLayout>
+</ContentPage>

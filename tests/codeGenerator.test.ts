@@ -428,7 +428,79 @@ describe('Code Generation Tests', () => {
         const afterContent = fs.readFileSync(outputPath, 'utf-8');
         const afterHash = require('crypto').createHash('sha256').update(afterContent).digest('hex');
         
-        // 内容应该相同（因为源文件未修改）
+         // 内容应该相同（因为源文件未修改）
         expect(afterHash).toBe(beforeHash);
+    });
+
+    // 阶段8异步层测试（M2 2.1）
+    test('should generate async-service.cs with Promise<T> mapping', async () => {
+        const parser = new ArkTsParser();
+        const asyncFixturePath = path.join(__dirname, 'fixtures/async-service.d.ts');
+        const outputPath = path.join(outputDir, 'async-service.cs');
+        
+        await parser.processFile(asyncFixturePath, outputPath);
+        expect(fs.existsSync(outputPath)).toBe(true);
+        
+        const content = fs.readFileSync(outputPath, 'utf-8');
+        
+        // 验证 using System.Threading.Tasks 存在
+        expect(content).toContain('using System.Threading.Tasks;');
+        
+        // 验证 Promise<string> → Task<string> 返回类型
+        expect(content).toContain('public Task<string> Load(string url)');
+        
+        // 验证 Promise<number> → Task<double> 返回类型（number 映射为 double）
+        expect(content).toContain('public Task<double> GetCount()');
+        
+        // 验证 Promise<boolean> → Task<bool> 返回类型
+        expect(content).toContain('public Task<bool> IsEnabled()');
+        
+        // 验证 Promise<void> 返回类型
+        expect(content).toContain('public Task DoWork()');
+        
+        // 验证复杂类型 Promise<SomeComplexType> → Task<IntPtr>
+        expect(content).toContain('public Task<IntPtr> GetHandle()');
+        
+        // 验证同步方法仍使用 CallMethod
+        expect(content).toContain('return NodeApi.CallMethod<double>(_jsObject, _syncMethod);');
+        
+        // 验证异步方法使用 CallMethodAsync
+        expect(content).toContain('return NodeApi.CallMethodAsync<string>(_jsObject, _load, url);');
+        expect(content).toContain('return NodeApi.CallMethodAsync<double>(_jsObject, _getCount);');
+        expect(content).toContain('return NodeApi.CallMethodAsync<bool>(_jsObject, _isEnabled);');
+        expect(content).toContain('return NodeApi.CallMethodAsync<IntPtr>(_jsObject, _getHandle);');
+    });
+
+    // AsyncCallback 测试（M2 2.1）
+    test('should generate async-callback-service.cs with AsyncCallback mapping', async () => {
+        const parser = new ArkTsParser();
+        const callbackFixturePath = path.join(__dirname, 'fixtures/async-callback-service.d.ts');
+        const outputPath = path.join(outputDir, 'async-callback-service.cs');
+        
+        await parser.processFile(callbackFixturePath, outputPath);
+        expect(fs.existsSync(outputPath)).toBe(true);
+        
+        const content = fs.readFileSync(outputPath, 'utf-8');
+        
+        // 验证 using System.Threading.Tasks 存在
+        expect(content).toContain('using System.Threading.Tasks;');
+        
+        // 验证 AsyncCallback<string> → Task<string>
+        expect(content).toContain('public Task<string> GetData()');
+        
+        // 验证 AsyncCallback<number> → Task<double>
+        expect(content).toContain('public Task<double> GetCount()');
+        
+        // 验证 AsyncCallback<boolean> → Task<bool>
+        expect(content).toContain('public Task<bool> IsEnabled()');
+        
+        // 验证 AsyncCallback<void> → Task
+        expect(content).toContain('public Task DoWork()');
+        
+        // 验证混合参数：AsyncCallback 移除，只保留 url 参数
+        expect(content).toContain('public Task<string> FetchData(string url)');
+        
+        // 验证同步方法
+        expect(content).toContain('public double SyncMethod()');
     });
 });

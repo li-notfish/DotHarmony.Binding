@@ -234,6 +234,17 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
             // 自适应维不设显式尺寸，让节点内容自撑（下一帧据此量测 Auto 轨道）
             bool wAuto = colUnit[c] == GridUnitType.Auto && cs == 1;
             bool hAuto = rowUnit[r] == GridUnitType.Auto && rs == 1;
+
+            // MAUI 子节点 Margin：在轨道单元内内缩（auto 维不缩，让内容自撑）
+            var mg = view.Margin;
+            float mgL = (float)mg.Left, mgT = (float)mg.Top, mgR = (float)mg.Right, mgB = (float)mg.Bottom;
+            if (mgL > 0 || mgT > 0 || mgR > 0 || mgB > 0)
+            {
+                x += mgL; y += mgT;
+                if (!wAuto) w = Math.Max(w - mgL - mgR, 0);
+                if (!hAuto) h = Math.Max(h - mgT - mgB, 0);
+            }
+
             if (!wAuto) node.SetWidth(w);
             if (!hAuto) node.SetHeight(h);
             node.SetPosition(x, y);
@@ -258,6 +269,16 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
             // 比例定位锚定的是"扣除自身尺寸后的可放置区"
             float x = posProp ? (float)bounds.X * (_containerW - w) : (float)bounds.X;
             float y = posProp ? (float)bounds.Y * (_containerH - h) : (float)bounds.Y;
+
+            // MAUI 子节点 Margin：定位偏移总是生效；比例/显式尺寸维内缩，auto 维不缩
+            var mg = view.Margin;
+            float mgL = (float)mg.Left, mgT = (float)mg.Top, mgR = (float)mg.Right, mgB = (float)mg.Bottom;
+            if (mgL > 0 || mgT > 0 || mgR > 0 || mgB > 0)
+            {
+                x += mgL; y += mgT;
+                if (!wAuto) w = Math.Max(w - mgL - mgR, 0);
+                if (!hAuto) h = Math.Max(h - mgT - mgB, 0);
+            }
 
             if (!wAuto) node.SetWidth(w);
             if (!hAuto) node.SetHeight(h);

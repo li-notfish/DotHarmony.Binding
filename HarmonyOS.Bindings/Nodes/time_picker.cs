@@ -5,41 +5,28 @@ using HarmonyOS.Bindings.NativeNode;
 
 namespace HarmonyOS.ArkUI;
 
-/// <summary>Image 组件（ARKUI_NODE_IMAGE）</summary>
-public unsafe partial class Image : ArkUINodeBase
+/// <summary>TimePicker 组件（ARKUI_NODE_TIME_PICKER）</summary>
+public unsafe partial class TimePicker : ArkUINodeBase
 {
-    public Image() : base(ArkUI_NodeType.ARKUI_NODE_IMAGE) { }
+    public TimePicker() : base(ArkUI_NodeType.ARKUI_NODE_TIME_PICKER) { }
 
-    /// <summary>fillColor（NODE_IMAGE_FILL_COLOR，单值 u32，0xAARRGGBB 格式）</summary>
-    public void SetFillColor(byte r, byte g, byte b, byte a = 255)
+    /// <summary>useMilitaryTime（NODE_TIME_PICKER_USE_MILITARY_TIME，i32 0/1）</summary>
+    public bool UseMilitaryTime
     {
-        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_IMAGE_FILL_COLOR, ArkUIValue.U((uint)((a << 24) | (r << 16) | (g << 8) | b)));
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TIME_PICKER_USE_MILITARY_TIME, ArkUIValue.I(value ? 1 : 0));
     }
 
-    /// <summary>objectFit（NODE_IMAGE_OBJECT_FIT）</summary>
-    public ArkUI_ObjectFit ObjectFit
+    /// <summary>selectedtime（构造选项，NODE_TIME_PICKER_SELECTED，string）</summary>
+    public string SelectedTime
     {
-        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_IMAGE_OBJECT_FIT, ArkUIValue.I((int)value));
+        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_TIME_PICKER_SELECTED, value);
     }
 
-    /// <summary>Src（构造参数映射，NODE_IMAGE_SRC）</summary>
-    public string Src
+    /// <summary>onChange 事件（NODE_TIME_PICKER_EVENT_ON_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? OnTimeChange
     {
-        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_IMAGE_SRC, value);
-    }
-
-    /// <summary>onComplete 事件（NODE_IMAGE_ON_COMPLETE）</summary>
-    public event Action<ArkUINodeEvent>? Complete
-    {
-        add => On(ArkUI_NodeEventType.NODE_IMAGE_ON_COMPLETE, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_IMAGE_ON_COMPLETE);
-    }
-
-    /// <summary>onError 事件（NODE_IMAGE_ON_ERROR）</summary>
-    public event Action<ArkUINodeEvent>? Error
-    {
-        add => On(ArkUI_NodeEventType.NODE_IMAGE_ON_ERROR, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_IMAGE_ON_ERROR);
+        add => On(ArkUI_NodeEventType.NODE_TIME_PICKER_EVENT_ON_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_TIME_PICKER_EVENT_ON_CHANGE);
     }
 
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>

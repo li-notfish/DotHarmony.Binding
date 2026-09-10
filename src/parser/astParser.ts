@@ -54,6 +54,8 @@ export class AstParser {
                 if (enumInfo) {
                     enums.push(enumInfo);
                 }
+            } else if (ts.isFunctionDeclaration(node)) {
+                this.parseFunctionDeclaration(node, component, warnings);
             }
         });
 
@@ -92,6 +94,20 @@ export class AstParser {
                             })),
                             isChained: false
                         };
+
+                        // AsyncCallback 检测：检查原始 TypeScript AST
+                        if (member.parameters && member.parameters.length > 0) {
+                            const lastParam = member.parameters[member.parameters.length - 1];
+                            if (lastParam.type && ts.isFunctionTypeNode(lastParam.type)) {
+                                const asyncCallbackInfo = this.detectAsyncCallbackFromAST(lastParam.type);
+                                if (asyncCallbackInfo) {
+                                    const mappedResultType = TypeMapper.mapType(asyncCallbackInfo.resultType);
+                                    method.returnType = mappedResultType === 'void' ? 'Task' : `Task<${mappedResultType}>`;
+                                    method.parameters.pop(); // 移除回调参数
+                                }
+                            }
+                        }
+
                         component.methods.push(method);
                     } else if (ts.isConstructorDeclaration(member)) {
                         const ctor: ConstructorOverload = {
@@ -128,6 +144,25 @@ export class AstParser {
                         component.methods.push(method);
                     }
                 });
+            } else if (ts.isFunctionDeclaration(node) && node.name) {
+                const funcName = node.name.text;
+                if (!component.name) {
+                    component.name = funcName;
+                    component.interfaceName = funcName + 'Interface';
+                }
+
+                const method: MethodInfo = {
+                    name: funcName,
+                    returnType: TypeMapper.mapType(this.getTypeName(node.type)),
+                    parameters: node.parameters.map(p => ({
+                        name: p.name.getText(),
+                        type: TypeMapper.mapType(this.getTypeName(p.type)),
+                        optional: !!p.questionToken,
+                        defaultValue: p.initializer ? p.initializer.getText() : undefined
+                    })),
+                    isChained: false
+                };
+                component.methods.push(method);
             } else if (ts.isExportAssignment(node)) {
                 const exportName = node.expression?.getText();
                 if (exportName) {
@@ -325,7 +360,105 @@ export class AstParser {
             });
         }
 
+        // AsyncCallback 检测：检查原始 TypeScript AST
+        // 如果最后一个参数是 (result: T, err?: Error) => void 格式
+        if (node.parameters && node.parameters.length > 0) {
+            const lastParam = node.parameters[node.parameters.length - 1];
+            if (lastParam.type && ts.isFunctionTypeNode(lastParam.type)) {
+                const asyncCallbackInfo = this.detectAsyncCallbackFromAST(lastParam.type);
+                if (asyncCallbackInfo) {
+                    const mappedResultType = TypeMapper.mapType(asyncCallbackInfo.resultType);
+                    method.returnType = mappedResultType === 'void' ? 'Task' : `Task<${mappedResultType}>`;
+                    method.parameters.pop(); // 移除回调参数
+                }
+            }
+        }
+
         component.methods.push(method);
+    }
+
+    private parseFunctionDeclaration(node: ts.FunctionDeclaration, component: ComponentInfo, warnings: string[]): void {
+        const funcName = node.name?.getText();
+        if (!funcName) return;
+
+        const returnType = this.getTypeName(node.type);
+
+        const method: MethodInfo = {
+            name: funcName,
+            returnType: TypeMapper.mapType(returnType),
+            parameters: [],
+            isChained: false
+        };
+
+        if (node.parameters) {
+            node.parameters.forEach((param) => {
+                const paramInfo: ParameterInfo = {
+                    name: param.name.getText(),
+                    type: this.getTypeName(param.type),
+                    optional: !!param.questionToken,
+                    defaultValue: param.initializer ? param.initializer.getText() : undefined
+                };
+                method.parameters.push(paramInfo);
+            });
+        }
+
+        // AsyncCallback 检测：检查原始 TypeScript AST
+        if (node.parameters && node.parameters.length > 0) {
+            const lastParam = node.parameters[node.parameters.length - 1];
+            if (lastParam.type && ts.isFunctionTypeNode(lastParam.type)) {
+                const asyncCallbackInfo = this.detectAsyncCallbackFromAST(lastParam.type);
+                if (asyncCallbackInfo) {
+                    const mappedResultType = TypeMapper.mapType(asyncCallbackInfo.resultType);
+                    method.returnType = mappedResultType === 'void' ? 'Task' : `Task<${mappedResultType}>`;
+                    method.parameters.pop(); // 移除回调参数
+                }
+            }
+        }
+
+        component.methods.push(method);
+    }
+
+    /**
+     * 从 TypeScript AST 检测 AsyncCallback 模式
+     * 匹配 (result: T, err?: Error) => void 或 (err?: Error) => void
+     */
+    private detectAsyncCallbackFromAST(funcType: ts.FunctionTypeNode): { resultType: string; callbackIndex: number } | null {
+        const params = funcType.parameters;
+        const returnType = this.getTypeName(funcType.type);
+
+        // 返回类型必须是 void
+        if (returnType !== 'void') return null;
+
+        // 模式1: (result: T, err?: Error) => void
+        if (params.length === 2) {
+            const firstParamType = this.getTypeName(params[0].type);
+            const secondParamType = this.getTypeName(params[1].type);
+            const secondParamOptional = !!params[1].questionToken;
+
+            if (secondParamOptional && this.isErrorType(secondParamType)) {
+                return { resultType: firstParamType, callbackIndex: 0 };
+            }
+        }
+
+        // 模式2: (err?: Error) => void - 仅错误回调，结果为 void
+        if (params.length === 1) {
+            const firstParamType = this.getTypeName(params[0].type);
+            const firstParamOptional = !!params[0].questionToken;
+
+            if (firstParamOptional && this.isErrorType(firstParamType)) {
+                return { resultType: 'void', callbackIndex: -1 };
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 检查类型是否是 Error 类型
+     */
+    private isErrorType(typeName: string): boolean {
+        return typeName === 'Error' || typeName === 'error' || 
+               typeName.endsWith('Error') || typeName.endsWith('error');
     }
 
     private isEventMethod(methodName: string): boolean {

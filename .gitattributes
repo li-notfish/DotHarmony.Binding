@@ -1,0 +1,6 @@
+# sh 必须保持 LF：WSL bash 无法执行 CRLF 脚本
+*.sh text eol=lf
+# Windows 侧脚本保持 CRLF
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.bat text eol=crlf

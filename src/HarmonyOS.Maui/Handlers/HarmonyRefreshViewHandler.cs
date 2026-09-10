@@ -1,7 +1,7 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
-using ArkRefresh = HarmonyOS.ArkUI.RefreshNode;
+using ArkRefresh = HarmonyOS.ArkUI.Refresh;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 
 namespace HarmonyOS.Maui.Handlers;

@@ -10,6 +10,12 @@ public unsafe partial class Refresh : ArkUINodeBase
 {
     public Refresh() : base(ArkUI_NodeType.ARKUI_NODE_REFRESH) { }
 
+    /// <summary>isrefreshing（构造选项，NODE_REFRESH_REFRESHING，i32 0/1）</summary>
+    public bool IsRefreshing
+    {
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_REFRESH_REFRESHING, ArkUIValue.I(value ? 1 : 0));
+    }
+
     /// <summary>onStateChange 事件（NODE_REFRESH_STATE_CHANGE）</summary>
     public event Action<ArkUINodeEvent>? StateChange
     {

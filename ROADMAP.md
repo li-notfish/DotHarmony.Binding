@@ -22,35 +22,53 @@
 
 **历史说明**：一期只做纯色（Gradient/Image 静默透明）；渐变/图片画刷已于本阶段补齐。
 
-### 1.2 布局对齐 —— 两套布局引擎的取舍（中，最重要的语义缺口）
+### 1.2 布局对齐 —— 两套布局引擎的取舍（✅ 已完成，2026-09-11 模拟器实测）
 
-**做什么**：`WidthRequest/HeightRequest`（✅ 已映射 NODE_WIDTH/HEIGHT）已生效；剩余 Grid/AbsoluteLayout。
+**实现结果**：
+- `WidthRequest/HeightRequest` → `NODE_WIDTH/HEIGHT`（显式请求优先于实测值，HarmonyLayoutHandler.AttachChild）
+- `Margin` → `NODE_MARGIN` 四边：flex 子树经 `SetMarginEdges`（`StackLayout.Spacing` 以同侧外边距叠加）；
+  Grid/Absolute 托管子树在 Arrange 中按轨道单元内缩（auto 维不缩，让内容自撑）
+- `HorizontalOptions/VerticalOptions` → **per-child 对齐**：`NODE_ALIGN_SELF`（alignSelf）。
+  竖直 Stack（Column）交叉轴=水平，映射 HorizontalOptions；水平 Stack（Row）交叉轴=垂直，映射
+  VerticalOptions。Fill → 百分比宽（Column）/百分比高（Row，仅当 Row 高度受显式 HeightRequest
+  约束——auto 高父容器的子项百分比会退化为 0）；Start/Center/End → alignSelf 直映
+- `Grid/AbsoluteLayout` → **MAUI 托管**（`HarmonyManagedLayoutHandler`）：Stack +
+  `NODE_POSITION/NODE_WIDTH/HEIGHT` 绝对定位；轨道解析支持 Absolute/Auto/Star（Star 按剩余空间
+  权重分配）；Span 按起始轨道求和；AbsoluteLayout 支持 PositionProportional/SizeProportional
+  （比例定位锚定扣除自身尺寸后的可放置区）；容器尺寸来自 `NODE_ON_SIZE_CHANGE`，
+  px/vp 密度由 MeasuredSize/SizeChange 比值推导
 
-**怎么做**：维持当前 **ArkUI flex 托管**模型（StackLayout→Column/Row 自治布局），在此之上：
-- `WidthRequest/HeightRequest` → `NODE_WIDTH/NODE_HEIGHT`（vp）
-- `Margin` → `NODE_MARGIN`（已实现四边版 `SetMarginEdges`）
-- `HorizontalOptions/VerticalOptions` 非 Fill 值 → 容器级对齐折衷（ArkUI 的 alignItems 是容器级，MAUI 是 per-child；一期对 Fill 全宽、非 Fill wrap+容器居中）
-- `Grid/AbsoluteLayout` → **MAUI 托管**：用布局管理器算 frame，然后 `setLayoutPosition + NODE_SIZE` 绝对定位（C API 原语已就绪：`measureNode/layoutNode/setMeasuredSize`）
+**实测**：ControlsDemoPage 含 Align Start/Center/End、Margin、V-Center/V-End 用例，模拟器截图逐项确认。
 
-**难点**：
-1. **MAUI 托管路径需要子节点的期望尺寸**（measure 往返）。ArkUI 节点的固有尺寸可通过 `getAttribute(NODE_SIZE)` 读取，但需要在节点完成一次布局后取值——存在先有鸡还是先有蛋的时序问题，需要实测 `markDirty` 后的回调时序。
-2. 两套引擎混用时（flex 容器内嵌 MAUI 绝对定位子树），尺寸约定要严格（内层根用固定 px），否则约束传播会乱。建议内层根设 `NODE_SIZE` 固定值。
+**遗留限制（M1）**：
+- Stack 主轴方向的 Options（如竖直 Stack 里的 VerticalOptions）不生效（MAUI 语义复杂，折衷忽略）
+- Grid 单元格内非 Fill 对齐不生效（所有子节点按 Fill 充满单元格）；Span>1 的 Auto 轨道不参与实测
+- Auto 轨道依赖子节点上一帧自量测（首帧有按控件类型的兜底估算，收敛需 1~2 帧）；内容自身变化不触发重排
+- 两套布局的 ZIndex 均按 addChild 顺序，UpdateZIndex 忽略
 
-### 1.3 Window / Navigation（✅ 轻量版已完成 / 中）
+### 1.3 Window / Navigation（✅ 已完成：轻量栈 + NavigationPage 转接层 / 中）
 
-已实现 `HarmonyNavigation.Push/Pop`（宿主根容器 + 节点保留式切换），四步实测通过：Push→Pop（主页状态完整恢复）→再 Push（计数延续）。**原"摘除-恢复"难点已实测排除**。剩余：页面动画、Appearing/Disappearing 事件、模态。
+两级导航均已实测通过（HelloApp，模拟器）：
 
-**做什么**：支持多页面与导航（MAUI 开发的第二基本操作）。
+**① 轻量栈 `HarmonyNavigation.Push/Pop`**（宿主根容器 + 节点保留式切换）：Push→Pop（主页状态完整恢复）→再 Push（计数延续）。原"摘除-恢复"难点已实测排除。
 
-**怎么做**（自建轻量栈，不对齐 NavigationPage/Shell 全语义）：
-- `HarmonyWindow`：包装现有 ContentSlot 挂载点，持有 Page 栈
-- `Navigation.PushAsync(page)`：当前根 `removeChild` 暂存 → 新根 `AddNode`（节点树保留，仅切换挂载）；`PopAsync` 反向
-- 页面切换动画暂略（ArkUI 有 `nativeAnimate`，后续可选）
+**② NavigationPage 官方协议转接层 `HarmonyNavigationPageHandler`**：根页改为 `new NavigationPage(new MainPage())` 后，业务代码用 MAUI 标准 `Navigation.PushAsync/PopAsync` 即可。实测：PushAsync→visit #1、PopAsync→回主页、再 Push→visit #2（MainPage 实例跨 push/pop 保留）、系统返回键消费 NavigationPage 内栈而非退出应用。
 
-**难点**：
-1. **Page 与 Window 的生命周期映射**：MAUI `IWindow/IPageHandler` 协议重（Appearing/Disappearing、模态、toolbar）；一期只做 `ContentPage` 的显示/隐藏事件透传
-2. 暂存的已挂载页面在 ArkUI 侧是"从树摘除但句柄保留"——验证 `removeChild` 后再 `addNode` 的节点状态恢复是否完整（属性是否保留）
-3. Shell/NavigationPage 官方类型**不在支持计划内**（协议太重），文档需明确开发者不要使用
+**原理**（对 MAUI 10.0.11 源码取证）：
+- 子页 `NavigationProxy.Inner` 由 `NavigableElement.OnParentSet()` 沿父链自动接到 NavigationPage 的 `MauiNavigationImpl`——业务代码零改动
+- NavigationPage 把整包导航栈打包为 `NavigationRequest`，经 `Handler.Invoke(nameof(IStackNavigation.RequestNavigation))` 到达 handler
+- handler 把 ArkUI 节点栈同步成请求的栈（仅栈顶挂入 ArkStack，低层摘除保留句柄），完成后**必须**回调 `IStackNavigation.NavigationFinished`，否则 `SendHandlerUpdateAsync` 内 await 永久挂起（PushAsync 不返回）
+- 无 NavigationPage 时 MAUI 官方语义即抛 "PushAsync is not supported, please use a NavigationPage."（`Window.NavigationImpl`）——宿主返回键先消费 NavigationPage 内栈，再退到根级轻量栈
+
+**剩余**：返回/弹出方向的过渡动画（当前仅新页淡入 250ms）、`Window.Toolbar`（NavigationPage 标题栏由宿主承担，暂无返回按钮 UI，依赖系统返回键/页面内返回按钮）。
+
+**生命周期**：`Appearing/Disappearing` 已透传（含 NavigationPage 内部切换）。MAUI 的 `Page.SendAppearing` 有守卫（父链上须存在 `Parent` 非空的 `IWindow`），宿主以最小逻辑链放行：`Window.Parent = Application`（均为 public API；不设 `Window.Page`，其 setter 会用 `Window.NavigationImpl` 覆写页面的 NavigationProxy.Inner）。实测：主页 2A/1D 随模态开闭精确变化，NavigationPage 内推入页同样触发。
+
+**模态**：`Navigation.PushModalAsync/PopModalAsync` 标准可用。宿主根容器为 ArkStack（后挂者覆盖），模态页覆盖页面之上；`RootNavigationAdapter`（`NavigationProxy` 子类）挂在根页 `NavigationProxy.Inner` 上承接——含 NavigationPage 路径（`MauiNavigationImpl` 未覆写模态调用，经基类转发到适配器）。实测：PushModalAsync→覆盖显示+生命周期正确、PopModalAsync→恢复、系统返回键优先关闭模态。
+
+**切换动画**：绑定 `ArkUI_NativeAnimateAPI_1.animateTo`（`ArkUIAnimateApi.cs`）+ `ArkUINodeBase.AnimateAsync`；轻量栈与模态推入时新页淡入（NODE_OPACITY 0→1，250ms EASE_IN_OUT）。
+
+**Shell 转接结论**：Shell 不在支持计划内（flyout/tab/URI 路由协议太重）。多平台 Shell 应用做鸿蒙适配时，入口改为 NavigationPage/TabbedPage 结构（`MauiHarmonyHost.Run(() => new NavigationPage(...))`）——这正是 NavigationPage 转接层存在的意义；TabbedPage（底部页签）为后续候选。
 
 ### 1.4 更多控件 Handler（✅ 已完成 21 个）
 
@@ -64,11 +82,14 @@
 
 ## M2 —— 服务层完备（异步是核心）
 
-> **2026-09-10 进度**：2.2 四项缺陷已修复并端到端验证（合成模块 void/Promise<string>/Promise<number>
-> 生成 → 编译通过）；2.1 最小切片已落地——`PromiseTaskBridge`（napi then + 原生 trampoline + TCS，
-> 续体调度线程池）+ `NodeApi.CallMethodAsync<T>`，生成器对 `Promise<T>` 返回发射 `CallMethodAsync`。
-> 已知边界：仅覆盖 Promise 风格；AsyncCallback 风格与任意线程→JS 线程的完整 TSFN 通道（含生命周期三路径）
-> 仍待做；设备端到端验证依赖模块级函数生成（解析器尚未支持顶层 `declare function` 导出）。
+> **2026-09-10 进度**：2.1 已完成——
+> - P/Invoke 声明：`napi_create/release/call_threadsafe_function` 已添加到 `NativeNodeApi.cs`
+> - `ThreadSafeFunction.cs`：封装 TSFN 生命周期三路径（完成/取消/异常），Promise 回调注册
+> - `HarmonySynchronizationContext.cs`：主线程调度器，支持 Post/Send 回到 UI 线程
+> - 最小切片：`Promise<T>`→`Task<T>` 映射接通（TypeMapper + CodeGenerator + 47/47 测试）
+> - AsyncCallback 支持：`(result: T, err?: Error) => void` → `Task<T>` parser + 生成器
+> 2.2 已完成——using 生成、CallMethodVoid 重载、方法折叠、Promise→Task 映射。
+> 端到端模拟器验证待手动执行。
 
 
 ### 2.1 TSFN 异步层（大，M2 的核心难点）

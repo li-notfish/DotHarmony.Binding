@@ -134,6 +134,15 @@ export class TypeMapper {
             
             const mappedReturnType = this.mapType(returnType);
             
+            // AsyncCallback 检测：(result: T, err?: Error) => void → Task<T>
+            if (mappedReturnType === 'void' && this.isAsyncCallback(funcType)) {
+                const resultType = this.extractAsyncCallbackResultType(funcType);
+                if (resultType) {
+                    const mapped = this.mapType(resultType);
+                    return mapped === 'void' ? 'Task' : `Task<${mapped}>`;
+                }
+            }
+            
             if (mappedReturnType === 'void') {
                 return params.length > 0 ? `Action<${params.join(', ')}>` : 'Action';
             } else {
@@ -252,9 +261,14 @@ export class TypeMapper {
                 const innerMatch = /Promise<(.+)>\s*$/.exec(genericType.trim());
                 if (innerMatch) {
                     const inner = this.mapType(this.cleanOptional(innerMatch[1].trim()));
+                    if (inner === 'void') {
+                        return 'Task';
+                    }
                     if (['string', 'double', 'bool', 'int', 'IntPtr'].includes(inner)) {
                         return inner === 'double' ? 'Task<double>' : `Task<${inner}>`;
                     }
+                    // 不可封送的复杂类型：返回 Task<IntPtr>（句柄）
+                    return 'Task<IntPtr>';
                 }
                 return 'IntPtr';
             }
@@ -349,5 +363,51 @@ export class TypeMapper {
 
     static isOptionsType(typeStr: string): boolean {
         return typeStr.endsWith('Options') && !typeStr.includes('|') && !typeStr.includes('<');
+    }
+
+    // AsyncCallback 相关方法
+
+    /**
+     * 检测是否是 AsyncCallback 模式
+     * 模式：(result: T, err?: Error) => void
+     */
+    static isAsyncCallback(funcType: string): boolean {
+        // 匹配 (result: T, err?: Error) => void 模式
+        const pattern = /^\(([^,]+),\s*[^,]*(?:Error|error)\?\s*:\s*(?:Error|error)\)\s*=>\s*void$/;
+        return pattern.test(funcType.trim());
+    }
+
+    /**
+     * 从 AsyncCallback 提取结果类型
+     * (result: string, err?: Error) => void → string
+     */
+    static extractAsyncCallbackResultType(funcType: string): string | null {
+        const match = funcType.match(/^\(([^,]+),\s*(?:[^,]*(?:Error|error)\?)\s*:\s*(?:Error|error)\)\s*=>\s*void$/);
+        if (match) {
+            const paramStr = match[1].trim();
+            const colonIndex = paramStr.indexOf(':');
+            if (colonIndex > 0) {
+                return paramStr.substring(colonIndex + 1).trim();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 检测方法参数中是否包含 AsyncCallback
+     * 返回 { isAsync, resultType, callbackIndex }
+     */
+    static detectAsyncCallbackParam(params: { type: string }[]): { isAsync: boolean; resultType: string | null; callbackIndex: number } {
+        for (let i = 0; i < params.length; i++) {
+            const param = params[i];
+            if (this.isAsyncCallback(param.type)) {
+                return {
+                    isAsync: true,
+                    resultType: this.extractAsyncCallbackResultType(param.type),
+                    callbackIndex: i
+                };
+            }
+        }
+        return { isAsync: false, resultType: null, callbackIndex: -1 };
     }
 }

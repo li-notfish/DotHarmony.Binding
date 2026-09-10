@@ -5,41 +5,50 @@ using HarmonyOS.Bindings.NativeNode;
 
 namespace HarmonyOS.ArkUI;
 
-/// <summary>Image 组件（ARKUI_NODE_IMAGE）</summary>
-public unsafe partial class Image : ArkUINodeBase
+/// <summary>TextPicker 组件（ARKUI_NODE_TEXT_PICKER）</summary>
+public unsafe partial class TextPicker : ArkUINodeBase
 {
-    public Image() : base(ArkUI_NodeType.ARKUI_NODE_IMAGE) { }
+    public TextPicker() : base(ArkUI_NodeType.ARKUI_NODE_TEXT_PICKER) { }
 
-    /// <summary>fillColor（NODE_IMAGE_FILL_COLOR，单值 u32，0xAARRGGBB 格式）</summary>
-    public void SetFillColor(byte r, byte g, byte b, byte a = 255)
+    /// <summary>canLoop（NODE_TEXT_PICKER_CAN_LOOP，i32 0/1）</summary>
+    public bool CanLoop
     {
-        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_IMAGE_FILL_COLOR, ArkUIValue.U((uint)((a << 24) | (r << 16) | (g << 8) | b)));
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_PICKER_CAN_LOOP, ArkUIValue.I(value ? 1 : 0));
     }
 
-    /// <summary>objectFit（NODE_IMAGE_OBJECT_FIT）</summary>
-    public ArkUI_ObjectFit ObjectFit
+    /// <summary>selectedindex（构造选项，NODE_TEXT_PICKER_SELECTED_INDEX，i32）</summary>
+    public int SelectedIndex
     {
-        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_IMAGE_OBJECT_FIT, ArkUIValue.I((int)value));
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_PICKER_SELECTED_INDEX, ArkUIValue.I(value));
     }
 
-    /// <summary>Src（构造参数映射，NODE_IMAGE_SRC）</summary>
-    public string Src
+    /// <summary>单列选项范围（NODE_TEXT_PICKER_OPTION_RANGE：value[0].i32=1 单列，string 以 ';' 分隔）</summary>
+    public void SetRange(System.Collections.Generic.IReadOnlyList<string> options)
     {
-        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_IMAGE_SRC, value);
+        var utf8 = System.Text.Encoding.UTF8.GetBytes(string.Join(";", options));
+        var values = new ArkUI_NumberValue[] { ArkUIValue.I(1) }; // ArkUI_TextPickerRangeType: 1 = 单列字符串
+        fixed (byte* p = utf8)
+        fixed (ArkUI_NumberValue* v = values)
+        {
+            var item = new ArkUI_AttributeItem { value = v, size = 1, @string = p };
+            var status = ArkUINativeApi.SetAttribute(Handle, ArkUI_NodeAttributeType.NODE_TEXT_PICKER_OPTION_RANGE, &item);
+            if (status != 0)
+                throw new InvalidOperationException("SetAttribute(NODE_TEXT_PICKER_OPTION_RANGE) failed: " + status);
+        }
     }
 
-    /// <summary>onComplete 事件（NODE_IMAGE_ON_COMPLETE）</summary>
-    public event Action<ArkUINodeEvent>? Complete
+    /// <summary>onChange 事件（NODE_TEXT_PICKER_EVENT_ON_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? OnChange
     {
-        add => On(ArkUI_NodeEventType.NODE_IMAGE_ON_COMPLETE, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_IMAGE_ON_COMPLETE);
+        add => On(ArkUI_NodeEventType.NODE_TEXT_PICKER_EVENT_ON_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_TEXT_PICKER_EVENT_ON_CHANGE);
     }
 
-    /// <summary>onError 事件（NODE_IMAGE_ON_ERROR）</summary>
-    public event Action<ArkUINodeEvent>? Error
+    /// <summary>onScrollStop 事件（NODE_TEXT_PICKER_EVENT_ON_SCROLL_STOP）</summary>
+    public event Action<ArkUINodeEvent>? ScrollStop
     {
-        add => On(ArkUI_NodeEventType.NODE_IMAGE_ON_ERROR, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_IMAGE_ON_ERROR);
+        add => On(ArkUI_NodeEventType.NODE_TEXT_PICKER_EVENT_ON_SCROLL_STOP, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_TEXT_PICKER_EVENT_ON_SCROLL_STOP);
     }
 
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>

@@ -28,13 +28,13 @@ public class HarmonyScrollViewHandler : ViewHandler<IScrollView, ArkScroll>, ISc
     protected override void ConnectHandler(ArkScroll platformView)
     {
         base.ConnectHandler(platformView);
-        platformView.Scroll += OnScroll;
+        platformView.Scrolled += OnScroll;
         platformView.ScrollStop += OnScrollStop;
     }
 
     protected override void DisconnectHandler(ArkScroll platformView)
     {
-        platformView.Scroll -= OnScroll;
+        platformView.Scrolled -= OnScroll;
         platformView.ScrollStop -= OnScrollStop;
         base.DisconnectHandler(platformView);
     }

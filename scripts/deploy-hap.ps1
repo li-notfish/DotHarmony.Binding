@@ -1,33 +1,63 @@
-# 一键部署：重装 HAP → 启动 → 抓取 HarmonyHost 日志
+# 一键部署：重装 HAP → 启动 → 抓取 HarmonyHost 日志。
+# SDK/hdc 定位顺序：OHOS_SDK_BASE > OHSDK_HOME > D:\Harmony\OpenHarmony\Sdk > DevEco sdk。
 $ErrorActionPreference = "Stop"
 
-# 获取脚本所在目录，然后跳转到上级（项目根目录）
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent $scriptDir
 
-# 从环境变量读取 HDC 路径
-if (-not $env:OHSDK_HOME) {
-    Write-Error "请先设置环境变量 OHSDK_HOME"
+$BUNDLE = "com.arktsbinding.harmonyhost"
+$ABILITY = "EntryAbility"
+$MODULE  = "entry"
+
+# ---- 定位 hdc ----
+$candidates = @($env:OHOS_SDK_BASE, $env:OHSDK_HOME,
+    "D:\Harmony\OpenHarmony\Sdk", "C:\Program Files\Huawei\DevEco Studio\sdk") | Where-Object { $_ }
+$HDC = $null
+foreach ($base in $candidates) {
+    foreach ($rel in @("26.0.0\toolchains\hdc.exe", "toolchains\hdc.exe")) {
+        $p = Join-Path $base $rel
+        if (Test-Path $p) { $HDC = $p; break }
+    }
+    if ($HDC) { break }
+}
+if (-not $HDC) {
+    Write-Error "找不到 hdc.exe。请设置 OHOS_SDK_BASE 指向 OpenHarmony SDK 根目录（含 26.0.0\toolchains）"
     exit 1
 }
-$HDC = Join-Path $env:OHSDK_HOME "26.0.0\toolchains\hdc.exe"
-if (-not (Test-Path $HDC)) {
-    Write-Error "找不到 hdc.exe，请检查 OHSDK_HOME 是否指向正确的 toolchains 目录"
+Write-Host "hdc: $HDC"
+
+# ---- 定位 HAP ----
+$HAP = Join-Path $projectRoot "samples\HarmonyHost\entry\build\default\outputs\default\$MODULE-default-unsigned.hap"
+if (-not (Test-Path $HAP)) {
+    Write-Error "找不到 HAP：$HAP（请先运行 scripts\build-hap.cmd）"
     exit 1
 }
 
-# 拼接 HAP 的相对路径（从项目根目录开始）
-$HAP = Join-Path $projectRoot "samples\HarmonyHost\entry\build\default\outputs\default\entry-default-unsigned.hap"
+Write-Host "=== 1. 检查设备 ==="
+$targets = & $HDC list targets | Where-Object { $_ -match '\S' }
+if (-not $targets) {
+    Write-Error "没有已连接的设备/模拟器（hdc list targets 为空）"
+    exit 1
+}
+Write-Host "targets: $($targets -join ', ')"
 
-Write-Host "=== 1. 清空 hilog ==="
+Write-Host "=== 2. 清空 hilog ==="
 & $HDC shell hilog -r > $null
 
-Write-Host "=== 2. 安装 HAP ==="
-& $HDC install -r $HAP
+Write-Host "=== 3. 安装 HAP ==="
+# 先停掉旧实例：install -r 与运行中实例存在时序竞争（新实例可能启动即被销毁）
+& $HDC shell "aa force-stop $BUNDLE" 2>$null | Out-Null
+$installOut = & $HDC install -r $HAP
+if (-not ("$installOut" -match "install bundle successfully")) {
+    Write-Error "安装失败：$installOut"
+    exit 1
+}
 
-Write-Host "=== 3. 启动应用 ==="
-& $HDC shell aa start -a EntryAbility -b com.arktsbinding.harmonyhost -m entry
+Write-Host "=== 4. 启动应用 ==="
+& $HDC shell aa start -a $ABILITY -b $BUNDLE -m $MODULE
 
-Write-Host "=== 4. 等待后抓取日志 ==="
+Write-Host "=== 5. 等待后抓取日志 ==="
 Start-Sleep -Seconds 6
-& $HDC shell "hilog -x" | Select-String -Pattern 'A00000/HarmonyHost|dlopen|libapp|dotnet|DOTNET' 
+& $HDC shell "hilog -x" |
+    Select-String -Pattern 'A00000/HarmonyHost|dlopen|libapp|dotnet|DOTNET' |
+    Select-Object -Last 40
