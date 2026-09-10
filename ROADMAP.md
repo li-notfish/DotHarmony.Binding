@@ -22,19 +22,29 @@
 
 **历史说明**：一期只做纯色（Gradient/Image 静默透明）；渐变/图片画刷已于本阶段补齐。
 
-### 1.2 布局对齐 —— 两套布局引擎的取舍（中，最重要的语义缺口）
+### 1.2 布局对齐 —— 两套布局引擎的取舍（✅ 已完成，2026-09-11 模拟器实测）
 
-**做什么**：`WidthRequest/HeightRequest`（✅ 已映射 NODE_WIDTH/HEIGHT）已生效；剩余 Grid/AbsoluteLayout。
+**实现结果**：
+- `WidthRequest/HeightRequest` → `NODE_WIDTH/HEIGHT`（显式请求优先于实测值，HarmonyLayoutHandler.AttachChild）
+- `Margin` → `NODE_MARGIN` 四边：flex 子树经 `SetMarginEdges`（`StackLayout.Spacing` 以同侧外边距叠加）；
+  Grid/Absolute 托管子树在 Arrange 中按轨道单元内缩（auto 维不缩，让内容自撑）
+- `HorizontalOptions/VerticalOptions` → **per-child 对齐**：`NODE_ALIGN_SELF`（alignSelf）。
+  竖直 Stack（Column）交叉轴=水平，映射 HorizontalOptions；水平 Stack（Row）交叉轴=垂直，映射
+  VerticalOptions。Fill → 百分比宽（Column）/百分比高（Row，仅当 Row 高度受显式 HeightRequest
+  约束——auto 高父容器的子项百分比会退化为 0）；Start/Center/End → alignSelf 直映
+- `Grid/AbsoluteLayout` → **MAUI 托管**（`HarmonyManagedLayoutHandler`）：Stack +
+  `NODE_POSITION/NODE_WIDTH/HEIGHT` 绝对定位；轨道解析支持 Absolute/Auto/Star（Star 按剩余空间
+  权重分配）；Span 按起始轨道求和；AbsoluteLayout 支持 PositionProportional/SizeProportional
+  （比例定位锚定扣除自身尺寸后的可放置区）；容器尺寸来自 `NODE_ON_SIZE_CHANGE`，
+  px/vp 密度由 MeasuredSize/SizeChange 比值推导
 
-**怎么做**：维持当前 **ArkUI flex 托管**模型（StackLayout→Column/Row 自治布局），在此之上：
-- `WidthRequest/HeightRequest` → `NODE_WIDTH/NODE_HEIGHT`（vp）
-- `Margin` → `NODE_MARGIN`（已实现四边版 `SetMarginEdges`）
-- `HorizontalOptions/VerticalOptions` 非 Fill 值 → 容器级对齐折衷（ArkUI 的 alignItems 是容器级，MAUI 是 per-child；一期对 Fill 全宽、非 Fill wrap+容器居中）
-- `Grid/AbsoluteLayout` → **MAUI 托管**：用布局管理器算 frame，然后 `setLayoutPosition + NODE_SIZE` 绝对定位（C API 原语已就绪：`measureNode/layoutNode/setMeasuredSize`）
+**实测**：ControlsDemoPage 含 Align Start/Center/End、Margin、V-Center/V-End 用例，模拟器截图逐项确认。
 
-**难点**：
-1. **MAUI 托管路径需要子节点的期望尺寸**（measure 往返）。ArkUI 节点的固有尺寸可通过 `getAttribute(NODE_SIZE)` 读取，但需要在节点完成一次布局后取值——存在先有鸡还是先有蛋的时序问题，需要实测 `markDirty` 后的回调时序。
-2. 两套引擎混用时（flex 容器内嵌 MAUI 绝对定位子树），尺寸约定要严格（内层根用固定 px），否则约束传播会乱。建议内层根设 `NODE_SIZE` 固定值。
+**遗留限制（M1）**：
+- Stack 主轴方向的 Options（如竖直 Stack 里的 VerticalOptions）不生效（MAUI 语义复杂，折衷忽略）
+- Grid 单元格内非 Fill 对齐不生效（所有子节点按 Fill 充满单元格）；Span>1 的 Auto 轨道不参与实测
+- Auto 轨道依赖子节点上一帧自量测（首帧有按控件类型的兜底估算，收敛需 1~2 帧）；内容自身变化不触发重排
+- 两套布局的 ZIndex 均按 addChild 顺序，UpdateZIndex 忽略
 
 ### 1.3 Window / Navigation（✅ 轻量版已完成 / 中）
 

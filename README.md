@@ -147,7 +147,7 @@ tests/                       jest（解析器/生成器 45 用例）
 
 ## 已知限制（当前真实状态）
 
-- **布局语义**：ArkUI flex 托管布局——MAUI 的 measure/arrange 引擎未实现（Fill/Spacing/Margin/WidthRequest/HeightRequest 已对齐；Grid/AbsoluteLayout 未支持）
+- **布局语义**：ArkUI flex 托管（StackLayout→Column/Row）+ Grid/AbsoluteLayout MAUI 托管（HarmonyManagedLayoutHandler 绝对定位）。已对齐：WidthRequest/HeightRequest、Margin、StackLayout.Spacing、HorizontalOptions/VerticalOptions 交叉轴对齐（Fill/Start/Center/End 经 NODE_ALIGN_SELF）；未支持：Stack 主轴方向 Options、Grid 单元内非 Fill 对齐、ZIndex
 - **画刷**：SolidColorBrush/LinearGradientBrush/RadialGradientBrush 全支持；ImageBrush 为 MAUI internal 类型无法声明（节点层 SetBackgroundImage 原语已就位）
 - **导航**：轻量 Page 栈（HarmonyNavigation.Push/Pop，节点保留式切换已实测）；Shell/NavigationPage 官方类型与页面动画未支持
 - **异步 API**：`Promise<T>`→`Task<T>` 已接通（TypeMapper + 生成器 + `CallMethodAsync`/`CallMethodAsyncVoid`）；AsyncCallback 风格 `(result: T, err?: Error) => void` → `Task<T>` 已支持（parser AST 检测）；TSFN 完整生命周期三路径已封装（`ThreadSafeFunction.cs` + `HarmonySynchronizationContext.cs`）

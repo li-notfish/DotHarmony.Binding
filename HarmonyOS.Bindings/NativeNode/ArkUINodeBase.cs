@@ -206,6 +206,13 @@ public abstract unsafe class ArkUINodeBase : IDisposable
             ArkUIValue.F(top), ArkUIValue.F(right), ArkUIValue.F(bottom), ArkUIValue.F(left));
     }
 
+    /// <summary>交叉轴子项对齐（NODE_ALIGN_SELF，ArkUI_ItemAlignment）—— flex 容器内逐子项对齐，
+    /// 用于 MAUI HorizontalOptions/VerticalOptions 的折衷映射（ArkUI alignItems 是容器级）</summary>
+    public void SetAlignSelf(ArkUI_ItemAlignment alignment)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_ALIGN_SELF, ArkUIValue.I((int)alignment));
+    }
+
     /// <summary>是否可见（NODE_VISIBILITY：0 = Visible）</summary>
     public bool Visible
     {
