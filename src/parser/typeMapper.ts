@@ -246,8 +246,16 @@ export class TypeMapper {
                 return mapping.csharp;
             }
             
-            // Promise<T>：映射为 napi promise 句柄；async/await 级支持待 ThreadSafeFunction 层
+            // Promise<T>：基础类型映射为 Task<T>（运行时经 TSFN 异步层完成，见 ROADMAP 2.1）；
+            // 不可封送的内层类型退回 IntPtr 句柄
             if (baseType === 'Promise' || baseType === 'promise') {
+                const innerMatch = /Promise<(.+)>\s*$/.exec(genericType.trim());
+                if (innerMatch) {
+                    const inner = this.mapType(this.cleanOptional(innerMatch[1].trim()));
+                    if (['string', 'double', 'bool', 'int', 'IntPtr'].includes(inner)) {
+                        return inner === 'double' ? 'Task<double>' : `Task<${inner}>`;
+                    }
+                }
                 return 'IntPtr';
             }
 

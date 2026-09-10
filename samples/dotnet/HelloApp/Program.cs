@@ -24,6 +24,10 @@ internal static class NativeExports
     [UnmanagedCallersOnly(EntryPoint = "HarmonyBuildUI")]
     private static int HarmonyBuildUI(nint env, nint nodeContentValue)
         => Host.BuildUICore(env, nodeContentValue);
+
+    [UnmanagedCallersOnly(EntryPoint = "HarmonyPopPage")]
+    private static int HarmonyPopPage(nint env)
+        => HarmonyOS.Maui.Hosting.HarmonyNavigation.OnBackRequested() ? 1 : 0;
 }
 
 internal static class Bootstrap

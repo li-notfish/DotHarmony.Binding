@@ -81,13 +81,13 @@ public readonly unsafe struct ArkUINodeEvent
     public float ClickScreenY => ComponentData(7).f32;
 
     // ───────────── 尺寸变化事件（NODE_ON_SIZE_CHANGE）data[] 布局访问器 ─────────────
-    // data[0]=新宽度(vp) data[1]=新高度(vp)
+    // 原生头文件（native_node.h @since 21）：data[0]=旧宽 data[1]=旧高 data[2]=新宽 data[3]=新高
 
     /// <summary>尺寸变化后的新宽度（vp）</summary>
-    public float SizeChangeWidth => ComponentData(0).f32;
+    public float SizeChangeWidth => ComponentData(2).f32;
 
     /// <summary>尺寸变化后的新高度（vp）</summary>
-    public float SizeChangeHeight => ComponentData(1).f32;
+    public float SizeChangeHeight => ComponentData(3).f32;
 
     internal static string? Utf8ToString(byte* p)
     {

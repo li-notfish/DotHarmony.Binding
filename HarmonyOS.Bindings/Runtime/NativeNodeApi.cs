@@ -152,6 +152,12 @@ internal static partial class NativeNodeApi
         out napi_value result);
 
     [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_is_promise(
+        napi_env env,
+        napi_value value,
+        [MarshalAs(UnmanagedType.U1)] out bool isPromise);
+
+    [LibraryImport(NApiLib)]
     internal static partial napi_status napi_call_function(
         napi_env env,
         napi_value recv,

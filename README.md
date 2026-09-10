@@ -4,7 +4,7 @@
 用 .NET (NativeAOT) 绑定 HarmonyOS (ArkUI/ArkTS)，并让 .NET MAUI 控件经 Handler 机制渲染为 ArkUI 原生节点。
 
 **当前状态：核心链路已在模拟器端到端验证** —— 运行时初始化 → 原生节点树上屏 → 属性/事件闭环 →
-`@ohos.*` 服务调用 → **XAML 声明式 UI → 鸿蒙原生渲染**。距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
+`@ohos.*` 服务调用 → **XAML 声明式 UI → 鸿蒙原生渲染**。**21 个 MAUI 控件 Handler** 已适配并统一为官方 handler 风格。距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 ## 这是什么
 
@@ -88,7 +88,7 @@ bash scripts/deploy-hap.sh
 | 未映射属性 | —— | 记入 `Nodes/native-gaps.json` |
 
 生成器不猜属性形态：只有登记在 `nativeCodeGenerator.ts` shape 表中的属性才生成代码，
-其余进入 **gap 清单**（当前 1182 条），这是 C API 覆盖度的实时地图，也是扩展组件的待办清单。
+其余进入 **gap 清单**（当前 3851 条），这是 C API 覆盖度的实时地图，也是扩展组件的待办清单。
 
 ## 运行时工具链要点（踩坑记录）
 
@@ -124,10 +124,10 @@ tests/                       jest（解析器/生成器 45 用例）
 ## 已知限制（当前真实状态）
 
 - **布局语义**：ArkUI flex 托管布局——MAUI 的 measure/arrange 引擎未实现（Fill/Spacing/Margin/WidthRequest/HeightRequest 已对齐；Grid/AbsoluteLayout 未支持）
-- **画刷**：仅 SolidColorBrush 映射，Gradient/ImageBrush 静默透明
+- **画刷**：SolidColorBrush/LinearGradientBrush/RadialGradientBrush 全支持；ImageBrush 为 MAUI internal 类型无法声明（节点层 SetBackgroundImage 原语已就位）
 - **导航**：轻量 Page 栈（HarmonyNavigation.Push/Pop，节点保留式切换已实测）；Shell/NavigationPage 官方类型与页面动画未支持
 - **异步 API 未支持**：`Promise<T>` 映射为 `IntPtr` 占位，TSFN（ThreadSafeFunction）异步层未实现——这是 M2 核心难点
-- **控件覆盖**：Button/Label/StackLayout/Grid/AbsoluteLayout/ContentPage 六个 Handler（共 ~1182 条属性 gap 待逐步登记）；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
+- **控件覆盖**：21 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/RefreshView/Picker/DatePicker/TimePicker + CollectionView/CarouselView M1 物化版），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
 - **权限模型未接**：需要权限的 @ohos.* 模块（位置/相机等）未生成 `module.json5` 联动

@@ -1,52 +1,40 @@
-// HarmonyLayoutHandler：MAUI ILayout（StackLayout 等）→ ArkUI Column/Row 容器
-//
-// 布局模型（M1）：ArkUI flex 引擎托管子节点布局（Column/Row 自治），
-// MAUI 的 Measure/Arrange 请求不透传——WidthRequest 等约束暂不生效。
-// CommandMapper 实现 Controls 的 ILayoutHandler 子树协议
-// （Add/Remove/Clear/Insert/Update/UpdateZIndex），子 handler 由 HarmonyHandlerFactory 装配。
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
-using MControlsLayout = Microsoft.Maui.Controls.Layout;
+using MLAYOUT = Microsoft.Maui.ILayout;
+using MALIGNMENT = Microsoft.Maui.Primitives.LayoutAlignment;
 
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Layout 的 HarmonyOS Handler（ArkUI Column/Row 托管布局）。</summary>
-public class HarmonyLayoutHandler : ViewHandler<MControlsLayout, ArkUINode>
+public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
 {
-    public static PropertyMapper<MControlsLayout, HarmonyLayoutHandler> Mapper =
-        new(ViewHandler.ViewMapper)
-        {
-            [nameof(MControlsLayout.BackgroundColor)] = (h, v) =>
-            {
-                if (v.BackgroundColor is { } c)
-                    h.PlatformView.SetBackgroundColor((byte)(c.Red * 255), (byte)(c.Green * 255), (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
-            },
-        };
+    public static PropertyMapper<MLAYOUT, HarmonyLayoutHandler> Mapper = new(ViewMapper)
+    {
+        [nameof(MLAYOUT.Background)] = MapBackground,
+        [nameof(MLAYOUT.Padding)] = MapPadding,
+    };
 
     // Controls 布局的子树变更协议（字符串命令，经 Handler.Invoke 派发）
-    public static CommandMapper<MControlsLayout, HarmonyLayoutHandler> LayoutCommandMapper =
-        new(ViewCommandMapper)
-        {
-            [nameof(ILayoutHandler.Add)] = (h, v, args) => { if (args is LayoutHandlerUpdate u) ((HarmonyLayoutHandler)h).Add(u.View); },
-            [nameof(ILayoutHandler.Remove)] = (h, v, args) => { if (args is LayoutHandlerUpdate u) ((HarmonyLayoutHandler)h).Remove(u.View); },
-            [nameof(ILayoutHandler.Clear)] = (h, v, args) => ((HarmonyLayoutHandler)h).Clear(),
-            [nameof(ILayoutHandler.Insert)] = (h, v, args) => { if (args is LayoutHandlerUpdate u) ((HarmonyLayoutHandler)h).Insert(u.Index, u.View); },
-            [nameof(ILayoutHandler.Update)] = (h, v, args) => { if (args is LayoutHandlerUpdate u) ((HarmonyLayoutHandler)h).Update(u.Index, u.View); },
-            [nameof(ILayoutHandler.UpdateZIndex)] = (h, v, args) => { /* ArkUI flex 按 addChild 顺序，z-index M1 忽略 */ },
-        };
+    public static CommandMapper<MLAYOUT, HarmonyLayoutHandler> LayoutCommandMapper = new(ViewCommandMapper)
+    {
+        [nameof(ILayoutHandler.Add)] = MapAdd,
+        [nameof(ILayoutHandler.Remove)] = MapRemove,
+        [nameof(ILayoutHandler.Clear)] = MapClear,
+        [nameof(ILayoutHandler.Insert)] = MapInsert,
+        [nameof(ILayoutHandler.Update)] = MapUpdate,
+        [nameof(ILayoutHandler.UpdateZIndex)] = MapUpdateZIndex,
+    };
 
     public HarmonyLayoutHandler() : base(Mapper, LayoutCommandMapper) { }
 
     protected override ArkUINode CreatePlatformView()
     {
         // StackLayout 按 Orientation 选择 ArkUI 容器；其余布局默认 Column
-        if (VirtualView is Microsoft.Maui.Controls.StackLayout sl &&
-            sl.Orientation == Microsoft.Maui.Controls.StackOrientation.Horizontal)
-        {
+        if (VirtualView is StackLayout sl && sl.Orientation == StackOrientation.Horizontal)
             return new HarmonyOS.ArkUI.Row();
-        }
         return new HarmonyOS.ArkUI.Column();
     }
 
@@ -54,13 +42,64 @@ public class HarmonyLayoutHandler : ViewHandler<MControlsLayout, ArkUINode>
     {
         base.ConnectHandler(platformView);
         // 连接时全量同步已存在的 Children（Controls 侧在 Handler 连接前添加的子节点不会发 Add 命令）
-        foreach (var child in ((Microsoft.Maui.Controls.Layout)VirtualView).Children)
-        {
+        foreach (var child in ((Layout)VirtualView).Children)
             AttachChild(child);
-        }
     }
 
     private readonly Dictionary<IView, IElementHandler> _children = new();
+
+    public static void MapBackground(HarmonyLayoutHandler h, MLAYOUT v)
+    {
+        BrushHelper.ApplyBackground(h.PlatformView, v.Background);
+    }
+
+    public static void MapPadding(HarmonyLayoutHandler h, MLAYOUT v)
+    {
+        var p = v.Padding;
+        if (p.Top > 0 || p.Right > 0 || p.Bottom > 0 || p.Left > 0)
+        {
+            h.PlatformView.SetPaddingEdges(
+                (float)p.Top, (float)p.Right, (float)p.Bottom, (float)p.Left);
+        }
+    }
+
+    public static void MapAdd(HarmonyLayoutHandler h, MLAYOUT v, object? args)
+    {
+        if (args is LayoutHandlerUpdate u)
+            h.AttachChild(u.View);
+    }
+
+    public static void MapRemove(HarmonyLayoutHandler h, MLAYOUT v, object? args)
+    {
+        if (args is LayoutHandlerUpdate u)
+            h.DetachChild(u.View);
+    }
+
+    public static void MapClear(HarmonyLayoutHandler h, MLAYOUT v, object? args)
+    {
+        h.ClearChildren();
+    }
+
+    public static void MapInsert(HarmonyLayoutHandler h, MLAYOUT v, object? args)
+    {
+        if (args is LayoutHandlerUpdate u)
+            h.AttachChild(u.View); // M1：中段插入退化为顺序追加
+    }
+
+    public static void MapUpdate(HarmonyLayoutHandler h, MLAYOUT v, object? args)
+    {
+        if (args is LayoutHandlerUpdate u)
+        {
+            if (h._children.TryGetValue(u.View, out var old) && old.PlatformView is ArkUINode oldNode)
+                h.PlatformView.RemoveChild(oldNode);
+            h.AttachChild(u.View);
+        }
+    }
+
+    public static void MapUpdateZIndex(HarmonyLayoutHandler h, MLAYOUT v, object? args)
+    {
+        // ArkUI flex 按 addChild 顺序，z-index M1 忽略
+    }
 
     private void AttachChild(IView view)
     {
@@ -69,23 +108,26 @@ public class HarmonyLayoutHandler : ViewHandler<MControlsLayout, ArkUINode>
         handler.SetVirtualView(view);
         if (handler.PlatformView is ArkUINode node)
         {
-            // MAUI 显式 WidthRequest/HeightRequest 优先（vp）；否则默认 Fill → 宽度撑满父容器
-            if (view.Width is double w && w >= 0)
+            // MAUI 显式 WidthRequest/HeightRequest 优先（vp）；view.Width/Height 是布局后的
+            // 实测值（未布局时为 -1），不能用来判断显式尺寸
+            if (view is VisualElement ve && ve.WidthRequest >= 0)
             {
-                node.SetWidth((float)w);
+                node.SetWidth((float)ve.WidthRequest);
             }
-            else if (view.HorizontalLayoutAlignment == Microsoft.Maui.Primitives.LayoutAlignment.Fill)
+            // 水平 StackLayout 不设 SetWidthPercent——子节点用自然宽度，防止溢出屏幕
+            else if (view.HorizontalLayoutAlignment == MALIGNMENT.Fill
+                && VirtualView is not StackLayout { Orientation: StackOrientation.Horizontal })
             {
                 node.SetWidthPercent(1.0f);
             }
 
-            if (view.Height is double hgt && hgt >= 0)
+            if (view is VisualElement vep && vep.HeightRequest >= 0)
             {
-                node.SetHeight((float)hgt);
+                node.SetHeight((float)vep.HeightRequest);
             }
 
             // MAUI StackLayout.Spacing → 子节点下边距（最后一个子节点略多余，视觉可接受）
-            if (VirtualView is Microsoft.Maui.Controls.StackLayout sl && sl.Spacing > 0)
+            if (VirtualView is StackLayout sl && sl.Spacing > 0)
             {
                 node.SetMarginEdges(0, 0, (float)sl.Spacing, 0);
             }
@@ -95,33 +137,15 @@ public class HarmonyLayoutHandler : ViewHandler<MControlsLayout, ArkUINode>
         }
     }
 
-    internal void Add(IView view) => AttachChild(view);
-
-    internal void Remove(IView view)
+    private void DetachChild(IView view)
     {
         if (_children.Remove(view, out var handler) && handler.PlatformView is ArkUINode node)
-        {
             PlatformView.RemoveChild(node);
-        }
     }
 
-    internal void Clear()
+    private void ClearChildren()
     {
         PlatformView.RemoveAllChildren();
         _children.Clear();
-    }
-
-    internal void Insert(int index, IView view)
-    {
-        // M1：中段插入暂退化为顺序追加（ArkUI flex 场景以追加为主）
-        AttachChild(view);
-    }
-
-    internal void Update(int index, IView view)
-    {
-        // M1：替换语义简化为 Remove + Insert
-        if (_children.TryGetValue(view, out var old) && old.PlatformView is ArkUINode oldNode)
-            PlatformView.RemoveChild(oldNode);
-        Insert(index, view);
     }
 }

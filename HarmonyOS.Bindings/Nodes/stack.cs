@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Stack 组件（ARKUI_NODE_STACK）</summary>
-public unsafe class Stack : ArkUINodeBase
+public unsafe partial class Stack : ArkUINodeBase
 {
     public Stack() : base(ArkUI_NodeType.ARKUI_NODE_STACK) { }
 

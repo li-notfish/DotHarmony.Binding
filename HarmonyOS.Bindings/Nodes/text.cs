@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Text 组件（ARKUI_NODE_TEXT）</summary>
-public unsafe class Text : ArkUINodeBase
+public unsafe partial class Text : ArkUINodeBase
 {
     public Text() : base(ArkUI_NodeType.ARKUI_NODE_TEXT) { }
 
@@ -38,6 +38,27 @@ public unsafe class Text : ArkUINodeBase
     public string Content
     {
         set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_TEXT_CONTENT, value);
+    }
+
+    /// <summary>onCopy 事件（NODE_TEXT_ON_COPY）</summary>
+    public event Action<ArkUINodeEvent>? Copy
+    {
+        add => On(ArkUI_NodeEventType.NODE_TEXT_ON_COPY, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_TEXT_ON_COPY);
+    }
+
+    /// <summary>onWillCopy 事件（NODE_TEXT_ON_WILL_COPY）</summary>
+    public event Action<ArkUINodeEvent>? WillCopy
+    {
+        add => On(ArkUI_NodeEventType.NODE_TEXT_ON_WILL_COPY, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_TEXT_ON_WILL_COPY);
+    }
+
+    /// <summary>onTextSelectionChange 事件（NODE_TEXT_ON_TEXT_SELECTION_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? TextSelectionChange
+    {
+        add => On(ArkUI_NodeEventType.NODE_TEXT_ON_TEXT_SELECTION_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_TEXT_ON_TEXT_SELECTION_CHANGE);
     }
 
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>

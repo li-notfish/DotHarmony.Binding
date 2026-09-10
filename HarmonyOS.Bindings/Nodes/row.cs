@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Row 组件（ARKUI_NODE_ROW）</summary>
-public unsafe class Row : ArkUINodeBase
+public unsafe partial class Row : ArkUINodeBase
 {
     public Row() : base(ArkUI_NodeType.ARKUI_NODE_ROW) { }
 

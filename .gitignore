@@ -53,3 +53,8 @@ samples/HarmonyHost/.hvigor/
 # libapp.so 为远程 NativeAOT 构建产物（scripts/remote-build.sh 生成）
 samples/HarmonyHost/entry/libs/*/libapp.so
 samples/HarmonyHost/oh_modules/
+
+# Visual Studio
+.vs/
+# 本地构建中转产物（remote-build 压缩包等）
+tmp/

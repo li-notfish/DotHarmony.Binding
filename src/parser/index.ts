@@ -416,12 +416,19 @@ export async function processNativeSDK(): Promise<void> {
     const parser = new ArkTsParser(enumMetadata);
     const context = createParseContext();
 
-    const sdkBase = 'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony';
+    // SDK ets 根目录：OHOS_SDK_BASE 优先，其次 OHSDK_HOME/26.0.0，最后 DevEco 内置
+    const sdkBase = process.env.OHOS_SDK_BASE
+        ?? (process.env.OHSDK_HOME && fs.existsSync(path.join(process.env.OHSDK_HOME, '26.0.0', 'ets'))
+            ? path.join(process.env.OHSDK_HOME, '26.0.0')
+            : 'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony');
     const componentDir = path.join(sdkBase, 'ets', 'component');
     const outputDir = path.join(__dirname, '../../HarmonyOS.Bindings/Nodes');
 
-    // 试点组件集合：shape 表覆盖范围内先跑通，扩展组件随 shape 表成长
-    const pilotFiles = ['text.d.ts', 'button.d.ts', 'column.d.ts', 'row.d.ts', 'stack.d.ts', 'flex.d.ts'];
+    // 组件清单：全量扫描 component 目录。非 C API 节点组件（如 alert_dialog）
+    // 由生成器自动登记 gap/跳过；属性形态未登记的成员进 native-gaps.json 待补。
+    const pilotFiles = fs.readdirSync(componentDir)
+        .filter(f => f.endsWith('.d.ts'))
+        .sort();
 
     console.log('=== Native (C API) Generation ===');
     console.log(`Input:  ${componentDir}`);

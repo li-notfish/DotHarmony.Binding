@@ -17,6 +17,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
+using HarmonyOS.Bindings.Runtime;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 using ArkStack = HarmonyOS.ArkUI.Stack;
 using MAbsolute = Microsoft.Maui.Controls.AbsoluteLayout;
@@ -64,6 +65,10 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
     {
         base.ConnectHandler(platformView);
         platformView.SizeChange += OnSizeChange;
+        // 让 Stack 填满父容器（Column），确保 ArkUI 给它真实尺寸，SizeChange 能触发
+        platformView.SetWidthPercent(1.0f);
+        platformView.SetHeightPercent(1.0f);
+        HiLog.Debug("Grid", $"ConnectHandler#{GetHashCode():X}: Stack W%+H% set, children={VirtualView.Children.Count}");
         // 连接时全量同步已存在的 Children（Controls 侧在 Handler 连接前添加的子节点不会发 Add 命令）
         foreach (var child in VirtualView.Children)
         {
@@ -75,7 +80,14 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
     {
         _containerW = e.SizeChangeWidth;
         _containerH = e.SizeChangeHeight;
+        HiLog.Debug("Grid", $"SizeChange: W={_containerW} H={_containerH}");
         Arrange();
+    }
+
+    protected override void DisconnectHandler(ArkStack platformView)
+    {
+        platformView.SizeChange -= OnSizeChange;
+        base.DisconnectHandler(platformView);
     }
 
     private void AttachChild(IView view)
@@ -125,6 +137,7 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
     private void Arrange()
     {
         if (_containerW <= 0 || _containerH <= 0) return;
+        HiLog.Debug("Grid", $"Arrange: containerW={_containerW} containerH={_containerH}");
         if (VirtualView is Grid grid)
             ArrangeGrid(grid, GetDensity());
         else if (VirtualView is MAbsolute absolute)
@@ -171,8 +184,36 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
                 rowAuto[r] = Math.Max(rowAuto[r], size.height / density);
         }
 
+        // Auto 轨道兜底：子节点未被 ArkUI 量测时（首帧），按 MAUI 控件语义估算高度
+        // 下一帧 SizeChange 触发后 MeasuredSize 有真实值，自动修正
+        foreach (var (view, handler) in _children)
+        {
+            if (handler.PlatformView is not ArkUINode node) continue;
+            int c = Math.Clamp(Grid.GetColumn((MBindableObject)view), 0, nCols - 1);
+            int r = Math.Clamp(Grid.GetRow((MBindableObject)view), 0, nRows - 1);
+            if (colUnit[c] == GridUnitType.Auto && Grid.GetColumnSpan((MBindableObject)view) == 1 && colAuto[c] <= 0)
+                colAuto[c] = view switch
+                {
+                    Label => 100,
+                    Button => 120,
+                    _ => 80,
+                };
+            if (rowUnit[r] == GridUnitType.Auto && Grid.GetRowSpan((MBindableObject)view) == 1 && rowAuto[r] <= 0)
+                rowAuto[r] = view switch
+                {
+                    Label => 30,
+                    Button => 44,
+                    Image img => (float)(img.HeightRequest > 0 ? img.HeightRequest : 100),
+                    _ => 30,
+                };
+        }
+
+        HiLog.Debug("Grid", $"Auto rows: [{string.Join(",", rowAuto.Select(x => x.ToString("F0")))}] cols: [{string.Join(",", colAuto.Select(x => x.ToString("F0")))}]");
+
         var widths = ResolveTracks(colUnit, colValue, colAuto, _containerW);
         var heights = ResolveTracks(rowUnit, rowValue, rowAuto, _containerH);
+
+        HiLog.Debug("Grid", $"Tracks: widths=[{string.Join(",", widths.Select(x => x.ToString("F0")))}] heights=[{string.Join(",", heights.Select(x => x.ToString("F0")))}]");
 
         foreach (var (view, handler) in _children)
         {
@@ -186,6 +227,9 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
             float y = Sum(heights, 0, r);
             float w = Sum(widths, c, cs);
             float h = Sum(heights, r, rs);
+
+            var size = node.MeasuredSize;
+            HiLog.Debug("Grid", $"  [{view.GetType().Name}] r={r}c={c} span={rs}x{cs} -> ({x:F0},{y:F0}) {w:F0}x{h:F0} measured={size.width}x{size.height}");
 
             // 自适应维不设显式尺寸，让节点内容自撑（下一帧据此量测 Auto 轨道）
             bool wAuto = colUnit[c] == GridUnitType.Auto && cs == 1;

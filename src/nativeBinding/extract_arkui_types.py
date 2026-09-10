@@ -12,9 +12,33 @@ import argparse
 import io
 import re
 import sys
+import os
 from pathlib import Path
 
-DEFAULT_SDK = r"C:/Program Files/Huawei/DevEco Studio/sdk/default/openharmony/native/sysroot/usr/include/arkui"
+SDK_HOME = os.getenv("OHSDK_HOME")
+if SDK_HOME is None:
+    # 回退默认值
+    SDK_HOME = r"C:/Program Files/Huawei/DevEco Studio/sdk/default"
+
+
+def _default_sdk() -> str:
+    """按优先级探测 ArkUI 头文件目录：OHSDK_HOME/版本号 → OHSDK_HOME/openharmony → DevEco 内置"""
+    candidates = []
+    if SDK_HOME:
+        candidates += [
+            os.path.join(SDK_HOME, "26.0.0", "native", "sysroot", "usr", "include", "arkui"),
+            os.path.join(SDK_HOME, "openharmony", "native", "sysroot", "usr", "include", "arkui"),
+            os.path.join(SDK_HOME, "native", "sysroot", "usr", "include", "arkui"),
+        ]
+    candidates.append("C:/Program Files/Huawei/DevEco Studio/sdk/default/openharmony/native/sysroot/usr/include/arkui")
+    for c in candidates:
+        if os.path.isfile(os.path.join(c, "native_node.h")):
+            return c
+    return candidates[0]
+
+
+DEFAULT_SDK = _default_sdk()
+
 DEFAULT_OUT = "HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.g.cs"
 
 # node 层核心枚举（native_node.h / native_node_napi.h）
@@ -124,6 +148,12 @@ def main() -> int:
 
     attr_dir = sdk / ATTRIBUTES_SUBDIR
     attr_files = sorted(attr_dir.glob("*.h")) if attr_dir.exists() else []
+
+    print(f"Using SDK: {sdk}", file=sys.stderr)
+    for h in HEADER_FILES + [str(p) for p in attr_files]:
+        path = Path(h) if Path(h).is_absolute() else sdk / h
+        print(f"Checking: {path} -> exists? {path.exists()}", file=sys.stderr)
+
     if not attr_files:
         print(f"warn: attribute headers not found under {attr_dir}", file=sys.stderr)
 

@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Flex 组件（ARKUI_NODE_FLEX）</summary>
-public unsafe class Flex : ArkUINodeBase
+public unsafe partial class Flex : ArkUINodeBase
 {
     public Flex() : base(ArkUI_NodeType.ARKUI_NODE_FLEX) { }
 

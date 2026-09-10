@@ -53,6 +53,13 @@ public abstract unsafe class ArkUINodeBase : IDisposable
             ArkUIValue.F(value), ArkUIValue.F(value), ArkUIValue.F(value), ArkUIValue.F(value));
     }
 
+    /// <summary>内边距（四边独立，vp）</summary>
+    public void SetPaddingEdges(float top, float right, float bottom, float left)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_PADDING,
+            ArkUIValue.F(top), ArkUIValue.F(right), ArkUIValue.F(bottom), ArkUIValue.F(left));
+    }
+
     /// <summary>外边距（四边同值，vp）</summary>
     public float Margin
     {
@@ -65,6 +72,101 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     {
         var argb = (uint)((a << 24) | (r << 16) | (g << 8) | b);
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BACKGROUND_COLOR, ArkUIValue.U(argb));
+    }
+
+    /// <summary>
+    /// 线性渐变背景（NODE_LINEAR_GRADIENT）。
+    /// 角度为 CSS 语义（0 = 向上，顺时针增大，默认 180 = 向下）；
+    /// 方向固定 CUSTOM(9) 才能让 angle 生效。
+    /// colors 为 0xAARRGGBB，stops 为 0~1 位置（两数组等长）。
+    /// </summary>
+    public void SetLinearGradient(float angleDeg, bool repeating, uint[] colors, float[] stops)
+    {
+        SetGradientAttribute(ArkUI_NodeAttributeType.NODE_LINEAR_GRADIENT,
+            new[]
+            {
+                ArkUIValue.F(angleDeg),
+                ArkUIValue.I(9), // ArkUI_LinearGradientDirection.CUSTOM
+                ArkUIValue.I(repeating ? 1 : 0),
+            },
+            colors, stops);
+    }
+
+    /// <summary>
+    /// 径向渐变背景（NODE_RADIAL_GRADIENT）。
+    /// center 为组件相对坐标（0~1）；radius 相对半对角线（对齐 MAUI RadialGradientPaint 语义）。
+    /// 属性设置时节点可能尚未布局（尺寸为 0），故经 NODE_ON_SIZE_CHANGE（独立 targetId，
+    /// 不占用用户 SubscribeEvent 的覆盖式订阅槽）在尺寸变化时按实测尺寸重算。
+    /// </summary>
+    public void SetRadialGradient(float centerXFrac, float centerYFrac, float radiusFrac,
+        bool repeating, uint[] colors, float[] stops)
+    {
+        ThrowIfDisposed();
+        _radialGradient = (centerXFrac, centerYFrac, radiusFrac);
+        _radialColors = colors;
+        _radialStops = stops;
+        _radialRepeating = repeating;
+
+        if (_gradientSizeChangeTargetId == 0)
+        {
+            _gradientSizeChangeTargetId = NodeEventBus.NextTargetId();
+            NodeEventBus.Register(_gradientSizeChangeTargetId,
+                ev => ApplyRadialGradient(ev.SizeChangeWidth, ev.SizeChangeHeight));
+            ArkUINativeApi.RegisterNodeEvent(
+                _handle, ArkUI_NodeEventType.NODE_ON_SIZE_CHANGE, _gradientSizeChangeTargetId, null);
+        }
+
+        ApplyRadialGradient(0, 0);
+    }
+
+    private (float Cx, float Cy, float R)? _radialGradient;
+    private uint[]? _radialColors;
+    private float[]? _radialStops;
+    private bool _radialRepeating;
+    private int _gradientSizeChangeTargetId;
+
+    private void ApplyRadialGradient(float widthVp, float heightVp)
+    {
+        var f = _radialGradient!.Value;
+        var values = new[]
+        {
+            ArkUIValue.F(f.Cx * widthVp),
+            ArkUIValue.F(f.Cy * heightVp),
+            ArkUIValue.F(f.R * 0.5f * MathF.Sqrt(widthVp * widthVp + heightVp * heightVp)),
+            ArkUIValue.I(_radialRepeating ? 1 : 0),
+        };
+        SetGradientAttribute(ArkUI_NodeAttributeType.NODE_RADIAL_GRADIENT, values, _radialColors!, _radialStops!);
+    }
+
+    /// <summary>背景图（NODE_BACKGROUND_IMAGE）。repeatMode 取 ArkUI_ImageRepeat（0 = 不重复）。</summary>
+    public void SetBackgroundImage(string uri, int repeatMode = 0)
+    {
+        ThrowIfDisposed();
+        var utf8 = Encoding.UTF8.GetBytes(uri);
+        var values = new[] { ArkUIValue.I(repeatMode) };
+        fixed (byte* ps = utf8)
+        fixed (ArkUI_NumberValue* pv = values)
+        {
+            var item = new ArkUI_AttributeItem { @string = ps, value = pv, size = 1 };
+            var status = ArkUINativeApi.SetAttribute(_handle, ArkUI_NodeAttributeType.NODE_BACKGROUND_IMAGE, &item);
+            if (status != 0)
+                throw new InvalidOperationException($"SetAttribute(NODE_BACKGROUND_IMAGE) failed: {status}");
+        }
+    }
+
+    /// <summary>设置带色标对象的渐变属性（value 数组 + ArkUI_ColorStop 对象同时入参）</summary>
+    private void SetGradientAttribute(ArkUI_NodeAttributeType attribute, ArkUI_NumberValue[] values, uint[] colors, float[] stops)
+    {
+        fixed (ArkUI_NumberValue* pv = values)
+        fixed (uint* pc = colors)
+        fixed (float* ps = stops)
+        {
+            var stop = new ArkUI_ColorStop { colors = pc, stops = ps, size = colors.Length };
+            var item = new ArkUI_AttributeItem { value = pv, size = values.Length, @object = &stop };
+            var status = ArkUINativeApi.SetAttribute(_handle, attribute, &item);
+            if (status != 0)
+                throw new InvalidOperationException($"SetAttribute({attribute}) failed: {status}");
+        }
     }
 
     /// <summary>固定宽度（vp，NODE_WIDTH）——MAUI WidthRequest 的 ArkUI 翻译</summary>
@@ -186,6 +288,18 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         }
     }
 
+    /// <summary>
+    /// 通用事件订阅入口。组件生成类只包装了 .d.ts 声明的事件子集；
+    /// ArkUI_NodeEventType 枚举为 NDK 头文件全量（含 NODE_EVENT_ON_APPEAR / NODE_EVENT_ON_AREA_CHANGE 等），
+    /// 可经此直接使用。覆盖式注册语义与 On() 一致：同类型事件后注册者替换先注册者。
+    /// </summary>
+    public void SubscribeEvent(ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
+        => On(eventType, handler);
+
+    /// <summary>注销通用订阅（同类型覆盖式注册语义，见 SubscribeEvent）</summary>
+    public void UnsubscribeEvent(ArkUI_NodeEventType eventType)
+        => Off(eventType);
+
     // ───────────────────────── 树操作 ─────────────────────────
 
     /// <summary>追加子节点</summary>
@@ -284,6 +398,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
 
         if (!_handle.IsNull)
         {
+            if (_gradientSizeChangeTargetId != 0)
+                NodeEventBus.Unregister(_gradientSizeChangeTargetId);
             NodeEventBus.Unregister(_targetId);
             ArkUINativeApi.DisposeNode(_handle);
             _handle = default;

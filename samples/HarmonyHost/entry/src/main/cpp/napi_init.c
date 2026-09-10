@@ -15,6 +15,7 @@
 
 typedef int (*harmony_init_t)(void* env);
 typedef int (*harmony_buildui_t)(void* env, void* nodeContentValue);
+typedef int (*harmony_poppage_t)(void* env);
 
 static void* g_app = NULL;
 
@@ -62,6 +63,23 @@ static bool ensure_runtime(napi_env env)
     return true;
 }
 
+// 返回键：调 C# 页面栈 Pop；栈底返回 0 交还系统默认行为
+static napi_value PopPage(napi_env env, napi_callback_info info)
+{
+    (void)info;
+    if (!ensure_runtime(env)) return NULL;
+
+    harmony_poppage_t pop = (harmony_poppage_t)dlsym(g_app, "HarmonyPopPage");
+    if (!pop) {
+        loge("dlsym HarmonyPopPage", dlerror());
+        return NULL;
+    }
+    int consumed = pop((void*)env);
+    napi_value result;
+    napi_get_boolean(env, consumed != 0, &result);
+    return result;
+}
+
 static napi_value InitDotnet(napi_env env, napi_callback_info info)
 {
     (void)info;
@@ -101,6 +119,7 @@ static napi_value ModuleInit(napi_env env, napi_value exports)
 {
     napi_property_descriptor desc[] = {
         {"initDotnet", NULL, InitDotnet, NULL, NULL, NULL, napi_default, NULL},
+        {"popPage", NULL, PopPage, NULL, NULL, NULL, napi_default, NULL},
         {"passNodeContent", NULL, PassNodeContent, NULL, NULL, NULL, napi_default, NULL},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);

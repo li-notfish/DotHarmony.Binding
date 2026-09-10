@@ -50,7 +50,7 @@ describe('NativeCodeGenerator（ArkUI C API 生成模式）', () => {
         const { csharp, gaps } = parser.generateNativeCode(result);
 
         expect(csharp).not.toBeNull();
-        expect(csharp).toContain('public unsafe class Text : ArkUINodeBase');
+        expect(csharp).toContain('public unsafe partial class Text : ArkUINodeBase');
         expect(csharp).toContain('ArkUI_NodeType.ARKUI_NODE_TEXT');
         // shape 表覆盖：textAlign → NODE_TEXT_ALIGN
         expect(csharp).toContain('SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_ALIGN, ArkUIValue.I((int)value))');

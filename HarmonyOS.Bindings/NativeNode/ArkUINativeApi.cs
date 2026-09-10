@@ -324,6 +324,15 @@ public unsafe struct ArkUI_AttributeItem
     public void* @object;
 }
 
+/// <summary>ArkUI_ColorStop（渐变色标数组：colors[i] = 0xAARRGGBB，stops[i] = 0~1 位置）</summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct ArkUI_ColorStop
+{
+    public uint* colors;
+    public float* stops;
+    public int size;
+}
+
 /// <summary>ArkUI_LayoutConstraint（不透明指针）</summary>
 public struct ArkUI_LayoutConstraint { }
 

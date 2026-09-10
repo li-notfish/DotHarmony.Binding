@@ -13,7 +13,7 @@
 import { ParseResult, MethodInfo, EventInfo } from './models';
 
 export interface AttributeShape {
-    kind: 'string' | 'int' | 'float' | 'enum' | 'color';
+    kind: 'string' | 'int' | 'float' | 'enum' | 'color' | 'bool';
     enumType?: string;
 }
 
@@ -49,6 +49,104 @@ export const DEFAULT_SHAPES: ShapeTable = {
     // 全局通用属性段
     NODE_FONT_COLOR: { kind: 'color' },
     NODE_FONT_SIZE: { kind: 'float' },
+    // Refresh（RefreshView）
+    NODE_REFRESH_REFRESHING: { kind: 'int' },
+    // Checkbox
+    NODE_CHECKBOX_SELECT: { kind: 'bool' },
+    NODE_CHECKBOX_NAME: { kind: 'string' },
+    NODE_CHECKBOX_SELECT_COLOR: { kind: 'color' },
+    // Radio
+    NODE_RADIO_CHECKED: { kind: 'bool' },
+    // Image
+    NODE_IMAGE_SRC: { kind: 'string' },
+    NODE_IMAGE_OBJECT_FIT: { kind: 'enum', enumType: 'ArkUI_ObjectFit' },
+    NODE_IMAGE_FILL_COLOR: { kind: 'color' },
+    // Progress
+    NODE_PROGRESS_TYPE: { kind: 'enum', enumType: 'ArkUI_ProgressType' },
+    NODE_PROGRESS_VALUE: { kind: 'float' },
+    NODE_PROGRESS_TOTAL: { kind: 'float' },
+    NODE_PROGRESS_COLOR: { kind: 'color' },
+    // Slider
+    NODE_SLIDER_VALUE: { kind: 'float' },
+    NODE_SLIDER_MIN_VALUE: { kind: 'float' },
+    NODE_SLIDER_MAX_VALUE: { kind: 'float' },
+    NODE_SLIDER_STEP: { kind: 'float' },
+    NODE_SLIDER_BLOCK_COLOR: { kind: 'color' },
+    NODE_SLIDER_TRACK_COLOR: { kind: 'color' },
+    NODE_SLIDER_SELECTED_COLOR: { kind: 'color' },
+    // Radio
+    NODE_RADIO_VALUE: { kind: 'string' },
+    NODE_RADIO_GROUP: { kind: 'string' },
+    // Scroll
+    NODE_SCROLL_SCROLL_DIRECTION: { kind: 'enum', enumType: 'ArkUI_ScrollDirection' },
+    NODE_SCROLL_EDGE_EFFECT: { kind: 'int' },
+    // Toggle
+    NODE_TOGGLE_VALUE: { kind: 'int' },
+    NODE_TOGGLE_SELECTED_COLOR: { kind: 'color' },
+    // TextArea / TextInput
+    NODE_TEXT_AREA_TEXT: { kind: 'string' },
+    NODE_TEXT_AREA_PLACEHOLDER: { kind: 'string' },
+    NODE_TEXT_AREA_PLACEHOLDER_COLOR: { kind: 'color' },
+    NODE_TEXT_INPUT_TEXT: { kind: 'string' },
+    NODE_TEXT_INPUT_PLACEHOLDER: { kind: 'string' },
+    NODE_TEXT_INPUT_PLACEHOLDER_COLOR: { kind: 'color' },
+    NODE_TEXT_INPUT_TYPE: { kind: 'enum', enumType: 'ArkUI_TextInputType' },
+    NODE_TEXT_INPUT_MAX_LENGTH: { kind: 'int' },
+    NODE_TEXT_INPUT_ENTER_KEY_TYPE: { kind: 'enum', enumType: 'ArkUI_EnterKeyType' },
+    NODE_TEXT_INPUT_EDITING: { kind: 'int' },
+};
+
+/**
+ * TS 方法名与 C 枚举名不同构的显式对照（含形态）。
+ * key = "<组件名>:<d.ts 方法名小写>"，优先级高于候选键。
+ */
+export const ATTR_ALIASES: Record<string, { key: string; shape: AttributeShape }> = {
+    // d.ts unselectedColor → C 枚举 NODE_CHECKBOX_UNSELECT_COLOR（无 ED）
+    'checkbox:unselectedcolor': { key: 'NODE_CHECKBOX_UNSELECT_COLOR', shape: { kind: 'color' } },
+    // d.ts selectedColor → C 枚举 NODE_CHECKBOX_SELECT_COLOR（无 ED）
+    'checkbox:selectedcolor': { key: 'NODE_CHECKBOX_SELECT_COLOR', shape: { kind: 'color' } },
+    // d.ts scrollable → C 枚举 NODE_SCROLL_SCROLL_DIRECTION（.d.ts 方法名与 C 枚举名不匹配）
+    'scroll:scrollable': { key: 'NODE_SCROLL_SCROLL_DIRECTION', shape: { kind: 'enum', enumType: 'ArkUI_ScrollDirection' } },
+};
+
+/**
+ * 构造参数 / 构造选项中映射到 C API 属性的成员。
+ * key = NODE_<组件>_<ATTR>（DEFAULT_SHAPES 中的键名）。
+ * 生成器在第 2c 阶段遍历此表，为未被 .d.ts 链式接口覆盖的属性补充生成。
+ */
+export const CONSTRUCTOR_OPTION_PROPS: Record<string, { csName: string; shape: AttributeShape; csType?: string }> = {
+    // CheckBox — select / name 是构造选项（非链式属性）
+    NODE_CHECKBOX_SELECT: { csName: 'IsSelected', shape: { kind: 'bool' }, csType: 'bool' },
+    NODE_CHECKBOX_NAME:   { csName: 'Name', shape: { kind: 'string' }, csType: 'string' },
+    // Radio — group / value 是构造选项
+    NODE_RADIO_GROUP: { csName: 'Group', shape: { kind: 'string' }, csType: 'string' },
+    NODE_RADIO_VALUE: { csName: 'Value', shape: { kind: 'string' }, csType: 'string' },
+    // Toggle — isOn 是构造选项（NODE_TOGGLE_VALUE → i32 0/1）
+    NODE_TOGGLE_VALUE: { csName: 'IsOn', shape: { kind: 'bool' }, csType: 'bool' },
+    // Slider — min / max / value / step 是构造选项
+    NODE_SLIDER_VALUE:     { csName: 'Value', shape: { kind: 'float' }, csType: 'float' },
+    NODE_SLIDER_MIN_VALUE: { csName: 'MinValue', shape: { kind: 'float' }, csType: 'float' },
+    NODE_SLIDER_MAX_VALUE: { csName: 'MaxValue', shape: { kind: 'float' }, csType: 'float' },
+    NODE_SLIDER_STEP:      { csName: 'Step', shape: { kind: 'float' }, csType: 'float' },
+};
+
+/**
+ * 组件名 → ArkUI_NodeType 枚举名的形态修正（驼峰直接大写连写会错）
+ * TextArea → TEXT_AREA（而非 TEXTAREA）
+ */
+const NODE_TYPE_NAME_FIXES: Record<string, string> = {
+    TextArea: 'TEXT_AREA',
+    TextInput: 'TEXT_INPUT',
+};
+
+/**
+ * 组件名 → C# 类名修正（.d.ts 组件名与 handler 期望的类名不一致时）。
+ * Checkbox → CheckBox（handler using alias 期望 HarmonyOS.ArkUI.CheckBox）
+ * Radio → RadioButton（handler using alias 期望 HarmonyOS.ArkUI.RadioButton）
+ */
+const CLASS_NAME_FIXES: Record<string, string> = {
+    Checkbox: 'CheckBox',
+    Radio: 'RadioButton',
 };
 
 /** CommonMethod 内联展开后与基类公开成员重名的属性，生成器跳过 */
@@ -58,8 +156,28 @@ const BASE_CLASS_MEMBERS = new Set([
 
 /** 事件名特殊映射（onXxx → C 枚举后缀） */
 const EVENT_NAME_OVERRIDES: Record<string, string> = {
+    // 枚举匹配修正（ArkUI 事件枚举名与 d.ts 不同构）
     onTouch: 'TOUCH_EVENT',
     onClick: 'ON_CLICK',
+    onRefreshing: 'ON_REFRESH',
+    onStateChange: 'STATE_CHANGE',
+    onOffsetChange: 'ON_OFFSET_CHANGE',
+    // MAUI 命名规范（[属性]Changed / 过去式动词）
+    onTextChange: 'TEXT_CHANGED',
+    onSubmit: 'COMPLETED',
+
+    onComplete: 'SELECTED',
+};
+
+/**
+ * 组件级事件名覆盖（key = "组件名:事件名"）。
+ * 优先级高于 EVENT_NAME_OVERRIDES，用于同一 ArkTS 事件名在不同组件上映射到不同枚举键和/或 MAUI 名称。
+ */
+const COMPONENT_EVENT_OVERRIDES: Record<string, { enumSuffix: string; csName?: string }> = {
+    'checkbox:onChange': { enumSuffix: 'CHECKBOX_EVENT_ON_CHANGE', csName: 'CheckedChanged' },
+    'radio:onChange':     { enumSuffix: 'RADIO_EVENT_ON_CHANGE', csName: 'CheckedChanged' },
+    'toggle:onChange':    { enumSuffix: 'TOGGLE_ON_CHANGE', csName: 'Toggled' },
+    'slider:onChange':    { enumSuffix: 'SLIDER_EVENT_ON_CHANGE', csName: 'ValueChanged' },
 };
 
 function toSnakeUpper(name: string): string {
@@ -101,20 +219,27 @@ export class NativeCodeGenerator {
         }
 
         // 1. ArkUI_NodeType
-        const nodeTypeName = `ARKUI_NODE_${comp.name.toUpperCase()}`;
+        const nodeTypeName = NODE_TYPE_NAME_FIXES[comp.name] || `ARKUI_NODE_${comp.name.toUpperCase()}`;
+        const className = CLASS_NAME_FIXES[comp.name] || comp.name;
         const nodeTypes = this.enumMetadata['ArkUI_NodeType'] || {};
         if (!(nodeTypeName in nodeTypes)) {
             gaps.push({
                 component: comp.name, member: nodeTypeName, kind: 'nodeType',
                 reason: `missing in ArkUI_NodeType (C API does not expose this component as a native node)`,
             });
-            return { className: comp.name, csharp: null, gaps };
+            return { className, csharp: null, gaps };
         }
 
-        // 2. 属性（onXxx 方法归入事件通道）
+        // 2. 属性（onXxx 方法归入事件通道）；同名成员去重（d.ts 接口与命名空间双声明）
         const isEventLike = (m: MethodInfo) => /^on[A-Z]/.test(m.name);
+        const seenMethod = new Set<string>();
+        const uniqueMethods = comp.methods.filter(m => {
+            if (seenMethod.has(m.name)) return false;
+            seenMethod.add(m.name);
+            return true;
+        });
         const attributeBlocks: string[] = [];
-        for (const method of comp.methods) {
+        for (const method of uniqueMethods) {
             if (BASE_CLASS_MEMBERS.has(method.name)) continue;
             if (isEventLike(method)) continue;
             const block = this.generateAttribute(comp.name, method, gaps);
@@ -129,17 +254,85 @@ export class NativeCodeGenerator {
             if (block) attributeBlocks.push(block);
         }
 
-        // 3. 事件：显式 events + methods 中 on 开头的方法（CommonMethod<T> 合并产物）
-        const allEvents: EventInfo[] = [...comp.events];
-        for (const method of comp.methods) {
-            if (isEventLike(method) && !allEvents.some(e => e.name === method.name)) {
-                allEvents.push({
-                    name: method.name,
-                    delegateName: `${toPascal(method.name)}Handler`,
-                    parameters: method.parameters,
-                    returnType: method.returnType,
-                });
+        // 2c. 构造选项属性：DEFAULT_SHAPES 中存在但 .d.ts 链式接口未覆盖的属性
+        //     （如 Slider.min/max/value、Toggle.isOn、Radio.group/value、CheckBox.isSelected/name）
+        const generatedAttrKeys = new Set<string>();
+        const seenAttrProp = new Set<string>();
+        for (const block of attributeBlocks) {
+            const m = block.match(/ArkUI_NodeAttributeType\.(\w+)/);
+            if (m) generatedAttrKeys.add(m[1]);
+            const pm = block.match(/public\s+\w+\s+(\w+)/);
+            if (pm) seenAttrProp.add(pm[1]);
+        }
+        const compPrefix = comp.name.toUpperCase();
+        for (const [attrKey, opt] of Object.entries(CONSTRUCTOR_OPTION_PROPS)) {
+            if (generatedAttrKeys.has(attrKey)) continue;
+            if (seenAttrProp.has(opt.csName)) continue;
+            // 只生成属于本组件的属性（NODE_CHECKBOX_XXX / NODE_SLIDER_XXX / …）
+            if (!attrKey.startsWith(`NODE_${compPrefix}_`)) continue;
+            const attrTypes = this.enumMetadata['ArkUI_NodeAttributeType'] || {};
+            if (!(attrKey in attrTypes)) continue;
+            const attrRef = `ArkUI_NodeAttributeType.${attrKey}`;
+            switch (opt.shape.kind) {
+                case 'bool':
+                    attributeBlocks.push(
+                        `    /// <summary>${opt.csName.toLowerCase()}（构造选项，${attrKey}，i32 0/1）</summary>\n` +
+                        `    public bool ${opt.csName}\n    {\n` +
+                        `        set => SetNumericAttribute(${attrRef}, ArkUIValue.I(value ? 1 : 0));\n    }`);
+                    break;
+                case 'string':
+                    attributeBlocks.push(
+                        `    /// <summary>${opt.csName.toLowerCase()}（构造选项，${attrKey}，string）</summary>\n` +
+                        `    public string ${opt.csName}\n    {\n` +
+                        `        set => SetStringAttribute(${attrRef}, value);\n    }`);
+                    break;
+                case 'float':
+                    attributeBlocks.push(
+                        `    /// <summary>${opt.csName.toLowerCase()}（构造选项，${attrKey}，float）</summary>\n` +
+                        `    public float ${opt.csName}\n    {\n` +
+                        `        set => SetNumericAttribute(${attrRef}, ArkUIValue.F(value));\n    }`);
+                    break;
+                case 'int':
+                    attributeBlocks.push(
+                        `    /// <summary>${opt.csName.toLowerCase()}（构造选项，${attrKey}，i32）</summary>\n` +
+                        `    public int ${opt.csName}\n    {\n` +
+                        `        set => SetNumericAttribute(${attrRef}, ArkUIValue.I(value));\n    }`);
+                    break;
+                case 'color':
+                    attributeBlocks.push(
+                        `    /// <summary>${opt.csName.toLowerCase()}（构造选项，${attrKey}，u32 0xAARRGGBB）</summary>\n` +
+                        `    public void Set${opt.csName}(byte r, byte g, byte b, byte a = 255)\n    {\n` +
+                        `        SetNumericAttribute(${attrRef}, ArkUIValue.U((uint)((a << 24) | (r << 16) | (g << 8) | b)));\n    }`);
+                    break;
             }
+        }
+
+        // 2d. 组件特有的额外成员（.d.ts 未声明但 C API 支持的方法/属性）
+        if (comp.name === 'Scroll') {
+            // SetOffset: C API NODE_SCROLL_OFFSET 接受双 f32 参数（水平/垂直偏移）
+            const offsetKey = 'NODE_SCROLL_OFFSET';
+            const attrTypes = this.enumMetadata['ArkUI_NodeAttributeType'] || {};
+            if (offsetKey in attrTypes && !generatedAttrKeys.has(offsetKey)) {
+                attributeBlocks.push(
+                    `    /// <summary>滚动偏移（${offsetKey}，双值 f32：水平 vp + 垂直 vp）</summary>\n` +
+                    `    public void SetOffset(float horizontal, float vertical)\n` +
+                    `        => SetNumericAttribute(ArkUI_NodeAttributeType.${offsetKey},\n` +
+                    `            ArkUIValue.F(horizontal), ArkUIValue.F(vertical));`);
+            }
+        }
+
+        // 3. 事件：显式 events + methods 中 on 开头的方法（CommonMethod<T> 合并产物），同名去重
+        const allEvents: EventInfo[] = [];
+        const seenEvent = new Set<string>();
+        for (const evt of [...comp.events, ...uniqueMethods.filter(m => isEventLike(m)).map(m => ({
+            name: m.name,
+            delegateName: `${toPascal(m.name)}Handler`,
+            parameters: m.parameters,
+            returnType: m.returnType,
+        }))]) {
+            if (seenEvent.has(evt.name)) continue;
+            seenEvent.add(evt.name);
+            allEvents.push(evt);
         }
         const eventBlocks: string[] = [];
         for (const evt of allEvents) {
@@ -148,8 +341,8 @@ export class NativeCodeGenerator {
         }
 
         // 4. 产出
-        const csharp = this.emit(comp.name, nodeTypeName, attributeBlocks, eventBlocks, comp.methods, comp.events);
-        return { className: comp.name, csharp, gaps };
+        const csharp = this.emit(className, nodeTypeName, attributeBlocks, eventBlocks, comp.methods, comp.events);
+        return { className, csharp, gaps };
     }
 
     /**
@@ -168,7 +361,12 @@ export class NativeCodeGenerator {
         return keys;
     }
 
-    private resolveShape(componentName: string, snake: string): { attrKey: string; shape: AttributeShape } | null {
+    private resolveShape(componentName: string, snake: string, tsName?: string): { attrKey: string; shape: AttributeShape } | null {
+        // 显式对照表优先（TS 名与 C 枚举名不同构的成员）
+        if (tsName) {
+            const alias = ATTR_ALIASES[`${componentName.toLowerCase()}:${tsName.toLowerCase()}`];
+            if (alias) return { attrKey: alias.key, shape: alias.shape };
+        }
         for (const key of this.candidateAttrKeys(componentName, snake)) {
             const shape = this.shapes[key];
             if (shape) return { attrKey: key, shape };
@@ -205,7 +403,7 @@ export class NativeCodeGenerator {
 
     private generateAttribute(componentName: string, method: MethodInfo, gaps: NativeGap[]): string | null {
         const snake = toSnakeUpper(method.name);
-        const resolved = this.resolveShape(componentName, snake);
+        const resolved = this.resolveShape(componentName, snake, method.name);
 
         if (!resolved) {
             const exists = this.shapeExistsInCApi(componentName, snake);
@@ -245,24 +443,43 @@ export class NativeCodeGenerator {
                 return `    /// <summary>${method.name}（${attrKey}，单值 u32，0xAARRGGBB 格式）</summary>\n` +
                     `    public void Set${prop}(byte r, byte g, byte b, byte a = 255)\n    {\n` +
                     `        SetNumericAttribute(${attrRef}, ArkUIValue.U((uint)((a << 24) | (r << 16) | (g << 8) | b)));\n    }`;
+            case 'bool':
+                return `    /// <summary>${method.name}（${attrKey}，i32 0/1）</summary>\n` +
+                    `    public bool ${prop}\n    {\n` +
+                    `        set => SetNumericAttribute(${attrRef}, ArkUIValue.I(value ? 1 : 0));\n    }`;
             default:
                 return null;
         }
     }
 
     private generateEvent(componentName: string, evt: EventInfo, gaps: NativeGap[]): string | null {
-        const suffix = EVENT_NAME_OVERRIDES[evt.name] || toSnakeUpper(evt.name);
-        const evtKey = `NODE_${suffix}`;
+        // 1. 枚举匹配：组件级覆盖优先，再全局覆盖，最后默认转换
+        const componentKey = `${componentName.toLowerCase()}:${evt.name}`;
+        const componentOverride = COMPONENT_EVENT_OVERRIDES[componentKey];
+        const globalEnumOverride = EVENT_NAME_OVERRIDES[evt.name];
+        const enumSuffix = componentOverride?.enumSuffix || globalEnumOverride || toSnakeUpper(evt.name);
+
+        // 候选枚举键：组件级覆盖直接用完整枚举名（如 NODE_CHECKBOX_EVENT_ON_CHANGE）；
+        // 否则走三形态候选（全局 / 组件专属 / 组件专属带 EVENT 中缀）
+        const compPrefix = componentName.toUpperCase();
+        let candidateKeys: string[];
+        if (componentOverride) {
+            candidateKeys = [`NODE_${enumSuffix}`];
+        } else {
+            candidateKeys = [`NODE_${enumSuffix}`, `NODE_${compPrefix}_${enumSuffix}`, `NODE_${compPrefix}_EVENT_${enumSuffix}`];
+        }
         const eventTypes = this.enumMetadata['ArkUI_NodeEventType'] || {};
-        if (!(evtKey in eventTypes)) {
+        const evtKey = candidateKeys.find(key => key in eventTypes);
+        if (!evtKey) {
             gaps.push({
                 component: componentName, member: evt.name, kind: 'event',
-                reason: `${evtKey} not present in ArkUI_NodeEventType`,
+                reason: `none of ${candidateKeys.join('/')} present in ArkUI_NodeEventType`,
             });
             return null;
         }
 
-        const csEventName = toPascal(evt.name.replace(/^on/, ''));
+        // 2. C# 事件名：组件级覆盖有 csName 时用它，否则从 ArkTS 名称推导（去 on + PascalCase）
+        const csEventName = componentOverride?.csName || toPascal(evt.name.replace(/^on/, ''));
         return `    /// <summary>${evt.name} 事件（${evtKey}）</summary>\n` +
             `    public event Action<ArkUINodeEvent>? ${csEventName}\n    {\n` +
             `        add => On(ArkUI_NodeEventType.${evtKey}, value!);\n` +
@@ -286,9 +503,9 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>${componentName} 组件（${nodeTypeName}）</summary>
-public unsafe class ${escapeIdentifier(componentName)} : ArkUINodeBase
+public unsafe partial class ${escapeIdentifier(CLASS_NAME_FIXES[componentName] || componentName)} : ArkUINodeBase
 {
-    public ${escapeIdentifier(componentName)}() : base(ArkUI_NodeType.${nodeTypeName}) { }
+    public ${escapeIdentifier(CLASS_NAME_FIXES[componentName] || componentName)}() : base(ArkUI_NodeType.${nodeTypeName}) { }
 
 ${body || '    // （无可映射到 C API 的属性/事件）'}
 }

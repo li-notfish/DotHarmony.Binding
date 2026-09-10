@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Column 组件（ARKUI_NODE_COLUMN）</summary>
-public unsafe class Column : ArkUINodeBase
+public unsafe partial class Column : ArkUINodeBase
 {
     public Column() : base(ArkUI_NodeType.ARKUI_NODE_COLUMN) { }
 

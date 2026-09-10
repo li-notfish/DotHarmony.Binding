@@ -7,22 +7,20 @@
 
 - ✅ UI 通道：ArkUI NDK C API（`ArkUI_NativeNodeAPI_1`）→ `ArkUINodeBase` 稳定句柄
 - ✅ 服务通道：napi（`napi_load_module("=@ohos.xxx")`）→ `@ohos.deviceInfo` 端到端
-- ✅ MAUI Handler 包：Button/Label/StackLayout/ContentPage 四个 Handler + XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）
+- ✅ MAUI Handler 包：21 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker/CollectionView/CarouselView）+ XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）；代码风格已统一为官方 handler 模式
 - ✅ 工具链：`remote-build.sh`（远程 NativeAOT）→ `build-hap.cmd`（hvigor）→ `deploy-hap.sh`（hdc）
 
 ---
 
 ## M1 尾巴 —— MAUI 基本面补齐
 
-### 1.1 Brush→ARGB 转换助手（✅ 已完成）
+### 1.1 Brush→ArkUI 背景翻译（✅ 已完成，含渐变/图片画刷）
 
-已实现 `BrushHelper`（SolidColorBrush→ARGB，Gradient/Image 静默透明）并接通四个 Handler 的 Background/BackgroundColor。剩余：渐变/图片画刷需要 ArkUI 渐变属性封装。
+`BrushHelper` 已支持 SolidColorBrush 与全部公开的渐变画刷：`LinearGradientBrush`→`NODE_LINEAR_GRADIENT`（StartPoint/EndPoint 方向向量转 CSS 角度，方向固定 CUSTOM(9)）；`RadialGradientBrush`→`NODE_RADIAL_GRADIENT`（Center 相对坐标 × 实测尺寸，Radius 相对半对角线；节点未布局时经 `NODE_ON_SIZE_CHANGE` 以独立 targetId 重算，不占用用户订阅槽）。渐变色标经 `ArkUI_ColorStop` 对象入参（native_type.h @since 12），GradientStop Offset 全 0 时按 MAUI 语义均匀分布。已接通 ContentPage/Frame(Border)/Label/Layout 四类 Handler，ControlsDemoPage 含两种渐变验证项。
 
-**做什么**：统一 `Controls 的 Background/TextColor` 等属性的取色逻辑，接通 `HarmonyContentPageHandler` 的 Background 映射（当前显式暂缓）。
+**ImageBrush 上游缺口**：MAUI 10 将 `ImageBrush` 保持为 internal 类型（用户代码无法构造/XAML 无法声明），属上游 API 限制；节点层 `SetBackgroundImage`（NODE_BACKGROUND_IMAGE + ArkUI_ImageRepeat）原语已就位，上游公开后即可在 BrushHelper 接线。
 
-**怎么做**：Controls 的 `VisualElement.Background` 为 **Brush 体系**（`SolidColorBrush`/`GradientBrush`/`ImageBrush`，与 `Graphics.SolidPaint` 平行，注意两者不互相继承——`is SolidPaint` 模式对 Brush 表达式会编译报错 CS8121）。写一个 `static Color? ToArgb(this Brush brush)`：匹配 `SolidColorBrush`（取 Color）、忽略其余并记录 gap。
-
-**难点**：Gradient（多 stop）、ImageBrush 需要真正的 ArkUI 渐变/图片属性封装，一期只做纯色。
+**历史说明**：一期只做纯色（Gradient/Image 静默透明）；渐变/图片画刷已于本阶段补齐。
 
 ### 1.2 布局对齐 —— 两套布局引擎的取舍（中，最重要的语义缺口）
 
@@ -54,9 +52,9 @@
 2. 暂存的已挂载页面在 ArkUI 侧是"从树摘除但句柄保留"——验证 `removeChild` 后再 `addNode` 的节点状态恢复是否完整（属性是否保留）
 3. Shell/NavigationPage 官方类型**不在支持计划内**（协议太重），文档需明确开发者不要使用
 
-### 1.4 更多控件 Handler（持续）
+### 1.4 更多控件 Handler（✅ 已完成 21 个）
 
-Image（需要图片服务/Resizetizer 联动，难）、Entry/Editor（键盘/焦点/输入法事件，中）、ScrollView（`NODE_SCROLL_*` 属性族，中）、CheckBox/Switch（简单）。按需插入。
+已完成 21 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker + CollectionView/CarouselView M1 版；RadioButton 的 Content 经 Row+Text 包装呈现，GroupName 已接通）。代码风格已统一为官方 handler 模式（`ViewHandler<TVirtualView, TPlatformView>` + 命名 Map 方法）。注意 MAUI 10 核心/Controls 接口差异：DatePicker.Date 等为可空类型，GroupName 仅在 Controls 类型上——虚拟视图类型按 Picker 先例直接用 Controls 具体类型。剩余：Shape/自绘（需 MAUI Graphics 前端）与 CollectionView 虚拟化（NodeAdapter）按需插入。
 
 ### 1.5 真机 arm64 验证（小）
 
@@ -65,6 +63,13 @@ Image（需要图片服务/Resizetizer 联动，难）、Entry/Editor（键盘/�
 ---
 
 ## M2 —— 服务层完备（异步是核心）
+
+> **2026-09-10 进度**：2.2 四项缺陷已修复并端到端验证（合成模块 void/Promise<string>/Promise<number>
+> 生成 → 编译通过）；2.1 最小切片已落地——`PromiseTaskBridge`（napi then + 原生 trampoline + TCS，
+> 续体调度线程池）+ `NodeApi.CallMethodAsync<T>`，生成器对 `Promise<T>` 返回发射 `CallMethodAsync`。
+> 已知边界：仅覆盖 Promise 风格；AsyncCallback 风格与任意线程→JS 线程的完整 TSFN 通道（含生命周期三路径）
+> 仍待做；设备端到端验证依赖模块级函数生成（解析器尚未支持顶层 `declare function` 导出）。
+
 
 ### 2.1 TSFN 异步层（大，M2 的核心难点）
 
