@@ -5,36 +5,47 @@ using HarmonyOS.Bindings.NativeNode;
 
 namespace HarmonyOS.ArkUI;
 
-/// <summary>Refresh 组件（ARKUI_NODE_REFRESH）</summary>
-public unsafe partial class Refresh : ArkUINodeBase
+/// <summary>DatePicker 组件（ARKUI_NODE_DATE_PICKER）</summary>
+public unsafe partial class DatePicker : ArkUINodeBase
 {
-    public Refresh() : base(ArkUI_NodeType.ARKUI_NODE_REFRESH) { }
+    public DatePicker() : base(ArkUI_NodeType.ARKUI_NODE_DATE_PICKER) { }
 
-    /// <summary>isrefreshing（构造选项，NODE_REFRESH_REFRESHING，i32 0/1）</summary>
-    public bool IsRefreshing
+    /// <summary>lunar（NODE_DATE_PICKER_LUNAR，i32 0/1）</summary>
+    public bool Lunar
     {
-        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_REFRESH_REFRESHING, ArkUIValue.I(value ? 1 : 0));
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_DATE_PICKER_LUNAR, ArkUIValue.I(value ? 1 : 0));
     }
 
-    /// <summary>onStateChange 事件（NODE_REFRESH_STATE_CHANGE）</summary>
-    public event Action<ArkUINodeEvent>? StateChange
+    /// <summary>selecteddate（构造选项，NODE_DATE_PICKER_SELECTED，string）</summary>
+    public string SelectedDate
     {
-        add => On(ArkUI_NodeEventType.NODE_REFRESH_STATE_CHANGE, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_STATE_CHANGE);
+        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_DATE_PICKER_SELECTED, value);
     }
 
-    /// <summary>onRefreshing 事件（NODE_REFRESH_ON_REFRESH）</summary>
-    public event Action<ArkUINodeEvent>? Refreshing
+    /// <summary>startdate（构造选项，NODE_DATE_PICKER_START，string）</summary>
+    public string StartDate
     {
-        add => On(ArkUI_NodeEventType.NODE_REFRESH_ON_REFRESH, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_ON_REFRESH);
+        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_DATE_PICKER_START, value);
     }
 
-    /// <summary>onOffsetChange 事件（NODE_REFRESH_ON_OFFSET_CHANGE）</summary>
-    public event Action<ArkUINodeEvent>? OffsetChange
+    /// <summary>enddate（构造选项，NODE_DATE_PICKER_END，string）</summary>
+    public string EndDate
     {
-        add => On(ArkUI_NodeEventType.NODE_REFRESH_ON_OFFSET_CHANGE, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_ON_OFFSET_CHANGE);
+        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_DATE_PICKER_END, value);
+    }
+
+    /// <summary>onChange 事件（NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? OnDateChange
+    {
+        add => On(ArkUI_NodeEventType.NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE);
+    }
+
+    /// <summary>onDateChange 事件（NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? DateChange
+    {
+        add => On(ArkUI_NodeEventType.NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE);
     }
 
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>

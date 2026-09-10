@@ -94,6 +94,10 @@ export const DEFAULT_SHAPES: ShapeTable = {
     NODE_TEXT_INPUT_MAX_LENGTH: { kind: 'int' },
     NODE_TEXT_INPUT_ENTER_KEY_TYPE: { kind: 'enum', enumType: 'ArkUI_EnterKeyType' },
     NODE_TEXT_INPUT_EDITING: { kind: 'int' },
+    // DatePicker / TimePicker / TextPicker（d.ts 链式方法）
+    NODE_DATE_PICKER_LUNAR: { kind: 'bool' },
+    NODE_TIME_PICKER_USE_MILITARY_TIME: { kind: 'bool' },
+    NODE_TEXT_PICKER_CAN_LOOP: { kind: 'bool' },
 };
 
 /**
@@ -114,20 +118,29 @@ export const ATTR_ALIASES: Record<string, { key: string; shape: AttributeShape }
  * key = NODE_<组件>_<ATTR>（DEFAULT_SHAPES 中的键名）。
  * 生成器在第 2c 阶段遍历此表，为未被 .d.ts 链式接口覆盖的属性补充生成。
  */
-export const CONSTRUCTOR_OPTION_PROPS: Record<string, { csName: string; shape: AttributeShape; csType?: string }> = {
+export const CONSTRUCTOR_OPTION_PROPS: Record<string, { component: string; csName: string; shape: AttributeShape; csType?: string }> = {
     // CheckBox — select / name 是构造选项（非链式属性）
-    NODE_CHECKBOX_SELECT: { csName: 'IsSelected', shape: { kind: 'bool' }, csType: 'bool' },
-    NODE_CHECKBOX_NAME:   { csName: 'Name', shape: { kind: 'string' }, csType: 'string' },
+    NODE_CHECKBOX_SELECT: { component: 'Checkbox', csName: 'IsSelected', shape: { kind: 'bool' }, csType: 'bool' },
+    NODE_CHECKBOX_NAME:   { component: 'Checkbox', csName: 'Name', shape: { kind: 'string' }, csType: 'string' },
     // Radio — group / value 是构造选项
-    NODE_RADIO_GROUP: { csName: 'Group', shape: { kind: 'string' }, csType: 'string' },
-    NODE_RADIO_VALUE: { csName: 'Value', shape: { kind: 'string' }, csType: 'string' },
+    NODE_RADIO_GROUP: { component: 'Radio', csName: 'Group', shape: { kind: 'string' }, csType: 'string' },
+    NODE_RADIO_VALUE: { component: 'Radio', csName: 'Value', shape: { kind: 'string' }, csType: 'string' },
     // Toggle — isOn 是构造选项（NODE_TOGGLE_VALUE → i32 0/1）
-    NODE_TOGGLE_VALUE: { csName: 'IsOn', shape: { kind: 'bool' }, csType: 'bool' },
+    NODE_TOGGLE_VALUE: { component: 'Toggle', csName: 'IsOn', shape: { kind: 'bool' }, csType: 'bool' },
     // Slider — min / max / value / step 是构造选项
-    NODE_SLIDER_VALUE:     { csName: 'Value', shape: { kind: 'float' }, csType: 'float' },
-    NODE_SLIDER_MIN_VALUE: { csName: 'MinValue', shape: { kind: 'float' }, csType: 'float' },
-    NODE_SLIDER_MAX_VALUE: { csName: 'MaxValue', shape: { kind: 'float' }, csType: 'float' },
-    NODE_SLIDER_STEP:      { csName: 'Step', shape: { kind: 'float' }, csType: 'float' },
+    NODE_SLIDER_VALUE:     { component: 'Slider', csName: 'Value', shape: { kind: 'float' }, csType: 'float' },
+    NODE_SLIDER_MIN_VALUE: { component: 'Slider', csName: 'MinValue', shape: { kind: 'float' }, csType: 'float' },
+    NODE_SLIDER_MAX_VALUE: { component: 'Slider', csName: 'MaxValue', shape: { kind: 'float' }, csType: 'float' },
+    NODE_SLIDER_STEP:      { component: 'Slider', csName: 'Step', shape: { kind: 'float' }, csType: 'float' },
+    // Refresh — refreshing 是构造选项（RefreshOptions.refreshing）
+    NODE_REFRESH_REFRESHING: { component: 'Refresh', csName: 'IsRefreshing', shape: { kind: 'bool' }, csType: 'bool' },
+    // DatePicker / TimePicker — 构造选项（DatePickerOptions/TimePickerOptions，载荷 .string "yyyy-MM-dd"/"HH:mm"）
+    NODE_DATE_PICKER_SELECTED: { component: 'DatePicker', csName: 'SelectedDate', shape: { kind: 'string' }, csType: 'string' },
+    NODE_DATE_PICKER_START:    { component: 'DatePicker', csName: 'StartDate', shape: { kind: 'string' }, csType: 'string' },
+    NODE_DATE_PICKER_END:      { component: 'DatePicker', csName: 'EndDate', shape: { kind: 'string' }, csType: 'string' },
+    NODE_TIME_PICKER_SELECTED: { component: 'TimePicker', csName: 'SelectedTime', shape: { kind: 'string' }, csType: 'string' },
+    // TextPicker — 选中索引（Range 为多值载荷，见 generate() 的组件特例 SetRange）
+    NODE_TEXT_PICKER_SELECTED_INDEX: { component: 'TextPicker', csName: 'SelectedIndex', shape: { kind: 'int' }, csType: 'int' },
 };
 
 /**
@@ -135,8 +148,14 @@ export const CONSTRUCTOR_OPTION_PROPS: Record<string, { csName: string; shape: A
  * TextArea → TEXT_AREA（而非 TEXTAREA）
  */
 const NODE_TYPE_NAME_FIXES: Record<string, string> = {
+    // 值为完整 ArkUI_NodeType 枚举名（attrPrefix 推导时剥离 ARKUI_NODE_ 前缀）。
+    // 注意 TextArea/TextInput 两条是历史遗留、从未生效（text_area.cs/text_input.cs
+    // 为手工对齐文件，勿在此启用——生成器产物会令 Entry/Editor handler 回归）
     TextArea: 'TEXT_AREA',
     TextInput: 'TEXT_INPUT',
+    DatePicker: 'ARKUI_NODE_DATE_PICKER',
+    TimePicker: 'ARKUI_NODE_TIME_PICKER',
+    TextPicker: 'ARKUI_NODE_TEXT_PICKER',
 };
 
 /**
@@ -175,6 +194,10 @@ const COMPONENT_EVENT_OVERRIDES: Record<string, { enumSuffix: string; csName?: s
     'slider:onChange':    { enumSuffix: 'SLIDER_EVENT_ON_CHANGE', csName: 'ValueChanged' },
     // CS0542：事件成员名不能与封闭类型 Scroll 同名；MAUI IScrollView 事件名为 Scrolled
     'scroll:onScroll':    { enumSuffix: 'SCROLL_EVENT_ON_SCROLL', csName: 'Scrolled' },
+    // picker 系：d.ts onChange 与 C 事件枚举名不同构（带 EVENT 中缀 + 不同尾名）
+    'datepicker:onChange': { enumSuffix: 'DATE_PICKER_EVENT_ON_DATE_CHANGE', csName: 'OnDateChange' },
+    'timepicker:onChange': { enumSuffix: 'TIME_PICKER_EVENT_ON_CHANGE', csName: 'OnTimeChange' },
+    'textpicker:onChange': { enumSuffix: 'TEXT_PICKER_EVENT_ON_CHANGE', csName: 'OnChange' },
 };
 
 function toSnakeUpper(name: string): string {
@@ -235,11 +258,14 @@ export class NativeCodeGenerator {
             seenMethod.add(m.name);
             return true;
         });
+        // C 枚举前缀用修正后的 nodeTypeName（DATE_PICKER 而非 DATEPICKER），
+        // 与 DEFAULT_SHAPES / CONSTRUCTOR_OPTION_PROPS 的多词键名对齐
+        const attrPrefix = nodeTypeName.replace(/^ARKUI_NODE_/, '');
         const attributeBlocks: string[] = [];
         for (const method of uniqueMethods) {
             if (BASE_CLASS_MEMBERS.has(method.name)) continue;
             if (isEventLike(method)) continue;
-            const block = this.generateAttribute(comp.name, method, gaps);
+            const block = this.generateAttribute(comp.name, method, gaps, attrPrefix);
             if (block) attributeBlocks.push(block);
         }
 
@@ -247,7 +273,7 @@ export class NativeCodeGenerator {
         //     NODE_<组件>_<参数名>（如 NODE_TEXT_CONTENT / NODE_BUTTON_LABEL）
         for (const param of comp.constructorParams) {
             if (!param.type.includes('string') && !param.type.includes('ResourceStr')) continue;
-            const block = this.generateConstructorParamAttribute(comp.name, param.name, gaps);
+            const block = this.generateConstructorParamAttribute(comp.name, param.name, gaps, attrPrefix);
             if (block) attributeBlocks.push(block);
         }
 
@@ -261,12 +287,11 @@ export class NativeCodeGenerator {
             const pm = block.match(/public\s+\w+\s+(\w+)/);
             if (pm) seenAttrProp.add(pm[1]);
         }
-        const compPrefix = comp.name.toUpperCase();
         for (const [attrKey, opt] of Object.entries(CONSTRUCTOR_OPTION_PROPS)) {
             if (generatedAttrKeys.has(attrKey)) continue;
             if (seenAttrProp.has(opt.csName)) continue;
-            // 只生成属于本组件的属性（NODE_CHECKBOX_XXX / NODE_SLIDER_XXX / …）
-            if (!attrKey.startsWith(`NODE_${compPrefix}_`)) continue;
+            // 只生成属于本组件的属性（component 显式归属，防前缀碰撞）
+            if (opt.component !== comp.name) continue;
             const attrTypes = this.enumMetadata['ArkUI_NodeAttributeType'] || {};
             if (!(attrKey in attrTypes)) continue;
             const attrRef = `ArkUI_NodeAttributeType.${attrKey}`;
@@ -318,6 +343,43 @@ export class NativeCodeGenerator {
             }
         }
 
+        // 2e. TextPicker Range 特殊载荷：value[0].i32=RangeType(1=单列) + .string（';' 分隔），
+        //     通用形态表无法表达，与 Scroll.SetOffset 同属组件特例
+        if (comp.name === 'TextPicker') {
+            const rangeKey = 'NODE_TEXT_PICKER_OPTION_RANGE';
+            const attrTypes = this.enumMetadata['ArkUI_NodeAttributeType'] || {};
+            if (rangeKey in attrTypes && !generatedAttrKeys.has(rangeKey)) {
+                attributeBlocks.push(
+                    `    /// <summary>单列选项范围（${rangeKey}：value[0].i32=1 单列，string 以 ';' 分隔）</summary>
+` +
+                    `    public void SetRange(System.Collections.Generic.IReadOnlyList<string> options)
+` +
+                    `    {
+` +
+                    `        var utf8 = System.Text.Encoding.UTF8.GetBytes(string.Join(";", options));
+` +
+                    `        var values = new ArkUI_NumberValue[] { ArkUIValue.I(1) }; // ArkUI_TextPickerRangeType: 1 = 单列字符串
+` +
+                    `        fixed (byte* p = utf8)
+` +
+                    `        fixed (ArkUI_NumberValue* v = values)
+` +
+                    `        {
+` +
+                    `            var item = new ArkUI_AttributeItem { value = v, size = 1, @string = p };
+` +
+                    `            var status = ArkUINativeApi.SetAttribute(Handle, ArkUI_NodeAttributeType.${rangeKey}, &item);
+` +
+                    `            if (status != 0)
+` +
+                    `                throw new InvalidOperationException("SetAttribute(${rangeKey}) failed: " + status);
+` +
+                    `        }
+` +
+                    `    }`);
+            }
+        }
+
         // 3. 事件：显式 events + methods 中 on 开头的方法（CommonMethod<T> 合并产物），同名去重
         const allEvents: EventInfo[] = [];
         const seenEvent = new Set<string>();
@@ -333,7 +395,7 @@ export class NativeCodeGenerator {
         }
         const eventBlocks: string[] = [];
         for (const evt of allEvents) {
-            const block = this.generateEvent(comp.name, evt, gaps);
+            const block = this.generateEvent(comp.name, evt, gaps, attrPrefix);
             if (block) eventBlocks.push(block);
         }
 
@@ -347,8 +409,10 @@ export class NativeCodeGenerator {
      *   textAlign + Text → 候选 [NODE_TEXT_TEXT_ALIGN, NODE_TEXT_ALIGN]（TS 属性名自带组件前缀时去重）
      *   label + Button   → 候选 [NODE_BUTTON_LABEL]
      */
-    private candidateAttrKeys(componentName: string, snake: string): string[] {
-        const compPrefix = `${componentName.toUpperCase()}_`;
+    private candidateAttrKeys(componentName: string, snake: string, attrPrefix?: string): string[] {
+        // 多词组件（TextArea→TEXT_AREA / DatePicker→DATE_PICKER）必须用修正后的 C 枚举前缀
+        const prefix = attrPrefix ?? componentName.toUpperCase();
+        const compPrefix = `${prefix}_`;
         const keys = [`NODE_${compPrefix}${snake}`];
         if (snake.startsWith(compPrefix)) {
             keys.push(`NODE_${snake}`);
@@ -358,31 +422,31 @@ export class NativeCodeGenerator {
         return keys;
     }
 
-    private resolveShape(componentName: string, snake: string, tsName?: string): { attrKey: string; shape: AttributeShape } | null {
+    private resolveShape(componentName: string, snake: string, tsName?: string, attrPrefix?: string): { attrKey: string; shape: AttributeShape } | null {
         // 显式对照表优先（TS 名与 C 枚举名不同构的成员）
         if (tsName) {
             const alias = ATTR_ALIASES[`${componentName.toLowerCase()}:${tsName.toLowerCase()}`];
             if (alias) return { attrKey: alias.key, shape: alias.shape };
         }
-        for (const key of this.candidateAttrKeys(componentName, snake)) {
+        for (const key of this.candidateAttrKeys(componentName, snake, attrPrefix)) {
             const shape = this.shapes[key];
             if (shape) return { attrKey: key, shape };
         }
         return null;
     }
 
-    private shapeExistsInCApi(componentName: string, snake: string): boolean {
+    private shapeExistsInCApi(componentName: string, snake: string, attrPrefix?: string): boolean {
         const attrTypes = this.enumMetadata['ArkUI_NodeAttributeType'] || {};
-        return this.candidateAttrKeys(componentName, snake).some(key => key in attrTypes);
+        return this.candidateAttrKeys(componentName, snake, attrPrefix).some(key => key in attrTypes);
     }
 
     private generateConstructorParamAttribute(
-        componentName: string, paramName: string, gaps: NativeGap[]
+        componentName: string, paramName: string, gaps: NativeGap[], attrPrefix?: string
     ): string | null {
         const snake = toSnakeUpper(paramName);
-        const resolved = this.resolveShape(componentName, snake);
+        const resolved = this.resolveShape(componentName, snake, undefined, attrPrefix);
         if (!resolved) {
-            if (this.shapeExistsInCApi(componentName, snake)) {
+            if (this.shapeExistsInCApi(componentName, snake, attrPrefix)) {
                 gaps.push({
                     component: componentName, member: `${paramName} (constructor)`, kind: 'attribute',
                     reason: `${snake} exists in C API but shape is not registered`,
@@ -398,12 +462,12 @@ export class NativeCodeGenerator {
             `        set => SetStringAttribute(ArkUI_NodeAttributeType.${resolved.attrKey}, value);\n    }`;
     }
 
-    private generateAttribute(componentName: string, method: MethodInfo, gaps: NativeGap[]): string | null {
+    private generateAttribute(componentName: string, method: MethodInfo, gaps: NativeGap[], attrPrefix?: string): string | null {
         const snake = toSnakeUpper(method.name);
-        const resolved = this.resolveShape(componentName, snake, method.name);
+        const resolved = this.resolveShape(componentName, snake, method.name, attrPrefix);
 
         if (!resolved) {
-            const exists = this.shapeExistsInCApi(componentName, snake);
+            const exists = this.shapeExistsInCApi(componentName, snake, attrPrefix);
             gaps.push({
                 component: componentName, member: method.name, kind: 'attribute',
                 reason: exists
@@ -449,7 +513,7 @@ export class NativeCodeGenerator {
         }
     }
 
-    private generateEvent(componentName: string, evt: EventInfo, gaps: NativeGap[]): string | null {
+    private generateEvent(componentName: string, evt: EventInfo, gaps: NativeGap[], attrPrefix?: string): string | null {
         // 1. 枚举匹配：组件级覆盖优先，再全局覆盖，最后默认转换
         const componentKey = `${componentName.toLowerCase()}:${evt.name}`;
         const componentOverride = COMPONENT_EVENT_OVERRIDES[componentKey];
@@ -458,7 +522,7 @@ export class NativeCodeGenerator {
 
         // 候选枚举键：组件级覆盖直接用完整枚举名（如 NODE_CHECKBOX_EVENT_ON_CHANGE）；
         // 否则走三形态候选（全局 / 组件专属 / 组件专属带 EVENT 中缀）
-        const compPrefix = componentName.toUpperCase();
+        const compPrefix = attrPrefix ?? componentName.toUpperCase();
         let candidateKeys: string[];
         if (componentOverride) {
             candidateKeys = [`NODE_${enumSuffix}`];

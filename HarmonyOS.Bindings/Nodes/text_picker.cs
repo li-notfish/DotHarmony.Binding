@@ -5,36 +5,50 @@ using HarmonyOS.Bindings.NativeNode;
 
 namespace HarmonyOS.ArkUI;
 
-/// <summary>Refresh 组件（ARKUI_NODE_REFRESH）</summary>
-public unsafe partial class Refresh : ArkUINodeBase
+/// <summary>TextPicker 组件（ARKUI_NODE_TEXT_PICKER）</summary>
+public unsafe partial class TextPicker : ArkUINodeBase
 {
-    public Refresh() : base(ArkUI_NodeType.ARKUI_NODE_REFRESH) { }
+    public TextPicker() : base(ArkUI_NodeType.ARKUI_NODE_TEXT_PICKER) { }
 
-    /// <summary>isrefreshing（构造选项，NODE_REFRESH_REFRESHING，i32 0/1）</summary>
-    public bool IsRefreshing
+    /// <summary>canLoop（NODE_TEXT_PICKER_CAN_LOOP，i32 0/1）</summary>
+    public bool CanLoop
     {
-        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_REFRESH_REFRESHING, ArkUIValue.I(value ? 1 : 0));
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_PICKER_CAN_LOOP, ArkUIValue.I(value ? 1 : 0));
     }
 
-    /// <summary>onStateChange 事件（NODE_REFRESH_STATE_CHANGE）</summary>
-    public event Action<ArkUINodeEvent>? StateChange
+    /// <summary>selectedindex（构造选项，NODE_TEXT_PICKER_SELECTED_INDEX，i32）</summary>
+    public int SelectedIndex
     {
-        add => On(ArkUI_NodeEventType.NODE_REFRESH_STATE_CHANGE, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_STATE_CHANGE);
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_PICKER_SELECTED_INDEX, ArkUIValue.I(value));
     }
 
-    /// <summary>onRefreshing 事件（NODE_REFRESH_ON_REFRESH）</summary>
-    public event Action<ArkUINodeEvent>? Refreshing
+    /// <summary>单列选项范围（NODE_TEXT_PICKER_OPTION_RANGE：value[0].i32=1 单列，string 以 ';' 分隔）</summary>
+    public void SetRange(System.Collections.Generic.IReadOnlyList<string> options)
     {
-        add => On(ArkUI_NodeEventType.NODE_REFRESH_ON_REFRESH, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_ON_REFRESH);
+        var utf8 = System.Text.Encoding.UTF8.GetBytes(string.Join(";", options));
+        var values = new ArkUI_NumberValue[] { ArkUIValue.I(1) }; // ArkUI_TextPickerRangeType: 1 = 单列字符串
+        fixed (byte* p = utf8)
+        fixed (ArkUI_NumberValue* v = values)
+        {
+            var item = new ArkUI_AttributeItem { value = v, size = 1, @string = p };
+            var status = ArkUINativeApi.SetAttribute(Handle, ArkUI_NodeAttributeType.NODE_TEXT_PICKER_OPTION_RANGE, &item);
+            if (status != 0)
+                throw new InvalidOperationException("SetAttribute(NODE_TEXT_PICKER_OPTION_RANGE) failed: " + status);
+        }
     }
 
-    /// <summary>onOffsetChange 事件（NODE_REFRESH_ON_OFFSET_CHANGE）</summary>
-    public event Action<ArkUINodeEvent>? OffsetChange
+    /// <summary>onChange 事件（NODE_TEXT_PICKER_EVENT_ON_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? OnChange
     {
-        add => On(ArkUI_NodeEventType.NODE_REFRESH_ON_OFFSET_CHANGE, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_ON_OFFSET_CHANGE);
+        add => On(ArkUI_NodeEventType.NODE_TEXT_PICKER_EVENT_ON_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_TEXT_PICKER_EVENT_ON_CHANGE);
+    }
+
+    /// <summary>onScrollStop 事件（NODE_TEXT_PICKER_EVENT_ON_SCROLL_STOP）</summary>
+    public event Action<ArkUINodeEvent>? ScrollStop
+    {
+        add => On(ArkUI_NodeEventType.NODE_TEXT_PICKER_EVENT_ON_SCROLL_STOP, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_TEXT_PICKER_EVENT_ON_SCROLL_STOP);
     }
 
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>

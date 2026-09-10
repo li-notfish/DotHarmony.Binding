@@ -5,36 +5,28 @@ using HarmonyOS.Bindings.NativeNode;
 
 namespace HarmonyOS.ArkUI;
 
-/// <summary>Refresh 组件（ARKUI_NODE_REFRESH）</summary>
-public unsafe partial class Refresh : ArkUINodeBase
+/// <summary>TimePicker 组件（ARKUI_NODE_TIME_PICKER）</summary>
+public unsafe partial class TimePicker : ArkUINodeBase
 {
-    public Refresh() : base(ArkUI_NodeType.ARKUI_NODE_REFRESH) { }
+    public TimePicker() : base(ArkUI_NodeType.ARKUI_NODE_TIME_PICKER) { }
 
-    /// <summary>isrefreshing（构造选项，NODE_REFRESH_REFRESHING，i32 0/1）</summary>
-    public bool IsRefreshing
+    /// <summary>useMilitaryTime（NODE_TIME_PICKER_USE_MILITARY_TIME，i32 0/1）</summary>
+    public bool UseMilitaryTime
     {
-        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_REFRESH_REFRESHING, ArkUIValue.I(value ? 1 : 0));
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TIME_PICKER_USE_MILITARY_TIME, ArkUIValue.I(value ? 1 : 0));
     }
 
-    /// <summary>onStateChange 事件（NODE_REFRESH_STATE_CHANGE）</summary>
-    public event Action<ArkUINodeEvent>? StateChange
+    /// <summary>selectedtime（构造选项，NODE_TIME_PICKER_SELECTED，string）</summary>
+    public string SelectedTime
     {
-        add => On(ArkUI_NodeEventType.NODE_REFRESH_STATE_CHANGE, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_STATE_CHANGE);
+        set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_TIME_PICKER_SELECTED, value);
     }
 
-    /// <summary>onRefreshing 事件（NODE_REFRESH_ON_REFRESH）</summary>
-    public event Action<ArkUINodeEvent>? Refreshing
+    /// <summary>onChange 事件（NODE_TIME_PICKER_EVENT_ON_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? OnTimeChange
     {
-        add => On(ArkUI_NodeEventType.NODE_REFRESH_ON_REFRESH, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_ON_REFRESH);
-    }
-
-    /// <summary>onOffsetChange 事件（NODE_REFRESH_ON_OFFSET_CHANGE）</summary>
-    public event Action<ArkUINodeEvent>? OffsetChange
-    {
-        add => On(ArkUI_NodeEventType.NODE_REFRESH_ON_OFFSET_CHANGE, value!);
-        remove => Off(ArkUI_NodeEventType.NODE_REFRESH_ON_OFFSET_CHANGE);
+        add => On(ArkUI_NodeEventType.NODE_TIME_PICKER_EVENT_ON_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_TIME_PICKER_EVENT_ON_CHANGE);
     }
 
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>

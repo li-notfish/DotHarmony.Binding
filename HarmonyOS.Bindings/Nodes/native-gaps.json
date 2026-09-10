@@ -3517,9 +3517,1143 @@
   },
   {
     "component": "DatePicker",
-    "member": "ARKUI_NODE_DATEPICKER",
-    "kind": "nodeType",
-    "reason": "missing in ArkUI_NodeType (C API does not expose this component as a native node)"
+    "member": "disappearTextStyle",
+    "kind": "attribute",
+    "reason": "DISAPPEAR_TEXT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "textStyle",
+    "kind": "attribute",
+    "reason": "TEXT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "selectedTextStyle",
+    "kind": "attribute",
+    "reason": "SELECTED_TEXT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "digitalCrownSensitivity",
+    "kind": "attribute",
+    "reason": "DIGITAL_CROWN_SENSITIVITY not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "enableHapticFeedback",
+    "kind": "attribute",
+    "reason": "ENABLE_HAPTIC_FEEDBACK exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "canLoop",
+    "kind": "attribute",
+    "reason": "CAN_LOOP exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "drawModifier",
+    "kind": "attribute",
+    "reason": "DRAW_MODIFIER not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "customProperty",
+    "kind": "attribute",
+    "reason": "CUSTOM_PROPERTY not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "expandSafeArea",
+    "kind": "attribute",
+    "reason": "EXPAND_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "ignoreLayoutSafeArea",
+    "kind": "attribute",
+    "reason": "IGNORE_LAYOUT_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "responseRegion",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "mouseResponseRegion",
+    "kind": "attribute",
+    "reason": "MOUSE_RESPONSE_REGION not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "responseRegionList",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION_LIST exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "size",
+    "kind": "attribute",
+    "reason": "SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "constraintSize",
+    "kind": "attribute",
+    "reason": "CONSTRAINT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "touchable",
+    "kind": "attribute",
+    "reason": "TOUCHABLE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "hitTestBehavior",
+    "kind": "attribute",
+    "reason": "HIT_TEST_BEHAVIOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "layoutWeight",
+    "kind": "attribute",
+    "reason": "LAYOUT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "chainWeight",
+    "kind": "attribute",
+    "reason": "CHAIN_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "safeAreaPadding",
+    "kind": "attribute",
+    "reason": "SAFE_AREA_PADDING not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "background",
+    "kind": "attribute",
+    "reason": "BACKGROUND not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "pixelRound",
+    "kind": "attribute",
+    "reason": "PIXEL_ROUND exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "backgroundImage",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "backgroundImageSize",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "backgroundImagePosition",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "backgroundBlurStyle",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "backgroundEffect",
+    "kind": "attribute",
+    "reason": "BACKGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "backgroundImageResizable",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_RESIZABLE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "foregroundEffect",
+    "kind": "attribute",
+    "reason": "FOREGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "visualEffect",
+    "kind": "attribute",
+    "reason": "VISUAL_EFFECT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "backgroundFilter",
+    "kind": "attribute",
+    "reason": "BACKGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "foregroundFilter",
+    "kind": "attribute",
+    "reason": "FOREGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "compositingFilter",
+    "kind": "attribute",
+    "reason": "COMPOSITING_FILTER not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "materialFilter",
+    "kind": "attribute",
+    "reason": "MATERIAL_FILTER not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "foregroundBlurStyle",
+    "kind": "attribute",
+    "reason": "FOREGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "border",
+    "kind": "attribute",
+    "reason": "BORDER not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "borderStyle",
+    "kind": "attribute",
+    "reason": "BORDER_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "borderWidth",
+    "kind": "attribute",
+    "reason": "BORDER_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "borderColor",
+    "kind": "attribute",
+    "reason": "BORDER_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "borderRadius",
+    "kind": "attribute",
+    "reason": "BORDER_RADIUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "borderImage",
+    "kind": "attribute",
+    "reason": "BORDER_IMAGE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "outline",
+    "kind": "attribute",
+    "reason": "OUTLINE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "outlineStyle",
+    "kind": "attribute",
+    "reason": "OUTLINE_STYLE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "outlineWidth",
+    "kind": "attribute",
+    "reason": "OUTLINE_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "outlineColor",
+    "kind": "attribute",
+    "reason": "OUTLINE_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "outlineRadius",
+    "kind": "attribute",
+    "reason": "OUTLINE_RADIUS not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "foregroundColor",
+    "kind": "attribute",
+    "reason": "FOREGROUND_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "hoverEffect",
+    "kind": "attribute",
+    "reason": "HOVER_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "focusable",
+    "kind": "attribute",
+    "reason": "FOCUSABLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "nextFocus",
+    "kind": "attribute",
+    "reason": "NEXT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "tabStop",
+    "kind": "attribute",
+    "reason": "TAB_STOP exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "tabIndex",
+    "kind": "attribute",
+    "reason": "TAB_INDEX not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "defaultFocus",
+    "kind": "attribute",
+    "reason": "DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "groupDefaultFocus",
+    "kind": "attribute",
+    "reason": "GROUP_DEFAULT_FOCUS not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "focusOnTouch",
+    "kind": "attribute",
+    "reason": "FOCUS_ON_TOUCH exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "focusBox",
+    "kind": "attribute",
+    "reason": "FOCUS_BOX exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "focusScopeId",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "focusScopePriority",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "animation",
+    "kind": "attribute",
+    "reason": "ANIMATION not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "transition",
+    "kind": "attribute",
+    "reason": "TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "gesture",
+    "kind": "attribute",
+    "reason": "GESTURE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "priorityGesture",
+    "kind": "attribute",
+    "reason": "PRIORITY_GESTURE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "parallelGesture",
+    "kind": "attribute",
+    "reason": "PARALLEL_GESTURE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "blur",
+    "kind": "attribute",
+    "reason": "BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "linearGradientBlur",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT_BLUR not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "motionBlur",
+    "kind": "attribute",
+    "reason": "MOTION_BLUR not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "brightness",
+    "kind": "attribute",
+    "reason": "BRIGHTNESS exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "contrast",
+    "kind": "attribute",
+    "reason": "CONTRAST exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "grayscale",
+    "kind": "attribute",
+    "reason": "GRAYSCALE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "colorBlend",
+    "kind": "attribute",
+    "reason": "COLOR_BLEND exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "saturate",
+    "kind": "attribute",
+    "reason": "SATURATE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "sepia",
+    "kind": "attribute",
+    "reason": "SEPIA exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "invert",
+    "kind": "attribute",
+    "reason": "INVERT exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "systemBarEffect",
+    "kind": "attribute",
+    "reason": "SYSTEM_BAR_EFFECT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "hueRotate",
+    "kind": "attribute",
+    "reason": "HUE_ROTATE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "useShadowBatching",
+    "kind": "attribute",
+    "reason": "USE_SHADOW_BATCHING not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "useEffect",
+    "kind": "attribute",
+    "reason": "USE_EFFECT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "backdropBlur",
+    "kind": "attribute",
+    "reason": "BACKDROP_BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "renderGroup",
+    "kind": "attribute",
+    "reason": "RENDER_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "freeze",
+    "kind": "attribute",
+    "reason": "FREEZE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "translate",
+    "kind": "attribute",
+    "reason": "TRANSLATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "scale",
+    "kind": "attribute",
+    "reason": "SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "gridSpan",
+    "kind": "attribute",
+    "reason": "GRID_SPAN not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "gridOffset",
+    "kind": "attribute",
+    "reason": "GRID_OFFSET not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "rotate",
+    "kind": "attribute",
+    "reason": "ROTATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "transform",
+    "kind": "attribute",
+    "reason": "TRANSFORM exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "transform3D",
+    "kind": "attribute",
+    "reason": "TRANSFORM3_D not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "flexGrow",
+    "kind": "attribute",
+    "reason": "FLEX_GROW exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "flexShrink",
+    "kind": "attribute",
+    "reason": "FLEX_SHRINK exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "flexBasis",
+    "kind": "attribute",
+    "reason": "FLEX_BASIS exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "alignSelf",
+    "kind": "attribute",
+    "reason": "ALIGN_SELF exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "layoutGravity",
+    "kind": "attribute",
+    "reason": "LAYOUT_GRAVITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "displayPriority",
+    "kind": "attribute",
+    "reason": "DISPLAY_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "zIndex",
+    "kind": "attribute",
+    "reason": "Z_INDEX exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "sharedTransition",
+    "kind": "attribute",
+    "reason": "SHARED_TRANSITION not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "direction",
+    "kind": "attribute",
+    "reason": "DIRECTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "align",
+    "kind": "attribute",
+    "reason": "ALIGN not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "position",
+    "kind": "attribute",
+    "reason": "POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "markAnchor",
+    "kind": "attribute",
+    "reason": "MARK_ANCHOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "offset",
+    "kind": "attribute",
+    "reason": "OFFSET exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "useSizeType",
+    "kind": "attribute",
+    "reason": "USE_SIZE_TYPE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "alignRules",
+    "kind": "attribute",
+    "reason": "ALIGN_RULES exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "chainMode",
+    "kind": "attribute",
+    "reason": "CHAIN_MODE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "aspectRatio",
+    "kind": "attribute",
+    "reason": "ASPECT_RATIO exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "clickEffect",
+    "kind": "attribute",
+    "reason": "CLICK_EFFECT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "enableClickSoundEffect",
+    "kind": "attribute",
+    "reason": "ENABLE_CLICK_SOUND_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "allowDrop",
+    "kind": "attribute",
+    "reason": "ALLOW_DROP not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "draggable",
+    "kind": "attribute",
+    "reason": "DRAGGABLE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "dragPreview",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "dragPreviewOptions",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW_OPTIONS not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "overlay",
+    "kind": "attribute",
+    "reason": "OVERLAY exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "toolbar",
+    "kind": "attribute",
+    "reason": "TOOLBAR not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "linearGradient",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "sweepGradient",
+    "kind": "attribute",
+    "reason": "SWEEP_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "radialGradient",
+    "kind": "attribute",
+    "reason": "RADIAL_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "motionPath",
+    "kind": "attribute",
+    "reason": "MOTION_PATH exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "shadow",
+    "kind": "attribute",
+    "reason": "SHADOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "blendMode",
+    "kind": "attribute",
+    "reason": "BLEND_MODE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "clip",
+    "kind": "attribute",
+    "reason": "CLIP exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "clipShape",
+    "kind": "attribute",
+    "reason": "CLIP_SHAPE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "mask",
+    "kind": "attribute",
+    "reason": "MASK exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "maskShape",
+    "kind": "attribute",
+    "reason": "MASK_SHAPE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "key",
+    "kind": "attribute",
+    "reason": "KEY not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "id",
+    "kind": "attribute",
+    "reason": "ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "geometryTransition",
+    "kind": "attribute",
+    "reason": "GEOMETRY_TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "bindTips",
+    "kind": "attribute",
+    "reason": "BIND_TIPS not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "bindPopup",
+    "kind": "attribute",
+    "reason": "BIND_POPUP not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "bindMenu",
+    "kind": "attribute",
+    "reason": "BIND_MENU not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "bindContextMenu",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "bindContextMenuByResponseType",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_RESPONSE_TYPE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "bindContextMenuWithResponse",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_WITH_RESPONSE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "bindContextMenuByIsShow",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_IS_SHOW not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "bindContentCover",
+    "kind": "attribute",
+    "reason": "BIND_CONTENT_COVER not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "bindSheet",
+    "kind": "attribute",
+    "reason": "BIND_SHEET not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "stateStyles",
+    "kind": "attribute",
+    "reason": "STATE_STYLES not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "restoreId",
+    "kind": "attribute",
+    "reason": "RESTORE_ID not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "sphericalEffect",
+    "kind": "attribute",
+    "reason": "SPHERICAL_EFFECT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "lightUpEffect",
+    "kind": "attribute",
+    "reason": "LIGHT_UP_EFFECT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "pixelStretchEffect",
+    "kind": "attribute",
+    "reason": "PIXEL_STRETCH_EFFECT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "keyboardShortcut",
+    "kind": "attribute",
+    "reason": "KEYBOARD_SHORTCUT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityGroup",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityText",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityNextFocusId",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_NEXT_FOCUS_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityDefaultFocus",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityUseSamePage",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_USE_SAME_PAGE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityScrollTriggerable",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SCROLL_TRIGGERABLE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityRole",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ROLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityTextHint",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT_HINT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DESCRIPTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_LEVEL not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityVirtualNode",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_VIRTUAL_NODE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityChecked",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CHECKED not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilitySelected",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SELECTED not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "obscured",
+    "kind": "attribute",
+    "reason": "OBSCURED not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "reuseId",
+    "kind": "attribute",
+    "reason": "REUSE_ID not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "reuse",
+    "kind": "attribute",
+    "reason": "REUSE not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "renderFit",
+    "kind": "attribute",
+    "reason": "RENDER_FIT exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "attributeModifier",
+    "kind": "attribute",
+    "reason": "ATTRIBUTE_MODIFIER not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "gestureModifier",
+    "kind": "attribute",
+    "reason": "GESTURE_MODIFIER not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "backgroundBrightness",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BRIGHTNESS not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "shouldBuiltInRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_BUILT_IN_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "shouldRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "monopolizeEvents",
+    "kind": "attribute",
+    "reason": "MONOPOLIZE_EVENTS exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityFocusDrawLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_FOCUS_DRAW_LEVEL not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "allowForceDark",
+    "kind": "attribute",
+    "reason": "ALLOW_FORCE_DARK exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "systemMaterial",
+    "kind": "attribute",
+    "reason": "SYSTEM_MATERIAL exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityStateDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_STATE_DESCRIPTION not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityActionOptions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ACTION_OPTIONS not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "accessibilityCustomActions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CUSTOM_ACTIONS not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "smartGestureShortcut",
+    "kind": "attribute",
+    "reason": "SMART_GESTURE_SHORTCUT not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "inspectorLabel",
+    "kind": "attribute",
+    "reason": "INSPECTOR_LABEL exists in C API but shape is not registered"
+  },
+  {
+    "component": "DatePicker",
+    "member": "doubleSided",
+    "kind": "attribute",
+    "reason": "DOUBLE_SIDED not present in C API"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onAccessibilityHover",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_HOVER/NODE_DATE_PICKER_ON_ACCESSIBILITY_HOVER/NODE_DATE_PICKER_EVENT_ON_ACCESSIBILITY_HOVER present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onAccessibilityHoverTransparent",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_HOVER_TRANSPARENT/NODE_DATE_PICKER_ON_ACCESSIBILITY_HOVER_TRANSPARENT/NODE_DATE_PICKER_EVENT_ON_ACCESSIBILITY_HOVER_TRANSPARENT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onKeyEventDispatch",
+    "kind": "event",
+    "reason": "none of NODE_ON_KEY_EVENT_DISPATCH/NODE_DATE_PICKER_ON_KEY_EVENT_DISPATCH/NODE_DATE_PICKER_EVENT_ON_KEY_EVENT_DISPATCH present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onFocusAxisEvent",
+    "kind": "event",
+    "reason": "none of NODE_ON_FOCUS_AXIS_EVENT/NODE_DATE_PICKER_ON_FOCUS_AXIS_EVENT/NODE_DATE_PICKER_EVENT_ON_FOCUS_AXIS_EVENT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onAxisEvent",
+    "kind": "event",
+    "reason": "none of NODE_ON_AXIS_EVENT/NODE_DATE_PICKER_ON_AXIS_EVENT/NODE_DATE_PICKER_EVENT_ON_AXIS_EVENT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onAppear",
+    "kind": "event",
+    "reason": "none of NODE_ON_APPEAR/NODE_DATE_PICKER_ON_APPEAR/NODE_DATE_PICKER_EVENT_ON_APPEAR present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onDisAppear",
+    "kind": "event",
+    "reason": "none of NODE_ON_DIS_APPEAR/NODE_DATE_PICKER_ON_DIS_APPEAR/NODE_DATE_PICKER_EVENT_ON_DIS_APPEAR present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onAttach",
+    "kind": "event",
+    "reason": "none of NODE_ON_ATTACH/NODE_DATE_PICKER_ON_ATTACH/NODE_DATE_PICKER_EVENT_ON_ATTACH present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onDetach",
+    "kind": "event",
+    "reason": "none of NODE_ON_DETACH/NODE_DATE_PICKER_ON_DETACH/NODE_DATE_PICKER_EVENT_ON_DETACH present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onAreaChange",
+    "kind": "event",
+    "reason": "none of NODE_ON_AREA_CHANGE/NODE_DATE_PICKER_ON_AREA_CHANGE/NODE_DATE_PICKER_EVENT_ON_AREA_CHANGE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onVisibleAreaChange",
+    "kind": "event",
+    "reason": "none of NODE_ON_VISIBLE_AREA_CHANGE/NODE_DATE_PICKER_ON_VISIBLE_AREA_CHANGE/NODE_DATE_PICKER_EVENT_ON_VISIBLE_AREA_CHANGE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onVisibleAreaApproximateChange",
+    "kind": "event",
+    "reason": "none of NODE_ON_VISIBLE_AREA_APPROXIMATE_CHANGE/NODE_DATE_PICKER_ON_VISIBLE_AREA_APPROXIMATE_CHANGE/NODE_DATE_PICKER_EVENT_ON_VISIBLE_AREA_APPROXIMATE_CHANGE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onAccessibilityFocus",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_FOCUS/NODE_DATE_PICKER_ON_ACCESSIBILITY_FOCUS/NODE_DATE_PICKER_EVENT_ON_ACCESSIBILITY_FOCUS present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onAccessibilityActionIntercept",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_ACTION_INTERCEPT/NODE_DATE_PICKER_ON_ACCESSIBILITY_ACTION_INTERCEPT/NODE_DATE_PICKER_EVENT_ON_ACCESSIBILITY_ACTION_INTERCEPT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onGestureJudgeBegin",
+    "kind": "event",
+    "reason": "none of NODE_ON_GESTURE_JUDGE_BEGIN/NODE_DATE_PICKER_ON_GESTURE_JUDGE_BEGIN/NODE_DATE_PICKER_EVENT_ON_GESTURE_JUDGE_BEGIN present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onGestureRecognizerJudgeBegin",
+    "kind": "event",
+    "reason": "none of NODE_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN/NODE_DATE_PICKER_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN/NODE_DATE_PICKER_EVENT_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onTouchTestDone",
+    "kind": "event",
+    "reason": "none of NODE_ON_TOUCH_TEST_DONE/NODE_DATE_PICKER_ON_TOUCH_TEST_DONE/NODE_DATE_PICKER_EVENT_ON_TOUCH_TEST_DONE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "DatePicker",
+    "member": "onDragSpringLoading",
+    "kind": "event",
+    "reason": "none of NODE_ON_DRAG_SPRING_LOADING/NODE_DATE_PICKER_ON_DRAG_SPRING_LOADING/NODE_DATE_PICKER_EVENT_ON_DRAG_SPRING_LOADING present in ArkUI_NodeEventType"
   },
   {
     "component": "Divider",
@@ -20785,9 +21919,1197 @@
   },
   {
     "component": "TextPicker",
-    "member": "ARKUI_NODE_TEXTPICKER",
-    "kind": "nodeType",
-    "reason": "missing in ArkUI_NodeType (C API does not expose this component as a native node)"
+    "member": "defaultPickerItemHeight",
+    "kind": "attribute",
+    "reason": "DEFAULT_PICKER_ITEM_HEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "disappearTextStyle",
+    "kind": "attribute",
+    "reason": "DISAPPEAR_TEXT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "textStyle",
+    "kind": "attribute",
+    "reason": "TEXT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "selectedTextStyle",
+    "kind": "attribute",
+    "reason": "SELECTED_TEXT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "disableTextStyleAnimation",
+    "kind": "attribute",
+    "reason": "DISABLE_TEXT_STYLE_ANIMATION not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "defaultTextStyle",
+    "kind": "attribute",
+    "reason": "DEFAULT_TEXT_STYLE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "selectedIndex",
+    "kind": "attribute",
+    "reason": "SELECTED_INDEX exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "divider",
+    "kind": "attribute",
+    "reason": "DIVIDER not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "gradientHeight",
+    "kind": "attribute",
+    "reason": "GRADIENT_HEIGHT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "enableHapticFeedback",
+    "kind": "attribute",
+    "reason": "ENABLE_HAPTIC_FEEDBACK exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "digitalCrownSensitivity",
+    "kind": "attribute",
+    "reason": "DIGITAL_CROWN_SENSITIVITY not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "selectedBackgroundStyle",
+    "kind": "attribute",
+    "reason": "SELECTED_BACKGROUND_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "drawModifier",
+    "kind": "attribute",
+    "reason": "DRAW_MODIFIER not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "customProperty",
+    "kind": "attribute",
+    "reason": "CUSTOM_PROPERTY not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "expandSafeArea",
+    "kind": "attribute",
+    "reason": "EXPAND_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "ignoreLayoutSafeArea",
+    "kind": "attribute",
+    "reason": "IGNORE_LAYOUT_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "responseRegion",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "mouseResponseRegion",
+    "kind": "attribute",
+    "reason": "MOUSE_RESPONSE_REGION not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "responseRegionList",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION_LIST exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "size",
+    "kind": "attribute",
+    "reason": "SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "constraintSize",
+    "kind": "attribute",
+    "reason": "CONSTRAINT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "touchable",
+    "kind": "attribute",
+    "reason": "TOUCHABLE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "hitTestBehavior",
+    "kind": "attribute",
+    "reason": "HIT_TEST_BEHAVIOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "layoutWeight",
+    "kind": "attribute",
+    "reason": "LAYOUT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "chainWeight",
+    "kind": "attribute",
+    "reason": "CHAIN_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "safeAreaPadding",
+    "kind": "attribute",
+    "reason": "SAFE_AREA_PADDING not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "background",
+    "kind": "attribute",
+    "reason": "BACKGROUND not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "pixelRound",
+    "kind": "attribute",
+    "reason": "PIXEL_ROUND exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "backgroundImage",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "backgroundImageSize",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "backgroundImagePosition",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "backgroundBlurStyle",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "backgroundEffect",
+    "kind": "attribute",
+    "reason": "BACKGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "backgroundImageResizable",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_RESIZABLE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "foregroundEffect",
+    "kind": "attribute",
+    "reason": "FOREGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "visualEffect",
+    "kind": "attribute",
+    "reason": "VISUAL_EFFECT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "backgroundFilter",
+    "kind": "attribute",
+    "reason": "BACKGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "foregroundFilter",
+    "kind": "attribute",
+    "reason": "FOREGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "compositingFilter",
+    "kind": "attribute",
+    "reason": "COMPOSITING_FILTER not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "materialFilter",
+    "kind": "attribute",
+    "reason": "MATERIAL_FILTER not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "foregroundBlurStyle",
+    "kind": "attribute",
+    "reason": "FOREGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "border",
+    "kind": "attribute",
+    "reason": "BORDER not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "borderStyle",
+    "kind": "attribute",
+    "reason": "BORDER_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "borderWidth",
+    "kind": "attribute",
+    "reason": "BORDER_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "borderColor",
+    "kind": "attribute",
+    "reason": "BORDER_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "borderRadius",
+    "kind": "attribute",
+    "reason": "BORDER_RADIUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "borderImage",
+    "kind": "attribute",
+    "reason": "BORDER_IMAGE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "outline",
+    "kind": "attribute",
+    "reason": "OUTLINE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "outlineStyle",
+    "kind": "attribute",
+    "reason": "OUTLINE_STYLE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "outlineWidth",
+    "kind": "attribute",
+    "reason": "OUTLINE_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "outlineColor",
+    "kind": "attribute",
+    "reason": "OUTLINE_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "outlineRadius",
+    "kind": "attribute",
+    "reason": "OUTLINE_RADIUS not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "foregroundColor",
+    "kind": "attribute",
+    "reason": "FOREGROUND_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "hoverEffect",
+    "kind": "attribute",
+    "reason": "HOVER_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "focusable",
+    "kind": "attribute",
+    "reason": "FOCUSABLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "nextFocus",
+    "kind": "attribute",
+    "reason": "NEXT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "tabStop",
+    "kind": "attribute",
+    "reason": "TAB_STOP exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "tabIndex",
+    "kind": "attribute",
+    "reason": "TAB_INDEX not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "defaultFocus",
+    "kind": "attribute",
+    "reason": "DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "groupDefaultFocus",
+    "kind": "attribute",
+    "reason": "GROUP_DEFAULT_FOCUS not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "focusOnTouch",
+    "kind": "attribute",
+    "reason": "FOCUS_ON_TOUCH exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "focusBox",
+    "kind": "attribute",
+    "reason": "FOCUS_BOX exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "focusScopeId",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "focusScopePriority",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "animation",
+    "kind": "attribute",
+    "reason": "ANIMATION not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "transition",
+    "kind": "attribute",
+    "reason": "TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "gesture",
+    "kind": "attribute",
+    "reason": "GESTURE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "priorityGesture",
+    "kind": "attribute",
+    "reason": "PRIORITY_GESTURE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "parallelGesture",
+    "kind": "attribute",
+    "reason": "PARALLEL_GESTURE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "blur",
+    "kind": "attribute",
+    "reason": "BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "linearGradientBlur",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT_BLUR not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "motionBlur",
+    "kind": "attribute",
+    "reason": "MOTION_BLUR not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "brightness",
+    "kind": "attribute",
+    "reason": "BRIGHTNESS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "contrast",
+    "kind": "attribute",
+    "reason": "CONTRAST exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "grayscale",
+    "kind": "attribute",
+    "reason": "GRAYSCALE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "colorBlend",
+    "kind": "attribute",
+    "reason": "COLOR_BLEND exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "saturate",
+    "kind": "attribute",
+    "reason": "SATURATE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "sepia",
+    "kind": "attribute",
+    "reason": "SEPIA exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "invert",
+    "kind": "attribute",
+    "reason": "INVERT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "systemBarEffect",
+    "kind": "attribute",
+    "reason": "SYSTEM_BAR_EFFECT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "hueRotate",
+    "kind": "attribute",
+    "reason": "HUE_ROTATE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "useShadowBatching",
+    "kind": "attribute",
+    "reason": "USE_SHADOW_BATCHING not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "useEffect",
+    "kind": "attribute",
+    "reason": "USE_EFFECT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "backdropBlur",
+    "kind": "attribute",
+    "reason": "BACKDROP_BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "renderGroup",
+    "kind": "attribute",
+    "reason": "RENDER_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "freeze",
+    "kind": "attribute",
+    "reason": "FREEZE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "translate",
+    "kind": "attribute",
+    "reason": "TRANSLATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "scale",
+    "kind": "attribute",
+    "reason": "SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "gridSpan",
+    "kind": "attribute",
+    "reason": "GRID_SPAN not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "gridOffset",
+    "kind": "attribute",
+    "reason": "GRID_OFFSET not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "rotate",
+    "kind": "attribute",
+    "reason": "ROTATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "transform",
+    "kind": "attribute",
+    "reason": "TRANSFORM exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "transform3D",
+    "kind": "attribute",
+    "reason": "TRANSFORM3_D not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "flexGrow",
+    "kind": "attribute",
+    "reason": "FLEX_GROW exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "flexShrink",
+    "kind": "attribute",
+    "reason": "FLEX_SHRINK exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "flexBasis",
+    "kind": "attribute",
+    "reason": "FLEX_BASIS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "alignSelf",
+    "kind": "attribute",
+    "reason": "ALIGN_SELF exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "layoutGravity",
+    "kind": "attribute",
+    "reason": "LAYOUT_GRAVITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "displayPriority",
+    "kind": "attribute",
+    "reason": "DISPLAY_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "zIndex",
+    "kind": "attribute",
+    "reason": "Z_INDEX exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "sharedTransition",
+    "kind": "attribute",
+    "reason": "SHARED_TRANSITION not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "direction",
+    "kind": "attribute",
+    "reason": "DIRECTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "align",
+    "kind": "attribute",
+    "reason": "ALIGN not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "position",
+    "kind": "attribute",
+    "reason": "POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "markAnchor",
+    "kind": "attribute",
+    "reason": "MARK_ANCHOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "offset",
+    "kind": "attribute",
+    "reason": "OFFSET exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "useSizeType",
+    "kind": "attribute",
+    "reason": "USE_SIZE_TYPE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "alignRules",
+    "kind": "attribute",
+    "reason": "ALIGN_RULES exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "chainMode",
+    "kind": "attribute",
+    "reason": "CHAIN_MODE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "aspectRatio",
+    "kind": "attribute",
+    "reason": "ASPECT_RATIO exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "clickEffect",
+    "kind": "attribute",
+    "reason": "CLICK_EFFECT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "enableClickSoundEffect",
+    "kind": "attribute",
+    "reason": "ENABLE_CLICK_SOUND_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "allowDrop",
+    "kind": "attribute",
+    "reason": "ALLOW_DROP not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "draggable",
+    "kind": "attribute",
+    "reason": "DRAGGABLE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "dragPreview",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "dragPreviewOptions",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW_OPTIONS not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "overlay",
+    "kind": "attribute",
+    "reason": "OVERLAY exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "toolbar",
+    "kind": "attribute",
+    "reason": "TOOLBAR not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "linearGradient",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "sweepGradient",
+    "kind": "attribute",
+    "reason": "SWEEP_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "radialGradient",
+    "kind": "attribute",
+    "reason": "RADIAL_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "motionPath",
+    "kind": "attribute",
+    "reason": "MOTION_PATH exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "shadow",
+    "kind": "attribute",
+    "reason": "SHADOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "blendMode",
+    "kind": "attribute",
+    "reason": "BLEND_MODE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "clip",
+    "kind": "attribute",
+    "reason": "CLIP exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "clipShape",
+    "kind": "attribute",
+    "reason": "CLIP_SHAPE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "mask",
+    "kind": "attribute",
+    "reason": "MASK exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "maskShape",
+    "kind": "attribute",
+    "reason": "MASK_SHAPE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "key",
+    "kind": "attribute",
+    "reason": "KEY not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "id",
+    "kind": "attribute",
+    "reason": "ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "geometryTransition",
+    "kind": "attribute",
+    "reason": "GEOMETRY_TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "bindTips",
+    "kind": "attribute",
+    "reason": "BIND_TIPS not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "bindPopup",
+    "kind": "attribute",
+    "reason": "BIND_POPUP not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "bindMenu",
+    "kind": "attribute",
+    "reason": "BIND_MENU not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "bindContextMenu",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "bindContextMenuByResponseType",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_RESPONSE_TYPE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "bindContextMenuWithResponse",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_WITH_RESPONSE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "bindContextMenuByIsShow",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_IS_SHOW not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "bindContentCover",
+    "kind": "attribute",
+    "reason": "BIND_CONTENT_COVER not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "bindSheet",
+    "kind": "attribute",
+    "reason": "BIND_SHEET not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "stateStyles",
+    "kind": "attribute",
+    "reason": "STATE_STYLES not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "restoreId",
+    "kind": "attribute",
+    "reason": "RESTORE_ID not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "sphericalEffect",
+    "kind": "attribute",
+    "reason": "SPHERICAL_EFFECT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "lightUpEffect",
+    "kind": "attribute",
+    "reason": "LIGHT_UP_EFFECT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "pixelStretchEffect",
+    "kind": "attribute",
+    "reason": "PIXEL_STRETCH_EFFECT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "keyboardShortcut",
+    "kind": "attribute",
+    "reason": "KEYBOARD_SHORTCUT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityGroup",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityText",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityNextFocusId",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_NEXT_FOCUS_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityDefaultFocus",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityUseSamePage",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_USE_SAME_PAGE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityScrollTriggerable",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SCROLL_TRIGGERABLE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityRole",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ROLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityTextHint",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT_HINT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DESCRIPTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_LEVEL not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityVirtualNode",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_VIRTUAL_NODE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityChecked",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CHECKED not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilitySelected",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SELECTED not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "obscured",
+    "kind": "attribute",
+    "reason": "OBSCURED not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "reuseId",
+    "kind": "attribute",
+    "reason": "REUSE_ID not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "reuse",
+    "kind": "attribute",
+    "reason": "REUSE not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "renderFit",
+    "kind": "attribute",
+    "reason": "RENDER_FIT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "attributeModifier",
+    "kind": "attribute",
+    "reason": "ATTRIBUTE_MODIFIER not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "gestureModifier",
+    "kind": "attribute",
+    "reason": "GESTURE_MODIFIER not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "backgroundBrightness",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BRIGHTNESS not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "shouldBuiltInRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_BUILT_IN_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "shouldRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "monopolizeEvents",
+    "kind": "attribute",
+    "reason": "MONOPOLIZE_EVENTS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityFocusDrawLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_FOCUS_DRAW_LEVEL not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "allowForceDark",
+    "kind": "attribute",
+    "reason": "ALLOW_FORCE_DARK exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "systemMaterial",
+    "kind": "attribute",
+    "reason": "SYSTEM_MATERIAL exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityStateDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_STATE_DESCRIPTION not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityActionOptions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ACTION_OPTIONS not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "accessibilityCustomActions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CUSTOM_ACTIONS not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "smartGestureShortcut",
+    "kind": "attribute",
+    "reason": "SMART_GESTURE_SHORTCUT not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "inspectorLabel",
+    "kind": "attribute",
+    "reason": "INSPECTOR_LABEL exists in C API but shape is not registered"
+  },
+  {
+    "component": "TextPicker",
+    "member": "doubleSided",
+    "kind": "attribute",
+    "reason": "DOUBLE_SIDED not present in C API"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onAccept",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCEPT/NODE_TEXT_PICKER_ON_ACCEPT/NODE_TEXT_PICKER_EVENT_ON_ACCEPT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onCancel",
+    "kind": "event",
+    "reason": "none of NODE_ON_CANCEL/NODE_TEXT_PICKER_ON_CANCEL/NODE_TEXT_PICKER_EVENT_ON_CANCEL present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onEnterSelectedArea",
+    "kind": "event",
+    "reason": "none of NODE_ON_ENTER_SELECTED_AREA/NODE_TEXT_PICKER_ON_ENTER_SELECTED_AREA/NODE_TEXT_PICKER_EVENT_ON_ENTER_SELECTED_AREA present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onAccessibilityHover",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_HOVER/NODE_TEXT_PICKER_ON_ACCESSIBILITY_HOVER/NODE_TEXT_PICKER_EVENT_ON_ACCESSIBILITY_HOVER present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onAccessibilityHoverTransparent",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_HOVER_TRANSPARENT/NODE_TEXT_PICKER_ON_ACCESSIBILITY_HOVER_TRANSPARENT/NODE_TEXT_PICKER_EVENT_ON_ACCESSIBILITY_HOVER_TRANSPARENT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onKeyEventDispatch",
+    "kind": "event",
+    "reason": "none of NODE_ON_KEY_EVENT_DISPATCH/NODE_TEXT_PICKER_ON_KEY_EVENT_DISPATCH/NODE_TEXT_PICKER_EVENT_ON_KEY_EVENT_DISPATCH present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onFocusAxisEvent",
+    "kind": "event",
+    "reason": "none of NODE_ON_FOCUS_AXIS_EVENT/NODE_TEXT_PICKER_ON_FOCUS_AXIS_EVENT/NODE_TEXT_PICKER_EVENT_ON_FOCUS_AXIS_EVENT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onAxisEvent",
+    "kind": "event",
+    "reason": "none of NODE_ON_AXIS_EVENT/NODE_TEXT_PICKER_ON_AXIS_EVENT/NODE_TEXT_PICKER_EVENT_ON_AXIS_EVENT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onAppear",
+    "kind": "event",
+    "reason": "none of NODE_ON_APPEAR/NODE_TEXT_PICKER_ON_APPEAR/NODE_TEXT_PICKER_EVENT_ON_APPEAR present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onDisAppear",
+    "kind": "event",
+    "reason": "none of NODE_ON_DIS_APPEAR/NODE_TEXT_PICKER_ON_DIS_APPEAR/NODE_TEXT_PICKER_EVENT_ON_DIS_APPEAR present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onAttach",
+    "kind": "event",
+    "reason": "none of NODE_ON_ATTACH/NODE_TEXT_PICKER_ON_ATTACH/NODE_TEXT_PICKER_EVENT_ON_ATTACH present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onDetach",
+    "kind": "event",
+    "reason": "none of NODE_ON_DETACH/NODE_TEXT_PICKER_ON_DETACH/NODE_TEXT_PICKER_EVENT_ON_DETACH present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onAreaChange",
+    "kind": "event",
+    "reason": "none of NODE_ON_AREA_CHANGE/NODE_TEXT_PICKER_ON_AREA_CHANGE/NODE_TEXT_PICKER_EVENT_ON_AREA_CHANGE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onVisibleAreaChange",
+    "kind": "event",
+    "reason": "none of NODE_ON_VISIBLE_AREA_CHANGE/NODE_TEXT_PICKER_ON_VISIBLE_AREA_CHANGE/NODE_TEXT_PICKER_EVENT_ON_VISIBLE_AREA_CHANGE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onVisibleAreaApproximateChange",
+    "kind": "event",
+    "reason": "none of NODE_ON_VISIBLE_AREA_APPROXIMATE_CHANGE/NODE_TEXT_PICKER_ON_VISIBLE_AREA_APPROXIMATE_CHANGE/NODE_TEXT_PICKER_EVENT_ON_VISIBLE_AREA_APPROXIMATE_CHANGE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onAccessibilityFocus",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_FOCUS/NODE_TEXT_PICKER_ON_ACCESSIBILITY_FOCUS/NODE_TEXT_PICKER_EVENT_ON_ACCESSIBILITY_FOCUS present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onAccessibilityActionIntercept",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_ACTION_INTERCEPT/NODE_TEXT_PICKER_ON_ACCESSIBILITY_ACTION_INTERCEPT/NODE_TEXT_PICKER_EVENT_ON_ACCESSIBILITY_ACTION_INTERCEPT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onGestureJudgeBegin",
+    "kind": "event",
+    "reason": "none of NODE_ON_GESTURE_JUDGE_BEGIN/NODE_TEXT_PICKER_ON_GESTURE_JUDGE_BEGIN/NODE_TEXT_PICKER_EVENT_ON_GESTURE_JUDGE_BEGIN present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onGestureRecognizerJudgeBegin",
+    "kind": "event",
+    "reason": "none of NODE_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN/NODE_TEXT_PICKER_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN/NODE_TEXT_PICKER_EVENT_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onTouchTestDone",
+    "kind": "event",
+    "reason": "none of NODE_ON_TOUCH_TEST_DONE/NODE_TEXT_PICKER_ON_TOUCH_TEST_DONE/NODE_TEXT_PICKER_EVENT_ON_TOUCH_TEST_DONE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TextPicker",
+    "member": "onDragSpringLoading",
+    "kind": "event",
+    "reason": "none of NODE_ON_DRAG_SPRING_LOADING/NODE_TEXT_PICKER_ON_DRAG_SPRING_LOADING/NODE_TEXT_PICKER_EVENT_ON_DRAG_SPRING_LOADING present in ArkUI_NodeEventType"
   },
   {
     "component": "TextTimer",
@@ -20797,9 +23119,1161 @@
   },
   {
     "component": "TimePicker",
-    "member": "ARKUI_NODE_TIMEPICKER",
-    "kind": "nodeType",
-    "reason": "missing in ArkUI_NodeType (C API does not expose this component as a native node)"
+    "member": "loop",
+    "kind": "attribute",
+    "reason": "LOOP not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "disappearTextStyle",
+    "kind": "attribute",
+    "reason": "DISAPPEAR_TEXT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "textStyle",
+    "kind": "attribute",
+    "reason": "TEXT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "selectedTextStyle",
+    "kind": "attribute",
+    "reason": "SELECTED_TEXT_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "dateTimeOptions",
+    "kind": "attribute",
+    "reason": "DATE_TIME_OPTIONS not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "enableHapticFeedback",
+    "kind": "attribute",
+    "reason": "ENABLE_HAPTIC_FEEDBACK not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "digitalCrownSensitivity",
+    "kind": "attribute",
+    "reason": "DIGITAL_CROWN_SENSITIVITY not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "enableCascade",
+    "kind": "attribute",
+    "reason": "ENABLE_CASCADE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "drawModifier",
+    "kind": "attribute",
+    "reason": "DRAW_MODIFIER not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "customProperty",
+    "kind": "attribute",
+    "reason": "CUSTOM_PROPERTY not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "expandSafeArea",
+    "kind": "attribute",
+    "reason": "EXPAND_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "ignoreLayoutSafeArea",
+    "kind": "attribute",
+    "reason": "IGNORE_LAYOUT_SAFE_AREA exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "responseRegion",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "mouseResponseRegion",
+    "kind": "attribute",
+    "reason": "MOUSE_RESPONSE_REGION not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "responseRegionList",
+    "kind": "attribute",
+    "reason": "RESPONSE_REGION_LIST exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "size",
+    "kind": "attribute",
+    "reason": "SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "constraintSize",
+    "kind": "attribute",
+    "reason": "CONSTRAINT_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "touchable",
+    "kind": "attribute",
+    "reason": "TOUCHABLE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "hitTestBehavior",
+    "kind": "attribute",
+    "reason": "HIT_TEST_BEHAVIOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "layoutWeight",
+    "kind": "attribute",
+    "reason": "LAYOUT_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "chainWeight",
+    "kind": "attribute",
+    "reason": "CHAIN_WEIGHT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "safeAreaPadding",
+    "kind": "attribute",
+    "reason": "SAFE_AREA_PADDING not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "background",
+    "kind": "attribute",
+    "reason": "BACKGROUND not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "pixelRound",
+    "kind": "attribute",
+    "reason": "PIXEL_ROUND exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "backgroundImage",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "backgroundImageSize",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_SIZE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "backgroundImagePosition",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "backgroundBlurStyle",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "backgroundEffect",
+    "kind": "attribute",
+    "reason": "BACKGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "backgroundImageResizable",
+    "kind": "attribute",
+    "reason": "BACKGROUND_IMAGE_RESIZABLE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "foregroundEffect",
+    "kind": "attribute",
+    "reason": "FOREGROUND_EFFECT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "visualEffect",
+    "kind": "attribute",
+    "reason": "VISUAL_EFFECT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "backgroundFilter",
+    "kind": "attribute",
+    "reason": "BACKGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "foregroundFilter",
+    "kind": "attribute",
+    "reason": "FOREGROUND_FILTER not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "compositingFilter",
+    "kind": "attribute",
+    "reason": "COMPOSITING_FILTER not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "materialFilter",
+    "kind": "attribute",
+    "reason": "MATERIAL_FILTER not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "foregroundBlurStyle",
+    "kind": "attribute",
+    "reason": "FOREGROUND_BLUR_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "border",
+    "kind": "attribute",
+    "reason": "BORDER not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "borderStyle",
+    "kind": "attribute",
+    "reason": "BORDER_STYLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "borderWidth",
+    "kind": "attribute",
+    "reason": "BORDER_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "borderColor",
+    "kind": "attribute",
+    "reason": "BORDER_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "borderRadius",
+    "kind": "attribute",
+    "reason": "BORDER_RADIUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "borderImage",
+    "kind": "attribute",
+    "reason": "BORDER_IMAGE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "outline",
+    "kind": "attribute",
+    "reason": "OUTLINE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "outlineStyle",
+    "kind": "attribute",
+    "reason": "OUTLINE_STYLE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "outlineWidth",
+    "kind": "attribute",
+    "reason": "OUTLINE_WIDTH exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "outlineColor",
+    "kind": "attribute",
+    "reason": "OUTLINE_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "outlineRadius",
+    "kind": "attribute",
+    "reason": "OUTLINE_RADIUS not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "foregroundColor",
+    "kind": "attribute",
+    "reason": "FOREGROUND_COLOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "hoverEffect",
+    "kind": "attribute",
+    "reason": "HOVER_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "focusable",
+    "kind": "attribute",
+    "reason": "FOCUSABLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "nextFocus",
+    "kind": "attribute",
+    "reason": "NEXT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "tabStop",
+    "kind": "attribute",
+    "reason": "TAB_STOP exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "tabIndex",
+    "kind": "attribute",
+    "reason": "TAB_INDEX not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "defaultFocus",
+    "kind": "attribute",
+    "reason": "DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "groupDefaultFocus",
+    "kind": "attribute",
+    "reason": "GROUP_DEFAULT_FOCUS not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "focusOnTouch",
+    "kind": "attribute",
+    "reason": "FOCUS_ON_TOUCH exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "focusBox",
+    "kind": "attribute",
+    "reason": "FOCUS_BOX exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "focusScopeId",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "focusScopePriority",
+    "kind": "attribute",
+    "reason": "FOCUS_SCOPE_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "animation",
+    "kind": "attribute",
+    "reason": "ANIMATION not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "transition",
+    "kind": "attribute",
+    "reason": "TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "gesture",
+    "kind": "attribute",
+    "reason": "GESTURE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "priorityGesture",
+    "kind": "attribute",
+    "reason": "PRIORITY_GESTURE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "parallelGesture",
+    "kind": "attribute",
+    "reason": "PARALLEL_GESTURE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "blur",
+    "kind": "attribute",
+    "reason": "BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "linearGradientBlur",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT_BLUR not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "motionBlur",
+    "kind": "attribute",
+    "reason": "MOTION_BLUR not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "brightness",
+    "kind": "attribute",
+    "reason": "BRIGHTNESS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "contrast",
+    "kind": "attribute",
+    "reason": "CONTRAST exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "grayscale",
+    "kind": "attribute",
+    "reason": "GRAYSCALE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "colorBlend",
+    "kind": "attribute",
+    "reason": "COLOR_BLEND exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "saturate",
+    "kind": "attribute",
+    "reason": "SATURATE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "sepia",
+    "kind": "attribute",
+    "reason": "SEPIA exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "invert",
+    "kind": "attribute",
+    "reason": "INVERT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "systemBarEffect",
+    "kind": "attribute",
+    "reason": "SYSTEM_BAR_EFFECT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "hueRotate",
+    "kind": "attribute",
+    "reason": "HUE_ROTATE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "useShadowBatching",
+    "kind": "attribute",
+    "reason": "USE_SHADOW_BATCHING not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "useEffect",
+    "kind": "attribute",
+    "reason": "USE_EFFECT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "backdropBlur",
+    "kind": "attribute",
+    "reason": "BACKDROP_BLUR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "renderGroup",
+    "kind": "attribute",
+    "reason": "RENDER_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "freeze",
+    "kind": "attribute",
+    "reason": "FREEZE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "translate",
+    "kind": "attribute",
+    "reason": "TRANSLATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "scale",
+    "kind": "attribute",
+    "reason": "SCALE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "gridSpan",
+    "kind": "attribute",
+    "reason": "GRID_SPAN not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "gridOffset",
+    "kind": "attribute",
+    "reason": "GRID_OFFSET not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "rotate",
+    "kind": "attribute",
+    "reason": "ROTATE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "transform",
+    "kind": "attribute",
+    "reason": "TRANSFORM exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "transform3D",
+    "kind": "attribute",
+    "reason": "TRANSFORM3_D not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "flexGrow",
+    "kind": "attribute",
+    "reason": "FLEX_GROW exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "flexShrink",
+    "kind": "attribute",
+    "reason": "FLEX_SHRINK exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "flexBasis",
+    "kind": "attribute",
+    "reason": "FLEX_BASIS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "alignSelf",
+    "kind": "attribute",
+    "reason": "ALIGN_SELF exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "layoutGravity",
+    "kind": "attribute",
+    "reason": "LAYOUT_GRAVITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "displayPriority",
+    "kind": "attribute",
+    "reason": "DISPLAY_PRIORITY exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "zIndex",
+    "kind": "attribute",
+    "reason": "Z_INDEX exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "sharedTransition",
+    "kind": "attribute",
+    "reason": "SHARED_TRANSITION not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "direction",
+    "kind": "attribute",
+    "reason": "DIRECTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "align",
+    "kind": "attribute",
+    "reason": "ALIGN not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "position",
+    "kind": "attribute",
+    "reason": "POSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "markAnchor",
+    "kind": "attribute",
+    "reason": "MARK_ANCHOR exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "offset",
+    "kind": "attribute",
+    "reason": "OFFSET exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "useSizeType",
+    "kind": "attribute",
+    "reason": "USE_SIZE_TYPE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "alignRules",
+    "kind": "attribute",
+    "reason": "ALIGN_RULES exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "chainMode",
+    "kind": "attribute",
+    "reason": "CHAIN_MODE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "aspectRatio",
+    "kind": "attribute",
+    "reason": "ASPECT_RATIO exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "clickEffect",
+    "kind": "attribute",
+    "reason": "CLICK_EFFECT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "enableClickSoundEffect",
+    "kind": "attribute",
+    "reason": "ENABLE_CLICK_SOUND_EFFECT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "allowDrop",
+    "kind": "attribute",
+    "reason": "ALLOW_DROP not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "draggable",
+    "kind": "attribute",
+    "reason": "DRAGGABLE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "dragPreview",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "dragPreviewOptions",
+    "kind": "attribute",
+    "reason": "DRAG_PREVIEW_OPTIONS not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "overlay",
+    "kind": "attribute",
+    "reason": "OVERLAY exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "toolbar",
+    "kind": "attribute",
+    "reason": "TOOLBAR not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "linearGradient",
+    "kind": "attribute",
+    "reason": "LINEAR_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "sweepGradient",
+    "kind": "attribute",
+    "reason": "SWEEP_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "radialGradient",
+    "kind": "attribute",
+    "reason": "RADIAL_GRADIENT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "motionPath",
+    "kind": "attribute",
+    "reason": "MOTION_PATH exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "shadow",
+    "kind": "attribute",
+    "reason": "SHADOW exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "blendMode",
+    "kind": "attribute",
+    "reason": "BLEND_MODE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "clip",
+    "kind": "attribute",
+    "reason": "CLIP exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "clipShape",
+    "kind": "attribute",
+    "reason": "CLIP_SHAPE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "mask",
+    "kind": "attribute",
+    "reason": "MASK exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "maskShape",
+    "kind": "attribute",
+    "reason": "MASK_SHAPE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "key",
+    "kind": "attribute",
+    "reason": "KEY not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "id",
+    "kind": "attribute",
+    "reason": "ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "geometryTransition",
+    "kind": "attribute",
+    "reason": "GEOMETRY_TRANSITION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "bindTips",
+    "kind": "attribute",
+    "reason": "BIND_TIPS not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "bindPopup",
+    "kind": "attribute",
+    "reason": "BIND_POPUP not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "bindMenu",
+    "kind": "attribute",
+    "reason": "BIND_MENU not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "bindContextMenu",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "bindContextMenuByResponseType",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_RESPONSE_TYPE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "bindContextMenuWithResponse",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_WITH_RESPONSE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "bindContextMenuByIsShow",
+    "kind": "attribute",
+    "reason": "BIND_CONTEXT_MENU_BY_IS_SHOW not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "bindContentCover",
+    "kind": "attribute",
+    "reason": "BIND_CONTENT_COVER not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "bindSheet",
+    "kind": "attribute",
+    "reason": "BIND_SHEET not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "stateStyles",
+    "kind": "attribute",
+    "reason": "STATE_STYLES not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "restoreId",
+    "kind": "attribute",
+    "reason": "RESTORE_ID not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "sphericalEffect",
+    "kind": "attribute",
+    "reason": "SPHERICAL_EFFECT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "lightUpEffect",
+    "kind": "attribute",
+    "reason": "LIGHT_UP_EFFECT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "pixelStretchEffect",
+    "kind": "attribute",
+    "reason": "PIXEL_STRETCH_EFFECT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "keyboardShortcut",
+    "kind": "attribute",
+    "reason": "KEYBOARD_SHORTCUT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityGroup",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_GROUP exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityText",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityNextFocusId",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_NEXT_FOCUS_ID exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityDefaultFocus",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DEFAULT_FOCUS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityUseSamePage",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_USE_SAME_PAGE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityScrollTriggerable",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SCROLL_TRIGGERABLE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityRole",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ROLE exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityTextHint",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_TEXT_HINT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_DESCRIPTION exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_LEVEL not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityVirtualNode",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_VIRTUAL_NODE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityChecked",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CHECKED not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilitySelected",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_SELECTED not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "obscured",
+    "kind": "attribute",
+    "reason": "OBSCURED not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "reuseId",
+    "kind": "attribute",
+    "reason": "REUSE_ID not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "reuse",
+    "kind": "attribute",
+    "reason": "REUSE not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "renderFit",
+    "kind": "attribute",
+    "reason": "RENDER_FIT exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "attributeModifier",
+    "kind": "attribute",
+    "reason": "ATTRIBUTE_MODIFIER not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "gestureModifier",
+    "kind": "attribute",
+    "reason": "GESTURE_MODIFIER not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "backgroundBrightness",
+    "kind": "attribute",
+    "reason": "BACKGROUND_BRIGHTNESS not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "shouldBuiltInRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_BUILT_IN_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "shouldRecognizerParallelWith",
+    "kind": "attribute",
+    "reason": "SHOULD_RECOGNIZER_PARALLEL_WITH not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "monopolizeEvents",
+    "kind": "attribute",
+    "reason": "MONOPOLIZE_EVENTS exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityFocusDrawLevel",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_FOCUS_DRAW_LEVEL not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "allowForceDark",
+    "kind": "attribute",
+    "reason": "ALLOW_FORCE_DARK exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "systemMaterial",
+    "kind": "attribute",
+    "reason": "SYSTEM_MATERIAL exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityStateDescription",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_STATE_DESCRIPTION not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityActionOptions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_ACTION_OPTIONS not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "accessibilityCustomActions",
+    "kind": "attribute",
+    "reason": "ACCESSIBILITY_CUSTOM_ACTIONS not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "smartGestureShortcut",
+    "kind": "attribute",
+    "reason": "SMART_GESTURE_SHORTCUT not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "inspectorLabel",
+    "kind": "attribute",
+    "reason": "INSPECTOR_LABEL exists in C API but shape is not registered"
+  },
+  {
+    "component": "TimePicker",
+    "member": "doubleSided",
+    "kind": "attribute",
+    "reason": "DOUBLE_SIDED not present in C API"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onEnterSelectedArea",
+    "kind": "event",
+    "reason": "none of NODE_ON_ENTER_SELECTED_AREA/NODE_TIME_PICKER_ON_ENTER_SELECTED_AREA/NODE_TIME_PICKER_EVENT_ON_ENTER_SELECTED_AREA present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onAccessibilityHover",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_HOVER/NODE_TIME_PICKER_ON_ACCESSIBILITY_HOVER/NODE_TIME_PICKER_EVENT_ON_ACCESSIBILITY_HOVER present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onAccessibilityHoverTransparent",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_HOVER_TRANSPARENT/NODE_TIME_PICKER_ON_ACCESSIBILITY_HOVER_TRANSPARENT/NODE_TIME_PICKER_EVENT_ON_ACCESSIBILITY_HOVER_TRANSPARENT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onKeyEventDispatch",
+    "kind": "event",
+    "reason": "none of NODE_ON_KEY_EVENT_DISPATCH/NODE_TIME_PICKER_ON_KEY_EVENT_DISPATCH/NODE_TIME_PICKER_EVENT_ON_KEY_EVENT_DISPATCH present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onFocusAxisEvent",
+    "kind": "event",
+    "reason": "none of NODE_ON_FOCUS_AXIS_EVENT/NODE_TIME_PICKER_ON_FOCUS_AXIS_EVENT/NODE_TIME_PICKER_EVENT_ON_FOCUS_AXIS_EVENT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onAxisEvent",
+    "kind": "event",
+    "reason": "none of NODE_ON_AXIS_EVENT/NODE_TIME_PICKER_ON_AXIS_EVENT/NODE_TIME_PICKER_EVENT_ON_AXIS_EVENT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onAppear",
+    "kind": "event",
+    "reason": "none of NODE_ON_APPEAR/NODE_TIME_PICKER_ON_APPEAR/NODE_TIME_PICKER_EVENT_ON_APPEAR present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onDisAppear",
+    "kind": "event",
+    "reason": "none of NODE_ON_DIS_APPEAR/NODE_TIME_PICKER_ON_DIS_APPEAR/NODE_TIME_PICKER_EVENT_ON_DIS_APPEAR present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onAttach",
+    "kind": "event",
+    "reason": "none of NODE_ON_ATTACH/NODE_TIME_PICKER_ON_ATTACH/NODE_TIME_PICKER_EVENT_ON_ATTACH present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onDetach",
+    "kind": "event",
+    "reason": "none of NODE_ON_DETACH/NODE_TIME_PICKER_ON_DETACH/NODE_TIME_PICKER_EVENT_ON_DETACH present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onAreaChange",
+    "kind": "event",
+    "reason": "none of NODE_ON_AREA_CHANGE/NODE_TIME_PICKER_ON_AREA_CHANGE/NODE_TIME_PICKER_EVENT_ON_AREA_CHANGE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onVisibleAreaChange",
+    "kind": "event",
+    "reason": "none of NODE_ON_VISIBLE_AREA_CHANGE/NODE_TIME_PICKER_ON_VISIBLE_AREA_CHANGE/NODE_TIME_PICKER_EVENT_ON_VISIBLE_AREA_CHANGE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onVisibleAreaApproximateChange",
+    "kind": "event",
+    "reason": "none of NODE_ON_VISIBLE_AREA_APPROXIMATE_CHANGE/NODE_TIME_PICKER_ON_VISIBLE_AREA_APPROXIMATE_CHANGE/NODE_TIME_PICKER_EVENT_ON_VISIBLE_AREA_APPROXIMATE_CHANGE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onAccessibilityFocus",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_FOCUS/NODE_TIME_PICKER_ON_ACCESSIBILITY_FOCUS/NODE_TIME_PICKER_EVENT_ON_ACCESSIBILITY_FOCUS present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onAccessibilityActionIntercept",
+    "kind": "event",
+    "reason": "none of NODE_ON_ACCESSIBILITY_ACTION_INTERCEPT/NODE_TIME_PICKER_ON_ACCESSIBILITY_ACTION_INTERCEPT/NODE_TIME_PICKER_EVENT_ON_ACCESSIBILITY_ACTION_INTERCEPT present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onGestureJudgeBegin",
+    "kind": "event",
+    "reason": "none of NODE_ON_GESTURE_JUDGE_BEGIN/NODE_TIME_PICKER_ON_GESTURE_JUDGE_BEGIN/NODE_TIME_PICKER_EVENT_ON_GESTURE_JUDGE_BEGIN present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onGestureRecognizerJudgeBegin",
+    "kind": "event",
+    "reason": "none of NODE_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN/NODE_TIME_PICKER_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN/NODE_TIME_PICKER_EVENT_ON_GESTURE_RECOGNIZER_JUDGE_BEGIN present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onTouchTestDone",
+    "kind": "event",
+    "reason": "none of NODE_ON_TOUCH_TEST_DONE/NODE_TIME_PICKER_ON_TOUCH_TEST_DONE/NODE_TIME_PICKER_EVENT_ON_TOUCH_TEST_DONE present in ArkUI_NodeEventType"
+  },
+  {
+    "component": "TimePicker",
+    "member": "onDragSpringLoading",
+    "kind": "event",
+    "reason": "none of NODE_ON_DRAG_SPRING_LOADING/NODE_TIME_PICKER_ON_DRAG_SPRING_LOADING/NODE_TIME_PICKER_EVENT_ON_DRAG_SPRING_LOADING present in ArkUI_NodeEventType"
   },
   {
     "component": "Toggle",
