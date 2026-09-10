@@ -3,6 +3,7 @@
 // 生命周期三路径：完成（release）、取消（abort）、异常（abort + TCS.SetException）。
 #nullable enable
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -70,7 +71,7 @@ internal sealed class ThreadSafeFunction : IDisposable
         ThrowIfDisposed();
         var ptr = Marshal.GetFunctionPointerForDelegate(callback);
         NativeNodeApi.napi_call_threadsafe_function(_tsfnHandle, ptr,
-            napi_threadsafe_function_call_mode.napi_tsfn_nonblocking).ThrowIfFailed();
+            NativeNodeApi.napi_threadsafe_function_call_mode.napi_tsfn_nonblocking).ThrowIfFailed();
     }
 
     /// <summary>
@@ -85,7 +86,7 @@ internal sealed class ThreadSafeFunction : IDisposable
         {
             NativeNodeApi.napi_release_threadsafe_function(
                 _tsfnHandle,
-                napi_threadsafe_function_release_mode.napi_tsfn_release);
+                NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_release);
             _tsfnHandle = IntPtr.Zero;
         }
 
@@ -105,7 +106,7 @@ internal sealed class ThreadSafeFunction : IDisposable
         {
             NativeNodeApi.napi_release_threadsafe_function(
                 _tsfnHandle,
-                napi_threadsafe_function_release_mode.napi_tsfn_abort);
+                NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_abort);
             _tsfnHandle = IntPtr.Zero;
         }
 

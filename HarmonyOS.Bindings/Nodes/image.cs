@@ -28,6 +28,13 @@ public unsafe partial class Image : ArkUINodeBase
         set => SetStringAttribute(ArkUI_NodeAttributeType.NODE_IMAGE_SRC, value);
     }
 
+    /// <summary>onComplete 事件（NODE_IMAGE_ON_COMPLETE）</summary>
+    public event Action<ArkUINodeEvent>? Complete
+    {
+        add => On(ArkUI_NodeEventType.NODE_IMAGE_ON_COMPLETE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_IMAGE_ON_COMPLETE);
+    }
+
     /// <summary>onError 事件（NODE_IMAGE_ON_ERROR）</summary>
     public event Action<ArkUINodeEvent>? Error
     {

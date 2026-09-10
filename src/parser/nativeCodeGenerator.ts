@@ -162,11 +162,6 @@ const EVENT_NAME_OVERRIDES: Record<string, string> = {
     onRefreshing: 'ON_REFRESH',
     onStateChange: 'STATE_CHANGE',
     onOffsetChange: 'ON_OFFSET_CHANGE',
-    // MAUI 命名规范（[属性]Changed / 过去式动词）
-    onTextChange: 'TEXT_CHANGED',
-    onSubmit: 'COMPLETED',
-
-    onComplete: 'SELECTED',
 };
 
 /**
@@ -178,6 +173,8 @@ const COMPONENT_EVENT_OVERRIDES: Record<string, { enumSuffix: string; csName?: s
     'radio:onChange':     { enumSuffix: 'RADIO_EVENT_ON_CHANGE', csName: 'CheckedChanged' },
     'toggle:onChange':    { enumSuffix: 'TOGGLE_ON_CHANGE', csName: 'Toggled' },
     'slider:onChange':    { enumSuffix: 'SLIDER_EVENT_ON_CHANGE', csName: 'ValueChanged' },
+    // CS0542：事件成员名不能与封闭类型 Scroll 同名；MAUI IScrollView 事件名为 Scrolled
+    'scroll:onScroll':    { enumSuffix: 'SCROLL_EVENT_ON_SCROLL', csName: 'Scrolled' },
 };
 
 function toSnakeUpper(name: string): string {

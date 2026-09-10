@@ -65,7 +65,7 @@ public class HarmonyDatePickerHandler : ViewHandler<MDatePicker, ArkDatePicker>
 
     private void OnDateChange(ArkUINodeEvent e)
     {
-        var date = new DateTime(e.GetNumber(0).i32, e.GetNumber(1).i32 + 1, e.GetNumber(2).i32);
+        var date = new DateTime(e.ComponentData(0).i32, e.ComponentData(1).i32 + 1, e.ComponentData(2).i32);
         if (VirtualView.Date == date)
             return;
         VirtualView.Date = date;

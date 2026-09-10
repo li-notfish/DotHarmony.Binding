@@ -45,7 +45,7 @@ public class HarmonyTimePickerHandler : ViewHandler<MTimePicker, ArkTimePicker>
 
     private void OnTimeChange(ArkUINodeEvent e)
     {
-        var time = new TimeSpan(e.GetNumber(0).i32, e.GetNumber(1).i32, 0);
+        var time = new TimeSpan(e.ComponentData(0).i32, e.ComponentData(1).i32, 0);
         if (VirtualView.Time == time)
             return;
         VirtualView.Time = time;

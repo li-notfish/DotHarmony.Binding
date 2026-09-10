@@ -7129,12 +7129,6 @@
   },
   {
     "component": "Image",
-    "member": "onComplete",
-    "kind": "event",
-    "reason": "none of NODE_SELECTED/NODE_IMAGE_SELECTED/NODE_IMAGE_EVENT_SELECTED present in ArkUI_NodeEventType"
-  },
-  {
-    "component": "Image",
     "member": "onFinish",
     "kind": "event",
     "reason": "none of NODE_ON_FINISH/NODE_IMAGE_ON_FINISH/NODE_IMAGE_EVENT_ON_FINISH present in ArkUI_NodeEventType"

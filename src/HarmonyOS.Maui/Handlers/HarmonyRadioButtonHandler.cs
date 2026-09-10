@@ -76,7 +76,7 @@ public class HarmonyRadioButtonHandler : ViewHandler<IRadioButton, ArkRow>, IRad
 
     private void OnRadioChanged(ArkUINodeEvent e)
     {
-        var isChecked = e.GetNumber(0).i32 == 1;
+        var isChecked = e.ComponentData(0).i32 == 1;
         if (VirtualView.IsChecked == isChecked)
             return;
         VirtualView.IsChecked = isChecked;

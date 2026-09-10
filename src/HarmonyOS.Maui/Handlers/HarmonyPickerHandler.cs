@@ -54,7 +54,7 @@ public class HarmonyPickerHandler : ViewHandler<Picker, ArkTextPicker>
 
     private void OnChange(ArkUINodeEvent e)
     {
-        var index = e.GetNumber(0).i32;
+        var index = e.ComponentData(0).i32;
         if (VirtualView.SelectedIndex == index)
             return;
         VirtualView.SelectedIndex = index;

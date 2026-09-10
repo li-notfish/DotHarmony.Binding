@@ -28,7 +28,7 @@ public unsafe partial class Scroll : ArkUINodeBase
             ArkUIValue.F(horizontal), ArkUIValue.F(vertical));
 
     /// <summary>onScroll 事件（NODE_SCROLL_EVENT_ON_SCROLL）</summary>
-    public event Action<ArkUINodeEvent>? Scroll
+    public event Action<ArkUINodeEvent>? Scrolled
     {
         add => On(ArkUI_NodeEventType.NODE_SCROLL_EVENT_ON_SCROLL, value!);
         remove => Off(ArkUI_NodeEventType.NODE_SCROLL_EVENT_ON_SCROLL);
