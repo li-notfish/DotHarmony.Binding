@@ -60,7 +60,13 @@
 - handler 把 ArkUI 节点栈同步成请求的栈（仅栈顶挂入 ArkStack，低层摘除保留句柄），完成后**必须**回调 `IStackNavigation.NavigationFinished`，否则 `SendHandlerUpdateAsync` 内 await 永久挂起（PushAsync 不返回）
 - 无 NavigationPage 时 MAUI 官方语义即抛 "PushAsync is not supported, please use a NavigationPage."（`Window.NavigationImpl`）——宿主返回键先消费 NavigationPage 内栈，再退到根级轻量栈
 
-**剩余**：页面切换动画（ArkUI `nativeAnimate` 可选）、Appearing/Disappearing 透传、模态（PushModalAsync 需接 Window 层，当前为 no-op）。
+**剩余**：返回/弹出方向的过渡动画（当前仅新页淡入 250ms）、`Window.Toolbar`（NavigationPage 标题栏由宿主承担，暂无返回按钮 UI，依赖系统返回键/页面内返回按钮）。
+
+**生命周期**：`Appearing/Disappearing` 已透传（含 NavigationPage 内部切换）。MAUI 的 `Page.SendAppearing` 有守卫（父链上须存在 `Parent` 非空的 `IWindow`），宿主以最小逻辑链放行：`Window.Parent = Application`（均为 public API；不设 `Window.Page`，其 setter 会用 `Window.NavigationImpl` 覆写页面的 NavigationProxy.Inner）。实测：主页 2A/1D 随模态开闭精确变化，NavigationPage 内推入页同样触发。
+
+**模态**：`Navigation.PushModalAsync/PopModalAsync` 标准可用。宿主根容器为 ArkStack（后挂者覆盖），模态页覆盖页面之上；`RootNavigationAdapter`（`NavigationProxy` 子类）挂在根页 `NavigationProxy.Inner` 上承接——含 NavigationPage 路径（`MauiNavigationImpl` 未覆写模态调用，经基类转发到适配器）。实测：PushModalAsync→覆盖显示+生命周期正确、PopModalAsync→恢复、系统返回键优先关闭模态。
+
+**切换动画**：绑定 `ArkUI_NativeAnimateAPI_1.animateTo`（`ArkUIAnimateApi.cs`）+ `ArkUINodeBase.AnimateAsync`；轻量栈与模态推入时新页淡入（NODE_OPACITY 0→1，250ms EASE_IN_OUT）。
 
 **Shell 转接结论**：Shell 不在支持计划内（flyout/tab/URI 路由协议太重）。多平台 Shell 应用做鸿蒙适配时，入口改为 NavigationPage/TabbedPage 结构（`MauiHarmonyHost.Run(() => new NavigationPage(...))`）——这正是 NavigationPage 转接层存在的意义；TabbedPage（底部页签）为后续候选。
 

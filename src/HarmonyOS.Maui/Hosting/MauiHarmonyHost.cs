@@ -1,7 +1,8 @@
 // MauiHarmonyHost：MAUI 控件树的鸿蒙引导
-// 宿主根为一个 100% 空容器（挂入 ContentSlot），页面经 HarmonyNavigation 挂入该容器。
+// 宿主根为一个 100% Stack 容器（挂入 ContentSlot）：Stack 后挂者覆盖先挂者，
+// 模态页借此覆盖在页面之上；页面经 HarmonyNavigation 挂入该容器。
 using HarmonyOS.Bindings.Hosting;
-using ArkColumn = HarmonyOS.ArkUI.Column;
+using ArkStack = HarmonyOS.ArkUI.Stack;
 using MPage = Microsoft.Maui.Controls.Page;
 
 namespace HarmonyOS.Maui.Hosting;
@@ -16,8 +17,8 @@ public static class MauiHarmonyHost
     {
         Host.RootBuilder = contentHandle =>
         {
-            // 宿主根容器：页面栈的挂载点
-            var container = new ArkColumn();
+            // 宿主根容器：页面栈 + 模态层的挂载点（Stack 叠加语义）
+            var container = new ArkStack();
             container.SetWidthPercent(1.0f);
             container.SetHeightPercent(1.0f);
             Host.AttachRoot(contentHandle, container);

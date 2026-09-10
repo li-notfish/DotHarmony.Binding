@@ -9,6 +9,21 @@ public partial class MainPage : ContentPage
 {
     private int _clicks;
     private int _visits;
+    private int _appearing;
+    private int _disappearing;
+
+    protected override void OnAppearing()
+    {
+        _appearing++;
+        LifecycleLabel.Text = $"Main: {_appearing}A / {_disappearing}D";
+    }
+
+    protected override void OnDisappearing()
+    {
+        _disappearing++;
+        // 页面已不可见，仅留痕迹；下一页的 LifecycleLabel 验证模态/导航切换时序
+        System.Diagnostics.Debug.WriteLine($"Main disappearing #{_disappearing}");
+    }
 
     public MainPage()
     {
@@ -44,6 +59,12 @@ public partial class MainPage : ContentPage
     private void OnOpenControlsDemoClicked(object? sender, EventArgs e)
     {
         Navigation.PushAsync(new ControlsDemoPage()).FireAndForgetNavigation();
+    }
+
+    private void OnOpenModalClicked(object? sender, EventArgs e)
+    {
+        // 模态：标准 INavigation API（经 RootNavigationAdapter 转接到宿主模态层）
+        Navigation.PushModalAsync(new ModalPage()).FireAndForgetNavigation();
     }
 }
 

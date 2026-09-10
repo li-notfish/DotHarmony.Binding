@@ -1,7 +1,9 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.NativeNode;
 
@@ -218,6 +220,80 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     {
         set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_VISIBILITY,
             ArkUIValue.I(value ? 0 : 1));
+    }
+
+    /// <summary>不透明度 0.0~1.0（NODE_OPACITY）——页面切换淡入动画的目标属性</summary>
+    public void SetOpacity(float opacity)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_OPACITY, ArkUIValue.F(opacity));
+    }
+
+    /// <summary>
+    /// 显式动画（animateTo）：updates 闭包内的属性变更按 durationMs 插值过渡。
+    /// 返回的 Task 在动画完成回调时结束；闭包由 ArkUI 在回调时机执行，节点须已挂树。
+    /// </summary>
+    public Task AnimateAsync(Action updates, int durationMs = 250)
+    {
+        ThrowIfDisposed();
+        var context = ArkUINativeApi.OH_ArkUI_GetContextByNode(_handle);
+        if (context == IntPtr.Zero)
+        {
+            updates();
+            return Task.CompletedTask;
+        }
+
+        var state = new AnimState { Updates = updates };
+        var handle = GCHandle.Alloc(state);
+        var update = new ArkUI_ContextCallback
+        {
+            UserData = (void*)GCHandle.ToIntPtr(handle),
+            Callback = &AnimUpdateTrampoline,
+        };
+        var complete = new ArkUI_AnimateCompleteCallback
+        {
+            Type = ArkUI_FinishCallbackType.ARKUI_FINISH_CALLBACK_TYPE_LOGICAL,
+            UserData = (void*)GCHandle.ToIntPtr(handle),
+            Callback = &AnimCompleteTrampoline,
+        };
+
+        var option = ArkUINativeApi.OH_ArkUI_AnimateOption_Create();
+        ArkUINativeApi.OH_ArkUI_AnimateOption_SetDuration(option, durationMs);
+        ArkUINativeApi.OH_ArkUI_AnimateOption_SetCurve(option, ArkUI_AnimationCurve.ARKUI_CURVE_EASE_IN_OUT);
+        var status = ArkUINativeApi.Animate->animateTo(context, option, &update, &complete);
+        ArkUINativeApi.OH_ArkUI_AnimateOption_Dispose(option);
+
+        if (status != 0)
+        {
+            handle.Free();
+            throw new InvalidOperationException($"animateTo failed: {status}");
+        }
+        return state.Completion.Task;
+    }
+
+    private sealed class AnimState
+    {
+        public Action Updates = default!;
+        public TaskCompletionSource Completion { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public bool Done;
+    }
+
+    [UnmanagedCallersOnly]
+    private static void AnimUpdateTrampoline(void* userData)
+    {
+        var state = (AnimState?)GCHandle.FromIntPtr((IntPtr)userData).Target;
+        state?.Updates();
+    }
+
+    [UnmanagedCallersOnly]
+    private static void AnimCompleteTrampoline(void* userData)
+    {
+        var handle = GCHandle.FromIntPtr((IntPtr)userData);
+        if (handle.Target is AnimState state && !state.Done)
+        {
+            state.Done = true;
+            state.Completion.SetResult();
+        }
+        handle.Free();
     }
 
     internal ArkUI_NodeHandle Handle => _handle;
