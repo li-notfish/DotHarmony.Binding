@@ -1,0 +1,16 @@
+# remote-build 打包清单（remote-build.ps1 / remote-build.sh 共用，勿单独修改其一）。
+# 每行一条，# 开头为注释；--exclude 必须在打包目标之前。
+--exclude=node_modules
+--exclude=.git
+--exclude=dist
+--exclude=coverage
+--exclude=bin
+--exclude=obj
+--exclude=output
+--exclude=UnityHarmony
+--exclude=tmp
+src
+HarmonyOS.Bindings
+samples
+scripts
+ArkTsBinding.slnx
