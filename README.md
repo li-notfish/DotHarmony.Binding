@@ -64,15 +64,39 @@ npx ts-node src/parser/index.ts --native
 # 4. Windows 上构建绑定库 + 样例
 dotnet build ArkTsBinding.slnx
 
-# 5. 远程交叉编译 libapp.so（双架构），配置见 scripts/remote-build.sh 顶部
+# 5. 交叉编译 libapp.so（双架构）。LOCAL=true 走本地 WSL（上传式构建），默认经 SSH 远程
 bash scripts/remote-build.sh
 
-# 6. 打 HAP（使用 DevEco 内置 hvigor，签名需在 DevEco 中配置自动签名一次）
+# 6. 打 HAP（hvigor；DevEco 路径自动探测，或用 DEVECO_HOME 指定）
 cmd //c scripts\build-hap.cmd
 
-# 7. 部署到模拟器/真机并抓取日志
+# 7. 部署到模拟器/真机并抓取日志（hdc 自动探测；PowerShell 版为 deploy-hap.ps1）
 bash scripts/deploy-hap.sh
 ```
+
+## 脚本工具链（scripts/）
+
+| 脚本 | 用途 | 说明 |
+|---|---|---|
+| `remote-build.ps1` / `remote-build.sh` | 交叉编译 libapp.so（arm64 + x64 双架构） | `LOCAL=true`：本地 WSL 构建——**上传式**（打包 → 解压到 WSL 原生文件系统 → 构建 → 取回），勿在 `/mnt/*` 上直接构建（9p I/O 慢一个数量级）；默认经 SSH 远程构建（别名 `wsl_auzrelinux`，构建机 IP 漂移先跑 `resolve-remote.ps1`） |
+| `build-hap.cmd` | hvigor 打 HAP | DevEco Studio 路径自动探测，`DEVECO_HOME` 可覆盖；签名需在 DevEco 中配置一次自动签名 |
+| `deploy-hap.sh` / `deploy-hap.ps1` | 重装 HAP → 启动 → 抓取 HarmonyHost 日志 | hdc 自动探测；无设备 / 缺 HAP / 安装失败即报错停止；启动前 `aa force-stop` 防 install 竞争 |
+| `build-files.txt` | remote-build 打包清单（含 excludes） | ps1/sh 共用的唯一来源，改一处即可 |
+| `build-libapp.sh` | 构建机内部的 NativeAOT 发布 | 由 remote-build 调用，不必手动跑；musl.cc gcc（arm64）+ zig cc（x64）wrapper 幂等生成 |
+| `resolve-remote.ps1` | 定位 SSH 构建机并回写 `~/.ssh/config` | 仅 SSH 远程模式需要 |
+| `smoke-aot.sh` | NativeAOT + zig cc 工具链冒烟探针 | 工具链问题排查用 |
+| `gen-module-sample.ts` | @ohos.* 模块绑定样例生成 | napi 路线（ROADMAP 2.3） |
+
+环境变量（全部可选，脚本内置默认探测链）：
+
+| 变量 | 作用 | 探测顺序 |
+|---|---|---|
+| `OHOS_SDK_BASE` | OpenHarmony SDK 根目录（含 `26.0.0/toolchains`） | → `OHSDK_HOME` → `D:\Harmony\OpenHarmony\Sdk` → DevEco 内置 sdk |
+| `DEVECO_HOME` | DevEco Studio 安装目录 | → `D:\Program Files\Huawei\DevEco Studio` → C 盘同名 |
+| `LOCAL` | `true` 时 remote-build 在本地 WSL 构建 | 否则走 SSH 远程 |
+| `REMOTE` / `BUILD` | SSH 别名 / 构建目录 | `wsl_auzrelinux` / `/tmp/arktsbinding` |
+
+> 约定：`.gitattributes` 强制 `*.sh` 为 LF（WSL bash 无法执行 CRLF 脚本）、`*.cmd/*.ps1` 为 CRLF；新增脚本请沿用"路径自动探测 + 前置检查失败即停"的风格。
 
 ## 类型映射（Native 模式）
 
