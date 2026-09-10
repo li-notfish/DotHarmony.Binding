@@ -1,7 +1,25 @@
 #!/bin/bash
 # 本地编排：打包源码 → 上传远程 → 构建 libapp.so → 取回放入 HarmonyHost/libs
+# LOCAL=true：在本地 WSL 直接构建，跳过 SSH/SCP
 set -e
 cd "$(dirname "$0")/.."
+
+# LOCAL 模式——在本地 WSL 直接构建，跳过 SSH/SCP
+if [ "$LOCAL" = "true" ]; then
+  echo "=== 本地 WSL 构建 ==="
+  bash "$(dirname "$0")/build-libapp.sh"
+
+  echo "=== 复制 libapp.so（双架构） ==="
+  mkdir -p samples/HarmonyHost/entry/libs/arm64-v8a samples/HarmonyHost/entry/libs/x86_64
+  cp samples/dotnet/HelloApp/bin/Release/net10.0/linux-musl-arm64/publish/app.so \
+     samples/HarmonyHost/entry/libs/arm64-v8a/libapp.so
+  cp samples/dotnet/HelloApp/bin/Release/net10.0/linux-musl-x64/publish/app.so \
+     samples/HarmonyHost/entry/libs/x86_64/libapp.so
+  ls -la samples/HarmonyHost/entry/libs/arm64-v8a/libapp.so samples/HarmonyHost/entry/libs/x86_64/libapp.so
+  echo "=== 完成 ==="
+  exit 0
+fi
+
 if [ -n "$REMOTE" ]; then
   REMOTE_ALIAS=$REMOTE
 else

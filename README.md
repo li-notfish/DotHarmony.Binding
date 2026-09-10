@@ -126,7 +126,7 @@ tests/                       jest（解析器/生成器 45 用例）
 - **布局语义**：ArkUI flex 托管布局——MAUI 的 measure/arrange 引擎未实现（Fill/Spacing/Margin/WidthRequest/HeightRequest 已对齐；Grid/AbsoluteLayout 未支持）
 - **画刷**：SolidColorBrush/LinearGradientBrush/RadialGradientBrush 全支持；ImageBrush 为 MAUI internal 类型无法声明（节点层 SetBackgroundImage 原语已就位）
 - **导航**：轻量 Page 栈（HarmonyNavigation.Push/Pop，节点保留式切换已实测）；Shell/NavigationPage 官方类型与页面动画未支持
-- **异步 API 未支持**：`Promise<T>` 映射为 `IntPtr` 占位，TSFN（ThreadSafeFunction）异步层未实现——这是 M2 核心难点
+- **异步 API**：`Promise<T>`→`Task<T>` 已接通（TypeMapper + 生成器 + `CallMethodAsync`/`CallMethodAsyncVoid`）；AsyncCallback 风格 `(result: T, err?: Error) => void` → `Task<T>` 已支持（parser AST 检测）；TSFN 完整生命周期三路径已封装（`ThreadSafeFunction.cs` + `HarmonySynchronizationContext.cs`）
 - **控件覆盖**：21 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/RefreshView/Picker/DatePicker/TimePicker + CollectionView/CarouselView M1 物化版），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
@@ -136,7 +136,7 @@ tests/                       jest（解析器/生成器 45 用例）
 
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
 - M1 尾巴（完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~、~~Grid/AbsoluteLayout（MAUI 托管布局）~~；剩真机验证
-- M2：TSFN 异步层（核心难点）、codeGenerator 缺陷修复、@ohos.* 批量绑定
+- M2：~~TSFN 异步层（2.1 完成）~~、~~codeGenerator 缺陷修复（2.2 完成）~~、@ohos.* 批量绑定
 - M3：NuGet 打包、单项目体验、CI
 
 ## 致谢 / Acknowledgements

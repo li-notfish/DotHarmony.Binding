@@ -17,7 +17,7 @@ export class CodeGenerator {
         lines.push('using System;');
         lines.push('using System.Runtime.InteropServices;');
         lines.push('using HarmonyOS.Bindings.Runtime;');
-        if (component.methods.some(m => /Promise/.test(m.returnType || ''))) {
+        if (component.methods.some(m => /^Task(<.+>)?$/.test(m.returnType || ''))) {
             lines.push('using System.Threading.Tasks;');
         }
         if (component.namespace !== 'HarmonyOS.ArkUI') {
@@ -246,6 +246,9 @@ export class CodeGenerator {
                 const taskMatch = /^Task<(.+)>$/.exec(returnTypeName);
                 if (taskMatch) {
                     lines.push(`        return NodeApi.CallMethodAsync<${taskMatch[1]}>(${callArgs});`);
+                } else if (returnTypeName === 'Task') {
+                    // Promise<void>：返回 Task，调用 CallMethodAsyncVoid
+                    lines.push(`        return NodeApi.CallMethodAsyncVoid(${callArgs});`);
                 } else {
                     lines.push(`        return NodeApi.CallMethod<${returnTypeName}>(${callArgs});`);
                 }

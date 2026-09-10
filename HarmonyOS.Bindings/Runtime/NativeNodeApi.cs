@@ -265,6 +265,69 @@ internal static partial class NativeNodeApi
 
     #endregion
 
+    #region Thread-Safe Function (TSFN)
+
+    /// <summary>
+    /// 回调类型：JS 线程调用 C# 的入口
+    /// void callback(napi_env env, napi_value js_callback, void* context, void* data)
+    /// </summary>
+    internal delegate void NapiThreadSafeFunctionCallJs(
+        napi_env env,
+        napi_value js_callback,
+        IntPtr context,
+        IntPtr data);
+
+    /// <summary>
+    /// 创建线程安全函数，允许任意线程安全地调用 JS 函数
+    /// </summary>
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_create_threadsafe_function(
+        napi_env env,
+        napi_value func,
+        napi_value async_resource,
+        byte[] async_resource_name,
+        IntPtr max_queue_size,
+        IntPtr initial_thread_count,
+        IntPtr thread_finalize_data,
+        IntPtr thread_finalize_callback,
+        IntPtr context,
+        IntPtr call_js,
+        out napi_threadsafe_function result);
+
+    /// <summary>
+    /// 释放线程安全函数。调用后不得再使用该句柄。
+    /// </summary>
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_release_threadsafe_function(
+        napi_threadsafe_function tsfn,
+        napi_threadsafe_function_release_mode mode);
+
+    /// <summary>
+    /// 从任意线程调用线程安全函数
+    /// </summary>
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_call_threadsafe_function(
+        napi_threadsafe_function tsfn,
+        IntPtr data,
+        napi_threadsafe_function_call_mode is_blocking);
+
+    /// <summary>
+    /// 增加线程安全函数的引用计数
+    /// </summary>
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_acquire_threadsafe_function(
+        napi_threadsafe_function tsfn);
+
+    /// <summary>
+    /// 获取线程安全函数所在线程的 ID
+    /// </summary>
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_get_threadsafe_function_thread_id(
+        napi_threadsafe_function tsfn,
+        out ulong result);
+
+    #endregion
+
     #region 状态检查
 
     /// <summary>
@@ -336,6 +399,30 @@ internal static partial class NativeNodeApi
         public override bool Equals(object? obj) => obj is napi_callback_info other && Equals(other);
         public override int GetHashCode() => _handle.GetHashCode();
         public override string ToString() => _handle.ToString("X");
+    }
+
+    internal readonly struct napi_threadsafe_function : IEquatable<napi_threadsafe_function>
+    {
+        private readonly IntPtr _handle;
+        public napi_threadsafe_function(IntPtr handle) => _handle = handle;
+        public static implicit operator IntPtr(napi_threadsafe_function tsfn) => tsfn._handle;
+        public static implicit operator napi_threadsafe_function(IntPtr handle) => new(handle);
+        public bool Equals(napi_threadsafe_function other) => _handle == other._handle;
+        public override bool Equals(object? obj) => obj is napi_threadsafe_function other && Equals(other);
+        public override int GetHashCode() => _handle.GetHashCode();
+        public override string ToString() => _handle.ToString("X");
+    }
+
+    internal enum napi_threadsafe_function_release_mode
+    {
+        napi_tsfn_release = 0,
+        napi_tsfn_abort = 1
+    }
+
+    internal enum napi_threadsafe_function_call_mode
+    {
+        napi_tsfn_nonblocking = 0,
+        napi_tsfn_blocking = 1
     }
 
     internal enum napi_status

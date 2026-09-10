@@ -14,6 +14,30 @@ New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
 $REMOTE = if ($env:REMOTE) { $env:REMOTE } else { "wsl_auzrelinux" }
 $BUILD  = if ($env:BUILD)  { $env:BUILD  } else { "/tmp/arktsbinding" }
 
+# LOCAL 模式——在本地 WSL 直接构建，跳过 SSH/SCP
+if ($env:LOCAL -eq "true") {
+    Write-Host "=== 本地 WSL 构建 ==="
+    $wslPath = wsl wslpath -a $projectRoot
+    & wsl bash "$wslPath/scripts/build-libapp.sh"
+    if ($LASTEXITCODE -ne 0) { throw "本地 WSL 构建失败" }
+
+    Write-Host "=== 复制 libapp.so（双架构） ==="
+    New-Item -ItemType Directory -Force -Path "samples\HarmonyHost\entry\libs\arm64-v8a" | Out-Null
+    New-Item -ItemType Directory -Force -Path "samples\HarmonyHost\entry\libs\x86_64" | Out-Null
+
+    Copy-Item "$projectRoot\samples\dotnet\HelloApp\bin\Release\net10.0\linux-musl-arm64\publish\app.so" `
+              "$projectRoot\samples\HarmonyHost\entry\libs\arm64-v8a\libapp.so" -Force
+    if ($LASTEXITCODE -ne 0) { throw "复制 arm64 架构文件失败" }
+
+    Copy-Item "$projectRoot\samples\dotnet\HelloApp\bin\Release\net10.0\linux-musl-x64\publish\app.so" `
+              "$projectRoot\samples\HarmonyHost\entry\libs\x86_64\libapp.so" -Force
+    if ($LASTEXITCODE -ne 0) { throw "复制 x86_64 架构文件失败" }
+
+    Get-ChildItem "samples\HarmonyHost\entry\libs\arm64-v8a\libapp.so", "samples\HarmonyHost\entry\libs\x86_64\libapp.so" | Format-Table -AutoSize
+    Write-Host "=== 完成 ==="
+    exit 0
+}
+
 Write-Host "=== 1. 打包源码 ==="
 $tempArchive = Join-Path $tmpDir "arkts-src.tgz"
 
