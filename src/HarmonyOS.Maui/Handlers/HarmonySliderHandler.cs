@@ -25,12 +25,12 @@ public class HarmonySliderHandler : ViewHandler<ISlider, ArkSlider>
     protected override void ConnectHandler(ArkSlider platformView)
     {
         base.ConnectHandler(platformView);
-        platformView.ValueChange += OnValueChange;
+        platformView.ValueChanged += OnValueChange;
     }
 
     protected override void DisconnectHandler(ArkSlider platformView)
     {
-        platformView.ValueChange -= OnValueChange;
+        platformView.ValueChanged -= OnValueChange;
         base.DisconnectHandler(platformView);
     }
 

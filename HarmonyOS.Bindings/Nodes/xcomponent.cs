@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>XComponent 组件（ARKUI_NODE_XCOMPONENT）</summary>
-public unsafe class XComponent : ArkUINodeBase
+public unsafe partial class XComponent : ArkUINodeBase
 {
     public XComponent() : base(ArkUI_NodeType.ARKUI_NODE_XCOMPONENT) { }
 

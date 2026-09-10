@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Span 组件（ARKUI_NODE_SPAN）</summary>
-public unsafe class Span : ArkUINodeBase
+public unsafe partial class Span : ArkUINodeBase
 {
     public Span() : base(ArkUI_NodeType.ARKUI_NODE_SPAN) { }
 

@@ -6,9 +6,72 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Swiper 组件（ARKUI_NODE_SWIPER）</summary>
-public unsafe class Swiper : ArkUINodeBase
+public unsafe partial class Swiper : ArkUINodeBase
 {
     public Swiper() : base(ArkUI_NodeType.ARKUI_NODE_SWIPER) { }
+
+    /// <summary>onChange 事件（NODE_SWIPER_EVENT_ON_CHANGE）</summary>
+    public event Action<ArkUINodeEvent>? Change
+    {
+        add => On(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_CHANGE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_CHANGE);
+    }
+
+    /// <summary>onSelected 事件（NODE_SWIPER_EVENT_ON_SELECTED）</summary>
+    public event Action<ArkUINodeEvent>? Selected
+    {
+        add => On(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_SELECTED, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_SELECTED);
+    }
+
+    /// <summary>onUnselected 事件（NODE_SWIPER_EVENT_ON_UNSELECTED）</summary>
+    public event Action<ArkUINodeEvent>? Unselected
+    {
+        add => On(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_UNSELECTED, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_UNSELECTED);
+    }
+
+    /// <summary>onScrollStateChanged 事件（NODE_SWIPER_EVENT_ON_SCROLL_STATE_CHANGED）</summary>
+    public event Action<ArkUINodeEvent>? ScrollStateChanged
+    {
+        add => On(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_SCROLL_STATE_CHANGED, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_SCROLL_STATE_CHANGED);
+    }
+
+    /// <summary>onAnimationStart 事件（NODE_SWIPER_EVENT_ON_ANIMATION_START）</summary>
+    public event Action<ArkUINodeEvent>? AnimationStart
+    {
+        add => On(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_ANIMATION_START, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_ANIMATION_START);
+    }
+
+    /// <summary>onAnimationEnd 事件（NODE_SWIPER_EVENT_ON_ANIMATION_END）</summary>
+    public event Action<ArkUINodeEvent>? AnimationEnd
+    {
+        add => On(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_ANIMATION_END, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_ANIMATION_END);
+    }
+
+    /// <summary>onGestureSwipe 事件（NODE_SWIPER_EVENT_ON_GESTURE_SWIPE）</summary>
+    public event Action<ArkUINodeEvent>? GestureSwipe
+    {
+        add => On(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_GESTURE_SWIPE, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_GESTURE_SWIPE);
+    }
+
+    /// <summary>onContentDidScroll 事件（NODE_SWIPER_EVENT_ON_CONTENT_DID_SCROLL）</summary>
+    public event Action<ArkUINodeEvent>? ContentDidScroll
+    {
+        add => On(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_CONTENT_DID_SCROLL, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_CONTENT_DID_SCROLL);
+    }
+
+    /// <summary>onContentWillScroll 事件（NODE_SWIPER_EVENT_ON_CONTENT_WILL_SCROLL）</summary>
+    public event Action<ArkUINodeEvent>? ContentWillScroll
+    {
+        add => On(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_CONTENT_WILL_SCROLL, value!);
+        remove => Off(ArkUI_NodeEventType.NODE_SWIPER_EVENT_ON_CONTENT_WILL_SCROLL);
+    }
 
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>
     public event Action<ArkUINodeEvent>? ChildTouchTest

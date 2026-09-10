@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Button 组件（ARKUI_NODE_BUTTON）</summary>
-public unsafe class Button : ArkUINodeBase
+public unsafe partial class Button : ArkUINodeBase
 {
     public Button() : base(ArkUI_NodeType.ARKUI_NODE_BUTTON) { }
 

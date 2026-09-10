@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Grid 组件（ARKUI_NODE_GRID）</summary>
-public unsafe class Grid : ArkUINodeBase
+public unsafe partial class Grid : ArkUINodeBase
 {
     public Grid() : base(ArkUI_NodeType.ARKUI_NODE_GRID) { }
 

@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>List 组件（ARKUI_NODE_LIST）</summary>
-public unsafe class List : ArkUINodeBase
+public unsafe partial class List : ArkUINodeBase
 {
     public List() : base(ArkUI_NodeType.ARKUI_NODE_LIST) { }
 

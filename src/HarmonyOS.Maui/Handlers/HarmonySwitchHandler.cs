@@ -26,12 +26,12 @@ public class HarmonySwitchHandler : ViewHandler<ISwitch, ArkSwitch>, ISwitchHand
     protected override void ConnectHandler(ArkSwitch platformView)
     {
         base.ConnectHandler(platformView);
-        platformView.IsOnChange += OnToggleChanged;
+        platformView.Toggled += OnToggleChanged;
     }
 
     protected override void DisconnectHandler(ArkSwitch platformView)
     {
-        platformView.IsOnChange -= OnToggleChanged;
+        platformView.Toggled -= OnToggleChanged;
         base.DisconnectHandler(platformView);
     }
 

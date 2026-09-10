@@ -28,13 +28,13 @@ public class HarmonyScrollViewHandler : ViewHandler<IScrollView, ArkScroll>, ISc
     protected override void ConnectHandler(ArkScroll platformView)
     {
         base.ConnectHandler(platformView);
-        platformView.ScrollUpdate += OnScroll;
+        platformView.Scroll += OnScroll;
         platformView.ScrollStop += OnScrollStop;
     }
 
     protected override void DisconnectHandler(ArkScroll platformView)
     {
-        platformView.ScrollUpdate -= OnScroll;
+        platformView.Scroll -= OnScroll;
         platformView.ScrollStop -= OnScrollStop;
         base.DisconnectHandler(platformView);
     }
@@ -72,7 +72,7 @@ public class HarmonyScrollViewHandler : ViewHandler<IScrollView, ArkScroll>, ISc
     public static void MapOrientation(IScrollViewHandler handler, IScrollView view)
     {
         if (handler is not HarmonyScrollViewHandler h) return;
-        h.PlatformView.ScrollDirection = view.Orientation switch
+        h.PlatformView.Scrollable = view.Orientation switch
         {
             ScrollOrientation.Vertical => ArkUI_ScrollDirection.ARKUI_SCROLL_DIRECTION_VERTICAL,
             ScrollOrientation.Horizontal => ArkUI_ScrollDirection.ARKUI_SCROLL_DIRECTION_HORIZONTAL,

@@ -426,15 +426,8 @@ export async function processNativeSDK(): Promise<void> {
 
     // 组件清单：全量扫描 component 目录。非 C API 节点组件（如 alert_dialog）
     // 由生成器自动登记 gap/跳过；属性形态未登记的成员进 native-gaps.json 待补。
-    // 注意：checkbox/image/progress/radio/scroll/slider/toggle/text_area/text_input
-    // 是旧版适配工具的 curated 产物（类名/属性面与 handler 强耦合，如 RadioButton.IsChecked），
-    // 与本生成器的输出（Radio 等）不兼容——补齐 shape 表前不要让本生成器覆盖它们。
-    const LEGACY_CURATED = new Set([
-        'checkbox.d.ts', 'image.d.ts', 'progress.d.ts', 'radio.d.ts', 'scroll.d.ts',
-        'slider.d.ts', 'toggle.d.ts', 'text_area.d.ts', 'text_input.d.ts',
-    ]);
     const pilotFiles = fs.readdirSync(componentDir)
-        .filter(f => f.endsWith('.d.ts') && !LEGACY_CURATED.has(f))
+        .filter(f => f.endsWith('.d.ts'))
         .sort();
 
     console.log('=== Native (C API) Generation ===');

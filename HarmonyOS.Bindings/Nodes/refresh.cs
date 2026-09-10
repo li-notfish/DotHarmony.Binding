@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Refresh 组件（ARKUI_NODE_REFRESH）</summary>
-public unsafe class Refresh : ArkUINodeBase
+public unsafe partial class Refresh : ArkUINodeBase
 {
     public Refresh() : base(ArkUI_NodeType.ARKUI_NODE_REFRESH) { }
 

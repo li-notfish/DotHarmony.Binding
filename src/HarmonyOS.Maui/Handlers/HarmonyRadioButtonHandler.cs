@@ -45,20 +45,20 @@ public class HarmonyRadioButtonHandler : ViewHandler<IRadioButton, ArkRow>, IRad
     {
         base.ConnectHandler(platformView);
         if (_radio is not null)
-            _radio.IsOnChange += OnRadioChanged;
+            _radio.CheckedChanged += OnRadioChanged;
     }
 
     protected override void DisconnectHandler(ArkRow platformView)
     {
         if (_radio is not null)
-            _radio.IsOnChange -= OnRadioChanged;
+            _radio.CheckedChanged -= OnRadioChanged;
         base.DisconnectHandler(platformView);
     }
 
     public static void MapIsChecked(IRadioButtonHandler handler, IRadioButton view)
     {
         if (handler is HarmonyRadioButtonHandler h && h._radio is not null)
-            h._radio.IsChecked = view.IsChecked;
+            h._radio.Checked = view.IsChecked;
     }
 
     public static void MapContent(IRadioButtonHandler handler, IRadioButton view)
@@ -69,7 +69,6 @@ public class HarmonyRadioButtonHandler : ViewHandler<IRadioButton, ArkRow>, IRad
 
     public static void MapGroupName(IRadioButtonHandler handler, IRadioButton view)
     {
-        // GroupName 在 Controls 类型上（核心接口 IRadioButton 未暴露），Controls 回退
         if (handler is HarmonyRadioButtonHandler h && h._radio is not null
             && view is Microsoft.Maui.Controls.RadioButton rb)
             h._radio.Group = rb.GroupName ?? string.Empty;

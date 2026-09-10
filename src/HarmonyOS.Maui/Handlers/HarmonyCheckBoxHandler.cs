@@ -26,19 +26,19 @@ public class HarmonyCheckBoxHandler : ViewHandler<ICheckBox, ArkCheckBox>, IChec
     protected override void ConnectHandler(ArkCheckBox platformView)
     {
         base.ConnectHandler(platformView);
-        platformView.IsOnChange += OnCheckBoxChanged;
+        platformView.CheckedChanged += OnCheckBoxChanged;
     }
 
     protected override void DisconnectHandler(ArkCheckBox platformView)
     {
-        platformView.IsOnChange -= OnCheckBoxChanged;
+        platformView.CheckedChanged -= OnCheckBoxChanged;
         base.DisconnectHandler(platformView);
     }
 
     public static void MapIsChecked(ICheckBoxHandler handler, ICheckBox view)
     {
         if (handler is HarmonyCheckBoxHandler h)
-            h.PlatformView.IsSelected = view.IsChecked;
+            h.PlatformView.Select = view.IsChecked;
     }
 
     private void OnCheckBoxChanged(ArkUINodeEvent e)

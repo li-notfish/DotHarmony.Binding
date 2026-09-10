@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.NativeNode;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>Text 组件（ARKUI_NODE_TEXT）</summary>
-public unsafe class Text : ArkUINodeBase
+public unsafe partial class Text : ArkUINodeBase
 {
     public Text() : base(ArkUI_NodeType.ARKUI_NODE_TEXT) { }
 
