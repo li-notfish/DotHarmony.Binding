@@ -251,7 +251,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         };
         var complete = new ArkUI_AnimateCompleteCallback
         {
-            Type = ArkUI_FinishCallbackType.ARKUI_FINISH_CALLBACK_TYPE_LOGICAL,
+            Type = ArkUI_FinishCallbackType.ARKUI_FINISH_CALLBACK_LOGICALLY,
             UserData = (void*)GCHandle.ToIntPtr(handle),
             Callback = &AnimCompleteTrampoline,
         };

@@ -55,7 +55,7 @@ DevEco Studio（内置 HarmonyOS SDK/NDK/hvigor）、可 SSH 的 Linux（NativeA
 # 1. 解析器构建 + 测试（45 用例）
 npm install && npm test
 
-# 2. 从 NDK 头文件生成 C# 枚举（ArkUINodeTypes.g.cs + .json 元数据）
+# 2. 从 NDK 头文件生成 C# 枚举（ArkUINodeTypes.g.cs + .json 元数据；SDK 探测顺序 --sdk → OHOS_SDK_BASE → OHSDK_HOME → 默认路径，找不到报错退出）
 python src/nativeBinding/extract_arkui_types.py --dump-json HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json
 
 # 3. 从 SDK 组件 .d.ts 生成 NodeHandle 包装类 → HarmonyOS.Bindings/Nodes/
