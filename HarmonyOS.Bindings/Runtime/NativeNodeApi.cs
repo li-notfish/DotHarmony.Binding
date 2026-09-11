@@ -18,7 +18,7 @@ internal static partial class NativeNodeApi
     [LibraryImport(NApiLib)]
     internal static partial napi_status napi_create_string_utf8(
         napi_env env,
-        byte[] str,
+        ReadOnlySpan<byte> str,
         IntPtr length,
         out napi_value result);
 
@@ -285,7 +285,7 @@ internal static partial class NativeNodeApi
         napi_env env,
         napi_value func,
         napi_value async_resource,
-        byte[] async_resource_name,
+        napi_value async_resource_name,
         IntPtr max_queue_size,
         IntPtr initial_thread_count,
         IntPtr thread_finalize_data,

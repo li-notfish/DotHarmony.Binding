@@ -220,6 +220,14 @@ internal static class NativeValue
     }
 
     /// <summary>
+    /// 将 napi_value 转换为 C# 字节（通过 int32 截断）
+    /// </summary>
+    public static byte ToByte(IntPtr value)
+    {
+        return (byte)ToInt(value);
+    }
+
+    /// <summary>
     /// 将 napi_value 转换为 C# 字符串
     /// </summary>
     public static string? ToString(IntPtr value)

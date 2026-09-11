@@ -74,6 +74,11 @@ public partial class MainPage : ContentPage
         TsfnLabel.Text = "TSFN: running...";
         HarmonyOS.Bindings.Runtime.TsfnExperiment.Run(s => TsfnLabel.Text = s);
     }
+
+    private void OnAsyncDemoClicked(object? sender, EventArgs e)
+    {
+        Navigation.PushAsync(new AsyncDemoPage()).FireAndForgetNavigation();
+    }
 }
 
 internal static class NavigationFireAndForget

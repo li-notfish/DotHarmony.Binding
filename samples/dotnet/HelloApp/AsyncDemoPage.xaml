@@ -1,0 +1,44 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HelloApp.AsyncDemoPage"
+             Title="Async Demo"
+             BackgroundColor="LightGray">
+    <StackLayout Spacing="12" Padding="12">
+        <Label Text="Async/Promise → Task Demo"
+               FontSize="24"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        
+        <Button Text="Test Promise&lt;string&gt;"
+                Clicked="OnTestPromiseString" />
+        
+        <Button Text="Test Promise&lt;double&gt;"
+                Clicked="OnTestPromiseDouble" />
+        
+        <Button Text="Test Promise&lt;bool&gt;"
+                Clicked="OnTestPromiseBool" />
+        
+        <Button Text="Test Promise&lt;int&gt;"
+                Clicked="OnTestPromiseInt" />
+        
+        <Button Text="Test Promise&lt;uint&gt;"
+                Clicked="OnTestPromiseUInt" />
+        
+        <Button Text="Test Promise&lt;long&gt;"
+                Clicked="OnTestPromiseLong" />
+        
+        <Button Text="Test Promise&lt;byte&gt;"
+                Clicked="OnTestPromiseByte" />
+        
+        <Button Text="Test Promise&lt;void&gt;"
+                Clicked="OnTestPromiseVoid" />
+        
+        <Button Text="Test Promise Reject"
+                Clicked="OnTestPromiseReject" />
+        
+        <Label x:Name="ResultLabel"
+               Text="Result will appear here"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+    </StackLayout>
+</ContentPage>

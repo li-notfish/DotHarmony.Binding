@@ -469,6 +469,14 @@ describe('Code Generation Tests', () => {
         expect(content).toContain('return NodeApi.CallMethodAsync<double>(_jsObject, _getCount);');
         expect(content).toContain('return NodeApi.CallMethodAsync<bool>(_jsObject, _isEnabled);');
         expect(content).toContain('return NodeApi.CallMethodAsync<IntPtr>(_jsObject, _getHandle);');
+        
+        // 验证新增类型映射：long/uint/byte
+        expect(content).toContain('public Task<long> GetLongValue()');
+        expect(content).toContain('public Task<uint> GetUIntValue()');
+        expect(content).toContain('public Task<byte> GetByteValue()');
+        expect(content).toContain('return NodeApi.CallMethodAsync<long>(_jsObject, _getLongValue);');
+        expect(content).toContain('return NodeApi.CallMethodAsync<uint>(_jsObject, _getUIntValue);');
+        expect(content).toContain('return NodeApi.CallMethodAsync<byte>(_jsObject, _getByteValue);');
     });
 
     // AsyncCallback 测试（M2 2.1）

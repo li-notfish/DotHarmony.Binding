@@ -30,7 +30,8 @@ internal sealed class ThreadSafeFunction : IDisposable
         tsfn._gch = GCHandle.Alloc(tsfn);
 
         var env = NapiEnv.Current;
-        var resourceName = "ThreadSafeFunction"u8.ToArray();
+        ReadOnlySpan<byte> resourceNameBytes = "ThreadSafeFunction"u8;
+        NativeNodeApi.napi_create_string_utf8(env, resourceNameBytes, (IntPtr)resourceNameBytes.Length, out var resourceName).ThrowIfFailed();
 
         NativeNodeApi.napi_create_threadsafe_function(
             env,
@@ -148,89 +149,103 @@ internal sealed class ThreadSafeFunction : IDisposable
         NativeNodeApi.napi_create_function(env, rejectedName, (IntPtr)rejectedName.Length,
             GetRejectedTrampoline(), GCHandle.ToIntPtr(gch), out var rejectedFn).ThrowIfFailed();
 
-        NativeNodeApi.napi_call_function(env, promise, thenFn,
-            2, [fulfilledFn, rejectedFn], out _).ThrowIfFailed();
-
-        // M0 铁律：清除挂起异常
+        var status = NativeNodeApi.napi_call_function(env, promise, thenFn,
+            2, [fulfilledFn, rejectedFn], out _);
+        // M0 铁律：先清除挂起异常，再检查状态
         NativeNodeApi.napi_get_and_clear_last_exception(env, out _).ThrowIfFailed();
+        status.ThrowIfFailed();
     }
 
     private sealed class PromiseState
     {
         public TaskCompletionSource<object?> Tcs { get; init; } = null!;
         public Type InnerType { get; init; } = null!;
+        public bool Done;
     }
 
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-    private static IntPtr FulfilledTrampoline(IntPtr env, IntPtr info)
-    {
-        try
-        {
-            var state = TakePromiseState(env, info, out var firstArg);
-            var inner = state.InnerType;
-            object? value = inner == typeof(string) ? (object?)NativeValue.ToString(firstArg)
-                : inner == typeof(double) ? NativeValue.ToDouble(firstArg)
-                : inner == typeof(bool) ? NativeValue.ToBool(firstArg)
-                : inner == typeof(int) ? (int)NativeValue.ToDouble(firstArg)
-                : firstArg;
-            state.Tcs.TrySetResult(value);
-        }
-        catch (Exception ex)
-        {
-            FailPendingState(env, info, ex);
-        }
-        NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-        return undefined;
-    }
-
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-    private static IntPtr RejectedTrampoline(IntPtr env, IntPtr info)
-    {
-        try
-        {
-            _ = TakePromiseState(env, info, out var reasonArg);
-            var reason = NativeValue.ToString(reasonArg);
-            FailAllPending(env, info, new InvalidOperationException($"ArkTS promise rejected: {reason}"));
-        }
-        catch (Exception ex)
-        {
-            FailAllPending(env, info, ex);
-        }
-        NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-        return undefined;
-    }
-
-    private static PromiseState TakePromiseState(IntPtr env, IntPtr info, out IntPtr firstArg)
+    private static PromiseState TakePromiseState(IntPtr env, IntPtr info, out IntPtr firstArg, out GCHandle gch)
     {
         var argc = (IntPtr)4;
         var argv = new IntPtr[4];
         NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
             .ThrowIfFailed();
         firstArg = argv[0];
-        var gch = GCHandle.FromIntPtr(data);
+        gch = GCHandle.FromIntPtr(data);
         return (PromiseState)gch.Target!;
     }
 
-    private static void FailPendingState(IntPtr env, IntPtr info, Exception ex)
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static IntPtr FulfilledTrampoline(IntPtr env, IntPtr info)
     {
-        try { FailAllPending(env, info, ex); } catch { }
-    }
-
-    private static void FailAllPending(IntPtr env, IntPtr info, Exception ex)
-    {
+        GCHandle gch = default;
         try
         {
-            var argc = (IntPtr)4;
-            var argv = new IntPtr[4];
-            NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
-                .ThrowIfFailed();
-            var gch = GCHandle.FromIntPtr(data);
-            if (gch.Target is PromiseState state)
+            var state = TakePromiseState(env, info, out var firstArg, out gch);
+            if (state.Done)
             {
-                state.Tcs.TrySetException(ex);
+                NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
+                return undefined;
+            }
+            state.Done = true;
+            var inner = state.InnerType;
+            object? value = inner == typeof(string) ? (object?)NativeValue.ToString(firstArg)
+                : inner == typeof(double) ? NativeValue.ToDouble(firstArg)
+                : inner == typeof(bool) ? NativeValue.ToBool(firstArg)
+                : inner == typeof(int) ? (int)NativeValue.ToDouble(firstArg)
+                : inner == typeof(uint) ? (uint)NativeValue.ToDouble(firstArg)
+                : inner == typeof(long) ? NativeValue.ToLong(firstArg)
+                : inner == typeof(byte) ? NativeValue.ToByte(firstArg)
+                : firstArg;
+            state.Tcs.TrySetResult(value);
+        }
+        catch (Exception ex)
+        {
+            if (gch.IsAllocated && gch.Target is PromiseState s && !s.Done)
+            {
+                s.Done = true;
+                s.Tcs.TrySetException(ex);
             }
         }
-        catch { }
+        finally
+        {
+            if (gch.IsAllocated) gch.Free();
+        }
+        NativeNodeApi.napi_get_undefined(env, out var undefinedRet).ThrowIfFailed();
+        return undefinedRet;
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static IntPtr RejectedTrampoline(IntPtr env, IntPtr info)
+    {
+        GCHandle gch = default;
+        try
+        {
+            var state = TakePromiseState(env, info, out var reasonArg, out gch);
+            if (state.Done)
+            {
+                NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
+                return undefined;
+            }
+            state.Done = true;
+            string? reason = null;
+            try { reason = NativeValue.ToString(reasonArg); }
+            catch { /* reason 可能不是字符串，忽略转换失败 */ }
+            state.Tcs.TrySetException(new ArkTSException($"ArkTS promise rejected: {reason ?? "unknown"}", reason, reasonArg));
+        }
+        catch (Exception ex)
+        {
+            if (gch.IsAllocated && gch.Target is PromiseState s && !s.Done)
+            {
+                s.Done = true;
+                s.Tcs.TrySetException(ex);
+            }
+        }
+        finally
+        {
+            if (gch.IsAllocated) gch.Free();
+        }
+        NativeNodeApi.napi_get_undefined(env, out var undefinedRet).ThrowIfFailed();
+        return undefinedRet;
     }
 
     private static unsafe IntPtr GetFulfilledTrampoline()

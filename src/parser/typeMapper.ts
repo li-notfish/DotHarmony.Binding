@@ -6,6 +6,11 @@ export class TypeMapper {
         'number': { typescript: 'number', csharp: 'double', isNative: false },
         'boolean': { typescript: 'boolean', csharp: 'bool', isNative: false },
         'void': { typescript: 'void', csharp: 'void', isNative: false },
+        // 数值类型扩展
+        'long': { typescript: 'long', csharp: 'long', isNative: false },
+        'ulong': { typescript: 'ulong', csharp: 'ulong', isNative: false },
+        'uint': { typescript: 'uint', csharp: 'uint', isNative: false },
+        'byte': { typescript: 'byte', csharp: 'byte', isNative: false },
         'Resource': { typescript: 'Resource', csharp: 'IntPtr', isNative: true },
         'ResourceColor': { typescript: 'ResourceColor', csharp: 'IntPtr', isNative: true },
         'ResourceStr': { typescript: 'ResourceStr', csharp: 'IntPtr', isNative: true },
@@ -264,7 +269,7 @@ export class TypeMapper {
                     if (inner === 'void') {
                         return 'Task';
                     }
-                    if (['string', 'double', 'bool', 'int', 'IntPtr'].includes(inner)) {
+                    if (['string', 'double', 'bool', 'int', 'uint', 'long', 'byte', 'IntPtr'].includes(inner)) {
                         return inner === 'double' ? 'Task<double>' : `Task<${inner}>`;
                     }
                     // 不可封送的复杂类型：返回 Task<IntPtr>（句柄）

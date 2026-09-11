@@ -291,7 +291,8 @@ public static class NodeApi
         NativeNodeApi.napi_is_promise(NapiEnv.Current, result, out var isPromise).ThrowIfFailed();
         if (!isPromise)
             return Task.CompletedTask;
-        return PromiseTaskBridge.ToTask<IntPtr>(result).ContinueWith(_ => { }, TaskScheduler.Default);
+        return PromiseTaskBridge.ToTask<object>(result)
+            .ContinueWith(t => t.GetAwaiter().GetResult(), TaskScheduler.Default);
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif
@@ -353,6 +354,12 @@ public static class NodeApi
             return (T)(object)NativeValue.ToDouble(result);
         if (type == typeof(int))
             return (T)(object)NativeValue.ToInt(result);
+        if (type == typeof(uint))
+            return (T)(object)NativeValue.ToUInt(result);
+        if (type == typeof(long))
+            return (T)(object)NativeValue.ToLong(result);
+        if (type == typeof(byte))
+            return (T)(object)NativeValue.ToByte(result);
         if (type == typeof(string))
             return (T)(object)NativeValue.ToString(result)!;
         if (type == typeof(IntPtr))

@@ -23,6 +23,8 @@
                 Clicked="OnOpenModalClicked" />
         <Button Text="TSFN test (M2)"
                 Clicked="OnTsfnTestClicked" />
+        <Button Text="Async Demo (Promise → Task)"
+                Clicked="OnAsyncDemoClicked" />
         <Label x:Name="TsfnLabel"
                Text="TSFN: not run"
                HorizontalTextAlignment="Center"

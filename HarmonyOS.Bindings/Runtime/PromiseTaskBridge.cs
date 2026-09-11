@@ -49,11 +49,11 @@ internal static class PromiseTaskBridge
         NativeNodeApi.napi_create_function(env, rejectedName, (IntPtr)rejectedName.Length,
             RejectedPtr, data, out var rejectedFn).ThrowIfFailed();
 
-        NativeNodeApi.napi_call_function(env, promise, thenFn,
-            2, new IntPtr[] { fulfilledFn, rejectedFn }, out _).ThrowIfFailed();
-
-        // then 调用本身可能抛 ArkTS 异常（M0 铁律：必须清除挂起异常）
+        var status = NativeNodeApi.napi_call_function(env, promise, thenFn,
+            2, new IntPtr[] { fulfilledFn, rejectedFn }, out _);
+        // M0 铁律：先清除挂起异常，再检查状态
         NativeNodeApi.napi_get_and_clear_last_exception(env, out _).ThrowIfFailed();
+        status.ThrowIfFailed();
 
         return state.Tcs.Task.ContinueWith(t => (T)t.Result!, TaskScheduler.Default);
 #else
@@ -62,89 +62,89 @@ internal static class PromiseTaskBridge
     }
 
 #if HARMONYOS
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-    private static IntPtr FulfilledTrampoline(IntPtr env, IntPtr info)
-    {
-        // napi 回调内抛出的未捕获异常会击穿 VM，必须整体兜底
-        try
-        {
-            var state = TakeState(env, info, out var firstArg);
-            var inner = state.InnerType;
-            object? value = inner == typeof(string) ? (object?)NativeValue.ToString(firstArg)
-                : inner == typeof(double) ? NativeValue.ToDouble(firstArg)
-                : inner == typeof(bool) ? NativeValue.ToBool(firstArg)
-                : inner == typeof(int) ? (int)NativeValue.ToDouble(firstArg)
-                : firstArg; // IntPtr 句柄
-            state.Tcs.TrySetResult(value);
-        }
-        catch (Exception ex)
-        {
-            FailPendingState(env, info, ex);
-        }
-        NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-        return undefined;
-    }
-
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-    private static IntPtr RejectedTrampoline(IntPtr env, IntPtr info)
-    {
-        try
-        {
-            _ = TakeState(env, info, out var reasonArg);
-            var reason = NativeValue.ToString(reasonArg);
-            FailAllPending(env, info, new InvalidOperationException($"ArkTS promise rejected: {reason}"));
-        }
-        catch (Exception ex)
-        {
-            FailAllPending(env, info, ex);
-        }
-        NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-        return undefined;
-    }
-
-    /// <summary>从回调取出共享状态（一次性，Done 防双触发双释放）</summary>
-    private static State TakeState(IntPtr env, IntPtr info, out IntPtr firstArg)
+    private static State TakeState(IntPtr env, IntPtr info, out IntPtr firstArg, out GCHandle gch)
     {
         var argc = (IntPtr)4;
         var argv = new IntPtr[4];
         NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
             .ThrowIfFailed();
         firstArg = argv[0];
-        var gch = GCHandle.FromIntPtr(data);
-        var state = (State)gch.Target!;
-        if (!state.Done)
-        {
-            state.Done = true;
-            gch.Free();
-        }
-        return state;
+        gch = GCHandle.FromIntPtr(data);
+        return (State)gch.Target!;
     }
 
-    private static void FailPendingState(IntPtr env, IntPtr info, Exception ex)
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static IntPtr FulfilledTrampoline(IntPtr env, IntPtr info)
     {
-        try { FailAllPending(env, info, ex); } catch { /* 兜底，不再外抛 */ }
-    }
-
-    private static void FailAllPending(IntPtr env, IntPtr info, Exception ex)
-    {
+        GCHandle gch = default;
         try
         {
-            var argc = (IntPtr)4;
-            var argv = new IntPtr[4];
-            NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
-                .ThrowIfFailed();
-            var gch = GCHandle.FromIntPtr(data);
-            if (gch.Target is State state)
+            var state = TakeState(env, info, out var firstArg, out gch);
+            if (state.Done)
             {
-                if (!state.Done)
-                {
-                    state.Done = true;
-                    gch.Free();
-                }
-                state.Tcs.TrySetException(ex);
+                NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
+                return undefined;
+            }
+            state.Done = true;
+            var inner = state.InnerType;
+            object? value = inner == typeof(string) ? (object?)NativeValue.ToString(firstArg)
+                : inner == typeof(double) ? NativeValue.ToDouble(firstArg)
+                : inner == typeof(bool) ? NativeValue.ToBool(firstArg)
+                : inner == typeof(int) ? (int)NativeValue.ToDouble(firstArg)
+                : inner == typeof(uint) ? (uint)NativeValue.ToDouble(firstArg)
+                : inner == typeof(long) ? NativeValue.ToLong(firstArg)
+                : inner == typeof(byte) ? NativeValue.ToByte(firstArg)
+                : firstArg; // IntPtr 句柄
+            state.Tcs.TrySetResult(value);
+        }
+        catch (Exception ex)
+        {
+            if (gch.IsAllocated && gch.Target is State s && !s.Done)
+            {
+                s.Done = true;
+                s.Tcs.TrySetException(ex);
             }
         }
-        catch { /* 状态已释放则忽略 */ }
+        finally
+        {
+            if (gch.IsAllocated) gch.Free();
+        }
+        NativeNodeApi.napi_get_undefined(env, out var undefinedRet).ThrowIfFailed();
+        return undefinedRet;
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static IntPtr RejectedTrampoline(IntPtr env, IntPtr info)
+    {
+        GCHandle gch = default;
+        try
+        {
+            var state = TakeState(env, info, out var reasonArg, out gch);
+            if (state.Done)
+            {
+                NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
+                return undefined;
+            }
+            state.Done = true;
+            string? reason = null;
+            try { reason = NativeValue.ToString(reasonArg); }
+            catch { /* reason 可能不是字符串，忽略转换失败 */ }
+            state.Tcs.TrySetException(new ArkTSException($"ArkTS promise rejected: {reason ?? "unknown"}", reason, reasonArg));
+        }
+        catch (Exception ex)
+        {
+            if (gch.IsAllocated && gch.Target is State s && !s.Done)
+            {
+                s.Done = true;
+                s.Tcs.TrySetException(ex);
+            }
+        }
+        finally
+        {
+            if (gch.IsAllocated) gch.Free();
+        }
+        NativeNodeApi.napi_get_undefined(env, out var undefinedRet).ThrowIfFailed();
+        return undefinedRet;
     }
 #endif
 }
