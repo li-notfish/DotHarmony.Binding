@@ -1,9 +1,12 @@
 // Promise → Task 桥（ROADMAP 2.1 的最小切片）。
 // 前提：被调 Promise 在 JS 线程 resolve/reject，fulfilled/rejected 回调经
 // napi_create_function 的原生 trampoline 进入 C#（复用 NativeCallbacks 的
-// GCHandle-data 模式）。Task 续体经 TaskCompletionSource
-// (RunContinuationsAsynchronously) + ContinueWith 调度到线程池，
-// 避免用户续体阻塞 JS 线程。
+// GCHandle-data 模式）。
+// TCS 不使用 RunContinuationsAsynchronously：Task 续体在 TrySetResult 内联到
+// JS 线程执行（与 JS await 微任务语义一致），保证 await 之后的 NAPI 调用
+// （wrapper 属性访问等）仍有 env 可用；若调度到线程池，NapiEnv.Current 会
+// 因线程亲和性直接抛异常。代价：用户续体在 JS 线程上同步执行，长耗时工作
+// 应自行切走（Task.Run）。
 // 任意线程 → JS 线程的回调式 API（AsyncCallback 风格）仍需完整 TSFN 通道，后续扩展。
 #nullable enable
 using System;
@@ -17,8 +20,10 @@ internal static class PromiseTaskBridge
 {
     private sealed class State
     {
-        public readonly TaskCompletionSource<object?> Tcs =
-            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        /// <summary>非泛型承载：ToTask&lt;T&gt; 注入强类型 TCS 的完成委托与最终 Task。</summary>
+        public required Task Task;
+        public required Action<object?> SetResult;
+        public required Action<Exception> SetException;
         public Type InnerType = typeof(object);
         /// <summary>调用点显式转换委托（数组/JsObject 包装类）；null 时走 ValueConverter 基元路径。</summary>
         public Func<IntPtr, object?>? Convert;
@@ -38,7 +43,16 @@ internal static class PromiseTaskBridge
     public static Task<T> ToTask<T>(IntPtr promise, Func<IntPtr, T>? convert = null)
     {
 #if HARMONYOS
-        var state = new State { InnerType = typeof(T) };
+        // 同步续体：Promise resolve 发生在 JS 线程，await 续体在该线程内联恢复，
+        // 使后续 NAPI 调用（wrapper 属性等）拥有 env。
+        var tcs = new TaskCompletionSource<T>();
+        var state = new State
+        {
+            Task = tcs.Task,
+            SetResult = v => tcs.TrySetResult((T)v!),
+            SetException = ex => tcs.TrySetException(ex),
+            InnerType = typeof(T),
+        };
         if (convert != null)
         {
             var conv = convert;
@@ -66,7 +80,7 @@ internal static class PromiseTaskBridge
         NativeNodeApi.napi_get_and_clear_last_exception(env, out _).ThrowIfFailed();
         status.ThrowIfFailed();
 
-        return state.Tcs.Task.ContinueWith(t => (T)t.Result!, TaskScheduler.Default);
+        return tcs.Task;
 #else
         throw new PlatformNotSupportedException("PromiseTaskBridge requires HarmonyOS runtime");
 #endif
@@ -100,14 +114,14 @@ internal static class PromiseTaskBridge
             object? value = state.Convert != null
                 ? state.Convert(firstArg)
                 : ValueConverter.ConvertTo(state.InnerType, firstArg);
-            state.Tcs.TrySetResult(value);
+            state.SetResult(value);
         }
         catch (Exception ex)
         {
             if (gch.IsAllocated && gch.Target is State s && !s.Done)
             {
                 s.Done = true;
-                s.Tcs.TrySetException(ex);
+                s.SetException(ex);
             }
         }
         finally
@@ -134,14 +148,14 @@ internal static class PromiseTaskBridge
             string? reason = null;
             try { reason = NativeValue.ToString(reasonArg); }
             catch { /* reason 可能不是字符串，忽略转换失败 */ }
-            state.Tcs.TrySetException(new ArkTSException($"ArkTS promise rejected: {reason ?? "unknown"}", reason, reasonArg));
+            state.SetException(new ArkTSException($"ArkTS promise rejected: {reason ?? "unknown"}", reason, reasonArg));
         }
         catch (Exception ex)
         {
             if (gch.IsAllocated && gch.Target is State s && !s.Done)
             {
                 s.Done = true;
-                s.Tcs.TrySetException(ex);
+                s.SetException(ex);
             }
         }
         finally
