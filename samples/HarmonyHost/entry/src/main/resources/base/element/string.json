@@ -1,7 +1,144 @@
 {
   "string": [
-    { "name": "module_desc", "value": "module description" },
-    { "name": "ability_desc", "value": ".NET NativeAOT host" },
-    { "name": "EntryAbility_label", "value": "HarmonyHost" }
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "ability_desc",
+      "value": ".NET NativeAOT host"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "HarmonyHost"
+    },
+    {
+      "name": "permission_ACCELEROMETER_reason",
+      "value": "Allow the app to use ohos.permission.ACCELEROMETER"
+    },
+    {
+      "name": "permission_ACCESS_DISK_PHY_INFO_reason",
+      "value": "Allow the app to use ohos.permission.ACCESS_DISK_PHY_INFO"
+    },
+    {
+      "name": "permission_ACCESS_VIRTUAL_SCREEN_reason",
+      "value": "Allow the app to use ohos.permission.ACCESS_VIRTUAL_SCREEN"
+    },
+    {
+      "name": "permission_ACTIVITY_MOTION_reason",
+      "value": "Allow the app to use ohos.permission.ACTIVITY_MOTION"
+    },
+    {
+      "name": "permission_APPROXIMATELY_LOCATION_reason",
+      "value": "Allow the app to use ohos.permission.APPROXIMATELY_LOCATION"
+    },
+    {
+      "name": "permission_CAMERA_reason",
+      "value": "Allow the app to use ohos.permission.CAMERA"
+    },
+    {
+      "name": "permission_CUSTOM_SCREEN_CAPTURE_reason",
+      "value": "Allow the app to use ohos.permission.CUSTOM_SCREEN_CAPTURE"
+    },
+    {
+      "name": "permission_DISTRIBUTED_DATASYNC_reason",
+      "value": "Allow the app to use ohos.permission.DISTRIBUTED_DATASYNC"
+    },
+    {
+      "name": "permission_GET_IP_MAC_INFO_reason",
+      "value": "Allow the app to use ohos.permission.GET_IP_MAC_INFO"
+    },
+    {
+      "name": "permission_GET_NETWORK_INFO_reason",
+      "value": "Allow the app to use ohos.permission.GET_NETWORK_INFO"
+    },
+    {
+      "name": "permission_GYROSCOPE_reason",
+      "value": "Allow the app to use ohos.permission.GYROSCOPE"
+    },
+    {
+      "name": "permission_INTERNET_reason",
+      "value": "Allow the app to use ohos.permission.INTERNET"
+    },
+    {
+      "name": "permission_LOCATION_reason",
+      "value": "Allow the app to use ohos.permission.LOCATION"
+    },
+    {
+      "name": "permission_MANAGE_PASTEBOARD_APP_SHARE_OPTION_reason",
+      "value": "Allow the app to use ohos.permission.MANAGE_PASTEBOARD_APP_SHARE_OPTION"
+    },
+    {
+      "name": "permission_MANAGE_RECENT_SNAPSHOT_reason",
+      "value": "Allow the app to use ohos.permission.MANAGE_RECENT_SNAPSHOT"
+    },
+    {
+      "name": "permission_MANAGE_SECURE_SETTINGS_reason",
+      "value": "Allow the app to use ohos.permission.MANAGE_SECURE_SETTINGS"
+    },
+    {
+      "name": "permission_MANAGE_SETTINGS_reason",
+      "value": "Allow the app to use ohos.permission.MANAGE_SETTINGS"
+    },
+    {
+      "name": "permission_MICROPHONE_reason",
+      "value": "Allow the app to use ohos.permission.MICROPHONE"
+    },
+    {
+      "name": "permission_PRIVACY_WINDOW_reason",
+      "value": "Allow the app to use ohos.permission.PRIVACY_WINDOW"
+    },
+    {
+      "name": "permission_READ_HEALTH_DATA_reason",
+      "value": "Allow the app to use ohos.permission.READ_HEALTH_DATA"
+    },
+    {
+      "name": "permission_READ_MEDIA_reason",
+      "value": "Allow the app to use ohos.permission.READ_MEDIA"
+    },
+    {
+      "name": "permission_READ_PASTEBOARD_reason",
+      "value": "Allow the app to use ohos.permission.READ_PASTEBOARD"
+    },
+    {
+      "name": "permission_SET_NET_EXT_ATTRIBUTE_reason",
+      "value": "Allow the app to use ohos.permission.SET_NET_EXT_ATTRIBUTE"
+    },
+    {
+      "name": "permission_SET_PAC_URL_reason",
+      "value": "Allow the app to use ohos.permission.SET_PAC_URL"
+    },
+    {
+      "name": "permission_SET_WINDOW_ALPHA_reason",
+      "value": "Allow the app to use ohos.permission.SET_WINDOW_ALPHA"
+    },
+    {
+      "name": "permission_SET_WINDOW_TOUCH_AREAS_reason",
+      "value": "Allow the app to use ohos.permission.SET_WINDOW_TOUCH_AREAS"
+    },
+    {
+      "name": "permission_SET_WINDOW_TRANSPARENT_reason",
+      "value": "Allow the app to use ohos.permission.SET_WINDOW_TRANSPARENT"
+    },
+    {
+      "name": "permission_SYSTEM_FLOAT_WINDOW_reason",
+      "value": "Allow the app to use ohos.permission.SYSTEM_FLOAT_WINDOW"
+    },
+    {
+      "name": "permission_VIBRATE_reason",
+      "value": "Allow the app to use ohos.permission.VIBRATE"
+    },
+    {
+      "name": "permission_VISIBLE_WINDOW_INFO_reason",
+      "value": "Allow the app to use ohos.permission.VISIBLE_WINDOW_INFO"
+    },
+    {
+      "name": "permission_WINDOW_TOPMOST_reason",
+      "value": "Allow the app to use ohos.permission.WINDOW_TOPMOST"
+    },
+    {
+      "name": "permission_ACCESS_UDID_reason",
+      "value": "Allow the app to use ohos.permission.sec.ACCESS_UDID"
+    }
   ]
 }

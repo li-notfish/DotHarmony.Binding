@@ -782,6 +782,50 @@ function writeModuleJson5Permissions(perms: string[]): void {
 
     fs.writeFileSync(moduleJson5Path, content);
     console.log(`  module.json5 updated: ${perms.length} permissions`);
+
+    writePermissionReasonStrings(perms);
+}
+
+/**
+ * 同步写入权限 reason 字符串资源。
+ * module.json5 引用 $string:permission_XXX_reason，若 string.json 缺少对应条目，
+ * hvigor CompileResource 会直接报错（"resource reference is not defined"）。
+ * 策略：解析 string.json，移除旧的 permission_* 条目后写入当前集合，其余条目保留。
+ */
+function writePermissionReasonStrings(perms: string[]): void {
+    const stringJsonPath = path.join(
+        __dirname, '../../samples/HarmonyHost/entry/src/main/resources/base/element/string.json'
+    );
+
+    if (!fs.existsSync(stringJsonPath)) {
+        console.log(`  string.json not found at ${stringJsonPath}, skipping permission reasons`);
+        return;
+    }
+
+    let doc: { string: Array<{ name: string; value: string }> };
+    try {
+        doc = JSON.parse(fs.readFileSync(stringJsonPath, 'utf-8'));
+    } catch (e: any) {
+        console.error(`  string.json parse failed: ${e.message}, skipping permission reasons`);
+        return;
+    }
+    if (!Array.isArray(doc.string)) {
+        doc.string = [];
+    }
+
+    // 移除旧 permission_* 条目，保留其它资源
+    doc.string = doc.string.filter(s => !s.name.startsWith('permission_'));
+
+    for (const p of perms) {
+        const short = p.replace(/.*\./, '');
+        doc.string.push({
+            name: `permission_${short}_reason`,
+            value: `Allow the app to use ${p}`,
+        });
+    }
+
+    fs.writeFileSync(stringJsonPath, JSON.stringify(doc, null, 2) + '\n');
+    console.log(`  string.json updated: ${perms.length} permission reasons`);
 }
 
 /** 已转正的模块（参与编译，不生成 Compile Remove） */
