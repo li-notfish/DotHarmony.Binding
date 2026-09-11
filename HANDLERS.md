@@ -233,52 +233,46 @@ public static CommandMapper<MLAYOUT, HarmonyLayoutHandler> LayoutCommandMapper =
 
 ---
 
-## 4. `@ohos.*` API 绑定（deviceInfo 模式）
+## 4. `@ohos.*` API 绑定（生成器产出，M2 完成）
 
-UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**只读常量型模块**照抄 `HarmonyOS.Bindings/Api/DeviceInfo.cs` 即可：
+UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**模块绑定全部由生成器产出**（`HarmonyOS.Bindings/Api/`，438 个模块 / 375 个转正编译），不要手写——下面的铁律是生成器与运行时已经实现的约束，排查问题时读。
 
-### 4.1 手写模板
+### 4.1 生成与转正流程
 
-```csharp
-public static unsafe partial class Vibration
-{
-    private const string ModuleName = "@ohos.vibrator";
+```bash
+# 全量生成（449 个 d.ts → 438 模块）；不带 --all 只处理 PILOT_MODULES 白名单
+npx ts-node src/parser/index.ts --sdk "<SDK 路径>" --all
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
-    private static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            // …与 DeviceInfo.Module 完全相同的加载样板…
-        }
-    }
-}
+# 转正策略：--all 模式默认全部转正，GRAYSCALE_MODULES（src/parser/index.ts）里的回灰；
+# 修复某模块的类型映射缺口后把它从黑名单移除即可
+dotnet build ArkTsBinding.slnx
 ```
 
-**五条铁律**（每条都有真实闪退/bug 对应，详见 ROADMAP）：
+产物形态：`static unsafe partial class DeviceInfo`（模块类，Module 句柄懒加载）+ 嵌套接口/类的包装类（`JsObject` 派生）与入参 record（`INapiRecord`）。
+
+### 4.2 封送能力（TypeMapper 单一事实源）
+
+| ArkTS | C# | 说明 |
+|---|---|---|
+| `Promise<T>` | `Task<T>` | PromiseTaskBridge；reject → `ArkTSException`；**续体在 JS 线程内联恢复** |
+| 仅 callback 形式 `AsyncCallback<T>` | `Task<T>` | CallbackTaskBridge（err-first 回调作末参传入） |
+| `on/off/once(type, cb)` | .NET `event` + 类型化 `On/Off/Once` | EventListenerRegistry 按函数实例配对 |
+| `ArrayBuffer`/TypedArray | `byte[]`（拷贝） | 内容逐字节往返已实测 |
+| `bigint` / `Map<K,V>` | `JsBigInt` / `JsMap<K,V>` 活视图 | 超出 int64/uint64 抛异常 |
+| 跨模块 `import type` | `IntPtr` 句柄（降级） | 强类型跨模块解析未实现 |
+
+### 4.3 铁律（生成器已实现，手写扩展时必须遵守）
 
 1. **库名**：napi P/Invoke 全部走 `libace_napi.z.so`（`libnapi.so` 不存在）；
 2. **模块加载格式**：先试 `"=@ohos.xxx"`（系统模块前缀），失败回退不带 `=`；
-3. **异常清理**：`napi_load_module` / 任何 napi 调用失败后**必须 `napi_get_and_clear_last_exception`**，否则 pending 异常传回宿主 ArkTS 执行流直接闪退；
-4. **handle scope**：`napi_value` 只在 `napi_open_handle_scope` 内有效，加载成功后立即转 `NapiReference`（napi_ref）长期持有；
-5. **字符串读取**：先取 length，缓冲区要 **`length + 1`** 字节（两段式），否则 UTF8 截尾（HUAWEI→HUAWE）。
+3. **异常清理**：napi 调用失败后**必须 `napi_get_and_clear_last_exception`**，否则 pending 异常传回宿主执行流直接闪退；
+4. **线程亲和**：`NapiEnv.Current` 是 `[ThreadStatic]`——napi 调用必须在 JS（宿主主）线程；后台线程经 TSFN 通道（`ThreadSafeFunction`，finalize 延迟释放防 UAF）；
+5. **字符串读取**：先取 length，缓冲区 **`length + 1`** 字节（两段式），否则 UTF8 截尾（HUAWEI→HUAWE）；
+6. **async void 兜底**：事件处理器必须 `catch (Exception)`——async void 中未处理异常直接杀进程。
 
-### 4.2 宿主模块登记（容易漏！）
+### 4.4 宿主模块登记（自动）
 
-HarmonyOS 只允许加载**宿主 ArkTS 已 import** 的模块。每个新模块绑定必须在 `samples/HarmonyHost/entry/src/main/ets/ohosImports.ets` 追加一行 re-export：
-
-```typescript
-export { default as vibrator } from '@ohos.vibrator';
-```
-
-漏了这行的症状：jscrash `Cannot find module '@ohos.vibrator'`。（生成器后续会自动维护此文件，M2。）
-
-### 4.3 带方法调用的模块（M2 方向，先了解）
-
-deviceInfo 只有属性读取；带方法的模块（如 `vibrator.start()`）需要 `napi_get_named_property` 取函数 → `napi_call_function` 调用，参数用 `HarmonyOS.Bindings/Runtime/NativeValue.cs` 的 `From/To` 系列封送（`From(string/double/bool/Enum/object)`，字符串 `ToString` 已处理两段式）。异步回调（Promise → Task）依赖 TSFN 异步层，属于 M2 范畴——当前阶段先绑**同步方法**。
+生成器自动维护 `samples/HarmonyHost/entry/src/main/ets/ohosImports.ets`（re-export 所有已生成模块），并同时写 `module.json5` 的 `requestPermissions` 与 `string.json` 的权限 reason 资源。手动登记仅在调试新模块时需要。
 
 ---
 

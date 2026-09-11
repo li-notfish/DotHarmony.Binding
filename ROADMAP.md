@@ -110,6 +110,13 @@
 - 明确不做：Set 容器（试点 0 使用）、DataView、Int32Array 等精确 TypedArray 类型（一律按字节拷贝，有损）、BigInt words 全精度、NativeCallbacks 反射兜底的替换
 - ~~待手动验证：模拟器端到端（事件触发、ArrayBuffer 读写、Map 迭代）~~ → 见 2.7（事件订阅/退订回路已实测；ArrayBuffer 读写、Map 迭代仍待专项用例）
 
+**2.10 M2 收尾与零分配改造（2026-09-12 完成）——M2 除 2.4 Essentials 外全部完成**：
+- **封送专项实测通过**（模拟器）：ArrayBuffer byte[8] 往返逐字节一致；JsMap 读侧（Count/TryGet/Entries）与写侧（Create+Set → JS forEach 求和）全通；TSFN 加固后 worker(tid 9)→JS(tid 1) 回调、env 往返正常
+- **TSFN 生命周期加固**：Release/Abort 与 Call 互斥（锁）防句柄竞态；GCHandle 延迟到 finalize 回调释放——abort 后已入队消息仍会派发，过早释放即 UAF；CallJsTrampoline 异常捕获（不得穿透原生帧）
+- **全量生成（M2.3 终态）**：`--all` 生成 449 个 d.ts 中的 438 个模块，**375 转正编译、63 灰度**（黑名单 GRAYSCALE_MODULES）。规模暴露的生成器工程化缺陷全部修复：模块 className 唯一化（resourceManager/global.resourceManager、net/bluetooth 的 connection/socket 同名互覆盖）；跨模块 import 类型降级 IntPtr（含 default import）；枚举冲突按属主模块加前缀（废弃"全局去重丢弃"——首发射者被灰度会拖垮依赖者）；陈旧 Enums.cs 清理；灰度清单携带唯一化后 className；含 UTF-16（CRLF/代理对）转义与命名保留字处理
+- **已知残留（立项待做）**：TS 声明合并类型（window.WindowRect 双定义）；跨模块强类型解析（现在降级 IntPtr）；63 灰度模块的类型映射缺口清单
+- **零分配调用路径（.NET 10 / C# 13）**：`params ReadOnlySpan<object?>`（params collections，调用点零数组）；argv 栈分配（InvokeMethod/CreateInstance/trampolines，>8 参数回退堆）；P/Invoke 改 `ReadOnlySpan<IntPtr>`（LibraryImport 钉扎零拷贝）；生成 record 的 WriteTo 属性名 u8 常量缓存（替代每次 `Encoding.UTF8.GetBytes`）；NodeApi 胶水名字节静态缓存。**剩余分配源**：object 转换点基元装箱、字符串结果物化、事件适配器闭包——完全零装箱需 union struct 参数设计，后续立项
+
 **2.9 事件触发路径实测 + 第四批扩展（2026-09-12 完成）**：
 - **事件触发路径首次全链路实测通过**（模拟器）：`Sensor.Accelerometer += handler` 订阅 → JS 持续触发 → ArgsTrampoline → 类型化 `AccelerometerResponse` 载荷（X/Y/Z 属性读取，实测 y=9.80 标准重力值）→ handler 内第 5 次自动退订（off 按函数实例匹配）。示例：ModuleVerifyPage Sensor 按钮
 - 批量扩展 46 → **74 全部转正编译**（+util 容器 9 个、events.emitter、commonEventManager、resourceManager、taskpool、worker、data.relationalStore/dataSharePredicates、file.hash/statvfs/securityLabel、multimedia.audio、graphics.displaySync/colorSpaceManager、screenLock、accounts.osAccount、formBindingData/formProvider、convertxml、zlib）
