@@ -76,11 +76,28 @@ public partial class ModuleVerifyPage : ContentPage
     {
         try
         {
-            // Sensor 模块加载测试
-            ShowResult("Sensor", "Module loaded OK (needs callback for subscribe)");
+            // 事件触发路径实测：订阅加速度计 → JS 持续触发 → handler 收到类型化载荷 →
+            // 第 5 次时在 handler 内退订（全程 JS 线程，无跨线程 NAPI）
+            _sensorEventCount = 0;
+            void OnAccel(HarmonyOS.Bindings.Api.AccelerometerResponse r)
+            {
+                _sensorEventCount++;
+                if (_sensorEventCount < 5)
+                {
+                    if (_sensorEventCount == 1)
+                        ShowResult("Sensor", $"event #1 x={r.X:F2} y={r.Y:F2} z={r.Z:F2}");
+                    return;
+                }
+                HarmonyOS.Bindings.Api.Sensor.Accelerometer -= OnAccel;
+                ShowResult("Sensor", $"event #{_sensorEventCount} x={r.X:F2} y={r.Y:F2} z={r.Z:F2} · received 5, auto-unsubscribed");
+            }
+            HarmonyOS.Bindings.Api.Sensor.Accelerometer += OnAccel;
+            ShowResult("Sensor", "subscribed, waiting for events...");
         }
         catch (Exception ex) { ShowError("Sensor", ex); }
     }
+
+    private int _sensorEventCount;
 
     // Network
     private void OnVerifyHttp(object? sender, EventArgs e)
