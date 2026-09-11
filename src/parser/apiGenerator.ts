@@ -10,7 +10,7 @@
  *
  * 产物命名空间：HarmonyOS.Bindings.Api
  */
-import { ComponentInfo, MethodInfo, ParameterInfo, EnumInfo, InterfaceInfo, ClassInfo } from './models';
+import { ComponentInfo, MethodInfo, ParameterInfo, EnumInfo, InterfaceInfo, ClassInfo, EventMetaInfo } from './models';
 import { TypeMapper } from './typeMapper';
 import { EnumGenerator } from './enumGenerator';
 import { toPascalCase, withAsyncSuffix } from './naming';
@@ -21,6 +21,22 @@ export interface ApiGenResult {
     className: string;
     moduleName: string;
     permissions: string[];
+}
+
+const EVENT_FN = new Set(['on', 'off', 'once']);
+
+/** 待生成的事件方法/访问器（一个 on/off/once 重载一条） */
+interface EventEmitInfo {
+    fnName: 'on' | 'off' | 'once';
+    kind: EventMetaInfo['kind'];
+    /** literal: 字面量值；enum: { raw: 'SensorId.ACCELEROMETER', memberCs: 'Accelerometer' } */
+    literals: { value?: string; enumFqn?: string; memberCs?: string }[];
+    /** 类型化方法的 type 参数 C# 类型（'string' 或枚举 fqn） */
+    typeParamCs: string;
+    /** 映射后的回调参数 C# 类型 */
+    callbackArgs: string[];
+    /** 除 type/callback 外的其余已映射参数 */
+    extraParams: ParameterInfo[];
 }
 
 /** 实例类型规格（namespace 内嵌套接口/类） */
@@ -128,11 +144,25 @@ export class ApiGenerator {
         // 3. 映射模块成员
         const members = this.mapMembers(component);
 
+        // 3.5 事件元数据：类型化 On/Off/Once + .NET event（回调参数类型参与可达性/升级扫描）。
+        // 注意：包装类（嵌套接口/类）上的实例事件回调参数同样参与扫描，
+        // 否则其载荷类型（如 camera 的 Photo）不会被发射导致 CS0246。
+        const moduleEvents = this.buildEventInfos(component.methods);
+        const allEventMethods = [
+            ...component.methods,
+            ...component.interfaces.flatMap(i => i.methods),
+            ...component.classes.flatMap(c => c.methods),
+        ];
+        const eventCallbackArgs = this.buildEventInfos(allEventMethods)
+            .filter(e => e.fnName === 'on' || e.fnName === 'once')
+            .flatMap(e => e.callbackArgs)
+            .filter(t => t !== 'IntPtr');
+
         // 4. 分类收敛：record 被返回位置引用 → 升级为 wrapper
-        this.convergeRecordUsage(members);
+        this.convergeRecordUsage(members, eventCallbackArgs);
 
         // 5. 可达性：只生成被模块成员（传递）引用的实例类型
-        const reachable = this.collectReachable(members);
+        const reachable = this.collectReachable(members, eventCallbackArgs);
 
         // 6. 生成
         const needsTask = members.some(m => /^Task(<.+>)?$/.test(m.retType));
@@ -140,7 +170,7 @@ export class ApiGenerator {
         const hasRecords = [...reachable].some(n => this.specByCsharp.get(n)?.kind === 'record');
         const lines: string[] = [];
         this.emitHeader(lines, moduleInfo, permissions, needsTask, hasWrappers || hasRecords);
-        this.emitModuleClass(lines, component, members, moduleInfo);
+        this.emitModuleClass(lines, component, members, moduleInfo, moduleEvents);
         for (const name of reachable) {
             const spec = this.specByCsharp.get(name)!;
             if (spec.kind === 'wrapper') this.emitWrapper(lines, spec);
@@ -258,6 +288,12 @@ export class ApiGenerator {
 
             // AsyncCallback 处理：命名形式参数 / 解析期 inline 形式标记
             let params = this.demoteOptionals([...method.parameters]);
+            // 事件函数：回调参数统一退回 IntPtr 原生重载（类型化 Action 重载由事件生成器单独产出，
+            // 否则 inline 回调映射出的 System.Action 会与类型化重载签名撞车 CS0111）
+            if (method.eventMeta) {
+                const cbIdx = params.findIndex(p => /^(?:Async)?Callback?</.test(p.type) || p.name === 'callback');
+                if (cbIdx >= 0) params[cbIdx] = { ...params[cbIdx], type: 'IntPtr', optional: false };
+            }
             let asyncInner: string | null = null;
             const namedCb = params.find(p => /^AsyncCallback<(.+)>$/.test(p.type));
             if (namedCb) {
@@ -320,11 +356,14 @@ export class ApiGenerator {
 
     // ---------- 分类收敛 / 可达性 ----------
 
-    private convergeRecordUsage(members: EmitMember[]): void {
+    private convergeRecordUsage(members: EmitMember[], extraReturnStrings: string[] = []): void {
         for (let round = 0; round < 5; round++) {
             let changed = false;
-            // 返回位置 = 模块方法返回类型 + 全部 wrapper 方法/属性的取值类型
-            const returnStrings = members.filter(m => !m.isProperty).map(m => m.retType);
+            // 返回位置 = 模块方法返回类型 + 全部 wrapper 方法/属性的取值类型 + 事件回调参数类型
+            const returnStrings = [
+                ...members.filter(m => !m.isProperty).map(m => m.retType),
+                ...extraReturnStrings,
+            ];
             for (const spec of this.specs) {
                 if (spec.kind !== 'wrapper' || !this.specByCsharp.has(spec.csharpName)) continue;
                 for (const m of this.wrapperMembers(spec).methods) {
@@ -357,7 +396,7 @@ export class ApiGenerator {
         return result;
     }
 
-    private collectReachable(members: EmitMember[]): Set<string> {
+    private collectReachable(members: EmitMember[], extraSeeds: string[] = []): Set<string> {
         const reachable = new Set<string>();
         const queue: string[] = [];
 
@@ -374,6 +413,7 @@ export class ApiGenerator {
             [m.retType, ...m.params.map(p => p.type)];
 
         add(this.collectReferencedNames(members.flatMap(memberTypeStrings)));
+        add(this.collectReferencedNames(extraSeeds));
 
         // 种子补充：带构造函数的嵌套类是实例化入口（如 PhotoViewPicker），即使模块无成员也生成
         for (const spec of this.specs) {
@@ -436,8 +476,10 @@ export class ApiGenerator {
             }
             const ms = s.iface ? s.iface.methods : (s.cls?.methods ?? []);
             for (const m of ms) {
-                if (!seenMethods.has(m.name)) {
-                    seenMethods.add(m.name);
+                // 按 名字+参数类型 去重（同名重载必须保留，否则 on 的 30 个字面量重载会被折叠成 1 个）
+                const key = `${m.name}(${m.parameters.map(p => p.type).join(',')})`;
+                if (!seenMethods.has(key)) {
+                    seenMethods.add(key);
                     methods.push(m);
                 }
             }
@@ -487,7 +529,8 @@ export class ApiGenerator {
         lines: string[],
         component: ComponentInfo,
         members: EmitMember[],
-        moduleInfo: { module: string; className: string; local: string }
+        moduleInfo: { module: string; className: string; local: string },
+        events: EventEmitInfo[]
     ): void {
         lines.push(`public static unsafe partial class ${moduleInfo.className}`);
         lines.push('{');
@@ -518,6 +561,9 @@ export class ApiGenerator {
                 this.emitStaticMethod(lines, m);
             }
         }
+        this.emitEventMembers(lines, events, false,
+            new Set(members.map(m => m.pascalName)),
+            new Set(members.map(m => `_${m.rawName}`)));
         lines.push('}');
         lines.push('');
         void component;
@@ -653,7 +699,13 @@ export class ApiGenerator {
         const generatedSigs = new Set<string>();
         for (const m of methods) {
             if (m.name === '__call__') continue;
-            const mappedParams = this.demoteOptionals(m.parameters).map(p => ({
+            // 事件函数的回调参数退回 IntPtr（与 mapMembers 同规则），类型化 Action 重载由事件生成器产出
+            let rawParams = m.parameters;
+            if (m.eventMeta) {
+                const cbIdx = rawParams.findIndex(p => /^(?:Async)?Callback?</.test(p.type) || p.name === 'callback');
+                if (cbIdx >= 0) rawParams = rawParams.map((p, i) => i === cbIdx ? { ...p, type: 'IntPtr', optional: false } : p);
+            }
+            const mappedParams = this.demoteOptionals(rawParams).map(p => ({
                 name: p.name,
                 type: this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(p.type))),
                 optional: p.optional,
@@ -685,6 +737,15 @@ export class ApiGenerator {
             lines.push('    }');
             lines.push('');
         }
+
+        // 实例事件（window/connection/pasteboard 等包装类上的 on/off/once）
+        const wrapperEvents = this.buildEventInfos(methods);
+        const takenNames = new Set<string>([
+            ...properties.map(p => toPascalCase(p.name)),
+            ...methods.filter(m => m.name !== '__call__').map(m => toPascalCase(m.name)),
+        ]);
+        this.emitEventMembers(lines, wrapperEvents, true, takenNames,
+            new Set([...u8Names].map(n => `_${n}`)));
 
         lines.push('}');
         lines.push('');
@@ -786,6 +847,9 @@ export class ApiGenerator {
             // 包装类：调用点显式工厂（AOT 安全，无反射）
             return call(method, `, static h => new ${wrapper.csharpName}(h)`);
         }
+        if (inner.startsWith('JsMap<')) {
+            return call(method, `, h => ${this.jsMapCtorExpr(inner, 'h')}`);
+        }
         const arrMatch = /^([\w.:]+)\[\]$/.exec(inner);
         if (arrMatch) {
             const elem = arrMatch[1];
@@ -807,6 +871,9 @@ export class ApiGenerator {
         const wrapper = this.specByCsharp.get(mapped);
         if (wrapper) {
             return { type: wrapper.csharpName, expr: `new ${wrapper.csharpName}(${raw})` };
+        }
+        if (mapped.startsWith('JsMap<')) {
+            return { type: mapped, expr: this.jsMapCtorExpr(mapped, raw) };
         }
         const arrMatch = /^([\w.:]+)\[\]$/.exec(mapped);
         if (arrMatch) {
@@ -843,5 +910,227 @@ export class ApiGenerator {
         const defaultVal = param.defaultValue ? ` = ${param.defaultValue}` :
             (param.optional ? ' = null' : '');
         return `${param.type}${optionalMark} ${TypeMapper.escapeCSharpKeyword(param.name)}${defaultVal}`;
+    }
+
+    // ---------- 事件模型（类型化 On/Off/Once + .NET event） ----------
+
+    private buildEventInfos(methods: MethodInfo[]): EventEmitInfo[] {
+        const infos: EventEmitInfo[] = [];
+        for (const m of methods) {
+            const meta = m.eventMeta;
+            if (!meta || !EVENT_FN.has(m.name)) continue;
+
+            // 类型参数（literal/plain → string；enum → 枚举 fqn）
+            let typeParamCs = 'string';
+            const literals: EventEmitInfo['literals'] = [];
+            if (meta.kind === 'enum' && meta.enumTypeName) {
+                const fqn = `global::HarmonyOS.ArkUI.${meta.enumTypeName}`;
+                typeParamCs = this.enumNames.has(fqn) ? fqn : meta.enumTypeName;
+            }
+            for (const raw of meta.literals) {
+                if (meta.kind === 'enum') {
+                    const dot = raw.lastIndexOf('.');
+                    const memberRaw = dot >= 0 ? raw.substring(dot + 1) : raw;
+                    literals.push({ enumFqn: typeParamCs, memberCs: toPascalCase(memberRaw) });
+                } else if (meta.kind === 'literal') {
+                    literals.push({ value: raw });
+                }
+            }
+
+            // 其余参数：跳过首参（type）与 callback 参数（具名回调类型如 CameraManager.OnCallback 按参数名兜底）
+            const callbackIdx = m.parameters.findIndex(p =>
+                /^(?:Async)?Callback?</.test(p.type) || p.name === 'callback');
+            const extraParams = m.parameters
+                .filter((p, i) => i !== 0 && i !== callbackIdx)
+                .map(p => ({
+                    name: p.name,
+                    type: this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(p.type))),
+                    optional: p.optional,
+                    defaultValue: p.defaultValue
+                }));
+
+            infos.push({
+                fnName: m.name as EventEmitInfo['fnName'],
+                kind: meta.kind,
+                literals,
+                typeParamCs,
+                // Callback<void> → System.Action；多参中的 void 位丢弃（如 Callback<T, U = void>）。
+                // Promise 载荷（Callback<Promise<bool>>）无法在同步适配器里桥接，退回 IntPtr 句柄
+                callbackArgs: meta.callbackArgs
+                    .map(t => this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(t))))
+                    .map(t => t.startsWith('Task') ? 'IntPtr' : t)
+                    .filter(t => t !== 'void'),
+                extraParams,
+            });
+        }
+        return infos;
+    }
+
+    /** JsMap 构造表达式：值类型为包装类时带 valueFactory（活视图读取包装值） */
+    private jsMapCtorExpr(mapped: string, handleExpr: string): string {
+        const valueCs = mapped.slice('JsMap<'.length, mapped.length - 1).split(',')[1]?.trim();
+        const factory = valueCs && this.specByCsharp.get(valueCs)
+            ? `, static v => new ${valueCs}(v)` : '';
+        return `new ${mapped}(${handleExpr}${factory})`;
+    }
+
+    /** 单个回调参数的转换表达式（适配器闭包内，napi_value → C#） */
+    private convertArgExpr(mapped: string, arg: string): string {
+        switch (mapped) {
+            case 'bool': return `NativeValue.ToBool(${arg})`;
+            case 'double': return `NativeValue.ToDouble(${arg})`;
+            case 'long': return `NativeValue.ToLong(${arg})`;
+            case 'int': return `NativeValue.ToInt(${arg})`;
+            case 'uint': return `NativeValue.ToUInt(${arg})`;
+            case 'byte': return `NativeValue.ToByte(${arg})`;
+            case 'string': return `(NativeValue.ToString(${arg}) ?? string.Empty)`;
+            case 'byte[]': return `NativeValue.ToByteArray(${arg})`;
+            case 'JsBigInt': return `NativeValue.ToBigInt(${arg})`;
+            case 'void': return 'default';
+        }
+        if (this.enumNames.has(mapped)) return `(${mapped})NativeValue.ToInt(${arg})`;
+        const wrapper = this.specByCsharp.get(mapped);
+        if (wrapper) return `new ${wrapper.csharpName}(${arg})`;
+        if (mapped.startsWith('JsMap<')) return this.jsMapCtorExpr(mapped, arg);
+        // 数组载荷（如 Callback<Array<Location>>）：逐元素转换
+        const arrMatch = /^([\w.:]+)\[\]$/.exec(mapped);
+        if (arrMatch) {
+            const elem = arrMatch[1];
+            const elemWrapper = this.specByCsharp.get(elem);
+            const conv = elemWrapper
+                ? `static e => new ${elemWrapper.csharpName}(e)`
+                : `static e => ValueConverter.Convert<${elem}>(e)`;
+            return `ValueConverter.ConvertArray(${arg}, ${conv})`;
+        }
+        // 其余类型透传句柄
+        return arg;
+    }
+
+    /** 适配器闭包：args => userFn(conv(args[0]), conv(args[1]), ...) */
+    private adapterExpr(callbackArgs: string[], invoke: string): string {
+        if (callbackArgs.length === 0) return `args => ${invoke}()`;
+        const convs = callbackArgs.map((t, i) => this.convertArgExpr(t, `args[${i}]`));
+        return `args => ${invoke}(${convs.join(', ')})`;
+    }
+
+    private actionType(callbackArgs: string[]): string {
+        return callbackArgs.length === 0
+            ? 'System.Action'
+            : `System.Action<${callbackArgs.join(', ')}>`;
+    }
+
+    /**
+     * 生成类型化 On/Off/Once 方法与 .NET event 访问器（模块类 static / 包装类 instance）。
+     * on/off 的 JS 函数实例经 EventListenerRegistry 配对，保证 off 传入同一 JS 函数。
+     */
+    private emitEventMembers(lines: string[], infos: EventEmitInfo[], instance: boolean, takenNames: Set<string> = new Set(), existingU8Names: Set<string> = new Set()): void {
+        if (infos.length === 0) return;
+
+        // 类里可能只有 on 没有 off（如 NetConnection）——补齐缺失的方法名 u8 常量。
+        // on/once 的事件访问器 remove 分支同样引用 _off。
+        const ensuredU8 = new Set<string>();
+        const ensure = (fn: string) => {
+            if (!ensuredU8.has(fn) && !existingU8Names.has(`_${fn}`)) {
+                ensuredU8.add(fn);
+                lines.push(`    private static ReadOnlySpan<byte> _${fn} => "${fn}"u8;`);
+            }
+        };
+        for (const info of infos) ensure(info.fnName);
+        if (infos.some(i => i.fnName !== 'off' && i.literals.length > 0)) ensure('off');
+        if (ensuredU8.size > 0) lines.push('');
+
+        lines.push(instance
+            ? '    private readonly EventListenerRegistry _eventListeners = new();'
+            : '    private static readonly EventListenerRegistry _eventListeners = new();');
+        lines.push('');
+
+        const target = instance ? 'Handle' : 'Module';
+        const call = (fnU8: string, args: string) =>
+            `NodeApi.CallMethodVoid(${target}, ${fnU8}${args ? `, ${args}` : ''})`;
+
+        // 类型化 On/Off/Once（按签名去重）
+        const seen = new Set<string>();
+        let offAllEmitted = false;
+        for (const info of infos) {
+            const fn = info.fnName;
+            const action = this.actionType(info.callbackArgs);
+            const extra = info.extraParams.length > 0
+                ? ', ' + info.extraParams.map(p => this.formatParameter(p)).join(', ') : '';
+            const extraArgs = info.extraParams.length > 0
+                ? ', ' + info.extraParams.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ') : '';
+            const mod = instance ? '' : 'static ';
+            const sigKey = `${fn}|${action}|${extra}`;
+            if (seen.has(sigKey)) continue;
+            seen.add(sigKey);
+
+            if (fn === 'off') {
+                // Off(type) 移除该事件全部 JS 监听（与回调形状无关，只发射一次）
+                if (!offAllEmitted) {
+                    offAllEmitted = true;
+                    lines.push('    /// <summary>');
+                    lines.push(`    /// off(type)：移除该事件类型的全部回调`);
+                    lines.push('    /// </summary>');
+                    lines.push(`    public ${mod}void Off(${info.typeParamCs} type)`);
+                    lines.push('    {');
+                    lines.push(`        ${call('_off', 'type')};`);
+                    lines.push('    }');
+                    lines.push('');
+                }
+                lines.push('    /// <summary>');
+                lines.push(`    /// off(type, callback)：解除订阅（按 handler 匹配）`);
+                lines.push('    /// </summary>');
+                lines.push(`    public ${mod}void Off(${info.typeParamCs} type, ${action} callback${extra})`);
+                lines.push('    {');
+                lines.push(`        _eventListeners.Remove((type, callback), js => ${call('_off', `type, js${extraArgs}`)});`);
+                lines.push('    }');
+                lines.push('');
+                continue;
+            }
+
+            const u8 = fn === 'on' ? '_on' : '_once';
+            lines.push('    /// <summary>');
+            lines.push(`    /// ${fn}(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）`);
+            lines.push('    /// </summary>');
+            lines.push(`    public ${instance ? '' : 'static '}void ${toPascalCase(fn)}(${info.typeParamCs} type, ${action} callback${extra})`);
+            lines.push('    {');
+            lines.push(`        _eventListeners.Add((type, callback),`);
+            lines.push(`            ${this.adapterExpr(info.callbackArgs, 'callback')},`);
+            lines.push(`            js => ${call(u8, `type, js${extraArgs}`)});`);
+            lines.push('    }');
+            lines.push('');
+        }
+
+        // .NET event 访问器（仅 literal/enum kind，on）
+        const seenEvents = new Set<string>();
+        for (const info of infos) {
+            if (info.fnName !== 'on') continue;
+            const action = this.actionType(info.callbackArgs);
+            for (const lit of info.literals) {
+                let eventName = lit.memberCs ?? toPascalCase(lit.value!);
+                // 与既有成员（如 AudioRecorder.Pause() 方法）撞名时追加 Event 后缀
+                if (takenNames.has(eventName)) eventName = `${eventName}Event`;
+                if (seenEvents.has(eventName)) continue;
+                seenEvents.add(eventName);
+                takenNames.add(eventName);
+                const typeValue = lit.enumFqn ? `${lit.enumFqn}.${lit.memberCs}` : JSON.stringify(lit.value!);
+                lines.push('    /// <summary>');
+                lines.push(`    /// 监听 ${lit.value ?? lit.memberCs} 事件（对应 on/off）`);
+                lines.push('    /// </summary>');
+                lines.push(`    public ${instance ? '' : 'static '}event ${action} ${eventName}`);
+                lines.push('    {');
+                lines.push('        add');
+                lines.push('        {');
+                lines.push(`            _eventListeners.Add((${typeValue}, value),`);
+                lines.push(`                ${this.adapterExpr(info.callbackArgs, 'value')},`);
+                lines.push(`                js => ${call('_on', `${typeValue}, js`)});`);
+                lines.push('        }');
+                lines.push('        remove');
+                lines.push('        {');
+                lines.push(`            _eventListeners.Remove((${typeValue}, value), js => ${call('_off', `${typeValue}, js`)});`);
+                lines.push('        }');
+                lines.push('    }');
+                lines.push('');
+            }
+        }
     }
 }

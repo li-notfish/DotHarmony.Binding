@@ -199,6 +199,14 @@ public sealed partial class PreferencesObject : JsObject
     }
 
     /// <summary>
+    /// get
+    /// </summary>
+    public Task<IntPtr> GetAsync(string key, IntPtr defValue)
+    {
+        return CallMethodAsync<IntPtr>(_get, key, defValue);
+    }
+
+    /// <summary>
     /// getSync
     /// </summary>
     public IntPtr GetSync(string key, IntPtr defValue)
@@ -212,6 +220,14 @@ public sealed partial class PreferencesObject : JsObject
     public void GetAll(IntPtr callback)
     {
         CallMethodVoid(_getAll, callback);
+    }
+
+    /// <summary>
+    /// getAll
+    /// </summary>
+    public Task<IntPtr> GetAllAsync()
+    {
+        return CallMethodAsync<IntPtr>(_getAll);
     }
 
     /// <summary>
@@ -231,6 +247,14 @@ public sealed partial class PreferencesObject : JsObject
     }
 
     /// <summary>
+    /// has
+    /// </summary>
+    public Task<bool> HasAsync(string key)
+    {
+        return CallMethodAsync<bool>(_has, key);
+    }
+
+    /// <summary>
     /// hasSync
     /// </summary>
     public bool HasSync(string key)
@@ -244,6 +268,14 @@ public sealed partial class PreferencesObject : JsObject
     public void Put(string key, IntPtr value, IntPtr callback)
     {
         CallMethodVoid(_put, key, value, callback);
+    }
+
+    /// <summary>
+    /// put
+    /// </summary>
+    public Task PutAsync(string key, IntPtr value)
+    {
+        return CallMethodAsyncVoid(_put, key, value);
     }
 
     /// <summary>
@@ -263,6 +295,14 @@ public sealed partial class PreferencesObject : JsObject
     }
 
     /// <summary>
+    /// delete
+    /// </summary>
+    public Task DeleteAsync(string key)
+    {
+        return CallMethodAsyncVoid(_delete, key);
+    }
+
+    /// <summary>
     /// deleteSync
     /// </summary>
     public void DeleteSync(string key)
@@ -276,6 +316,14 @@ public sealed partial class PreferencesObject : JsObject
     public void Clear(IntPtr callback)
     {
         CallMethodVoid(_clear, callback);
+    }
+
+    /// <summary>
+    /// clear
+    /// </summary>
+    public Task ClearAsync()
+    {
+        return CallMethodAsyncVoid(_clear);
     }
 
     /// <summary>
@@ -295,6 +343,14 @@ public sealed partial class PreferencesObject : JsObject
     }
 
     /// <summary>
+    /// flush
+    /// </summary>
+    public Task FlushAsync()
+    {
+        return CallMethodAsyncVoid(_flush);
+    }
+
+    /// <summary>
     /// flushSync
     /// </summary>
     public void FlushSync()
@@ -311,11 +367,124 @@ public sealed partial class PreferencesObject : JsObject
     }
 
     /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, string[] keys, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, keys, callback);
+    }
+
+    /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, string[] keys, IntPtr callback)
+    {
+        CallMethodVoid(_off, type, keys, callback);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<string> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback((NativeValue.ToString(args[0]) ?? string.Empty)),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<IntPtr> callback, string[] keys)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(args[0]),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, keys));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<string> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<IntPtr> callback, string[] keys)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, keys));
+    }
+
+    /// <summary>
+    /// 监听 change 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<string> Change
+    {
+        add
+        {
+            _eventListeners.Add(("change", value),
+                args => value((NativeValue.ToString(args[0]) ?? string.Empty)),
+                js => NodeApi.CallMethodVoid(Handle, _on, "change", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("change", value), js => NodeApi.CallMethodVoid(Handle, _off, "change", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 multiProcessChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<string> MultiProcessChange
+    {
+        add
+        {
+            _eventListeners.Add(("multiProcessChange", value),
+                args => value((NativeValue.ToString(args[0]) ?? string.Empty)),
+                js => NodeApi.CallMethodVoid(Handle, _on, "multiProcessChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("multiProcessChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "multiProcessChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 dataChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> DataChange
+    {
+        add
+        {
+            _eventListeners.Add(("dataChange", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "dataChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("dataChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "dataChange", js));
+        }
     }
 
 }

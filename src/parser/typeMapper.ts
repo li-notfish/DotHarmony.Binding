@@ -26,6 +26,12 @@ export class TypeMapper {
         'Array': { typescript: 'Array', csharp: 'IntPtr[]', isNative: true },
         'Callback': { typescript: 'Callback', csharp: 'IntPtr', isNative: true },
         'Function': { typescript: 'Function', csharp: 'IntPtr', isNative: true },
+        // 封送类型（Runtime 侧支持见 Runtime/JsBigInt.cs、NativeValue.From(byte[])）
+        'ArrayBuffer': { typescript: 'ArrayBuffer', csharp: 'byte[]', isNative: false },
+        'Uint8Array': { typescript: 'Uint8Array', csharp: 'byte[]', isNative: false },
+        'Int8Array': { typescript: 'Int8Array', csharp: 'byte[]', isNative: false },
+        'Uint8ClampedArray': { typescript: 'Uint8ClampedArray', csharp: 'byte[]', isNative: false },
+        'bigint': { typescript: 'bigint', csharp: 'JsBigInt', isNative: false },
         // System. 全限定：产物 using HarmonyOS.ArkUI 中可能有同名类型（如枚举 Action）造成 CS0104
         'Action': { typescript: 'Action', csharp: 'System.Action', isNative: false },
         'Func': { typescript: 'Func', csharp: 'System.Func', isNative: false },
@@ -289,8 +295,14 @@ export class TypeMapper {
                 return 'IntPtr';
             }
 
-            // Record/Map/Set 等 JS 运行时容器没有对应 C# 泛型映射，统一封送为对象句柄
-            if (baseType === 'Record' || baseType === 'Map' || baseType === 'Set') {
+            // Record/Map/Set：Map → JsMap 活视图（Runtime/JsMap.cs）；Set 暂不支持退回句柄
+            if (baseType === 'Map' || baseType === 'map') {
+                if (typeArgs.length === 2) {
+                    return `JsMap<${typeArgs[0]}, ${typeArgs[1]}>`;
+                }
+                return 'IntPtr';
+            }
+            if (baseType === 'Record' || baseType === 'Set' || baseType === 'set') {
                 return 'IntPtr';
             }
 
@@ -311,7 +323,7 @@ export class TypeMapper {
         const result: string[] = [];
         let depth = 0;
         let current = '';
-        
+
         for (const char of typeArgsStr) {
             if (char === '<') {
                 depth++;
@@ -326,12 +338,17 @@ export class TypeMapper {
                 current += char;
             }
         }
-        
+
         if (current.trim()) {
             result.push(current);
         }
-        
+
         return result;
+    }
+
+    /** 公开入口：切分泛型类型参数（事件元数据的 Callback<T1,T2> 解析等使用） */
+    static splitGenericArgs(typeArgsStr: string): string[] {
+        return this.splitTypeArguments(typeArgsStr);
     }
 
     static isNativeType(typescriptType: string): boolean {

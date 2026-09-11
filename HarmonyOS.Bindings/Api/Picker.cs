@@ -91,11 +91,43 @@ public sealed partial class PhotoViewPicker : JsObject
     }
 
     /// <summary>
+    /// select
+    /// </summary>
+    public void Select(PhotoSelectOptions option, IntPtr callback)
+    {
+        CallMethodVoid(_select, option, callback);
+    }
+
+    /// <summary>
+    /// select
+    /// </summary>
+    public void Select(IntPtr callback)
+    {
+        CallMethodVoid(_select, callback);
+    }
+
+    /// <summary>
     /// save
     /// </summary>
     public Task<string[]> SaveAsync(PhotoSaveOptions? option = null)
     {
         return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+    }
+
+    /// <summary>
+    /// save
+    /// </summary>
+    public void Save(PhotoSaveOptions option, IntPtr callback)
+    {
+        CallMethodVoid(_save, option, callback);
+    }
+
+    /// <summary>
+    /// save
+    /// </summary>
+    public void Save(IntPtr callback)
+    {
+        CallMethodVoid(_save, callback);
     }
 
 }
@@ -127,11 +159,43 @@ public sealed partial class DocumentViewPicker : JsObject
     }
 
     /// <summary>
+    /// select
+    /// </summary>
+    public void Select(DocumentSelectOptions option, IntPtr callback)
+    {
+        CallMethodVoid(_select, option, callback);
+    }
+
+    /// <summary>
+    /// select
+    /// </summary>
+    public void Select(IntPtr callback)
+    {
+        CallMethodVoid(_select, callback);
+    }
+
+    /// <summary>
     /// save
     /// </summary>
     public Task<string[]> SaveAsync(DocumentSaveOptions? option = null)
     {
         return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+    }
+
+    /// <summary>
+    /// save
+    /// </summary>
+    public void Save(DocumentSaveOptions option, IntPtr callback)
+    {
+        CallMethodVoid(_save, option, callback);
+    }
+
+    /// <summary>
+    /// save
+    /// </summary>
+    public void Save(IntPtr callback)
+    {
+        CallMethodVoid(_save, callback);
     }
 
     /// <summary>
@@ -167,11 +231,43 @@ public sealed partial class AudioViewPicker : JsObject
     }
 
     /// <summary>
+    /// select
+    /// </summary>
+    public void Select(AudioSelectOptions option, IntPtr callback)
+    {
+        CallMethodVoid(_select, option, callback);
+    }
+
+    /// <summary>
+    /// select
+    /// </summary>
+    public void Select(IntPtr callback)
+    {
+        CallMethodVoid(_select, callback);
+    }
+
+    /// <summary>
     /// save
     /// </summary>
     public Task<string[]> SaveAsync(AudioSaveOptions? option = null)
     {
         return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+    }
+
+    /// <summary>
+    /// save
+    /// </summary>
+    public void Save(AudioSaveOptions option, IntPtr callback)
+    {
+        CallMethodVoid(_save, option, callback);
+    }
+
+    /// <summary>
+    /// save
+    /// </summary>
+    public void Save(IntPtr callback)
+    {
+        CallMethodVoid(_save, callback);
     }
 
 }

@@ -112,7 +112,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// off
     /// </summary>
-    public static void Off(IntPtr type, IntPtr? callback = null)
+    public static void Off(IntPtr type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
@@ -120,7 +120,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// off
     /// </summary>
-    public static void Off(IntPtr type, SensorInfoParam? sensorInfoParam = null, IntPtr? callback = null)
+    public static void Off(IntPtr type, SensorInfoParam? sensorInfoParam = null, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
     }
@@ -328,9 +328,1559 @@ public static unsafe partial class Sensor
     /// <summary>
     /// off
     /// </summary>
-    public static void Off(string type, IntPtr? callback = null)
+    public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
+    }
+
+    private static readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<AccelerometerResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AccelerometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<AccelerometerUncalibratedResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AccelerometerUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<LightResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new LightResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<AmbientTemperatureResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AmbientTemperatureResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<BarometerResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new BarometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<GravityResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GravityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<GyroscopeResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GyroscopeResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<GyroscopeUncalibratedResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GyroscopeUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<HallResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HallResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<HeartRateResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HeartRateResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<HumidityResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HumidityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<LinearAccelerometerResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new LinearAccelerometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<MagneticFieldResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new MagneticFieldResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<MagneticFieldUncalibratedResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new MagneticFieldUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<OrientationResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new OrientationResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<PedometerResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new PedometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<PedometerDetectionResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new PedometerDetectionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<ProximityResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new ProximityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<RotationVectorResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new RotationVectorResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<SignificantMotionResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new SignificantMotionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<WearDetectionResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new WearDetectionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorId type, System.Action<FusionPressureResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new FusionPressureResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<AccelerometerResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AccelerometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<AccelerometerUncalibratedResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AccelerometerUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<LightResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new LightResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<AmbientTemperatureResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AmbientTemperatureResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<BarometerResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new BarometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<GravityResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GravityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<GyroscopeResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GyroscopeResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<GyroscopeUncalibratedResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GyroscopeUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<HallResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HallResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<HeartRateResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HeartRateResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<HumidityResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HumidityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<LinearAccelerometerResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new LinearAccelerometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<MagneticFieldResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new MagneticFieldResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<MagneticFieldUncalibratedResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new MagneticFieldUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<OrientationResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new OrientationResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<PedometerResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new PedometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<PedometerDetectionResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new PedometerDetectionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<ProximityResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new ProximityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<RotationVectorResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new RotationVectorResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<SignificantMotionResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new SignificantMotionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorId type, System.Action<WearDetectionResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new WearDetectionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type)
+    {
+        NodeApi.CallMethodVoid(Module, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<AccelerometerResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<AccelerometerResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<AccelerometerUncalibratedResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<AccelerometerUncalibratedResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<LightResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<LightResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<AmbientTemperatureResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<AmbientTemperatureResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<BarometerResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<BarometerResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<GravityResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<GravityResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<GyroscopeResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<GyroscopeResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<GyroscopeUncalibratedResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<GyroscopeUncalibratedResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<HallResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<HallResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<HeartRateResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<HeartRateResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<HumidityResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<HumidityResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<LinearAccelerometerResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<LinearAccelerometerResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<MagneticFieldResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<MagneticFieldResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<MagneticFieldUncalibratedResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<MagneticFieldUncalibratedResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<OrientationResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<OrientationResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<PedometerResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<PedometerResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<PedometerDetectionResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<PedometerDetectionResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<ProximityResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<ProximityResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<RotationVectorResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<RotationVectorResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<SignificantMotionResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<SignificantMotionResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<WearDetectionResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<FusionPressureResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<WearDetectionResponse> callback, SensorInfoParam? sensorInfoParam = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<SensorStatusEvent> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new SensorStatusEvent(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<SensorStatusEvent> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 Accelerometer 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<AccelerometerResponse> Accelerometer
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.Accelerometer, value),
+                args => value(new AccelerometerResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.Accelerometer, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.Accelerometer, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.Accelerometer, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 AccelerometerUncalibrated 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<AccelerometerUncalibratedResponse> AccelerometerUncalibrated
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.AccelerometerUncalibrated, value),
+                args => value(new AccelerometerUncalibratedResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.AccelerometerUncalibrated, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.AccelerometerUncalibrated, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.AccelerometerUncalibrated, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 AmbientLight 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<LightResponse> AmbientLight
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.AmbientLight, value),
+                args => value(new LightResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.AmbientLight, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.AmbientLight, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.AmbientLight, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 AmbientTemperature 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<AmbientTemperatureResponse> AmbientTemperature
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.AmbientTemperature, value),
+                args => value(new AmbientTemperatureResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.AmbientTemperature, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.AmbientTemperature, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.AmbientTemperature, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 Barometer 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<BarometerResponse> Barometer
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.Barometer, value),
+                args => value(new BarometerResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.Barometer, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.Barometer, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.Barometer, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 Gravity 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<GravityResponse> Gravity
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.Gravity, value),
+                args => value(new GravityResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.Gravity, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.Gravity, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.Gravity, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 Gyroscope 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<GyroscopeResponse> Gyroscope
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.Gyroscope, value),
+                args => value(new GyroscopeResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.Gyroscope, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.Gyroscope, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.Gyroscope, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 GyroscopeUncalibrated 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<GyroscopeUncalibratedResponse> GyroscopeUncalibrated
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.GyroscopeUncalibrated, value),
+                args => value(new GyroscopeUncalibratedResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.GyroscopeUncalibrated, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.GyroscopeUncalibrated, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.GyroscopeUncalibrated, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 Hall 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<HallResponse> Hall
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.Hall, value),
+                args => value(new HallResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.Hall, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.Hall, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.Hall, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 HeartRate 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<HeartRateResponse> HeartRate
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.HeartRate, value),
+                args => value(new HeartRateResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.HeartRate, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.HeartRate, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.HeartRate, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 Humidity 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<HumidityResponse> Humidity
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.Humidity, value),
+                args => value(new HumidityResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.Humidity, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.Humidity, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.Humidity, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 LinearAccelerometer 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<LinearAccelerometerResponse> LinearAccelerometer
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.LinearAccelerometer, value),
+                args => value(new LinearAccelerometerResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.LinearAccelerometer, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.LinearAccelerometer, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.LinearAccelerometer, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 MagneticField 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<MagneticFieldResponse> MagneticField
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.MagneticField, value),
+                args => value(new MagneticFieldResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.MagneticField, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.MagneticField, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.MagneticField, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 MagneticFieldUncalibrated 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<MagneticFieldUncalibratedResponse> MagneticFieldUncalibrated
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.MagneticFieldUncalibrated, value),
+                args => value(new MagneticFieldUncalibratedResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.MagneticFieldUncalibrated, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.MagneticFieldUncalibrated, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.MagneticFieldUncalibrated, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 Orientation 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<OrientationResponse> Orientation
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.Orientation, value),
+                args => value(new OrientationResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.Orientation, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.Orientation, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.Orientation, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 Pedometer 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<PedometerResponse> Pedometer
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.Pedometer, value),
+                args => value(new PedometerResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.Pedometer, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.Pedometer, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.Pedometer, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 PedometerDetection 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<PedometerDetectionResponse> PedometerDetection
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.PedometerDetection, value),
+                args => value(new PedometerDetectionResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.PedometerDetection, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.PedometerDetection, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.PedometerDetection, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 Proximity 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<ProximityResponse> Proximity
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.Proximity, value),
+                args => value(new ProximityResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.Proximity, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.Proximity, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.Proximity, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 RotationVector 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<RotationVectorResponse> RotationVector
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.RotationVector, value),
+                args => value(new RotationVectorResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.RotationVector, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.RotationVector, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.RotationVector, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SignificantMotion 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<SignificantMotionResponse> SignificantMotion
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.SignificantMotion, value),
+                args => value(new SignificantMotionResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.SignificantMotion, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.SignificantMotion, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.SignificantMotion, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 WearDetection 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<WearDetectionResponse> WearDetection
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.WearDetection, value),
+                args => value(new WearDetectionResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.WearDetection, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.WearDetection, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.WearDetection, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 FusionPressure 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<FusionPressureResponse> FusionPressure
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorId.FusionPressure, value),
+                args => value(new FusionPressureResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorId.FusionPressure, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorId.FusionPressure, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorId.FusionPressure, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdAccelerometer 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<AccelerometerResponse> SensorTypeIdAccelerometer
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAccelerometer, value),
+                args => value(new AccelerometerResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAccelerometer, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAccelerometer, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAccelerometer, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdAccelerometerUncalibrated 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<AccelerometerUncalibratedResponse> SensorTypeIdAccelerometerUncalibrated
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAccelerometerUncalibrated, value),
+                args => value(new AccelerometerUncalibratedResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAccelerometerUncalibrated, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAccelerometerUncalibrated, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAccelerometerUncalibrated, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdAmbientLight 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<LightResponse> SensorTypeIdAmbientLight
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAmbientLight, value),
+                args => value(new LightResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAmbientLight, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAmbientLight, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAmbientLight, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdAmbientTemperature 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<AmbientTemperatureResponse> SensorTypeIdAmbientTemperature
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAmbientTemperature, value),
+                args => value(new AmbientTemperatureResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAmbientTemperature, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAmbientTemperature, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdAmbientTemperature, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdBarometer 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<BarometerResponse> SensorTypeIdBarometer
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdBarometer, value),
+                args => value(new BarometerResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdBarometer, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdBarometer, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdBarometer, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdGravity 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<GravityResponse> SensorTypeIdGravity
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGravity, value),
+                args => value(new GravityResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGravity, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGravity, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGravity, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdGyroscope 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<GyroscopeResponse> SensorTypeIdGyroscope
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGyroscope, value),
+                args => value(new GyroscopeResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGyroscope, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGyroscope, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGyroscope, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdGyroscopeUncalibrated 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<GyroscopeUncalibratedResponse> SensorTypeIdGyroscopeUncalibrated
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGyroscopeUncalibrated, value),
+                args => value(new GyroscopeUncalibratedResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGyroscopeUncalibrated, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGyroscopeUncalibrated, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdGyroscopeUncalibrated, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdHall 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<HallResponse> SensorTypeIdHall
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHall, value),
+                args => value(new HallResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHall, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHall, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHall, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdHeartRate 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<HeartRateResponse> SensorTypeIdHeartRate
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHeartRate, value),
+                args => value(new HeartRateResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHeartRate, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHeartRate, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHeartRate, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdHumidity 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<HumidityResponse> SensorTypeIdHumidity
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHumidity, value),
+                args => value(new HumidityResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHumidity, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHumidity, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdHumidity, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdLinearAcceleration 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<LinearAccelerometerResponse> SensorTypeIdLinearAcceleration
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdLinearAcceleration, value),
+                args => value(new LinearAccelerometerResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdLinearAcceleration, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdLinearAcceleration, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdLinearAcceleration, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdMagneticField 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<MagneticFieldResponse> SensorTypeIdMagneticField
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdMagneticField, value),
+                args => value(new MagneticFieldResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdMagneticField, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdMagneticField, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdMagneticField, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdMagneticFieldUncalibrated 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<MagneticFieldUncalibratedResponse> SensorTypeIdMagneticFieldUncalibrated
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdMagneticFieldUncalibrated, value),
+                args => value(new MagneticFieldUncalibratedResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdMagneticFieldUncalibrated, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdMagneticFieldUncalibrated, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdMagneticFieldUncalibrated, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdOrientation 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<OrientationResponse> SensorTypeIdOrientation
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdOrientation, value),
+                args => value(new OrientationResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdOrientation, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdOrientation, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdOrientation, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdPedometer 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<PedometerResponse> SensorTypeIdPedometer
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdPedometer, value),
+                args => value(new PedometerResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdPedometer, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdPedometer, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdPedometer, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdPedometerDetection 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<PedometerDetectionResponse> SensorTypeIdPedometerDetection
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdPedometerDetection, value),
+                args => value(new PedometerDetectionResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdPedometerDetection, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdPedometerDetection, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdPedometerDetection, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdProximity 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<ProximityResponse> SensorTypeIdProximity
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdProximity, value),
+                args => value(new ProximityResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdProximity, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdProximity, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdProximity, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdRotationVector 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<RotationVectorResponse> SensorTypeIdRotationVector
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdRotationVector, value),
+                args => value(new RotationVectorResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdRotationVector, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdRotationVector, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdRotationVector, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdSignificantMotion 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<SignificantMotionResponse> SensorTypeIdSignificantMotion
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdSignificantMotion, value),
+                args => value(new SignificantMotionResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdSignificantMotion, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdSignificantMotion, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdSignificantMotion, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 SensorTypeIdWearDetection 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<WearDetectionResponse> SensorTypeIdWearDetection
+    {
+        add
+        {
+            _eventListeners.Add((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdWearDetection, value),
+                args => value(new WearDetectionResponse(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdWearDetection, js));
+        }
+        remove
+        {
+            _eventListeners.Remove((global::HarmonyOS.ArkUI.SensorType.SensorTypeIdWearDetection, value), js => NodeApi.CallMethodVoid(Module, _off, global::HarmonyOS.ArkUI.SensorType.SensorTypeIdWearDetection, js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 sensorStatusChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<SensorStatusEvent> SensorStatusChange
+    {
+        add
+        {
+            _eventListeners.Add(("sensorStatusChange", value),
+                args => value(new SensorStatusEvent(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "sensorStatusChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("sensorStatusChange", value), js => NodeApi.CallMethodVoid(Module, _off, "sensorStatusChange", js));
+        }
     }
 
 }
@@ -592,5 +2142,836 @@ public sealed partial class RotationMatrixResponse : JsObject
     /// inclination
     /// </summary>
     public double[] Inclination => ValueConverter.ConvertArray(GetPropertyRaw(_inclination), static e => ValueConverter.Convert<double>(e));
+
+}
+
+/// <summary>
+/// AccelerometerResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AccelerometerResponse : JsObject
+{
+    public AccelerometerResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double Z => NativeValue.ToDouble(GetPropertyRaw(_z));
+
+}
+
+/// <summary>
+/// AccelerometerUncalibratedResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AccelerometerUncalibratedResponse : JsObject
+{
+    public AccelerometerUncalibratedResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    private static ReadOnlySpan<byte> _biasX => "biasX"u8;
+    private static ReadOnlySpan<byte> _biasY => "biasY"u8;
+    private static ReadOnlySpan<byte> _biasZ => "biasZ"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double Z => NativeValue.ToDouble(GetPropertyRaw(_z));
+
+    /// <summary>
+    /// biasX
+    /// </summary>
+    public double BiasX => NativeValue.ToDouble(GetPropertyRaw(_biasX));
+
+    /// <summary>
+    /// biasY
+    /// </summary>
+    public double BiasY => NativeValue.ToDouble(GetPropertyRaw(_biasY));
+
+    /// <summary>
+    /// biasZ
+    /// </summary>
+    public double BiasZ => NativeValue.ToDouble(GetPropertyRaw(_biasZ));
+
+}
+
+/// <summary>
+/// LightResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class LightResponse : JsObject
+{
+    public LightResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _intensity => "intensity"u8;
+    private static ReadOnlySpan<byte> _colorTemperature => "colorTemperature"u8;
+    private static ReadOnlySpan<byte> _infraredLuminance => "infraredLuminance"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// intensity
+    /// </summary>
+    public double Intensity => NativeValue.ToDouble(GetPropertyRaw(_intensity));
+
+    /// <summary>
+    /// colorTemperature
+    /// </summary>
+    public double? ColorTemperature => (double?)NativeValue.ToDouble(GetPropertyRaw(_colorTemperature));
+
+    /// <summary>
+    /// infraredLuminance
+    /// </summary>
+    public double? InfraredLuminance => (double?)NativeValue.ToDouble(GetPropertyRaw(_infraredLuminance));
+
+}
+
+/// <summary>
+/// AmbientTemperatureResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AmbientTemperatureResponse : JsObject
+{
+    public AmbientTemperatureResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _temperature => "temperature"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// temperature
+    /// </summary>
+    public double Temperature => NativeValue.ToDouble(GetPropertyRaw(_temperature));
+
+}
+
+/// <summary>
+/// BarometerResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class BarometerResponse : JsObject
+{
+    public BarometerResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _pressure => "pressure"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// pressure
+    /// </summary>
+    public double Pressure => NativeValue.ToDouble(GetPropertyRaw(_pressure));
+
+}
+
+/// <summary>
+/// GravityResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class GravityResponse : JsObject
+{
+    public GravityResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double Z => NativeValue.ToDouble(GetPropertyRaw(_z));
+
+}
+
+/// <summary>
+/// GyroscopeResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class GyroscopeResponse : JsObject
+{
+    public GyroscopeResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double Z => NativeValue.ToDouble(GetPropertyRaw(_z));
+
+}
+
+/// <summary>
+/// GyroscopeUncalibratedResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class GyroscopeUncalibratedResponse : JsObject
+{
+    public GyroscopeUncalibratedResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    private static ReadOnlySpan<byte> _biasX => "biasX"u8;
+    private static ReadOnlySpan<byte> _biasY => "biasY"u8;
+    private static ReadOnlySpan<byte> _biasZ => "biasZ"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double Z => NativeValue.ToDouble(GetPropertyRaw(_z));
+
+    /// <summary>
+    /// biasX
+    /// </summary>
+    public double BiasX => NativeValue.ToDouble(GetPropertyRaw(_biasX));
+
+    /// <summary>
+    /// biasY
+    /// </summary>
+    public double BiasY => NativeValue.ToDouble(GetPropertyRaw(_biasY));
+
+    /// <summary>
+    /// biasZ
+    /// </summary>
+    public double BiasZ => NativeValue.ToDouble(GetPropertyRaw(_biasZ));
+
+}
+
+/// <summary>
+/// HallResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class HallResponse : JsObject
+{
+    public HallResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _status => "status"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// status
+    /// </summary>
+    public double Status => NativeValue.ToDouble(GetPropertyRaw(_status));
+
+}
+
+/// <summary>
+/// HeartRateResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class HeartRateResponse : JsObject
+{
+    public HeartRateResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _heartRate => "heartRate"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// heartRate
+    /// </summary>
+    public double HeartRate => NativeValue.ToDouble(GetPropertyRaw(_heartRate));
+
+}
+
+/// <summary>
+/// HumidityResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class HumidityResponse : JsObject
+{
+    public HumidityResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _humidity => "humidity"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// humidity
+    /// </summary>
+    public double Humidity => NativeValue.ToDouble(GetPropertyRaw(_humidity));
+
+}
+
+/// <summary>
+/// LinearAccelerometerResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class LinearAccelerometerResponse : JsObject
+{
+    public LinearAccelerometerResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double Z => NativeValue.ToDouble(GetPropertyRaw(_z));
+
+}
+
+/// <summary>
+/// MagneticFieldResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class MagneticFieldResponse : JsObject
+{
+    public MagneticFieldResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double Z => NativeValue.ToDouble(GetPropertyRaw(_z));
+
+}
+
+/// <summary>
+/// MagneticFieldUncalibratedResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class MagneticFieldUncalibratedResponse : JsObject
+{
+    public MagneticFieldUncalibratedResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    private static ReadOnlySpan<byte> _biasX => "biasX"u8;
+    private static ReadOnlySpan<byte> _biasY => "biasY"u8;
+    private static ReadOnlySpan<byte> _biasZ => "biasZ"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double Z => NativeValue.ToDouble(GetPropertyRaw(_z));
+
+    /// <summary>
+    /// biasX
+    /// </summary>
+    public double BiasX => NativeValue.ToDouble(GetPropertyRaw(_biasX));
+
+    /// <summary>
+    /// biasY
+    /// </summary>
+    public double BiasY => NativeValue.ToDouble(GetPropertyRaw(_biasY));
+
+    /// <summary>
+    /// biasZ
+    /// </summary>
+    public double BiasZ => NativeValue.ToDouble(GetPropertyRaw(_biasZ));
+
+}
+
+/// <summary>
+/// OrientationResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class OrientationResponse : JsObject
+{
+    public OrientationResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _alpha => "alpha"u8;
+    private static ReadOnlySpan<byte> _beta => "beta"u8;
+    private static ReadOnlySpan<byte> _gamma => "gamma"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// alpha
+    /// </summary>
+    public double Alpha => NativeValue.ToDouble(GetPropertyRaw(_alpha));
+
+    /// <summary>
+    /// beta
+    /// </summary>
+    public double Beta => NativeValue.ToDouble(GetPropertyRaw(_beta));
+
+    /// <summary>
+    /// gamma
+    /// </summary>
+    public double Gamma => NativeValue.ToDouble(GetPropertyRaw(_gamma));
+
+}
+
+/// <summary>
+/// PedometerResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PedometerResponse : JsObject
+{
+    public PedometerResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _steps => "steps"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// steps
+    /// </summary>
+    public double Steps => NativeValue.ToDouble(GetPropertyRaw(_steps));
+
+}
+
+/// <summary>
+/// PedometerDetectionResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PedometerDetectionResponse : JsObject
+{
+    public PedometerDetectionResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _scalar => "scalar"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// scalar
+    /// </summary>
+    public double Scalar => NativeValue.ToDouble(GetPropertyRaw(_scalar));
+
+}
+
+/// <summary>
+/// ProximityResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ProximityResponse : JsObject
+{
+    public ProximityResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _distance => "distance"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// distance
+    /// </summary>
+    public double Distance => NativeValue.ToDouble(GetPropertyRaw(_distance));
+
+}
+
+/// <summary>
+/// RotationVectorResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class RotationVectorResponse : JsObject
+{
+    public RotationVectorResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    private static ReadOnlySpan<byte> _w => "w"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double Z => NativeValue.ToDouble(GetPropertyRaw(_z));
+
+    /// <summary>
+    /// w
+    /// </summary>
+    public double W => NativeValue.ToDouble(GetPropertyRaw(_w));
+
+}
+
+/// <summary>
+/// SignificantMotionResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SignificantMotionResponse : JsObject
+{
+    public SignificantMotionResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _scalar => "scalar"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// scalar
+    /// </summary>
+    public double Scalar => NativeValue.ToDouble(GetPropertyRaw(_scalar));
+
+}
+
+/// <summary>
+/// WearDetectionResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WearDetectionResponse : JsObject
+{
+    public WearDetectionResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _value => "value"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// value
+    /// </summary>
+    public double Value => NativeValue.ToDouble(GetPropertyRaw(_value));
+
+}
+
+/// <summary>
+/// FusionPressureResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class FusionPressureResponse : JsObject
+{
+    public FusionPressureResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _fusionPressure => "fusionPressure"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SensorAccuracy Accuracy => (global::HarmonyOS.ArkUI.SensorAccuracy)NativeValue.ToInt(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// fusionPressure
+    /// </summary>
+    public double FusionPressure => NativeValue.ToDouble(GetPropertyRaw(_fusionPressure));
+
+}
+
+/// <summary>
+/// SensorStatusEvent 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SensorStatusEvent : JsObject
+{
+    public SensorStatusEvent(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _sensorId => "sensorId"u8;
+    private static ReadOnlySpan<byte> _sensorIndex => "sensorIndex"u8;
+    private static ReadOnlySpan<byte> _isSensorOnline => "isSensorOnline"u8;
+    private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
+    private static ReadOnlySpan<byte> _deviceName => "deviceName"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// sensorId
+    /// </summary>
+    public double SensorId => NativeValue.ToDouble(GetPropertyRaw(_sensorId));
+
+    /// <summary>
+    /// sensorIndex
+    /// </summary>
+    public double SensorIndex => NativeValue.ToDouble(GetPropertyRaw(_sensorIndex));
+
+    /// <summary>
+    /// isSensorOnline
+    /// </summary>
+    public bool IsSensorOnline => NativeValue.ToBool(GetPropertyRaw(_isSensorOnline));
+
+    /// <summary>
+    /// deviceId
+    /// </summary>
+    public double DeviceId => NativeValue.ToDouble(GetPropertyRaw(_deviceId));
+
+    /// <summary>
+    /// deviceName
+    /// </summary>
+    public string DeviceName => NativeValue.ToString(GetPropertyRaw(_deviceName)) ?? string.Empty;
 
 }

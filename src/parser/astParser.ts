@@ -1,8 +1,54 @@
 import * as ts from 'typescript';
 import * as path from 'path';
 import * as fs from 'fs';
-import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EnumInfo, EnumMemberInfo, EventInfo, DelegateInfo, InheritanceInfo, ImportInfo, ParseResult, ParseContext, createParseContext, ModuleInfo, InterfaceInfo, PropertyInfo, ClassInfo } from './models';
+import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EnumInfo, EnumMemberInfo, EventInfo, DelegateInfo, InheritanceInfo, ImportInfo, ParseResult, ParseContext, createParseContext, ModuleInfo, InterfaceInfo, PropertyInfo, ClassInfo, EventMetaInfo } from './models';
 import { TypeMapper } from './typeMapper';
+
+const EVENT_FUNCTION_NAMES = new Set(['on', 'off', 'once']);
+
+/**
+ * 从 on/off/once 函数/方法提取事件元数据（首参事件键形态 + Callback 参数形状）。
+ * 仅服务模块路径使用；组件路径的事件走 parseEventMethod。
+ */
+function extractEventMeta(node: { parameters: readonly ts.ParameterDeclaration[] }): EventMetaInfo | undefined {
+    const first = node.parameters[0];
+    const callbackParam = node.parameters.find(p => {
+        const t = p.type?.getText() ?? '';
+        return t.startsWith('Callback<') || t.startsWith('AsyncCallback<') || p.name.getText() === 'callback';
+    });
+
+    let kind: EventMetaInfo['kind'] = 'plain';
+    const literals: string[] = [];
+    let enumTypeName: string | undefined;
+
+    if (first?.type) {
+        const typeText = first.type.getText();
+        const stringLits = [...typeText.matchAll(/'([^']+)'|"([^"]+)"/g)]
+            .map(m => m[1] ?? m[2]!)
+            .filter(v => v.length > 0);
+        if (stringLits.length > 0) {
+            kind = 'literal';
+            literals.push(...stringLits);
+        } else {
+            const enumRef = /\b([A-Z][A-Za-z]\w*)\.([A-Za-z_]\w*)\b/.exec(typeText);
+            if (enumRef) {
+                kind = 'enum';
+                enumTypeName = enumRef[1];
+                literals.push(typeText.trim());
+            }
+        }
+    }
+
+    const callbackArgs: string[] = [];
+    if (callbackParam?.type) {
+        const m = /^(?:Async)?Callback?<(.+)>$/.exec(callbackParam.type.getText().trim());
+        if (m) {
+            callbackArgs.push(...TypeMapper.splitGenericArgs(m[1]).map(t => t.trim()));
+        }
+    }
+
+    return { kind, literals, enumTypeName, callbackArgs };
+}
 
 export class AstParser {
     private program: ts.Program;
@@ -432,6 +478,10 @@ export class AstParser {
             parameters: [],
             isChained: returnType === component.attributeName
         };
+
+        if (isServiceModule && EVENT_FUNCTION_NAMES.has(methodName)) {
+            method.eventMeta = extractEventMeta(node);
+        }
 
         if (node.parameters) {
             node.parameters.forEach((param) => {
@@ -1024,6 +1074,9 @@ export class AstParser {
                     })),
                     isChained: false
                 };
+                if (raw && EVENT_FUNCTION_NAMES.has(method.name)) {
+                    method.eventMeta = extractEventMeta(member);
+                }
                 methods.push(method);
             } else if (ts.isCallSignatureDeclaration(member)) {
                 const method: MethodInfo = {
@@ -1096,6 +1149,9 @@ export class AstParser {
                     })),
                     isChained: false
                 };
+                if (raw && EVENT_FUNCTION_NAMES.has(method.name)) {
+                    method.eventMeta = extractEventMeta(member);
+                }
                 methods.push(method);
             } else if (ts.isConstructorDeclaration(member)) {
                 const ctor: ConstructorOverload = {

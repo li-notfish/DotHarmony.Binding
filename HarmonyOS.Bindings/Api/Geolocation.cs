@@ -91,7 +91,7 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// off
     /// </summary>
-    public static void Off(string type, IntPtr? callback = null)
+    public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
@@ -214,6 +214,226 @@ public static unsafe partial class Geolocation
     public static Task<bool> SendCommandAsync(LocationCommand command)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _sendCommand, command);
+    }
+
+    private static readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<Location> callback, LocationRequest request)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new Location(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, request));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public static void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Module, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<Location> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<bool> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(NativeValue.ToBool(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<bool> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<Location[]> callback, CachedGnssLocationsRequest request)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(ValueConverter.ConvertArray(args[0], static e => new Location(e))),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, request));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<Location[]> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<SatelliteStatusInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new SatelliteStatusInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<SatelliteStatusInfo> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<string> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback((NativeValue.ToString(args[0]) ?? string.Empty)),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<string> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action callback, GeofenceRequest request, IntPtr want)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, request, want));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action callback, GeofenceRequest request, IntPtr want)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, request, want));
+    }
+
+    /// <summary>
+    /// 监听 locationChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<Location> LocationChange
+    {
+        add
+        {
+            _eventListeners.Add(("locationChange", value),
+                args => value(new Location(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "locationChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("locationChange", value), js => NodeApi.CallMethodVoid(Module, _off, "locationChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 locationServiceState 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<bool> LocationServiceState
+    {
+        add
+        {
+            _eventListeners.Add(("locationServiceState", value),
+                args => value(NativeValue.ToBool(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "locationServiceState", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("locationServiceState", value), js => NodeApi.CallMethodVoid(Module, _off, "locationServiceState", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 cachedGnssLocationsReporting 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<Location[]> CachedGnssLocationsReporting
+    {
+        add
+        {
+            _eventListeners.Add(("cachedGnssLocationsReporting", value),
+                args => value(ValueConverter.ConvertArray(args[0], static e => new Location(e))),
+                js => NodeApi.CallMethodVoid(Module, _on, "cachedGnssLocationsReporting", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("cachedGnssLocationsReporting", value), js => NodeApi.CallMethodVoid(Module, _off, "cachedGnssLocationsReporting", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 gnssStatusChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<SatelliteStatusInfo> GnssStatusChange
+    {
+        add
+        {
+            _eventListeners.Add(("gnssStatusChange", value),
+                args => value(new SatelliteStatusInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "gnssStatusChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("gnssStatusChange", value), js => NodeApi.CallMethodVoid(Module, _off, "gnssStatusChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 nmeaMessageChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<string> NmeaMessageChange
+    {
+        add
+        {
+            _eventListeners.Add(("nmeaMessageChange", value),
+                args => value((NativeValue.ToString(args[0]) ?? string.Empty)),
+                js => NodeApi.CallMethodVoid(Module, _on, "nmeaMessageChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("nmeaMessageChange", value), js => NodeApi.CallMethodVoid(Module, _off, "nmeaMessageChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 fenceStatusChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action FenceStatusChange
+    {
+        add
+        {
+            _eventListeners.Add(("fenceStatusChange", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Module, _on, "fenceStatusChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("fenceStatusChange", value), js => NodeApi.CallMethodVoid(Module, _off, "fenceStatusChange", js));
+        }
     }
 
 }
@@ -614,6 +834,51 @@ public sealed record LocationCommand(
         if (_commandV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _command, _commandV);
     }
+}
+
+/// <summary>
+/// SatelliteStatusInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SatelliteStatusInfo : JsObject
+{
+    public SatelliteStatusInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _satellitesNumber => "satellitesNumber"u8;
+    private static ReadOnlySpan<byte> _satelliteIds => "satelliteIds"u8;
+    private static ReadOnlySpan<byte> _carrierToNoiseDensitys => "carrierToNoiseDensitys"u8;
+    private static ReadOnlySpan<byte> _altitudes => "altitudes"u8;
+    private static ReadOnlySpan<byte> _azimuths => "azimuths"u8;
+    private static ReadOnlySpan<byte> _carrierFrequencies => "carrierFrequencies"u8;
+    /// <summary>
+    /// satellitesNumber
+    /// </summary>
+    public double SatellitesNumber => NativeValue.ToDouble(GetPropertyRaw(_satellitesNumber));
+
+    /// <summary>
+    /// satelliteIds
+    /// </summary>
+    public double[] SatelliteIds => ValueConverter.ConvertArray(GetPropertyRaw(_satelliteIds), static e => ValueConverter.Convert<double>(e));
+
+    /// <summary>
+    /// carrierToNoiseDensitys
+    /// </summary>
+    public double[] CarrierToNoiseDensitys => ValueConverter.ConvertArray(GetPropertyRaw(_carrierToNoiseDensitys), static e => ValueConverter.Convert<double>(e));
+
+    /// <summary>
+    /// altitudes
+    /// </summary>
+    public double[] Altitudes => ValueConverter.ConvertArray(GetPropertyRaw(_altitudes), static e => ValueConverter.Convert<double>(e));
+
+    /// <summary>
+    /// azimuths
+    /// </summary>
+    public double[] Azimuths => ValueConverter.ConvertArray(GetPropertyRaw(_azimuths), static e => ValueConverter.Convert<double>(e));
+
+    /// <summary>
+    /// carrierFrequencies
+    /// </summary>
+    public double[] CarrierFrequencies => ValueConverter.ConvertArray(GetPropertyRaw(_carrierFrequencies), static e => ValueConverter.Convert<double>(e));
+
 }
 
 /// <summary>

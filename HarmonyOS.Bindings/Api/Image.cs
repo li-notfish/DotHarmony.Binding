@@ -115,7 +115,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapFromPixels
     /// </summary>
-    public static Task<PixelMap> CreatePixelMapFromPixelsAsync(IntPtr pixels, InitializationOptions param)
+    public static Task<PixelMap> CreatePixelMapFromPixelsAsync(byte[] pixels, InitializationOptions param)
     {
         return NodeApi.CallMethodAsync(Module, _createPixelMapFromPixels, static h => new PixelMap(h), pixels, param);
     }
@@ -123,7 +123,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapFromPixelsSync
     /// </summary>
-    public static PixelMap CreatePixelMapFromPixelsSync(IntPtr pixels, InitializationOptions param)
+    public static PixelMap CreatePixelMapFromPixelsSync(byte[] pixels, InitializationOptions param)
     {
         return NodeApi.CallMethod(Module, _createPixelMapFromPixelsSync, static h => new PixelMap(h), pixels, param);
     }
@@ -131,7 +131,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMap
     /// </summary>
-    public static Task<PixelMap> CreatePixelMapAsync(IntPtr colors, InitializationOptions options)
+    public static Task<PixelMap> CreatePixelMapAsync(byte[] colors, InitializationOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _createPixelMap, static h => new PixelMap(h), colors, options);
     }
@@ -139,7 +139,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapSync
     /// </summary>
-    public static PixelMap CreatePixelMapSync(IntPtr colors, InitializationOptions options)
+    public static PixelMap CreatePixelMapSync(byte[] colors, InitializationOptions options)
     {
         return NodeApi.CallMethod(Module, _createPixelMapSync, static h => new PixelMap(h), colors, options);
     }
@@ -147,7 +147,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapUsingAllocator
     /// </summary>
-    public static Task<PixelMap> CreatePixelMapUsingAllocatorAsync(IntPtr colors, InitializationOptions param, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null)
+    public static Task<PixelMap> CreatePixelMapUsingAllocatorAsync(byte[] colors, InitializationOptions param, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null)
     {
         return NodeApi.CallMethodAsync(Module, _createPixelMapUsingAllocator, static h => new PixelMap(h), colors, param, allocatorType);
     }
@@ -155,7 +155,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapUsingAllocatorSync
     /// </summary>
-    public static PixelMap CreatePixelMapUsingAllocatorSync(IntPtr colors, InitializationOptions param, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null)
+    public static PixelMap CreatePixelMapUsingAllocatorSync(byte[] colors, InitializationOptions param, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null)
     {
         return NodeApi.CallMethod(Module, _createPixelMapUsingAllocatorSync, static h => new PixelMap(h), colors, param, allocatorType);
     }
@@ -291,7 +291,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageSource
     /// </summary>
-    public static ImageSource CreateImageSource(IntPtr buf)
+    public static ImageSource CreateImageSource(byte[] buf)
     {
         return NodeApi.CallMethod(Module, _createImageSource, static h => new ImageSource(h), buf);
     }
@@ -299,15 +299,23 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageSource
     /// </summary>
-    public static ImageSource CreateImageSource(IntPtr buf, SourceOptions options)
+    public static ImageSource CreateImageSource(byte[] buf, SourceOptions options)
     {
         return NodeApi.CallMethod(Module, _createImageSource, static h => new ImageSource(h), buf, options);
     }
 
     /// <summary>
+    /// createImageSource
+    /// </summary>
+    public static ImageSource CreateImageSource(IntPtr rawfile, SourceOptions? options = null)
+    {
+        return NodeApi.CallMethod(Module, _createImageSource, static h => new ImageSource(h), rawfile, options);
+    }
+
+    /// <summary>
     /// CreateIncrementalSource
     /// </summary>
-    public static ImageSource CreateIncrementalSource(IntPtr buf)
+    public static ImageSource CreateIncrementalSource(byte[] buf)
     {
         return NodeApi.CallMethod(Module, _CreateIncrementalSource, static h => new ImageSource(h), buf);
     }
@@ -315,7 +323,7 @@ public static unsafe partial class Image
     /// <summary>
     /// CreateIncrementalSource
     /// </summary>
-    public static ImageSource CreateIncrementalSource(IntPtr buf, SourceOptions? options = null)
+    public static ImageSource CreateIncrementalSource(byte[] buf, SourceOptions? options = null)
     {
         return NodeApi.CallMethod(Module, _CreateIncrementalSource, static h => new ImageSource(h), buf, options);
     }
@@ -387,7 +395,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createAuxiliaryPicture
     /// </summary>
-    public static AuxiliaryPicture CreateAuxiliaryPicture(IntPtr buffer, ImageSize size, global::HarmonyOS.ArkUI.AuxiliaryPictureType type)
+    public static AuxiliaryPicture CreateAuxiliaryPicture(byte[] buffer, ImageSize size, global::HarmonyOS.ArkUI.AuxiliaryPictureType type)
     {
         return NodeApi.CallMethod(Module, _createAuxiliaryPicture, static h => new AuxiliaryPicture(h), buffer, size, type);
     }
@@ -395,7 +403,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createAuxiliaryPictureUsingAllocator
     /// </summary>
-    public static AuxiliaryPicture CreateAuxiliaryPictureUsingAllocator(IntPtr auxiliaryPictureInfo, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null, IntPtr? pixels = null)
+    public static AuxiliaryPicture CreateAuxiliaryPictureUsingAllocator(IntPtr auxiliaryPictureInfo, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null, byte[]? pixels = null)
     {
         return NodeApi.CallMethod(Module, _createAuxiliaryPictureUsingAllocator, static h => new AuxiliaryPicture(h), auxiliaryPictureInfo, allocatorType, pixels);
     }
@@ -609,7 +617,7 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// readAllPixelsToBuffer
     /// </summary>
-    public Task ReadAllPixelsToBufferAsync(IntPtr dst)
+    public Task ReadAllPixelsToBufferAsync(byte[] dst)
     {
         return CallMethodAsyncVoid(_readAllPixelsToBuffer, dst);
     }
@@ -617,7 +625,7 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// readAllPixelsToBufferSync
     /// </summary>
-    public void ReadAllPixelsToBufferSync(IntPtr dst)
+    public void ReadAllPixelsToBufferSync(byte[] dst)
     {
         CallMethodVoid(_readAllPixelsToBufferSync, dst);
     }
@@ -625,15 +633,23 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// readPixelsToBuffer
     /// </summary>
-    public Task ReadPixelsToBufferAsync(IntPtr dst)
+    public Task ReadPixelsToBufferAsync(byte[] dst)
     {
         return CallMethodAsyncVoid(_readPixelsToBuffer, dst);
     }
 
     /// <summary>
+    /// readPixelsToBuffer
+    /// </summary>
+    public void ReadPixelsToBuffer(byte[] dst, IntPtr callback)
+    {
+        CallMethodVoid(_readPixelsToBuffer, dst, callback);
+    }
+
+    /// <summary>
     /// readPixelsToBufferSync
     /// </summary>
-    public void ReadPixelsToBufferSync(IntPtr dst)
+    public void ReadPixelsToBufferSync(byte[] dst)
     {
         CallMethodVoid(_readPixelsToBufferSync, dst);
     }
@@ -641,7 +657,7 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// readPixelsToArea
     /// </summary>
-    public Task ReadPixelsToAreaAsync(IntPtr area)
+    public Task ReadPixelsToAreaAsync(PositionArea area)
     {
         return CallMethodAsyncVoid(_readPixelsToArea, area);
     }
@@ -649,7 +665,7 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// readPixelsToAreaSync
     /// </summary>
-    public void ReadPixelsToAreaSync(IntPtr area)
+    public void ReadPixelsToAreaSync(PositionArea area)
     {
         CallMethodVoid(_readPixelsToAreaSync, area);
     }
@@ -657,15 +673,23 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// readPixels
     /// </summary>
-    public Task ReadPixelsAsync(IntPtr area)
+    public Task ReadPixelsAsync(PositionArea area)
     {
         return CallMethodAsyncVoid(_readPixels, area);
     }
 
     /// <summary>
+    /// readPixels
+    /// </summary>
+    public void ReadPixels(PositionArea area, IntPtr callback)
+    {
+        CallMethodVoid(_readPixels, area, callback);
+    }
+
+    /// <summary>
     /// readPixelsSync
     /// </summary>
-    public void ReadPixelsSync(IntPtr area)
+    public void ReadPixelsSync(PositionArea area)
     {
         CallMethodVoid(_readPixelsSync, area);
     }
@@ -673,7 +697,7 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// writePixelsFromArea
     /// </summary>
-    public Task WritePixelsFromAreaAsync(IntPtr area)
+    public Task WritePixelsFromAreaAsync(PositionArea area)
     {
         return CallMethodAsyncVoid(_writePixelsFromArea, area);
     }
@@ -681,7 +705,7 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// writePixelsFromAreaSync
     /// </summary>
-    public void WritePixelsFromAreaSync(IntPtr area)
+    public void WritePixelsFromAreaSync(PositionArea area)
     {
         CallMethodVoid(_writePixelsFromAreaSync, area);
     }
@@ -689,15 +713,23 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// writePixels
     /// </summary>
-    public Task WritePixelsAsync(IntPtr area)
+    public Task WritePixelsAsync(PositionArea area)
     {
         return CallMethodAsyncVoid(_writePixels, area);
     }
 
     /// <summary>
+    /// writePixels
+    /// </summary>
+    public void WritePixels(PositionArea area, IntPtr callback)
+    {
+        CallMethodVoid(_writePixels, area, callback);
+    }
+
+    /// <summary>
     /// writePixelsSync
     /// </summary>
-    public void WritePixelsSync(IntPtr area)
+    public void WritePixelsSync(PositionArea area)
     {
         CallMethodVoid(_writePixelsSync, area);
     }
@@ -705,7 +737,7 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// writeAllPixelsFromBuffer
     /// </summary>
-    public Task WriteAllPixelsFromBufferAsync(IntPtr src)
+    public Task WriteAllPixelsFromBufferAsync(byte[] src)
     {
         return CallMethodAsyncVoid(_writeAllPixelsFromBuffer, src);
     }
@@ -713,7 +745,7 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// writeAllPixelsFromBufferSync
     /// </summary>
-    public void WriteAllPixelsFromBufferSync(IntPtr src)
+    public void WriteAllPixelsFromBufferSync(byte[] src)
     {
         CallMethodVoid(_writeAllPixelsFromBufferSync, src);
     }
@@ -721,15 +753,23 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// writeBufferToPixels
     /// </summary>
-    public Task WriteBufferToPixelsAsync(IntPtr src)
+    public Task WriteBufferToPixelsAsync(byte[] src)
     {
         return CallMethodAsyncVoid(_writeBufferToPixels, src);
     }
 
     /// <summary>
+    /// writeBufferToPixels
+    /// </summary>
+    public void WriteBufferToPixels(byte[] src, IntPtr callback)
+    {
+        CallMethodVoid(_writeBufferToPixels, src, callback);
+    }
+
+    /// <summary>
     /// writeBufferToPixelsSync
     /// </summary>
-    public void WriteBufferToPixelsSync(IntPtr src)
+    public void WriteBufferToPixelsSync(byte[] src)
     {
         CallMethodVoid(_writeBufferToPixelsSync, src);
     }
@@ -748,6 +788,14 @@ public sealed partial class PixelMap : JsObject
     public Task<ImageInfo> GetImageInfoAsync()
     {
         return CallMethodAsync(_getImageInfo, static h => new ImageInfo(h));
+    }
+
+    /// <summary>
+    /// getImageInfo
+    /// </summary>
+    public void GetImageInfo(IntPtr callback)
+    {
+        CallMethodVoid(_getImageInfo, callback);
     }
 
     /// <summary>
@@ -807,6 +855,14 @@ public sealed partial class PixelMap : JsObject
     }
 
     /// <summary>
+    /// opacity
+    /// </summary>
+    public Task OpacityAsync(double rate)
+    {
+        return CallMethodAsyncVoid(_opacity, rate);
+    }
+
+    /// <summary>
     /// opacitySync
     /// </summary>
     public void OpacitySync(double rate)
@@ -836,6 +892,14 @@ public sealed partial class PixelMap : JsObject
     public Task<PixelMap> CreateAlphaPixelmapAsync()
     {
         return CallMethodAsync(_createAlphaPixelmap, static h => new PixelMap(h));
+    }
+
+    /// <summary>
+    /// createAlphaPixelmap
+    /// </summary>
+    public void CreateAlphaPixelmap(IntPtr callback)
+    {
+        CallMethodVoid(_createAlphaPixelmap, callback);
     }
 
     /// <summary>
@@ -871,11 +935,35 @@ public sealed partial class PixelMap : JsObject
     }
 
     /// <summary>
+    /// scale
+    /// </summary>
+    public Task ScaleAsync(double x, double y)
+    {
+        return CallMethodAsyncVoid(_scale, x, y);
+    }
+
+    /// <summary>
     /// scaleSync
     /// </summary>
     public void ScaleSync(double x, double y)
     {
         CallMethodVoid(_scaleSync, x, y);
+    }
+
+    /// <summary>
+    /// scale
+    /// </summary>
+    public Task ScaleAsync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel level)
+    {
+        return CallMethodAsyncVoid(_scale, x, y, level);
+    }
+
+    /// <summary>
+    /// scaleSync
+    /// </summary>
+    public void ScaleSync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel level)
+    {
+        CallMethodVoid(_scaleSync, x, y, level);
     }
 
     /// <summary>
@@ -919,6 +1007,14 @@ public sealed partial class PixelMap : JsObject
     }
 
     /// <summary>
+    /// translate
+    /// </summary>
+    public Task TranslateAsync(double x, double y)
+    {
+        return CallMethodAsyncVoid(_translate, x, y);
+    }
+
+    /// <summary>
     /// translateSync
     /// </summary>
     public void TranslateSync(double x, double y)
@@ -948,6 +1044,14 @@ public sealed partial class PixelMap : JsObject
     public void Rotate(double angle, IntPtr callback)
     {
         CallMethodVoid(_rotate, angle, callback);
+    }
+
+    /// <summary>
+    /// rotate
+    /// </summary>
+    public Task RotateAsync(double angle)
+    {
+        return CallMethodAsyncVoid(_rotate, angle);
     }
 
     /// <summary>
@@ -983,6 +1087,14 @@ public sealed partial class PixelMap : JsObject
     }
 
     /// <summary>
+    /// flip
+    /// </summary>
+    public Task FlipAsync(bool horizontal, bool vertical)
+    {
+        return CallMethodAsyncVoid(_flip, horizontal, vertical);
+    }
+
+    /// <summary>
     /// flipSync
     /// </summary>
     public void FlipSync(bool horizontal, bool vertical)
@@ -1012,6 +1124,14 @@ public sealed partial class PixelMap : JsObject
     public void Crop(Region region, IntPtr callback)
     {
         CallMethodVoid(_crop, region, callback);
+    }
+
+    /// <summary>
+    /// crop
+    /// </summary>
+    public Task CropAsync(Region region)
+    {
+        return CallMethodAsyncVoid(_crop, region);
     }
 
     /// <summary>
@@ -1063,6 +1183,14 @@ public sealed partial class PixelMap : JsObject
     }
 
     /// <summary>
+    /// applyColorSpace
+    /// </summary>
+    public Task ApplyColorSpaceAsync(IntPtr targetColorSpace)
+    {
+        return CallMethodAsyncVoid(_applyColorSpace, targetColorSpace);
+    }
+
+    /// <summary>
     /// convertPixelFormat
     /// </summary>
     public Task ConvertPixelFormatAsync(global::HarmonyOS.ArkUI.PixelMapFormat targetPixelFormat)
@@ -1076,6 +1204,14 @@ public sealed partial class PixelMap : JsObject
     public void Release(IntPtr callback)
     {
         CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
     }
 
     /// <summary>
@@ -1276,6 +1412,22 @@ public sealed partial class ImageSource : JsObject
     }
 
     /// <summary>
+    /// getImageInfo
+    /// </summary>
+    public void GetImageInfo(IntPtr callback)
+    {
+        CallMethodVoid(_getImageInfo, callback);
+    }
+
+    /// <summary>
+    /// getImageInfo
+    /// </summary>
+    public Task<ImageInfo> GetImageInfoAsync(double? index = null)
+    {
+        return CallMethodAsync(_getImageInfo, static h => new ImageInfo(h), index);
+    }
+
+    /// <summary>
     /// getImageInfoSync
     /// </summary>
     public ImageInfo GetImageInfoSync(double? index = null)
@@ -1289,6 +1441,22 @@ public sealed partial class ImageSource : JsObject
     public Task<PixelMap> CreatePixelMapAsync(IntPtr? options = null)
     {
         return CallMethodAsync(_createPixelMap, static h => new PixelMap(h), options);
+    }
+
+    /// <summary>
+    /// createPixelMap
+    /// </summary>
+    public void CreatePixelMap(IntPtr callback)
+    {
+        CallMethodVoid(_createPixelMap, callback);
+    }
+
+    /// <summary>
+    /// createPixelMap
+    /// </summary>
+    public void CreatePixelMap(IntPtr options, IntPtr callback)
+    {
+        CallMethodVoid(_createPixelMap, options, callback);
     }
 
     /// <summary>
@@ -1324,11 +1492,35 @@ public sealed partial class ImageSource : JsObject
     }
 
     /// <summary>
+    /// createPixelMapList
+    /// </summary>
+    public void CreatePixelMapList(IntPtr callback)
+    {
+        CallMethodVoid(_createPixelMapList, callback);
+    }
+
+    /// <summary>
+    /// createPixelMapList
+    /// </summary>
+    public void CreatePixelMapList(IntPtr options, IntPtr callback)
+    {
+        CallMethodVoid(_createPixelMapList, options, callback);
+    }
+
+    /// <summary>
     /// getDelayTimeList
     /// </summary>
     public Task<double[]> GetDelayTimeListAsync()
     {
         return CallMethodAsync(_getDelayTimeList, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)));
+    }
+
+    /// <summary>
+    /// getDelayTimeList
+    /// </summary>
+    public void GetDelayTimeList(IntPtr callback)
+    {
+        CallMethodVoid(_getDelayTimeList, callback);
     }
 
     /// <summary>
@@ -1348,11 +1540,43 @@ public sealed partial class ImageSource : JsObject
     }
 
     /// <summary>
+    /// getFrameCount
+    /// </summary>
+    public void GetFrameCount(IntPtr callback)
+    {
+        CallMethodVoid(_getFrameCount, callback);
+    }
+
+    /// <summary>
     /// getImageProperty
     /// </summary>
     public Task<string> GetImagePropertyAsync(global::HarmonyOS.ArkUI.PropertyKey key, ImagePropertyOptions? options = null)
     {
         return CallMethodAsync<string>(_getImageProperty, key, options);
+    }
+
+    /// <summary>
+    /// getImageProperty
+    /// </summary>
+    public Task<string> GetImagePropertyAsync(string key, GetImagePropertyOptions? options = null)
+    {
+        return CallMethodAsync<string>(_getImageProperty, key, options);
+    }
+
+    /// <summary>
+    /// getImageProperty
+    /// </summary>
+    public void GetImageProperty(string key, IntPtr callback)
+    {
+        CallMethodVoid(_getImageProperty, key, callback);
+    }
+
+    /// <summary>
+    /// getImageProperty
+    /// </summary>
+    public void GetImageProperty(string key, GetImagePropertyOptions options, IntPtr callback)
+    {
+        CallMethodVoid(_getImageProperty, key, options, callback);
     }
 
     /// <summary>
@@ -1380,6 +1604,22 @@ public sealed partial class ImageSource : JsObject
     }
 
     /// <summary>
+    /// modifyImageProperty
+    /// </summary>
+    public Task ModifyImagePropertyAsync(string key, string value)
+    {
+        return CallMethodAsyncVoid(_modifyImageProperty, key, value);
+    }
+
+    /// <summary>
+    /// modifyImageProperty
+    /// </summary>
+    public void ModifyImageProperty(string key, string value, IntPtr callback)
+    {
+        CallMethodVoid(_modifyImageProperty, key, value, callback);
+    }
+
+    /// <summary>
     /// modifyImageProperties
     /// </summary>
     public Task ModifyImagePropertiesAsync(IntPtr records)
@@ -1398,9 +1638,17 @@ public sealed partial class ImageSource : JsObject
     /// <summary>
     /// updateData
     /// </summary>
-    public Task UpdateDataAsync(IntPtr buf, bool isFinished, double offset, double length)
+    public Task UpdateDataAsync(byte[] buf, bool isFinished, double offset, double length)
     {
         return CallMethodAsyncVoid(_updateData, buf, isFinished, offset, length);
+    }
+
+    /// <summary>
+    /// updateData
+    /// </summary>
+    public void UpdateData(byte[] buf, bool isFinished, double offset, double length, IntPtr callback)
+    {
+        CallMethodVoid(_updateData, buf, isFinished, offset, length, callback);
     }
 
     /// <summary>
@@ -1409,6 +1657,14 @@ public sealed partial class ImageSource : JsObject
     public void Release(IntPtr callback)
     {
         CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
     }
 
     /// <summary>
@@ -1454,9 +1710,9 @@ public sealed partial class ImageSource : JsObject
     /// <summary>
     /// createImageRawData
     /// </summary>
-    public Task<IntPtr> CreateImageRawDataAsync()
+    public Task<ImageRawData> CreateImageRawDataAsync()
     {
-        return CallMethodAsync<IntPtr>(_createImageRawData);
+        return CallMethodAsync(_createImageRawData, static h => new ImageRawData(h));
     }
 
     /// <summary>
@@ -1533,19 +1789,51 @@ public sealed partial class ImagePacker : JsObject
     }
 
     /// <summary>
+    /// packing
+    /// </summary>
+    public Task<byte[]> PackingAsync(ImageSource source, PackingOption option)
+    {
+        return CallMethodAsync(_packing, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), source, option);
+    }
+
+    /// <summary>
     /// packToData
     /// </summary>
-    public Task<IntPtr> PackToDataAsync(ImageSource source, PackingOption options)
+    public Task<byte[]> PackToDataAsync(ImageSource source, PackingOption options)
     {
-        return CallMethodAsync<IntPtr>(_packToData, source, options);
+        return CallMethodAsync(_packToData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), source, options);
+    }
+
+    /// <summary>
+    /// packing
+    /// </summary>
+    public void Packing(PixelMap source, PackingOption option, IntPtr callback)
+    {
+        CallMethodVoid(_packing, source, option, callback);
+    }
+
+    /// <summary>
+    /// packing
+    /// </summary>
+    public Task<byte[]> PackingAsync(PixelMap source, PackingOption option)
+    {
+        return CallMethodAsync(_packing, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), source, option);
+    }
+
+    /// <summary>
+    /// packToData
+    /// </summary>
+    public Task<byte[]> PackToDataAsync(PixelMap source, PackingOption options)
+    {
+        return CallMethodAsync(_packToData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), source, options);
     }
 
     /// <summary>
     /// packToDataFromPixelmapSequence
     /// </summary>
-    public Task<IntPtr> PackToDataFromPixelmapSequenceAsync(PixelMap[] pixelmapSequence, PackingOptionsForSequence options)
+    public Task<byte[]> PackToDataFromPixelmapSequenceAsync(PixelMap[] pixelmapSequence, PackingOptionsForSequence options)
     {
-        return CallMethodAsync<IntPtr>(_packToDataFromPixelmapSequence, pixelmapSequence, options);
+        return CallMethodAsync(_packToDataFromPixelmapSequence, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), pixelmapSequence, options);
     }
 
     /// <summary>
@@ -1554,6 +1842,30 @@ public sealed partial class ImagePacker : JsObject
     public void PackToFile(ImageSource source, double fd, PackingOption options, IntPtr callback)
     {
         CallMethodVoid(_packToFile, source, fd, options, callback);
+    }
+
+    /// <summary>
+    /// packToFile
+    /// </summary>
+    public Task PackToFileAsync(ImageSource source, double fd, PackingOption options)
+    {
+        return CallMethodAsyncVoid(_packToFile, source, fd, options);
+    }
+
+    /// <summary>
+    /// packToFile
+    /// </summary>
+    public void PackToFile(PixelMap source, double fd, PackingOption options, IntPtr callback)
+    {
+        CallMethodVoid(_packToFile, source, fd, options, callback);
+    }
+
+    /// <summary>
+    /// packToFile
+    /// </summary>
+    public Task PackToFileAsync(PixelMap source, double fd, PackingOption options)
+    {
+        return CallMethodAsyncVoid(_packToFile, source, fd, options);
     }
 
     /// <summary>
@@ -1573,9 +1885,33 @@ public sealed partial class ImagePacker : JsObject
     }
 
     /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    /// <summary>
+    /// packing
+    /// </summary>
+    public Task<byte[]> PackingAsync(Picture picture, PackingOption options)
+    {
+        return CallMethodAsync(_packing, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), picture, options);
+    }
+
+    /// <summary>
+    /// packToFile
+    /// </summary>
+    public Task PackToFileAsync(Picture picture, double fd, PackingOption options)
+    {
+        return CallMethodAsyncVoid(_packToFile, picture, fd, options);
+    }
+
+    /// <summary>
     /// packBinaryImageToTiffFile
     /// </summary>
-    public Task PackBinaryImageToTiffFileAsync(IntPtr bufferInfo, double fd, PackingOptionsForTiff? options = null)
+    public Task PackBinaryImageToTiffFileAsync(BinaryBufferInfo bufferInfo, double fd, PackingOptionsForTiff? options = null)
     {
         return CallMethodAsyncVoid(_packBinaryImageToTiffFile, bufferInfo, fd, options);
     }
@@ -1583,9 +1919,9 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packBinaryImageToTiffData
     /// </summary>
-    public Task<IntPtr> PackBinaryImageToTiffDataAsync(IntPtr bufferInfo, PackingOptionsForTiff? options = null)
+    public Task<byte[]> PackBinaryImageToTiffDataAsync(BinaryBufferInfo bufferInfo, PackingOptionsForTiff? options = null)
     {
-        return CallMethodAsync<IntPtr>(_packBinaryImageToTiffData, bufferInfo, options);
+        return CallMethodAsync(_packBinaryImageToTiffData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), bufferInfo, options);
     }
 
 }
@@ -1630,6 +1966,14 @@ public sealed partial class ImageReceiver : JsObject
     }
 
     /// <summary>
+    /// getReceivingSurfaceId
+    /// </summary>
+    public Task<string> GetReceivingSurfaceIdAsync()
+    {
+        return CallMethodAsync<string>(_getReceivingSurfaceId);
+    }
+
+    /// <summary>
     /// readLatestImage
     /// </summary>
     public void ReadLatestImage(IntPtr callback)
@@ -1638,11 +1982,27 @@ public sealed partial class ImageReceiver : JsObject
     }
 
     /// <summary>
+    /// readLatestImage
+    /// </summary>
+    public Task<ImageObject> ReadLatestImageAsync()
+    {
+        return CallMethodAsync(_readLatestImage, static h => new ImageObject(h));
+    }
+
+    /// <summary>
     /// readNextImage
     /// </summary>
     public void ReadNextImage(IntPtr callback)
     {
         CallMethodVoid(_readNextImage, callback);
+    }
+
+    /// <summary>
+    /// readNextImage
+    /// </summary>
+    public Task<ImageObject> ReadNextImageAsync()
+    {
+        return CallMethodAsync(_readNextImage, static h => new ImageObject(h));
     }
 
     /// <summary>
@@ -1656,7 +2016,7 @@ public sealed partial class ImageReceiver : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -1667,6 +2027,59 @@ public sealed partial class ImageReceiver : JsObject
     public void Release(IntPtr callback)
     {
         CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 imageArrival 事件（对应 on/off）
+    /// </summary>
+    public event System.Action ImageArrival
+    {
+        add
+        {
+            _eventListeners.Add(("imageArrival", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "imageArrival", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("imageArrival", value), js => NodeApi.CallMethodVoid(Handle, _off, "imageArrival", js));
+        }
     }
 
 }
@@ -1746,11 +2159,27 @@ public sealed partial class ImageCreator : JsObject
     }
 
     /// <summary>
+    /// dequeueImage
+    /// </summary>
+    public Task<ImageObject> DequeueImageAsync()
+    {
+        return CallMethodAsync(_dequeueImage, static h => new ImageObject(h));
+    }
+
+    /// <summary>
     /// queueImage
     /// </summary>
     public void QueueImage(ImageObject image, IntPtr callback)
     {
         CallMethodVoid(_queueImage, image, callback);
+    }
+
+    /// <summary>
+    /// queueImage
+    /// </summary>
+    public Task QueueImageAsync(ImageObject image)
+    {
+        return CallMethodAsyncVoid(_queueImage, image);
     }
 
     /// <summary>
@@ -1764,7 +2193,7 @@ public sealed partial class ImageCreator : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -1775,6 +2204,59 @@ public sealed partial class ImageCreator : JsObject
     public void Release(IntPtr callback)
     {
         CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 imageRelease 事件（对应 on/off）
+    /// </summary>
+    public event System.Action ImageRelease
+    {
+        add
+        {
+            _eventListeners.Add(("imageRelease", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "imageRelease", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("imageRelease", value), js => NodeApi.CallMethodVoid(Handle, _off, "imageRelease", js));
+        }
     }
 
 }
@@ -1905,7 +2387,7 @@ public sealed partial class AuxiliaryPicture : JsObject
     /// <summary>
     /// writePixelsFromBuffer
     /// </summary>
-    public Task WritePixelsFromBufferAsync(IntPtr data)
+    public Task WritePixelsFromBufferAsync(byte[] data)
     {
         return CallMethodAsyncVoid(_writePixelsFromBuffer, data);
     }
@@ -1913,9 +2395,9 @@ public sealed partial class AuxiliaryPicture : JsObject
     /// <summary>
     /// readPixelsToBuffer
     /// </summary>
-    public Task<IntPtr> ReadPixelsToBufferAsync()
+    public Task<byte[]> ReadPixelsToBufferAsync()
     {
-        return CallMethodAsync<IntPtr>(_readPixelsToBuffer);
+        return CallMethodAsync(_readPixelsToBuffer, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)));
     }
 
     /// <summary>
@@ -1990,6 +2472,37 @@ public sealed partial class XMPNamespace : JsObject
 }
 
 /// <summary>
+/// PositionArea（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record PositionArea(
+    byte[] Pixels,
+    double Offset,
+    double Stride,
+    Region Region
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _pixels = Encoding.UTF8.GetBytes("pixels");
+        var _pixelsV = NativeValue.From(Pixels);
+        if (_pixelsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _pixels, _pixelsV);
+        var _offset = Encoding.UTF8.GetBytes("offset");
+        var _offsetV = NativeValue.From(Offset);
+        if (_offsetV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
+        var _stride = Encoding.UTF8.GetBytes("stride");
+        var _strideV = NativeValue.From(Stride);
+        if (_strideV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _stride, _strideV);
+        var _region = Encoding.UTF8.GetBytes("region");
+        var _regionV = NativeValue.From(Region);
+        if (_regionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _region, _regionV);
+    }
+}
+
+/// <summary>
 /// ImageInfo 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -2044,6 +2557,27 @@ public sealed partial class ImageInfo : JsObject
 /// ImagePropertyOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
 public sealed record ImagePropertyOptions(
+    double? Index = null,
+    string? DefaultValue = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _index = Encoding.UTF8.GetBytes("index");
+        var _indexV = NativeValue.From(Index);
+        if (_indexV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _index, _indexV);
+        var _defaultValue = Encoding.UTF8.GetBytes("defaultValue");
+        var _defaultValueV = NativeValue.From(DefaultValue);
+        if (_defaultValueV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _defaultValue, _defaultValueV);
+    }
+}
+
+/// <summary>
+/// GetImagePropertyOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record GetImagePropertyOptions(
     double? Index = null,
     string? DefaultValue = null
 ) : INapiRecord
@@ -2163,6 +2697,27 @@ public sealed partial class ImageMetadata : JsObject
 }
 
 /// <summary>
+/// ImageRawData 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ImageRawData : JsObject
+{
+    public ImageRawData(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _buffer => "buffer"u8;
+    private static ReadOnlySpan<byte> _bitsPerPixel => "bitsPerPixel"u8;
+    /// <summary>
+    /// buffer
+    /// </summary>
+    public byte[] Buffer => ValueConverter.ConvertArray(GetPropertyRaw(_buffer), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// bitsPerPixel
+    /// </summary>
+    public double BitsPerPixel => NativeValue.ToDouble(GetPropertyRaw(_bitsPerPixel));
+
+}
+
+/// <summary>
 /// DecodingOptionsForThumbnail（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
 public sealed record DecodingOptionsForThumbnail(
@@ -2276,6 +2831,32 @@ public sealed record PackingOptionsForSequence(
 }
 
 /// <summary>
+/// BinaryBufferInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record BinaryBufferInfo(
+    ImageSize Size,
+    byte[] Data,
+    double? BytesPerRow = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _size = Encoding.UTF8.GetBytes("size");
+        var _sizeV = NativeValue.From(Size);
+        if (_sizeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _size, _sizeV);
+        var _data = Encoding.UTF8.GetBytes("data");
+        var _dataV = NativeValue.From(Data);
+        if (_dataV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _data, _dataV);
+        var _bytesPerRow = Encoding.UTF8.GetBytes("bytesPerRow");
+        var _bytesPerRowV = NativeValue.From(BytesPerRow);
+        if (_bytesPerRowV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _bytesPerRow, _bytesPerRowV);
+    }
+}
+
+/// <summary>
 /// PackingOptionsForTiff（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
 public sealed record PackingOptionsForTiff(
@@ -2361,6 +2942,14 @@ public sealed partial class ImageObject : JsObject
     }
 
     /// <summary>
+    /// getComponent
+    /// </summary>
+    public Task<Component> GetComponentAsync(global::HarmonyOS.ArkUI.ComponentType componentType)
+    {
+        return CallMethodAsync(_getComponent, static h => new Component(h), componentType);
+    }
+
+    /// <summary>
     /// release
     /// </summary>
     public void Release(IntPtr callback)
@@ -2369,11 +2958,19 @@ public sealed partial class ImageObject : JsObject
     }
 
     /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    /// <summary>
     /// getBufferData
     /// </summary>
-    public IntPtr GetBufferData()
+    public ImageBufferData GetBufferData()
     {
-        return CallMethod<IntPtr>(_getBufferData);
+        return CallMethod(_getBufferData, static h => new ImageBufferData(h));
     }
 
     /// <summary>
@@ -2450,15 +3047,15 @@ public sealed partial class Metadata : JsObject
     /// <summary>
     /// getBlob
     /// </summary>
-    public Task<IntPtr> GetBlobAsync()
+    public Task<byte[]> GetBlobAsync()
     {
-        return CallMethodAsync<IntPtr>(_getBlob);
+        return CallMethodAsync(_getBlob, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)));
     }
 
     /// <summary>
     /// setBlob
     /// </summary>
-    public Task SetBlobAsync(IntPtr blob)
+    public Task SetBlobAsync(byte[] blob)
     {
         return CallMethodAsyncVoid(_setBlob, blob);
     }
@@ -2977,7 +3574,7 @@ public sealed partial class ExifMetadata : JsObject
     /// <summary>
     /// oecf
     /// </summary>
-    public IntPtr Oecf => GetPropertyRaw(_oecf);
+    public byte[] Oecf => ValueConverter.ConvertArray(GetPropertyRaw(_oecf), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// sensitivityType
@@ -3102,7 +3699,7 @@ public sealed partial class ExifMetadata : JsObject
     /// <summary>
     /// makerNote
     /// </summary>
-    public IntPtr MakerNote => GetPropertyRaw(_makerNote);
+    public byte[] MakerNote => ValueConverter.ConvertArray(GetPropertyRaw(_makerNote), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// userComment
@@ -3157,7 +3754,7 @@ public sealed partial class ExifMetadata : JsObject
     /// <summary>
     /// spatialFrequencyResponse
     /// </summary>
-    public IntPtr SpatialFrequencyResponse => GetPropertyRaw(_spatialFrequencyResponse);
+    public byte[] SpatialFrequencyResponse => ValueConverter.ConvertArray(GetPropertyRaw(_spatialFrequencyResponse), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// focalPlaneXResolution
@@ -3192,17 +3789,17 @@ public sealed partial class ExifMetadata : JsObject
     /// <summary>
     /// fileSource
     /// </summary>
-    public IntPtr FileSource => GetPropertyRaw(_fileSource);
+    public byte[] FileSource => ValueConverter.ConvertArray(GetPropertyRaw(_fileSource), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// sceneType
     /// </summary>
-    public IntPtr SceneType => GetPropertyRaw(_sceneType);
+    public byte[] SceneType => ValueConverter.ConvertArray(GetPropertyRaw(_sceneType), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// cfaPattern
     /// </summary>
-    public IntPtr CfaPattern => GetPropertyRaw(_cfaPattern);
+    public byte[] CfaPattern => ValueConverter.ConvertArray(GetPropertyRaw(_cfaPattern), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// customRendered
@@ -3257,7 +3854,7 @@ public sealed partial class ExifMetadata : JsObject
     /// <summary>
     /// deviceSettingDescription
     /// </summary>
-    public IntPtr DeviceSettingDescription => GetPropertyRaw(_deviceSettingDescription);
+    public byte[] DeviceSettingDescription => ValueConverter.ConvertArray(GetPropertyRaw(_deviceSettingDescription), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// subjectDistanceRange
@@ -3312,7 +3909,7 @@ public sealed partial class ExifMetadata : JsObject
     /// <summary>
     /// sourceExposureTimesOfCompositeImage
     /// </summary>
-    public IntPtr SourceExposureTimesOfCompositeImage => GetPropertyRaw(_sourceExposureTimesOfCompositeImage);
+    public byte[] SourceExposureTimesOfCompositeImage => ValueConverter.ConvertArray(GetPropertyRaw(_sourceExposureTimesOfCompositeImage), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// gamma
@@ -3362,15 +3959,15 @@ public sealed partial class ExifMetadata : JsObject
     /// <summary>
     /// getBlob
     /// </summary>
-    public Task<IntPtr> GetBlobAsync()
+    public Task<byte[]> GetBlobAsync()
     {
-        return CallMethodAsync<IntPtr>(_getBlob);
+        return CallMethodAsync(_getBlob, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)));
     }
 
     /// <summary>
     /// setBlob
     /// </summary>
-    public Task SetBlobAsync(IntPtr blob)
+    public Task SetBlobAsync(byte[] blob)
     {
         return CallMethodAsyncVoid(_setBlob, blob);
     }
@@ -3620,15 +4217,15 @@ public sealed partial class MakerNoteHuaweiMetadata : JsObject
     /// <summary>
     /// getBlob
     /// </summary>
-    public Task<IntPtr> GetBlobAsync()
+    public Task<byte[]> GetBlobAsync()
     {
-        return CallMethodAsync<IntPtr>(_getBlob);
+        return CallMethodAsync(_getBlob, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)));
     }
 
     /// <summary>
     /// setBlob
     /// </summary>
-    public Task SetBlobAsync(IntPtr blob)
+    public Task SetBlobAsync(byte[] blob)
     {
         return CallMethodAsyncVoid(_setBlob, blob);
     }
@@ -3716,15 +4313,15 @@ public sealed partial class HeifsMetadata : JsObject
     /// <summary>
     /// getBlob
     /// </summary>
-    public Task<IntPtr> GetBlobAsync()
+    public Task<byte[]> GetBlobAsync()
     {
-        return CallMethodAsync<IntPtr>(_getBlob);
+        return CallMethodAsync(_getBlob, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)));
     }
 
     /// <summary>
     /// setBlob
     /// </summary>
-    public Task SetBlobAsync(IntPtr blob)
+    public Task SetBlobAsync(byte[] blob)
     {
         return CallMethodAsyncVoid(_setBlob, blob);
     }
@@ -4000,7 +4597,7 @@ public sealed partial class DngMetadata : JsObject
     /// <summary>
     /// dngPrivateData
     /// </summary>
-    public IntPtr DngPrivateData => GetPropertyRaw(_dngPrivateData);
+    public byte[] DngPrivateData => ValueConverter.ConvertArray(GetPropertyRaw(_dngPrivateData), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// makerNoteSafety
@@ -4035,7 +4632,7 @@ public sealed partial class DngMetadata : JsObject
     /// <summary>
     /// originalRawFileData
     /// </summary>
-    public IntPtr OriginalRawFileData => GetPropertyRaw(_originalRawFileData);
+    public byte[] OriginalRawFileData => ValueConverter.ConvertArray(GetPropertyRaw(_originalRawFileData), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// activeArea
@@ -4050,7 +4647,7 @@ public sealed partial class DngMetadata : JsObject
     /// <summary>
     /// asShotICCProfile
     /// </summary>
-    public IntPtr AsShotIccProfile => GetPropertyRaw(_asShotICCProfile);
+    public byte[] AsShotIccProfile => ValueConverter.ConvertArray(GetPropertyRaw(_asShotICCProfile), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// asShotPreProfileMatrix
@@ -4060,7 +4657,7 @@ public sealed partial class DngMetadata : JsObject
     /// <summary>
     /// currentICCProfile
     /// </summary>
-    public IntPtr CurrentIccProfile => GetPropertyRaw(_currentICCProfile);
+    public byte[] CurrentIccProfile => ValueConverter.ConvertArray(GetPropertyRaw(_currentICCProfile), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// currentPreProfileMatrix
@@ -4205,17 +4802,17 @@ public sealed partial class DngMetadata : JsObject
     /// <summary>
     /// opcodeList1
     /// </summary>
-    public IntPtr OpcodeList1 => GetPropertyRaw(_opcodeList1);
+    public byte[] OpcodeList1 => ValueConverter.ConvertArray(GetPropertyRaw(_opcodeList1), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// opcodeList2
     /// </summary>
-    public IntPtr OpcodeList2 => GetPropertyRaw(_opcodeList2);
+    public byte[] OpcodeList2 => ValueConverter.ConvertArray(GetPropertyRaw(_opcodeList2), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// opcodeList3
     /// </summary>
-    public IntPtr OpcodeList3 => GetPropertyRaw(_opcodeList3);
+    public byte[] OpcodeList3 => ValueConverter.ConvertArray(GetPropertyRaw(_opcodeList3), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// noiseProfile
@@ -4703,7 +5300,7 @@ public sealed partial class XMPMetadata : JsObject
     /// <summary>
     /// setBlob
     /// </summary>
-    public Task SetBlobAsync(IntPtr buffer)
+    public Task SetBlobAsync(byte[] buffer)
     {
         return CallMethodAsyncVoid(_setBlob, buffer);
     }
@@ -4711,9 +5308,9 @@ public sealed partial class XMPMetadata : JsObject
     /// <summary>
     /// getBlob
     /// </summary>
-    public Task<IntPtr> GetBlobAsync()
+    public Task<byte[]> GetBlobAsync()
     {
-        return CallMethodAsync<IntPtr>(_getBlob);
+        return CallMethodAsync(_getBlob, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)));
     }
 
 }
@@ -4752,6 +5349,66 @@ public sealed record PackingSizeLimit(
         if (_levelV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _level, _levelV);
     }
+}
+
+/// <summary>
+/// Component 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Component : JsObject
+{
+    public Component(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _componentType => "componentType"u8;
+    private static ReadOnlySpan<byte> _rowStride => "rowStride"u8;
+    private static ReadOnlySpan<byte> _pixelStride => "pixelStride"u8;
+    private static ReadOnlySpan<byte> _byteBuffer => "byteBuffer"u8;
+    /// <summary>
+    /// componentType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ComponentType ComponentType => (global::HarmonyOS.ArkUI.ComponentType)NativeValue.ToInt(GetPropertyRaw(_componentType));
+
+    /// <summary>
+    /// rowStride
+    /// </summary>
+    public double RowStride => NativeValue.ToDouble(GetPropertyRaw(_rowStride));
+
+    /// <summary>
+    /// pixelStride
+    /// </summary>
+    public double PixelStride => NativeValue.ToDouble(GetPropertyRaw(_pixelStride));
+
+    /// <summary>
+    /// byteBuffer
+    /// </summary>
+    public byte[] ByteBuffer => ValueConverter.ConvertArray(GetPropertyRaw(_byteBuffer), static e => ValueConverter.Convert<byte>(e));
+
+}
+
+/// <summary>
+/// ImageBufferData 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ImageBufferData : JsObject
+{
+    public ImageBufferData(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _rowStride => "rowStride"u8;
+    private static ReadOnlySpan<byte> _pixelStride => "pixelStride"u8;
+    private static ReadOnlySpan<byte> _byteBuffer => "byteBuffer"u8;
+    /// <summary>
+    /// rowStride
+    /// </summary>
+    public double[] RowStride => ValueConverter.ConvertArray(GetPropertyRaw(_rowStride), static e => ValueConverter.Convert<double>(e));
+
+    /// <summary>
+    /// pixelStride
+    /// </summary>
+    public double[] PixelStride => ValueConverter.ConvertArray(GetPropertyRaw(_pixelStride), static e => ValueConverter.Convert<double>(e));
+
+    /// <summary>
+    /// byteBuffer
+    /// </summary>
+    public byte[] ByteBuffer => ValueConverter.ConvertArray(GetPropertyRaw(_byteBuffer), static e => ValueConverter.Convert<byte>(e));
+
 }
 
 /// <summary>

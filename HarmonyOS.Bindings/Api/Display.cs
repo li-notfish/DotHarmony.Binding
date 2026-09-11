@@ -165,7 +165,7 @@ public static unsafe partial class Display
     /// <summary>
     /// off
     /// </summary>
-    public static void Off(string type, IntPtr? callback = null)
+    public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
@@ -272,6 +272,260 @@ public static unsafe partial class Display
     public static BrightnessInfo GetBrightnessInfo(double displayId)
     {
         return NodeApi.CallMethod(Module, _getBrightnessInfo, static h => new BrightnessInfo(h), displayId);
+    }
+
+    private static readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<double> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(NativeValue.ToDouble(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public static void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Module, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<double> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<global::HarmonyOS.ArkUI.FoldStatus> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback((global::HarmonyOS.ArkUI.FoldStatus)NativeValue.ToInt(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<global::HarmonyOS.ArkUI.FoldStatus> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<double[]> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<double>(e))),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<double[]> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<bool> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(NativeValue.ToBool(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<bool> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<global::HarmonyOS.ArkUI.FoldDisplayMode> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback((global::HarmonyOS.ArkUI.FoldDisplayMode)NativeValue.ToInt(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<global::HarmonyOS.ArkUI.FoldDisplayMode> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 add 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<double> Add
+    {
+        add
+        {
+            _eventListeners.Add(("add", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "add", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("add", value), js => NodeApi.CallMethodVoid(Module, _off, "add", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 remove 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<double> Remove
+    {
+        add
+        {
+            _eventListeners.Add(("remove", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "remove", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("remove", value), js => NodeApi.CallMethodVoid(Module, _off, "remove", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 change 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<double> Change
+    {
+        add
+        {
+            _eventListeners.Add(("change", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "change", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("change", value), js => NodeApi.CallMethodVoid(Module, _off, "change", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 foldStatusChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<global::HarmonyOS.ArkUI.FoldStatus> FoldStatusChange
+    {
+        add
+        {
+            _eventListeners.Add(("foldStatusChange", value),
+                args => value((global::HarmonyOS.ArkUI.FoldStatus)NativeValue.ToInt(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "foldStatusChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("foldStatusChange", value), js => NodeApi.CallMethodVoid(Module, _off, "foldStatusChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 foldAngleChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<double[]> FoldAngleChange
+    {
+        add
+        {
+            _eventListeners.Add(("foldAngleChange", value),
+                args => value(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<double>(e))),
+                js => NodeApi.CallMethodVoid(Module, _on, "foldAngleChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("foldAngleChange", value), js => NodeApi.CallMethodVoid(Module, _off, "foldAngleChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 captureStatusChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<bool> CaptureStatusChange
+    {
+        add
+        {
+            _eventListeners.Add(("captureStatusChange", value),
+                args => value(NativeValue.ToBool(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "captureStatusChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("captureStatusChange", value), js => NodeApi.CallMethodVoid(Module, _off, "captureStatusChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 foldDisplayModeChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<global::HarmonyOS.ArkUI.FoldDisplayMode> FoldDisplayModeChange
+    {
+        add
+        {
+            _eventListeners.Add(("foldDisplayModeChange", value),
+                args => value((global::HarmonyOS.ArkUI.FoldDisplayMode)NativeValue.ToInt(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "foldDisplayModeChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("foldDisplayModeChange", value), js => NodeApi.CallMethodVoid(Module, _off, "foldDisplayModeChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 brightnessInfoChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action BrightnessInfoChange
+    {
+        add
+        {
+            _eventListeners.Add(("brightnessInfoChange", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Module, _on, "brightnessInfoChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("brightnessInfoChange", value), js => NodeApi.CallMethodVoid(Module, _off, "brightnessInfoChange", js));
+        }
     }
 
 }
@@ -437,6 +691,14 @@ public sealed partial class DisplayObject : JsObject
     }
 
     /// <summary>
+    /// getCutoutInfo
+    /// </summary>
+    public Task<IntPtr> GetCutoutInfoAsync()
+    {
+        return CallMethodAsync<IntPtr>(_getCutoutInfo);
+    }
+
+    /// <summary>
     /// getAvailableArea
     /// </summary>
     public Task<Rect> GetAvailableAreaAsync()
@@ -463,7 +725,7 @@ public sealed partial class DisplayObject : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -482,6 +744,51 @@ public sealed partial class DisplayObject : JsObject
     public RoundedCorner[] GetRoundedCorner()
     {
         return CallMethod(_getRoundedCorner, h => ValueConverter.ConvertArray(h, static e => new RoundedCorner(e)));
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<Rect> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new Rect(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<Rect> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 availableAreaChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<Rect> AvailableAreaChange
+    {
+        add
+        {
+            _eventListeners.Add(("availableAreaChange", value),
+                args => value(new Rect(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "availableAreaChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("availableAreaChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "availableAreaChange", js));
+        }
     }
 
 }

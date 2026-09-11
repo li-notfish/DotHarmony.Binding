@@ -10,6 +10,7 @@ export { default as display } from '@ohos.display';
 export { default as file_fs } from '@ohos.file.fs';
 export { default as file_picker } from '@ohos.file.picker';
 export { default as geolocation } from '@ohos.geolocation';
+export { default as geoLocationManager } from '@ohos.geoLocationManager';
 export { default as multimedia_camera } from '@ohos.multimedia.camera';
 export { default as multimedia_image } from '@ohos.multimedia.image';
 export { default as multimedia_media } from '@ohos.multimedia.media';

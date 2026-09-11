@@ -195,9 +195,54 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// off
     /// </summary>
-    public static void Off(string type, IntPtr? callback = null)
+    public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
+    }
+
+    private static readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<VibratorStatusEvent> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new VibratorStatusEvent(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public static void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Module, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<VibratorStatusEvent> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 vibratorStateChange 事件（对应 on/off）
+    /// </summary>
+    public static event System.Action<VibratorStatusEvent> VibratorStateChange
+    {
+        add
+        {
+            _eventListeners.Add(("vibratorStateChange", value),
+                args => value(new VibratorStatusEvent(args[0])),
+                js => NodeApi.CallMethodVoid(Module, _on, "vibratorStateChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("vibratorStateChange", value), js => NodeApi.CallMethodVoid(Module, _off, "vibratorStateChange", js));
+        }
     }
 
 }
@@ -274,5 +319,38 @@ public sealed partial class VibratorInfo : JsObject
     /// isLocalVibrator
     /// </summary>
     public bool IsLocalVibrator => NativeValue.ToBool(GetPropertyRaw(_isLocalVibrator));
+
+}
+
+/// <summary>
+/// VibratorStatusEvent 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class VibratorStatusEvent : JsObject
+{
+    public VibratorStatusEvent(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
+    private static ReadOnlySpan<byte> _vibratorCount => "vibratorCount"u8;
+    private static ReadOnlySpan<byte> _isVibratorOnline => "isVibratorOnline"u8;
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// deviceId
+    /// </summary>
+    public double DeviceId => NativeValue.ToDouble(GetPropertyRaw(_deviceId));
+
+    /// <summary>
+    /// vibratorCount
+    /// </summary>
+    public double VibratorCount => NativeValue.ToDouble(GetPropertyRaw(_vibratorCount));
+
+    /// <summary>
+    /// isVibratorOnline
+    /// </summary>
+    public bool IsVibratorOnline => NativeValue.ToBool(GetPropertyRaw(_isVibratorOnline));
 
 }

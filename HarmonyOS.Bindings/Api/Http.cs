@@ -112,6 +112,22 @@ public sealed partial class HttpRequest : JsObject
     }
 
     /// <summary>
+    /// request
+    /// </summary>
+    public void Request(string url, IntPtr options, IntPtr callback)
+    {
+        CallMethodVoid(_request, url, options, callback);
+    }
+
+    /// <summary>
+    /// request
+    /// </summary>
+    public Task<IntPtr> RequestAsync(string url, IntPtr? options = null)
+    {
+        return CallMethodAsync<IntPtr>(_request, url, options);
+    }
+
+    /// <summary>
     /// requestSync
     /// </summary>
     public IntPtr RequestSync(string url, IntPtr? options = null)
@@ -125,6 +141,22 @@ public sealed partial class HttpRequest : JsObject
     public void RequestInStream(string url, IntPtr callback)
     {
         CallMethodVoid(_requestInStream, url, callback);
+    }
+
+    /// <summary>
+    /// requestInStream
+    /// </summary>
+    public void RequestInStream(string url, IntPtr options, IntPtr callback)
+    {
+        CallMethodVoid(_requestInStream, url, options, callback);
+    }
+
+    /// <summary>
+    /// requestInStream
+    /// </summary>
+    public Task<double> RequestInStreamAsync(string url, IntPtr? options = null)
+    {
+        return CallMethodAsync<double>(_requestInStream, url, options);
     }
 
     /// <summary>
@@ -146,7 +178,7 @@ public sealed partial class HttpRequest : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -165,6 +197,218 @@ public sealed partial class HttpRequest : JsObject
     public void EnableAutoCookie(bool enable)
     {
         CallMethodVoid(_enableAutoCookie, enable);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(args[0]),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void Once(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(args[0]),
+            js => NodeApi.CallMethodVoid(Handle, _once, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<byte[]> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(NativeValue.ToByteArray(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<byte[]> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<DataReceiveProgressInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new DataReceiveProgressInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<DataReceiveProgressInfo> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<DataSendProgressInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new DataSendProgressInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<DataSendProgressInfo> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 headerReceive 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> HeaderReceive
+    {
+        add
+        {
+            _eventListeners.Add(("headerReceive", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "headerReceive", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("headerReceive", value), js => NodeApi.CallMethodVoid(Handle, _off, "headerReceive", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 headersReceive 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> HeadersReceive
+    {
+        add
+        {
+            _eventListeners.Add(("headersReceive", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "headersReceive", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("headersReceive", value), js => NodeApi.CallMethodVoid(Handle, _off, "headersReceive", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 dataReceive 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<byte[]> DataReceive
+    {
+        add
+        {
+            _eventListeners.Add(("dataReceive", value),
+                args => value(NativeValue.ToByteArray(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "dataReceive", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("dataReceive", value), js => NodeApi.CallMethodVoid(Handle, _off, "dataReceive", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 dataEnd 事件（对应 on/off）
+    /// </summary>
+    public event System.Action DataEnd
+    {
+        add
+        {
+            _eventListeners.Add(("dataEnd", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "dataEnd", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("dataEnd", value), js => NodeApi.CallMethodVoid(Handle, _off, "dataEnd", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 dataReceiveProgress 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<DataReceiveProgressInfo> DataReceiveProgress
+    {
+        add
+        {
+            _eventListeners.Add(("dataReceiveProgress", value),
+                args => value(new DataReceiveProgressInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "dataReceiveProgress", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("dataReceiveProgress", value), js => NodeApi.CallMethodVoid(Handle, _off, "dataReceiveProgress", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 dataSendProgress 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<DataSendProgressInfo> DataSendProgress
+    {
+        add
+        {
+            _eventListeners.Add(("dataSendProgress", value),
+                args => value(new DataSendProgressInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "dataSendProgress", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("dataSendProgress", value), js => NodeApi.CallMethodVoid(Handle, _off, "dataSendProgress", js));
+        }
     }
 
 }
@@ -187,11 +431,69 @@ public sealed partial class HttpResponseCache : JsObject
     }
 
     /// <summary>
+    /// flush
+    /// </summary>
+    public Task FlushAsync()
+    {
+        return CallMethodAsyncVoid(_flush);
+    }
+
+    /// <summary>
     /// delete
     /// </summary>
     public void Delete(IntPtr callback)
     {
         CallMethodVoid(_delete, callback);
     }
+
+    /// <summary>
+    /// delete
+    /// </summary>
+    public Task DeleteAsync()
+    {
+        return CallMethodAsyncVoid(_delete);
+    }
+
+}
+
+/// <summary>
+/// DataReceiveProgressInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DataReceiveProgressInfo : JsObject
+{
+    public DataReceiveProgressInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _receiveSize => "receiveSize"u8;
+    private static ReadOnlySpan<byte> _totalSize => "totalSize"u8;
+    /// <summary>
+    /// receiveSize
+    /// </summary>
+    public double ReceiveSize => NativeValue.ToDouble(GetPropertyRaw(_receiveSize));
+
+    /// <summary>
+    /// totalSize
+    /// </summary>
+    public double TotalSize => NativeValue.ToDouble(GetPropertyRaw(_totalSize));
+
+}
+
+/// <summary>
+/// DataSendProgressInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DataSendProgressInfo : JsObject
+{
+    public DataSendProgressInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _sendSize => "sendSize"u8;
+    private static ReadOnlySpan<byte> _totalSize => "totalSize"u8;
+    /// <summary>
+    /// sendSize
+    /// </summary>
+    public double SendSize => NativeValue.ToDouble(GetPropertyRaw(_sendSize));
+
+    /// <summary>
+    /// totalSize
+    /// </summary>
+    public double TotalSize => NativeValue.ToDouble(GetPropertyRaw(_totalSize));
 
 }

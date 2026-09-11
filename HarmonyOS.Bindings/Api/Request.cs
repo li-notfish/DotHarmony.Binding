@@ -409,7 +409,7 @@ public sealed partial class DownloadTask : JsObject
     /// <summary>
     /// on
     /// </summary>
-    public void On(string type, System.Action<double, double> callback)
+    public void On(string type, IntPtr callback)
     {
         CallMethodVoid(_on, type, callback);
     }
@@ -417,7 +417,7 @@ public sealed partial class DownloadTask : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, System.Action<double, double>? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -431,11 +431,27 @@ public sealed partial class DownloadTask : JsObject
     }
 
     /// <summary>
+    /// remove
+    /// </summary>
+    public Task<bool> RemoveAsync()
+    {
+        return CallMethodAsync<bool>(_remove);
+    }
+
+    /// <summary>
     /// pause
     /// </summary>
     public void Pause(IntPtr callback)
     {
         CallMethodVoid(_pause, callback);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public Task PauseAsync()
+    {
+        return CallMethodAsyncVoid(_pause);
     }
 
     /// <summary>
@@ -447,11 +463,27 @@ public sealed partial class DownloadTask : JsObject
     }
 
     /// <summary>
+    /// resume
+    /// </summary>
+    public Task ResumeAsync()
+    {
+        return CallMethodAsyncVoid(_resume);
+    }
+
+    /// <summary>
     /// query
     /// </summary>
     public void Query(IntPtr callback)
     {
         CallMethodVoid(_query, callback);
+    }
+
+    /// <summary>
+    /// query
+    /// </summary>
+    public Task<DownloadInfo> QueryAsync()
+    {
+        return CallMethodAsync(_query, static h => new DownloadInfo(h));
     }
 
     /// <summary>
@@ -463,11 +495,27 @@ public sealed partial class DownloadTask : JsObject
     }
 
     /// <summary>
+    /// queryMimeType
+    /// </summary>
+    public Task<string> QueryMimeTypeAsync()
+    {
+        return CallMethodAsync<string>(_queryMimeType);
+    }
+
+    /// <summary>
     /// delete
     /// </summary>
     public void Delete(IntPtr callback)
     {
         CallMethodVoid(_delete, callback);
+    }
+
+    /// <summary>
+    /// delete
+    /// </summary>
+    public Task<bool> DeleteAsync()
+    {
+        return CallMethodAsync<bool>(_delete);
     }
 
     /// <summary>
@@ -479,11 +527,27 @@ public sealed partial class DownloadTask : JsObject
     }
 
     /// <summary>
+    /// suspend
+    /// </summary>
+    public Task<bool> SuspendAsync()
+    {
+        return CallMethodAsync<bool>(_suspend);
+    }
+
+    /// <summary>
     /// restore
     /// </summary>
     public void Restore(IntPtr callback)
     {
         CallMethodVoid(_restore, callback);
+    }
+
+    /// <summary>
+    /// restore
+    /// </summary>
+    public Task<bool> RestoreAsync()
+    {
+        return CallMethodAsync<bool>(_restore);
     }
 
     /// <summary>
@@ -495,11 +559,140 @@ public sealed partial class DownloadTask : JsObject
     }
 
     /// <summary>
+    /// getTaskInfo
+    /// </summary>
+    public Task<DownloadInfo> GetTaskInfoAsync()
+    {
+        return CallMethodAsync(_getTaskInfo, static h => new DownloadInfo(h));
+    }
+
+    /// <summary>
     /// getTaskMimeType
     /// </summary>
     public void GetTaskMimeType(IntPtr callback)
     {
         CallMethodVoid(_getTaskMimeType, callback);
+    }
+
+    /// <summary>
+    /// getTaskMimeType
+    /// </summary>
+    public Task<string> GetTaskMimeTypeAsync()
+    {
+        return CallMethodAsync<string>(_getTaskMimeType);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 progress 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Progress
+    {
+        add
+        {
+            _eventListeners.Add(("progress", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "progress", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("progress", value), js => NodeApi.CallMethodVoid(Handle, _off, "progress", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 complete 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Complete
+    {
+        add
+        {
+            _eventListeners.Add(("complete", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "complete", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("complete", value), js => NodeApi.CallMethodVoid(Handle, _off, "complete", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 pause 事件（对应 on/off）
+    /// </summary>
+    public event System.Action PauseEvent
+    {
+        add
+        {
+            _eventListeners.Add(("pause", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "pause", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("pause", value), js => NodeApi.CallMethodVoid(Handle, _off, "pause", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 remove 事件（对应 on/off）
+    /// </summary>
+    public event System.Action RemoveEvent
+    {
+        add
+        {
+            _eventListeners.Add(("remove", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "remove", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("remove", value), js => NodeApi.CallMethodVoid(Handle, _off, "remove", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 fail 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Fail
+    {
+        add
+        {
+            _eventListeners.Add(("fail", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "fail", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("fail", value), js => NodeApi.CallMethodVoid(Handle, _off, "fail", js));
+        }
     }
 
 }
@@ -518,7 +711,7 @@ public sealed partial class UploadTask : JsObject
     /// <summary>
     /// on
     /// </summary>
-    public void On(string type, System.Action<double, double> callback)
+    public void On(string type, IntPtr callback)
     {
         CallMethodVoid(_on, type, callback);
     }
@@ -526,7 +719,7 @@ public sealed partial class UploadTask : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, System.Action<double, double>? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -540,11 +733,141 @@ public sealed partial class UploadTask : JsObject
     }
 
     /// <summary>
+    /// remove
+    /// </summary>
+    public Task<bool> RemoveAsync()
+    {
+        return CallMethodAsync<bool>(_remove);
+    }
+
+    /// <summary>
     /// delete
     /// </summary>
     public void Delete(IntPtr callback)
     {
         CallMethodVoid(_delete, callback);
+    }
+
+    /// <summary>
+    /// delete
+    /// </summary>
+    public Task<bool> DeleteAsync()
+    {
+        return CallMethodAsync<bool>(_delete);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(args[0]),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 progress 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Progress
+    {
+        add
+        {
+            _eventListeners.Add(("progress", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "progress", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("progress", value), js => NodeApi.CallMethodVoid(Handle, _off, "progress", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 headerReceive 事件（对应 on/off）
+    /// </summary>
+    public event System.Action HeaderReceive
+    {
+        add
+        {
+            _eventListeners.Add(("headerReceive", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "headerReceive", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("headerReceive", value), js => NodeApi.CallMethodVoid(Handle, _off, "headerReceive", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 complete 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> Complete
+    {
+        add
+        {
+            _eventListeners.Add(("complete", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "complete", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("complete", value), js => NodeApi.CallMethodVoid(Handle, _off, "complete", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 fail 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> Fail
+    {
+        add
+        {
+            _eventListeners.Add(("fail", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "fail", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("fail", value), js => NodeApi.CallMethodVoid(Handle, _off, "fail", js));
+        }
     }
 
 }
@@ -583,4 +906,79 @@ public sealed record Filter(
         if (_modeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _mode, _modeV);
     }
+}
+
+/// <summary>
+/// DownloadInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DownloadInfo : JsObject
+{
+    public DownloadInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _description => "description"u8;
+    private static ReadOnlySpan<byte> _downloadedBytes => "downloadedBytes"u8;
+    private static ReadOnlySpan<byte> _downloadId => "downloadId"u8;
+    private static ReadOnlySpan<byte> _failedReason => "failedReason"u8;
+    private static ReadOnlySpan<byte> _fileName => "fileName"u8;
+    private static ReadOnlySpan<byte> _filePath => "filePath"u8;
+    private static ReadOnlySpan<byte> _pausedReason => "pausedReason"u8;
+    private static ReadOnlySpan<byte> _status => "status"u8;
+    private static ReadOnlySpan<byte> _targetURI => "targetURI"u8;
+    private static ReadOnlySpan<byte> _downloadTitle => "downloadTitle"u8;
+    private static ReadOnlySpan<byte> _downloadTotalBytes => "downloadTotalBytes"u8;
+    /// <summary>
+    /// description
+    /// </summary>
+    public string Description => NativeValue.ToString(GetPropertyRaw(_description)) ?? string.Empty;
+
+    /// <summary>
+    /// downloadedBytes
+    /// </summary>
+    public double DownloadedBytes => NativeValue.ToDouble(GetPropertyRaw(_downloadedBytes));
+
+    /// <summary>
+    /// downloadId
+    /// </summary>
+    public double DownloadId => NativeValue.ToDouble(GetPropertyRaw(_downloadId));
+
+    /// <summary>
+    /// failedReason
+    /// </summary>
+    public double FailedReason => NativeValue.ToDouble(GetPropertyRaw(_failedReason));
+
+    /// <summary>
+    /// fileName
+    /// </summary>
+    public string FileName => NativeValue.ToString(GetPropertyRaw(_fileName)) ?? string.Empty;
+
+    /// <summary>
+    /// filePath
+    /// </summary>
+    public string FilePath => NativeValue.ToString(GetPropertyRaw(_filePath)) ?? string.Empty;
+
+    /// <summary>
+    /// pausedReason
+    /// </summary>
+    public double PausedReason => NativeValue.ToDouble(GetPropertyRaw(_pausedReason));
+
+    /// <summary>
+    /// status
+    /// </summary>
+    public double Status => NativeValue.ToDouble(GetPropertyRaw(_status));
+
+    /// <summary>
+    /// targetURI
+    /// </summary>
+    public string TargetUri => NativeValue.ToString(GetPropertyRaw(_targetURI)) ?? string.Empty;
+
+    /// <summary>
+    /// downloadTitle
+    /// </summary>
+    public string DownloadTitle => NativeValue.ToString(GetPropertyRaw(_downloadTitle)) ?? string.Empty;
+
+    /// <summary>
+    /// downloadTotalBytes
+    /// </summary>
+    public double DownloadTotalBytes => NativeValue.ToDouble(GetPropertyRaw(_downloadTotalBytes));
+
 }

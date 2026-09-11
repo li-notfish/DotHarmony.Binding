@@ -287,6 +287,14 @@ public sealed partial class PasteData : JsObject
     }
 
     /// <summary>
+    /// addRecord
+    /// </summary>
+    public void AddRecord(string mimeType, IntPtr value)
+    {
+        CallMethodVoid(_addRecord, mimeType, value);
+    }
+
+    /// <summary>
     /// getMimeTypes
     /// </summary>
     public string[] GetMimeTypes()
@@ -519,6 +527,14 @@ public sealed partial class PasteDataRecord : JsObject
     }
 
     /// <summary>
+    /// convertToText
+    /// </summary>
+    public Task<string> ConvertToTextAsync()
+    {
+        return CallMethodAsync<string>(_convertToText);
+    }
+
+    /// <summary>
     /// toPlainText
     /// </summary>
     public string ToPlainText()
@@ -592,7 +608,7 @@ public sealed partial class SystemPasteboard : JsObject
     /// <summary>
     /// on
     /// </summary>
-    public void On(string type, System.Action callback)
+    public void On(string type, IntPtr callback)
     {
         CallMethodVoid(_on, type, callback);
     }
@@ -608,7 +624,7 @@ public sealed partial class SystemPasteboard : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, System.Action? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -662,11 +678,27 @@ public sealed partial class SystemPasteboard : JsObject
     }
 
     /// <summary>
+    /// clear
+    /// </summary>
+    public Task ClearAsync()
+    {
+        return CallMethodAsyncVoid(_clear);
+    }
+
+    /// <summary>
     /// clearData
     /// </summary>
     public void ClearData(IntPtr callback)
     {
         CallMethodVoid(_clearData, callback);
+    }
+
+    /// <summary>
+    /// clearData
+    /// </summary>
+    public Task ClearDataAsync()
+    {
+        return CallMethodAsyncVoid(_clearData);
     }
 
     /// <summary>
@@ -686,11 +718,27 @@ public sealed partial class SystemPasteboard : JsObject
     }
 
     /// <summary>
+    /// getPasteData
+    /// </summary>
+    public Task<PasteData> GetPasteDataAsync()
+    {
+        return CallMethodAsync(_getPasteData, static h => new PasteData(h));
+    }
+
+    /// <summary>
     /// getData
     /// </summary>
     public void GetData(IntPtr callback)
     {
         CallMethodVoid(_getData, callback);
+    }
+
+    /// <summary>
+    /// getData
+    /// </summary>
+    public Task<PasteData> GetDataAsync()
+    {
+        return CallMethodAsync(_getData, static h => new PasteData(h));
     }
 
     /// <summary>
@@ -710,11 +758,27 @@ public sealed partial class SystemPasteboard : JsObject
     }
 
     /// <summary>
+    /// hasPasteData
+    /// </summary>
+    public Task<bool> HasPasteDataAsync()
+    {
+        return CallMethodAsync<bool>(_hasPasteData);
+    }
+
+    /// <summary>
     /// hasData
     /// </summary>
     public void HasData(IntPtr callback)
     {
         CallMethodVoid(_hasData, callback);
+    }
+
+    /// <summary>
+    /// hasData
+    /// </summary>
+    public Task<bool> HasDataAsync()
+    {
+        return CallMethodAsync<bool>(_hasData);
     }
 
     /// <summary>
@@ -734,11 +798,27 @@ public sealed partial class SystemPasteboard : JsObject
     }
 
     /// <summary>
+    /// setPasteData
+    /// </summary>
+    public Task SetPasteDataAsync(PasteData data)
+    {
+        return CallMethodAsyncVoid(_setPasteData, data);
+    }
+
+    /// <summary>
     /// setData
     /// </summary>
     public void SetData(PasteData data, IntPtr callback)
     {
         CallMethodVoid(_setData, data, callback);
+    }
+
+    /// <summary>
+    /// setData
+    /// </summary>
+    public Task SetDataAsync(PasteData data)
+    {
+        return CallMethodAsyncVoid(_setData, data);
     }
 
     /// <summary>
@@ -827,6 +907,51 @@ public sealed partial class SystemPasteboard : JsObject
     public Task<PasteData> GetDataWithProgressAsync(IntPtr @params)
     {
         return CallMethodAsync(_getDataWithProgress, static h => new PasteData(h), @params);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 update 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Update
+    {
+        add
+        {
+            _eventListeners.Add(("update", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "update", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("update", value), js => NodeApi.CallMethodVoid(Handle, _off, "update", js));
+        }
     }
 
 }

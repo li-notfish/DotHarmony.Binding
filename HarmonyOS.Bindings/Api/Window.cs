@@ -429,11 +429,35 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// show
+    /// </summary>
+    public Task ShowAsync()
+    {
+        return CallMethodAsyncVoid(_show);
+    }
+
+    /// <summary>
     /// showWindow
     /// </summary>
     public void ShowWindow(IntPtr callback)
     {
         CallMethodVoid(_showWindow, callback);
+    }
+
+    /// <summary>
+    /// showWindow
+    /// </summary>
+    public Task ShowWindowAsync()
+    {
+        return CallMethodAsyncVoid(_showWindow);
+    }
+
+    /// <summary>
+    /// showWindow
+    /// </summary>
+    public Task ShowWindowAsync(ShowWindowOptions options)
+    {
+        return CallMethodAsyncVoid(_showWindow, options);
     }
 
     /// <summary>
@@ -445,11 +469,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// destroy
+    /// </summary>
+    public Task DestroyAsync()
+    {
+        return CallMethodAsyncVoid(_destroy);
+    }
+
+    /// <summary>
     /// destroyWindow
     /// </summary>
     public void DestroyWindow(IntPtr callback)
     {
         CallMethodVoid(_destroyWindow, callback);
+    }
+
+    /// <summary>
+    /// destroyWindow
+    /// </summary>
+    public Task DestroyWindowAsync()
+    {
+        return CallMethodAsyncVoid(_destroyWindow);
     }
 
     /// <summary>
@@ -461,6 +501,14 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// moveTo
+    /// </summary>
+    public void MoveTo(double x, double y, IntPtr callback)
+    {
+        CallMethodVoid(_moveTo, x, y, callback);
+    }
+
+    /// <summary>
     /// moveWindowTo
     /// </summary>
     public Task MoveWindowToAsync(double x, double y)
@@ -469,11 +517,35 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// moveWindowTo
+    /// </summary>
+    public void MoveWindowTo(double x, double y, IntPtr callback)
+    {
+        CallMethodVoid(_moveWindowTo, x, y, callback);
+    }
+
+    /// <summary>
+    /// moveWindowToAsync
+    /// </summary>
+    public Task MoveWindowToAsync(double x, double y, MoveConfiguration? moveConfiguration = null)
+    {
+        return CallMethodAsyncVoid(_moveWindowToAsync, x, y, moveConfiguration);
+    }
+
+    /// <summary>
     /// moveWindowToGlobal
     /// </summary>
     public Task MoveWindowToGlobalAsync(double x, double y)
     {
         return CallMethodAsyncVoid(_moveWindowToGlobal, x, y);
+    }
+
+    /// <summary>
+    /// moveWindowToGlobal
+    /// </summary>
+    public Task MoveWindowToGlobalAsync(double x, double y, MoveConfiguration? moveConfiguration = null)
+    {
+        return CallMethodAsyncVoid(_moveWindowToGlobal, x, y, moveConfiguration);
     }
 
     /// <summary>
@@ -493,11 +565,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// resetSize
+    /// </summary>
+    public void ResetSize(double width, double height, IntPtr callback)
+    {
+        CallMethodVoid(_resetSize, width, height, callback);
+    }
+
+    /// <summary>
     /// resize
     /// </summary>
     public Task ResizeAsync(double width, double height)
     {
         return CallMethodAsyncVoid(_resize, width, height);
+    }
+
+    /// <summary>
+    /// resize
+    /// </summary>
+    public void Resize(double width, double height, IntPtr callback)
+    {
+        CallMethodVoid(_resize, width, height, callback);
     }
 
     /// <summary>
@@ -533,6 +621,14 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// getProperties
+    /// </summary>
+    public Task<WindowProperties> GetPropertiesAsync()
+    {
+        return CallMethodAsync(_getProperties, static h => new WindowProperties(h));
+    }
+
+    /// <summary>
     /// getWindowProperties
     /// </summary>
     public WindowProperties GetWindowProperties()
@@ -554,6 +650,14 @@ public sealed partial class WindowObject : JsObject
     public void GetAvoidArea(global::HarmonyOS.ArkUI.AvoidAreaType type, IntPtr callback)
     {
         CallMethodVoid(_getAvoidArea, type, callback);
+    }
+
+    /// <summary>
+    /// getAvoidArea
+    /// </summary>
+    public Task<AvoidArea> GetAvoidAreaAsync(global::HarmonyOS.ArkUI.AvoidAreaType type)
+    {
+        return CallMethodAsync(_getAvoidArea, static h => new AvoidArea(h), type);
     }
 
     /// <summary>
@@ -613,11 +717,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setFullScreen
+    /// </summary>
+    public Task SetFullScreenAsync(bool isFullScreen)
+    {
+        return CallMethodAsyncVoid(_setFullScreen, isFullScreen);
+    }
+
+    /// <summary>
     /// setLayoutFullScreen
     /// </summary>
     public void SetLayoutFullScreen(bool isLayoutFullScreen, IntPtr callback)
     {
         CallMethodVoid(_setLayoutFullScreen, isLayoutFullScreen, callback);
+    }
+
+    /// <summary>
+    /// setLayoutFullScreen
+    /// </summary>
+    public Task SetLayoutFullScreenAsync(bool isLayoutFullScreen)
+    {
+        return CallMethodAsyncVoid(_setLayoutFullScreen, isLayoutFullScreen);
     }
 
     /// <summary>
@@ -629,6 +749,14 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setWindowLayoutFullScreen
+    /// </summary>
+    public Task SetWindowLayoutFullScreenAsync(bool isLayoutFullScreen)
+    {
+        return CallMethodAsyncVoid(_setWindowLayoutFullScreen, isLayoutFullScreen);
+    }
+
+    /// <summary>
     /// setSystemBarEnable
     /// </summary>
     public void SetSystemBarEnable(IntPtr names, IntPtr callback)
@@ -637,11 +765,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setSystemBarEnable
+    /// </summary>
+    public Task SetSystemBarEnableAsync(IntPtr names)
+    {
+        return CallMethodAsyncVoid(_setSystemBarEnable, names);
+    }
+
+    /// <summary>
     /// setWindowSystemBarEnable
     /// </summary>
     public void SetWindowSystemBarEnable(IntPtr names, IntPtr callback)
     {
         CallMethodVoid(_setWindowSystemBarEnable, names, callback);
+    }
+
+    /// <summary>
+    /// setWindowSystemBarEnable
+    /// </summary>
+    public Task SetWindowSystemBarEnableAsync(IntPtr names)
+    {
+        return CallMethodAsyncVoid(_setWindowSystemBarEnable, names);
     }
 
     /// <summary>
@@ -661,11 +805,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setSystemBarProperties
+    /// </summary>
+    public Task SetSystemBarPropertiesAsync(SystemBarProperties systemBarProperties)
+    {
+        return CallMethodAsyncVoid(_setSystemBarProperties, systemBarProperties);
+    }
+
+    /// <summary>
     /// setWindowSystemBarProperties
     /// </summary>
     public void SetWindowSystemBarProperties(SystemBarProperties systemBarProperties, IntPtr callback)
     {
         CallMethodVoid(_setWindowSystemBarProperties, systemBarProperties, callback);
+    }
+
+    /// <summary>
+    /// setWindowSystemBarProperties
+    /// </summary>
+    public Task SetWindowSystemBarPropertiesAsync(SystemBarProperties systemBarProperties)
+    {
+        return CallMethodAsyncVoid(_setWindowSystemBarProperties, systemBarProperties);
     }
 
     /// <summary>
@@ -735,9 +895,17 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// setPreferredOrientation
+    /// </summary>
+    public void SetPreferredOrientation(global::HarmonyOS.ArkUI.Orientation orientation, IntPtr callback)
+    {
+        CallMethodVoid(_setPreferredOrientation, orientation, callback);
     }
 
     /// <summary>
@@ -765,6 +933,30 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// loadContent
+    /// </summary>
+    public Task LoadContentAsync(string path, IntPtr storage)
+    {
+        return CallMethodAsyncVoid(_loadContent, path, storage);
+    }
+
+    /// <summary>
+    /// loadContent
+    /// </summary>
+    public void LoadContent(string path, IntPtr callback)
+    {
+        CallMethodVoid(_loadContent, path, callback);
+    }
+
+    /// <summary>
+    /// loadContent
+    /// </summary>
+    public Task LoadContentAsync(string path)
+    {
+        return CallMethodAsyncVoid(_loadContent, path);
+    }
+
+    /// <summary>
     /// getUIContext
     /// </summary>
     public IntPtr GetUiContext()
@@ -781,11 +973,35 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setUIContent
+    /// </summary>
+    public Task SetUiContentAsync(string path)
+    {
+        return CallMethodAsyncVoid(_setUIContent, path);
+    }
+
+    /// <summary>
     /// loadContentByName
     /// </summary>
     public void LoadContentByName(string name, IntPtr storage, IntPtr callback)
     {
         CallMethodVoid(_loadContentByName, name, storage, callback);
+    }
+
+    /// <summary>
+    /// loadContentByName
+    /// </summary>
+    public void LoadContentByName(string name, IntPtr callback)
+    {
+        CallMethodVoid(_loadContentByName, name, callback);
+    }
+
+    /// <summary>
+    /// loadContentByName
+    /// </summary>
+    public Task LoadContentByNameAsync(string name, IntPtr? storage = null)
+    {
+        return CallMethodAsyncVoid(_loadContentByName, name, storage);
     }
 
     /// <summary>
@@ -797,11 +1013,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// isShowing
+    /// </summary>
+    public Task<bool> IsShowingAsync()
+    {
+        return CallMethodAsync<bool>(_isShowing);
+    }
+
+    /// <summary>
     /// isWindowShowing
     /// </summary>
     public bool IsWindowShowing()
     {
         return CallMethod<bool>(_isWindowShowing);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, double timeout, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, timeout, callback);
     }
 
     /// <summary>
@@ -821,11 +1053,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// isSupportWideGamut
+    /// </summary>
+    public void IsSupportWideGamut(IntPtr callback)
+    {
+        CallMethodVoid(_isSupportWideGamut, callback);
+    }
+
+    /// <summary>
     /// isWindowSupportWideGamut
     /// </summary>
     public Task<bool> IsWindowSupportWideGamutAsync()
     {
         return CallMethodAsync<bool>(_isWindowSupportWideGamut);
+    }
+
+    /// <summary>
+    /// isWindowSupportWideGamut
+    /// </summary>
+    public void IsWindowSupportWideGamut(IntPtr callback)
+    {
+        CallMethodVoid(_isWindowSupportWideGamut, callback);
     }
 
     /// <summary>
@@ -837,6 +1085,14 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setColorSpace
+    /// </summary>
+    public void SetColorSpace(global::HarmonyOS.ArkUI.ColorSpace colorSpace, IntPtr callback)
+    {
+        CallMethodVoid(_setColorSpace, colorSpace, callback);
+    }
+
+    /// <summary>
     /// setWindowColorSpace
     /// </summary>
     public Task SetWindowColorSpaceAsync(global::HarmonyOS.ArkUI.ColorSpace colorSpace)
@@ -845,11 +1101,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setWindowColorSpace
+    /// </summary>
+    public void SetWindowColorSpace(global::HarmonyOS.ArkUI.ColorSpace colorSpace, IntPtr callback)
+    {
+        CallMethodVoid(_setWindowColorSpace, colorSpace, callback);
+    }
+
+    /// <summary>
     /// getColorSpace
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ColorSpace> GetColorSpaceAsync()
     {
         return CallMethodAsync<global::HarmonyOS.ArkUI.ColorSpace>(_getColorSpace);
+    }
+
+    /// <summary>
+    /// getColorSpace
+    /// </summary>
+    public void GetColorSpace(IntPtr callback)
+    {
+        CallMethodVoid(_getColorSpace, callback);
     }
 
     /// <summary>
@@ -866,6 +1138,14 @@ public sealed partial class WindowObject : JsObject
     public Task SetBackgroundColorAsync(string color)
     {
         return CallMethodAsyncVoid(_setBackgroundColor, color);
+    }
+
+    /// <summary>
+    /// setBackgroundColor
+    /// </summary>
+    public void SetBackgroundColor(string color, IntPtr callback)
+    {
+        CallMethodVoid(_setBackgroundColor, color, callback);
     }
 
     /// <summary>
@@ -893,6 +1173,14 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setBrightness
+    /// </summary>
+    public void SetBrightness(double brightness, IntPtr callback)
+    {
+        CallMethodVoid(_setBrightness, brightness, callback);
+    }
+
+    /// <summary>
     /// setWindowTopmost
     /// </summary>
     public Task SetWindowTopmostAsync(bool isWindowTopmost)
@@ -906,6 +1194,14 @@ public sealed partial class WindowObject : JsObject
     public Task SetWindowBrightnessAsync(double brightness)
     {
         return CallMethodAsyncVoid(_setWindowBrightness, brightness);
+    }
+
+    /// <summary>
+    /// setWindowBrightness
+    /// </summary>
+    public void SetWindowBrightness(double brightness, IntPtr callback)
+    {
+        CallMethodVoid(_setWindowBrightness, brightness, callback);
     }
 
     /// <summary>
@@ -925,6 +1221,14 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setDimBehind
+    /// </summary>
+    public Task SetDimBehindAsync(double dimBehindValue)
+    {
+        return CallMethodAsyncVoid(_setDimBehind, dimBehindValue);
+    }
+
+    /// <summary>
     /// setFocusable
     /// </summary>
     public Task SetFocusableAsync(bool isFocusable)
@@ -933,11 +1237,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setFocusable
+    /// </summary>
+    public void SetFocusable(bool isFocusable, IntPtr callback)
+    {
+        CallMethodVoid(_setFocusable, isFocusable, callback);
+    }
+
+    /// <summary>
     /// setWindowFocusable
     /// </summary>
     public Task SetWindowFocusableAsync(bool isFocusable)
     {
         return CallMethodAsyncVoid(_setWindowFocusable, isFocusable);
+    }
+
+    /// <summary>
+    /// setWindowFocusable
+    /// </summary>
+    public void SetWindowFocusable(bool isFocusable, IntPtr callback)
+    {
+        CallMethodVoid(_setWindowFocusable, isFocusable, callback);
     }
 
     /// <summary>
@@ -965,11 +1285,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setKeepScreenOn
+    /// </summary>
+    public void SetKeepScreenOn(bool isKeepScreenOn, IntPtr callback)
+    {
+        CallMethodVoid(_setKeepScreenOn, isKeepScreenOn, callback);
+    }
+
+    /// <summary>
     /// setWindowKeepScreenOn
     /// </summary>
     public Task SetWindowKeepScreenOnAsync(bool isKeepScreenOn)
     {
         return CallMethodAsyncVoid(_setWindowKeepScreenOn, isKeepScreenOn);
+    }
+
+    /// <summary>
+    /// setWindowKeepScreenOn
+    /// </summary>
+    public void SetWindowKeepScreenOn(bool isKeepScreenOn, IntPtr callback)
+    {
+        CallMethodVoid(_setWindowKeepScreenOn, isKeepScreenOn, callback);
     }
 
     /// <summary>
@@ -981,11 +1317,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setOutsideTouchable
+    /// </summary>
+    public void SetOutsideTouchable(bool touchable, IntPtr callback)
+    {
+        CallMethodVoid(_setOutsideTouchable, touchable, callback);
+    }
+
+    /// <summary>
     /// setPrivacyMode
     /// </summary>
     public Task SetPrivacyModeAsync(bool isPrivacyMode)
     {
         return CallMethodAsyncVoid(_setPrivacyMode, isPrivacyMode);
+    }
+
+    /// <summary>
+    /// setPrivacyMode
+    /// </summary>
+    public void SetPrivacyMode(bool isPrivacyMode, IntPtr callback)
+    {
+        CallMethodVoid(_setPrivacyMode, isPrivacyMode, callback);
     }
 
     /// <summary>
@@ -997,11 +1349,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setWindowPrivacyMode
+    /// </summary>
+    public void SetWindowPrivacyMode(bool isPrivacyMode, IntPtr callback)
+    {
+        CallMethodVoid(_setWindowPrivacyMode, isPrivacyMode, callback);
+    }
+
+    /// <summary>
     /// setTouchable
     /// </summary>
     public Task SetTouchableAsync(bool isTouchable)
     {
         return CallMethodAsyncVoid(_setTouchable, isTouchable);
+    }
+
+    /// <summary>
+    /// setTouchable
+    /// </summary>
+    public void SetTouchable(bool isTouchable, IntPtr callback)
+    {
+        CallMethodVoid(_setTouchable, isTouchable, callback);
     }
 
     /// <summary>
@@ -1013,11 +1381,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setWindowTouchable
+    /// </summary>
+    public void SetWindowTouchable(bool isTouchable, IntPtr callback)
+    {
+        CallMethodVoid(_setWindowTouchable, isTouchable, callback);
+    }
+
+    /// <summary>
     /// snapshot
     /// </summary>
     public void Snapshot(IntPtr callback)
     {
         CallMethodVoid(_snapshot, callback);
+    }
+
+    /// <summary>
+    /// snapshot
+    /// </summary>
+    public Task<IntPtr> SnapshotAsync()
+    {
+        return CallMethodAsync<IntPtr>(_snapshot);
     }
 
     /// <summary>
@@ -1077,6 +1461,14 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setAspectRatio
+    /// </summary>
+    public Task SetAspectRatioAsync(double ratio)
+    {
+        return CallMethodAsyncVoid(_setAspectRatio, ratio);
+    }
+
+    /// <summary>
     /// setContentAspectRatio
     /// </summary>
     public Task SetContentAspectRatioAsync(double ratio, bool? isPersistent = null, bool? needUpdateRect = null)
@@ -1090,6 +1482,14 @@ public sealed partial class WindowObject : JsObject
     public void ResetAspectRatio(IntPtr callback)
     {
         CallMethodVoid(_resetAspectRatio, callback);
+    }
+
+    /// <summary>
+    /// resetAspectRatio
+    /// </summary>
+    public Task ResetAspectRatioAsync()
+    {
+        return CallMethodAsyncVoid(_resetAspectRatio);
     }
 
     /// <summary>
@@ -1109,11 +1509,27 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// minimize
+    /// </summary>
+    public Task MinimizeAsync()
+    {
+        return CallMethodAsyncVoid(_minimize);
+    }
+
+    /// <summary>
     /// maximize
     /// </summary>
     public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null)
     {
         return CallMethodAsyncVoid(_maximize, presentation);
+    }
+
+    /// <summary>
+    /// maximize
+    /// </summary>
+    public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null, bool? acrossDisplay = null)
+    {
+        return CallMethodAsyncVoid(_maximize, presentation, acrossDisplay);
     }
 
     /// <summary>
@@ -1130,6 +1546,14 @@ public sealed partial class WindowObject : JsObject
     public void SetResizeByDragEnabled(bool enable, IntPtr callback)
     {
         CallMethodVoid(_setResizeByDragEnabled, enable, callback);
+    }
+
+    /// <summary>
+    /// setResizeByDragEnabled
+    /// </summary>
+    public Task SetResizeByDragEnabledAsync(bool enable)
+    {
+        return CallMethodAsyncVoid(_setResizeByDragEnabled, enable);
     }
 
     /// <summary>
@@ -1165,6 +1589,14 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// setWindowLimits
+    /// </summary>
+    public Task<WindowLimits> SetWindowLimitsAsync(WindowLimits windowLimits, bool isForcible)
+    {
+        return CallMethodAsync(_setWindowLimits, static h => new WindowLimits(h), windowLimits, isForcible);
+    }
+
+    /// <summary>
     /// keepKeyboardOnFocus
     /// </summary>
     public void KeepKeyboardOnFocus(bool keepKeyboardFlag)
@@ -1178,6 +1610,14 @@ public sealed partial class WindowObject : JsObject
     public Task RecoverAsync()
     {
         return CallMethodAsyncVoid(_recover);
+    }
+
+    /// <summary>
+    /// recover
+    /// </summary>
+    public Task RecoverAsync(WindowSnapshotAnimationConfig snapshotAnimationConfig)
+    {
+        return CallMethodAsyncVoid(_recover, snapshotAnimationConfig);
     }
 
     /// <summary>
@@ -1234,6 +1674,14 @@ public sealed partial class WindowObject : JsObject
     public Task SetSubWindowModalAsync(bool isModal)
     {
         return CallMethodAsyncVoid(_setSubWindowModal, isModal);
+    }
+
+    /// <summary>
+    /// setSubWindowModal
+    /// </summary>
+    public Task SetSubWindowModalAsync(bool isModal, global::HarmonyOS.ArkUI.ModalityType modalityType)
+    {
+        return CallMethodAsyncVoid(_setSubWindowModal, isModal, modalityType);
     }
 
     /// <summary>
@@ -1309,6 +1757,14 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// startMoving
+    /// </summary>
+    public Task StartMovingAsync(double offsetX, double offsetY)
+    {
+        return CallMethodAsyncVoid(_startMoving, offsetX, offsetY);
+    }
+
+    /// <summary>
     /// stopMoving
     /// </summary>
     public Task StopMovingAsync()
@@ -1343,7 +1799,7 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setWindowMaskWithAlpha
     /// </summary>
-    public Task SetWindowMaskWithAlphaAsync(IntPtr windowMask, double maskWidth, double maskHeight)
+    public Task SetWindowMaskWithAlphaAsync(byte[] windowMask, double maskWidth, double maskHeight)
     {
         return CallMethodAsyncVoid(_setWindowMaskWithAlpha, windowMask, maskWidth, maskHeight);
     }
@@ -1588,6 +2044,788 @@ public sealed partial class WindowObject : JsObject
         return CallMethodAsyncVoid(_setSubWindowZLevel, zLevel);
     }
 
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<bool> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(NativeValue.ToBool(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<bool> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<FrameMetrics> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new FrameMetrics(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<FrameMetrics> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<global::HarmonyOS.ArkUI.OcclusionState> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback((global::HarmonyOS.ArkUI.OcclusionState)NativeValue.ToInt(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<global::HarmonyOS.ArkUI.OcclusionState> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<WindowSize> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new WindowSize(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<WindowSize> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<AvoidArea> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AvoidArea(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<AvoidArea> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<AvoidAreaOptions> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AvoidAreaOptions(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<AvoidAreaOptions> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<double> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(NativeValue.ToDouble(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<double> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(args[0]),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback, double timeout)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, timeout));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<global::HarmonyOS.ArkUI.ScreenshotEventType> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback((global::HarmonyOS.ArkUI.ScreenshotEventType)NativeValue.ToInt(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<global::HarmonyOS.ArkUI.ScreenshotEventType> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<global::HarmonyOS.ArkUI.WindowEventType> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback((global::HarmonyOS.ArkUI.WindowEventType)NativeValue.ToInt(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<global::HarmonyOS.ArkUI.WindowEventType> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<global::HarmonyOS.ArkUI.WindowStatusType> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback((global::HarmonyOS.ArkUI.WindowStatusType)NativeValue.ToInt(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<global::HarmonyOS.ArkUI.WindowStatusType> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<TitleButtonRect> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new TitleButtonRect(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<TitleButtonRect> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<RectChangeOptions> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new RectChangeOptions(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<RectChangeOptions> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 rotationChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action RotationChange
+    {
+        add
+        {
+            _eventListeners.Add(("rotationChange", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "rotationChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("rotationChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "rotationChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 uiExtensionSecureLimitChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<bool> UiExtensionSecureLimitChange
+    {
+        add
+        {
+            _eventListeners.Add(("uiExtensionSecureLimitChange", value),
+                args => value(NativeValue.ToBool(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "uiExtensionSecureLimitChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("uiExtensionSecureLimitChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "uiExtensionSecureLimitChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 frameMetricsMeasured 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<FrameMetrics> FrameMetricsMeasured
+    {
+        add
+        {
+            _eventListeners.Add(("frameMetricsMeasured", value),
+                args => value(new FrameMetrics(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "frameMetricsMeasured", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("frameMetricsMeasured", value), js => NodeApi.CallMethodVoid(Handle, _off, "frameMetricsMeasured", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 occlusionStateChanged 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<global::HarmonyOS.ArkUI.OcclusionState> OcclusionStateChanged
+    {
+        add
+        {
+            _eventListeners.Add(("occlusionStateChanged", value),
+                args => value((global::HarmonyOS.ArkUI.OcclusionState)NativeValue.ToInt(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "occlusionStateChanged", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("occlusionStateChanged", value), js => NodeApi.CallMethodVoid(Handle, _off, "occlusionStateChanged", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 windowSizeChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<WindowSize> WindowSizeChange
+    {
+        add
+        {
+            _eventListeners.Add(("windowSizeChange", value),
+                args => value(new WindowSize(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "windowSizeChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("windowSizeChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "windowSizeChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 systemAvoidAreaChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<AvoidArea> SystemAvoidAreaChange
+    {
+        add
+        {
+            _eventListeners.Add(("systemAvoidAreaChange", value),
+                args => value(new AvoidArea(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "systemAvoidAreaChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("systemAvoidAreaChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "systemAvoidAreaChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 avoidAreaChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<AvoidAreaOptions> AvoidAreaChange
+    {
+        add
+        {
+            _eventListeners.Add(("avoidAreaChange", value),
+                args => value(new AvoidAreaOptions(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "avoidAreaChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("avoidAreaChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "avoidAreaChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 keyboardHeightChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> KeyboardHeightChange
+    {
+        add
+        {
+            _eventListeners.Add(("keyboardHeightChange", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "keyboardHeightChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("keyboardHeightChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "keyboardHeightChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 keyboardWillShow 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> KeyboardWillShow
+    {
+        add
+        {
+            _eventListeners.Add(("keyboardWillShow", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "keyboardWillShow", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("keyboardWillShow", value), js => NodeApi.CallMethodVoid(Handle, _off, "keyboardWillShow", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 keyboardDidShow 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> KeyboardDidShow
+    {
+        add
+        {
+            _eventListeners.Add(("keyboardDidShow", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "keyboardDidShow", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("keyboardDidShow", value), js => NodeApi.CallMethodVoid(Handle, _off, "keyboardDidShow", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 keyboardWillHide 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> KeyboardWillHide
+    {
+        add
+        {
+            _eventListeners.Add(("keyboardWillHide", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "keyboardWillHide", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("keyboardWillHide", value), js => NodeApi.CallMethodVoid(Handle, _off, "keyboardWillHide", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 keyboardDidHide 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> KeyboardDidHide
+    {
+        add
+        {
+            _eventListeners.Add(("keyboardDidHide", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "keyboardDidHide", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("keyboardDidHide", value), js => NodeApi.CallMethodVoid(Handle, _off, "keyboardDidHide", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 touchOutside 事件（对应 on/off）
+    /// </summary>
+    public event System.Action TouchOutside
+    {
+        add
+        {
+            _eventListeners.Add(("touchOutside", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "touchOutside", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("touchOutside", value), js => NodeApi.CallMethodVoid(Handle, _off, "touchOutside", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 displayIdChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> DisplayIdChange
+    {
+        add
+        {
+            _eventListeners.Add(("displayIdChange", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "displayIdChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("displayIdChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "displayIdChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 windowVisibilityChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<bool> WindowVisibilityChange
+    {
+        add
+        {
+            _eventListeners.Add(("windowVisibilityChange", value),
+                args => value(NativeValue.ToBool(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "windowVisibilityChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("windowVisibilityChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "windowVisibilityChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 systemDensityChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> SystemDensityChange
+    {
+        add
+        {
+            _eventListeners.Add(("systemDensityChange", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "systemDensityChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("systemDensityChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "systemDensityChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 noInteractionDetected 事件（对应 on/off）
+    /// </summary>
+    public event System.Action NoInteractionDetected
+    {
+        add
+        {
+            _eventListeners.Add(("noInteractionDetected", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "noInteractionDetected", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("noInteractionDetected", value), js => NodeApi.CallMethodVoid(Handle, _off, "noInteractionDetected", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 screenshot 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Screenshot
+    {
+        add
+        {
+            _eventListeners.Add(("screenshot", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "screenshot", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("screenshot", value), js => NodeApi.CallMethodVoid(Handle, _off, "screenshot", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 screenshotAppEvent 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<global::HarmonyOS.ArkUI.ScreenshotEventType> ScreenshotAppEvent
+    {
+        add
+        {
+            _eventListeners.Add(("screenshotAppEvent", value),
+                args => value((global::HarmonyOS.ArkUI.ScreenshotEventType)NativeValue.ToInt(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "screenshotAppEvent", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("screenshotAppEvent", value), js => NodeApi.CallMethodVoid(Handle, _off, "screenshotAppEvent", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 dialogTargetTouch 事件（对应 on/off）
+    /// </summary>
+    public event System.Action DialogTargetTouch
+    {
+        add
+        {
+            _eventListeners.Add(("dialogTargetTouch", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "dialogTargetTouch", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("dialogTargetTouch", value), js => NodeApi.CallMethodVoid(Handle, _off, "dialogTargetTouch", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 windowEvent 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<global::HarmonyOS.ArkUI.WindowEventType> WindowEvent
+    {
+        add
+        {
+            _eventListeners.Add(("windowEvent", value),
+                args => value((global::HarmonyOS.ArkUI.WindowEventType)NativeValue.ToInt(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "windowEvent", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("windowEvent", value), js => NodeApi.CallMethodVoid(Handle, _off, "windowEvent", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 windowStatusChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<global::HarmonyOS.ArkUI.WindowStatusType> WindowStatusChange
+    {
+        add
+        {
+            _eventListeners.Add(("windowStatusChange", value),
+                args => value((global::HarmonyOS.ArkUI.WindowStatusType)NativeValue.ToInt(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "windowStatusChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("windowStatusChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "windowStatusChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 windowStatusDidChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<global::HarmonyOS.ArkUI.WindowStatusType> WindowStatusDidChange
+    {
+        add
+        {
+            _eventListeners.Add(("windowStatusDidChange", value),
+                args => value((global::HarmonyOS.ArkUI.WindowStatusType)NativeValue.ToInt(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "windowStatusDidChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("windowStatusDidChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "windowStatusDidChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 subWindowClose 事件（对应 on/off）
+    /// </summary>
+    public event System.Action SubWindowClose
+    {
+        add
+        {
+            _eventListeners.Add(("subWindowClose", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "subWindowClose", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("subWindowClose", value), js => NodeApi.CallMethodVoid(Handle, _off, "subWindowClose", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 windowWillClose 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> WindowWillClose
+    {
+        add
+        {
+            _eventListeners.Add(("windowWillClose", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "windowWillClose", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("windowWillClose", value), js => NodeApi.CallMethodVoid(Handle, _off, "windowWillClose", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 windowHighlightChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<bool> WindowHighlightChange
+    {
+        add
+        {
+            _eventListeners.Add(("windowHighlightChange", value),
+                args => value(NativeValue.ToBool(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "windowHighlightChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("windowHighlightChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "windowHighlightChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 windowTitleButtonRectChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<TitleButtonRect> WindowTitleButtonRectChange
+    {
+        add
+        {
+            _eventListeners.Add(("windowTitleButtonRectChange", value),
+                args => value(new TitleButtonRect(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "windowTitleButtonRectChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("windowTitleButtonRectChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "windowTitleButtonRectChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 windowRectChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<RectChangeOptions> WindowRectChange
+    {
+        add
+        {
+            _eventListeners.Add(("windowRectChange", value),
+                args => value(new RectChangeOptions(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "windowRectChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("windowRectChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "windowRectChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 rectChangeInGlobalDisplay 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<RectChangeOptions> RectChangeInGlobalDisplay
+    {
+        add
+        {
+            _eventListeners.Add(("rectChangeInGlobalDisplay", value),
+                args => value(new RectChangeOptions(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "rectChangeInGlobalDisplay", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("rectChangeInGlobalDisplay", value), js => NodeApi.CallMethodVoid(Handle, _off, "rectChangeInGlobalDisplay", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 freeWindowModeChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<bool> FreeWindowModeChange
+    {
+        add
+        {
+            _eventListeners.Add(("freeWindowModeChange", value),
+                args => value(NativeValue.ToBool(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "freeWindowModeChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("freeWindowModeChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "freeWindowModeChange", js));
+        }
+    }
+
 }
 
 /// <summary>
@@ -1746,6 +2984,206 @@ public sealed record WindowSnapshotConfiguration(
         var _useCacheV = NativeValue.From(UseCache);
         if (_useCacheV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _useCache, _useCacheV);
+    }
+}
+
+/// <summary>
+/// FrameMetrics 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class FrameMetrics : JsObject
+{
+    public FrameMetrics(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _firstDrawFrame => "firstDrawFrame"u8;
+    private static ReadOnlySpan<byte> _inputHandlingDuration => "inputHandlingDuration"u8;
+    private static ReadOnlySpan<byte> _layoutMeasureDuration => "layoutMeasureDuration"u8;
+    private static ReadOnlySpan<byte> _vsyncTimestamp => "vsyncTimestamp"u8;
+    /// <summary>
+    /// firstDrawFrame
+    /// </summary>
+    public bool FirstDrawFrame => NativeValue.ToBool(GetPropertyRaw(_firstDrawFrame));
+
+    /// <summary>
+    /// inputHandlingDuration
+    /// </summary>
+    public double InputHandlingDuration => NativeValue.ToDouble(GetPropertyRaw(_inputHandlingDuration));
+
+    /// <summary>
+    /// layoutMeasureDuration
+    /// </summary>
+    public double LayoutMeasureDuration => NativeValue.ToDouble(GetPropertyRaw(_layoutMeasureDuration));
+
+    /// <summary>
+    /// vsyncTimestamp
+    /// </summary>
+    public double VsyncTimestamp => NativeValue.ToDouble(GetPropertyRaw(_vsyncTimestamp));
+
+}
+
+/// <summary>
+/// Size 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowSize : JsObject
+{
+    public WindowSize(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+}
+
+/// <summary>
+/// AvoidArea 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AvoidArea : JsObject
+{
+    public AvoidArea(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _visible => "visible"u8;
+    private static ReadOnlySpan<byte> _leftRect => "leftRect"u8;
+    private static ReadOnlySpan<byte> _topRect => "topRect"u8;
+    private static ReadOnlySpan<byte> _rightRect => "rightRect"u8;
+    private static ReadOnlySpan<byte> _bottomRect => "bottomRect"u8;
+    /// <summary>
+    /// visible
+    /// </summary>
+    public bool Visible => NativeValue.ToBool(GetPropertyRaw(_visible));
+
+    /// <summary>
+    /// leftRect
+    /// </summary>
+    public WindowRect LeftRect => new WindowRect(GetPropertyRaw(_leftRect));
+
+    /// <summary>
+    /// topRect
+    /// </summary>
+    public WindowRect TopRect => new WindowRect(GetPropertyRaw(_topRect));
+
+    /// <summary>
+    /// rightRect
+    /// </summary>
+    public WindowRect RightRect => new WindowRect(GetPropertyRaw(_rightRect));
+
+    /// <summary>
+    /// bottomRect
+    /// </summary>
+    public WindowRect BottomRect => new WindowRect(GetPropertyRaw(_bottomRect));
+
+}
+
+/// <summary>
+/// AvoidAreaOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AvoidAreaOptions : JsObject
+{
+    public AvoidAreaOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _area => "area"u8;
+    /// <summary>
+    /// type
+    /// </summary>
+    public global::HarmonyOS.ArkUI.AvoidAreaType Type => (global::HarmonyOS.ArkUI.AvoidAreaType)NativeValue.ToInt(GetPropertyRaw(_type));
+
+    /// <summary>
+    /// area
+    /// </summary>
+    public AvoidArea Area => new AvoidArea(GetPropertyRaw(_area));
+
+}
+
+/// <summary>
+/// TitleButtonRect 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class TitleButtonRect : JsObject
+{
+    public TitleButtonRect(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _right => "right"u8;
+    private static ReadOnlySpan<byte> _top => "top"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// right
+    /// </summary>
+    public double Right => NativeValue.ToDouble(GetPropertyRaw(_right));
+
+    /// <summary>
+    /// top
+    /// </summary>
+    public double Top => NativeValue.ToDouble(GetPropertyRaw(_top));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+}
+
+/// <summary>
+/// RectChangeOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class RectChangeOptions : JsObject
+{
+    public RectChangeOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _rect => "rect"u8;
+    private static ReadOnlySpan<byte> _reason => "reason"u8;
+    /// <summary>
+    /// rect
+    /// </summary>
+    public WindowRect Rect => new WindowRect(GetPropertyRaw(_rect));
+
+    /// <summary>
+    /// reason
+    /// </summary>
+    public global::HarmonyOS.ArkUI.RectChangeReason Reason => (global::HarmonyOS.ArkUI.RectChangeReason)NativeValue.ToInt(GetPropertyRaw(_reason));
+
+}
+
+/// <summary>
+/// ShowWindowOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ShowWindowOptions(
+    bool? FocusOnShow = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _focusOnShow = Encoding.UTF8.GetBytes("focusOnShow");
+        var _focusOnShowV = NativeValue.From(FocusOnShow);
+        if (_focusOnShowV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _focusOnShow, _focusOnShowV);
+    }
+}
+
+/// <summary>
+/// MoveConfiguration（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record MoveConfiguration(
+    double? DisplayId = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _displayId = Encoding.UTF8.GetBytes("displayId");
+        var _displayIdV = NativeValue.From(DisplayId);
+        if (_displayIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _displayId, _displayIdV);
     }
 }
 
@@ -1927,45 +3365,6 @@ public sealed partial class WindowDensityInfo : JsObject
 }
 
 /// <summary>
-/// AvoidArea 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class AvoidArea : JsObject
-{
-    public AvoidArea(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _visible => "visible"u8;
-    private static ReadOnlySpan<byte> _leftRect => "leftRect"u8;
-    private static ReadOnlySpan<byte> _topRect => "topRect"u8;
-    private static ReadOnlySpan<byte> _rightRect => "rightRect"u8;
-    private static ReadOnlySpan<byte> _bottomRect => "bottomRect"u8;
-    /// <summary>
-    /// visible
-    /// </summary>
-    public bool Visible => NativeValue.ToBool(GetPropertyRaw(_visible));
-
-    /// <summary>
-    /// leftRect
-    /// </summary>
-    public WindowRect LeftRect => new WindowRect(GetPropertyRaw(_leftRect));
-
-    /// <summary>
-    /// topRect
-    /// </summary>
-    public WindowRect TopRect => new WindowRect(GetPropertyRaw(_topRect));
-
-    /// <summary>
-    /// rightRect
-    /// </summary>
-    public WindowRect RightRect => new WindowRect(GetPropertyRaw(_rightRect));
-
-    /// <summary>
-    /// bottomRect
-    /// </summary>
-    public WindowRect BottomRect => new WindowRect(GetPropertyRaw(_bottomRect));
-
-}
-
-/// <summary>
 /// SystemBarProperties 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -2118,36 +3517,24 @@ public sealed partial class WindowLimits : JsObject
 }
 
 /// <summary>
-/// TitleButtonRect 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// WindowSnapshotAnimationConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed partial class TitleButtonRect : JsObject
+public sealed record WindowSnapshotAnimationConfig(
+    double? Duration = null,
+    double? Delay = null
+) : INapiRecord
 {
-    public TitleButtonRect(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _right => "right"u8;
-    private static ReadOnlySpan<byte> _top => "top"u8;
-    private static ReadOnlySpan<byte> _width => "width"u8;
-    private static ReadOnlySpan<byte> _height => "height"u8;
-    /// <summary>
-    /// right
-    /// </summary>
-    public double Right => NativeValue.ToDouble(GetPropertyRaw(_right));
-
-    /// <summary>
-    /// top
-    /// </summary>
-    public double Top => NativeValue.ToDouble(GetPropertyRaw(_top));
-
-    /// <summary>
-    /// width
-    /// </summary>
-    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
-
-    /// <summary>
-    /// height
-    /// </summary>
-    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
-
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _duration = Encoding.UTF8.GetBytes("duration");
+        var _durationV = NativeValue.From(Duration);
+        if (_durationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _duration, _durationV);
+        var _delay = Encoding.UTF8.GetBytes("delay");
+        var _delayV = NativeValue.From(Delay);
+        if (_delayV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _delay, _delayV);
+    }
 }
 
 /// <summary>
@@ -2264,25 +3651,4 @@ public sealed partial class KeyFramePolicy : JsObject
     /// </summary>
     public double? AnimationDelay => (double?)NativeValue.ToDouble(GetPropertyRaw(_animationDelay));
 
-}
-
-/// <summary>
-/// WindowSnapshotAnimationConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record WindowSnapshotAnimationConfig(
-    double? Duration = null,
-    double? Delay = null
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _duration = Encoding.UTF8.GetBytes("duration");
-        var _durationV = NativeValue.From(Duration);
-        if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _duration, _durationV);
-        var _delay = Encoding.UTF8.GetBytes("delay");
-        var _delayV = NativeValue.From(Delay);
-        if (_delayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _delay, _delayV);
-    }
 }

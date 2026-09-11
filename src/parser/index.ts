@@ -550,6 +550,7 @@ const PILOT_MODULES = [
     '@ohos.vibrator',
     '@ohos.sensor',
     '@ohos.geolocation',
+    '@ohos.geoLocationManager',
     // M2.3 第二批：常用系统 API
     '@ohos.net.http',
     '@ohos.net.connection',

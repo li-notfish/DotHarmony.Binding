@@ -51,7 +51,13 @@ public partial class ModuleVerifyPage : ContentPage
         {
             // .NET 风格标准化后的实例包装：Promise<Array<Display>> → Task<DisplayObject[]>
             var display = await HarmonyOS.Bindings.Api.Display.GetDefaultDisplayAsync();
-            ShowResult("Display", $"#{(int)display.Id} {display.Name} {display.Width}x{display.Height} @{display.DensityDpi}dpi");
+
+            // 事件模型演示：.NET event 访问器自动配对 on/off（订阅 → 退订，真实事件需等待触发）
+            System.Action<double> onChange = _ => { };
+            HarmonyOS.Bindings.Api.Display.Change += onChange;
+            HarmonyOS.Bindings.Api.Display.Change -= onChange;
+
+            ShowResult("Display", $"#{(int)display.Id} {display.Name} {display.Width}x{display.Height} @{display.DensityDpi}dpi · event ok");
         }
         catch (Exception ex) { ShowError("Display", ex); }
     }

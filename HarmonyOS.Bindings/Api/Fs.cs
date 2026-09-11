@@ -654,7 +654,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// read
     /// </summary>
-    public static Task<double> ReadAsync(double fd, IntPtr buffer, IntPtr? options = null)
+    public static Task<double> ReadAsync(double fd, byte[] buffer, IntPtr? options = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _read, fd, buffer, options);
     }
@@ -662,7 +662,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// read
     /// </summary>
-    public static Task<double> ReadAsync(double fd, IntPtr buffer)
+    public static Task<double> ReadAsync(double fd, byte[] buffer)
     {
         return NodeApi.CallMethodAsync<double>(Module, _read, fd, buffer);
     }
@@ -670,7 +670,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// readSync
     /// </summary>
-    public static double ReadSync(double fd, IntPtr buffer, IntPtr? options = null)
+    public static double ReadSync(double fd, byte[] buffer, IntPtr? options = null)
     {
         return NodeApi.CallMethod<double>(Module, _readSync, fd, buffer, options);
     }
@@ -838,7 +838,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// write
     /// </summary>
-    public static Task<double> WriteAsync(double fd, string buffer, IntPtr? options = null)
+    public static Task<double> WriteAsync(double fd, byte[] buffer, IntPtr? options = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _write, fd, buffer, options);
     }
@@ -846,7 +846,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// write
     /// </summary>
-    public static Task<double> WriteAsync(double fd, string buffer)
+    public static Task<double> WriteAsync(double fd, byte[] buffer)
     {
         return NodeApi.CallMethodAsync<double>(Module, _write, fd, buffer);
     }
@@ -854,7 +854,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// writeSync
     /// </summary>
-    public static double WriteSync(double fd, string buffer, IntPtr? options = null)
+    public static double WriteSync(double fd, byte[] buffer, IntPtr? options = null)
     {
         return NodeApi.CallMethod<double>(Module, _writeSync, fd, buffer, options);
     }

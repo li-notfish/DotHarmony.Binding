@@ -135,6 +135,14 @@ public sealed partial class CameraManager : JsObject
     }
 
     /// <summary>
+    /// getSupportedOutputCapability
+    /// </summary>
+    public IntPtr GetSupportedOutputCapability(IntPtr camera, global::HarmonyOS.ArkUI.SceneMode mode)
+    {
+        return CallMethod<IntPtr>(_getSupportedOutputCapability, camera, mode);
+    }
+
+    /// <summary>
     /// getSupportedFullOutputCapability
     /// </summary>
     public IntPtr GetSupportedFullOutputCapability(IntPtr camera, global::HarmonyOS.ArkUI.SceneMode mode)
@@ -159,11 +167,27 @@ public sealed partial class CameraManager : JsObject
     }
 
     /// <summary>
+    /// createCameraInput
+    /// </summary>
+    public CameraInput CreateCameraInput(global::HarmonyOS.ArkUI.CameraPosition position, global::HarmonyOS.ArkUI.CameraType type)
+    {
+        return CallMethod(_createCameraInput, static h => new CameraInput(h), position, type);
+    }
+
+    /// <summary>
     /// createPreviewOutput
     /// </summary>
     public PreviewOutput CreatePreviewOutput(Profile profile, string surfaceId)
     {
         return CallMethod(_createPreviewOutput, static h => new PreviewOutput(h), profile, surfaceId);
+    }
+
+    /// <summary>
+    /// createPreviewOutput
+    /// </summary>
+    public PreviewOutput CreatePreviewOutput(string surfaceId)
+    {
+        return CallMethod(_createPreviewOutput, static h => new PreviewOutput(h), surfaceId);
     }
 
     /// <summary>
@@ -175,11 +199,27 @@ public sealed partial class CameraManager : JsObject
     }
 
     /// <summary>
+    /// createPhotoOutput
+    /// </summary>
+    public PhotoOutput CreatePhotoOutput(Profile? profile = null)
+    {
+        return CallMethod(_createPhotoOutput, static h => new PhotoOutput(h), profile);
+    }
+
+    /// <summary>
     /// createVideoOutput
     /// </summary>
     public VideoOutput CreateVideoOutput(VideoProfile profile, string surfaceId)
     {
         return CallMethod(_createVideoOutput, static h => new VideoOutput(h), profile, surfaceId);
+    }
+
+    /// <summary>
+    /// createVideoOutput
+    /// </summary>
+    public VideoOutput CreateVideoOutput(string surfaceId)
+    {
+        return CallMethod(_createVideoOutput, static h => new VideoOutput(h), surfaceId);
     }
 
     /// <summary>
@@ -217,7 +257,7 @@ public sealed partial class CameraManager : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -302,6 +342,343 @@ public sealed partial class CameraManager : JsObject
         return CallMethod(_getCameraDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), position, types, connectType);
     }
 
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(args[0]),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<TorchStatusInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new TorchStatusInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<TorchStatusInfo> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 cameraStatus 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> CameraStatus
+    {
+        add
+        {
+            _eventListeners.Add(("cameraStatus", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "cameraStatus", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("cameraStatus", value), js => NodeApi.CallMethodVoid(Handle, _off, "cameraStatus", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 foldStatusChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> FoldStatusChange
+    {
+        add
+        {
+            _eventListeners.Add(("foldStatusChange", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "foldStatusChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("foldStatusChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "foldStatusChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 torchStatusChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<TorchStatusInfo> TorchStatusChange
+    {
+        add
+        {
+            _eventListeners.Add(("torchStatusChange", value),
+                args => value(new TorchStatusInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "torchStatusChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("torchStatusChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "torchStatusChange", js));
+        }
+    }
+
+}
+
+/// <summary>
+/// TorchStatusInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class TorchStatusInfo : JsObject
+{
+    public TorchStatusInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _isTorchAvailable => "isTorchAvailable"u8;
+    private static ReadOnlySpan<byte> _isTorchActive => "isTorchActive"u8;
+    private static ReadOnlySpan<byte> _torchLevel => "torchLevel"u8;
+    /// <summary>
+    /// isTorchAvailable
+    /// </summary>
+    public bool IsTorchAvailable => NativeValue.ToBool(GetPropertyRaw(_isTorchAvailable));
+
+    /// <summary>
+    /// isTorchActive
+    /// </summary>
+    public bool IsTorchActive => NativeValue.ToBool(GetPropertyRaw(_isTorchActive));
+
+    /// <summary>
+    /// torchLevel
+    /// </summary>
+    public double TorchLevel => NativeValue.ToDouble(GetPropertyRaw(_torchLevel));
+
+}
+
+/// <summary>
+/// CameraOcclusionDetectionResult 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CameraOcclusionDetectionResult : JsObject
+{
+    public CameraOcclusionDetectionResult(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _isCameraOccluded => "isCameraOccluded"u8;
+    private static ReadOnlySpan<byte> _isCameraLensDirty => "isCameraLensDirty"u8;
+    /// <summary>
+    /// isCameraOccluded
+    /// </summary>
+    public bool IsCameraOccluded => NativeValue.ToBool(GetPropertyRaw(_isCameraOccluded));
+
+    /// <summary>
+    /// isCameraLensDirty
+    /// </summary>
+    public bool IsCameraLensDirty => NativeValue.ToBool(GetPropertyRaw(_isCameraLensDirty));
+
+}
+
+/// <summary>
+/// SmoothZoomInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SmoothZoomInfo : JsObject
+{
+    public SmoothZoomInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _duration => "duration"u8;
+    /// <summary>
+    /// duration
+    /// </summary>
+    public double Duration => NativeValue.ToDouble(GetPropertyRaw(_duration));
+
+}
+
+/// <summary>
+/// AutoDeviceSwitchStatus 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AutoDeviceSwitchStatus : JsObject
+{
+    public AutoDeviceSwitchStatus(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _isDeviceSwitched => "isDeviceSwitched"u8;
+    private static ReadOnlySpan<byte> _isDeviceCapabilityChanged => "isDeviceCapabilityChanged"u8;
+    /// <summary>
+    /// isDeviceSwitched
+    /// </summary>
+    public bool IsDeviceSwitched => NativeValue.ToBool(GetPropertyRaw(_isDeviceSwitched));
+
+    /// <summary>
+    /// isDeviceCapabilityChanged
+    /// </summary>
+    public bool IsDeviceCapabilityChanged => NativeValue.ToBool(GetPropertyRaw(_isDeviceCapabilityChanged));
+
+}
+
+/// <summary>
+/// ControlCenterStatusInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ControlCenterStatusInfo : JsObject
+{
+    public ControlCenterStatusInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _effectType => "effectType"u8;
+    private static ReadOnlySpan<byte> _isActive => "isActive"u8;
+    /// <summary>
+    /// effectType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ControlCenterEffectType EffectType => (global::HarmonyOS.ArkUI.ControlCenterEffectType)NativeValue.ToInt(GetPropertyRaw(_effectType));
+
+    /// <summary>
+    /// isActive
+    /// </summary>
+    public bool IsActive => NativeValue.ToBool(GetPropertyRaw(_isActive));
+
+}
+
+/// <summary>
+/// Photo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Photo : JsObject
+{
+    public Photo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _main => "main"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    /// <summary>
+    /// main
+    /// </summary>
+    public IntPtr Main => GetPropertyRaw(_main);
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+}
+
+/// <summary>
+/// CaptureStartInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CaptureStartInfo : JsObject
+{
+    public CaptureStartInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _captureId => "captureId"u8;
+    private static ReadOnlySpan<byte> _time => "time"u8;
+    /// <summary>
+    /// captureId
+    /// </summary>
+    public double CaptureId => NativeValue.ToDouble(GetPropertyRaw(_captureId));
+
+    /// <summary>
+    /// time
+    /// </summary>
+    public double Time => NativeValue.ToDouble(GetPropertyRaw(_time));
+
+}
+
+/// <summary>
+/// FrameShutterInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class FrameShutterInfo : JsObject
+{
+    public FrameShutterInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _captureId => "captureId"u8;
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    /// <summary>
+    /// captureId
+    /// </summary>
+    public double CaptureId => NativeValue.ToDouble(GetPropertyRaw(_captureId));
+
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+}
+
+/// <summary>
+/// FrameShutterEndInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class FrameShutterEndInfo : JsObject
+{
+    public FrameShutterEndInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _captureId => "captureId"u8;
+    /// <summary>
+    /// captureId
+    /// </summary>
+    public double CaptureId => NativeValue.ToDouble(GetPropertyRaw(_captureId));
+
+}
+
+/// <summary>
+/// CaptureEndInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CaptureEndInfo : JsObject
+{
+    public CaptureEndInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _captureId => "captureId"u8;
+    private static ReadOnlySpan<byte> _frameCount => "frameCount"u8;
+    /// <summary>
+    /// captureId
+    /// </summary>
+    public double CaptureId => NativeValue.ToDouble(GetPropertyRaw(_captureId));
+
+    /// <summary>
+    /// frameCount
+    /// </summary>
+    public double FrameCount => NativeValue.ToDouble(GetPropertyRaw(_frameCount));
+
+}
+
+/// <summary>
+/// MetadataObject 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class MetadataObject : JsObject
+{
+    public MetadataObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _boundingBox => "boundingBox"u8;
+    private static ReadOnlySpan<byte> _isLockFocusTracked => "isLockFocusTracked"u8;
+    /// <summary>
+    /// type
+    /// </summary>
+    public global::HarmonyOS.ArkUI.MetadataObjectType Type => (global::HarmonyOS.ArkUI.MetadataObjectType)NativeValue.ToInt(GetPropertyRaw(_type));
+
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// boundingBox
+    /// </summary>
+    public CameraRect BoundingBox => new CameraRect(GetPropertyRaw(_boundingBox));
+
+    /// <summary>
+    /// isLockFocusTracked
+    /// </summary>
+    public bool? IsLockFocusTracked => (bool?)NativeValue.ToBool(GetPropertyRaw(_isLockFocusTracked));
+
 }
 
 /// <summary>
@@ -327,11 +704,35 @@ public sealed partial class CameraInput : JsObject
     }
 
     /// <summary>
+    /// open
+    /// </summary>
+    public Task OpenAsync()
+    {
+        return CallMethodAsyncVoid(_open);
+    }
+
+    /// <summary>
+    /// open
+    /// </summary>
+    public Task<JsBigInt> OpenAsync(bool isSecureEnabled)
+    {
+        return CallMethodAsync<JsBigInt>(_open, isSecureEnabled);
+    }
+
+    /// <summary>
     /// close
     /// </summary>
     public void Close(IntPtr callback)
     {
         CallMethodVoid(_close, callback);
+    }
+
+    /// <summary>
+    /// close
+    /// </summary>
+    public Task CloseAsync()
+    {
+        return CallMethodAsyncVoid(_close);
     }
 
     /// <summary>
@@ -345,9 +746,25 @@ public sealed partial class CameraInput : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr camera, IntPtr? callback = null)
+    public void Off(string type, IntPtr camera, IntPtr callback)
     {
         CallMethodVoid(_off, type, camera, callback);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr callback)
+    {
+        CallMethodVoid(_off, type, callback);
     }
 
     /// <summary>
@@ -372,6 +789,94 @@ public sealed partial class CameraInput : JsObject
     public void UsePhysicalCameraOrientation(bool isUsed)
     {
         CallMethodVoid(_usePhysicalCameraOrientation, isUsed);
+    }
+
+    /// <summary>
+    /// open
+    /// </summary>
+    public Task OpenAsync(global::HarmonyOS.ArkUI.CameraConcurrentType type)
+    {
+        return CallMethodAsyncVoid(_open, type);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback, IntPtr camera)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, camera));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback, IntPtr camera)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, camera));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<CameraOcclusionDetectionResult> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new CameraOcclusionDetectionResult(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<CameraOcclusionDetectionResult> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 cameraOcclusionDetection 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<CameraOcclusionDetectionResult> CameraOcclusionDetection
+    {
+        add
+        {
+            _eventListeners.Add(("cameraOcclusionDetection", value),
+                args => value(new CameraOcclusionDetectionResult(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "cameraOcclusionDetection", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("cameraOcclusionDetection", value), js => NodeApi.CallMethodVoid(Handle, _off, "cameraOcclusionDetection", js));
+        }
     }
 
 }
@@ -408,6 +913,14 @@ public sealed partial class PreviewOutput : JsObject
     }
 
     /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    /// <summary>
     /// start
     /// </summary>
     public void Start(IntPtr callback)
@@ -416,11 +929,27 @@ public sealed partial class PreviewOutput : JsObject
     }
 
     /// <summary>
+    /// start
+    /// </summary>
+    public Task StartAsync()
+    {
+        return CallMethodAsyncVoid(_start);
+    }
+
+    /// <summary>
     /// stop
     /// </summary>
     public void Stop(IntPtr callback)
     {
         CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public Task StopAsync()
+    {
+        return CallMethodAsyncVoid(_stop);
     }
 
     /// <summary>
@@ -434,7 +963,7 @@ public sealed partial class PreviewOutput : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -527,6 +1056,85 @@ public sealed partial class PreviewOutput : JsObject
         CallMethodVoid(_setLogViewAssistEnable, enable);
     }
 
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 frameStart 事件（对应 on/off）
+    /// </summary>
+    public event System.Action FrameStart
+    {
+        add
+        {
+            _eventListeners.Add(("frameStart", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "frameStart", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("frameStart", value), js => NodeApi.CallMethodVoid(Handle, _off, "frameStart", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 frameEnd 事件（对应 on/off）
+    /// </summary>
+    public event System.Action FrameEnd
+    {
+        add
+        {
+            _eventListeners.Add(("frameEnd", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "frameEnd", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("frameEnd", value), js => NodeApi.CallMethodVoid(Handle, _off, "frameEnd", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
+    }
+
 }
 
 /// <summary>
@@ -584,11 +1192,43 @@ public sealed partial class PhotoOutput : JsObject
     }
 
     /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    /// <summary>
     /// capture
     /// </summary>
     public void Capture(IntPtr callback)
     {
         CallMethodVoid(_capture, callback);
+    }
+
+    /// <summary>
+    /// capture
+    /// </summary>
+    public Task CaptureAsync()
+    {
+        return CallMethodAsyncVoid(_capture);
+    }
+
+    /// <summary>
+    /// capture
+    /// </summary>
+    public void Capture(PhotoCaptureSetting setting, IntPtr callback)
+    {
+        CallMethodVoid(_capture, setting, callback);
+    }
+
+    /// <summary>
+    /// capture
+    /// </summary>
+    public Task CaptureAsync(PhotoCaptureSetting setting)
+    {
+        return CallMethodAsyncVoid(_capture, setting);
     }
 
     /// <summary>
@@ -618,7 +1258,7 @@ public sealed partial class PhotoOutput : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -719,6 +1359,330 @@ public sealed partial class PhotoOutput : JsObject
         CallMethodVoid(_enableAutoExtendedGainmapDelivery, enabled);
     }
 
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<Photo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new Photo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<Photo> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(args[0]),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<double> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(NativeValue.ToDouble(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<double> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<CaptureStartInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new CaptureStartInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<CaptureStartInfo> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<FrameShutterInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new FrameShutterInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<FrameShutterInfo> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<FrameShutterEndInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new FrameShutterEndInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<FrameShutterEndInfo> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<CaptureEndInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new CaptureEndInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<CaptureEndInfo> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 photoAvailable 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<Photo> PhotoAvailable
+    {
+        add
+        {
+            _eventListeners.Add(("photoAvailable", value),
+                args => value(new Photo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "photoAvailable", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("photoAvailable", value), js => NodeApi.CallMethodVoid(Handle, _off, "photoAvailable", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 photoAssetAvailable 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> PhotoAssetAvailable
+    {
+        add
+        {
+            _eventListeners.Add(("photoAssetAvailable", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "photoAssetAvailable", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("photoAssetAvailable", value), js => NodeApi.CallMethodVoid(Handle, _off, "photoAssetAvailable", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 captureStart 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> CaptureStart
+    {
+        add
+        {
+            _eventListeners.Add(("captureStart", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "captureStart", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("captureStart", value), js => NodeApi.CallMethodVoid(Handle, _off, "captureStart", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 captureStartWithInfo 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<CaptureStartInfo> CaptureStartWithInfo
+    {
+        add
+        {
+            _eventListeners.Add(("captureStartWithInfo", value),
+                args => value(new CaptureStartInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "captureStartWithInfo", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("captureStartWithInfo", value), js => NodeApi.CallMethodVoid(Handle, _off, "captureStartWithInfo", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 frameShutter 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<FrameShutterInfo> FrameShutter
+    {
+        add
+        {
+            _eventListeners.Add(("frameShutter", value),
+                args => value(new FrameShutterInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "frameShutter", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("frameShutter", value), js => NodeApi.CallMethodVoid(Handle, _off, "frameShutter", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 frameShutterEnd 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<FrameShutterEndInfo> FrameShutterEnd
+    {
+        add
+        {
+            _eventListeners.Add(("frameShutterEnd", value),
+                args => value(new FrameShutterEndInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "frameShutterEnd", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("frameShutterEnd", value), js => NodeApi.CallMethodVoid(Handle, _off, "frameShutterEnd", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 captureEnd 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<CaptureEndInfo> CaptureEnd
+    {
+        add
+        {
+            _eventListeners.Add(("captureEnd", value),
+                args => value(new CaptureEndInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "captureEnd", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("captureEnd", value), js => NodeApi.CallMethodVoid(Handle, _off, "captureEnd", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 captureReady 事件（对应 on/off）
+    /// </summary>
+    public event System.Action CaptureReady
+    {
+        add
+        {
+            _eventListeners.Add(("captureReady", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "captureReady", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("captureReady", value), js => NodeApi.CallMethodVoid(Handle, _off, "captureReady", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 estimatedCaptureDuration 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> EstimatedCaptureDuration
+    {
+        add
+        {
+            _eventListeners.Add(("estimatedCaptureDuration", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "estimatedCaptureDuration", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("estimatedCaptureDuration", value), js => NodeApi.CallMethodVoid(Handle, _off, "estimatedCaptureDuration", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
+    }
+
 }
 
 /// <summary>
@@ -749,6 +1713,14 @@ public sealed partial class VideoOutput : JsObject
     }
 
     /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    /// <summary>
     /// start
     /// </summary>
     public void Start(IntPtr callback)
@@ -757,11 +1729,27 @@ public sealed partial class VideoOutput : JsObject
     }
 
     /// <summary>
+    /// start
+    /// </summary>
+    public Task StartAsync()
+    {
+        return CallMethodAsyncVoid(_start);
+    }
+
+    /// <summary>
     /// stop
     /// </summary>
     public void Stop(IntPtr callback)
     {
         CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public Task StopAsync()
+    {
+        return CallMethodAsyncVoid(_stop);
     }
 
     /// <summary>
@@ -823,7 +1811,7 @@ public sealed partial class VideoOutput : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -834,6 +1822,85 @@ public sealed partial class VideoOutput : JsObject
     public VideoProfile GetActiveProfile()
     {
         return CallMethod(_getActiveProfile, static h => new VideoProfile(h));
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 frameStart 事件（对应 on/off）
+    /// </summary>
+    public event System.Action FrameStart
+    {
+        add
+        {
+            _eventListeners.Add(("frameStart", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "frameStart", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("frameStart", value), js => NodeApi.CallMethodVoid(Handle, _off, "frameStart", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 frameEnd 事件（对应 on/off）
+    /// </summary>
+    public event System.Action FrameEnd
+    {
+        add
+        {
+            _eventListeners.Add(("frameEnd", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "frameEnd", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("frameEnd", value), js => NodeApi.CallMethodVoid(Handle, _off, "frameEnd", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
     }
 
 }
@@ -891,6 +1958,14 @@ public sealed partial class MetadataOutput : JsObject
     }
 
     /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    /// <summary>
     /// start
     /// </summary>
     public void Start(IntPtr callback)
@@ -899,11 +1974,27 @@ public sealed partial class MetadataOutput : JsObject
     }
 
     /// <summary>
+    /// start
+    /// </summary>
+    public Task StartAsync()
+    {
+        return CallMethodAsyncVoid(_start);
+    }
+
+    /// <summary>
     /// stop
     /// </summary>
     public void Stop(IntPtr callback)
     {
         CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public Task StopAsync()
+    {
+        return CallMethodAsyncVoid(_stop);
     }
 
     /// <summary>
@@ -933,7 +2024,7 @@ public sealed partial class MetadataOutput : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -949,7 +2040,7 @@ public sealed partial class MetadataOutput : JsObject
     /// <summary>
     /// lockMetadataObjectTracking
     /// </summary>
-    public void LockMetadataObjectTracking(Point point)
+    public void LockMetadataObjectTracking(CameraPoint point)
     {
         CallMethodVoid(_lockMetadataObjectTracking, point);
     }
@@ -960,6 +2051,86 @@ public sealed partial class MetadataOutput : JsObject
     public void UnlockMetadataObjectTracking()
     {
         CallMethodVoid(_unlockMetadataObjectTracking);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<MetadataObject[]> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(ValueConverter.ConvertArray(args[0], static e => new MetadataObject(e))),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<MetadataObject[]> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 metadataObjectsAvailable 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<MetadataObject[]> MetadataObjectsAvailable
+    {
+        add
+        {
+            _eventListeners.Add(("metadataObjectsAvailable", value),
+                args => value(ValueConverter.ConvertArray(args[0], static e => new MetadataObject(e))),
+                js => NodeApi.CallMethodVoid(Handle, _on, "metadataObjectsAvailable", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("metadataObjectsAvailable", value), js => NodeApi.CallMethodVoid(Handle, _off, "metadataObjectsAvailable", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
     }
 
 }
@@ -1023,6 +2194,14 @@ public sealed partial class CaptureSession : JsObject
     }
 
     /// <summary>
+    /// commitConfig
+    /// </summary>
+    public Task CommitConfigAsync()
+    {
+        return CallMethodAsyncVoid(_commitConfig);
+    }
+
+    /// <summary>
     /// addInput
     /// </summary>
     public void AddInput(CameraInput cameraInput)
@@ -1063,6 +2242,14 @@ public sealed partial class CaptureSession : JsObject
     }
 
     /// <summary>
+    /// start
+    /// </summary>
+    public Task StartAsync()
+    {
+        return CallMethodAsyncVoid(_start);
+    }
+
+    /// <summary>
     /// stop
     /// </summary>
     public void Stop(IntPtr callback)
@@ -1071,11 +2258,27 @@ public sealed partial class CaptureSession : JsObject
     }
 
     /// <summary>
+    /// stop
+    /// </summary>
+    public Task StopAsync()
+    {
+        return CallMethodAsyncVoid(_stop);
+    }
+
+    /// <summary>
     /// release
     /// </summary>
     public void Release(IntPtr callback)
     {
         CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
     }
 
     /// <summary>
@@ -1137,15 +2340,15 @@ public sealed partial class CaptureSession : JsObject
     /// <summary>
     /// getMeteringPoint
     /// </summary>
-    public Point GetMeteringPoint()
+    public CameraPoint GetMeteringPoint()
     {
-        return CallMethod(_getMeteringPoint, static h => new Point(h));
+        return CallMethod(_getMeteringPoint, static h => new CameraPoint(h));
     }
 
     /// <summary>
     /// setMeteringPoint
     /// </summary>
-    public void SetMeteringPoint(Point point)
+    public void SetMeteringPoint(CameraPoint point)
     {
         CallMethodVoid(_setMeteringPoint, point);
     }
@@ -1201,7 +2404,7 @@ public sealed partial class CaptureSession : JsObject
     /// <summary>
     /// setFocusPoint
     /// </summary>
-    public void SetFocusPoint(Point point)
+    public void SetFocusPoint(CameraPoint point)
     {
         CallMethodVoid(_setFocusPoint, point);
     }
@@ -1209,9 +2412,9 @@ public sealed partial class CaptureSession : JsObject
     /// <summary>
     /// getFocusPoint
     /// </summary>
-    public Point GetFocusPoint()
+    public CameraPoint GetFocusPoint()
     {
-        return CallMethod(_getFocusPoint, static h => new Point(h));
+        return CallMethod(_getFocusPoint, static h => new CameraPoint(h));
     }
 
     /// <summary>
@@ -1281,10 +2484,123 @@ public sealed partial class CaptureSession : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<global::HarmonyOS.ArkUI.FocusState> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback((global::HarmonyOS.ArkUI.FocusState)NativeValue.ToInt(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<global::HarmonyOS.ArkUI.FocusState> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 focusStateChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<global::HarmonyOS.ArkUI.FocusState> FocusStateChange
+    {
+        add
+        {
+            _eventListeners.Add(("focusStateChange", value),
+                args => value((global::HarmonyOS.ArkUI.FocusState)NativeValue.ToInt(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "focusStateChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("focusStateChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "focusStateChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
+    }
+
+}
+
+/// <summary>
+/// Rect 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CameraRect : JsObject
+{
+    public CameraRect(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _topLeftX => "topLeftX"u8;
+    private static ReadOnlySpan<byte> _topLeftY => "topLeftY"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// topLeftX
+    /// </summary>
+    public double TopLeftX => NativeValue.ToDouble(GetPropertyRaw(_topLeftX));
+
+    /// <summary>
+    /// topLeftY
+    /// </summary>
+    public double TopLeftY => NativeValue.ToDouble(GetPropertyRaw(_topLeftY));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
 
 }
 
@@ -1331,12 +2647,48 @@ public sealed partial class Size : JsObject
 }
 
 /// <summary>
+/// PhotoCaptureSetting（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record PhotoCaptureSetting(
+    global::HarmonyOS.ArkUI.QualityLevel? Quality = null,
+    global::HarmonyOS.ArkUI.ImageRotation? Rotation = null,
+    CameraLocation? Location = null,
+    bool? Mirror = null,
+    double? CompressionQuality = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _quality = Encoding.UTF8.GetBytes("quality");
+        var _qualityV = NativeValue.From(Quality);
+        if (_qualityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _quality, _qualityV);
+        var _rotation = Encoding.UTF8.GetBytes("rotation");
+        var _rotationV = NativeValue.From(Rotation);
+        if (_rotationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _rotation, _rotationV);
+        var _location = Encoding.UTF8.GetBytes("location");
+        var _locationV = NativeValue.From(Location);
+        if (_locationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _location, _locationV);
+        var _mirror = Encoding.UTF8.GetBytes("mirror");
+        var _mirrorV = NativeValue.From(Mirror);
+        if (_mirrorV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _mirror, _mirrorV);
+        var _compressionQuality = Encoding.UTF8.GetBytes("compressionQuality");
+        var _compressionQualityV = NativeValue.From(CompressionQuality);
+        if (_compressionQualityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _compressionQuality, _compressionQualityV);
+    }
+}
+
+/// <summary>
 /// Point 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class Point : JsObject
+public sealed partial class CameraPoint : JsObject
 {
-    public Point(IntPtr handle) : base(handle) { }
+    public CameraPoint(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _x => "x"u8;
     private static ReadOnlySpan<byte> _y => "y"u8;
     /// <summary>
@@ -1367,4 +2719,38 @@ public sealed partial class CameraOutput : JsObject
         CallMethodVoid(_release, callback);
     }
 
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+}
+
+/// <summary>
+/// Location（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record CameraLocation(
+    double Latitude,
+    double Longitude,
+    double Altitude
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _latitude = Encoding.UTF8.GetBytes("latitude");
+        var _latitudeV = NativeValue.From(Latitude);
+        if (_latitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
+        var _longitude = Encoding.UTF8.GetBytes("longitude");
+        var _longitudeV = NativeValue.From(Longitude);
+        if (_longitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
+        var _altitude = Encoding.UTF8.GetBytes("altitude");
+        var _altitudeV = NativeValue.From(Altitude);
+        if (_altitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _altitude, _altitudeV);
+    }
 }

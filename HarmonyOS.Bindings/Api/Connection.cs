@@ -491,6 +491,162 @@ public sealed partial class NetConnection : JsObject
         CallMethodVoid(_unregister, callback);
     }
 
+    private static ReadOnlySpan<byte> _off => "off"u8;
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<NetHandle> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new NetHandle(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<NetBlockStatusInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new NetBlockStatusInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<NetCapabilityInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new NetCapabilityInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(args[0]),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// 监听 netAvailable 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<NetHandle> NetAvailable
+    {
+        add
+        {
+            _eventListeners.Add(("netAvailable", value),
+                args => value(new NetHandle(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "netAvailable", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("netAvailable", value), js => NodeApi.CallMethodVoid(Handle, _off, "netAvailable", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 netBlockStatusChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<NetBlockStatusInfo> NetBlockStatusChange
+    {
+        add
+        {
+            _eventListeners.Add(("netBlockStatusChange", value),
+                args => value(new NetBlockStatusInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "netBlockStatusChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("netBlockStatusChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "netBlockStatusChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 netCapabilitiesChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<NetCapabilityInfo> NetCapabilitiesChange
+    {
+        add
+        {
+            _eventListeners.Add(("netCapabilitiesChange", value),
+                args => value(new NetCapabilityInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "netCapabilitiesChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("netCapabilitiesChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "netCapabilitiesChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 netConnectionPropertiesChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> NetConnectionPropertiesChange
+    {
+        add
+        {
+            _eventListeners.Add(("netConnectionPropertiesChange", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "netConnectionPropertiesChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("netConnectionPropertiesChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "netConnectionPropertiesChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 netLost 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<NetHandle> NetLost
+    {
+        add
+        {
+            _eventListeners.Add(("netLost", value),
+                args => value(new NetHandle(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "netLost", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("netLost", value), js => NodeApi.CallMethodVoid(Handle, _off, "netLost", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 netUnavailable 事件（对应 on/off）
+    /// </summary>
+    public event System.Action NetUnavailable
+    {
+        add
+        {
+            _eventListeners.Add(("netUnavailable", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "netUnavailable", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("netUnavailable", value), js => NodeApi.CallMethodVoid(Handle, _off, "netUnavailable", js));
+        }
+    }
+
 }
 
 /// <summary>
@@ -540,11 +696,27 @@ public sealed partial class NetHandle : JsObject
     }
 
     /// <summary>
+    /// bindSocket
+    /// </summary>
+    public Task BindSocketAsync(IntPtr socketParam)
+    {
+        return CallMethodAsyncVoid(_bindSocket, socketParam);
+    }
+
+    /// <summary>
     /// getAddressesByName
     /// </summary>
     public void GetAddressesByName(string host, IntPtr callback)
     {
         CallMethodVoid(_getAddressesByName, host, callback);
+    }
+
+    /// <summary>
+    /// getAddressesByName
+    /// </summary>
+    public Task<NetAddress[]> GetAddressesByNameAsync(string host)
+    {
+        return CallMethodAsync(_getAddressesByName, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host);
     }
 
     /// <summary>
@@ -561,6 +733,14 @@ public sealed partial class NetHandle : JsObject
     public void GetAddressByName(string host, IntPtr callback)
     {
         CallMethodVoid(_getAddressByName, host, callback);
+    }
+
+    /// <summary>
+    /// getAddressByName
+    /// </summary>
+    public Task<NetAddress> GetAddressByNameAsync(string host)
+    {
+        return CallMethodAsync(_getAddressByName, static h => new NetAddress(h), host);
     }
 
 }
@@ -773,5 +953,47 @@ public sealed partial class ProbeResultInfo : JsObject
     /// rtt
     /// </summary>
     public double[] Rtt => ValueConverter.ConvertArray(GetPropertyRaw(_rtt), static e => ValueConverter.Convert<double>(e));
+
+}
+
+/// <summary>
+/// NetBlockStatusInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class NetBlockStatusInfo : JsObject
+{
+    public NetBlockStatusInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _netHandle => "netHandle"u8;
+    private static ReadOnlySpan<byte> _blocked => "blocked"u8;
+    /// <summary>
+    /// netHandle
+    /// </summary>
+    public NetHandle NetHandle => new NetHandle(GetPropertyRaw(_netHandle));
+
+    /// <summary>
+    /// blocked
+    /// </summary>
+    public bool Blocked => NativeValue.ToBool(GetPropertyRaw(_blocked));
+
+}
+
+/// <summary>
+/// NetCapabilityInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class NetCapabilityInfo : JsObject
+{
+    public NetCapabilityInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _netHandle => "netHandle"u8;
+    private static ReadOnlySpan<byte> _netCap => "netCap"u8;
+    /// <summary>
+    /// netHandle
+    /// </summary>
+    public NetHandle NetHandle => new NetHandle(GetPropertyRaw(_netHandle));
+
+    /// <summary>
+    /// netCap
+    /// </summary>
+    public NetCapabilities NetCap => new NetCapabilities(GetPropertyRaw(_netCap));
 
 }

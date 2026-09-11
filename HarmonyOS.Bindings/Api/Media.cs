@@ -389,11 +389,27 @@ public sealed partial class AVPlayer : JsObject
     }
 
     /// <summary>
+    /// prepare
+    /// </summary>
+    public Task PrepareAsync()
+    {
+        return CallMethodAsyncVoid(_prepare);
+    }
+
+    /// <summary>
     /// play
     /// </summary>
     public void Play(IntPtr callback)
     {
         CallMethodVoid(_play, callback);
+    }
+
+    /// <summary>
+    /// play
+    /// </summary>
+    public Task PlayAsync()
+    {
+        return CallMethodAsyncVoid(_play);
     }
 
     /// <summary>
@@ -405,11 +421,27 @@ public sealed partial class AVPlayer : JsObject
     }
 
     /// <summary>
+    /// pause
+    /// </summary>
+    public Task PauseAsync()
+    {
+        return CallMethodAsyncVoid(_pause);
+    }
+
+    /// <summary>
     /// stop
     /// </summary>
     public void Stop(IntPtr callback)
     {
         CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public Task StopAsync()
+    {
+        return CallMethodAsyncVoid(_stop);
     }
 
     /// <summary>
@@ -421,11 +453,27 @@ public sealed partial class AVPlayer : JsObject
     }
 
     /// <summary>
+    /// reset
+    /// </summary>
+    public Task ResetAsync()
+    {
+        return CallMethodAsyncVoid(_reset);
+    }
+
+    /// <summary>
     /// release
     /// </summary>
     public void Release(IntPtr callback)
     {
         CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
     }
 
     /// <summary>
@@ -450,6 +498,14 @@ public sealed partial class AVPlayer : JsObject
     public void GetTrackDescription(IntPtr callback)
     {
         CallMethodVoid(_getTrackDescription, callback);
+    }
+
+    /// <summary>
+    /// getTrackDescription
+    /// </summary>
+    public Task<MediaDescription[]> GetTrackDescriptionAsync()
+    {
+        return CallMethodAsync(_getTrackDescription, h => ValueConverter.ConvertArray(h, static e => new MediaDescription(e)));
     }
 
     /// <summary>
@@ -759,9 +815,25 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, double[] payloadTypes, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, payloadTypes, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, double[] payloadTypes, IntPtr callback)
+    {
+        CallMethodVoid(_off, type, payloadTypes, callback);
     }
 
     /// <summary>
@@ -812,6 +884,551 @@ public sealed partial class AVPlayer : JsObject
         CallMethodVoid(_offTimedMetaData, callback);
     }
 
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<IntPtr[]> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<IntPtr>(e))),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<IntPtr[]> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<double> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(NativeValue.ToDouble(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<double> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(args[0]),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<double[]> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<double>(e))),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<double[]> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<SubtitleInfo> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new SubtitleInfo(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<SubtitleInfo> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<MediaDescription[]> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(ValueConverter.ConvertArray(args[0], static e => new MediaDescription(e))),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<MediaDescription[]> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback, double[] payloadTypes)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, payloadTypes));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback, double[]? payloadTypes = null)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, payloadTypes));
+    }
+
+    /// <summary>
+    /// 监听 mediaKeySystemInfoUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr[]> MediaKeySystemInfoUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("mediaKeySystemInfoUpdate", value),
+                args => value(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<IntPtr>(e))),
+                js => NodeApi.CallMethodVoid(Handle, _on, "mediaKeySystemInfoUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("mediaKeySystemInfoUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "mediaKeySystemInfoUpdate", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 stateChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action StateChange
+    {
+        add
+        {
+            _eventListeners.Add(("stateChange", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "stateChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("stateChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "stateChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 volumeChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> VolumeChange
+    {
+        add
+        {
+            _eventListeners.Add(("volumeChange", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "volumeChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("volumeChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "volumeChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 endOfStream 事件（对应 on/off）
+    /// </summary>
+    public event System.Action EndOfStream
+    {
+        add
+        {
+            _eventListeners.Add(("endOfStream", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "endOfStream", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("endOfStream", value), js => NodeApi.CallMethodVoid(Handle, _off, "endOfStream", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 seekDone 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> SeekDone
+    {
+        add
+        {
+            _eventListeners.Add(("seekDone", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "seekDone", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("seekDone", value), js => NodeApi.CallMethodVoid(Handle, _off, "seekDone", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 speedDone 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> SpeedDone
+    {
+        add
+        {
+            _eventListeners.Add(("speedDone", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "speedDone", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("speedDone", value), js => NodeApi.CallMethodVoid(Handle, _off, "speedDone", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 playbackRateDone 事件（对应 on/off）
+    /// </summary>
+    public event System.Action PlaybackRateDone
+    {
+        add
+        {
+            _eventListeners.Add(("playbackRateDone", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "playbackRateDone", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("playbackRateDone", value), js => NodeApi.CallMethodVoid(Handle, _off, "playbackRateDone", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 bitrateDone 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> BitrateDone
+    {
+        add
+        {
+            _eventListeners.Add(("bitrateDone", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "bitrateDone", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("bitrateDone", value), js => NodeApi.CallMethodVoid(Handle, _off, "bitrateDone", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 timeUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> TimeUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("timeUpdate", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "timeUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("timeUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "timeUpdate", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 durationUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> DurationUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("durationUpdate", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "durationUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("durationUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "durationUpdate", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 bufferingUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action BufferingUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("bufferingUpdate", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "bufferingUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("bufferingUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "bufferingUpdate", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 startRenderFrame 事件（对应 on/off）
+    /// </summary>
+    public event System.Action StartRenderFrame
+    {
+        add
+        {
+            _eventListeners.Add(("startRenderFrame", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "startRenderFrame", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("startRenderFrame", value), js => NodeApi.CallMethodVoid(Handle, _off, "startRenderFrame", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 videoSizeChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action VideoSizeChange
+    {
+        add
+        {
+            _eventListeners.Add(("videoSizeChange", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "videoSizeChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("videoSizeChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "videoSizeChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 audioInterrupt 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> AudioInterrupt
+    {
+        add
+        {
+            _eventListeners.Add(("audioInterrupt", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "audioInterrupt", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("audioInterrupt", value), js => NodeApi.CallMethodVoid(Handle, _off, "audioInterrupt", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 availableBitrates 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double[]> AvailableBitrates
+    {
+        add
+        {
+            _eventListeners.Add(("availableBitrates", value),
+                args => value(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<double>(e))),
+                js => NodeApi.CallMethodVoid(Handle, _on, "availableBitrates", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("availableBitrates", value), js => NodeApi.CallMethodVoid(Handle, _off, "availableBitrates", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 audioOutputDeviceChangeWithInfo 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> AudioOutputDeviceChangeWithInfo
+    {
+        add
+        {
+            _eventListeners.Add(("audioOutputDeviceChangeWithInfo", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "audioOutputDeviceChangeWithInfo", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("audioOutputDeviceChangeWithInfo", value), js => NodeApi.CallMethodVoid(Handle, _off, "audioOutputDeviceChangeWithInfo", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 subtitleUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<SubtitleInfo> SubtitleUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("subtitleUpdate", value),
+                args => value(new SubtitleInfo(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "subtitleUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("subtitleUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "subtitleUpdate", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 trackChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action TrackChange
+    {
+        add
+        {
+            _eventListeners.Add(("trackChange", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "trackChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("trackChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "trackChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 trackInfoUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<MediaDescription[]> TrackInfoUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("trackInfoUpdate", value),
+                args => value(ValueConverter.ConvertArray(args[0], static e => new MediaDescription(e))),
+                js => NodeApi.CallMethodVoid(Handle, _on, "trackInfoUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("trackInfoUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "trackInfoUpdate", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 amplitudeUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double[]> AmplitudeUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("amplitudeUpdate", value),
+                args => value(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<double>(e))),
+                js => NodeApi.CallMethodVoid(Handle, _on, "amplitudeUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("amplitudeUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "amplitudeUpdate", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 seiMessageReceived 事件（对应 on/off）
+    /// </summary>
+    public event System.Action SeiMessageReceived
+    {
+        add
+        {
+            _eventListeners.Add(("seiMessageReceived", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "seiMessageReceived", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("seiMessageReceived", value), js => NodeApi.CallMethodVoid(Handle, _off, "seiMessageReceived", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 superResolutionChanged 事件（对应 on/off）
+    /// </summary>
+    public event System.Action SuperResolutionChanged
+    {
+        add
+        {
+            _eventListeners.Add(("superResolutionChanged", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "superResolutionChanged", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("superResolutionChanged", value), js => NodeApi.CallMethodVoid(Handle, _off, "superResolutionChanged", js));
+        }
+    }
+
 }
 
 /// <summary>
@@ -854,6 +1471,14 @@ public sealed partial class AVRecorder : JsObject
     }
 
     /// <summary>
+    /// prepare
+    /// </summary>
+    public Task PrepareAsync(IntPtr config)
+    {
+        return CallMethodAsyncVoid(_prepare, config);
+    }
+
+    /// <summary>
     /// getAVRecorderConfig
     /// </summary>
     public void GetAVRecorderConfig(IntPtr callback)
@@ -862,11 +1487,27 @@ public sealed partial class AVRecorder : JsObject
     }
 
     /// <summary>
+    /// getAVRecorderConfig
+    /// </summary>
+    public Task<IntPtr> GetAVRecorderConfigAsync()
+    {
+        return CallMethodAsync<IntPtr>(_getAVRecorderConfig);
+    }
+
+    /// <summary>
     /// getInputSurface
     /// </summary>
     public void GetInputSurface(IntPtr callback)
     {
         CallMethodVoid(_getInputSurface, callback);
+    }
+
+    /// <summary>
+    /// getInputSurface
+    /// </summary>
+    public Task<string> GetInputSurfaceAsync()
+    {
+        return CallMethodAsync<string>(_getInputSurface);
     }
 
     /// <summary>
@@ -910,11 +1551,27 @@ public sealed partial class AVRecorder : JsObject
     }
 
     /// <summary>
+    /// start
+    /// </summary>
+    public Task StartAsync()
+    {
+        return CallMethodAsyncVoid(_start);
+    }
+
+    /// <summary>
     /// pause
     /// </summary>
     public void Pause(IntPtr callback)
     {
         CallMethodVoid(_pause, callback);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public Task PauseAsync()
+    {
+        return CallMethodAsyncVoid(_pause);
     }
 
     /// <summary>
@@ -926,11 +1583,27 @@ public sealed partial class AVRecorder : JsObject
     }
 
     /// <summary>
+    /// resume
+    /// </summary>
+    public Task ResumeAsync()
+    {
+        return CallMethodAsyncVoid(_resume);
+    }
+
+    /// <summary>
     /// stop
     /// </summary>
     public void Stop(IntPtr callback)
     {
         CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public Task StopAsync()
+    {
+        return CallMethodAsyncVoid(_stop);
     }
 
     /// <summary>
@@ -942,11 +1615,27 @@ public sealed partial class AVRecorder : JsObject
     }
 
     /// <summary>
+    /// reset
+    /// </summary>
+    public Task ResetAsync()
+    {
+        return CallMethodAsyncVoid(_reset);
+    }
+
+    /// <summary>
     /// release
     /// </summary>
     public void Release(IntPtr callback)
     {
         CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
     }
 
     /// <summary>
@@ -958,6 +1647,14 @@ public sealed partial class AVRecorder : JsObject
     }
 
     /// <summary>
+    /// getCurrentAudioCapturerInfo
+    /// </summary>
+    public Task<IntPtr> GetCurrentAudioCapturerInfoAsync()
+    {
+        return CallMethodAsync<IntPtr>(_getCurrentAudioCapturerInfo);
+    }
+
+    /// <summary>
     /// getAudioCapturerMaxAmplitude
     /// </summary>
     public void GetAudioCapturerMaxAmplitude(IntPtr callback)
@@ -966,11 +1663,27 @@ public sealed partial class AVRecorder : JsObject
     }
 
     /// <summary>
+    /// getAudioCapturerMaxAmplitude
+    /// </summary>
+    public Task<double> GetAudioCapturerMaxAmplitudeAsync()
+    {
+        return CallMethodAsync<double>(_getAudioCapturerMaxAmplitude);
+    }
+
+    /// <summary>
     /// getAvailableEncoder
     /// </summary>
     public void GetAvailableEncoder(IntPtr callback)
     {
         CallMethodVoid(_getAvailableEncoder, callback);
+    }
+
+    /// <summary>
+    /// getAvailableEncoder
+    /// </summary>
+    public Task<EncoderInfo[]> GetAvailableEncoderAsync()
+    {
+        return CallMethodAsync(_getAvailableEncoder, h => ValueConverter.ConvertArray(h, static e => new EncoderInfo(e)));
     }
 
     /// <summary>
@@ -984,9 +1697,123 @@ public sealed partial class AVRecorder : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(args[0]),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<IntPtr> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 audioCapturerChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> AudioCapturerChange
+    {
+        add
+        {
+            _eventListeners.Add(("audioCapturerChange", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "audioCapturerChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("audioCapturerChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "audioCapturerChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 photoAssetAvailable 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<IntPtr> PhotoAssetAvailable
+    {
+        add
+        {
+            _eventListeners.Add(("photoAssetAvailable", value),
+                args => value(args[0]),
+                js => NodeApi.CallMethodVoid(Handle, _on, "photoAssetAvailable", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("photoAssetAvailable", value), js => NodeApi.CallMethodVoid(Handle, _off, "photoAssetAvailable", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 stateChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action StateChange
+    {
+        add
+        {
+            _eventListeners.Add(("stateChange", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "stateChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("stateChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "stateChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
     }
 
 }
@@ -1114,11 +1941,230 @@ public sealed partial class AudioPlayer : JsObject
     }
 
     /// <summary>
+    /// getTrackDescription
+    /// </summary>
+    public Task<MediaDescription[]> GetTrackDescriptionAsync()
+    {
+        return CallMethodAsync(_getTrackDescription, h => ValueConverter.ConvertArray(h, static e => new MediaDescription(e)));
+    }
+
+    /// <summary>
     /// on
     /// </summary>
-    public void On(string type, System.Action<global::HarmonyOS.ArkUI.BufferingInfoType, double> callback)
+    public void On(string type, IntPtr callback)
     {
         CallMethodVoid(_on, type, callback);
+    }
+
+    private static ReadOnlySpan<byte> _off => "off"u8;
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<double> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(NativeValue.ToDouble(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// 监听 bufferingUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action BufferingUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("bufferingUpdate", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "bufferingUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("bufferingUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "bufferingUpdate", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 play 事件（对应 on/off）
+    /// </summary>
+    public event System.Action PlayEvent
+    {
+        add
+        {
+            _eventListeners.Add(("play", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "play", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("play", value), js => NodeApi.CallMethodVoid(Handle, _off, "play", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 pause 事件（对应 on/off）
+    /// </summary>
+    public event System.Action PauseEvent
+    {
+        add
+        {
+            _eventListeners.Add(("pause", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "pause", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("pause", value), js => NodeApi.CallMethodVoid(Handle, _off, "pause", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 stop 事件（对应 on/off）
+    /// </summary>
+    public event System.Action StopEvent
+    {
+        add
+        {
+            _eventListeners.Add(("stop", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "stop", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("stop", value), js => NodeApi.CallMethodVoid(Handle, _off, "stop", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 reset 事件（对应 on/off）
+    /// </summary>
+    public event System.Action ResetEvent
+    {
+        add
+        {
+            _eventListeners.Add(("reset", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "reset", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("reset", value), js => NodeApi.CallMethodVoid(Handle, _off, "reset", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 dataLoad 事件（对应 on/off）
+    /// </summary>
+    public event System.Action DataLoad
+    {
+        add
+        {
+            _eventListeners.Add(("dataLoad", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "dataLoad", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("dataLoad", value), js => NodeApi.CallMethodVoid(Handle, _off, "dataLoad", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 finish 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Finish
+    {
+        add
+        {
+            _eventListeners.Add(("finish", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "finish", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("finish", value), js => NodeApi.CallMethodVoid(Handle, _off, "finish", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 volumeChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action VolumeChange
+    {
+        add
+        {
+            _eventListeners.Add(("volumeChange", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "volumeChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("volumeChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "volumeChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 timeUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> TimeUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("timeUpdate", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "timeUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("timeUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "timeUpdate", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 audioInterrupt 事件（对应 on/off）
+    /// </summary>
+    public event System.Action AudioInterrupt
+    {
+        add
+        {
+            _eventListeners.Add(("audioInterrupt", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "audioInterrupt", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("audioInterrupt", value), js => NodeApi.CallMethodVoid(Handle, _off, "audioInterrupt", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
     }
 
 }
@@ -1197,9 +2243,159 @@ public sealed partial class AudioRecorder : JsObject
     /// <summary>
     /// on
     /// </summary>
-    public void On(string type, System.Action callback)
+    public void On(string type, IntPtr callback)
     {
         CallMethodVoid(_on, type, callback);
+    }
+
+    private static ReadOnlySpan<byte> _off => "off"u8;
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// 监听 prepare 事件（对应 on/off）
+    /// </summary>
+    public event System.Action PrepareEvent
+    {
+        add
+        {
+            _eventListeners.Add(("prepare", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "prepare", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("prepare", value), js => NodeApi.CallMethodVoid(Handle, _off, "prepare", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 start 事件（对应 on/off）
+    /// </summary>
+    public event System.Action StartEvent
+    {
+        add
+        {
+            _eventListeners.Add(("start", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "start", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("start", value), js => NodeApi.CallMethodVoid(Handle, _off, "start", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 pause 事件（对应 on/off）
+    /// </summary>
+    public event System.Action PauseEvent
+    {
+        add
+        {
+            _eventListeners.Add(("pause", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "pause", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("pause", value), js => NodeApi.CallMethodVoid(Handle, _off, "pause", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 resume 事件（对应 on/off）
+    /// </summary>
+    public event System.Action ResumeEvent
+    {
+        add
+        {
+            _eventListeners.Add(("resume", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "resume", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("resume", value), js => NodeApi.CallMethodVoid(Handle, _off, "resume", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 stop 事件（对应 on/off）
+    /// </summary>
+    public event System.Action StopEvent
+    {
+        add
+        {
+            _eventListeners.Add(("stop", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "stop", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("stop", value), js => NodeApi.CallMethodVoid(Handle, _off, "stop", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 release 事件（对应 on/off）
+    /// </summary>
+    public event System.Action ReleaseEvent
+    {
+        add
+        {
+            _eventListeners.Add(("release", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "release", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("release", value), js => NodeApi.CallMethodVoid(Handle, _off, "release", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 reset 事件（对应 on/off）
+    /// </summary>
+    public event System.Action ResetEvent
+    {
+        add
+        {
+            _eventListeners.Add(("reset", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "reset", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("reset", value), js => NodeApi.CallMethodVoid(Handle, _off, "reset", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
     }
 
 }
@@ -1521,11 +2717,27 @@ public sealed partial class VideoPlayer : JsObject
     }
 
     /// <summary>
+    /// setDisplaySurface
+    /// </summary>
+    public Task SetDisplaySurfaceAsync(string surfaceId)
+    {
+        return CallMethodAsyncVoid(_setDisplaySurface, surfaceId);
+    }
+
+    /// <summary>
     /// prepare
     /// </summary>
     public void Prepare(IntPtr callback)
     {
         CallMethodVoid(_prepare, callback);
+    }
+
+    /// <summary>
+    /// prepare
+    /// </summary>
+    public Task PrepareAsync()
+    {
+        return CallMethodAsyncVoid(_prepare);
     }
 
     /// <summary>
@@ -1537,11 +2749,27 @@ public sealed partial class VideoPlayer : JsObject
     }
 
     /// <summary>
+    /// play
+    /// </summary>
+    public Task PlayAsync()
+    {
+        return CallMethodAsyncVoid(_play);
+    }
+
+    /// <summary>
     /// pause
     /// </summary>
     public void Pause(IntPtr callback)
     {
         CallMethodVoid(_pause, callback);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public Task PauseAsync()
+    {
+        return CallMethodAsyncVoid(_pause);
     }
 
     /// <summary>
@@ -1553,11 +2781,27 @@ public sealed partial class VideoPlayer : JsObject
     }
 
     /// <summary>
+    /// stop
+    /// </summary>
+    public Task StopAsync()
+    {
+        return CallMethodAsyncVoid(_stop);
+    }
+
+    /// <summary>
     /// reset
     /// </summary>
     public void Reset(IntPtr callback)
     {
         CallMethodVoid(_reset, callback);
+    }
+
+    /// <summary>
+    /// reset
+    /// </summary>
+    public Task ResetAsync()
+    {
+        return CallMethodAsyncVoid(_reset);
     }
 
     /// <summary>
@@ -1569,11 +2813,35 @@ public sealed partial class VideoPlayer : JsObject
     }
 
     /// <summary>
+    /// seek
+    /// </summary>
+    public void Seek(double timeMs, global::HarmonyOS.ArkUI.SeekMode mode, IntPtr callback)
+    {
+        CallMethodVoid(_seek, timeMs, mode, callback);
+    }
+
+    /// <summary>
+    /// seek
+    /// </summary>
+    public Task<double> SeekAsync(double timeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null)
+    {
+        return CallMethodAsync<double>(_seek, timeMs, mode);
+    }
+
+    /// <summary>
     /// setVolume
     /// </summary>
     public void SetVolume(double vol, IntPtr callback)
     {
         CallMethodVoid(_setVolume, vol, callback);
+    }
+
+    /// <summary>
+    /// setVolume
+    /// </summary>
+    public Task SetVolumeAsync(double vol)
+    {
+        return CallMethodAsyncVoid(_setVolume, vol);
     }
 
     /// <summary>
@@ -1585,11 +2853,27 @@ public sealed partial class VideoPlayer : JsObject
     }
 
     /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    /// <summary>
     /// getTrackDescription
     /// </summary>
     public void GetTrackDescription(IntPtr callback)
     {
         CallMethodVoid(_getTrackDescription, callback);
+    }
+
+    /// <summary>
+    /// getTrackDescription
+    /// </summary>
+    public Task<MediaDescription[]> GetTrackDescriptionAsync()
+    {
+        return CallMethodAsync(_getTrackDescription, h => ValueConverter.ConvertArray(h, static e => new MediaDescription(e)));
     }
 
     /// <summary>
@@ -1601,11 +2885,135 @@ public sealed partial class VideoPlayer : JsObject
     }
 
     /// <summary>
+    /// setSpeed
+    /// </summary>
+    public Task<double> SetSpeedAsync(double speed)
+    {
+        return CallMethodAsync<double>(_setSpeed, speed);
+    }
+
+    /// <summary>
     /// on
     /// </summary>
     public void On(string type, IntPtr callback)
     {
         CallMethodVoid(_on, type, callback);
+    }
+
+    private static ReadOnlySpan<byte> _off => "off"u8;
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// 监听 playbackCompleted 事件（对应 on/off）
+    /// </summary>
+    public event System.Action PlaybackCompleted
+    {
+        add
+        {
+            _eventListeners.Add(("playbackCompleted", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "playbackCompleted", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("playbackCompleted", value), js => NodeApi.CallMethodVoid(Handle, _off, "playbackCompleted", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 bufferingUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action BufferingUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("bufferingUpdate", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "bufferingUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("bufferingUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "bufferingUpdate", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 startRenderFrame 事件（对应 on/off）
+    /// </summary>
+    public event System.Action StartRenderFrame
+    {
+        add
+        {
+            _eventListeners.Add(("startRenderFrame", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "startRenderFrame", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("startRenderFrame", value), js => NodeApi.CallMethodVoid(Handle, _off, "startRenderFrame", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 videoSizeChanged 事件（对应 on/off）
+    /// </summary>
+    public event System.Action VideoSizeChanged
+    {
+        add
+        {
+            _eventListeners.Add(("videoSizeChanged", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "videoSizeChanged", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("videoSizeChanged", value), js => NodeApi.CallMethodVoid(Handle, _off, "videoSizeChanged", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 audioInterrupt 事件（对应 on/off）
+    /// </summary>
+    public event System.Action AudioInterrupt
+    {
+        add
+        {
+            _eventListeners.Add(("audioInterrupt", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "audioInterrupt", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("audioInterrupt", value), js => NodeApi.CallMethodVoid(Handle, _off, "audioInterrupt", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
     }
 
 }
@@ -1747,9 +3155,89 @@ public sealed partial class AVScreenCaptureRecorder : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<global::HarmonyOS.ArkUI.AVScreenCaptureStateCode> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback((global::HarmonyOS.ArkUI.AVScreenCaptureStateCode)NativeValue.ToInt(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<global::HarmonyOS.ArkUI.AVScreenCaptureStateCode> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 stateChange 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<global::HarmonyOS.ArkUI.AVScreenCaptureStateCode> StateChange
+    {
+        add
+        {
+            _eventListeners.Add(("stateChange", value),
+                args => value((global::HarmonyOS.ArkUI.AVScreenCaptureStateCode)NativeValue.ToInt(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "stateChange", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("stateChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "stateChange", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
     }
 
 }
@@ -1841,7 +3329,7 @@ public sealed partial class AVTranscoder : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr? callback = null)
+    public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
     }
@@ -1852,6 +3340,103 @@ public sealed partial class AVTranscoder : JsObject
     public Task<double> AddWatermarkAsync(IntPtr watermark, WatermarkConfiguration config)
     {
         return CallMethodAsync<double>(_addWatermark, watermark, config);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<double> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(NativeValue.ToDouble(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type)：移除该事件类型的全部回调
+    /// </summary>
+    public void Off(string type)
+    {
+        NodeApi.CallMethodVoid(Handle, _off, type);
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<double> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
+    /// 监听 complete 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Complete
+    {
+        add
+        {
+            _eventListeners.Add(("complete", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "complete", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("complete", value), js => NodeApi.CallMethodVoid(Handle, _off, "complete", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 error 事件（对应 on/off）
+    /// </summary>
+    public event System.Action Error
+    {
+        add
+        {
+            _eventListeners.Add(("error", value),
+                args => value(),
+                js => NodeApi.CallMethodVoid(Handle, _on, "error", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("error", value), js => NodeApi.CallMethodVoid(Handle, _off, "error", js));
+        }
+    }
+
+    /// <summary>
+    /// 监听 progressUpdate 事件（对应 on/off）
+    /// </summary>
+    public event System.Action<double> ProgressUpdate
+    {
+        add
+        {
+            _eventListeners.Add(("progressUpdate", value),
+                args => value(NativeValue.ToDouble(args[0])),
+                js => NodeApi.CallMethodVoid(Handle, _on, "progressUpdate", js));
+        }
+        remove
+        {
+            _eventListeners.Remove(("progressUpdate", value), js => NodeApi.CallMethodVoid(Handle, _off, "progressUpdate", js));
+        }
     }
 
 }
@@ -1894,6 +3479,14 @@ public sealed partial class AVMetadataExtractor : JsObject
     }
 
     /// <summary>
+    /// fetchMetadata
+    /// </summary>
+    public Task<IntPtr> FetchMetadataAsync()
+    {
+        return CallMethodAsync<IntPtr>(_fetchMetadata);
+    }
+
+    /// <summary>
     /// fetchMetadataWithTimeout
     /// </summary>
     public Task<IntPtr> FetchMetadataWithTimeoutAsync(double timeoutMs)
@@ -1907,6 +3500,14 @@ public sealed partial class AVMetadataExtractor : JsObject
     public void FetchAlbumCover(IntPtr callback)
     {
         CallMethodVoid(_fetchAlbumCover, callback);
+    }
+
+    /// <summary>
+    /// fetchAlbumCover
+    /// </summary>
+    public Task<IntPtr> FetchAlbumCoverAsync()
+    {
+        return CallMethodAsync<IntPtr>(_fetchAlbumCover);
     }
 
     /// <summary>
@@ -1965,6 +3566,14 @@ public sealed partial class AVMetadataExtractor : JsObject
         CallMethodVoid(_release, callback);
     }
 
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
 }
 
 /// <summary>
@@ -1992,6 +3601,14 @@ public sealed partial class AVImageGenerator : JsObject
     }
 
     /// <summary>
+    /// fetchFrameByTime
+    /// </summary>
+    public Task<IntPtr> FetchFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param)
+    {
+        return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, options, param);
+    }
+
+    /// <summary>
     /// fetchScaledFrameByTime
     /// </summary>
     public Task<IntPtr> FetchScaledFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryMode, OutputSize? outputSize = null)
@@ -2005,6 +3622,14 @@ public sealed partial class AVImageGenerator : JsObject
     public void Release(IntPtr callback)
     {
         CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
     }
 
 }
@@ -2151,6 +3776,42 @@ public sealed partial class AVDownloaderManager : JsObject
         CallMethodVoid(_release);
     }
 
+}
+
+/// <summary>
+/// SubtitleInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SubtitleInfo : JsObject
+{
+    public SubtitleInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _duration => "duration"u8;
+    private static ReadOnlySpan<byte> _startTime => "startTime"u8;
+    private static ReadOnlySpan<byte> _text => "text"u8;
+    /// <summary>
+    /// duration
+    /// </summary>
+    public double? Duration => (double?)NativeValue.ToDouble(GetPropertyRaw(_duration));
+
+    /// <summary>
+    /// startTime
+    /// </summary>
+    public double? StartTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_startTime));
+
+    /// <summary>
+    /// text
+    /// </summary>
+    public string? Text => (string?)NativeValue.ToString(GetPropertyRaw(_text)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// MediaDescription 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class MediaDescription : JsObject
+{
+    public MediaDescription(IntPtr handle) : base(handle) { }
 }
 
 /// <summary>
@@ -2370,6 +4031,63 @@ public sealed record WatermarkConfiguration(
         if (_heightV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
     }
+}
+
+/// <summary>
+/// EncoderInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class EncoderInfo : JsObject
+{
+    public EncoderInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _mimeType => "mimeType"u8;
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _bitRate => "bitRate"u8;
+    private static ReadOnlySpan<byte> _frameRate => "frameRate"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    private static ReadOnlySpan<byte> _channels => "channels"u8;
+    private static ReadOnlySpan<byte> _sampleRate => "sampleRate"u8;
+    /// <summary>
+    /// mimeType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CodecMimeType MimeType => (global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_mimeType));
+
+    /// <summary>
+    /// type
+    /// </summary>
+    public string Type => NativeValue.ToString(GetPropertyRaw(_type)) ?? string.Empty;
+
+    /// <summary>
+    /// bitRate
+    /// </summary>
+    public Range? BitRate => GetPropertyRaw(_bitRate) == IntPtr.Zero ? null : new Range(GetPropertyRaw(_bitRate));
+
+    /// <summary>
+    /// frameRate
+    /// </summary>
+    public Range? FrameRate => GetPropertyRaw(_frameRate) == IntPtr.Zero ? null : new Range(GetPropertyRaw(_frameRate));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public Range? Width => GetPropertyRaw(_width) == IntPtr.Zero ? null : new Range(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public Range? Height => GetPropertyRaw(_height) == IntPtr.Zero ? null : new Range(GetPropertyRaw(_height));
+
+    /// <summary>
+    /// channels
+    /// </summary>
+    public Range? Channels => GetPropertyRaw(_channels) == IntPtr.Zero ? null : new Range(GetPropertyRaw(_channels));
+
+    /// <summary>
+    /// sampleRate
+    /// </summary>
+    public double[] SampleRate => ValueConverter.ConvertArray(GetPropertyRaw(_sampleRate), static e => ValueConverter.Convert<double>(e));
+
 }
 
 /// <summary>

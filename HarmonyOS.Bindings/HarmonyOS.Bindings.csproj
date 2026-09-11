@@ -29,8 +29,10 @@
        未转正模块默认不参与编译，逐个验证后加入 APPROVED_MODULES。 -->
   <ItemGroup Condition="'$(SkipGeneratedApi)' != 'false'">
     <Compile Remove="Api\Fs.cs" />
+    <Compile Remove="Api\GeoLocationManager.cs" />
     <Compile Remove="Api\Sensor.cs" />
     <Compile Remove="Api\Fs.Enums.cs" />
+    <Compile Remove="Api\GeoLocationManager.Enums.cs" />
     <Compile Remove="Api\Sensor.Enums.cs" />
   </ItemGroup>
 </Project>
