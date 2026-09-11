@@ -289,13 +289,15 @@ export class ApiGenerator {
             }
 
             // AsyncCallback 处理：命名形式参数 / 解析期 inline 形式标记
-            let params = this.demoteOptionals([...method.parameters]);
+            let params = [...method.parameters];
             // 事件函数：回调参数统一退回 IntPtr 原生重载（类型化 Action 重载由事件生成器单独产出，
-            // 否则 inline 回调映射出的 System.Action 会与类型化重载签名撞车 CS0111）
+            // 否则 inline 回调映射出的 System.Action 会与类型化重载签名撞车 CS0111）。
+            // 必须先强制回调为必需参数，再 demoteOptionals——否则回调前的可选参数不会降级（CS1737）。
             if (method.eventMeta) {
                 const cbIdx = params.findIndex(p => /^(?:Async)?Callback?</.test(p.type) || p.name === 'callback');
                 if (cbIdx >= 0) params[cbIdx] = { ...params[cbIdx], type: 'IntPtr', optional: false };
             }
+            params = this.demoteOptionals(params);
             let asyncInner: string | null = null;
             const namedCb = params.find(p => /^AsyncCallback<(.+)>$/.test(p.type));
             if (namedCb) {

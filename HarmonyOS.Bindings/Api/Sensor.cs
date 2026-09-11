@@ -120,7 +120,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// off
     /// </summary>
-    public static void Off(IntPtr type, SensorInfoParam? sensorInfoParam = null, IntPtr callback)
+    public static void Off(IntPtr type, SensorInfoParam sensorInfoParam, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
     }

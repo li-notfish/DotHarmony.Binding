@@ -185,3 +185,13 @@ declare namespace testsvc {
         expect(cs).toContain('CallMethodAsyncCallback<double>(_read, null, len)');
     });
 });
+
+test('事件回调强制必需后，其前的可选参数须降级（CS1737）', () => {
+    const cs = generate(`
+declare namespace testsvc {
+    interface SensorInfoParamX { a?: number; }
+    function off(type: string, sensorInfoParam?: SensorInfoParamX, callback?: Callback<SensorInfoParamX>): void;
+}
+`);
+    expect(cs).not.toMatch(/SensorInfoParamX\? \w+ = null, IntPtr callback/);
+});

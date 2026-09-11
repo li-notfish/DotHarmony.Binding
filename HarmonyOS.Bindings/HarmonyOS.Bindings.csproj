@@ -25,14 +25,10 @@
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
   </ItemGroup>
 
-  <!-- 灰度策略：已转正 BatteryInfo, Camera, Connection, DeviceInfo, Display, Geolocation, Http, Image, Media, Pasteboard, Picker, Preferences, PromptAction, Request, Router, Settings, Vibrator, Window（共 18 个）。
+  <!-- 灰度策略：已转正 BatteryInfo, Camera, Connection, DeviceInfo, Display, Fs, GeoLocationManager, Geolocation, Http, Image, Media, Pasteboard, Picker, Preferences, PromptAction, Request, Router, Sensor, Settings, Vibrator, Window（共 21 个）。
        未转正模块默认不参与编译，逐个验证后加入 APPROVED_MODULES。 -->
   <ItemGroup Condition="'$(SkipGeneratedApi)' != 'false'">
-    <Compile Remove="Api\Fs.cs" />
-    <Compile Remove="Api\GeoLocationManager.cs" />
-    <Compile Remove="Api\Sensor.cs" />
-    <Compile Remove="Api\Fs.Enums.cs" />
-    <Compile Remove="Api\GeoLocationManager.Enums.cs" />
-    <Compile Remove="Api\Sensor.Enums.cs" />
+
+
   </ItemGroup>
 </Project>

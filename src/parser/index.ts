@@ -835,10 +835,11 @@ const APPROVED_MODULES = new Set([
     'Display',
     'Settings',
     'Vibrator',
+    'GeoLocationManager',  // 2026-09-12 转正：JsMap 试点模块
     // M2.3 转正（17 个可编译模块）
     'Camera',
     'Connection',
-    // 'Fs',        // 含 ArrayBuffer/WriteOptions/DfsListeners 等未映射类型，待修复
+    'Fs',            // 2026-09-12 转正：ArrayBuffer/WriteOptions 经封送补全后可编译
     'Geolocation',
     'Http',
     'Image',
@@ -849,7 +850,7 @@ const APPROVED_MODULES = new Set([
     'PromptAction',
     'Request',
     'Router',
-    // 'Sensor',    // 含 SensorId/SensorType/SensorInfoParam 等复杂类型，待修复
+    'Sensor',        // 2026-09-12 转正：事件回调强制必需后的可选参数降级修复（CS1737）
     // 'Settings',  // 含 Context/DataAbilityHelper 等未映射类型，待修复
     'Window',
 ]);
