@@ -7,6 +7,6 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum StorageType
 {
-    XML = 0,
-    GSKV
+    Xml = 0,
+    Gskv
 }

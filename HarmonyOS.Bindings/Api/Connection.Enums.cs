@@ -7,17 +7,17 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum TcpState
 {
-    TCP_ESTABLISHED = 1,
-    TCP_SYN_SENT = 2,
-    TCP_SYN_RECV = 3,
-    TCP_FIN_WAIT1 = 4,
-    TCP_FIN_WAIT2 = 5,
-    TCP_TIME_WAIT = 6,
-    TCP_CLOSE = 7,
-    TCP_CLOSE_WAIT = 8,
-    TCP_LAST_ACK = 9,
-    TCP_LISTEN = 10,
-    TCP_CLOSING = 11
+    TcpEstablished = 1,
+    TcpSynSent = 2,
+    TcpSynRecv = 3,
+    TcpFinWait1 = 4,
+    TcpFinWait2 = 5,
+    TcpTimeWait = 6,
+    TcpClose = 7,
+    TcpCloseWait = 8,
+    TcpLastAck = 9,
+    TcpListen = 10,
+    TcpClosing = 11
 }
 
 /// <summary>
@@ -25,9 +25,9 @@ public enum TcpState
 /// </summary>
 public enum ConversionProcess
 {
-    NO_CONFIGURATION = 0,
-    ALLOW_UNASSIGNED = 1,
-    USE_STD3_ASCII_RULES = 2
+    NoConfiguration = 0,
+    AllowUnassigned = 1,
+    UseStd3AsciiRules = 2
 }
 
 /// <summary>
@@ -35,9 +35,9 @@ public enum ConversionProcess
 /// </summary>
 public enum FamilyType
 {
-    FAMILY_TYPE_ALL = 0,
-    FAMILY_TYPE_IPV4 = 1,
-    FAMILY_TYPE_IPV6 = 2
+    FamilyTypeAll = 0,
+    FamilyTypeIpv4 = 1,
+    FamilyTypeIpv6 = 2
 }
 
 /// <summary>
@@ -45,13 +45,13 @@ public enum FamilyType
 /// </summary>
 public enum NetCap
 {
-    NET_CAPABILITY_MMS = 0,
-    NET_CAPABILITY_NOT_METERED = 11,
-    NET_CAPABILITY_INTERNET = 12,
-    NET_CAPABILITY_NOT_VPN = 15,
-    NET_CAPABILITY_VALIDATED = 16,
-    NET_CAPABILITY_PORTAL = 17,
-    NET_CAPABILITY_CHECKING_CONNECTIVITY = 31
+    NetCapabilityMms = 0,
+    NetCapabilityNotMetered = 11,
+    NetCapabilityInternet = 12,
+    NetCapabilityNotVpn = 15,
+    NetCapabilityValidated = 16,
+    NetCapabilityPortal = 17,
+    NetCapabilityCheckingConnectivity = 31
 }
 
 /// <summary>
@@ -59,11 +59,11 @@ public enum NetCap
 /// </summary>
 public enum NetBearType
 {
-    BEARER_CELLULAR = 0,
-    BEARER_WIFI = 1,
-    BEARER_BLUETOOTH = 2,
-    BEARER_ETHERNET = 3,
-    BEARER_VPN = 4
+    BearerCellular = 0,
+    BearerWifi = 1,
+    BearerBluetooth = 2,
+    BearerEthernet = 3,
+    BearerVpn = 4
 }
 
 /// <summary>
@@ -71,8 +71,8 @@ public enum NetBearType
 /// </summary>
 public enum Socks5DnsStrategy
 {
-    SYSTEM_MODE = 0,
-    PROXY_MODE = 1
+    SystemMode = 0,
+    ProxyMode = 1
 }
 
 /// <summary>
@@ -80,8 +80,8 @@ public enum Socks5DnsStrategy
 /// </summary>
 public enum ProtocolType
 {
-    PROTO_TYPE_TCP = 6,
-    PROTO_TYPE_UDP = 17
+    ProtoTypeTcp = 6,
+    ProtoTypeUdp = 17
 }
 
 /// <summary>
@@ -89,6 +89,6 @@ public enum ProtocolType
 /// </summary>
 public enum PacketsType
 {
-    NETCONN_PACKETS_ICMP = 0,
-    NETCONN_PACKETS_UDP = 1
+    NetconnPacketsIcmp = 0,
+    NetconnPacketsUdp = 1
 }

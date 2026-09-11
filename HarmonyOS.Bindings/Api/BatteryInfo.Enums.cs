@@ -9,10 +9,10 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum BatteryPluggedType
 {
-    NONE,
-    AC,
-    USB,
-    WIRELESS
+    None,
+    Ac,
+    Usb,
+    Wireless
 }
 
 /// <summary>
@@ -20,10 +20,10 @@ public enum BatteryPluggedType
 /// </summary>
 public enum BatteryChargeState
 {
-    NONE,
-    ENABLE,
-    DISABLE,
-    FULL
+    None,
+    Enable,
+    Disable,
+    Full
 }
 
 /// <summary>
@@ -31,12 +31,12 @@ public enum BatteryChargeState
 /// </summary>
 public enum BatteryHealthState
 {
-    UNKNOWN,
-    GOOD,
-    OVERHEAT,
-    OVERVOLTAGE,
-    COLD,
-    DEAD
+    Unknown,
+    Good,
+    Overheat,
+    Overvoltage,
+    Cold,
+    Dead
 }
 
 /// <summary>
@@ -44,14 +44,14 @@ public enum BatteryHealthState
 /// </summary>
 public enum BatteryCapacityLevel
 {
-    LEVEL_NONE,
-    LEVEL_FULL,
-    LEVEL_HIGH,
-    LEVEL_NORMAL,
-    LEVEL_LOW,
-    LEVEL_WARNING,
-    LEVEL_CRITICAL,
-    LEVEL_SHUTDOWN
+    LevelNone,
+    LevelFull,
+    LevelHigh,
+    LevelNormal,
+    LevelLow,
+    LevelWarning,
+    LevelCritical,
+    LevelShutdown
 }
 
 /// <summary>
@@ -60,21 +60,21 @@ public enum BatteryCapacityLevel
 public enum CommonEventBatteryChangedKey
 {
     [Description("soc")]
-    EXTRA_SOC,
+    ExtraSoc,
     [Description("chargeState")]
-    EXTRA_CHARGE_STATE,
+    ExtraChargeState,
     [Description("healthState")]
-    EXTRA_HEALTH_STATE,
+    ExtraHealthState,
     [Description("pluggedType")]
-    EXTRA_PLUGGED_TYPE,
+    ExtraPluggedType,
     [Description("voltage")]
-    EXTRA_VOLTAGE,
+    ExtraVoltage,
     [Description("technology")]
-    EXTRA_TECHNOLOGY,
+    ExtraTechnology,
     [Description("temperature")]
-    EXTRA_TEMPERATURE,
+    ExtraTemperature,
     [Description("present")]
-    EXTRA_PRESENT,
+    ExtraPresent,
     [Description("capacityLevel")]
-    EXTRA_CAPACITY_LEVEL
+    ExtraCapacityLevel
 }

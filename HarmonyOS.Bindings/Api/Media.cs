@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -23,7 +24,8 @@ public static unsafe partial class Media
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -84,139 +86,2581 @@ public static unsafe partial class Media
     private static ReadOnlySpan<byte> _createAVDownloaderManager => "createAVDownloaderManager"u8;
 
     /// <summary>
-    /// createAVPlayer 方法
+    /// createAVPlayer
     /// </summary>
-    public static Task<IntPtr> CreateAVPlayer()
+    public static Task<AVPlayer> CreateAVPlayerAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVPlayer);
+        return NodeApi.CallMethodAsync(Module, _createAVPlayer, static h => new AVPlayer(h));
     }
 
     /// <summary>
-    /// createAVRecorder 方法
+    /// createAVRecorder
     /// </summary>
-    public static Task<IntPtr> CreateAVRecorder()
+    public static Task<AVRecorder> CreateAVRecorderAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVRecorder);
+        return NodeApi.CallMethodAsync(Module, _createAVRecorder, static h => new AVRecorder(h));
     }
 
     /// <summary>
-    /// createAudioPlayer 方法
+    /// createAudioPlayer
     /// </summary>
-    public static IntPtr CreateAudioPlayer()
+    public static AudioPlayer CreateAudioPlayer()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createAudioPlayer);
+        return NodeApi.CallMethod(Module, _createAudioPlayer, static h => new AudioPlayer(h));
     }
 
     /// <summary>
-    /// createAudioRecorder 方法
+    /// createAudioRecorder
     /// </summary>
-    public static IntPtr CreateAudioRecorder()
+    public static AudioRecorder CreateAudioRecorder()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createAudioRecorder);
+        return NodeApi.CallMethod(Module, _createAudioRecorder, static h => new AudioRecorder(h));
     }
 
     /// <summary>
-    /// createMediaSourceWithFd 方法
+    /// createMediaSourceWithFd
     /// </summary>
-    public static IntPtr CreateMediaSourceWithFd(IntPtr fdSrc)
+    public static MediaSource CreateMediaSourceWithFd(AVFileDescriptor fdSrc)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createMediaSourceWithFd, fdSrc);
+        return NodeApi.CallMethod(Module, _createMediaSourceWithFd, static h => new MediaSource(h), fdSrc);
     }
 
     /// <summary>
-    /// createMediaSourceWithDataSource 方法
+    /// createMediaSourceWithDataSource
     /// </summary>
-    public static IntPtr CreateMediaSourceWithDataSource(IntPtr dataSrc)
+    public static MediaSource CreateMediaSourceWithDataSource(IntPtr dataSrc)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createMediaSourceWithDataSource, dataSrc);
+        return NodeApi.CallMethod(Module, _createMediaSourceWithDataSource, static h => new MediaSource(h), dataSrc);
     }
 
     /// <summary>
-    /// createMediaSourceWithUrl 方法
+    /// createMediaSourceWithUrl
     /// </summary>
-    public static IntPtr CreateMediaSourceWithUrl(string url, IntPtr headers)
+    public static MediaSource CreateMediaSourceWithUrl(string url, IntPtr? headers = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createMediaSourceWithUrl, url, headers);
+        return NodeApi.CallMethod(Module, _createMediaSourceWithUrl, static h => new MediaSource(h), url, headers);
     }
 
     /// <summary>
-    /// createMediaSourceWithStreamData 方法
+    /// createMediaSourceWithStreamData
     /// </summary>
-    public static IntPtr CreateMediaSourceWithStreamData(IntPtr[] streams)
+    public static MediaSource CreateMediaSourceWithStreamData(MediaStream[] streams)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createMediaSourceWithStreamData, streams);
+        return NodeApi.CallMethod(Module, _createMediaSourceWithStreamData, static h => new MediaSource(h), streams);
     }
 
     /// <summary>
-    /// createAVAdsController 方法
+    /// createAVAdsController
     /// </summary>
-    public static Task<IntPtr> CreateAVAdsController(IntPtr player)
+    public static Task<AVAdsController> CreateAVAdsControllerAsync(AVPlayer player)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVAdsController, player);
+        return NodeApi.CallMethodAsync(Module, _createAVAdsController, static h => new AVAdsController(h), player);
     }
 
     /// <summary>
-    /// createVideoPlayer 方法
+    /// createVideoPlayer
     /// </summary>
-    public static Task<IntPtr> CreateVideoPlayer()
+    public static Task<VideoPlayer> CreateVideoPlayerAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createVideoPlayer);
+        return NodeApi.CallMethodAsync(Module, _createVideoPlayer, static h => new VideoPlayer(h));
     }
 
     /// <summary>
-    /// createSoundPool 方法
+    /// createSoundPool
     /// </summary>
-    public static Task<IntPtr> CreateSoundPool(double maxStreams, IntPtr audioRenderInfo)
+    public static Task<IntPtr> CreateSoundPoolAsync(double maxStreams, IntPtr audioRenderInfo)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createSoundPool, maxStreams, audioRenderInfo);
     }
 
     /// <summary>
-    /// createAVScreenCaptureRecorder 方法
+    /// createAVScreenCaptureRecorder
     /// </summary>
-    public static Task<IntPtr> CreateAVScreenCaptureRecorder()
+    public static Task<AVScreenCaptureRecorder> CreateAVScreenCaptureRecorderAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVScreenCaptureRecorder);
+        return NodeApi.CallMethodAsync(Module, _createAVScreenCaptureRecorder, static h => new AVScreenCaptureRecorder(h));
     }
 
     /// <summary>
-    /// createAVTranscoder 方法
+    /// createAVTranscoder
     /// </summary>
-    public static Task<IntPtr> CreateAVTranscoder()
+    public static Task<AVTranscoder> CreateAVTranscoderAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVTranscoder);
+        return NodeApi.CallMethodAsync(Module, _createAVTranscoder, static h => new AVTranscoder(h));
     }
 
     /// <summary>
-    /// createAVMetadataExtractor 方法
+    /// createAVMetadataExtractor
     /// </summary>
-    public static Task<IntPtr> CreateAVMetadataExtractor()
+    public static Task<AVMetadataExtractor> CreateAVMetadataExtractorAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVMetadataExtractor);
+        return NodeApi.CallMethodAsync(Module, _createAVMetadataExtractor, static h => new AVMetadataExtractor(h));
     }
 
     /// <summary>
-    /// createAVImageGenerator 方法
+    /// createAVImageGenerator
     /// </summary>
-    public static Task<IntPtr> CreateAVImageGenerator()
+    public static Task<AVImageGenerator> CreateAVImageGeneratorAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVImageGenerator);
+        return NodeApi.CallMethodAsync(Module, _createAVImageGenerator, static h => new AVImageGenerator(h));
     }
 
     /// <summary>
-    /// createMediaSourceWithDirectory 方法
+    /// createMediaSourceWithDirectory
     /// </summary>
-    public static Task<IntPtr> CreateMediaSourceWithDirectory(string path)
+    public static Task<MediaSource> CreateMediaSourceWithDirectoryAsync(string path)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createMediaSourceWithDirectory, path);
+        return NodeApi.CallMethodAsync(Module, _createMediaSourceWithDirectory, static h => new MediaSource(h), path);
     }
 
     /// <summary>
-    /// createAVDownloaderManager 方法
+    /// createAVDownloaderManager
     /// </summary>
-    public static Task<IntPtr> CreateAVDownloaderManager()
+    public static Task<AVDownloaderManager> CreateAVDownloaderManagerAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVDownloaderManager);
+        return NodeApi.CallMethodAsync(Module, _createAVDownloaderManager, static h => new AVDownloaderManager(h));
     }
 
+}
+
+/// <summary>
+/// AVPlayer 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AVPlayer : JsObject
+{
+    public AVPlayer(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _url => "url"u8;
+    private static ReadOnlySpan<byte> _fdSrc => "fdSrc"u8;
+    private static ReadOnlySpan<byte> _dataSrc => "dataSrc"u8;
+    private static ReadOnlySpan<byte> _loop => "loop"u8;
+    private static ReadOnlySpan<byte> _playlistLoopMode => "playlistLoopMode"u8;
+    private static ReadOnlySpan<byte> _audioInterruptMode => "audioInterruptMode"u8;
+    private static ReadOnlySpan<byte> _audioRendererInfo => "audioRendererInfo"u8;
+    private static ReadOnlySpan<byte> _audioEffectMode => "audioEffectMode"u8;
+    private static ReadOnlySpan<byte> _currentTime => "currentTime"u8;
+    private static ReadOnlySpan<byte> _duration => "duration"u8;
+    private static ReadOnlySpan<byte> _state => "state"u8;
+    private static ReadOnlySpan<byte> _surfaceId => "surfaceId"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    private static ReadOnlySpan<byte> _videoScaleType => "videoScaleType"u8;
+    private static ReadOnlySpan<byte> _privacyType => "privacyType"u8;
+    private static ReadOnlySpan<byte> _prepare => "prepare"u8;
+    private static ReadOnlySpan<byte> _play => "play"u8;
+    private static ReadOnlySpan<byte> _pause => "pause"u8;
+    private static ReadOnlySpan<byte> _stop => "stop"u8;
+    private static ReadOnlySpan<byte> _reset => "reset"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _seek => "seek"u8;
+    private static ReadOnlySpan<byte> _setVolume => "setVolume"u8;
+    private static ReadOnlySpan<byte> _getTrackDescription => "getTrackDescription"u8;
+    private static ReadOnlySpan<byte> _getSelectedTracks => "getSelectedTracks"u8;
+    private static ReadOnlySpan<byte> _selectTrack => "selectTrack"u8;
+    private static ReadOnlySpan<byte> _deselectTrack => "deselectTrack"u8;
+    private static ReadOnlySpan<byte> _getCurrentTrack => "getCurrentTrack"u8;
+    private static ReadOnlySpan<byte> _setMediaSource => "setMediaSource"u8;
+    private static ReadOnlySpan<byte> _getTrackSelectionFilter => "getTrackSelectionFilter"u8;
+    private static ReadOnlySpan<byte> _setTrackSelectionFilter => "setTrackSelectionFilter"u8;
+    private static ReadOnlySpan<byte> _addSubtitleFromFd => "addSubtitleFromFd"u8;
+    private static ReadOnlySpan<byte> _addSubtitleFromUrl => "addSubtitleFromUrl"u8;
+    private static ReadOnlySpan<byte> _getPlaybackInfo => "getPlaybackInfo"u8;
+    private static ReadOnlySpan<byte> _getPlaybackRate => "getPlaybackRate"u8;
+    private static ReadOnlySpan<byte> _getLoadedTimeRanges => "getLoadedTimeRanges"u8;
+    private static ReadOnlySpan<byte> _getSeekableTimeRanges => "getSeekableTimeRanges"u8;
+    private static ReadOnlySpan<byte> _seekToDefaultPosition => "seekToDefaultPosition"u8;
+    private static ReadOnlySpan<byte> _getPlaybackStatisticMetrics => "getPlaybackStatisticMetrics"u8;
+    private static ReadOnlySpan<byte> _setPlaybackStrategy => "setPlaybackStrategy"u8;
+    private static ReadOnlySpan<byte> _setMediaMuted => "setMediaMuted"u8;
+    private static ReadOnlySpan<byte> _setPlaybackRange => "setPlaybackRange"u8;
+    private static ReadOnlySpan<byte> _isSeekContinuousSupported => "isSeekContinuousSupported"u8;
+    private static ReadOnlySpan<byte> _getPlaybackPosition => "getPlaybackPosition"u8;
+    private static ReadOnlySpan<byte> _getCurrentPresentationTimestamp => "getCurrentPresentationTimestamp"u8;
+    private static ReadOnlySpan<byte> _setSuperResolution => "setSuperResolution"u8;
+    private static ReadOnlySpan<byte> _setVideoWindowSize => "setVideoWindowSize"u8;
+    private static ReadOnlySpan<byte> _advanceToNextMediaSource => "advanceToNextMediaSource"u8;
+    private static ReadOnlySpan<byte> _advanceToPrevMediaSource => "advanceToPrevMediaSource"u8;
+    private static ReadOnlySpan<byte> _getCurrentMediaSource => "getCurrentMediaSource"u8;
+    private static ReadOnlySpan<byte> _addPlaybackMediaSource => "addPlaybackMediaSource"u8;
+    private static ReadOnlySpan<byte> _removePlaybackMediaSource => "removePlaybackMediaSource"u8;
+    private static ReadOnlySpan<byte> _clearPlaybackList => "clearPlaybackList"u8;
+    private static ReadOnlySpan<byte> _advanceToMediaSource => "advanceToMediaSource"u8;
+    private static ReadOnlySpan<byte> _getMediaSources => "getMediaSources"u8;
+    private static ReadOnlySpan<byte> _setSpeed => "setSpeed"u8;
+    private static ReadOnlySpan<byte> _setPlaybackRate => "setPlaybackRate"u8;
+    private static ReadOnlySpan<byte> _setBitrate => "setBitrate"u8;
+    private static ReadOnlySpan<byte> _setLoudnessGain => "setLoudnessGain"u8;
+    private static ReadOnlySpan<byte> _setDecryptionConfig => "setDecryptionConfig"u8;
+    private static ReadOnlySpan<byte> _getMediaKeySystemInfos => "getMediaKeySystemInfos"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _onMetricsEvent => "onMetricsEvent"u8;
+    private static ReadOnlySpan<byte> _offMetricsEvent => "offMetricsEvent"u8;
+    private static ReadOnlySpan<byte> _onPlaybackContentChanged => "onPlaybackContentChanged"u8;
+    private static ReadOnlySpan<byte> _offPlaybackContentChanged => "offPlaybackContentChanged"u8;
+    private static ReadOnlySpan<byte> _onTimedMetaData => "onTimedMetaData"u8;
+    private static ReadOnlySpan<byte> _offTimedMetaData => "offTimedMetaData"u8;
+    /// <summary>
+    /// url
+    /// </summary>
+    public string? Url => (string?)NativeValue.ToString(GetPropertyRaw(_url)) ?? string.Empty;
+
+    /// <summary>
+    /// fdSrc
+    /// </summary>
+    public AVFileDescriptor? FdSrc => GetPropertyRaw(_fdSrc) == IntPtr.Zero ? null : new AVFileDescriptor(GetPropertyRaw(_fdSrc));
+
+    /// <summary>
+    /// dataSrc
+    /// </summary>
+    public IntPtr DataSrc => GetPropertyRaw(_dataSrc);
+
+    /// <summary>
+    /// loop
+    /// </summary>
+    public bool Loop => NativeValue.ToBool(GetPropertyRaw(_loop));
+
+    /// <summary>
+    /// playlistLoopMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PlaylistLoopMode? PlaylistLoopMode => (global::HarmonyOS.ArkUI.PlaylistLoopMode?)(global::HarmonyOS.ArkUI.PlaylistLoopMode)NativeValue.ToInt(GetPropertyRaw(_playlistLoopMode));
+
+    /// <summary>
+    /// audioInterruptMode
+    /// </summary>
+    public IntPtr AudioInterruptMode => GetPropertyRaw(_audioInterruptMode);
+
+    /// <summary>
+    /// audioRendererInfo
+    /// </summary>
+    public IntPtr AudioRendererInfo => GetPropertyRaw(_audioRendererInfo);
+
+    /// <summary>
+    /// audioEffectMode
+    /// </summary>
+    public IntPtr AudioEffectMode => GetPropertyRaw(_audioEffectMode);
+
+    /// <summary>
+    /// currentTime
+    /// </summary>
+    public double CurrentTime => NativeValue.ToDouble(GetPropertyRaw(_currentTime));
+
+    /// <summary>
+    /// duration
+    /// </summary>
+    public double Duration => NativeValue.ToDouble(GetPropertyRaw(_duration));
+
+    /// <summary>
+    /// state
+    /// </summary>
+    public IntPtr State => GetPropertyRaw(_state);
+
+    /// <summary>
+    /// surfaceId
+    /// </summary>
+    public string? SurfaceId => (string?)NativeValue.ToString(GetPropertyRaw(_surfaceId)) ?? string.Empty;
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+    /// <summary>
+    /// videoScaleType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.VideoScaleType? VideoScaleType => (global::HarmonyOS.ArkUI.VideoScaleType?)(global::HarmonyOS.ArkUI.VideoScaleType)NativeValue.ToInt(GetPropertyRaw(_videoScaleType));
+
+    /// <summary>
+    /// privacyType
+    /// </summary>
+    public IntPtr PrivacyType => GetPropertyRaw(_privacyType);
+
+    /// <summary>
+    /// prepare
+    /// </summary>
+    public void Prepare(IntPtr callback)
+    {
+        CallMethodVoid(_prepare, callback);
+    }
+
+    /// <summary>
+    /// play
+    /// </summary>
+    public void Play(IntPtr callback)
+    {
+        CallMethodVoid(_play, callback);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public void Pause(IntPtr callback)
+    {
+        CallMethodVoid(_pause, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public void Stop(IntPtr callback)
+    {
+        CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// reset
+    /// </summary>
+    public void Reset(IntPtr callback)
+    {
+        CallMethodVoid(_reset, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// seek
+    /// </summary>
+    public void Seek(double timeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null)
+    {
+        CallMethodVoid(_seek, timeMs, mode);
+    }
+
+    /// <summary>
+    /// setVolume
+    /// </summary>
+    public void SetVolume(double volume)
+    {
+        CallMethodVoid(_setVolume, volume);
+    }
+
+    /// <summary>
+    /// getTrackDescription
+    /// </summary>
+    public void GetTrackDescription(IntPtr callback)
+    {
+        CallMethodVoid(_getTrackDescription, callback);
+    }
+
+    /// <summary>
+    /// getSelectedTracks
+    /// </summary>
+    public Task<double[]> GetSelectedTracksAsync()
+    {
+        return CallMethodAsync(_getSelectedTracks, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)));
+    }
+
+    /// <summary>
+    /// selectTrack
+    /// </summary>
+    public Task SelectTrackAsync(double index, global::HarmonyOS.ArkUI.SwitchMode? mode = null)
+    {
+        return CallMethodAsyncVoid(_selectTrack, index, mode);
+    }
+
+    /// <summary>
+    /// deselectTrack
+    /// </summary>
+    public Task DeselectTrackAsync(double index)
+    {
+        return CallMethodAsyncVoid(_deselectTrack, index);
+    }
+
+    /// <summary>
+    /// getCurrentTrack
+    /// </summary>
+    public Task<double> GetCurrentTrackAsync(global::HarmonyOS.ArkUI.MediaType trackType)
+    {
+        return CallMethodAsync<double>(_getCurrentTrack, trackType);
+    }
+
+    /// <summary>
+    /// setMediaSource
+    /// </summary>
+    public Task SetMediaSourceAsync(MediaSource src, PlaybackStrategy? strategy = null)
+    {
+        return CallMethodAsyncVoid(_setMediaSource, src, strategy);
+    }
+
+    /// <summary>
+    /// getTrackSelectionFilter
+    /// </summary>
+    public Task<TrackSelectionFilter> GetTrackSelectionFilterAsync()
+    {
+        return CallMethodAsync(_getTrackSelectionFilter, static h => new TrackSelectionFilter(h));
+    }
+
+    /// <summary>
+    /// setTrackSelectionFilter
+    /// </summary>
+    public Task SetTrackSelectionFilterAsync(TrackSelectionFilter filter)
+    {
+        return CallMethodAsyncVoid(_setTrackSelectionFilter, filter);
+    }
+
+    /// <summary>
+    /// addSubtitleFromFd
+    /// </summary>
+    public Task AddSubtitleFromFdAsync(double fd, double? offset = null, double? length = null)
+    {
+        return CallMethodAsyncVoid(_addSubtitleFromFd, fd, offset, length);
+    }
+
+    /// <summary>
+    /// addSubtitleFromUrl
+    /// </summary>
+    public Task AddSubtitleFromUrlAsync(string url)
+    {
+        return CallMethodAsyncVoid(_addSubtitleFromUrl, url);
+    }
+
+    /// <summary>
+    /// getPlaybackInfo
+    /// </summary>
+    public Task<PlaybackInfo> GetPlaybackInfoAsync()
+    {
+        return CallMethodAsync(_getPlaybackInfo, static h => new PlaybackInfo(h));
+    }
+
+    /// <summary>
+    /// getPlaybackRate
+    /// </summary>
+    public Task<double> GetPlaybackRateAsync()
+    {
+        return CallMethodAsync<double>(_getPlaybackRate);
+    }
+
+    /// <summary>
+    /// getLoadedTimeRanges
+    /// </summary>
+    public Task<Range[]> GetLoadedTimeRangesAsync()
+    {
+        return CallMethodAsync(_getLoadedTimeRanges, h => ValueConverter.ConvertArray(h, static e => new Range(e)));
+    }
+
+    /// <summary>
+    /// getSeekableTimeRanges
+    /// </summary>
+    public Task<Range[]> GetSeekableTimeRangesAsync()
+    {
+        return CallMethodAsync(_getSeekableTimeRanges, h => ValueConverter.ConvertArray(h, static e => new Range(e)));
+    }
+
+    /// <summary>
+    /// seekToDefaultPosition
+    /// </summary>
+    public void SeekToDefaultPosition()
+    {
+        CallMethodVoid(_seekToDefaultPosition);
+    }
+
+    /// <summary>
+    /// getPlaybackStatisticMetrics
+    /// </summary>
+    public Task<IntPtr> GetPlaybackStatisticMetricsAsync()
+    {
+        return CallMethodAsync<IntPtr>(_getPlaybackStatisticMetrics);
+    }
+
+    /// <summary>
+    /// setPlaybackStrategy
+    /// </summary>
+    public Task SetPlaybackStrategyAsync(PlaybackStrategy strategy)
+    {
+        return CallMethodAsyncVoid(_setPlaybackStrategy, strategy);
+    }
+
+    /// <summary>
+    /// setMediaMuted
+    /// </summary>
+    public Task SetMediaMutedAsync(global::HarmonyOS.ArkUI.MediaType mediaType, bool muted)
+    {
+        return CallMethodAsyncVoid(_setMediaMuted, mediaType, muted);
+    }
+
+    /// <summary>
+    /// setPlaybackRange
+    /// </summary>
+    public Task SetPlaybackRangeAsync(double startTimeMs, double endTimeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null)
+    {
+        return CallMethodAsyncVoid(_setPlaybackRange, startTimeMs, endTimeMs, mode);
+    }
+
+    /// <summary>
+    /// isSeekContinuousSupported
+    /// </summary>
+    public bool IsSeekContinuousSupported()
+    {
+        return CallMethod<bool>(_isSeekContinuousSupported);
+    }
+
+    /// <summary>
+    /// getPlaybackPosition
+    /// </summary>
+    public double GetPlaybackPosition()
+    {
+        return CallMethod<double>(_getPlaybackPosition);
+    }
+
+    /// <summary>
+    /// getCurrentPresentationTimestamp
+    /// </summary>
+    public double GetCurrentPresentationTimestamp()
+    {
+        return CallMethod<double>(_getCurrentPresentationTimestamp);
+    }
+
+    /// <summary>
+    /// setSuperResolution
+    /// </summary>
+    public Task SetSuperResolutionAsync(bool enabled)
+    {
+        return CallMethodAsyncVoid(_setSuperResolution, enabled);
+    }
+
+    /// <summary>
+    /// setVideoWindowSize
+    /// </summary>
+    public Task SetVideoWindowSizeAsync(double width, double height)
+    {
+        return CallMethodAsyncVoid(_setVideoWindowSize, width, height);
+    }
+
+    /// <summary>
+    /// advanceToNextMediaSource
+    /// </summary>
+    public Task AdvanceToNextMediaSourceAsync()
+    {
+        return CallMethodAsyncVoid(_advanceToNextMediaSource);
+    }
+
+    /// <summary>
+    /// advanceToPrevMediaSource
+    /// </summary>
+    public Task AdvanceToPrevMediaSourceAsync()
+    {
+        return CallMethodAsyncVoid(_advanceToPrevMediaSource);
+    }
+
+    /// <summary>
+    /// getCurrentMediaSource
+    /// </summary>
+    public MediaSource GetCurrentMediaSource()
+    {
+        return CallMethod(_getCurrentMediaSource, static h => new MediaSource(h));
+    }
+
+    /// <summary>
+    /// addPlaybackMediaSource
+    /// </summary>
+    public Task<string> AddPlaybackMediaSourceAsync(MediaSource src, string? id = null)
+    {
+        return CallMethodAsync<string>(_addPlaybackMediaSource, src, id);
+    }
+
+    /// <summary>
+    /// removePlaybackMediaSource
+    /// </summary>
+    public Task RemovePlaybackMediaSourceAsync(string id)
+    {
+        return CallMethodAsyncVoid(_removePlaybackMediaSource, id);
+    }
+
+    /// <summary>
+    /// clearPlaybackList
+    /// </summary>
+    public Task ClearPlaybackListAsync()
+    {
+        return CallMethodAsyncVoid(_clearPlaybackList);
+    }
+
+    /// <summary>
+    /// advanceToMediaSource
+    /// </summary>
+    public Task AdvanceToMediaSourceAsync(string id)
+    {
+        return CallMethodAsyncVoid(_advanceToMediaSource, id);
+    }
+
+    /// <summary>
+    /// getMediaSources
+    /// </summary>
+    public MediaSource[] GetMediaSources()
+    {
+        return CallMethod(_getMediaSources, h => ValueConverter.ConvertArray(h, static e => new MediaSource(e)));
+    }
+
+    /// <summary>
+    /// setSpeed
+    /// </summary>
+    public void SetSpeed(global::HarmonyOS.ArkUI.PlaybackSpeed speed)
+    {
+        CallMethodVoid(_setSpeed, speed);
+    }
+
+    /// <summary>
+    /// setPlaybackRate
+    /// </summary>
+    public void SetPlaybackRate(double rate)
+    {
+        CallMethodVoid(_setPlaybackRate, rate);
+    }
+
+    /// <summary>
+    /// setBitrate
+    /// </summary>
+    public void SetBitrate(double bitrate)
+    {
+        CallMethodVoid(_setBitrate, bitrate);
+    }
+
+    /// <summary>
+    /// setLoudnessGain
+    /// </summary>
+    public Task SetLoudnessGainAsync(double loudnessGain)
+    {
+        return CallMethodAsyncVoid(_setLoudnessGain, loudnessGain);
+    }
+
+    /// <summary>
+    /// setDecryptionConfig
+    /// </summary>
+    public void SetDecryptionConfig(IntPtr mediaKeySession, bool secureVideoPath)
+    {
+        CallMethodVoid(_setDecryptionConfig, mediaKeySession, secureVideoPath);
+    }
+
+    /// <summary>
+    /// getMediaKeySystemInfos
+    /// </summary>
+    public IntPtr[] GetMediaKeySystemInfos()
+    {
+        return CallMethod(_getMediaKeySystemInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// onMetricsEvent
+    /// </summary>
+    public void OnMetricsEvent(IntPtr callback)
+    {
+        CallMethodVoid(_onMetricsEvent, callback);
+    }
+
+    /// <summary>
+    /// offMetricsEvent
+    /// </summary>
+    public void OffMetricsEvent(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offMetricsEvent, callback);
+    }
+
+    /// <summary>
+    /// onPlaybackContentChanged
+    /// </summary>
+    public void OnPlaybackContentChanged(IntPtr callback)
+    {
+        CallMethodVoid(_onPlaybackContentChanged, callback);
+    }
+
+    /// <summary>
+    /// offPlaybackContentChanged
+    /// </summary>
+    public void OffPlaybackContentChanged(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offPlaybackContentChanged, callback);
+    }
+
+    /// <summary>
+    /// onTimedMetaData
+    /// </summary>
+    public void OnTimedMetaData(IntPtr callback)
+    {
+        CallMethodVoid(_onTimedMetaData, callback);
+    }
+
+    /// <summary>
+    /// offTimedMetaData
+    /// </summary>
+    public void OffTimedMetaData(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offTimedMetaData, callback);
+    }
+
+}
+
+/// <summary>
+/// AVRecorder 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AVRecorder : JsObject
+{
+    public AVRecorder(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _state => "state"u8;
+    private static ReadOnlySpan<byte> _prepare => "prepare"u8;
+    private static ReadOnlySpan<byte> _getAVRecorderConfig => "getAVRecorderConfig"u8;
+    private static ReadOnlySpan<byte> _getInputSurface => "getInputSurface"u8;
+    private static ReadOnlySpan<byte> _addWatermark => "addWatermark"u8;
+    private static ReadOnlySpan<byte> _setMetadata => "setMetadata"u8;
+    private static ReadOnlySpan<byte> _updateRotation => "updateRotation"u8;
+    private static ReadOnlySpan<byte> _setWillMuteWhenInterrupted => "setWillMuteWhenInterrupted"u8;
+    private static ReadOnlySpan<byte> _start => "start"u8;
+    private static ReadOnlySpan<byte> _pause => "pause"u8;
+    private static ReadOnlySpan<byte> _resume => "resume"u8;
+    private static ReadOnlySpan<byte> _stop => "stop"u8;
+    private static ReadOnlySpan<byte> _reset => "reset"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _getCurrentAudioCapturerInfo => "getCurrentAudioCapturerInfo"u8;
+    private static ReadOnlySpan<byte> _getAudioCapturerMaxAmplitude => "getAudioCapturerMaxAmplitude"u8;
+    private static ReadOnlySpan<byte> _getAvailableEncoder => "getAvailableEncoder"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    /// <summary>
+    /// state
+    /// </summary>
+    public IntPtr State => GetPropertyRaw(_state);
+
+    /// <summary>
+    /// prepare
+    /// </summary>
+    public void Prepare(IntPtr config, IntPtr callback)
+    {
+        CallMethodVoid(_prepare, config, callback);
+    }
+
+    /// <summary>
+    /// getAVRecorderConfig
+    /// </summary>
+    public void GetAVRecorderConfig(IntPtr callback)
+    {
+        CallMethodVoid(_getAVRecorderConfig, callback);
+    }
+
+    /// <summary>
+    /// getInputSurface
+    /// </summary>
+    public void GetInputSurface(IntPtr callback)
+    {
+        CallMethodVoid(_getInputSurface, callback);
+    }
+
+    /// <summary>
+    /// addWatermark
+    /// </summary>
+    public Task<double> AddWatermarkAsync(IntPtr watermark, WatermarkConfiguration config)
+    {
+        return CallMethodAsync<double>(_addWatermark, watermark, config);
+    }
+
+    /// <summary>
+    /// setMetadata
+    /// </summary>
+    public void SetMetadata(IntPtr metadata)
+    {
+        CallMethodVoid(_setMetadata, metadata);
+    }
+
+    /// <summary>
+    /// updateRotation
+    /// </summary>
+    public Task UpdateRotationAsync(double rotation)
+    {
+        return CallMethodAsyncVoid(_updateRotation, rotation);
+    }
+
+    /// <summary>
+    /// setWillMuteWhenInterrupted
+    /// </summary>
+    public Task SetWillMuteWhenInterruptedAsync(bool muteWhenInterrupted)
+    {
+        return CallMethodAsyncVoid(_setWillMuteWhenInterrupted, muteWhenInterrupted);
+    }
+
+    /// <summary>
+    /// start
+    /// </summary>
+    public void Start(IntPtr callback)
+    {
+        CallMethodVoid(_start, callback);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public void Pause(IntPtr callback)
+    {
+        CallMethodVoid(_pause, callback);
+    }
+
+    /// <summary>
+    /// resume
+    /// </summary>
+    public void Resume(IntPtr callback)
+    {
+        CallMethodVoid(_resume, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public void Stop(IntPtr callback)
+    {
+        CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// reset
+    /// </summary>
+    public void Reset(IntPtr callback)
+    {
+        CallMethodVoid(_reset, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// getCurrentAudioCapturerInfo
+    /// </summary>
+    public void GetCurrentAudioCapturerInfo(IntPtr callback)
+    {
+        CallMethodVoid(_getCurrentAudioCapturerInfo, callback);
+    }
+
+    /// <summary>
+    /// getAudioCapturerMaxAmplitude
+    /// </summary>
+    public void GetAudioCapturerMaxAmplitude(IntPtr callback)
+    {
+        CallMethodVoid(_getAudioCapturerMaxAmplitude, callback);
+    }
+
+    /// <summary>
+    /// getAvailableEncoder
+    /// </summary>
+    public void GetAvailableEncoder(IntPtr callback)
+    {
+        CallMethodVoid(_getAvailableEncoder, callback);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+}
+
+/// <summary>
+/// AudioPlayer 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AudioPlayer : JsObject
+{
+    public AudioPlayer(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _src => "src"u8;
+    private static ReadOnlySpan<byte> _fdSrc => "fdSrc"u8;
+    private static ReadOnlySpan<byte> _loop => "loop"u8;
+    private static ReadOnlySpan<byte> _audioInterruptMode => "audioInterruptMode"u8;
+    private static ReadOnlySpan<byte> _currentTime => "currentTime"u8;
+    private static ReadOnlySpan<byte> _duration => "duration"u8;
+    private static ReadOnlySpan<byte> _state => "state"u8;
+    private static ReadOnlySpan<byte> _play => "play"u8;
+    private static ReadOnlySpan<byte> _pause => "pause"u8;
+    private static ReadOnlySpan<byte> _stop => "stop"u8;
+    private static ReadOnlySpan<byte> _reset => "reset"u8;
+    private static ReadOnlySpan<byte> _seek => "seek"u8;
+    private static ReadOnlySpan<byte> _setVolume => "setVolume"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _getTrackDescription => "getTrackDescription"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    /// <summary>
+    /// src
+    /// </summary>
+    public string Src => NativeValue.ToString(GetPropertyRaw(_src)) ?? string.Empty;
+
+    /// <summary>
+    /// fdSrc
+    /// </summary>
+    public AVFileDescriptor FdSrc => new AVFileDescriptor(GetPropertyRaw(_fdSrc));
+
+    /// <summary>
+    /// loop
+    /// </summary>
+    public bool Loop => NativeValue.ToBool(GetPropertyRaw(_loop));
+
+    /// <summary>
+    /// audioInterruptMode
+    /// </summary>
+    public IntPtr AudioInterruptMode => GetPropertyRaw(_audioInterruptMode);
+
+    /// <summary>
+    /// currentTime
+    /// </summary>
+    public double CurrentTime => NativeValue.ToDouble(GetPropertyRaw(_currentTime));
+
+    /// <summary>
+    /// duration
+    /// </summary>
+    public double Duration => NativeValue.ToDouble(GetPropertyRaw(_duration));
+
+    /// <summary>
+    /// state
+    /// </summary>
+    public IntPtr State => GetPropertyRaw(_state);
+
+    /// <summary>
+    /// play
+    /// </summary>
+    public void Play()
+    {
+        CallMethodVoid(_play);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public void Pause()
+    {
+        CallMethodVoid(_pause);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public void Stop()
+    {
+        CallMethodVoid(_stop);
+    }
+
+    /// <summary>
+    /// reset
+    /// </summary>
+    public void Reset()
+    {
+        CallMethodVoid(_reset);
+    }
+
+    /// <summary>
+    /// seek
+    /// </summary>
+    public void Seek(double timeMs)
+    {
+        CallMethodVoid(_seek, timeMs);
+    }
+
+    /// <summary>
+    /// setVolume
+    /// </summary>
+    public void SetVolume(double vol)
+    {
+        CallMethodVoid(_setVolume, vol);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release()
+    {
+        CallMethodVoid(_release);
+    }
+
+    /// <summary>
+    /// getTrackDescription
+    /// </summary>
+    public void GetTrackDescription(IntPtr callback)
+    {
+        CallMethodVoid(_getTrackDescription, callback);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, System.Action<global::HarmonyOS.ArkUI.BufferingInfoType, double> callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+}
+
+/// <summary>
+/// AudioRecorder 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AudioRecorder : JsObject
+{
+    public AudioRecorder(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _prepare => "prepare"u8;
+    private static ReadOnlySpan<byte> _start => "start"u8;
+    private static ReadOnlySpan<byte> _pause => "pause"u8;
+    private static ReadOnlySpan<byte> _resume => "resume"u8;
+    private static ReadOnlySpan<byte> _stop => "stop"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _reset => "reset"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    /// <summary>
+    /// prepare
+    /// </summary>
+    public void Prepare(AudioRecorderConfig config)
+    {
+        CallMethodVoid(_prepare, config);
+    }
+
+    /// <summary>
+    /// start
+    /// </summary>
+    public void Start()
+    {
+        CallMethodVoid(_start);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public void Pause()
+    {
+        CallMethodVoid(_pause);
+    }
+
+    /// <summary>
+    /// resume
+    /// </summary>
+    public void Resume()
+    {
+        CallMethodVoid(_resume);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public void Stop()
+    {
+        CallMethodVoid(_stop);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release()
+    {
+        CallMethodVoid(_release);
+    }
+
+    /// <summary>
+    /// reset
+    /// </summary>
+    public void Reset()
+    {
+        CallMethodVoid(_reset);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+}
+
+/// <summary>
+/// MediaSource 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class MediaSource : JsObject
+{
+    public MediaSource(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _setMimeType => "setMimeType"u8;
+    private static ReadOnlySpan<byte> _setMediaResourceLoaderDelegate => "setMediaResourceLoaderDelegate"u8;
+    private static ReadOnlySpan<byte> _enableOfflineCache => "enableOfflineCache"u8;
+    private static ReadOnlySpan<byte> _getID => "getID"u8;
+    /// <summary>
+    /// setMimeType
+    /// </summary>
+    public void SetMimeType(global::HarmonyOS.ArkUI.AVMimeTypes mimeType)
+    {
+        CallMethodVoid(_setMimeType, mimeType);
+    }
+
+    /// <summary>
+    /// setMediaResourceLoaderDelegate
+    /// </summary>
+    public void SetMediaResourceLoaderDelegate(IntPtr resourceLoader)
+    {
+        CallMethodVoid(_setMediaResourceLoaderDelegate, resourceLoader);
+    }
+
+    /// <summary>
+    /// enableOfflineCache
+    /// </summary>
+    public void EnableOfflineCache(bool enable)
+    {
+        CallMethodVoid(_enableOfflineCache, enable);
+    }
+
+    /// <summary>
+    /// getID
+    /// </summary>
+    public string GetId()
+    {
+        return CallMethod<string>(_getID);
+    }
+
+}
+
+/// <summary>
+/// AVFileDescriptor 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AVFileDescriptor : JsObject
+{
+    public AVFileDescriptor(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _fd => "fd"u8;
+    private static ReadOnlySpan<byte> _offset => "offset"u8;
+    private static ReadOnlySpan<byte> _length => "length"u8;
+    /// <summary>
+    /// fd
+    /// </summary>
+    public double Fd => NativeValue.ToDouble(GetPropertyRaw(_fd));
+
+    /// <summary>
+    /// offset
+    /// </summary>
+    public double? Offset => (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
+
+    /// <summary>
+    /// length
+    /// </summary>
+    public double? Length => (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
+
+}
+
+/// <summary>
+/// MediaStream（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record MediaStream(
+    string Url,
+    double Width,
+    double Height,
+    double Bitrate
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _url = Encoding.UTF8.GetBytes("url");
+        var _urlV = NativeValue.From(Url);
+        if (_urlV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _url, _urlV);
+        var _width = Encoding.UTF8.GetBytes("width");
+        var _widthV = NativeValue.From(Width);
+        if (_widthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
+        var _height = Encoding.UTF8.GetBytes("height");
+        var _heightV = NativeValue.From(Height);
+        if (_heightV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
+        var _bitrate = Encoding.UTF8.GetBytes("bitrate");
+        var _bitrateV = NativeValue.From(Bitrate);
+        if (_bitrateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _bitrate, _bitrateV);
+    }
+}
+
+/// <summary>
+/// AVAdsController 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AVAdsController : JsObject
+{
+    public AVAdsController(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _addAdsMediaSource => "addAdsMediaSource"u8;
+    private static ReadOnlySpan<byte> _removeAdsMediaSource => "removeAdsMediaSource"u8;
+    private static ReadOnlySpan<byte> _skipCurrentAdsMediaSource => "skipCurrentAdsMediaSource"u8;
+    private static ReadOnlySpan<byte> _disableAllAdsMediaSource => "disableAllAdsMediaSource"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _onAdsEventListenerLoadingError => "onAdsEventListenerLoadingError"u8;
+    private static ReadOnlySpan<byte> _onAdsListenerAdsStarted => "onAdsListenerAdsStarted"u8;
+    private static ReadOnlySpan<byte> _onAdsListenerAdsSkipped => "onAdsListenerAdsSkipped"u8;
+    private static ReadOnlySpan<byte> _onAdsListenerAdsCompleted => "onAdsListenerAdsCompleted"u8;
+    private static ReadOnlySpan<byte> _offAdsEventListenerLoadingError => "offAdsEventListenerLoadingError"u8;
+    private static ReadOnlySpan<byte> _offAdsListenerAdsStarted => "offAdsListenerAdsStarted"u8;
+    private static ReadOnlySpan<byte> _offAdsListenerAdsSkipped => "offAdsListenerAdsSkipped"u8;
+    private static ReadOnlySpan<byte> _offAdsListenerAdsCompleted => "offAdsListenerAdsCompleted"u8;
+    /// <summary>
+    /// addAdsMediaSource
+    /// </summary>
+    public Task<string> AddAdsMediaSourceAsync(MediaSource src, double start)
+    {
+        return CallMethodAsync<string>(_addAdsMediaSource, src, start);
+    }
+
+    /// <summary>
+    /// removeAdsMediaSource
+    /// </summary>
+    public void RemoveAdsMediaSource(string id)
+    {
+        CallMethodVoid(_removeAdsMediaSource, id);
+    }
+
+    /// <summary>
+    /// skipCurrentAdsMediaSource
+    /// </summary>
+    public void SkipCurrentAdsMediaSource()
+    {
+        CallMethodVoid(_skipCurrentAdsMediaSource);
+    }
+
+    /// <summary>
+    /// disableAllAdsMediaSource
+    /// </summary>
+    public void DisableAllAdsMediaSource()
+    {
+        CallMethodVoid(_disableAllAdsMediaSource);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release()
+    {
+        CallMethodVoid(_release);
+    }
+
+    /// <summary>
+    /// onAdsEventListenerLoadingError
+    /// </summary>
+    public void OnAdsEventListenerLoadingError(IntPtr callback)
+    {
+        CallMethodVoid(_onAdsEventListenerLoadingError, callback);
+    }
+
+    /// <summary>
+    /// onAdsListenerAdsStarted
+    /// </summary>
+    public void OnAdsListenerAdsStarted(IntPtr callback)
+    {
+        CallMethodVoid(_onAdsListenerAdsStarted, callback);
+    }
+
+    /// <summary>
+    /// onAdsListenerAdsSkipped
+    /// </summary>
+    public void OnAdsListenerAdsSkipped(IntPtr callback)
+    {
+        CallMethodVoid(_onAdsListenerAdsSkipped, callback);
+    }
+
+    /// <summary>
+    /// onAdsListenerAdsCompleted
+    /// </summary>
+    public void OnAdsListenerAdsCompleted(IntPtr callback)
+    {
+        CallMethodVoid(_onAdsListenerAdsCompleted, callback);
+    }
+
+    /// <summary>
+    /// offAdsEventListenerLoadingError
+    /// </summary>
+    public void OffAdsEventListenerLoadingError(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offAdsEventListenerLoadingError, callback);
+    }
+
+    /// <summary>
+    /// offAdsListenerAdsStarted
+    /// </summary>
+    public void OffAdsListenerAdsStarted(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offAdsListenerAdsStarted, callback);
+    }
+
+    /// <summary>
+    /// offAdsListenerAdsSkipped
+    /// </summary>
+    public void OffAdsListenerAdsSkipped(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offAdsListenerAdsSkipped, callback);
+    }
+
+    /// <summary>
+    /// offAdsListenerAdsCompleted
+    /// </summary>
+    public void OffAdsListenerAdsCompleted(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offAdsListenerAdsCompleted, callback);
+    }
+
+}
+
+/// <summary>
+/// VideoPlayer 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class VideoPlayer : JsObject
+{
+    public VideoPlayer(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _url => "url"u8;
+    private static ReadOnlySpan<byte> _fdSrc => "fdSrc"u8;
+    private static ReadOnlySpan<byte> _loop => "loop"u8;
+    private static ReadOnlySpan<byte> _currentTime => "currentTime"u8;
+    private static ReadOnlySpan<byte> _duration => "duration"u8;
+    private static ReadOnlySpan<byte> _state => "state"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    private static ReadOnlySpan<byte> _audioInterruptMode => "audioInterruptMode"u8;
+    private static ReadOnlySpan<byte> _videoScaleType => "videoScaleType"u8;
+    private static ReadOnlySpan<byte> _setDisplaySurface => "setDisplaySurface"u8;
+    private static ReadOnlySpan<byte> _prepare => "prepare"u8;
+    private static ReadOnlySpan<byte> _play => "play"u8;
+    private static ReadOnlySpan<byte> _pause => "pause"u8;
+    private static ReadOnlySpan<byte> _stop => "stop"u8;
+    private static ReadOnlySpan<byte> _reset => "reset"u8;
+    private static ReadOnlySpan<byte> _seek => "seek"u8;
+    private static ReadOnlySpan<byte> _setVolume => "setVolume"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _getTrackDescription => "getTrackDescription"u8;
+    private static ReadOnlySpan<byte> _setSpeed => "setSpeed"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    /// <summary>
+    /// url
+    /// </summary>
+    public string Url => NativeValue.ToString(GetPropertyRaw(_url)) ?? string.Empty;
+
+    /// <summary>
+    /// fdSrc
+    /// </summary>
+    public AVFileDescriptor FdSrc => new AVFileDescriptor(GetPropertyRaw(_fdSrc));
+
+    /// <summary>
+    /// loop
+    /// </summary>
+    public bool Loop => NativeValue.ToBool(GetPropertyRaw(_loop));
+
+    /// <summary>
+    /// currentTime
+    /// </summary>
+    public double CurrentTime => NativeValue.ToDouble(GetPropertyRaw(_currentTime));
+
+    /// <summary>
+    /// duration
+    /// </summary>
+    public double Duration => NativeValue.ToDouble(GetPropertyRaw(_duration));
+
+    /// <summary>
+    /// state
+    /// </summary>
+    public IntPtr State => GetPropertyRaw(_state);
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+    /// <summary>
+    /// audioInterruptMode
+    /// </summary>
+    public IntPtr AudioInterruptMode => GetPropertyRaw(_audioInterruptMode);
+
+    /// <summary>
+    /// videoScaleType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.VideoScaleType? VideoScaleType => (global::HarmonyOS.ArkUI.VideoScaleType?)(global::HarmonyOS.ArkUI.VideoScaleType)NativeValue.ToInt(GetPropertyRaw(_videoScaleType));
+
+    /// <summary>
+    /// setDisplaySurface
+    /// </summary>
+    public void SetDisplaySurface(string surfaceId, IntPtr callback)
+    {
+        CallMethodVoid(_setDisplaySurface, surfaceId, callback);
+    }
+
+    /// <summary>
+    /// prepare
+    /// </summary>
+    public void Prepare(IntPtr callback)
+    {
+        CallMethodVoid(_prepare, callback);
+    }
+
+    /// <summary>
+    /// play
+    /// </summary>
+    public void Play(IntPtr callback)
+    {
+        CallMethodVoid(_play, callback);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public void Pause(IntPtr callback)
+    {
+        CallMethodVoid(_pause, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public void Stop(IntPtr callback)
+    {
+        CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// reset
+    /// </summary>
+    public void Reset(IntPtr callback)
+    {
+        CallMethodVoid(_reset, callback);
+    }
+
+    /// <summary>
+    /// seek
+    /// </summary>
+    public void Seek(double timeMs, IntPtr callback)
+    {
+        CallMethodVoid(_seek, timeMs, callback);
+    }
+
+    /// <summary>
+    /// setVolume
+    /// </summary>
+    public void SetVolume(double vol, IntPtr callback)
+    {
+        CallMethodVoid(_setVolume, vol, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// getTrackDescription
+    /// </summary>
+    public void GetTrackDescription(IntPtr callback)
+    {
+        CallMethodVoid(_getTrackDescription, callback);
+    }
+
+    /// <summary>
+    /// setSpeed
+    /// </summary>
+    public void SetSpeed(double speed, IntPtr callback)
+    {
+        CallMethodVoid(_setSpeed, speed, callback);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+}
+
+/// <summary>
+/// AVScreenCaptureRecorder 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AVScreenCaptureRecorder : JsObject
+{
+    public AVScreenCaptureRecorder(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _init => "init"u8;
+    private static ReadOnlySpan<byte> _startRecording => "startRecording"u8;
+    private static ReadOnlySpan<byte> _stopRecording => "stopRecording"u8;
+    private static ReadOnlySpan<byte> _pauseRecording => "pauseRecording"u8;
+    private static ReadOnlySpan<byte> _resumeRecording => "resumeRecording"u8;
+    private static ReadOnlySpan<byte> _skipPrivacyMode => "skipPrivacyMode"u8;
+    private static ReadOnlySpan<byte> _setPickerMode => "setPickerMode"u8;
+    private static ReadOnlySpan<byte> _excludePickerWindows => "excludePickerWindows"u8;
+    private static ReadOnlySpan<byte> _presentPicker => "presentPicker"u8;
+    private static ReadOnlySpan<byte> _setMicEnabled => "setMicEnabled"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _addWatermark => "addWatermark"u8;
+    private static ReadOnlySpan<byte> _setContentAutoRotation => "setContentAutoRotation"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    /// <summary>
+    /// init
+    /// </summary>
+    public Task InitAsync(AVScreenCaptureRecordConfig config)
+    {
+        return CallMethodAsyncVoid(_init, config);
+    }
+
+    /// <summary>
+    /// startRecording
+    /// </summary>
+    public Task StartRecordingAsync()
+    {
+        return CallMethodAsyncVoid(_startRecording);
+    }
+
+    /// <summary>
+    /// stopRecording
+    /// </summary>
+    public Task StopRecordingAsync()
+    {
+        return CallMethodAsyncVoid(_stopRecording);
+    }
+
+    /// <summary>
+    /// pauseRecording
+    /// </summary>
+    public Task PauseRecordingAsync()
+    {
+        return CallMethodAsyncVoid(_pauseRecording);
+    }
+
+    /// <summary>
+    /// resumeRecording
+    /// </summary>
+    public Task ResumeRecordingAsync()
+    {
+        return CallMethodAsyncVoid(_resumeRecording);
+    }
+
+    /// <summary>
+    /// skipPrivacyMode
+    /// </summary>
+    public Task SkipPrivacyModeAsync(double[] windowIDs)
+    {
+        return CallMethodAsyncVoid(_skipPrivacyMode, windowIDs);
+    }
+
+    /// <summary>
+    /// setPickerMode
+    /// </summary>
+    public Task SetPickerModeAsync(global::HarmonyOS.ArkUI.PickerMode pickerMode)
+    {
+        return CallMethodAsyncVoid(_setPickerMode, pickerMode);
+    }
+
+    /// <summary>
+    /// excludePickerWindows
+    /// </summary>
+    public Task ExcludePickerWindowsAsync(double[] excludedWindows)
+    {
+        return CallMethodAsyncVoid(_excludePickerWindows, excludedWindows);
+    }
+
+    /// <summary>
+    /// presentPicker
+    /// </summary>
+    public Task PresentPickerAsync()
+    {
+        return CallMethodAsyncVoid(_presentPicker);
+    }
+
+    /// <summary>
+    /// setMicEnabled
+    /// </summary>
+    public Task SetMicEnabledAsync(bool enable)
+    {
+        return CallMethodAsyncVoid(_setMicEnabled, enable);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    /// <summary>
+    /// addWatermark
+    /// </summary>
+    public Task<double> AddWatermarkAsync(IntPtr watermark, WatermarkConfiguration config)
+    {
+        return CallMethodAsync<double>(_addWatermark, watermark, config);
+    }
+
+    /// <summary>
+    /// setContentAutoRotation
+    /// </summary>
+    public Task SetContentAutoRotationAsync(bool enable)
+    {
+        return CallMethodAsyncVoid(_setContentAutoRotation, enable);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+}
+
+/// <summary>
+/// AVTranscoder 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AVTranscoder : JsObject
+{
+    public AVTranscoder(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _fdSrc => "fdSrc"u8;
+    private static ReadOnlySpan<byte> _fdDst => "fdDst"u8;
+    private static ReadOnlySpan<byte> _prepare => "prepare"u8;
+    private static ReadOnlySpan<byte> _start => "start"u8;
+    private static ReadOnlySpan<byte> _pause => "pause"u8;
+    private static ReadOnlySpan<byte> _resume => "resume"u8;
+    private static ReadOnlySpan<byte> _cancel => "cancel"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _addWatermark => "addWatermark"u8;
+    /// <summary>
+    /// fdSrc
+    /// </summary>
+    public AVFileDescriptor FdSrc => new AVFileDescriptor(GetPropertyRaw(_fdSrc));
+
+    /// <summary>
+    /// fdDst
+    /// </summary>
+    public double FdDst => NativeValue.ToDouble(GetPropertyRaw(_fdDst));
+
+    /// <summary>
+    /// prepare
+    /// </summary>
+    public Task PrepareAsync(AVTranscoderConfig config)
+    {
+        return CallMethodAsyncVoid(_prepare, config);
+    }
+
+    /// <summary>
+    /// start
+    /// </summary>
+    public Task StartAsync()
+    {
+        return CallMethodAsyncVoid(_start);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public Task PauseAsync()
+    {
+        return CallMethodAsyncVoid(_pause);
+    }
+
+    /// <summary>
+    /// resume
+    /// </summary>
+    public Task ResumeAsync()
+    {
+        return CallMethodAsyncVoid(_resume);
+    }
+
+    /// <summary>
+    /// cancel
+    /// </summary>
+    public Task CancelAsync()
+    {
+        return CallMethodAsyncVoid(_cancel);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public Task ReleaseAsync()
+    {
+        return CallMethodAsyncVoid(_release);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// addWatermark
+    /// </summary>
+    public Task<double> AddWatermarkAsync(IntPtr watermark, WatermarkConfiguration config)
+    {
+        return CallMethodAsync<double>(_addWatermark, watermark, config);
+    }
+
+}
+
+/// <summary>
+/// AVMetadataExtractor 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AVMetadataExtractor : JsObject
+{
+    public AVMetadataExtractor(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _fdSrc => "fdSrc"u8;
+    private static ReadOnlySpan<byte> _dataSrc => "dataSrc"u8;
+    private static ReadOnlySpan<byte> _fetchMetadata => "fetchMetadata"u8;
+    private static ReadOnlySpan<byte> _fetchMetadataWithTimeout => "fetchMetadataWithTimeout"u8;
+    private static ReadOnlySpan<byte> _fetchAlbumCover => "fetchAlbumCover"u8;
+    private static ReadOnlySpan<byte> _setUrlSource => "setUrlSource"u8;
+    private static ReadOnlySpan<byte> _fetchFrameByTime => "fetchFrameByTime"u8;
+    private static ReadOnlySpan<byte> _fetchFrameByTimeWithTimeout => "fetchFrameByTimeWithTimeout"u8;
+    private static ReadOnlySpan<byte> _fetchFramesByTimes => "fetchFramesByTimes"u8;
+    private static ReadOnlySpan<byte> _fetchFramesByTimesWithTimeout => "fetchFramesByTimesWithTimeout"u8;
+    private static ReadOnlySpan<byte> _cancelAllFetchFrames => "cancelAllFetchFrames"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    /// <summary>
+    /// fdSrc
+    /// </summary>
+    public AVFileDescriptor? FdSrc => GetPropertyRaw(_fdSrc) == IntPtr.Zero ? null : new AVFileDescriptor(GetPropertyRaw(_fdSrc));
+
+    /// <summary>
+    /// dataSrc
+    /// </summary>
+    public IntPtr DataSrc => GetPropertyRaw(_dataSrc);
+
+    /// <summary>
+    /// fetchMetadata
+    /// </summary>
+    public void FetchMetadata(IntPtr callback)
+    {
+        CallMethodVoid(_fetchMetadata, callback);
+    }
+
+    /// <summary>
+    /// fetchMetadataWithTimeout
+    /// </summary>
+    public Task<IntPtr> FetchMetadataWithTimeoutAsync(double timeoutMs)
+    {
+        return CallMethodAsync<IntPtr>(_fetchMetadataWithTimeout, timeoutMs);
+    }
+
+    /// <summary>
+    /// fetchAlbumCover
+    /// </summary>
+    public void FetchAlbumCover(IntPtr callback)
+    {
+        CallMethodVoid(_fetchAlbumCover, callback);
+    }
+
+    /// <summary>
+    /// setUrlSource
+    /// </summary>
+    public void SetUrlSource(string url, IntPtr? headers = null)
+    {
+        CallMethodVoid(_setUrlSource, url, headers);
+    }
+
+    /// <summary>
+    /// fetchFrameByTime
+    /// </summary>
+    public Task<IntPtr> FetchFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param)
+    {
+        return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, options, param);
+    }
+
+    /// <summary>
+    /// fetchFrameByTimeWithTimeout
+    /// </summary>
+    public Task<IntPtr> FetchFrameByTimeWithTimeoutAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param, double timeoutMs)
+    {
+        return CallMethodAsync<IntPtr>(_fetchFrameByTimeWithTimeout, timeUs, options, param, timeoutMs);
+    }
+
+    /// <summary>
+    /// fetchFramesByTimes
+    /// </summary>
+    public void FetchFramesByTimes(double[] timesUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryOption, PixelMapParams param, IntPtr callback)
+    {
+        CallMethodVoid(_fetchFramesByTimes, timesUs, queryOption, param, callback);
+    }
+
+    /// <summary>
+    /// fetchFramesByTimesWithTimeout
+    /// </summary>
+    public void FetchFramesByTimesWithTimeout(double[] timesUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryOption, PixelMapParams param, double timeoutMs, IntPtr callback)
+    {
+        CallMethodVoid(_fetchFramesByTimesWithTimeout, timesUs, queryOption, param, timeoutMs, callback);
+    }
+
+    /// <summary>
+    /// cancelAllFetchFrames
+    /// </summary>
+    public void CancelAllFetchFrames()
+    {
+        CallMethodVoid(_cancelAllFetchFrames);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
+    }
+
+}
+
+/// <summary>
+/// AVImageGenerator 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AVImageGenerator : JsObject
+{
+    public AVImageGenerator(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _fdSrc => "fdSrc"u8;
+    private static ReadOnlySpan<byte> _fetchFrameByTime => "fetchFrameByTime"u8;
+    private static ReadOnlySpan<byte> _fetchScaledFrameByTime => "fetchScaledFrameByTime"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    /// <summary>
+    /// fdSrc
+    /// </summary>
+    public AVFileDescriptor? FdSrc => GetPropertyRaw(_fdSrc) == IntPtr.Zero ? null : new AVFileDescriptor(GetPropertyRaw(_fdSrc));
+
+    /// <summary>
+    /// fetchFrameByTime
+    /// </summary>
+    public void FetchFrameByTime(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param, IntPtr callback)
+    {
+        CallMethodVoid(_fetchFrameByTime, timeUs, options, param, callback);
+    }
+
+    /// <summary>
+    /// fetchScaledFrameByTime
+    /// </summary>
+    public Task<IntPtr> FetchScaledFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryMode, OutputSize? outputSize = null)
+    {
+        return CallMethodAsync<IntPtr>(_fetchScaledFrameByTime, timeUs, queryMode, outputSize);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
+    }
+
+}
+
+/// <summary>
+/// AVDownloaderManager 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AVDownloaderManager : JsObject
+{
+    public AVDownloaderManager(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _allowsCellularAccess => "allowsCellularAccess"u8;
+    private static ReadOnlySpan<byte> _setRequestTimeout => "setRequestTimeout"u8;
+    private static ReadOnlySpan<byte> _addAVDownloadTask => "addAVDownloadTask"u8;
+    private static ReadOnlySpan<byte> _removeDownloadTask => "removeDownloadTask"u8;
+    private static ReadOnlySpan<byte> _pauseDownloadTask => "pauseDownloadTask"u8;
+    private static ReadOnlySpan<byte> _resumeDownloadTask => "resumeDownloadTask"u8;
+    private static ReadOnlySpan<byte> _getDownloadTasks => "getDownloadTasks"u8;
+    private static ReadOnlySpan<byte> _getTaskCacheDirectory => "getTaskCacheDirectory"u8;
+    private static ReadOnlySpan<byte> _getTaskStatus => "getTaskStatus"u8;
+    private static ReadOnlySpan<byte> _getTaskProgress => "getTaskProgress"u8;
+    private static ReadOnlySpan<byte> _onStatusChange => "onStatusChange"u8;
+    private static ReadOnlySpan<byte> _onProgressChange => "onProgressChange"u8;
+    private static ReadOnlySpan<byte> _offStatusChange => "offStatusChange"u8;
+    private static ReadOnlySpan<byte> _offProgressChange => "offProgressChange"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    /// <summary>
+    /// allowsCellularAccess
+    /// </summary>
+    public void AllowsCellularAccess(bool value)
+    {
+        CallMethodVoid(_allowsCellularAccess, value);
+    }
+
+    /// <summary>
+    /// setRequestTimeout
+    /// </summary>
+    public void SetRequestTimeout(double timeout)
+    {
+        CallMethodVoid(_setRequestTimeout, timeout);
+    }
+
+    /// <summary>
+    /// addAVDownloadTask
+    /// </summary>
+    public string AddAVDownloadTask(MediaSource source)
+    {
+        return CallMethod<string>(_addAVDownloadTask, source);
+    }
+
+    /// <summary>
+    /// removeDownloadTask
+    /// </summary>
+    public void RemoveDownloadTask(string? taskId = null)
+    {
+        CallMethodVoid(_removeDownloadTask, taskId);
+    }
+
+    /// <summary>
+    /// pauseDownloadTask
+    /// </summary>
+    public void PauseDownloadTask(string? taskId = null)
+    {
+        CallMethodVoid(_pauseDownloadTask, taskId);
+    }
+
+    /// <summary>
+    /// resumeDownloadTask
+    /// </summary>
+    public void ResumeDownloadTask(string? taskId = null)
+    {
+        CallMethodVoid(_resumeDownloadTask, taskId);
+    }
+
+    /// <summary>
+    /// getDownloadTasks
+    /// </summary>
+    public string[] GetDownloadTasks()
+    {
+        return CallMethod(_getDownloadTasks, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
+    }
+
+    /// <summary>
+    /// getTaskCacheDirectory
+    /// </summary>
+    public string GetTaskCacheDirectory(string taskId)
+    {
+        return CallMethod<string>(_getTaskCacheDirectory, taskId);
+    }
+
+    /// <summary>
+    /// getTaskStatus
+    /// </summary>
+    public IntPtr GetTaskStatus(string taskId)
+    {
+        return CallMethod<IntPtr>(_getTaskStatus, taskId);
+    }
+
+    /// <summary>
+    /// getTaskProgress
+    /// </summary>
+    public double GetTaskProgress(string taskId)
+    {
+        return CallMethod<double>(_getTaskProgress, taskId);
+    }
+
+    /// <summary>
+    /// onStatusChange
+    /// </summary>
+    public void OnStatusChange(IntPtr callback)
+    {
+        CallMethodVoid(_onStatusChange, callback);
+    }
+
+    /// <summary>
+    /// onProgressChange
+    /// </summary>
+    public void OnProgressChange(IntPtr callback)
+    {
+        CallMethodVoid(_onProgressChange, callback);
+    }
+
+    /// <summary>
+    /// offStatusChange
+    /// </summary>
+    public void OffStatusChange(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offStatusChange, callback);
+    }
+
+    /// <summary>
+    /// offProgressChange
+    /// </summary>
+    public void OffProgressChange(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offProgressChange, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release()
+    {
+        CallMethodVoid(_release);
+    }
+
+}
+
+/// <summary>
+/// PlaybackStrategy（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record PlaybackStrategy(
+    double? PreferredWidth = null,
+    double? PreferredHeight = null,
+    double? PreferredBufferDuration = null,
+    bool? PreferredHdr = null,
+    global::HarmonyOS.ArkUI.MediaType? MutedMediaType = null,
+    string? PreferredAudioLanguage = null,
+    string? PreferredSubtitleLanguage = null,
+    bool? ShowFirstFrameOnPrepare = null,
+    double? PreferredBufferDurationForPlaying = null,
+    bool? EnableSuperResolution = null,
+    double? ThresholdForAutoQuickPlay = null,
+    bool? KeepDecodingOnMute = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _preferredWidth = Encoding.UTF8.GetBytes("preferredWidth");
+        var _preferredWidthV = NativeValue.From(PreferredWidth);
+        if (_preferredWidthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _preferredWidth, _preferredWidthV);
+        var _preferredHeight = Encoding.UTF8.GetBytes("preferredHeight");
+        var _preferredHeightV = NativeValue.From(PreferredHeight);
+        if (_preferredHeightV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _preferredHeight, _preferredHeightV);
+        var _preferredBufferDuration = Encoding.UTF8.GetBytes("preferredBufferDuration");
+        var _preferredBufferDurationV = NativeValue.From(PreferredBufferDuration);
+        if (_preferredBufferDurationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _preferredBufferDuration, _preferredBufferDurationV);
+        var _preferredHdr = Encoding.UTF8.GetBytes("preferredHdr");
+        var _preferredHdrV = NativeValue.From(PreferredHdr);
+        if (_preferredHdrV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _preferredHdr, _preferredHdrV);
+        var _mutedMediaType = Encoding.UTF8.GetBytes("mutedMediaType");
+        var _mutedMediaTypeV = NativeValue.From(MutedMediaType);
+        if (_mutedMediaTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _mutedMediaType, _mutedMediaTypeV);
+        var _preferredAudioLanguage = Encoding.UTF8.GetBytes("preferredAudioLanguage");
+        var _preferredAudioLanguageV = NativeValue.From(PreferredAudioLanguage);
+        if (_preferredAudioLanguageV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _preferredAudioLanguage, _preferredAudioLanguageV);
+        var _preferredSubtitleLanguage = Encoding.UTF8.GetBytes("preferredSubtitleLanguage");
+        var _preferredSubtitleLanguageV = NativeValue.From(PreferredSubtitleLanguage);
+        if (_preferredSubtitleLanguageV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _preferredSubtitleLanguage, _preferredSubtitleLanguageV);
+        var _showFirstFrameOnPrepare = Encoding.UTF8.GetBytes("showFirstFrameOnPrepare");
+        var _showFirstFrameOnPrepareV = NativeValue.From(ShowFirstFrameOnPrepare);
+        if (_showFirstFrameOnPrepareV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _showFirstFrameOnPrepare, _showFirstFrameOnPrepareV);
+        var _preferredBufferDurationForPlaying = Encoding.UTF8.GetBytes("preferredBufferDurationForPlaying");
+        var _preferredBufferDurationForPlayingV = NativeValue.From(PreferredBufferDurationForPlaying);
+        if (_preferredBufferDurationForPlayingV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _preferredBufferDurationForPlaying, _preferredBufferDurationForPlayingV);
+        var _enableSuperResolution = Encoding.UTF8.GetBytes("enableSuperResolution");
+        var _enableSuperResolutionV = NativeValue.From(EnableSuperResolution);
+        if (_enableSuperResolutionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _enableSuperResolution, _enableSuperResolutionV);
+        var _thresholdForAutoQuickPlay = Encoding.UTF8.GetBytes("thresholdForAutoQuickPlay");
+        var _thresholdForAutoQuickPlayV = NativeValue.From(ThresholdForAutoQuickPlay);
+        if (_thresholdForAutoQuickPlayV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _thresholdForAutoQuickPlay, _thresholdForAutoQuickPlayV);
+        var _keepDecodingOnMute = Encoding.UTF8.GetBytes("keepDecodingOnMute");
+        var _keepDecodingOnMuteV = NativeValue.From(KeepDecodingOnMute);
+        if (_keepDecodingOnMuteV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _keepDecodingOnMute, _keepDecodingOnMuteV);
+    }
+}
+
+/// <summary>
+/// TrackSelectionFilter 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class TrackSelectionFilter : JsObject
+{
+    public TrackSelectionFilter(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _maxVideoBitrate => "maxVideoBitrate"u8;
+    private static ReadOnlySpan<byte> _minVideoBitrate => "minVideoBitrate"u8;
+    private static ReadOnlySpan<byte> _maxVideoFrameRate => "maxVideoFrameRate"u8;
+    private static ReadOnlySpan<byte> _minVideoFrameRate => "minVideoFrameRate"u8;
+    private static ReadOnlySpan<byte> _maxVideoResolution => "maxVideoResolution"u8;
+    private static ReadOnlySpan<byte> _minVideoResolution => "minVideoResolution"u8;
+    private static ReadOnlySpan<byte> _preferredVideoMimeTypes => "preferredVideoMimeTypes"u8;
+    private static ReadOnlySpan<byte> _maxAudioBitrate => "maxAudioBitrate"u8;
+    private static ReadOnlySpan<byte> _minAudioBitrate => "minAudioBitrate"u8;
+    private static ReadOnlySpan<byte> _maxAudioChannels => "maxAudioChannels"u8;
+    private static ReadOnlySpan<byte> _preferredAudioMimeTypes => "preferredAudioMimeTypes"u8;
+    private static ReadOnlySpan<byte> _preferredAudioLanguages => "preferredAudioLanguages"u8;
+    private static ReadOnlySpan<byte> _preferredSubtitleLanguages => "preferredSubtitleLanguages"u8;
+    /// <summary>
+    /// maxVideoBitrate
+    /// </summary>
+    public double? MaxVideoBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxVideoBitrate));
+
+    /// <summary>
+    /// minVideoBitrate
+    /// </summary>
+    public double? MinVideoBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_minVideoBitrate));
+
+    /// <summary>
+    /// maxVideoFrameRate
+    /// </summary>
+    public double? MaxVideoFrameRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxVideoFrameRate));
+
+    /// <summary>
+    /// minVideoFrameRate
+    /// </summary>
+    public double? MinVideoFrameRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_minVideoFrameRate));
+
+    /// <summary>
+    /// maxVideoResolution
+    /// </summary>
+    public VideoSize? MaxVideoResolution => GetPropertyRaw(_maxVideoResolution) == IntPtr.Zero ? null : new VideoSize(GetPropertyRaw(_maxVideoResolution));
+
+    /// <summary>
+    /// minVideoResolution
+    /// </summary>
+    public VideoSize? MinVideoResolution => GetPropertyRaw(_minVideoResolution) == IntPtr.Zero ? null : new VideoSize(GetPropertyRaw(_minVideoResolution));
+
+    /// <summary>
+    /// preferredVideoMimeTypes
+    /// </summary>
+    public string[] PreferredVideoMimeTypes => ValueConverter.ConvertArray(GetPropertyRaw(_preferredVideoMimeTypes), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// maxAudioBitrate
+    /// </summary>
+    public double? MaxAudioBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxAudioBitrate));
+
+    /// <summary>
+    /// minAudioBitrate
+    /// </summary>
+    public double? MinAudioBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_minAudioBitrate));
+
+    /// <summary>
+    /// maxAudioChannels
+    /// </summary>
+    public double? MaxAudioChannels => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxAudioChannels));
+
+    /// <summary>
+    /// preferredAudioMimeTypes
+    /// </summary>
+    public string[] PreferredAudioMimeTypes => ValueConverter.ConvertArray(GetPropertyRaw(_preferredAudioMimeTypes), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// preferredAudioLanguages
+    /// </summary>
+    public string[] PreferredAudioLanguages => ValueConverter.ConvertArray(GetPropertyRaw(_preferredAudioLanguages), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// preferredSubtitleLanguages
+    /// </summary>
+    public string[] PreferredSubtitleLanguages => ValueConverter.ConvertArray(GetPropertyRaw(_preferredSubtitleLanguages), static e => ValueConverter.Convert<string>(e));
+
+}
+
+/// <summary>
+/// PlaybackInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PlaybackInfo : JsObject
+{
+    public PlaybackInfo(IntPtr handle) : base(handle) { }
+}
+
+/// <summary>
+/// Range 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Range : JsObject
+{
+    public Range(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _min => "min"u8;
+    private static ReadOnlySpan<byte> _max => "max"u8;
+    /// <summary>
+    /// min
+    /// </summary>
+    public double Min => NativeValue.ToDouble(GetPropertyRaw(_min));
+
+    /// <summary>
+    /// max
+    /// </summary>
+    public double Max => NativeValue.ToDouble(GetPropertyRaw(_max));
+
+}
+
+/// <summary>
+/// WatermarkConfiguration（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record WatermarkConfiguration(
+    double Top,
+    double Left,
+    double? Width = null,
+    double? Height = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _top = Encoding.UTF8.GetBytes("top");
+        var _topV = NativeValue.From(Top);
+        if (_topV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _top, _topV);
+        var _left = Encoding.UTF8.GetBytes("left");
+        var _leftV = NativeValue.From(Left);
+        if (_leftV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _left, _leftV);
+        var _width = Encoding.UTF8.GetBytes("width");
+        var _widthV = NativeValue.From(Width);
+        if (_widthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
+        var _height = Encoding.UTF8.GetBytes("height");
+        var _heightV = NativeValue.From(Height);
+        if (_heightV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
+    }
+}
+
+/// <summary>
+/// AudioRecorderConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record AudioRecorderConfig(
+    global::HarmonyOS.ArkUI.AudioEncoder? AudioEncoder,
+    double? AudioEncodeBitRate,
+    double? AudioSampleRate,
+    double? NumberOfChannels,
+    global::HarmonyOS.ArkUI.AudioOutputFormat? Format,
+    string Uri,
+    MediaLocation? Location = null,
+    global::HarmonyOS.ArkUI.CodecMimeType? AudioEncoderMime = null,
+    global::HarmonyOS.ArkUI.ContainerFormatType? FileFormat = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _audioEncoder = Encoding.UTF8.GetBytes("audioEncoder");
+        var _audioEncoderV = NativeValue.From(AudioEncoder);
+        if (_audioEncoderV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _audioEncoder, _audioEncoderV);
+        var _audioEncodeBitRate = Encoding.UTF8.GetBytes("audioEncodeBitRate");
+        var _audioEncodeBitRateV = NativeValue.From(AudioEncodeBitRate);
+        if (_audioEncodeBitRateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _audioEncodeBitRate, _audioEncodeBitRateV);
+        var _audioSampleRate = Encoding.UTF8.GetBytes("audioSampleRate");
+        var _audioSampleRateV = NativeValue.From(AudioSampleRate);
+        if (_audioSampleRateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _audioSampleRate, _audioSampleRateV);
+        var _numberOfChannels = Encoding.UTF8.GetBytes("numberOfChannels");
+        var _numberOfChannelsV = NativeValue.From(NumberOfChannels);
+        if (_numberOfChannelsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _numberOfChannels, _numberOfChannelsV);
+        var _format = Encoding.UTF8.GetBytes("format");
+        var _formatV = NativeValue.From(Format);
+        if (_formatV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _format, _formatV);
+        var _uri = Encoding.UTF8.GetBytes("uri");
+        var _uriV = NativeValue.From(Uri);
+        if (_uriV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _uri, _uriV);
+        var _location = Encoding.UTF8.GetBytes("location");
+        var _locationV = NativeValue.From(Location);
+        if (_locationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _location, _locationV);
+        var _audioEncoderMime = Encoding.UTF8.GetBytes("audioEncoderMime");
+        var _audioEncoderMimeV = NativeValue.From(AudioEncoderMime);
+        if (_audioEncoderMimeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _audioEncoderMime, _audioEncoderMimeV);
+        var _fileFormat = Encoding.UTF8.GetBytes("fileFormat");
+        var _fileFormatV = NativeValue.From(FileFormat);
+        if (_fileFormatV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fileFormat, _fileFormatV);
+    }
+}
+
+/// <summary>
+/// AVScreenCaptureRecordConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record AVScreenCaptureRecordConfig(
+    double Fd,
+    double? FrameWidth = null,
+    double? FrameHeight = null,
+    double? VideoBitrate = null,
+    double? AudioSampleRate = null,
+    double? AudioChannelCount = null,
+    double? AudioBitrate = null,
+    global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset? Preset = null,
+    double? DisplayId = null,
+    global::HarmonyOS.ArkUI.AVScreenCaptureFillMode? FillMode = null,
+    AVScreenCaptureStrategy? Strategy = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _fd = Encoding.UTF8.GetBytes("fd");
+        var _fdV = NativeValue.From(Fd);
+        if (_fdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fd, _fdV);
+        var _frameWidth = Encoding.UTF8.GetBytes("frameWidth");
+        var _frameWidthV = NativeValue.From(FrameWidth);
+        if (_frameWidthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _frameWidth, _frameWidthV);
+        var _frameHeight = Encoding.UTF8.GetBytes("frameHeight");
+        var _frameHeightV = NativeValue.From(FrameHeight);
+        if (_frameHeightV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _frameHeight, _frameHeightV);
+        var _videoBitrate = Encoding.UTF8.GetBytes("videoBitrate");
+        var _videoBitrateV = NativeValue.From(VideoBitrate);
+        if (_videoBitrateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _videoBitrate, _videoBitrateV);
+        var _audioSampleRate = Encoding.UTF8.GetBytes("audioSampleRate");
+        var _audioSampleRateV = NativeValue.From(AudioSampleRate);
+        if (_audioSampleRateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _audioSampleRate, _audioSampleRateV);
+        var _audioChannelCount = Encoding.UTF8.GetBytes("audioChannelCount");
+        var _audioChannelCountV = NativeValue.From(AudioChannelCount);
+        if (_audioChannelCountV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _audioChannelCount, _audioChannelCountV);
+        var _audioBitrate = Encoding.UTF8.GetBytes("audioBitrate");
+        var _audioBitrateV = NativeValue.From(AudioBitrate);
+        if (_audioBitrateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _audioBitrate, _audioBitrateV);
+        var _preset = Encoding.UTF8.GetBytes("preset");
+        var _presetV = NativeValue.From(Preset);
+        if (_presetV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _preset, _presetV);
+        var _displayId = Encoding.UTF8.GetBytes("displayId");
+        var _displayIdV = NativeValue.From(DisplayId);
+        if (_displayIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _displayId, _displayIdV);
+        var _fillMode = Encoding.UTF8.GetBytes("fillMode");
+        var _fillModeV = NativeValue.From(FillMode);
+        if (_fillModeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fillMode, _fillModeV);
+        var _strategy = Encoding.UTF8.GetBytes("strategy");
+        var _strategyV = NativeValue.From(Strategy);
+        if (_strategyV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _strategy, _strategyV);
+    }
+}
+
+/// <summary>
+/// AVTranscoderConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record AVTranscoderConfig(
+    double? AudioBitrate,
+    global::HarmonyOS.ArkUI.CodecMimeType? AudioCodec,
+    global::HarmonyOS.ArkUI.CodecMimeType? AudioCodecV2,
+    global::HarmonyOS.ArkUI.ContainerFormatType FileFormat,
+    double? VideoBitrate = null,
+    global::HarmonyOS.ArkUI.CodecMimeType? VideoCodec = null,
+    double? VideoFrameWidth = null,
+    double? VideoFrameHeight = null,
+    bool? EnableBFrame = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _audioBitrate = Encoding.UTF8.GetBytes("audioBitrate");
+        var _audioBitrateV = NativeValue.From(AudioBitrate);
+        if (_audioBitrateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _audioBitrate, _audioBitrateV);
+        var _audioCodec = Encoding.UTF8.GetBytes("audioCodec");
+        var _audioCodecV = NativeValue.From(AudioCodec);
+        if (_audioCodecV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _audioCodec, _audioCodecV);
+        var _audioCodecV2 = Encoding.UTF8.GetBytes("audioCodecV2");
+        var _audioCodecV2V = NativeValue.From(AudioCodecV2);
+        if (_audioCodecV2V != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _audioCodecV2, _audioCodecV2V);
+        var _fileFormat = Encoding.UTF8.GetBytes("fileFormat");
+        var _fileFormatV = NativeValue.From(FileFormat);
+        if (_fileFormatV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fileFormat, _fileFormatV);
+        var _videoBitrate = Encoding.UTF8.GetBytes("videoBitrate");
+        var _videoBitrateV = NativeValue.From(VideoBitrate);
+        if (_videoBitrateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _videoBitrate, _videoBitrateV);
+        var _videoCodec = Encoding.UTF8.GetBytes("videoCodec");
+        var _videoCodecV = NativeValue.From(VideoCodec);
+        if (_videoCodecV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _videoCodec, _videoCodecV);
+        var _videoFrameWidth = Encoding.UTF8.GetBytes("videoFrameWidth");
+        var _videoFrameWidthV = NativeValue.From(VideoFrameWidth);
+        if (_videoFrameWidthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _videoFrameWidth, _videoFrameWidthV);
+        var _videoFrameHeight = Encoding.UTF8.GetBytes("videoFrameHeight");
+        var _videoFrameHeightV = NativeValue.From(VideoFrameHeight);
+        if (_videoFrameHeightV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _videoFrameHeight, _videoFrameHeightV);
+        var _enableBFrame = Encoding.UTF8.GetBytes("enableBFrame");
+        var _enableBFrameV = NativeValue.From(EnableBFrame);
+        if (_enableBFrameV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _enableBFrame, _enableBFrameV);
+    }
+}
+
+/// <summary>
+/// PixelMapParams（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record PixelMapParams(
+    double? Width = null,
+    double? Height = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _width = Encoding.UTF8.GetBytes("width");
+        var _widthV = NativeValue.From(Width);
+        if (_widthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
+        var _height = Encoding.UTF8.GetBytes("height");
+        var _heightV = NativeValue.From(Height);
+        if (_heightV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
+    }
+}
+
+/// <summary>
+/// OutputSize（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record OutputSize(
+    double? Width = null,
+    double? Height = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _width = Encoding.UTF8.GetBytes("width");
+        var _widthV = NativeValue.From(Width);
+        if (_widthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
+        var _height = Encoding.UTF8.GetBytes("height");
+        var _heightV = NativeValue.From(Height);
+        if (_heightV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
+    }
+}
+
+/// <summary>
+/// VideoSize 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class VideoSize : JsObject
+{
+    public VideoSize(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// width
+    /// </summary>
+    public double? Width => (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double? Height => (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
+
+}
+
+/// <summary>
+/// Location（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record MediaLocation(
+    double Latitude,
+    double Longitude
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _latitude = Encoding.UTF8.GetBytes("latitude");
+        var _latitudeV = NativeValue.From(Latitude);
+        if (_latitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
+        var _longitude = Encoding.UTF8.GetBytes("longitude");
+        var _longitudeV = NativeValue.From(Longitude);
+        if (_longitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
+    }
+}
+
+/// <summary>
+/// AVScreenCaptureStrategy（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record AVScreenCaptureStrategy(
+    bool? KeepCaptureDuringCall = null,
+    bool? EnableBFrame = null,
+    double? PrivacyMaskMode = null,
+    bool? EnablePause = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _keepCaptureDuringCall = Encoding.UTF8.GetBytes("keepCaptureDuringCall");
+        var _keepCaptureDuringCallV = NativeValue.From(KeepCaptureDuringCall);
+        if (_keepCaptureDuringCallV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _keepCaptureDuringCall, _keepCaptureDuringCallV);
+        var _enableBFrame = Encoding.UTF8.GetBytes("enableBFrame");
+        var _enableBFrameV = NativeValue.From(EnableBFrame);
+        if (_enableBFrameV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _enableBFrame, _enableBFrameV);
+        var _privacyMaskMode = Encoding.UTF8.GetBytes("privacyMaskMode");
+        var _privacyMaskModeV = NativeValue.From(PrivacyMaskMode);
+        if (_privacyMaskModeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _privacyMaskMode, _privacyMaskModeV);
+        var _enablePause = Encoding.UTF8.GetBytes("enablePause");
+        var _enablePauseV = NativeValue.From(EnablePause);
+        if (_enablePauseV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _enablePause, _enablePauseV);
+    }
 }

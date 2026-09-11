@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -23,7 +24,8 @@ public static unsafe partial class Request
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -114,273 +116,471 @@ public static unsafe partial class Request
     /// <summary>
     /// EXCEPTION_PERMISSION
     /// </summary>
-    public static double EXCEPTION_PERMISSION => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_PERMISSION));
+    public static double ExceptionPermission => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_PERMISSION));
 
     /// <summary>
     /// EXCEPTION_PARAMCHECK
     /// </summary>
-    public static double EXCEPTION_PARAMCHECK => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_PARAMCHECK));
+    public static double ExceptionParamcheck => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_PARAMCHECK));
 
     /// <summary>
     /// EXCEPTION_UNSUPPORTED
     /// </summary>
-    public static double EXCEPTION_UNSUPPORTED => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_UNSUPPORTED));
+    public static double ExceptionUnsupported => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_UNSUPPORTED));
 
     /// <summary>
     /// EXCEPTION_FILEIO
     /// </summary>
-    public static double EXCEPTION_FILEIO => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_FILEIO));
+    public static double ExceptionFileio => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_FILEIO));
 
     /// <summary>
     /// EXCEPTION_FILEPATH
     /// </summary>
-    public static double EXCEPTION_FILEPATH => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_FILEPATH));
+    public static double ExceptionFilepath => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_FILEPATH));
 
     /// <summary>
     /// EXCEPTION_SERVICE
     /// </summary>
-    public static double EXCEPTION_SERVICE => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_SERVICE));
+    public static double ExceptionService => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_SERVICE));
 
     /// <summary>
     /// EXCEPTION_OTHERS
     /// </summary>
-    public static double EXCEPTION_OTHERS => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_OTHERS));
+    public static double ExceptionOthers => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_OTHERS));
 
     /// <summary>
     /// NETWORK_MOBILE
     /// </summary>
-    public static double NETWORK_MOBILE => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NETWORK_MOBILE));
+    public static double NetworkMobile => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NETWORK_MOBILE));
 
     /// <summary>
     /// NETWORK_WIFI
     /// </summary>
-    public static double NETWORK_WIFI => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NETWORK_WIFI));
+    public static double NetworkWifi => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NETWORK_WIFI));
 
     /// <summary>
     /// ERROR_CANNOT_RESUME
     /// </summary>
-    public static double ERROR_CANNOT_RESUME => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_CANNOT_RESUME));
+    public static double ErrorCannotResume => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_CANNOT_RESUME));
 
     /// <summary>
     /// ERROR_DEVICE_NOT_FOUND
     /// </summary>
-    public static double ERROR_DEVICE_NOT_FOUND => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_DEVICE_NOT_FOUND));
+    public static double ErrorDeviceNotFound => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_DEVICE_NOT_FOUND));
 
     /// <summary>
     /// ERROR_FILE_ALREADY_EXISTS
     /// </summary>
-    public static double ERROR_FILE_ALREADY_EXISTS => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_FILE_ALREADY_EXISTS));
+    public static double ErrorFileAlreadyExists => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_FILE_ALREADY_EXISTS));
 
     /// <summary>
     /// ERROR_FILE_ERROR
     /// </summary>
-    public static double ERROR_FILE_ERROR => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_FILE_ERROR));
+    public static double ErrorFileError => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_FILE_ERROR));
 
     /// <summary>
     /// ERROR_HTTP_DATA_ERROR
     /// </summary>
-    public static double ERROR_HTTP_DATA_ERROR => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_HTTP_DATA_ERROR));
+    public static double ErrorHttpDataError => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_HTTP_DATA_ERROR));
 
     /// <summary>
     /// ERROR_INSUFFICIENT_SPACE
     /// </summary>
-    public static double ERROR_INSUFFICIENT_SPACE => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_INSUFFICIENT_SPACE));
+    public static double ErrorInsufficientSpace => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_INSUFFICIENT_SPACE));
 
     /// <summary>
     /// ERROR_TOO_MANY_REDIRECTS
     /// </summary>
-    public static double ERROR_TOO_MANY_REDIRECTS => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_TOO_MANY_REDIRECTS));
+    public static double ErrorTooManyRedirects => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_TOO_MANY_REDIRECTS));
 
     /// <summary>
     /// ERROR_UNHANDLED_HTTP_CODE
     /// </summary>
-    public static double ERROR_UNHANDLED_HTTP_CODE => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_UNHANDLED_HTTP_CODE));
+    public static double ErrorUnhandledHttpCode => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_UNHANDLED_HTTP_CODE));
 
     /// <summary>
     /// ERROR_UNKNOWN
     /// </summary>
-    public static double ERROR_UNKNOWN => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_UNKNOWN));
+    public static double ErrorUnknown => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_UNKNOWN));
 
     /// <summary>
     /// ERROR_OFFLINE
     /// </summary>
-    public static double ERROR_OFFLINE => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_OFFLINE));
+    public static double ErrorOffline => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_OFFLINE));
 
     /// <summary>
     /// ERROR_UNSUPPORTED_NETWORK_TYPE
     /// </summary>
-    public static double ERROR_UNSUPPORTED_NETWORK_TYPE => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_UNSUPPORTED_NETWORK_TYPE));
+    public static double ErrorUnsupportedNetworkType => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_UNSUPPORTED_NETWORK_TYPE));
 
     /// <summary>
     /// PAUSED_QUEUED_FOR_WIFI
     /// </summary>
-    public static double PAUSED_QUEUED_FOR_WIFI => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_QUEUED_FOR_WIFI));
+    public static double PausedQueuedForWifi => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_QUEUED_FOR_WIFI));
 
     /// <summary>
     /// PAUSED_WAITING_FOR_NETWORK
     /// </summary>
-    public static double PAUSED_WAITING_FOR_NETWORK => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_WAITING_FOR_NETWORK));
+    public static double PausedWaitingForNetwork => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_WAITING_FOR_NETWORK));
 
     /// <summary>
     /// PAUSED_WAITING_TO_RETRY
     /// </summary>
-    public static double PAUSED_WAITING_TO_RETRY => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_WAITING_TO_RETRY));
+    public static double PausedWaitingToRetry => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_WAITING_TO_RETRY));
 
     /// <summary>
     /// PAUSED_BY_USER
     /// </summary>
-    public static double PAUSED_BY_USER => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_BY_USER));
+    public static double PausedByUser => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_BY_USER));
 
     /// <summary>
     /// PAUSED_UNKNOWN
     /// </summary>
-    public static double PAUSED_UNKNOWN => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_UNKNOWN));
+    public static double PausedUnknown => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_UNKNOWN));
 
     /// <summary>
     /// SESSION_SUCCESSFUL
     /// </summary>
-    public static double SESSION_SUCCESSFUL => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_SUCCESSFUL));
+    public static double SessionSuccessful => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_SUCCESSFUL));
 
     /// <summary>
     /// SESSION_RUNNING
     /// </summary>
-    public static double SESSION_RUNNING => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_RUNNING));
+    public static double SessionRunning => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_RUNNING));
 
     /// <summary>
     /// SESSION_PENDING
     /// </summary>
-    public static double SESSION_PENDING => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_PENDING));
+    public static double SessionPending => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_PENDING));
 
     /// <summary>
     /// SESSION_PAUSED
     /// </summary>
-    public static double SESSION_PAUSED => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_PAUSED));
+    public static double SessionPaused => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_PAUSED));
 
     /// <summary>
     /// SESSION_FAILED
     /// </summary>
-    public static double SESSION_FAILED => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_FAILED));
+    public static double SessionFailed => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_FAILED));
 
     /// <summary>
-    /// download 方法
+    /// download
     /// </summary>
-    public static Task<IntPtr> Download(IntPtr config)
+    public static Task<DownloadTask> DownloadAsync(IntPtr config)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _download, config);
+        return NodeApi.CallMethodAsync(Module, _download, static h => new DownloadTask(h), config);
     }
 
     /// <summary>
-    /// downloadFile 方法
+    /// downloadFile
     /// </summary>
-    public static Task<IntPtr> DownloadFile(IntPtr context, IntPtr config)
+    public static Task<DownloadTask> DownloadFileAsync(IntPtr context, IntPtr config)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _downloadFile, context, config);
+        return NodeApi.CallMethodAsync(Module, _downloadFile, static h => new DownloadTask(h), context, config);
     }
 
     /// <summary>
-    /// upload 方法
+    /// upload
     /// </summary>
-    public static Task<IntPtr> Upload(IntPtr config)
+    public static Task<UploadTask> UploadAsync(IntPtr config)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _upload, config);
+        return NodeApi.CallMethodAsync(Module, _upload, static h => new UploadTask(h), config);
     }
 
     /// <summary>
-    /// uploadFile 方法
+    /// uploadFile
     /// </summary>
-    public static Task<IntPtr> UploadFile(IntPtr context, IntPtr config)
+    public static Task<UploadTask> UploadFileAsync(IntPtr context, IntPtr config)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _uploadFile, context, config);
+        return NodeApi.CallMethodAsync(Module, _uploadFile, static h => new UploadTask(h), context, config);
     }
 
     /// <summary>
     /// VISIBILITY_COMPLETION
     /// </summary>
-    public static IntPtr VISIBILITY_COMPLETION => NodeApi.GetProperty(Module, _VISIBILITY_COMPLETION);
+    public static IntPtr VisibilityCompletion => NodeApi.GetProperty(Module, _VISIBILITY_COMPLETION);
 
     /// <summary>
     /// VISIBILITY_PROGRESS
     /// </summary>
-    public static IntPtr VISIBILITY_PROGRESS => NodeApi.GetProperty(Module, _VISIBILITY_PROGRESS);
+    public static IntPtr VisibilityProgress => NodeApi.GetProperty(Module, _VISIBILITY_PROGRESS);
 
     /// <summary>
-    /// create 方法
+    /// create
     /// </summary>
-    public static Task<Task> Create(IntPtr context, IntPtr config)
+    public static Task<Task> CreateAsync(IntPtr context, IntPtr config)
     {
         return NodeApi.CallMethodAsync<Task>(Module, _create, context, config);
     }
 
     /// <summary>
-    /// getTask 方法
+    /// getTask
     /// </summary>
-    public static Task<IntPtr> GetTask(IntPtr context, string id, string token)
+    public static Task<Task> GetTaskAsync(IntPtr context, string id, string? token = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getTask, context, id, token);
+        return NodeApi.CallMethodAsync<Task>(Module, _getTask, context, id, token);
     }
 
     /// <summary>
-    /// remove 方法
+    /// remove
     /// </summary>
-    public static Task Remove(string id)
+    public static Task RemoveAsync(string id)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _remove, id);
     }
 
     /// <summary>
-    /// show 方法
+    /// show
     /// </summary>
-    public static Task<IntPtr> Show(string id)
+    public static Task<IntPtr> ShowAsync(string id)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _show, id);
     }
 
     /// <summary>
-    /// touch 方法
+    /// touch
     /// </summary>
-    public static Task<IntPtr> Touch(string id, string token)
+    public static Task<IntPtr> TouchAsync(string id, string token)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _touch, id, token);
     }
 
     /// <summary>
-    /// search 方法
+    /// search
     /// </summary>
-    public static Task<string[]> Search()
+    public static Task<string[]> SearchAsync()
     {
-        return NodeApi.CallMethodAsync<string[]>(Module, _search);
+        return NodeApi.CallMethodAsync(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// search 方法
+    /// search
     /// </summary>
-    public static Task<string[]> Search(IntPtr filter)
+    public static Task<string[]> SearchAsync(Filter filter)
     {
-        return NodeApi.CallMethodAsync<string[]>(Module, _search, filter);
+        return NodeApi.CallMethodAsync(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), filter);
     }
 
     /// <summary>
-    /// createGroup 方法
+    /// createGroup
     /// </summary>
-    public static Task<string> CreateGroup(IntPtr config)
+    public static Task<string> CreateGroupAsync(IntPtr config)
     {
         return NodeApi.CallMethodAsync<string>(Module, _createGroup, config);
     }
 
     /// <summary>
-    /// attachGroup 方法
+    /// attachGroup
     /// </summary>
-    public static Task AttachGroup(string gid, string[] tids)
+    public static Task AttachGroupAsync(string gid, string[] tids)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _attachGroup, gid, tids);
     }
 
     /// <summary>
-    /// deleteGroup 方法
+    /// deleteGroup
     /// </summary>
-    public static Task DeleteGroup(string gid)
+    public static Task DeleteGroupAsync(string gid)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteGroup, gid);
     }
 
+}
+
+/// <summary>
+/// DownloadTask 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DownloadTask : JsObject
+{
+    public DownloadTask(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _remove => "remove"u8;
+    private static ReadOnlySpan<byte> _pause => "pause"u8;
+    private static ReadOnlySpan<byte> _resume => "resume"u8;
+    private static ReadOnlySpan<byte> _query => "query"u8;
+    private static ReadOnlySpan<byte> _queryMimeType => "queryMimeType"u8;
+    private static ReadOnlySpan<byte> _delete => "delete"u8;
+    private static ReadOnlySpan<byte> _suspend => "suspend"u8;
+    private static ReadOnlySpan<byte> _restore => "restore"u8;
+    private static ReadOnlySpan<byte> _getTaskInfo => "getTaskInfo"u8;
+    private static ReadOnlySpan<byte> _getTaskMimeType => "getTaskMimeType"u8;
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, System.Action<double, double> callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, System.Action<double, double>? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// remove
+    /// </summary>
+    public void Remove(IntPtr callback)
+    {
+        CallMethodVoid(_remove, callback);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public void Pause(IntPtr callback)
+    {
+        CallMethodVoid(_pause, callback);
+    }
+
+    /// <summary>
+    /// resume
+    /// </summary>
+    public void Resume(IntPtr callback)
+    {
+        CallMethodVoid(_resume, callback);
+    }
+
+    /// <summary>
+    /// query
+    /// </summary>
+    public void Query(IntPtr callback)
+    {
+        CallMethodVoid(_query, callback);
+    }
+
+    /// <summary>
+    /// queryMimeType
+    /// </summary>
+    public void QueryMimeType(IntPtr callback)
+    {
+        CallMethodVoid(_queryMimeType, callback);
+    }
+
+    /// <summary>
+    /// delete
+    /// </summary>
+    public void Delete(IntPtr callback)
+    {
+        CallMethodVoid(_delete, callback);
+    }
+
+    /// <summary>
+    /// suspend
+    /// </summary>
+    public void Suspend(IntPtr callback)
+    {
+        CallMethodVoid(_suspend, callback);
+    }
+
+    /// <summary>
+    /// restore
+    /// </summary>
+    public void Restore(IntPtr callback)
+    {
+        CallMethodVoid(_restore, callback);
+    }
+
+    /// <summary>
+    /// getTaskInfo
+    /// </summary>
+    public void GetTaskInfo(IntPtr callback)
+    {
+        CallMethodVoid(_getTaskInfo, callback);
+    }
+
+    /// <summary>
+    /// getTaskMimeType
+    /// </summary>
+    public void GetTaskMimeType(IntPtr callback)
+    {
+        CallMethodVoid(_getTaskMimeType, callback);
+    }
+
+}
+
+/// <summary>
+/// UploadTask 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class UploadTask : JsObject
+{
+    public UploadTask(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _remove => "remove"u8;
+    private static ReadOnlySpan<byte> _delete => "delete"u8;
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, System.Action<double, double> callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, System.Action<double, double>? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// remove
+    /// </summary>
+    public void Remove(IntPtr callback)
+    {
+        CallMethodVoid(_remove, callback);
+    }
+
+    /// <summary>
+    /// delete
+    /// </summary>
+    public void Delete(IntPtr callback)
+    {
+        CallMethodVoid(_delete, callback);
+    }
+
+}
+
+/// <summary>
+/// Filter（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record Filter(
+    double? Before = null,
+    double? After = null,
+    global::HarmonyOS.ArkUI.State? State = null,
+    global::HarmonyOS.ArkUI.Action? Action = null,
+    global::HarmonyOS.ArkUI.Mode? Mode = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _before = Encoding.UTF8.GetBytes("before");
+        var _beforeV = NativeValue.From(Before);
+        if (_beforeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _before, _beforeV);
+        var _after = Encoding.UTF8.GetBytes("after");
+        var _afterV = NativeValue.From(After);
+        if (_afterV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _after, _afterV);
+        var _state = Encoding.UTF8.GetBytes("state");
+        var _stateV = NativeValue.From(State);
+        if (_stateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _state, _stateV);
+        var _action = Encoding.UTF8.GetBytes("action");
+        var _actionV = NativeValue.From(Action);
+        if (_actionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _action, _actionV);
+        var _mode = Encoding.UTF8.GetBytes("mode");
+        var _modeV = NativeValue.From(Mode);
+        if (_modeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _mode, _modeV);
+    }
 }

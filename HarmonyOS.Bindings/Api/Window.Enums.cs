@@ -7,11 +7,11 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum WindowType
 {
-    TYPE_APP = 0,
-    TYPE_SYSTEM_ALERT = 1,
-    TYPE_FLOAT = 8,
-    TYPE_DIALOG = 16,
-    TYPE_MAIN = 32
+    TypeApp = 0,
+    TypeSystemAlert = 1,
+    TypeFloat = 8,
+    TypeDialog = 16,
+    TypeMain = 32
 }
 
 /// <summary>
@@ -19,12 +19,12 @@ public enum WindowType
 /// </summary>
 public enum AvoidAreaType
 {
-    TYPE_SYSTEM = 0,
-    TYPE_CUTOUT = 1,
-    TYPE_SYSTEM_GESTURE = 2,
-    TYPE_KEYBOARD = 3,
-    TYPE_NAVIGATION_INDICATOR = 4,
-    TYPE_FLOAT_NAVIGATION = 5
+    TypeSystem = 0,
+    TypeCutout = 1,
+    TypeSystemGesture = 2,
+    TypeKeyboard = 3,
+    TypeNavigationIndicator = 4,
+    TypeFloatNavigation = 5
 }
 
 /// <summary>
@@ -32,9 +32,9 @@ public enum AvoidAreaType
 /// </summary>
 public enum SplitRatioPreference
 {
-    EQUAL = 0,
-    PRIMARY_DOMINANT = 1,
-    SECONDARY_DOMINANT = 2
+    Equal = 0,
+    PrimaryDominant = 1,
+    SecondaryDominant = 2
 }
 
 /// <summary>
@@ -42,12 +42,12 @@ public enum SplitRatioPreference
 /// </summary>
 public enum WindowStatusType
 {
-    UNDEFINED = 0,
-    FULL_SCREEN = 1,
-    MAXIMIZE = 2,
-    MINIMIZE = 3,
-    FLOATING = 4,
-    SPLIT_SCREEN = 5
+    Undefined = 0,
+    FullScreen = 1,
+    Maximize = 2,
+    Minimize = 3,
+    Floating = 4,
+    SplitScreen = 5
 }
 
 /// <summary>
@@ -55,8 +55,8 @@ public enum WindowStatusType
 /// </summary>
 public enum PixelUnit
 {
-    PX = 0,
-    VP = 1
+    Px = 0,
+    Vp = 1
 }
 
 /// <summary>
@@ -64,9 +64,9 @@ public enum PixelUnit
 /// </summary>
 public enum WindowAnimationCurve
 {
-    LINEAR = 0,
-    INTERPOLATION_SPRING = 1,
-    CUBIC_BEZIER = 2
+    Linear = 0,
+    InterpolationSpring = 1,
+    CubicBezier = 2
 }
 
 /// <summary>
@@ -74,7 +74,7 @@ public enum WindowAnimationCurve
 /// </summary>
 public enum WindowTransitionType
 {
-    DESTROY = 0
+    Destroy = 0
 }
 
 /// <summary>
@@ -82,7 +82,7 @@ public enum WindowTransitionType
 /// </summary>
 public enum AnimationType
 {
-    FADE_IN_OUT = 0
+    FadeInOut = 0
 }
 
 /// <summary>
@@ -90,15 +90,15 @@ public enum AnimationType
 /// </summary>
 public enum WindowAnchor
 {
-    TOP_START = 0,
-    TOP = 1,
-    TOP_END = 2,
-    START = 3,
-    CENTER = 4,
-    END = 5,
-    BOTTOM_START = 6,
-    BOTTOM = 7,
-    BOTTOM_END = 8
+    TopStart = 0,
+    Top = 1,
+    TopEnd = 2,
+    Start = 3,
+    Center = 4,
+    End = 5,
+    BottomStart = 6,
+    Bottom = 7,
+    BottomEnd = 8
 }
 
 /// <summary>
@@ -106,8 +106,8 @@ public enum WindowAnchor
 /// </summary>
 public enum ColorSpace
 {
-    DEFAULT = 0,
-    WIDE_GAMUT = 1
+    Default = 0,
+    WideGamut = 1
 }
 
 /// <summary>
@@ -115,13 +115,13 @@ public enum ColorSpace
 /// </summary>
 public enum RectChangeReason
 {
-    UNDEFINED = 0,
-    MAXIMIZE = 1,
-    RECOVER = 2,
-    MOVE = 3,
-    DRAG = 4,
-    DRAG_START = 5,
-    DRAG_END = 6
+    Undefined = 0,
+    Maximize = 1,
+    Recover = 2,
+    Move = 3,
+    Drag = 4,
+    DragStart = 5,
+    DragEnd = 6
 }
 
 [Flags]
@@ -130,10 +130,10 @@ public enum RectChangeReason
 /// </summary>
 public enum GlobalWindowMode
 {
-    FULLSCREEN = 1,
-    SPLIT = 2,
-    FLOAT = 4,
-    PIP = 8
+    Fullscreen = 1,
+    Split = 2,
+    Float = 4,
+    Pip = 8
 }
 
 /// <summary>
@@ -141,9 +141,9 @@ public enum GlobalWindowMode
 /// </summary>
 public enum OcclusionState
 {
-    NO_OCCLUSION = 0,
-    PARTIAL_OCCLUSION = 1,
-    FULL_OCCLUSION = 2
+    NoOcclusion = 0,
+    PartialOcclusion = 1,
+    FullOcclusion = 2
 }
 
 /// <summary>
@@ -151,9 +151,9 @@ public enum OcclusionState
 /// </summary>
 public enum OrientationExecutionResult
 {
-    ORIENTATION_APPLIED = 0,
-    ORIENTATION_IGNORED = 1,
-    ORIENTATION_PENDING = 2
+    OrientationApplied = 0,
+    OrientationIgnored = 1,
+    OrientationPending = 2
 }
 
 /// <summary>
@@ -161,8 +161,8 @@ public enum OrientationExecutionResult
 /// </summary>
 public enum RotationChangeType
 {
-    WINDOW_WILL_ROTATE = 0,
-    WINDOW_DID_ROTATE = 1
+    WindowWillRotate = 0,
+    WindowDidRotate = 1
 }
 
 /// <summary>
@@ -170,8 +170,8 @@ public enum RotationChangeType
 /// </summary>
 public enum RectType
 {
-    RELATIVE_TO_SCREEN = 0,
-    RELATIVE_TO_PARENT_WINDOW = 1
+    RelativeToScreen = 0,
+    RelativeToParentWindow = 1
 }
 
 /// <summary>
@@ -179,11 +179,11 @@ public enum RectType
 /// </summary>
 public enum ScreenshotEventType
 {
-    SYSTEM_SCREENSHOT = 0,
-    SYSTEM_SCREENSHOT_ABORT = 1,
-    SCROLL_SHOT_START = 2,
-    SCROLL_SHOT_END = 3,
-    SCROLL_SHOT_ABORT = 4
+    SystemScreenshot = 0,
+    SystemScreenshotAbort = 1,
+    ScrollShotStart = 2,
+    ScrollShotEnd = 3,
+    ScrollShotAbort = 4
 }
 
 /// <summary>
@@ -191,9 +191,9 @@ public enum ScreenshotEventType
 /// </summary>
 public enum RotationInfoType
 {
-    WINDOW_ORIENTATION = 0,
-    DISPLAY_ORIENTATION = 1,
-    DISPLAY_ROTATION = 2
+    WindowOrientation = 0,
+    DisplayOrientation = 1,
+    DisplayRotation = 2
 }
 
 /// <summary>
@@ -201,11 +201,11 @@ public enum RotationInfoType
 /// </summary>
 public enum WindowEventType
 {
-    WINDOW_SHOWN = 1,
-    WINDOW_ACTIVE = 2,
-    WINDOW_INACTIVE = 3,
-    WINDOW_HIDDEN = 4,
-    WINDOW_DESTROYED = 7
+    WindowShown = 1,
+    WindowActive = 2,
+    WindowInactive = 3,
+    WindowHidden = 4,
+    WindowDestroyed = 7
 }
 
 /// <summary>
@@ -213,10 +213,10 @@ public enum WindowEventType
 /// </summary>
 public enum MaximizePresentation
 {
-    FOLLOW_APP_IMMERSIVE_SETTING = 0,
-    EXIT_IMMERSIVE = 1,
-    ENTER_IMMERSIVE = 2,
-    ENTER_IMMERSIVE_DISABLE_TITLE_AND_DOCK_HOVER = 3
+    FollowAppImmersiveSetting = 0,
+    ExitImmersive = 1,
+    EnterImmersive = 2,
+    EnterImmersiveDisableTitleAndDockHover = 3
 }
 
 /// <summary>
@@ -224,9 +224,9 @@ public enum MaximizePresentation
 /// </summary>
 public enum AcrossDisplayPresentation
 {
-    FOLLOW_ACROSS_DISPLAY_SETTING = 0,
-    ENTER_ACROSS_DISPLAY_MODE = 1,
-    EXIT_ACROSS_DISPLAY_MODE = 2
+    FollowAcrossDisplaySetting = 0,
+    EnterAcrossDisplayMode = 1,
+    ExitAcrossDisplayMode = 2
 }
 
 /// <summary>
@@ -234,12 +234,12 @@ public enum AcrossDisplayPresentation
 /// </summary>
 public enum WindowStageEventType
 {
-    SHOWN = 1,
-    ACTIVE = 2,
-    INACTIVE = 3,
-    HIDDEN = 4,
-    RESUMED = 5,
-    PAUSED = 6
+    Shown = 1,
+    Active = 2,
+    Inactive = 3,
+    Hidden = 4,
+    Resumed = 5,
+    Paused = 6
 }
 
 /// <summary>
@@ -247,10 +247,10 @@ public enum WindowStageEventType
 /// </summary>
 public enum WindowStageLifecycleEventType
 {
-    SHOWN = 1,
-    RESUMED = 2,
-    PAUSED = 3,
-    HIDDEN = 4
+    Shown = 1,
+    Resumed = 2,
+    Paused = 3,
+    Hidden = 4
 }
 
 /// <summary>
@@ -258,8 +258,8 @@ public enum WindowStageLifecycleEventType
 /// </summary>
 public enum ModalityType
 {
-    WINDOW_MODALITY = 0,
-    APPLICATION_MODALITY = 1
+    WindowModality = 0,
+    ApplicationModality = 1
 }
 
 /// <summary>
@@ -267,5 +267,5 @@ public enum ModalityType
 /// </summary>
 public enum WindowPostureMode
 {
-    DESKTOP_MODE = 0
+    DesktopMode = 0
 }

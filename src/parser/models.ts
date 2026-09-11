@@ -8,6 +8,8 @@ export interface ComponentInfo {
     events: EventInfo[];
     delegates: DelegateInfo[];
     namespace: string;               // "HarmonyOS.ArkUI"
+    interfaces: InterfaceInfo[];     // namespace 内嵌套接口（@ohos 服务模块的实例类型）
+    classes: ClassInfo[];            // namespace 内嵌套类（如 photoViewPicker）
 }
 
 export interface ConstructorOverload {
@@ -26,6 +28,8 @@ export interface MethodInfo {
     returnType: string;
     parameters: ParameterInfo[];
     isChained: boolean;              // 是否返回this用于链式调用
+    /** 服务模块：inline AsyncCallback 检测到的原始结果类型（ApiGenerator 负责映射为 Task<T>） */
+    asyncResultType?: string;
 }
 
 export interface TypeMapping {

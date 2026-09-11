@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -23,7 +24,8 @@ public static unsafe partial class Vibrator
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -79,47 +81,47 @@ public static unsafe partial class Vibrator
     private static ReadOnlySpan<byte> _off => "off"u8;
 
     /// <summary>
-    /// vibrate 方法
+    /// vibrate
     /// </summary>
-    public static Task Vibrate(double duration)
+    public static Task VibrateAsync(double duration)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _vibrate, duration);
     }
 
     /// <summary>
-    /// vibrate 方法
+    /// vibrate
     /// </summary>
-    public static Task Vibrate(IntPtr effectId)
+    public static Task VibrateAsync(global::HarmonyOS.ArkUI.EffectId effectId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _vibrate, effectId);
     }
 
     /// <summary>
-    /// startVibration 方法
+    /// startVibration
     /// </summary>
-    public static Task StartVibration(IntPtr effect, IntPtr attribute)
+    public static Task StartVibrationAsync(IntPtr effect, IntPtr attribute)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startVibration, effect, attribute);
     }
 
     /// <summary>
-    /// stopVibration 方法
+    /// stopVibration
     /// </summary>
-    public static Task StopVibration(IntPtr stopMode)
+    public static Task StopVibrationAsync(global::HarmonyOS.ArkUI.VibratorStopMode stopMode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, stopMode);
     }
 
     /// <summary>
-    /// stopVibration 方法
+    /// stopVibration
     /// </summary>
-    public static Task StopVibration()
+    public static Task StopVibrationAsync()
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopVibration);
     }
 
     /// <summary>
-    /// stopVibrationSync 方法
+    /// stopVibrationSync
     /// </summary>
     public static void StopVibrationSync()
     {
@@ -127,15 +129,23 @@ public static unsafe partial class Vibrator
     }
 
     /// <summary>
-    /// isSupportEffect 方法
+    /// stopVibration
     /// </summary>
-    public static Task<bool> IsSupportEffect(string effectId)
+    public static Task StopVibrationAsync(VibratorInfoParam? param = null)
+    {
+        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, param);
+    }
+
+    /// <summary>
+    /// isSupportEffect
+    /// </summary>
+    public static Task<bool> IsSupportEffectAsync(string effectId)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isSupportEffect, effectId);
     }
 
     /// <summary>
-    /// isSupportEffectSync 方法
+    /// isSupportEffectSync
     /// </summary>
     public static bool IsSupportEffectSync(string effectId)
     {
@@ -143,39 +153,39 @@ public static unsafe partial class Vibrator
     }
 
     /// <summary>
-    /// getEffectInfoSync 方法
+    /// getEffectInfoSync
     /// </summary>
-    public static IntPtr GetEffectInfoSync(string effectId, IntPtr param)
+    public static EffectInfo GetEffectInfoSync(string effectId, VibratorInfoParam? param = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getEffectInfoSync, effectId, param);
+        return NodeApi.CallMethod(Module, _getEffectInfoSync, static h => new EffectInfo(h), effectId, param);
     }
 
     /// <summary>
-    /// stop 方法
+    /// stop
     /// </summary>
-    public static Task Stop(IntPtr stopMode)
+    public static Task StopAsync(global::HarmonyOS.ArkUI.VibratorStopMode stopMode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stop, stopMode);
     }
 
     /// <summary>
-    /// isHdHapticSupported 方法
+    /// isHdHapticSupported
     /// </summary>
-    public static bool IsHdHapticSupported()
+    public static bool IsHDHapticSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isHdHapticSupported);
     }
 
     /// <summary>
-    /// getVibratorInfoSync 方法
+    /// getVibratorInfoSync
     /// </summary>
-    public static IntPtr[] GetVibratorInfoSync(IntPtr param)
+    public static VibratorInfo[] GetVibratorInfoSync(VibratorInfoParam? param = null)
     {
-        return NodeApi.CallMethod<IntPtr[]>(Module, _getVibratorInfoSync, param);
+        return NodeApi.CallMethod(Module, _getVibratorInfoSync, h => ValueConverter.ConvertArray(h, static e => new VibratorInfo(e)), param);
     }
 
     /// <summary>
-    /// on 方法
+    /// on
     /// </summary>
     public static void On(string type, IntPtr callback)
     {
@@ -183,11 +193,86 @@ public static unsafe partial class Vibrator
     }
 
     /// <summary>
-    /// off 方法
+    /// off
     /// </summary>
-    public static void Off(string type, IntPtr callback)
+    public static void Off(string type, IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
+
+}
+
+/// <summary>
+/// VibratorInfoParam（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record VibratorInfoParam(
+    double? DeviceId = null,
+    double? VibratorId = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _deviceId = Encoding.UTF8.GetBytes("deviceId");
+        var _deviceIdV = NativeValue.From(DeviceId);
+        if (_deviceIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceId, _deviceIdV);
+        var _vibratorId = Encoding.UTF8.GetBytes("vibratorId");
+        var _vibratorIdV = NativeValue.From(VibratorId);
+        if (_vibratorIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _vibratorId, _vibratorIdV);
+    }
+}
+
+/// <summary>
+/// EffectInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class EffectInfo : JsObject
+{
+    public EffectInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _isEffectSupported => "isEffectSupported"u8;
+    /// <summary>
+    /// isEffectSupported
+    /// </summary>
+    public bool IsEffectSupported => NativeValue.ToBool(GetPropertyRaw(_isEffectSupported));
+
+}
+
+/// <summary>
+/// VibratorInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class VibratorInfo : JsObject
+{
+    public VibratorInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
+    private static ReadOnlySpan<byte> _vibratorId => "vibratorId"u8;
+    private static ReadOnlySpan<byte> _deviceName => "deviceName"u8;
+    private static ReadOnlySpan<byte> _isHdHapticSupported => "isHdHapticSupported"u8;
+    private static ReadOnlySpan<byte> _isLocalVibrator => "isLocalVibrator"u8;
+    /// <summary>
+    /// deviceId
+    /// </summary>
+    public double DeviceId => NativeValue.ToDouble(GetPropertyRaw(_deviceId));
+
+    /// <summary>
+    /// vibratorId
+    /// </summary>
+    public double VibratorId => NativeValue.ToDouble(GetPropertyRaw(_vibratorId));
+
+    /// <summary>
+    /// deviceName
+    /// </summary>
+    public string DeviceName => NativeValue.ToString(GetPropertyRaw(_deviceName)) ?? string.Empty;
+
+    /// <summary>
+    /// isHdHapticSupported
+    /// </summary>
+    public bool IsHDHapticSupported => NativeValue.ToBool(GetPropertyRaw(_isHdHapticSupported));
+
+    /// <summary>
+    /// isLocalVibrator
+    /// </summary>
+    public bool IsLocalVibrator => NativeValue.ToBool(GetPropertyRaw(_isLocalVibrator));
 
 }

@@ -30,12 +30,17 @@ export class AstParser {
             methods: [],
             events: [],
             delegates: [],
-            namespace: 'HarmonyOS.ArkUI'
+            namespace: 'HarmonyOS.ArkUI',
+            interfaces: [],
+            classes: []
         };
 
         const enums: EnumInfo[] = [];
         const imports: ImportInfo[] = [];
         const warnings: string[] = [];
+
+        // @ohos.* 服务模块：类型映射延迟到 ApiGenerator（需先登记包装类/枚举映射）
+        const isServiceModule = filePath.includes('@ohos');
 
         ts.forEachChild(sourceFile, (node) => {
             if (ts.isImportDeclaration(node)) {
@@ -45,7 +50,7 @@ export class AstParser {
                 }
             } else if (ts.isModuleDeclaration(node) && node.name) {
                 // @ohos.* 模块：declare namespace xxx { const/function/enum }
-                this.parseNamespace(node, component, warnings, enums);
+                this.parseNamespace(node, component, warnings, enums, isServiceModule);
             } else if (ts.isInterfaceDeclaration(node)) {
                 this.parseInterface(node, component, warnings);
             } else if (ts.isClassDeclaration(node)) {
@@ -83,7 +88,8 @@ export class AstParser {
         node: ts.ModuleDeclaration,
         component: ComponentInfo,
         warnings: string[],
-        enums: EnumInfo[]
+        enums: EnumInfo[],
+        isServiceModule: boolean = false
     ): void {
         const nsName = node.name.text;
         if (!component.name) {
@@ -98,9 +104,10 @@ export class AstParser {
             if (ts.isVariableStatement(child)) {
                 for (const decl of child.declarationList.declarations) {
                     if (decl.name && ts.isIdentifier(decl.name)) {
-                        const propType = this.getTypeName(decl.type);
-                        const mappedType = TypeMapper.mapType(propType);
                         // const → C# static property (getter)
+                        // 服务模块：存原始 TS 类型，ApiGenerator 登记包装类/枚举映射后统一转换
+                        const propType = this.getTypeName(decl.type);
+                        const mappedType = isServiceModule ? propType : TypeMapper.mapType(propType);
                         const method: MethodInfo = {
                             name: decl.name.text,
                             returnType: mappedType,
@@ -111,18 +118,27 @@ export class AstParser {
                     }
                 }
             } else if (ts.isFunctionDeclaration(child) && child.name) {
-                this.parseMethod(child as unknown as ts.MethodDeclaration, component, warnings);
+                this.parseMethod(child as unknown as ts.MethodDeclaration, component, warnings, isServiceModule);
             } else if (ts.isEnumDeclaration(child)) {
                 const enumInfo = this.parseEnum(child);
                 if (enumInfo) {
                     enums.push(enumInfo);
                 }
             } else if (ts.isInterfaceDeclaration(child)) {
-                // namespace 内部嵌套接口（如 Display、DisplayInfo 等）
-                this.parseInterface(child, component, warnings);
+                // namespace 内部嵌套接口（如 Display、PasteData 等）→ 实例类型
+                if (isServiceModule) {
+                    component.interfaces.push(this.parseInterfaceFull(child, '', true));
+                } else {
+                    this.parseInterface(child, component, warnings);
+                }
+            } else if (ts.isClassDeclaration(child) && child.name) {
+                // namespace 内部嵌套类（如 PhotoViewPicker）→ 实例类型
+                if (isServiceModule) {
+                    component.classes.push(this.parseClassFull(child, '', true));
+                }
             } else if (ts.isModuleDeclaration(child) && child.name) {
                 // 嵌套 namespace（如 settings.date、settings.general）
-                this.parseNamespace(child, component, warnings, enums);
+                this.parseNamespace(child, component, warnings, enums, isServiceModule);
             }
         });
     }
@@ -383,22 +399,24 @@ export class AstParser {
         });
     }
 
-    private parseMethod(node: ts.MethodDeclaration, component: ComponentInfo, warnings: string[]): void {
+    private parseMethod(node: ts.MethodDeclaration, component: ComponentInfo, warnings: string[], isServiceModule: boolean = false): void {
         const methodName = node.name.getText();
         const returnType = this.getTypeName(node.type);
-        
-        // 检测是否是事件方法（以 "on" 开头）
-        if (this.isEventMethod(methodName)) {
+
+        // 检测是否是事件方法（以 "on" 开头）——仅 ArkUI 组件路径；
+        // @ohos 服务模块的 on/off/onChangeWithAttribute 是普通函数，不得误判为组件事件
+        if (!isServiceModule && this.isEventMethod(methodName)) {
             const eventInfo = this.parseEventMethod(node, methodName, component);
             if (eventInfo) {
                 component.events.push(eventInfo);
             }
             return;
         }
-        
+
         const method: MethodInfo = {
+            // 服务模块：存原始 TS 类型，ApiGenerator 登记包装类/枚举映射后统一转换
             name: methodName,
-            returnType: TypeMapper.mapType(returnType),
+            returnType: isServiceModule ? returnType : TypeMapper.mapType(returnType),
             parameters: [],
             isChained: returnType === component.attributeName
         };
@@ -422,9 +440,15 @@ export class AstParser {
             if (lastParam.type && ts.isFunctionTypeNode(lastParam.type)) {
                 const asyncCallbackInfo = this.detectAsyncCallbackFromAST(lastParam.type);
                 if (asyncCallbackInfo) {
-                    const mappedResultType = TypeMapper.mapType(asyncCallbackInfo.resultType);
-                    method.returnType = mappedResultType === 'void' ? 'Task' : `Task<${mappedResultType}>`;
-                    method.parameters.pop(); // 移除回调参数
+                    if (isServiceModule) {
+                        // 服务模块：记录原始结果类型，ApiGenerator 登记映射后统一转换
+                        method.asyncResultType = asyncCallbackInfo.resultType;
+                        method.parameters.pop();
+                    } else {
+                        const mappedResultType = TypeMapper.mapType(asyncCallbackInfo.resultType);
+                        method.returnType = mappedResultType === 'void' ? 'Task' : `Task<${mappedResultType}>`;
+                        method.parameters.pop(); // 移除回调参数
+                    }
                 }
             }
         }
@@ -950,7 +974,7 @@ export class AstParser {
         });
     }
 
-    private parseInterfaceFull(node: ts.InterfaceDeclaration, sourceFile: string): InterfaceInfo {
+    private parseInterfaceFull(node: ts.InterfaceDeclaration, sourceFile: string, raw: boolean = false): InterfaceInfo {
         const name = node.name.text;
         const properties: PropertyInfo[] = [];
         const methods: MethodInfo[] = [];
@@ -979,10 +1003,10 @@ export class AstParser {
             } else if (ts.isMethodSignature(member)) {
                 const method: MethodInfo = {
                     name: member.name.getText(),
-                    returnType: TypeMapper.mapType(this.getTypeName(member.type)),
+                    returnType: raw ? this.getTypeName(member.type) : TypeMapper.mapType(this.getTypeName(member.type)),
                     parameters: member.parameters.map(p => ({
                         name: p.name.getText(),
-                        type: TypeMapper.mapType(this.getTypeName(p.type)),
+                        type: this.getTypeName(p.type),
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     })),
@@ -992,10 +1016,10 @@ export class AstParser {
             } else if (ts.isCallSignatureDeclaration(member)) {
                 const method: MethodInfo = {
                     name: '__call__',
-                    returnType: TypeMapper.mapType(this.getTypeName(member.type)),
+                    returnType: raw ? this.getTypeName(member.type) : TypeMapper.mapType(this.getTypeName(member.type)),
                     parameters: member.parameters.map(p => ({
                         name: p.name.getText(),
-                        type: TypeMapper.mapType(this.getTypeName(p.type)),
+                        type: raw ? this.getTypeName(p.type) : TypeMapper.mapType(this.getTypeName(p.type)),
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     })),
@@ -1015,7 +1039,7 @@ export class AstParser {
         };
     }
 
-    private parseClassFull(node: ts.ClassDeclaration, sourceFile: string): ClassInfo {
+    private parseClassFull(node: ts.ClassDeclaration, sourceFile: string, raw: boolean = false): ClassInfo {
         const name = node.name?.getText() || '';
         const properties: PropertyInfo[] = [];
         const methods: MethodInfo[] = [];
@@ -1051,10 +1075,10 @@ export class AstParser {
             } else if (ts.isMethodDeclaration(member)) {
                 const method: MethodInfo = {
                     name: member.name.getText(),
-                    returnType: TypeMapper.mapType(this.getTypeName(member.type)),
+                    returnType: raw ? this.getTypeName(member.type) : TypeMapper.mapType(this.getTypeName(member.type)),
                     parameters: member.parameters.map(p => ({
                         name: p.name.getText(),
-                        type: TypeMapper.mapType(this.getTypeName(p.type)),
+                        type: raw ? this.getTypeName(p.type) : TypeMapper.mapType(this.getTypeName(p.type)),
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     })),
@@ -1065,7 +1089,7 @@ export class AstParser {
                 const ctor: ConstructorOverload = {
                     parameters: member.parameters.map(p => ({
                         name: p.name.getText(),
-                        type: TypeMapper.mapType(this.getTypeName(p.type)),
+                        type: raw ? this.getTypeName(p.type) : TypeMapper.mapType(this.getTypeName(p.type)),
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     }))

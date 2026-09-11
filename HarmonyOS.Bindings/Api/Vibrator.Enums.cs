@@ -10,7 +10,7 @@ namespace HarmonyOS.ArkUI;
 public enum EffectId
 {
     [Description("haptic.clock.timer")]
-    EFFECT_CLOCK_TIMER
+    EffectClockTimer
 }
 
 /// <summary>
@@ -19,17 +19,17 @@ public enum EffectId
 public enum HapticFeedback
 {
     [Description("haptic.effect.soft")]
-    EFFECT_SOFT,
+    EffectSoft,
     [Description("haptic.effect.hard")]
-    EFFECT_HARD,
+    EffectHard,
     [Description("haptic.effect.sharp")]
-    EFFECT_SHARP,
+    EffectSharp,
     [Description("haptic.notice.success")]
-    EFFECT_NOTICE_SUCCESS,
+    EffectNoticeSuccess,
     [Description("haptic.notice.fail")]
-    EFFECT_NOTICE_FAILURE,
+    EffectNoticeFailure,
     [Description("haptic.notice.warning")]
-    EFFECT_NOTICE_WARNING
+    EffectNoticeWarning
 }
 
 /// <summary>
@@ -38,9 +38,9 @@ public enum HapticFeedback
 public enum VibratorStopMode
 {
     [Description("time")]
-    VIBRATOR_STOP_MODE_TIME,
+    VibratorStopModeTime,
     [Description("preset")]
-    VIBRATOR_STOP_MODE_PRESET
+    VibratorStopModePreset
 }
 
 /// <summary>
@@ -48,6 +48,6 @@ public enum VibratorStopMode
 /// </summary>
 public enum VibratorEventType
 {
-    CONTINUOUS = 0,
-    TRANSIENT = 1
+    Continuous = 0,
+    Transient = 1
 }

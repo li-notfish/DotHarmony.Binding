@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -23,7 +24,8 @@ public static unsafe partial class Fs
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -65,17 +67,6 @@ public static unsafe partial class Fs
         }
     }
 
-    private static ReadOnlySpan<byte> _READ_ONLY => "READ_ONLY"u8;
-    private static ReadOnlySpan<byte> _WRITE_ONLY => "WRITE_ONLY"u8;
-    private static ReadOnlySpan<byte> _READ_WRITE => "READ_WRITE"u8;
-    private static ReadOnlySpan<byte> _CREATE => "CREATE"u8;
-    private static ReadOnlySpan<byte> _TRUNC => "TRUNC"u8;
-    private static ReadOnlySpan<byte> _APPEND => "APPEND"u8;
-    private static ReadOnlySpan<byte> _NONBLOCK => "NONBLOCK"u8;
-    private static ReadOnlySpan<byte> _DIR => "DIR"u8;
-    private static ReadOnlySpan<byte> _NOFOLLOW => "NOFOLLOW"u8;
-    private static ReadOnlySpan<byte> _SYNC => "SYNC"u8;
-    private static ReadOnlySpan<byte> _UNCACHE => "UNCACHE"u8;
     private static ReadOnlySpan<byte> _access => "access"u8;
     private static ReadOnlySpan<byte> _accessSync => "accessSync"u8;
     private static ReadOnlySpan<byte> _close => "close"u8;
@@ -147,55 +138,55 @@ public static unsafe partial class Fs
     private static ReadOnlySpan<byte> _getxattrSync => "getxattrSync"u8;
 
     /// <summary>
-    /// access 方法
+    /// access
     /// </summary>
-    public static Task<bool> Access(string path, IntPtr mode)
+    public static Task<bool> AccessAsync(string path, global::HarmonyOS.ArkUI.AccessModeType? mode = null)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _access, path, mode);
     }
 
     /// <summary>
-    /// access 方法
+    /// access
     /// </summary>
-    public static Task<bool> Access(string path)
+    public static Task<bool> AccessAsync(string path)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _access, path);
     }
 
     /// <summary>
-    /// access 方法
+    /// access
     /// </summary>
-    public static Task<bool> Access(string path, IntPtr mode, IntPtr flag)
+    public static Task<bool> AccessAsync(string path, global::HarmonyOS.ArkUI.AccessModeType mode, global::HarmonyOS.ArkUI.AccessFlagType flag)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _access, path, mode, flag);
     }
 
     /// <summary>
-    /// accessSync 方法
+    /// accessSync
     /// </summary>
-    public static bool AccessSync(string path, IntPtr mode)
+    public static bool AccessSync(string path, global::HarmonyOS.ArkUI.AccessModeType? mode = null)
     {
         return NodeApi.CallMethod<bool>(Module, _accessSync, path, mode);
     }
 
     /// <summary>
-    /// accessSync 方法
+    /// accessSync
     /// </summary>
-    public static bool AccessSync(string path, IntPtr mode, IntPtr flag)
+    public static bool AccessSync(string path, global::HarmonyOS.ArkUI.AccessModeType mode, global::HarmonyOS.ArkUI.AccessFlagType flag)
     {
         return NodeApi.CallMethod<bool>(Module, _accessSync, path, mode, flag);
     }
 
     /// <summary>
-    /// close 方法
+    /// close
     /// </summary>
-    public static Task Close(double file)
+    public static Task CloseAsync(double file)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _close, file);
     }
 
     /// <summary>
-    /// closeSync 方法
+    /// closeSync
     /// </summary>
     public static void CloseSync(double file)
     {
@@ -203,79 +194,79 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// copy 方法
+    /// copy
     /// </summary>
-    public static Task Copy(string srcUri, string destUri, IntPtr options)
+    public static Task CopyAsync(string srcUri, string destUri, IntPtr? options = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copy, srcUri, destUri, options);
     }
 
     /// <summary>
-    /// copy 方法
+    /// copy
     /// </summary>
-    public static Task Copy(string srcUri, string destUri)
+    public static Task CopyAsync(string srcUri, string destUri)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copy, srcUri, destUri);
     }
 
     /// <summary>
-    /// copyDir 方法
+    /// copyDir
     /// </summary>
-    public static Task CopyDir(string src, string dest, double mode)
+    public static Task CopyDirAsync(string src, string dest, double? mode = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copyDir, src, dest, mode);
     }
 
     /// <summary>
-    /// copyDir 方法
+    /// copyDir
     /// </summary>
-    public static Task CopyDir(string src, string dest)
+    public static Task CopyDirAsync(string src, string dest)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copyDir, src, dest);
     }
 
     /// <summary>
-    /// copyDirSync 方法
+    /// copyDirSync
     /// </summary>
-    public static void CopyDirSync(string src, string dest, double mode)
+    public static void CopyDirSync(string src, string dest, double? mode = null)
     {
         NodeApi.CallMethodVoid(Module, _copyDirSync, src, dest, mode);
     }
 
     /// <summary>
-    /// copyFile 方法
+    /// copyFile
     /// </summary>
-    public static Task CopyFile(string src, string dest, double mode)
+    public static Task CopyFileAsync(string src, string dest, double? mode = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest, mode);
     }
 
     /// <summary>
-    /// copyFile 方法
+    /// copyFile
     /// </summary>
-    public static Task CopyFile(string src, string dest)
+    public static Task CopyFileAsync(string src, string dest)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest);
     }
 
     /// <summary>
-    /// copyFileSync 方法
+    /// copyFileSync
     /// </summary>
-    public static void CopyFileSync(string src, string dest, double mode)
+    public static void CopyFileSync(string src, string dest, double? mode = null)
     {
         NodeApi.CallMethodVoid(Module, _copyFileSync, src, dest, mode);
     }
 
     /// <summary>
-    /// createStream 方法
+    /// createStream
     /// </summary>
-    public static Task<IntPtr> CreateStream(string path, string mode)
+    public static Task<IntPtr> CreateStreamAsync(string path, string mode)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createStream, path, mode);
     }
 
     /// <summary>
-    /// createStreamSync 方法
+    /// createStreamSync
     /// </summary>
     public static IntPtr CreateStreamSync(string path, string mode)
     {
@@ -283,55 +274,55 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// createRandomAccessFile 方法
+    /// createRandomAccessFile
     /// </summary>
-    public static Task<IntPtr> CreateRandomAccessFile(string file, double mode, IntPtr options)
+    public static Task<IntPtr> CreateRandomAccessFileAsync(string file, double? mode = null, IntPtr? options = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file, mode, options);
     }
 
     /// <summary>
-    /// createRandomAccessFile 方法
+    /// createRandomAccessFile
     /// </summary>
-    public static Task<IntPtr> CreateRandomAccessFile(string file)
+    public static Task<IntPtr> CreateRandomAccessFileAsync(string file)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file);
     }
 
     /// <summary>
-    /// createRandomAccessFile 方法
+    /// createRandomAccessFile
     /// </summary>
-    public static Task<IntPtr> CreateRandomAccessFile(string file, double mode)
+    public static Task<IntPtr> CreateRandomAccessFileAsync(string file, double mode)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file, mode);
     }
 
     /// <summary>
-    /// createRandomAccessFileSync 方法
+    /// createRandomAccessFileSync
     /// </summary>
-    public static IntPtr CreateRandomAccessFileSync(string file, double mode, IntPtr options)
+    public static IntPtr CreateRandomAccessFileSync(string file, double? mode = null, IntPtr? options = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createRandomAccessFileSync, file, mode, options);
     }
 
     /// <summary>
-    /// createReadStream 方法
+    /// createReadStream
     /// </summary>
-    public static IntPtr CreateReadStream(string path, IntPtr options)
+    public static IntPtr CreateReadStream(string path, IntPtr? options = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createReadStream, path, options);
     }
 
     /// <summary>
-    /// createWriteStream 方法
+    /// createWriteStream
     /// </summary>
-    public static IntPtr CreateWriteStream(string path, IntPtr options)
+    public static IntPtr CreateWriteStream(string path, IntPtr? options = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createWriteStream, path, options);
     }
 
     /// <summary>
-    /// createWatcher 方法
+    /// createWatcher
     /// </summary>
     public static IntPtr CreateWatcher(string path, double events, IntPtr listener)
     {
@@ -339,7 +330,7 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// dup 方法
+    /// dup
     /// </summary>
     public static IntPtr Dup(double fd)
     {
@@ -347,15 +338,15 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// fdatasync 方法
+    /// fdatasync
     /// </summary>
-    public static Task Fdatasync(double fd)
+    public static Task FdatasyncAsync(double fd)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _fdatasync, fd);
     }
 
     /// <summary>
-    /// fdatasyncSync 方法
+    /// fdatasyncSync
     /// </summary>
     public static void FdatasyncSync(double fd)
     {
@@ -363,15 +354,15 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// fdopenStream 方法
+    /// fdopenStream
     /// </summary>
-    public static Task<IntPtr> FdopenStream(double fd, string mode)
+    public static Task<IntPtr> FdopenStreamAsync(double fd, string mode)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _fdopenStream, fd, mode);
     }
 
     /// <summary>
-    /// fdopenStreamSync 方法
+    /// fdopenStreamSync
     /// </summary>
     public static IntPtr FdopenStreamSync(double fd, string mode)
     {
@@ -379,15 +370,15 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// fsync 方法
+    /// fsync
     /// </summary>
-    public static Task Fsync(double fd)
+    public static Task FsyncAsync(double fd)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _fsync, fd);
     }
 
     /// <summary>
-    /// fsyncSync 方法
+    /// fsyncSync
     /// </summary>
     public static void FsyncSync(double fd)
     {
@@ -395,63 +386,63 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// listFile 方法
+    /// listFile
     /// </summary>
-    public static Task<IntPtr> ListFile(string path, IntPtr options)
+    public static Task<string[]> ListFileAsync(string path, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _listFile, path, options);
+        return NodeApi.CallMethodAsync(Module, _listFile, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
     }
 
     /// <summary>
-    /// listFile 方法
+    /// listFile
     /// </summary>
-    public static Task<string[]> ListFile(string path)
+    public static Task<string[]> ListFileAsync(string path)
     {
-        return NodeApi.CallMethodAsync<string[]>(Module, _listFile, path);
+        return NodeApi.CallMethodAsync(Module, _listFile, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path);
     }
 
     /// <summary>
-    /// listFileSync 方法
+    /// listFileSync
     /// </summary>
-    public static string[] ListFileSync(string path, IntPtr options)
+    public static string[] ListFileSync(string path, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<string[]>(Module, _listFileSync, path, options);
+        return NodeApi.CallMethod(Module, _listFileSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
     }
 
     /// <summary>
-    /// listFileExt 方法
+    /// listFileExt
     /// </summary>
-    public static Task<IntPtr> ListFileExt(string path, IntPtr options)
+    public static Task<string[]> ListFileExtAsync(string path, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _listFileExt, path, options);
+        return NodeApi.CallMethodAsync(Module, _listFileExt, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
     }
 
     /// <summary>
-    /// listFileExtSync 方法
+    /// listFileExtSync
     /// </summary>
-    public static string[] ListFileExtSync(string path, IntPtr options)
+    public static string[] ListFileExtSync(string path, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<string[]>(Module, _listFileExtSync, path, options);
+        return NodeApi.CallMethod(Module, _listFileExtSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
     }
 
     /// <summary>
-    /// lseek 方法
+    /// lseek
     /// </summary>
-    public static double Lseek(double fd, double offset, IntPtr whence)
+    public static double Lseek(double fd, double offset, global::HarmonyOS.ArkUI.WhenceType? whence = null)
     {
         return NodeApi.CallMethod<double>(Module, _lseek, fd, offset, whence);
     }
 
     /// <summary>
-    /// lstat 方法
+    /// lstat
     /// </summary>
-    public static Task<IntPtr> Lstat(string path)
+    public static Task<IntPtr> LstatAsync(string path)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _lstat, path);
     }
 
     /// <summary>
-    /// lstatSync 方法
+    /// lstatSync
     /// </summary>
     public static IntPtr LstatSync(string path)
     {
@@ -459,23 +450,23 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// mkdir 方法
+    /// mkdir
     /// </summary>
-    public static Task Mkdir(string path)
+    public static Task MkdirAsync(string path)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _mkdir, path);
     }
 
     /// <summary>
-    /// mkdir 方法
+    /// mkdir
     /// </summary>
-    public static Task Mkdir(string path, bool recursion)
+    public static Task MkdirAsync(string path, bool recursion)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _mkdir, path, recursion);
     }
 
     /// <summary>
-    /// mkdirSync 方法
+    /// mkdirSync
     /// </summary>
     public static void MkdirSync(string path)
     {
@@ -483,7 +474,7 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// mkdirSync 方法
+    /// mkdirSync
     /// </summary>
     public static void MkdirSync(string path, bool recursion)
     {
@@ -491,15 +482,15 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// mkdtemp 方法
+    /// mkdtemp
     /// </summary>
-    public static Task<string> Mkdtemp(string prefix)
+    public static Task<string> MkdtempAsync(string prefix)
     {
         return NodeApi.CallMethodAsync<string>(Module, _mkdtemp, prefix);
     }
 
     /// <summary>
-    /// mkdtempSync 方法
+    /// mkdtempSync
     /// </summary>
     public static string MkdtempSync(string prefix)
     {
@@ -507,175 +498,175 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// mmap 方法
+    /// mmap
     /// </summary>
-    public static Task<IntPtr> Mmap(double file, IntPtr mode, double offset, double size)
+    public static Task<IntPtr> MmapAsync(double file, global::HarmonyOS.ArkUI.MappingMode mode, double offset, double size)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _mmap, file, mode, offset, size);
     }
 
     /// <summary>
-    /// mmapSync 方法
+    /// mmapSync
     /// </summary>
-    public static IntPtr MmapSync(double file, IntPtr mode, double offset, double size)
+    public static IntPtr MmapSync(double file, global::HarmonyOS.ArkUI.MappingMode mode, double offset, double size)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _mmapSync, file, mode, offset, size);
     }
 
     /// <summary>
-    /// moveDir 方法
+    /// moveDir
     /// </summary>
-    public static Task MoveDir(string src, string dest, double mode)
+    public static Task MoveDirAsync(string src, string dest, double? mode = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _moveDir, src, dest, mode);
     }
 
     /// <summary>
-    /// moveDir 方法
+    /// moveDir
     /// </summary>
-    public static Task MoveDir(string src, string dest)
+    public static Task MoveDirAsync(string src, string dest)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _moveDir, src, dest);
     }
 
     /// <summary>
-    /// moveDirSync 方法
+    /// moveDirSync
     /// </summary>
-    public static void MoveDirSync(string src, string dest, double mode)
+    public static void MoveDirSync(string src, string dest, double? mode = null)
     {
         NodeApi.CallMethodVoid(Module, _moveDirSync, src, dest, mode);
     }
 
     /// <summary>
-    /// moveFile 方法
+    /// moveFile
     /// </summary>
-    public static Task MoveFile(string src, string dest, double mode)
+    public static Task MoveFileAsync(string src, string dest, double? mode = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _moveFile, src, dest, mode);
     }
 
     /// <summary>
-    /// moveFile 方法
+    /// moveFile
     /// </summary>
-    public static Task MoveFile(string src, string dest)
+    public static Task MoveFileAsync(string src, string dest)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _moveFile, src, dest);
     }
 
     /// <summary>
-    /// moveFileSync 方法
+    /// moveFileSync
     /// </summary>
-    public static void MoveFileSync(string src, string dest, double mode)
+    public static void MoveFileSync(string src, string dest, double? mode = null)
     {
         NodeApi.CallMethodVoid(Module, _moveFileSync, src, dest, mode);
     }
 
     /// <summary>
-    /// open 方法
+    /// open
     /// </summary>
-    public static Task<IntPtr> Open(string path, double mode)
+    public static Task<IntPtr> OpenAsync(string path, double? mode = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _open, path, mode);
     }
 
     /// <summary>
-    /// open 方法
+    /// open
     /// </summary>
-    public static Task<IntPtr> Open(string path)
+    public static Task<IntPtr> OpenAsync(string path)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _open, path);
     }
 
     /// <summary>
-    /// openSync 方法
+    /// openSync
     /// </summary>
-    public static IntPtr OpenSync(string path, double mode)
+    public static IntPtr OpenSync(string path, double? mode = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _openSync, path, mode);
     }
 
     /// <summary>
-    /// read 方法
+    /// read
     /// </summary>
-    public static Task<double> Read(double fd, IntPtr buffer, IntPtr options)
+    public static Task<double> ReadAsync(double fd, IntPtr buffer, IntPtr? options = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _read, fd, buffer, options);
     }
 
     /// <summary>
-    /// read 方法
+    /// read
     /// </summary>
-    public static Task<double> Read(double fd, IntPtr buffer)
+    public static Task<double> ReadAsync(double fd, IntPtr buffer)
     {
         return NodeApi.CallMethodAsync<double>(Module, _read, fd, buffer);
     }
 
     /// <summary>
-    /// readSync 方法
+    /// readSync
     /// </summary>
-    public static double ReadSync(double fd, IntPtr buffer, IntPtr options)
+    public static double ReadSync(double fd, IntPtr buffer, IntPtr? options = null)
     {
         return NodeApi.CallMethod<double>(Module, _readSync, fd, buffer, options);
     }
 
     /// <summary>
-    /// readLines 方法
+    /// readLines
     /// </summary>
-    public static Task<IntPtr> ReadLines(string filePath, IntPtr options)
+    public static Task<IntPtr> ReadLinesAsync(string filePath, Options? options = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _readLines, filePath, options);
     }
 
     /// <summary>
-    /// readLines 方法
+    /// readLines
     /// </summary>
-    public static Task<IntPtr> ReadLines(string filePath)
+    public static Task<IntPtr> ReadLinesAsync(string filePath)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _readLines, filePath);
     }
 
     /// <summary>
-    /// readLinesSync 方法
+    /// readLinesSync
     /// </summary>
-    public static IntPtr ReadLinesSync(string filePath, IntPtr options)
+    public static IntPtr ReadLinesSync(string filePath, Options? options = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _readLinesSync, filePath, options);
     }
 
     /// <summary>
-    /// readText 方法
+    /// readText
     /// </summary>
-    public static Task<string> ReadText(string filePath, IntPtr options)
+    public static Task<string> ReadTextAsync(string filePath, IntPtr? options = null)
     {
         return NodeApi.CallMethodAsync<string>(Module, _readText, filePath, options);
     }
 
     /// <summary>
-    /// readText 方法
+    /// readText
     /// </summary>
-    public static Task<string> ReadText(string filePath)
+    public static Task<string> ReadTextAsync(string filePath)
     {
         return NodeApi.CallMethodAsync<string>(Module, _readText, filePath);
     }
 
     /// <summary>
-    /// readTextSync 方法
+    /// readTextSync
     /// </summary>
-    public static string ReadTextSync(string filePath, IntPtr options)
+    public static string ReadTextSync(string filePath, IntPtr? options = null)
     {
         return NodeApi.CallMethod<string>(Module, _readTextSync, filePath, options);
     }
 
     /// <summary>
-    /// rename 方法
+    /// rename
     /// </summary>
-    public static Task Rename(string oldPath, string newPath)
+    public static Task RenameAsync(string oldPath, string newPath)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _rename, oldPath, newPath);
     }
 
     /// <summary>
-    /// renameSync 方法
+    /// renameSync
     /// </summary>
     public static void RenameSync(string oldPath, string newPath)
     {
@@ -683,15 +674,15 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// rmdir 方法
+    /// rmdir
     /// </summary>
-    public static Task Rmdir(string path)
+    public static Task RmdirAsync(string path)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _rmdir, path);
     }
 
     /// <summary>
-    /// rmdirSync 方法
+    /// rmdirSync
     /// </summary>
     public static void RmdirSync(string path)
     {
@@ -699,15 +690,15 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// stat 方法
+    /// stat
     /// </summary>
-    public static Task<IntPtr> Stat(string file)
+    public static Task<IntPtr> StatAsync(string file)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _stat, file);
     }
 
     /// <summary>
-    /// statSync 方法
+    /// statSync
     /// </summary>
     public static IntPtr StatSync(string file)
     {
@@ -715,15 +706,15 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// symlink 方法
+    /// symlink
     /// </summary>
-    public static Task Symlink(string target, string srcPath)
+    public static Task SymlinkAsync(string target, string srcPath)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _symlink, target, srcPath);
     }
 
     /// <summary>
-    /// symlinkSync 方法
+    /// symlinkSync
     /// </summary>
     public static void SymlinkSync(string target, string srcPath)
     {
@@ -731,39 +722,39 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// truncate 方法
+    /// truncate
     /// </summary>
-    public static Task Truncate(string file, double len)
+    public static Task TruncateAsync(string file, double? len = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _truncate, file, len);
     }
 
     /// <summary>
-    /// truncate 方法
+    /// truncate
     /// </summary>
-    public static Task Truncate(string file)
+    public static Task TruncateAsync(string file)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _truncate, file);
     }
 
     /// <summary>
-    /// truncateSync 方法
+    /// truncateSync
     /// </summary>
-    public static void TruncateSync(string file, double len)
+    public static void TruncateSync(string file, double? len = null)
     {
         NodeApi.CallMethodVoid(Module, _truncateSync, file, len);
     }
 
     /// <summary>
-    /// unlink 方法
+    /// unlink
     /// </summary>
-    public static Task Unlink(string path)
+    public static Task UnlinkAsync(string path)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _unlink, path);
     }
 
     /// <summary>
-    /// unlinkSync 方法
+    /// unlinkSync
     /// </summary>
     public static void UnlinkSync(string path)
     {
@@ -771,7 +762,7 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// utimes 方法
+    /// utimes
     /// </summary>
     public static void Utimes(string path, double mtime)
     {
@@ -779,55 +770,55 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// write 方法
+    /// write
     /// </summary>
-    public static Task<double> Write(double fd, string buffer, IntPtr options)
+    public static Task<double> WriteAsync(double fd, string buffer, IntPtr? options = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _write, fd, buffer, options);
     }
 
     /// <summary>
-    /// write 方法
+    /// write
     /// </summary>
-    public static Task<double> Write(double fd, string buffer)
+    public static Task<double> WriteAsync(double fd, string buffer)
     {
         return NodeApi.CallMethodAsync<double>(Module, _write, fd, buffer);
     }
 
     /// <summary>
-    /// writeSync 方法
+    /// writeSync
     /// </summary>
-    public static double WriteSync(double fd, string buffer, IntPtr options)
+    public static double WriteSync(double fd, string buffer, IntPtr? options = null)
     {
         return NodeApi.CallMethod<double>(Module, _writeSync, fd, buffer, options);
     }
 
     /// <summary>
-    /// connectDfs 方法
+    /// connectDfs
     /// </summary>
-    public static Task ConnectDfs(string networkId, IntPtr listeners)
+    public static Task ConnectDfsAsync(string networkId, IntPtr listeners)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _connectDfs, networkId, listeners);
     }
 
     /// <summary>
-    /// disconnectDfs 方法
+    /// disconnectDfs
     /// </summary>
-    public static Task DisconnectDfs(string networkId)
+    public static Task DisconnectDfsAsync(string networkId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _disconnectDfs, networkId);
     }
 
     /// <summary>
-    /// setxattr 方法
+    /// setxattr
     /// </summary>
-    public static Task Setxattr(string path, string key, string value)
+    public static Task SetxattrAsync(string path, string key, string value)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setxattr, path, key, value);
     }
 
     /// <summary>
-    /// setxattrSync 方法
+    /// setxattrSync
     /// </summary>
     public static void SetxattrSync(string path, string key, string value)
     {
@@ -835,15 +826,15 @@ public static unsafe partial class Fs
     }
 
     /// <summary>
-    /// getxattr 方法
+    /// getxattr
     /// </summary>
-    public static Task<string> Getxattr(string path, string key)
+    public static Task<string> GetxattrAsync(string path, string key)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getxattr, path, key);
     }
 
     /// <summary>
-    /// getxattrSync 方法
+    /// getxattrSync
     /// </summary>
     public static string GetxattrSync(string path, string key)
     {

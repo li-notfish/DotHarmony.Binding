@@ -7,28 +7,28 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum SensorId
 {
-    ACCELEROMETER = 1,
-    GYROSCOPE = 2,
-    AMBIENT_LIGHT = 5,
-    MAGNETIC_FIELD = 6,
-    BAROMETER = 8,
-    HALL = 10,
-    PROXIMITY = 12,
-    HUMIDITY = 13,
-    ORIENTATION = 256,
-    GRAVITY = 257,
-    LINEAR_ACCELEROMETER = 258,
-    ROTATION_VECTOR = 259,
-    AMBIENT_TEMPERATURE = 260,
-    MAGNETIC_FIELD_UNCALIBRATED = 261,
-    GYROSCOPE_UNCALIBRATED = 263,
-    SIGNIFICANT_MOTION = 264,
-    PEDOMETER_DETECTION = 265,
-    PEDOMETER = 266,
-    HEART_RATE = 278,
-    WEAR_DETECTION = 280,
-    ACCELEROMETER_UNCALIBRATED = 281,
-    FUSION_PRESSURE = 283
+    Accelerometer = 1,
+    Gyroscope = 2,
+    AmbientLight = 5,
+    MagneticField = 6,
+    Barometer = 8,
+    Hall = 10,
+    Proximity = 12,
+    Humidity = 13,
+    Orientation = 256,
+    Gravity = 257,
+    LinearAccelerometer = 258,
+    RotationVector = 259,
+    AmbientTemperature = 260,
+    MagneticFieldUncalibrated = 261,
+    GyroscopeUncalibrated = 263,
+    SignificantMotion = 264,
+    PedometerDetection = 265,
+    Pedometer = 266,
+    HeartRate = 278,
+    WearDetection = 280,
+    AccelerometerUncalibrated = 281,
+    FusionPressure = 283
 }
 
 /// <summary>
@@ -36,27 +36,27 @@ public enum SensorId
 /// </summary>
 public enum SensorType
 {
-    SENSOR_TYPE_ID_ACCELEROMETER = 1,
-    SENSOR_TYPE_ID_GYROSCOPE = 2,
-    SENSOR_TYPE_ID_AMBIENT_LIGHT = 5,
-    SENSOR_TYPE_ID_MAGNETIC_FIELD = 6,
-    SENSOR_TYPE_ID_BAROMETER = 8,
-    SENSOR_TYPE_ID_HALL = 10,
-    SENSOR_TYPE_ID_PROXIMITY = 12,
-    SENSOR_TYPE_ID_HUMIDITY = 13,
-    SENSOR_TYPE_ID_ORIENTATION = 256,
-    SENSOR_TYPE_ID_GRAVITY = 257,
-    SENSOR_TYPE_ID_LINEAR_ACCELERATION = 258,
-    SENSOR_TYPE_ID_ROTATION_VECTOR = 259,
-    SENSOR_TYPE_ID_AMBIENT_TEMPERATURE = 260,
-    SENSOR_TYPE_ID_MAGNETIC_FIELD_UNCALIBRATED = 261,
-    SENSOR_TYPE_ID_GYROSCOPE_UNCALIBRATED = 263,
-    SENSOR_TYPE_ID_SIGNIFICANT_MOTION = 264,
-    SENSOR_TYPE_ID_PEDOMETER_DETECTION = 265,
-    SENSOR_TYPE_ID_PEDOMETER = 266,
-    SENSOR_TYPE_ID_HEART_RATE = 278,
-    SENSOR_TYPE_ID_WEAR_DETECTION = 280,
-    SENSOR_TYPE_ID_ACCELEROMETER_UNCALIBRATED = 281
+    SensorTypeIdAccelerometer = 1,
+    SensorTypeIdGyroscope = 2,
+    SensorTypeIdAmbientLight = 5,
+    SensorTypeIdMagneticField = 6,
+    SensorTypeIdBarometer = 8,
+    SensorTypeIdHall = 10,
+    SensorTypeIdProximity = 12,
+    SensorTypeIdHumidity = 13,
+    SensorTypeIdOrientation = 256,
+    SensorTypeIdGravity = 257,
+    SensorTypeIdLinearAcceleration = 258,
+    SensorTypeIdRotationVector = 259,
+    SensorTypeIdAmbientTemperature = 260,
+    SensorTypeIdMagneticFieldUncalibrated = 261,
+    SensorTypeIdGyroscopeUncalibrated = 263,
+    SensorTypeIdSignificantMotion = 264,
+    SensorTypeIdPedometerDetection = 265,
+    SensorTypeIdPedometer = 266,
+    SensorTypeIdHeartRate = 278,
+    SensorTypeIdWearDetection = 280,
+    SensorTypeIdAccelerometerUncalibrated = 281
 }
 
 /// <summary>
@@ -64,8 +64,8 @@ public enum SensorType
 /// </summary>
 public enum SensorAccuracy
 {
-    ACCURACY_UNRELIABLE = 0,
-    ACCURACY_LOW = 1,
-    ACCURACY_MEDIUM = 2,
-    ACCURACY_HIGH = 3
+    AccuracyUnreliable = 0,
+    AccuracyLow = 1,
+    AccuracyMedium = 2,
+    AccuracyHigh = 3
 }

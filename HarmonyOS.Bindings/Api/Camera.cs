@@ -4,8 +4,10 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
 
@@ -22,7 +24,8 @@ public static unsafe partial class Camera
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -67,11 +70,1301 @@ public static unsafe partial class Camera
     private static ReadOnlySpan<byte> _getCameraManager => "getCameraManager"u8;
 
     /// <summary>
-    /// getCameraManager 方法
+    /// getCameraManager
     /// </summary>
-    public static IntPtr GetCameraManager(IntPtr context)
+    public static CameraManager GetCameraManager(IntPtr context)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getCameraManager, context);
+        return NodeApi.CallMethod(Module, _getCameraManager, static h => new CameraManager(h), context);
+    }
+
+}
+
+/// <summary>
+/// CameraManager 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CameraManager : JsObject
+{
+    public CameraManager(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _getSupportedCameras => "getSupportedCameras"u8;
+    private static ReadOnlySpan<byte> _getSupportedOutputCapability => "getSupportedOutputCapability"u8;
+    private static ReadOnlySpan<byte> _getSupportedSceneModes => "getSupportedSceneModes"u8;
+    private static ReadOnlySpan<byte> _getSupportedFullOutputCapability => "getSupportedFullOutputCapability"u8;
+    private static ReadOnlySpan<byte> _isCameraMuted => "isCameraMuted"u8;
+    private static ReadOnlySpan<byte> _createCameraInput => "createCameraInput"u8;
+    private static ReadOnlySpan<byte> _createPreviewOutput => "createPreviewOutput"u8;
+    private static ReadOnlySpan<byte> _createPhotoOutput => "createPhotoOutput"u8;
+    private static ReadOnlySpan<byte> _createVideoOutput => "createVideoOutput"u8;
+    private static ReadOnlySpan<byte> _createMetadataOutput => "createMetadataOutput"u8;
+    private static ReadOnlySpan<byte> _createCaptureSession => "createCaptureSession"u8;
+    private static ReadOnlySpan<byte> _createSession => "createSession"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _createDeferredPreviewOutput => "createDeferredPreviewOutput"u8;
+    private static ReadOnlySpan<byte> _isTorchSupported => "isTorchSupported"u8;
+    private static ReadOnlySpan<byte> _isTorchModeSupported => "isTorchModeSupported"u8;
+    private static ReadOnlySpan<byte> _getTorchMode => "getTorchMode"u8;
+    private static ReadOnlySpan<byte> _setTorchMode => "setTorchMode"u8;
+    private static ReadOnlySpan<byte> _isTorchLevelControlSupported => "isTorchLevelControlSupported"u8;
+    private static ReadOnlySpan<byte> _setTorchModeOnWithLevel => "setTorchModeOnWithLevel"u8;
+    private static ReadOnlySpan<byte> _getCameraDevice => "getCameraDevice"u8;
+    private static ReadOnlySpan<byte> _getCameraConcurrentInfos => "getCameraConcurrentInfos"u8;
+    private static ReadOnlySpan<byte> _getCameraDevices => "getCameraDevices"u8;
+    /// <summary>
+    /// getSupportedCameras
+    /// </summary>
+    public IntPtr[] GetSupportedCameras()
+    {
+        return CallMethod(_getSupportedCameras, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+    }
+
+    /// <summary>
+    /// getSupportedOutputCapability
+    /// </summary>
+    public IntPtr GetSupportedOutputCapability(IntPtr camera)
+    {
+        return CallMethod<IntPtr>(_getSupportedOutputCapability, camera);
+    }
+
+    /// <summary>
+    /// getSupportedSceneModes
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SceneMode[] GetSupportedSceneModes(IntPtr camera)
+    {
+        return CallMethod(_getSupportedSceneModes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.SceneMode>(e)), camera);
+    }
+
+    /// <summary>
+    /// getSupportedFullOutputCapability
+    /// </summary>
+    public IntPtr GetSupportedFullOutputCapability(IntPtr camera, global::HarmonyOS.ArkUI.SceneMode mode)
+    {
+        return CallMethod<IntPtr>(_getSupportedFullOutputCapability, camera, mode);
+    }
+
+    /// <summary>
+    /// isCameraMuted
+    /// </summary>
+    public bool IsCameraMuted()
+    {
+        return CallMethod<bool>(_isCameraMuted);
+    }
+
+    /// <summary>
+    /// createCameraInput
+    /// </summary>
+    public CameraInput CreateCameraInput(IntPtr camera)
+    {
+        return CallMethod(_createCameraInput, static h => new CameraInput(h), camera);
+    }
+
+    /// <summary>
+    /// createPreviewOutput
+    /// </summary>
+    public PreviewOutput CreatePreviewOutput(Profile profile, string surfaceId)
+    {
+        return CallMethod(_createPreviewOutput, static h => new PreviewOutput(h), profile, surfaceId);
+    }
+
+    /// <summary>
+    /// createPhotoOutput
+    /// </summary>
+    public PhotoOutput CreatePhotoOutput(Profile profile, string surfaceId)
+    {
+        return CallMethod(_createPhotoOutput, static h => new PhotoOutput(h), profile, surfaceId);
+    }
+
+    /// <summary>
+    /// createVideoOutput
+    /// </summary>
+    public VideoOutput CreateVideoOutput(VideoProfile profile, string surfaceId)
+    {
+        return CallMethod(_createVideoOutput, static h => new VideoOutput(h), profile, surfaceId);
+    }
+
+    /// <summary>
+    /// createMetadataOutput
+    /// </summary>
+    public MetadataOutput CreateMetadataOutput(global::HarmonyOS.ArkUI.MetadataObjectType[] metadataObjectTypes)
+    {
+        return CallMethod(_createMetadataOutput, static h => new MetadataOutput(h), metadataObjectTypes);
+    }
+
+    /// <summary>
+    /// createCaptureSession
+    /// </summary>
+    public CaptureSession CreateCaptureSession()
+    {
+        return CallMethod(_createCaptureSession, static h => new CaptureSession(h));
+    }
+
+    /// <summary>
+    /// createSession
+    /// </summary>
+    public IntPtr CreateSession(global::HarmonyOS.ArkUI.SceneMode mode)
+    {
+        return CallMethod<IntPtr>(_createSession, mode);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// createDeferredPreviewOutput
+    /// </summary>
+    public PreviewOutput CreateDeferredPreviewOutput(Profile profile)
+    {
+        return CallMethod(_createDeferredPreviewOutput, static h => new PreviewOutput(h), profile);
+    }
+
+    /// <summary>
+    /// isTorchSupported
+    /// </summary>
+    public bool IsTorchSupported()
+    {
+        return CallMethod<bool>(_isTorchSupported);
+    }
+
+    /// <summary>
+    /// isTorchModeSupported
+    /// </summary>
+    public bool IsTorchModeSupported(global::HarmonyOS.ArkUI.TorchMode mode)
+    {
+        return CallMethod<bool>(_isTorchModeSupported, mode);
+    }
+
+    /// <summary>
+    /// getTorchMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.TorchMode GetTorchMode()
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.TorchMode>(_getTorchMode);
+    }
+
+    /// <summary>
+    /// setTorchMode
+    /// </summary>
+    public void SetTorchMode(global::HarmonyOS.ArkUI.TorchMode mode)
+    {
+        CallMethodVoid(_setTorchMode, mode);
+    }
+
+    /// <summary>
+    /// isTorchLevelControlSupported
+    /// </summary>
+    public bool IsTorchLevelControlSupported()
+    {
+        return CallMethod<bool>(_isTorchLevelControlSupported);
+    }
+
+    /// <summary>
+    /// setTorchModeOnWithLevel
+    /// </summary>
+    public void SetTorchModeOnWithLevel(double torchLevel)
+    {
+        CallMethodVoid(_setTorchModeOnWithLevel, torchLevel);
+    }
+
+    /// <summary>
+    /// getCameraDevice
+    /// </summary>
+    public IntPtr GetCameraDevice(global::HarmonyOS.ArkUI.CameraPosition position, global::HarmonyOS.ArkUI.CameraType type)
+    {
+        return CallMethod<IntPtr>(_getCameraDevice, position, type);
+    }
+
+    /// <summary>
+    /// getCameraConcurrentInfos
+    /// </summary>
+    public IntPtr[] GetCameraConcurrentInfos(IntPtr[] cameras)
+    {
+        return CallMethod(_getCameraConcurrentInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), cameras);
+    }
+
+    /// <summary>
+    /// getCameraDevices
+    /// </summary>
+    public IntPtr[] GetCameraDevices(global::HarmonyOS.ArkUI.CameraPosition position, global::HarmonyOS.ArkUI.CameraType[] types, global::HarmonyOS.ArkUI.ConnectionType connectType)
+    {
+        return CallMethod(_getCameraDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), position, types, connectType);
+    }
+
+}
+
+/// <summary>
+/// CameraInput 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CameraInput : JsObject
+{
+    public CameraInput(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _open => "open"u8;
+    private static ReadOnlySpan<byte> _close => "close"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _isPhysicalCameraOrientationVariable => "isPhysicalCameraOrientationVariable"u8;
+    private static ReadOnlySpan<byte> _getPhysicalCameraOrientation => "getPhysicalCameraOrientation"u8;
+    private static ReadOnlySpan<byte> _usePhysicalCameraOrientation => "usePhysicalCameraOrientation"u8;
+    /// <summary>
+    /// open
+    /// </summary>
+    public void Open(IntPtr callback)
+    {
+        CallMethodVoid(_open, callback);
+    }
+
+    /// <summary>
+    /// close
+    /// </summary>
+    public void Close(IntPtr callback)
+    {
+        CallMethodVoid(_close, callback);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr camera, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, camera, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr camera, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, camera, callback);
+    }
+
+    /// <summary>
+    /// isPhysicalCameraOrientationVariable
+    /// </summary>
+    public bool IsPhysicalCameraOrientationVariable()
+    {
+        return CallMethod<bool>(_isPhysicalCameraOrientationVariable);
+    }
+
+    /// <summary>
+    /// getPhysicalCameraOrientation
+    /// </summary>
+    public double GetPhysicalCameraOrientation()
+    {
+        return CallMethod<double>(_getPhysicalCameraOrientation);
+    }
+
+    /// <summary>
+    /// usePhysicalCameraOrientation
+    /// </summary>
+    public void UsePhysicalCameraOrientation(bool isUsed)
+    {
+        CallMethodVoid(_usePhysicalCameraOrientation, isUsed);
+    }
+
+}
+
+/// <summary>
+/// PreviewOutput 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PreviewOutput : JsObject
+{
+    public PreviewOutput(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _start => "start"u8;
+    private static ReadOnlySpan<byte> _stop => "stop"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _getSupportedFrameRates => "getSupportedFrameRates"u8;
+    private static ReadOnlySpan<byte> _setFrameRate => "setFrameRate"u8;
+    private static ReadOnlySpan<byte> _getActiveFrameRate => "getActiveFrameRate"u8;
+    private static ReadOnlySpan<byte> _getPreviewRotation => "getPreviewRotation"u8;
+    private static ReadOnlySpan<byte> _setPreviewRotation => "setPreviewRotation"u8;
+    private static ReadOnlySpan<byte> _getActiveProfile => "getActiveProfile"u8;
+    private static ReadOnlySpan<byte> _addDeferredSurface => "addDeferredSurface"u8;
+    private static ReadOnlySpan<byte> _isBandwidthCompressionSupported => "isBandwidthCompressionSupported"u8;
+    private static ReadOnlySpan<byte> _enableBandwidthCompression => "enableBandwidthCompression"u8;
+    private static ReadOnlySpan<byte> _isLogViewAssistSupported => "isLogViewAssistSupported"u8;
+    private static ReadOnlySpan<byte> _setLogViewAssistEnable => "setLogViewAssistEnable"u8;
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// start
+    /// </summary>
+    public void Start(IntPtr callback)
+    {
+        CallMethodVoid(_start, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public void Stop(IntPtr callback)
+    {
+        CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// getSupportedFrameRates
+    /// </summary>
+    public FrameRateRange[] GetSupportedFrameRates()
+    {
+        return CallMethod(_getSupportedFrameRates, h => ValueConverter.ConvertArray(h, static e => new FrameRateRange(e)));
+    }
+
+    /// <summary>
+    /// setFrameRate
+    /// </summary>
+    public void SetFrameRate(double minFps, double maxFps)
+    {
+        CallMethodVoid(_setFrameRate, minFps, maxFps);
+    }
+
+    /// <summary>
+    /// getActiveFrameRate
+    /// </summary>
+    public FrameRateRange GetActiveFrameRate()
+    {
+        return CallMethod(_getActiveFrameRate, static h => new FrameRateRange(h));
+    }
+
+    /// <summary>
+    /// getPreviewRotation
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ImageRotation GetPreviewRotation(double? displayRotation = null)
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getPreviewRotation, displayRotation);
+    }
+
+    /// <summary>
+    /// setPreviewRotation
+    /// </summary>
+    public void SetPreviewRotation(global::HarmonyOS.ArkUI.ImageRotation previewRotation, bool? isDisplayLocked = null)
+    {
+        CallMethodVoid(_setPreviewRotation, previewRotation, isDisplayLocked);
+    }
+
+    /// <summary>
+    /// getActiveProfile
+    /// </summary>
+    public Profile GetActiveProfile()
+    {
+        return CallMethod(_getActiveProfile, static h => new Profile(h));
+    }
+
+    /// <summary>
+    /// addDeferredSurface
+    /// </summary>
+    public void AddDeferredSurface(string surfaceId)
+    {
+        CallMethodVoid(_addDeferredSurface, surfaceId);
+    }
+
+    /// <summary>
+    /// isBandwidthCompressionSupported
+    /// </summary>
+    public bool IsBandwidthCompressionSupported()
+    {
+        return CallMethod<bool>(_isBandwidthCompressionSupported);
+    }
+
+    /// <summary>
+    /// enableBandwidthCompression
+    /// </summary>
+    public void EnableBandwidthCompression(bool enabled)
+    {
+        CallMethodVoid(_enableBandwidthCompression, enabled);
+    }
+
+    /// <summary>
+    /// isLogViewAssistSupported
+    /// </summary>
+    public bool IsLogViewAssistSupported()
+    {
+        return CallMethod<bool>(_isLogViewAssistSupported);
+    }
+
+    /// <summary>
+    /// setLogViewAssistEnable
+    /// </summary>
+    public void SetLogViewAssistEnable(bool enable)
+    {
+        CallMethodVoid(_setLogViewAssistEnable, enable);
+    }
+
+}
+
+/// <summary>
+/// Profile 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Profile : JsObject
+{
+    public Profile(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _format => "format"u8;
+    private static ReadOnlySpan<byte> _size => "size"u8;
+    /// <summary>
+    /// format
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CameraFormat Format => (global::HarmonyOS.ArkUI.CameraFormat)NativeValue.ToInt(GetPropertyRaw(_format));
+
+    /// <summary>
+    /// size
+    /// </summary>
+    public Size Size => new Size(GetPropertyRaw(_size));
+
+}
+
+/// <summary>
+/// PhotoOutput 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PhotoOutput : JsObject
+{
+    public PhotoOutput(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _capture => "capture"u8;
+    private static ReadOnlySpan<byte> _getSupportedMovingPhotoVideoCodecTypes => "getSupportedMovingPhotoVideoCodecTypes"u8;
+    private static ReadOnlySpan<byte> _setMovingPhotoVideoCodecType => "setMovingPhotoVideoCodecType"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _onCapturePhotoAvailable => "onCapturePhotoAvailable"u8;
+    private static ReadOnlySpan<byte> _offCapturePhotoAvailable => "offCapturePhotoAvailable"u8;
+    private static ReadOnlySpan<byte> _isMirrorSupported => "isMirrorSupported"u8;
+    private static ReadOnlySpan<byte> _enableMirror => "enableMirror"u8;
+    private static ReadOnlySpan<byte> _getActiveProfile => "getActiveProfile"u8;
+    private static ReadOnlySpan<byte> _isMovingPhotoSupported => "isMovingPhotoSupported"u8;
+    private static ReadOnlySpan<byte> _enableMovingPhoto => "enableMovingPhoto"u8;
+    private static ReadOnlySpan<byte> _isPhotoQualityPrioritizationSupported => "isPhotoQualityPrioritizationSupported"u8;
+    private static ReadOnlySpan<byte> _setPhotoQualityPrioritization => "setPhotoQualityPrioritization"u8;
+    private static ReadOnlySpan<byte> _getPhotoRotation => "getPhotoRotation"u8;
+    private static ReadOnlySpan<byte> _isAutoExtendedGainmapDeliverySupported => "isAutoExtendedGainmapDeliverySupported"u8;
+    private static ReadOnlySpan<byte> _enableAutoExtendedGainmapDelivery => "enableAutoExtendedGainmapDelivery"u8;
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// capture
+    /// </summary>
+    public void Capture(IntPtr callback)
+    {
+        CallMethodVoid(_capture, callback);
+    }
+
+    /// <summary>
+    /// getSupportedMovingPhotoVideoCodecTypes
+    /// </summary>
+    public global::HarmonyOS.ArkUI.VideoCodecType[] GetSupportedMovingPhotoVideoCodecTypes()
+    {
+        return CallMethod(_getSupportedMovingPhotoVideoCodecTypes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.VideoCodecType>(e)));
+    }
+
+    /// <summary>
+    /// setMovingPhotoVideoCodecType
+    /// </summary>
+    public void SetMovingPhotoVideoCodecType(global::HarmonyOS.ArkUI.VideoCodecType codecType)
+    {
+        CallMethodVoid(_setMovingPhotoVideoCodecType, codecType);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// onCapturePhotoAvailable
+    /// </summary>
+    public void OnCapturePhotoAvailable(IntPtr callback)
+    {
+        CallMethodVoid(_onCapturePhotoAvailable, callback);
+    }
+
+    /// <summary>
+    /// offCapturePhotoAvailable
+    /// </summary>
+    public void OffCapturePhotoAvailable(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offCapturePhotoAvailable, callback);
+    }
+
+    /// <summary>
+    /// isMirrorSupported
+    /// </summary>
+    public bool IsMirrorSupported()
+    {
+        return CallMethod<bool>(_isMirrorSupported);
+    }
+
+    /// <summary>
+    /// enableMirror
+    /// </summary>
+    public void EnableMirror(bool enabled)
+    {
+        CallMethodVoid(_enableMirror, enabled);
+    }
+
+    /// <summary>
+    /// getActiveProfile
+    /// </summary>
+    public Profile GetActiveProfile()
+    {
+        return CallMethod(_getActiveProfile, static h => new Profile(h));
+    }
+
+    /// <summary>
+    /// isMovingPhotoSupported
+    /// </summary>
+    public bool IsMovingPhotoSupported()
+    {
+        return CallMethod<bool>(_isMovingPhotoSupported);
+    }
+
+    /// <summary>
+    /// enableMovingPhoto
+    /// </summary>
+    public void EnableMovingPhoto(bool enabled)
+    {
+        CallMethodVoid(_enableMovingPhoto, enabled);
+    }
+
+    /// <summary>
+    /// isPhotoQualityPrioritizationSupported
+    /// </summary>
+    public bool IsPhotoQualityPrioritizationSupported(global::HarmonyOS.ArkUI.PhotoQualityPrioritization qualityPrioritization)
+    {
+        return CallMethod<bool>(_isPhotoQualityPrioritizationSupported, qualityPrioritization);
+    }
+
+    /// <summary>
+    /// setPhotoQualityPrioritization
+    /// </summary>
+    public void SetPhotoQualityPrioritization(global::HarmonyOS.ArkUI.PhotoQualityPrioritization qualityPrioritization)
+    {
+        CallMethodVoid(_setPhotoQualityPrioritization, qualityPrioritization);
+    }
+
+    /// <summary>
+    /// getPhotoRotation
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ImageRotation GetPhotoRotation(double? deviceDegree = null)
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getPhotoRotation, deviceDegree);
+    }
+
+    /// <summary>
+    /// isAutoExtendedGainmapDeliverySupported
+    /// </summary>
+    public bool IsAutoExtendedGainmapDeliverySupported()
+    {
+        return CallMethod<bool>(_isAutoExtendedGainmapDeliverySupported);
+    }
+
+    /// <summary>
+    /// enableAutoExtendedGainmapDelivery
+    /// </summary>
+    public void EnableAutoExtendedGainmapDelivery(bool enabled)
+    {
+        CallMethodVoid(_enableAutoExtendedGainmapDelivery, enabled);
+    }
+
+}
+
+/// <summary>
+/// VideoOutput 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class VideoOutput : JsObject
+{
+    public VideoOutput(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _start => "start"u8;
+    private static ReadOnlySpan<byte> _stop => "stop"u8;
+    private static ReadOnlySpan<byte> _isMirrorSupported => "isMirrorSupported"u8;
+    private static ReadOnlySpan<byte> _enableMirror => "enableMirror"u8;
+    private static ReadOnlySpan<byte> _getSupportedFrameRates => "getSupportedFrameRates"u8;
+    private static ReadOnlySpan<byte> _setFrameRate => "setFrameRate"u8;
+    private static ReadOnlySpan<byte> _getActiveFrameRate => "getActiveFrameRate"u8;
+    private static ReadOnlySpan<byte> _getVideoRotation => "getVideoRotation"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _getActiveProfile => "getActiveProfile"u8;
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// start
+    /// </summary>
+    public void Start(IntPtr callback)
+    {
+        CallMethodVoid(_start, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public void Stop(IntPtr callback)
+    {
+        CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// isMirrorSupported
+    /// </summary>
+    public bool IsMirrorSupported()
+    {
+        return CallMethod<bool>(_isMirrorSupported);
+    }
+
+    /// <summary>
+    /// enableMirror
+    /// </summary>
+    public void EnableMirror(bool enabled)
+    {
+        CallMethodVoid(_enableMirror, enabled);
+    }
+
+    /// <summary>
+    /// getSupportedFrameRates
+    /// </summary>
+    public FrameRateRange[] GetSupportedFrameRates()
+    {
+        return CallMethod(_getSupportedFrameRates, h => ValueConverter.ConvertArray(h, static e => new FrameRateRange(e)));
+    }
+
+    /// <summary>
+    /// setFrameRate
+    /// </summary>
+    public void SetFrameRate(double minFps, double maxFps)
+    {
+        CallMethodVoid(_setFrameRate, minFps, maxFps);
+    }
+
+    /// <summary>
+    /// getActiveFrameRate
+    /// </summary>
+    public FrameRateRange GetActiveFrameRate()
+    {
+        return CallMethod(_getActiveFrameRate, static h => new FrameRateRange(h));
+    }
+
+    /// <summary>
+    /// getVideoRotation
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ImageRotation GetVideoRotation(double? deviceDegree = null)
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getVideoRotation, deviceDegree);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// getActiveProfile
+    /// </summary>
+    public VideoProfile GetActiveProfile()
+    {
+        return CallMethod(_getActiveProfile, static h => new VideoProfile(h));
+    }
+
+}
+
+/// <summary>
+/// VideoProfile 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class VideoProfile : JsObject
+{
+    public VideoProfile(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _format => "format"u8;
+    private static ReadOnlySpan<byte> _size => "size"u8;
+    private static ReadOnlySpan<byte> _frameRateRange => "frameRateRange"u8;
+    /// <summary>
+    /// format
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CameraFormat Format => (global::HarmonyOS.ArkUI.CameraFormat)NativeValue.ToInt(GetPropertyRaw(_format));
+
+    /// <summary>
+    /// size
+    /// </summary>
+    public Size Size => new Size(GetPropertyRaw(_size));
+
+    /// <summary>
+    /// frameRateRange
+    /// </summary>
+    public FrameRateRange FrameRateRange => new FrameRateRange(GetPropertyRaw(_frameRateRange));
+
+}
+
+/// <summary>
+/// MetadataOutput 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class MetadataOutput : JsObject
+{
+    public MetadataOutput(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _start => "start"u8;
+    private static ReadOnlySpan<byte> _stop => "stop"u8;
+    private static ReadOnlySpan<byte> _addMetadataObjectTypes => "addMetadataObjectTypes"u8;
+    private static ReadOnlySpan<byte> _removeMetadataObjectTypes => "removeMetadataObjectTypes"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _isLockMetadataObjectTrackingSupported => "isLockMetadataObjectTrackingSupported"u8;
+    private static ReadOnlySpan<byte> _lockMetadataObjectTracking => "lockMetadataObjectTracking"u8;
+    private static ReadOnlySpan<byte> _unlockMetadataObjectTracking => "unlockMetadataObjectTracking"u8;
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// start
+    /// </summary>
+    public void Start(IntPtr callback)
+    {
+        CallMethodVoid(_start, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public void Stop(IntPtr callback)
+    {
+        CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// addMetadataObjectTypes
+    /// </summary>
+    public void AddMetadataObjectTypes(global::HarmonyOS.ArkUI.MetadataObjectType[] types)
+    {
+        CallMethodVoid(_addMetadataObjectTypes, types);
+    }
+
+    /// <summary>
+    /// removeMetadataObjectTypes
+    /// </summary>
+    public void RemoveMetadataObjectTypes(global::HarmonyOS.ArkUI.MetadataObjectType[] types)
+    {
+        CallMethodVoid(_removeMetadataObjectTypes, types);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// isLockMetadataObjectTrackingSupported
+    /// </summary>
+    public bool IsLockMetadataObjectTrackingSupported()
+    {
+        return CallMethod<bool>(_isLockMetadataObjectTrackingSupported);
+    }
+
+    /// <summary>
+    /// lockMetadataObjectTracking
+    /// </summary>
+    public void LockMetadataObjectTracking(Point point)
+    {
+        CallMethodVoid(_lockMetadataObjectTracking, point);
+    }
+
+    /// <summary>
+    /// unlockMetadataObjectTracking
+    /// </summary>
+    public void UnlockMetadataObjectTracking()
+    {
+        CallMethodVoid(_unlockMetadataObjectTracking);
+    }
+
+}
+
+/// <summary>
+/// CaptureSession 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CaptureSession : JsObject
+{
+    public CaptureSession(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _beginConfig => "beginConfig"u8;
+    private static ReadOnlySpan<byte> _commitConfig => "commitConfig"u8;
+    private static ReadOnlySpan<byte> _addInput => "addInput"u8;
+    private static ReadOnlySpan<byte> _removeInput => "removeInput"u8;
+    private static ReadOnlySpan<byte> _addOutput => "addOutput"u8;
+    private static ReadOnlySpan<byte> _removeOutput => "removeOutput"u8;
+    private static ReadOnlySpan<byte> _start => "start"u8;
+    private static ReadOnlySpan<byte> _stop => "stop"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _hasFlash => "hasFlash"u8;
+    private static ReadOnlySpan<byte> _isFlashModeSupported => "isFlashModeSupported"u8;
+    private static ReadOnlySpan<byte> _getFlashMode => "getFlashMode"u8;
+    private static ReadOnlySpan<byte> _setFlashMode => "setFlashMode"u8;
+    private static ReadOnlySpan<byte> _isExposureModeSupported => "isExposureModeSupported"u8;
+    private static ReadOnlySpan<byte> _getExposureMode => "getExposureMode"u8;
+    private static ReadOnlySpan<byte> _setExposureMode => "setExposureMode"u8;
+    private static ReadOnlySpan<byte> _getMeteringPoint => "getMeteringPoint"u8;
+    private static ReadOnlySpan<byte> _setMeteringPoint => "setMeteringPoint"u8;
+    private static ReadOnlySpan<byte> _getExposureBiasRange => "getExposureBiasRange"u8;
+    private static ReadOnlySpan<byte> _setExposureBias => "setExposureBias"u8;
+    private static ReadOnlySpan<byte> _getExposureValue => "getExposureValue"u8;
+    private static ReadOnlySpan<byte> _isFocusModeSupported => "isFocusModeSupported"u8;
+    private static ReadOnlySpan<byte> _getFocusMode => "getFocusMode"u8;
+    private static ReadOnlySpan<byte> _setFocusMode => "setFocusMode"u8;
+    private static ReadOnlySpan<byte> _setFocusPoint => "setFocusPoint"u8;
+    private static ReadOnlySpan<byte> _getFocusPoint => "getFocusPoint"u8;
+    private static ReadOnlySpan<byte> _getFocalLength => "getFocalLength"u8;
+    private static ReadOnlySpan<byte> _getZoomRatioRange => "getZoomRatioRange"u8;
+    private static ReadOnlySpan<byte> _getZoomRatio => "getZoomRatio"u8;
+    private static ReadOnlySpan<byte> _setZoomRatio => "setZoomRatio"u8;
+    private static ReadOnlySpan<byte> _isVideoStabilizationModeSupported => "isVideoStabilizationModeSupported"u8;
+    private static ReadOnlySpan<byte> _getActiveVideoStabilizationMode => "getActiveVideoStabilizationMode"u8;
+    private static ReadOnlySpan<byte> _setVideoStabilizationMode => "setVideoStabilizationMode"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    /// <summary>
+    /// beginConfig
+    /// </summary>
+    public void BeginConfig()
+    {
+        CallMethodVoid(_beginConfig);
+    }
+
+    /// <summary>
+    /// commitConfig
+    /// </summary>
+    public void CommitConfig(IntPtr callback)
+    {
+        CallMethodVoid(_commitConfig, callback);
+    }
+
+    /// <summary>
+    /// addInput
+    /// </summary>
+    public void AddInput(CameraInput cameraInput)
+    {
+        CallMethodVoid(_addInput, cameraInput);
+    }
+
+    /// <summary>
+    /// removeInput
+    /// </summary>
+    public void RemoveInput(CameraInput cameraInput)
+    {
+        CallMethodVoid(_removeInput, cameraInput);
+    }
+
+    /// <summary>
+    /// addOutput
+    /// </summary>
+    public void AddOutput(CameraOutput cameraOutput)
+    {
+        CallMethodVoid(_addOutput, cameraOutput);
+    }
+
+    /// <summary>
+    /// removeOutput
+    /// </summary>
+    public void RemoveOutput(CameraOutput cameraOutput)
+    {
+        CallMethodVoid(_removeOutput, cameraOutput);
+    }
+
+    /// <summary>
+    /// start
+    /// </summary>
+    public void Start(IntPtr callback)
+    {
+        CallMethodVoid(_start, callback);
+    }
+
+    /// <summary>
+    /// stop
+    /// </summary>
+    public void Stop(IntPtr callback)
+    {
+        CallMethodVoid(_stop, callback);
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
+    }
+
+    /// <summary>
+    /// hasFlash
+    /// </summary>
+    public bool HasFlash()
+    {
+        return CallMethod<bool>(_hasFlash);
+    }
+
+    /// <summary>
+    /// isFlashModeSupported
+    /// </summary>
+    public bool IsFlashModeSupported(global::HarmonyOS.ArkUI.FlashMode flashMode)
+    {
+        return CallMethod<bool>(_isFlashModeSupported, flashMode);
+    }
+
+    /// <summary>
+    /// getFlashMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.FlashMode GetFlashMode()
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.FlashMode>(_getFlashMode);
+    }
+
+    /// <summary>
+    /// setFlashMode
+    /// </summary>
+    public void SetFlashMode(global::HarmonyOS.ArkUI.FlashMode flashMode)
+    {
+        CallMethodVoid(_setFlashMode, flashMode);
+    }
+
+    /// <summary>
+    /// isExposureModeSupported
+    /// </summary>
+    public bool IsExposureModeSupported(global::HarmonyOS.ArkUI.ExposureMode aeMode)
+    {
+        return CallMethod<bool>(_isExposureModeSupported, aeMode);
+    }
+
+    /// <summary>
+    /// getExposureMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ExposureMode GetExposureMode()
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.ExposureMode>(_getExposureMode);
+    }
+
+    /// <summary>
+    /// setExposureMode
+    /// </summary>
+    public void SetExposureMode(global::HarmonyOS.ArkUI.ExposureMode aeMode)
+    {
+        CallMethodVoid(_setExposureMode, aeMode);
+    }
+
+    /// <summary>
+    /// getMeteringPoint
+    /// </summary>
+    public Point GetMeteringPoint()
+    {
+        return CallMethod(_getMeteringPoint, static h => new Point(h));
+    }
+
+    /// <summary>
+    /// setMeteringPoint
+    /// </summary>
+    public void SetMeteringPoint(Point point)
+    {
+        CallMethodVoid(_setMeteringPoint, point);
+    }
+
+    /// <summary>
+    /// getExposureBiasRange
+    /// </summary>
+    public double[] GetExposureBiasRange()
+    {
+        return CallMethod(_getExposureBiasRange, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)));
+    }
+
+    /// <summary>
+    /// setExposureBias
+    /// </summary>
+    public void SetExposureBias(double exposureBias)
+    {
+        CallMethodVoid(_setExposureBias, exposureBias);
+    }
+
+    /// <summary>
+    /// getExposureValue
+    /// </summary>
+    public double GetExposureValue()
+    {
+        return CallMethod<double>(_getExposureValue);
+    }
+
+    /// <summary>
+    /// isFocusModeSupported
+    /// </summary>
+    public bool IsFocusModeSupported(global::HarmonyOS.ArkUI.FocusMode afMode)
+    {
+        return CallMethod<bool>(_isFocusModeSupported, afMode);
+    }
+
+    /// <summary>
+    /// getFocusMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.FocusMode GetFocusMode()
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.FocusMode>(_getFocusMode);
+    }
+
+    /// <summary>
+    /// setFocusMode
+    /// </summary>
+    public void SetFocusMode(global::HarmonyOS.ArkUI.FocusMode afMode)
+    {
+        CallMethodVoid(_setFocusMode, afMode);
+    }
+
+    /// <summary>
+    /// setFocusPoint
+    /// </summary>
+    public void SetFocusPoint(Point point)
+    {
+        CallMethodVoid(_setFocusPoint, point);
+    }
+
+    /// <summary>
+    /// getFocusPoint
+    /// </summary>
+    public Point GetFocusPoint()
+    {
+        return CallMethod(_getFocusPoint, static h => new Point(h));
+    }
+
+    /// <summary>
+    /// getFocalLength
+    /// </summary>
+    public double GetFocalLength()
+    {
+        return CallMethod<double>(_getFocalLength);
+    }
+
+    /// <summary>
+    /// getZoomRatioRange
+    /// </summary>
+    public double[] GetZoomRatioRange()
+    {
+        return CallMethod(_getZoomRatioRange, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)));
+    }
+
+    /// <summary>
+    /// getZoomRatio
+    /// </summary>
+    public double GetZoomRatio()
+    {
+        return CallMethod<double>(_getZoomRatio);
+    }
+
+    /// <summary>
+    /// setZoomRatio
+    /// </summary>
+    public void SetZoomRatio(double zoomRatio)
+    {
+        CallMethodVoid(_setZoomRatio, zoomRatio);
+    }
+
+    /// <summary>
+    /// isVideoStabilizationModeSupported
+    /// </summary>
+    public bool IsVideoStabilizationModeSupported(global::HarmonyOS.ArkUI.VideoStabilizationMode vsMode)
+    {
+        return CallMethod<bool>(_isVideoStabilizationModeSupported, vsMode);
+    }
+
+    /// <summary>
+    /// getActiveVideoStabilizationMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.VideoStabilizationMode GetActiveVideoStabilizationMode()
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.VideoStabilizationMode>(_getActiveVideoStabilizationMode);
+    }
+
+    /// <summary>
+    /// setVideoStabilizationMode
+    /// </summary>
+    public void SetVideoStabilizationMode(global::HarmonyOS.ArkUI.VideoStabilizationMode mode)
+    {
+        CallMethodVoid(_setVideoStabilizationMode, mode);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+}
+
+/// <summary>
+/// FrameRateRange 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class FrameRateRange : JsObject
+{
+    public FrameRateRange(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _min => "min"u8;
+    private static ReadOnlySpan<byte> _max => "max"u8;
+    /// <summary>
+    /// min
+    /// </summary>
+    public double Min => NativeValue.ToDouble(GetPropertyRaw(_min));
+
+    /// <summary>
+    /// max
+    /// </summary>
+    public double Max => NativeValue.ToDouble(GetPropertyRaw(_max));
+
+}
+
+/// <summary>
+/// Size 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Size : JsObject
+{
+    public Size(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+}
+
+/// <summary>
+/// Point 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Point : JsObject
+{
+    public Point(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+}
+
+/// <summary>
+/// CameraOutput 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CameraOutput : JsObject
+{
+    public CameraOutput(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release(IntPtr callback)
+    {
+        CallMethodVoid(_release, callback);
     }
 
 }

@@ -26,8 +26,9 @@ export class TypeMapper {
         'Array': { typescript: 'Array', csharp: 'IntPtr[]', isNative: true },
         'Callback': { typescript: 'Callback', csharp: 'IntPtr', isNative: true },
         'Function': { typescript: 'Function', csharp: 'IntPtr', isNative: true },
-        'Action': { typescript: 'Action', csharp: 'Action', isNative: false },
-        'Func': { typescript: 'Func', csharp: 'Func', isNative: false },
+        // System. 全限定：产物 using HarmonyOS.ArkUI 中可能有同名类型（如枚举 Action）造成 CS0104
+        'Action': { typescript: 'Action', csharp: 'System.Action', isNative: false },
+        'Func': { typescript: 'Func', csharp: 'System.Func', isNative: false },
         // 特殊类型映射
         'object': { typescript: 'object', csharp: 'object', isNative: false },
         'any': { typescript: 'any', csharp: 'object', isNative: false },
@@ -78,7 +79,7 @@ export class TypeMapper {
         
         // 6. 处理映射类型 ([K in keyof T]) - 必须在泛型检测之前
         if (typescriptType.includes('[K in keyof') || typescriptType.includes('keyof')) {
-            return 'dynamic';
+            return 'object';
         }
 
         // 7. 处理泛型类型 (Callback<T1, T2>, Action<T>, Func<T, R>)
@@ -159,9 +160,9 @@ export class TypeMapper {
             }
             
             if (mappedReturnType === 'void') {
-                return params.length > 0 ? `Action<${params.join(', ')}>` : 'Action';
+                return params.length > 0 ? `System.Action<${params.join(', ')}>` : 'System.Action';
             } else {
-                return params.length > 0 ? `Func<${params.join(', ')}, ${mappedReturnType}>` : `Func<${mappedReturnType}>`;
+                return params.length > 0 ? `System.Func<${params.join(', ')}, ${mappedReturnType}>` : `System.Func<${mappedReturnType}>`;
             }
         }
         return 'IntPtr';
@@ -218,9 +219,8 @@ export class TypeMapper {
     }
 
     private static mapConditionalType(conditionalType: string): string {
-        // 条件类型映射为 dynamic
-        // 在 C# 中可以使用泛型约束或运行时类型判断
-        return 'dynamic';
+        // 条件类型无法静态确定，映射为 object（AOT 下不用 dynamic）
+        return 'object';
     }
 
     private static mapArrayType(arrayType: string): string {
@@ -234,7 +234,8 @@ export class TypeMapper {
 
     private static mapGenericType(genericType: string): string {
         // 匹配泛型类型，如 Callback<string, boolean>, Action<number>, Func<number, boolean>
-        const match = genericType.match(/^([^(]+)<(.+)>$/);
+        // baseType 只取首个 '<' 前的限定标识符——贪婪 ([^(]+)< 会把 Promise<Array<T>> 误切为 baseType='Promise<Array>'
+        const match = genericType.match(/^([A-Za-z_]\w*)<(.+)>$/);
         if (match) {
             const baseType = match[1].trim();
             const typeArgsStr = match[2];
@@ -252,12 +253,12 @@ export class TypeMapper {
                 // Action 和 Func 需要递归映射内部参数
                 if (baseType === 'Action' || baseType === 'Func') {
                     if (typeArgs.length === 0) {
-                        return baseType;
+                        return `System.${baseType}`;
                     } else if (baseType === 'Action') {
-                        return `Action<${typeArgs.join(', ')}>`;
+                        return `System.Action<${typeArgs.join(', ')}>`;
                     } else {
                         // Func<T, R> 或 Func<T1, T2, ..., R>
-                        return `Func<${typeArgs.join(', ')}>`;
+                        return `System.Func<${typeArgs.join(', ')}>`;
                     }
                 }
                 
@@ -271,7 +272,7 @@ export class TypeMapper {
             }
             
             // Promise<T>：基础类型映射为 Task<T>（运行时经 TSFN 异步层完成，见 ROADMAP 2.1）；
-            // 不可封送的内层类型退回 IntPtr 句柄
+            // 内层类型映射成功（含包装类/数组）直接用，仍为 IntPtr 的不可封送类型退回 Task<IntPtr> 句柄
             if (baseType === 'Promise' || baseType === 'promise') {
                 const innerMatch = /Promise<(.+)>\s*$/.exec(genericType.trim());
                 if (innerMatch) {
@@ -279,8 +280,8 @@ export class TypeMapper {
                     if (inner === 'void') {
                         return 'Task';
                     }
-                    if (['string', 'double', 'bool', 'int', 'uint', 'long', 'byte', 'IntPtr'].includes(inner)) {
-                        return inner === 'double' ? 'Task<double>' : `Task<${inner}>`;
+                    if (inner !== 'IntPtr' && inner !== 'object') {
+                        return `Task<${inner}>`;
                     }
                     // 不可封送的复杂类型：返回 Task<IntPtr>（句柄）
                     return 'Task<IntPtr>';
@@ -296,7 +297,8 @@ export class TypeMapper {
             // 对于未映射的泛型类型，检查是否已经是有效的 C# 泛型类型
             // （如 Task<T>, Action<T>, Func<T,R> 等由先前映射产生的类型）
             if (baseType === 'Task' || baseType === 'Action' || baseType === 'Func') {
-                return `${baseType}<${typeArgs.join(', ')}>`;
+                const csBase = baseType === 'Task' ? 'Task' : `System.${baseType}`;
+                return `${csBase}<${typeArgs.join(', ')}>`;
             }
             // 其他未映射的泛型类型退回 IntPtr
             return 'IntPtr';
@@ -339,6 +341,11 @@ export class TypeMapper {
 
     static addMapping(typescript: string, csharp: string, isNative: boolean = false): void {
         this.TYPE_MAP[typescript] = { typescript, csharp, isNative };
+    }
+
+    /** 移除映射（record 可封送性收敛时调用，移除后类型退回 IntPtr 句柄） */
+    static removeMapping(typescript: string): void {
+        delete this.TYPE_MAP[typescript];
     }
 
     static extractBaseType(typeWithUnion: string): string {

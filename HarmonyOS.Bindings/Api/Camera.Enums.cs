@@ -9,10 +9,10 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum CameraStatus
 {
-    CAMERA_STATUS_APPEAR = 0,
-    CAMERA_STATUS_DISAPPEAR = 1,
-    CAMERA_STATUS_AVAILABLE = 2,
-    CAMERA_STATUS_UNAVAILABLE = 3
+    CameraStatusAppear = 0,
+    CameraStatusDisappear = 1,
+    CameraStatusAvailable = 2,
+    CameraStatusUnavailable = 3
 }
 
 /// <summary>
@@ -20,10 +20,10 @@ public enum CameraStatus
 /// </summary>
 public enum SensorColorFilterArrangement
 {
-    BGGR = 0,
-    GBRG = 1,
-    GRBG = 2,
-    RGGB = 3
+    Bggr = 0,
+    Gbrg = 1,
+    Grbg = 2,
+    Rggb = 3
 }
 
 /// <summary>
@@ -31,17 +31,17 @@ public enum SensorColorFilterArrangement
 /// </summary>
 public enum CameraErrorCode
 {
-    INVALID_ARGUMENT = 7400101,
-    OPERATION_NOT_ALLOWED = 7400102,
-    SESSION_NOT_CONFIG = 7400103,
-    SESSION_NOT_RUNNING = 7400104,
-    SESSION_CONFIG_LOCKED = 7400105,
-    DEVICE_SETTING_LOCKED = 7400106,
-    CONFLICT_CAMERA = 7400107,
-    DEVICE_DISABLED = 7400108,
-    DEVICE_PREEMPTED = 7400109,
-    UNRESOLVED_CONFLICTS_WITH_CURRENT_CONFIGURATIONS = 7400110,
-    SERVICE_FATAL_ERROR = 7400201
+    InvalidArgument = 7400101,
+    OperationNotAllowed = 7400102,
+    SessionNotConfig = 7400103,
+    SessionNotRunning = 7400104,
+    SessionConfigLocked = 7400105,
+    DeviceSettingLocked = 7400106,
+    ConflictCamera = 7400107,
+    DeviceDisabled = 7400108,
+    DevicePreempted = 7400109,
+    UnresolvedConflictsWithCurrentConfigurations = 7400110,
+    ServiceFatalError = 7400201
 }
 
 /// <summary>
@@ -49,9 +49,9 @@ public enum CameraErrorCode
 /// </summary>
 public enum TorchMode
 {
-    OFF = 0,
-    ON = 1,
-    AUTO = 2
+    Off = 0,
+    On = 1,
+    Auto = 2
 }
 
 /// <summary>
@@ -59,10 +59,10 @@ public enum TorchMode
 /// </summary>
 public enum CameraPosition
 {
-    CAMERA_POSITION_UNSPECIFIED = 0,
-    CAMERA_POSITION_BACK = 1,
-    CAMERA_POSITION_FRONT = 2,
-    CAMERA_POSITION_FOLD_INNER = 3
+    CameraPositionUnspecified = 0,
+    CameraPositionBack = 1,
+    CameraPositionFront = 2,
+    CameraPositionFoldInner = 3
 }
 
 /// <summary>
@@ -70,11 +70,11 @@ public enum CameraPosition
 /// </summary>
 public enum CameraType
 {
-    CAMERA_TYPE_DEFAULT = 0,
-    CAMERA_TYPE_WIDE_ANGLE = 1,
-    CAMERA_TYPE_ULTRA_WIDE = 2,
-    CAMERA_TYPE_TELEPHOTO = 3,
-    CAMERA_TYPE_TRUE_DEPTH = 4
+    CameraTypeDefault = 0,
+    CameraTypeWideAngle = 1,
+    CameraTypeUltraWide = 2,
+    CameraTypeTelephoto = 3,
+    CameraTypeTrueDepth = 4
 }
 
 /// <summary>
@@ -82,9 +82,9 @@ public enum CameraType
 /// </summary>
 public enum ConnectionType
 {
-    CAMERA_CONNECTION_BUILT_IN = 0,
-    CAMERA_CONNECTION_USB_PLUGIN = 1,
-    CAMERA_CONNECTION_REMOTE = 2
+    CameraConnectionBuiltIn = 0,
+    CameraConnectionUsbPlugin = 1,
+    CameraConnectionRemote = 2
 }
 
 /// <summary>
@@ -92,9 +92,9 @@ public enum ConnectionType
 /// </summary>
 public enum HostDeviceType
 {
-    UNKNOWN_TYPE = 0,
-    PHONE = 14,
-    TABLET = 17
+    UnknownType = 0,
+    Phone = 14,
+    Tablet = 17
 }
 
 /// <summary>
@@ -102,9 +102,9 @@ public enum HostDeviceType
 /// </summary>
 public enum SceneMode
 {
-    NORMAL_PHOTO = 1,
-    NORMAL_VIDEO = 2,
-    SECURE_PHOTO = 12
+    NormalPhoto = 1,
+    NormalVideo = 2,
+    SecurePhoto = 12
 }
 
 /// <summary>
@@ -112,14 +112,14 @@ public enum SceneMode
 /// </summary>
 public enum CameraFormat
 {
-    CAMERA_FORMAT_RGBA_8888 = 3,
-    CAMERA_FORMAT_DNG = 4,
-    CAMERA_FORMAT_YUV_420_SP = 1003,
-    CAMERA_FORMAT_JPEG = 2000,
-    CAMERA_FORMAT_YCBCR_P010,
-    CAMERA_FORMAT_YCRCB_P010 = 2002,
-    CAMERA_FORMAT_HEIC = 2003,
-    CAMERA_FORMAT_DNG_XDRAW = 5
+    CameraFormatRgba8888 = 3,
+    CameraFormatDng = 4,
+    CameraFormatYuv420Sp = 1003,
+    CameraFormatJpeg = 2000,
+    CameraFormatYcbcrP010,
+    CameraFormatYcrcbP010 = 2002,
+    CameraFormatHeic = 2003,
+    CameraFormatDngXdraw = 5
 }
 
 /// <summary>
@@ -127,10 +127,10 @@ public enum CameraFormat
 /// </summary>
 public enum FlashMode
 {
-    FLASH_MODE_CLOSE = 0,
-    FLASH_MODE_OPEN = 1,
-    FLASH_MODE_AUTO = 2,
-    FLASH_MODE_ALWAYS_OPEN = 3
+    FlashModeClose = 0,
+    FlashModeOpen = 1,
+    FlashModeAuto = 2,
+    FlashModeAlwaysOpen = 3
 }
 
 /// <summary>
@@ -138,9 +138,9 @@ public enum FlashMode
 /// </summary>
 public enum FlashState
 {
-    FLASH_STATE_UNAVAILABLE = 0,
-    FLASH_STATE_READY = 1,
-    FLASH_STATE_FLASHING = 2
+    FlashStateUnavailable = 0,
+    FlashStateReady = 1,
+    FlashStateFlashing = 2
 }
 
 /// <summary>
@@ -149,11 +149,11 @@ public enum FlashState
 public enum ExposureMode
 {
     [Description("-1")]
-    EXPOSURE_MODE_UNSPECIFIED,
-    EXPOSURE_MODE_LOCKED = 0,
-    EXPOSURE_MODE_AUTO = 1,
-    EXPOSURE_MODE_CONTINUOUS_AUTO = 2,
-    EXPOSURE_MODE_MANUAL = 3
+    ExposureModeUnspecified,
+    ExposureModeLocked = 0,
+    ExposureModeAuto = 1,
+    ExposureModeContinuousAuto = 2,
+    ExposureModeManual = 3
 }
 
 /// <summary>
@@ -161,8 +161,8 @@ public enum ExposureMode
 /// </summary>
 public enum ExposureState
 {
-    EXPOSURE_STATE_SCAN = 0,
-    EXPOSURE_STATE_CONVERGED = 1
+    ExposureStateScan = 0,
+    ExposureStateConverged = 1
 }
 
 /// <summary>
@@ -170,9 +170,9 @@ public enum ExposureState
 /// </summary>
 public enum ExposureMeteringMode
 {
-    MATRIX = 0,
-    CENTER = 1,
-    SPOT = 2
+    Matrix = 0,
+    Center = 1,
+    Spot = 2
 }
 
 /// <summary>
@@ -180,10 +180,10 @@ public enum ExposureMeteringMode
 /// </summary>
 public enum FocusMode
 {
-    FOCUS_MODE_MANUAL = 0,
-    FOCUS_MODE_CONTINUOUS_AUTO = 1,
-    FOCUS_MODE_AUTO = 2,
-    FOCUS_MODE_LOCKED = 3
+    FocusModeManual = 0,
+    FocusModeContinuousAuto = 1,
+    FocusModeAuto = 2,
+    FocusModeLocked = 3
 }
 
 /// <summary>
@@ -191,9 +191,9 @@ public enum FocusMode
 /// </summary>
 public enum FocusState
 {
-    FOCUS_STATE_SCAN = 0,
-    FOCUS_STATE_FOCUSED = 1,
-    FOCUS_STATE_UNFOCUSED = 2
+    FocusStateScan = 0,
+    FocusStateFocused = 1,
+    FocusStateUnfocused = 2
 }
 
 /// <summary>
@@ -201,13 +201,13 @@ public enum FocusState
 /// </summary>
 public enum WhiteBalanceMode
 {
-    AUTO = 0,
-    CLOUDY = 1,
-    INCANDESCENT = 2,
-    FLUORESCENT = 3,
-    DAYLIGHT = 4,
-    MANUAL = 5,
-    LOCKED = 6
+    Auto = 0,
+    Cloudy = 1,
+    Incandescent = 2,
+    Fluorescent = 3,
+    Daylight = 4,
+    Manual = 5,
+    Locked = 6
 }
 
 /// <summary>
@@ -215,7 +215,7 @@ public enum WhiteBalanceMode
 /// </summary>
 public enum SmoothZoomMode
 {
-    NORMAL = 0
+    Normal = 0
 }
 
 /// <summary>
@@ -223,11 +223,11 @@ public enum SmoothZoomMode
 /// </summary>
 public enum VideoStabilizationMode
 {
-    OFF = 0,
-    LOW = 1,
-    MIDDLE = 2,
-    HIGH = 3,
-    AUTO = 4
+    Off = 0,
+    Low = 1,
+    Middle = 2,
+    High = 3,
+    Auto = 4
 }
 
 /// <summary>
@@ -235,10 +235,10 @@ public enum VideoStabilizationMode
 /// </summary>
 public enum ControlCenterEffectType
 {
-    BEAUTY = 0,
-    PORTRAIT = 1,
-    AUTO_FRAMING = 2,
-    COLOR_EFFECT = 3
+    Beauty = 0,
+    Portrait = 1,
+    AutoFraming = 2,
+    ColorEffect = 3
 }
 
 /// <summary>
@@ -246,11 +246,11 @@ public enum ControlCenterEffectType
 /// </summary>
 public enum PreconfigType
 {
-    PRECONFIG_720P = 0,
-    PRECONFIG_1080P = 1,
-    PRECONFIG_4K = 2,
-    PRECONFIG_HIGH_QUALITY = 3,
-    PRECONFIG_HIGH_QUALITY_PHOTOSESSION_BT2020 = 4
+    Preconfig720P = 0,
+    Preconfig1080P = 1,
+    Preconfig4K = 2,
+    PreconfigHighQuality = 3,
+    PreconfigHighQualityPhotosessionBt2020 = 4
 }
 
 /// <summary>
@@ -258,9 +258,9 @@ public enum PreconfigType
 /// </summary>
 public enum PreconfigRatio
 {
-    PRECONFIG_RATIO_1_1 = 0,
-    PRECONFIG_RATIO_4_3 = 1,
-    PRECONFIG_RATIO_16_9 = 2
+    PreconfigRatio11 = 0,
+    PreconfigRatio43 = 1,
+    PreconfigRatio169 = 2
 }
 
 /// <summary>
@@ -268,8 +268,8 @@ public enum PreconfigRatio
 /// </summary>
 public enum PhotoQualityPrioritization
 {
-    HIGH_QUALITY = 0,
-    SPEED = 1
+    HighQuality = 0,
+    Speed = 1
 }
 
 /// <summary>
@@ -277,8 +277,8 @@ public enum PhotoQualityPrioritization
 /// </summary>
 public enum QualityPrioritization
 {
-    HIGH_QUALITY = 0,
-    POWER_BALANCE = 1
+    HighQuality = 0,
+    PowerBalance = 1
 }
 
 /// <summary>
@@ -286,11 +286,11 @@ public enum QualityPrioritization
 /// </summary>
 public enum SystemPressureLevel
 {
-    SYSTEM_PRESSURE_NORMAL = 0,
-    SYSTEM_PRESSURE_MILD = 1,
-    SYSTEM_PRESSURE_SEVERE = 2,
-    SYSTEM_PRESSURE_CRITICAL = 3,
-    SYSTEM_PRESSURE_SHUTDOWN = 4
+    SystemPressureNormal = 0,
+    SystemPressureMild = 1,
+    SystemPressureSevere = 2,
+    SystemPressureCritical = 3,
+    SystemPressureShutdown = 4
 }
 
 /// <summary>
@@ -298,10 +298,10 @@ public enum SystemPressureLevel
 /// </summary>
 public enum ImageRotation
 {
-    ROTATION_0 = 0,
-    ROTATION_90 = 90,
-    ROTATION_180 = 180,
-    ROTATION_270 = 270
+    Rotation0 = 0,
+    Rotation90 = 90,
+    Rotation180 = 180,
+    Rotation270 = 270
 }
 
 /// <summary>
@@ -309,9 +309,9 @@ public enum ImageRotation
 /// </summary>
 public enum QualityLevel
 {
-    QUALITY_LEVEL_HIGH = 0,
-    QUALITY_LEVEL_MEDIUM = 1,
-    QUALITY_LEVEL_LOW = 2
+    QualityLevelHigh = 0,
+    QualityLevelMedium = 1,
+    QualityLevelLow = 2
 }
 
 /// <summary>
@@ -319,8 +319,8 @@ public enum QualityLevel
 /// </summary>
 public enum VideoCodecType
 {
-    AVC = 0,
-    HEVC = 1
+    Avc = 0,
+    Hevc = 1
 }
 
 /// <summary>
@@ -328,15 +328,15 @@ public enum VideoCodecType
 /// </summary>
 public enum MetadataObjectType
 {
-    FACE_DETECTION = 0,
-    HUMAN_BODY = 1,
-    CAT_FACE = 2,
-    CAT_BODY = 3,
-    DOG_FACE = 4,
-    DOG_BODY = 5,
-    SALIENT_DETECTION = 6,
-    BAR_CODE_DETECTION = 7,
-    BASIC_FACE_DETECTION = 8
+    FaceDetection = 0,
+    HumanBody = 1,
+    CatFace = 2,
+    CatBody = 3,
+    DogFace = 4,
+    DogBody = 5,
+    SalientDetection = 6,
+    BarCodeDetection = 7,
+    BasicFaceDetection = 8
 }
 
 /// <summary>
@@ -344,10 +344,10 @@ public enum MetadataObjectType
 /// </summary>
 public enum Emotion
 {
-    NEUTRAL = 0,
-    SADNESS = 1,
-    SMILE = 2,
-    SURPRISE = 3
+    Neutral = 0,
+    Sadness = 1,
+    Smile = 2,
+    Surprise = 3
 }
 
 /// <summary>
@@ -355,8 +355,8 @@ public enum Emotion
 /// </summary>
 public enum CameraConcurrentType
 {
-    CAMERA_FULL_CAPABILITY = 1,
-    CAMERA_LIMITED_CAPABILITY = 0
+    CameraFullCapability = 1,
+    CameraLimitedCapability = 0
 }
 
 /// <summary>
@@ -364,9 +364,9 @@ public enum CameraConcurrentType
 /// </summary>
 public enum OISMode
 {
-    OFF = 0,
-    AUTO = 1,
-    CUSTOM = 2
+    Off = 0,
+    Auto = 1,
+    Custom = 2
 }
 
 /// <summary>
@@ -374,8 +374,8 @@ public enum OISMode
 /// </summary>
 public enum OISAxes
 {
-    PITCH = 0,
-    YAW = 1
+    Pitch = 0,
+    Yaw = 1
 }
 
 /// <summary>
@@ -383,19 +383,19 @@ public enum OISAxes
 /// </summary>
 public enum AutomotiveCameraPosition
 {
-    AUTOMOTIVE_CAMERA_POSITION_EXTERIOR_OTHER = 0,
-    AUTOMOTIVE_CAMERA_POSITION_EXTERIOR_FRONT = 1,
-    AUTOMOTIVE_CAMERA_POSITION_EXTERIOR_REAR = 2,
-    AUTOMOTIVE_CAMERA_POSITION_EXTERIOR_LEFT = 3,
-    AUTOMOTIVE_CAMERA_POSITION_EXTERIOR_RIGHT = 4,
-    AUTOMOTIVE_CAMERA_POSITION_INTERIOR_OTHER = 5,
-    AUTOMOTIVE_CAMERA_POSITION_INTERIOR_ROW_1_LEFT = 6,
-    AUTOMOTIVE_CAMERA_POSITION_INTERIOR_ROW_1_CENTER = 7,
-    AUTOMOTIVE_CAMERA_POSITION_INTERIOR_ROW_1_RIGHT = 8,
-    AUTOMOTIVE_CAMERA_POSITION_INTERIOR_ROW_2_LEFT = 9,
-    AUTOMOTIVE_CAMERA_POSITION_INTERIOR_ROW_2_CENTER = 10,
-    AUTOMOTIVE_CAMERA_POSITION_INTERIOR_ROW_2_RIGHT = 11,
-    AUTOMOTIVE_CAMERA_POSITION_INTERIOR_ROW_3_LEFT = 12,
-    AUTOMOTIVE_CAMERA_POSITION_INTERIOR_ROW_3_CENTER = 13,
-    AUTOMOTIVE_CAMERA_POSITION_INTERIOR_ROW_3_RIGHT = 14
+    AutomotiveCameraPositionExteriorOther = 0,
+    AutomotiveCameraPositionExteriorFront = 1,
+    AutomotiveCameraPositionExteriorRear = 2,
+    AutomotiveCameraPositionExteriorLeft = 3,
+    AutomotiveCameraPositionExteriorRight = 4,
+    AutomotiveCameraPositionInteriorOther = 5,
+    AutomotiveCameraPositionInteriorRow1Left = 6,
+    AutomotiveCameraPositionInteriorRow1Center = 7,
+    AutomotiveCameraPositionInteriorRow1Right = 8,
+    AutomotiveCameraPositionInteriorRow2Left = 9,
+    AutomotiveCameraPositionInteriorRow2Center = 10,
+    AutomotiveCameraPositionInteriorRow2Right = 11,
+    AutomotiveCameraPositionInteriorRow3Left = 12,
+    AutomotiveCameraPositionInteriorRow3Center = 13,
+    AutomotiveCameraPositionInteriorRow3Right = 14
 }

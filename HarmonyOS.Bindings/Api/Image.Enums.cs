@@ -9,23 +9,23 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum PixelMapFormat
 {
-    UNKNOWN = 0,
-    ARGB_8888 = 1,
-    RGB_565 = 2,
-    RGBA_8888 = 3,
-    BGRA_8888 = 4,
-    RGB_888 = 5,
-    ALPHA_8 = 6,
-    RGBA_F16 = 7,
-    NV21 = 8,
-    NV12 = 9,
-    RGBA_1010102 = 10,
-    YCBCR_P010 = 11,
-    YCRCB_P010 = 12,
+    Unknown = 0,
+    Argb8888 = 1,
+    Rgb565 = 2,
+    Rgba8888 = 3,
+    Bgra8888 = 4,
+    Rgb888 = 5,
+    Alpha8 = 6,
+    RgbaF16 = 7,
+    Nv21 = 8,
+    Nv12 = 9,
+    Rgba1010102 = 10,
+    YcbcrP010 = 11,
+    YcrcbP010 = 12,
     Y8 = 14,
-    ALPHA_U8 = 15,
-    ALPHA_F16 = 16,
-    ASTC_4x4 = 102
+    AlphaU8 = 15,
+    AlphaF16 = 16,
+    Astc4x4 = 102
 }
 
 /// <summary>
@@ -34,365 +34,365 @@ public enum PixelMapFormat
 public enum PropertyKey
 {
     [Description("BitsPerSample")]
-    BITS_PER_SAMPLE,
+    BitsPerSample,
     [Description("Orientation")]
-    ORIENTATION,
+    Orientation,
     [Description("ImageLength")]
-    IMAGE_LENGTH,
+    ImageLength,
     [Description("ImageWidth")]
-    IMAGE_WIDTH,
+    ImageWidth,
     [Description("GPSLatitude")]
-    GPS_LATITUDE,
+    GpsLatitude,
     [Description("GPSLongitude")]
-    GPS_LONGITUDE,
+    GpsLongitude,
     [Description("GPSLatitudeRef")]
-    GPS_LATITUDE_REF,
+    GpsLatitudeRef,
     [Description("GPSLongitudeRef")]
-    GPS_LONGITUDE_REF,
+    GpsLongitudeRef,
     [Description("DateTimeOriginal")]
-    DATE_TIME_ORIGINAL,
+    DateTimeOriginal,
     [Description("ExposureTime")]
-    EXPOSURE_TIME,
+    ExposureTime,
     [Description("SceneType")]
-    SCENE_TYPE,
+    SceneType,
     [Description("ISOSpeedRatings")]
-    ISO_SPEED_RATINGS,
+    IsoSpeedRatings,
     [Description("FNumber")]
-    F_NUMBER,
+    FNumber,
     [Description("DateTime")]
-    DATE_TIME,
+    DateTime,
     [Description("GPSTimeStamp")]
-    GPS_TIME_STAMP,
+    GpsTimeStamp,
     [Description("GPSDateStamp")]
-    GPS_DATE_STAMP,
+    GpsDateStamp,
     [Description("ImageDescription")]
-    IMAGE_DESCRIPTION,
+    ImageDescription,
     [Description("Make")]
-    MAKE,
+    Make,
     [Description("Model")]
-    MODEL,
+    Model,
     [Description("PhotoMode")]
-    PHOTO_MODE,
+    PhotoMode,
     [Description("SensitivityType")]
-    SENSITIVITY_TYPE,
+    SensitivityType,
     [Description("StandardOutputSensitivity")]
-    STANDARD_OUTPUT_SENSITIVITY,
+    StandardOutputSensitivity,
     [Description("RecommendedExposureIndex")]
-    RECOMMENDED_EXPOSURE_INDEX,
+    RecommendedExposureIndex,
     [Description("ISOSpeedRatings")]
-    ISO_SPEED,
+    IsoSpeed,
     [Description("ApertureValue")]
-    APERTURE_VALUE,
+    ApertureValue,
     [Description("ExposureBiasValue")]
-    EXPOSURE_BIAS_VALUE,
+    ExposureBiasValue,
     [Description("MeteringMode")]
-    METERING_MODE,
+    MeteringMode,
     [Description("LightSource")]
-    LIGHT_SOURCE,
+    LightSource,
     [Description("Flash")]
-    FLASH,
+    Flash,
     [Description("FocalLength")]
-    FOCAL_LENGTH,
+    FocalLength,
     [Description("UserComment")]
-    USER_COMMENT,
+    UserComment,
     [Description("PixelXDimension")]
-    PIXEL_X_DIMENSION,
+    PixelXDimension,
     [Description("PixelYDimension")]
-    PIXEL_Y_DIMENSION,
+    PixelYDimension,
     [Description("WhiteBalance")]
-    WHITE_BALANCE,
+    WhiteBalance,
     [Description("FocalLengthIn35mmFilm")]
-    FOCAL_LENGTH_IN_35_MM_FILM,
+    FocalLengthIn35MmFilm,
     [Description("HwMnoteCaptureMode")]
-    CAPTURE_MODE,
+    CaptureMode,
     [Description("HwMnotePhysicalAperture")]
-    PHYSICAL_APERTURE,
+    PhysicalAperture,
     [Description("HwMnoteRollAngle")]
-    ROLL_ANGLE,
+    RollAngle,
     [Description("HwMnotePitchAngle")]
-    PITCH_ANGLE,
+    PitchAngle,
     [Description("HwMnoteSceneFoodConf")]
-    SCENE_FOOD_CONF,
+    SceneFoodConf,
     [Description("HwMnoteSceneStageConf")]
-    SCENE_STAGE_CONF,
+    SceneStageConf,
     [Description("HwMnoteSceneBlueSkyConf")]
-    SCENE_BLUE_SKY_CONF,
+    SceneBlueSkyConf,
     [Description("HwMnoteSceneGreenPlantConf")]
-    SCENE_GREEN_PLANT_CONF,
+    SceneGreenPlantConf,
     [Description("HwMnoteSceneBeachConf")]
-    SCENE_BEACH_CONF,
+    SceneBeachConf,
     [Description("HwMnoteSceneSnowConf")]
-    SCENE_SNOW_CONF,
+    SceneSnowConf,
     [Description("HwMnoteSceneSunsetConf")]
-    SCENE_SUNSET_CONF,
+    SceneSunsetConf,
     [Description("HwMnoteSceneFlowersConf")]
-    SCENE_FLOWERS_CONF,
+    SceneFlowersConf,
     [Description("HwMnoteSceneNightConf")]
-    SCENE_NIGHT_CONF,
+    SceneNightConf,
     [Description("HwMnoteSceneTextConf")]
-    SCENE_TEXT_CONF,
+    SceneTextConf,
     [Description("HwMnoteFaceCount")]
-    FACE_COUNT,
+    FaceCount,
     [Description("HwMnoteFocusMode")]
-    FOCUS_MODE,
+    FocusMode,
     [Description("Compression")]
-    COMPRESSION,
+    Compression,
     [Description("PhotometricInterpretation")]
-    PHOTOMETRIC_INTERPRETATION,
+    PhotometricInterpretation,
     [Description("StripOffsets")]
-    STRIP_OFFSETS,
+    StripOffsets,
     [Description("SamplesPerPixel")]
-    SAMPLES_PER_PIXEL,
+    SamplesPerPixel,
     [Description("RowsPerStrip")]
-    ROWS_PER_STRIP,
+    RowsPerStrip,
     [Description("StripByteCounts")]
-    STRIP_BYTE_COUNTS,
+    StripByteCounts,
     [Description("XResolution")]
-    X_RESOLUTION,
+    XResolution,
     [Description("YResolution")]
-    Y_RESOLUTION,
+    YResolution,
     [Description("PlanarConfiguration")]
-    PLANAR_CONFIGURATION,
+    PlanarConfiguration,
     [Description("ResolutionUnit")]
-    RESOLUTION_UNIT,
+    ResolutionUnit,
     [Description("TransferFunction")]
-    TRANSFER_FUNCTION,
+    TransferFunction,
     [Description("Software")]
-    SOFTWARE,
+    Software,
     [Description("Artist")]
-    ARTIST,
+    Artist,
     [Description("WhitePoint")]
-    WHITE_POINT,
+    WhitePoint,
     [Description("PrimaryChromaticities")]
-    PRIMARY_CHROMATICITIES,
+    PrimaryChromaticities,
     [Description("YCbCrCoefficients")]
-    YCBCR_COEFFICIENTS,
+    YcbcrCoefficients,
     [Description("YCbCrSubSampling")]
-    YCBCR_SUB_SAMPLING,
+    YcbcrSubSampling,
     [Description("YCbCrPositioning")]
-    YCBCR_POSITIONING,
+    YcbcrPositioning,
     [Description("ReferenceBlackWhite")]
-    REFERENCE_BLACK_WHITE,
+    ReferenceBlackWhite,
     [Description("Copyright")]
-    COPYRIGHT,
+    Copyright,
     [Description("JPEGInterchangeFormat")]
-    JPEG_INTERCHANGE_FORMAT,
+    JpegInterchangeFormat,
     [Description("JPEGInterchangeFormatLength")]
-    JPEG_INTERCHANGE_FORMAT_LENGTH,
+    JpegInterchangeFormatLength,
     [Description("ExposureProgram")]
-    EXPOSURE_PROGRAM,
+    ExposureProgram,
     [Description("SpectralSensitivity")]
-    SPECTRAL_SENSITIVITY,
+    SpectralSensitivity,
     [Description("OECF")]
-    OECF,
+    Oecf,
     [Description("ExifVersion")]
-    EXIF_VERSION,
+    ExifVersion,
     [Description("DateTimeDigitized")]
-    DATE_TIME_DIGITIZED,
+    DateTimeDigitized,
     [Description("ComponentsConfiguration")]
-    COMPONENTS_CONFIGURATION,
+    ComponentsConfiguration,
     [Description("ShutterSpeedValue")]
-    SHUTTER_SPEED,
+    ShutterSpeed,
     [Description("BrightnessValue")]
-    BRIGHTNESS_VALUE,
+    BrightnessValue,
     [Description("MaxApertureValue")]
-    MAX_APERTURE_VALUE,
+    MaxApertureValue,
     [Description("SubjectDistance")]
-    SUBJECT_DISTANCE,
+    SubjectDistance,
     [Description("SubjectArea")]
-    SUBJECT_AREA,
+    SubjectArea,
     [Description("MakerNote")]
-    MAKER_NOTE,
+    MakerNote,
     [Description("SubsecTime")]
-    SUBSEC_TIME,
+    SubsecTime,
     [Description("SubsecTimeOriginal")]
-    SUBSEC_TIME_ORIGINAL,
+    SubsecTimeOriginal,
     [Description("SubsecTimeDigitized")]
-    SUBSEC_TIME_DIGITIZED,
+    SubsecTimeDigitized,
     [Description("FlashpixVersion")]
-    FLASHPIX_VERSION,
+    FlashpixVersion,
     [Description("ColorSpace")]
-    COLOR_SPACE,
+    ColorSpace,
     [Description("RelatedSoundFile")]
-    RELATED_SOUND_FILE,
+    RelatedSoundFile,
     [Description("FlashEnergy")]
-    FLASH_ENERGY,
+    FlashEnergy,
     [Description("SpatialFrequencyResponse")]
-    SPATIAL_FREQUENCY_RESPONSE,
+    SpatialFrequencyResponse,
     [Description("FocalPlaneXResolution")]
-    FOCAL_PLANE_X_RESOLUTION,
+    FocalPlaneXResolution,
     [Description("FocalPlaneYResolution")]
-    FOCAL_PLANE_Y_RESOLUTION,
+    FocalPlaneYResolution,
     [Description("FocalPlaneResolutionUnit")]
-    FOCAL_PLANE_RESOLUTION_UNIT,
+    FocalPlaneResolutionUnit,
     [Description("SubjectLocation")]
-    SUBJECT_LOCATION,
+    SubjectLocation,
     [Description("ExposureIndex")]
-    EXPOSURE_INDEX,
+    ExposureIndex,
     [Description("SensingMethod")]
-    SENSING_METHOD,
+    SensingMethod,
     [Description("FileSource")]
-    FILE_SOURCE,
+    FileSource,
     [Description("CFAPattern")]
-    CFA_PATTERN,
+    CfaPattern,
     [Description("CustomRendered")]
-    CUSTOM_RENDERED,
+    CustomRendered,
     [Description("ExposureMode")]
-    EXPOSURE_MODE,
+    ExposureMode,
     [Description("DigitalZoomRatio")]
-    DIGITAL_ZOOM_RATIO,
+    DigitalZoomRatio,
     [Description("SceneCaptureType")]
-    SCENE_CAPTURE_TYPE,
+    SceneCaptureType,
     [Description("GainControl")]
-    GAIN_CONTROL,
+    GainControl,
     [Description("Contrast")]
-    CONTRAST,
+    Contrast,
     [Description("Saturation")]
-    SATURATION,
+    Saturation,
     [Description("Sharpness")]
-    SHARPNESS,
+    Sharpness,
     [Description("DeviceSettingDescription")]
-    DEVICE_SETTING_DESCRIPTION,
+    DeviceSettingDescription,
     [Description("SubjectDistanceRange")]
-    SUBJECT_DISTANCE_RANGE,
+    SubjectDistanceRange,
     [Description("ImageUniqueID")]
-    IMAGE_UNIQUE_ID,
+    ImageUniqueId,
     [Description("GPSVersionID")]
-    GPS_VERSION_ID,
+    GpsVersionId,
     [Description("GPSAltitudeRef")]
-    GPS_ALTITUDE_REF,
+    GpsAltitudeRef,
     [Description("GPSAltitude")]
-    GPS_ALTITUDE,
+    GpsAltitude,
     [Description("GPSSatellites")]
-    GPS_SATELLITES,
+    GpsSatellites,
     [Description("GPSStatus")]
-    GPS_STATUS,
+    GpsStatus,
     [Description("GPSMeasureMode")]
-    GPS_MEASURE_MODE,
+    GpsMeasureMode,
     [Description("GPSDOP")]
-    GPS_DOP,
+    GpsDop,
     [Description("GPSSpeedRef")]
-    GPS_SPEED_REF,
+    GpsSpeedRef,
     [Description("GPSSpeed")]
-    GPS_SPEED,
+    GpsSpeed,
     [Description("GPSTrackRef")]
-    GPS_TRACK_REF,
+    GpsTrackRef,
     [Description("GPSTrack")]
-    GPS_TRACK,
+    GpsTrack,
     [Description("GPSImgDirectionRef")]
-    GPS_IMG_DIRECTION_REF,
+    GpsImgDirectionRef,
     [Description("GPSImgDirection")]
-    GPS_IMG_DIRECTION,
+    GpsImgDirection,
     [Description("GPSMapDatum")]
-    GPS_MAP_DATUM,
+    GpsMapDatum,
     [Description("GPSDestLatitudeRef")]
-    GPS_DEST_LATITUDE_REF,
+    GpsDestLatitudeRef,
     [Description("GPSDestLatitude")]
-    GPS_DEST_LATITUDE,
+    GpsDestLatitude,
     [Description("GPSDestLongitudeRef")]
-    GPS_DEST_LONGITUDE_REF,
+    GpsDestLongitudeRef,
     [Description("GPSDestLongitude")]
-    GPS_DEST_LONGITUDE,
+    GpsDestLongitude,
     [Description("GPSDestBearingRef")]
-    GPS_DEST_BEARING_REF,
+    GpsDestBearingRef,
     [Description("GPSDestBearing")]
-    GPS_DEST_BEARING,
+    GpsDestBearing,
     [Description("GPSDestDistanceRef")]
-    GPS_DEST_DISTANCE_REF,
+    GpsDestDistanceRef,
     [Description("GPSDestDistance")]
-    GPS_DEST_DISTANCE,
+    GpsDestDistance,
     [Description("GPSProcessingMethod")]
-    GPS_PROCESSING_METHOD,
+    GpsProcessingMethod,
     [Description("GPSAreaInformation")]
-    GPS_AREA_INFORMATION,
+    GpsAreaInformation,
     [Description("GPSDifferential")]
-    GPS_DIFFERENTIAL,
+    GpsDifferential,
     [Description("BodySerialNumber")]
-    BODY_SERIAL_NUMBER,
+    BodySerialNumber,
     [Description("CameraOwnerName")]
-    CAMERA_OWNER_NAME,
+    CameraOwnerName,
     [Description("CompositeImage")]
-    COMPOSITE_IMAGE,
+    CompositeImage,
     [Description("CompressedBitsPerPixel")]
-    COMPRESSED_BITS_PER_PIXEL,
+    CompressedBitsPerPixel,
     [Description("DNGVersion")]
-    DNG_VERSION,
+    DngVersion,
     [Description("DefaultCropSize")]
-    DEFAULT_CROP_SIZE,
+    DefaultCropSize,
     [Description("Gamma")]
-    GAMMA,
+    Gamma,
     [Description("ISOSpeedLatitudeyyy")]
-    ISO_SPEED_LATITUDE_YYY,
+    IsoSpeedLatitudeYyy,
     [Description("ISOSpeedLatitudezzz")]
-    ISO_SPEED_LATITUDE_ZZZ,
+    IsoSpeedLatitudeZzz,
     [Description("LensMake")]
-    LENS_MAKE,
+    LensMake,
     [Description("LensModel")]
-    LENS_MODEL,
+    LensModel,
     [Description("LensSerialNumber")]
-    LENS_SERIAL_NUMBER,
+    LensSerialNumber,
     [Description("LensSpecification")]
-    LENS_SPECIFICATION,
+    LensSpecification,
     [Description("NewSubfileType")]
-    NEW_SUBFILE_TYPE,
+    NewSubfileType,
     [Description("OffsetTime")]
-    OFFSET_TIME,
+    OffsetTime,
     [Description("OffsetTimeDigitized")]
-    OFFSET_TIME_DIGITIZED,
+    OffsetTimeDigitized,
     [Description("OffsetTimeOriginal")]
-    OFFSET_TIME_ORIGINAL,
+    OffsetTimeOriginal,
     [Description("SourceExposureTimesOfCompositeImage")]
-    SOURCE_EXPOSURE_TIMES_OF_COMPOSITE_IMAGE,
+    SourceExposureTimesOfCompositeImage,
     [Description("SourceImageNumberOfCompositeImage")]
-    SOURCE_IMAGE_NUMBER_OF_COMPOSITE_IMAGE,
+    SourceImageNumberOfCompositeImage,
     [Description("SubfileType")]
-    SUBFILE_TYPE,
+    SubfileType,
     [Description("GPSHPositioningError")]
-    GPS_H_POSITIONING_ERROR,
+    GpsHPositioningError,
     [Description("PhotographicSensitivity")]
-    PHOTOGRAPHIC_SENSITIVITY,
+    PhotographicSensitivity,
     [Description("HwMnoteBurstNumber")]
-    BURST_NUMBER,
+    BurstNumber,
     [Description("HwMnoteFaceConf")]
-    FACE_CONF,
+    FaceConf,
     [Description("HwMnoteFaceLeyeCenter")]
-    FACE_LEYE_CENTER,
+    FaceLeyeCenter,
     [Description("HwMnoteFaceMouthCenter")]
-    FACE_MOUTH_CENTER,
+    FaceMouthCenter,
     [Description("HwMnoteFacePointer")]
-    FACE_POINTER,
+    FacePointer,
     [Description("HwMnoteFaceRect")]
-    FACE_RECT,
+    FaceRect,
     [Description("HwMnoteFaceReyeCenter")]
-    FACE_REYE_CENTER,
+    FaceReyeCenter,
     [Description("HwMnoteFaceSmileScore")]
-    FACE_SMILE_SCORE,
+    FaceSmileScore,
     [Description("HwMnoteFaceVersion")]
-    FACE_VERSION,
+    FaceVersion,
     [Description("HwMnoteFrontCamera")]
-    FRONT_CAMERA,
+    FrontCamera,
     [Description("HwMnoteScenePointer")]
-    SCENE_POINTER,
+    ScenePointer,
     [Description("HwMnoteSceneVersion")]
-    SCENE_VERSION,
+    SceneVersion,
     [Description("HwMnoteIsXmageSupported")]
-    IS_XMAGE_SUPPORTED,
+    IsXmageSupported,
     [Description("HwMnoteXmageMode")]
-    XMAGE_MODE,
+    XmageMode,
     [Description("HwMnoteXmageLeft")]
-    XMAGE_LEFT,
+    XmageLeft,
     [Description("HwMnoteXmageTop")]
-    XMAGE_TOP,
+    XmageTop,
     [Description("HwMnoteXmageRight")]
-    XMAGE_RIGHT,
+    XmageRight,
     [Description("HwMnoteXmageBottom")]
-    XMAGE_BOTTOM,
+    XmageBottom,
     [Description("HwMnoteCloudEnhancementMode")]
-    CLOUD_ENHANCEMENT_MODE,
+    CloudEnhancementMode,
     [Description("HwMnoteWindSnapshotMode")]
-    WIND_SNAPSHOT_MODE,
+    WindSnapshotMode,
     [Description("GIFLoopCount")]
-    GIF_LOOP_COUNT
+    GifLoopCount
 }
 
 /// <summary>
@@ -400,8 +400,8 @@ public enum PropertyKey
 /// </summary>
 public enum ImageFormat
 {
-    YCBCR_422_SP = 1000,
-    JPEG = 2000
+    Ycbcr422Sp = 1000,
+    Jpeg = 2000
 }
 
 /// <summary>
@@ -409,10 +409,10 @@ public enum ImageFormat
 /// </summary>
 public enum AlphaType
 {
-    UNKNOWN = 0,
-    OPAQUE = 1,
-    PREMUL = 2,
-    UNPREMUL = 3
+    Unknown = 0,
+    Opaque = 1,
+    Premul = 2,
+    Unpremul = 3
 }
 
 /// <summary>
@@ -420,9 +420,9 @@ public enum AlphaType
 /// </summary>
 public enum DecodingDynamicRange
 {
-    AUTO = 0,
-    SDR = 1,
-    HDR = 2
+    Auto = 0,
+    Sdr = 1,
+    Hdr = 2
 }
 
 /// <summary>
@@ -430,8 +430,8 @@ public enum DecodingDynamicRange
 /// </summary>
 public enum PackingDynamicRange
 {
-    AUTO = 0,
-    SDR = 1
+    Auto = 0,
+    Sdr = 1
 }
 
 /// <summary>
@@ -439,10 +439,10 @@ public enum PackingDynamicRange
 /// </summary>
 public enum AntiAliasingLevel
 {
-    NONE = 0,
-    LOW = 1,
-    MEDIUM = 2,
-    HIGH = 3
+    None = 0,
+    Low = 1,
+    Medium = 2,
+    High = 3
 }
 
 /// <summary>
@@ -450,8 +450,8 @@ public enum AntiAliasingLevel
 /// </summary>
 public enum ScaleMode
 {
-    FIT_TARGET_SIZE = 0,
-    CENTER_CROP = 1
+    FitTargetSize = 0,
+    CenterCrop = 1
 }
 
 /// <summary>
@@ -459,10 +459,10 @@ public enum ScaleMode
 /// </summary>
 public enum ComponentType
 {
-    YUV_Y = 1,
-    YUV_U = 2,
-    YUV_V = 3,
-    JPEG = 4
+    YuvY = 1,
+    YuvU = 2,
+    YuvV = 3,
+    Jpeg = 4
 }
 
 /// <summary>
@@ -470,10 +470,10 @@ public enum ComponentType
 /// </summary>
 public enum HdrMetadataKey
 {
-    HDR_METADATA_TYPE = 0,
-    HDR_STATIC_METADATA = 1,
-    HDR_DYNAMIC_METADATA = 2,
-    HDR_GAINMAP_METADATA = 3
+    HdrMetadataType = 0,
+    HdrStaticMetadata = 1,
+    HdrDynamicMetadata = 2,
+    HdrGainmapMetadata = 3
 }
 
 /// <summary>
@@ -481,10 +481,10 @@ public enum HdrMetadataKey
 /// </summary>
 public enum HdrMetadataType
 {
-    NONE = 0,
-    BASE = 1,
-    GAINMAP = 2,
-    ALTERNATE = 3
+    None = 0,
+    Base = 1,
+    Gainmap = 2,
+    Alternate = 3
 }
 
 /// <summary>
@@ -492,9 +492,9 @@ public enum HdrMetadataType
 /// </summary>
 public enum AllocatorType
 {
-    AUTO = 0,
-    DMA = 1,
-    SHARE_MEMORY = 2
+    Auto = 0,
+    Dma = 1,
+    ShareMemory = 2
 }
 
 /// <summary>
@@ -502,8 +502,8 @@ public enum AllocatorType
 /// </summary>
 public enum CropAndScaleStrategy
 {
-    SCALE_FIRST = 1,
-    CROP_FIRST = 2
+    ScaleFirst = 1,
+    CropFirst = 2
 }
 
 /// <summary>
@@ -511,12 +511,12 @@ public enum CropAndScaleStrategy
 /// </summary>
 public enum AuxiliaryPictureType
 {
-    GAINMAP = 1,
-    DEPTH_MAP = 2,
-    UNREFOCUS_MAP = 3,
-    LINEAR_MAP = 4,
-    FRAGMENT_MAP = 5,
-    LHDR_GAINMAP = 10
+    Gainmap = 1,
+    DepthMap = 2,
+    UnrefocusMap = 3,
+    LinearMap = 4,
+    FragmentMap = 5,
+    LhdrGainmap = 10
 }
 
 /// <summary>
@@ -524,17 +524,17 @@ public enum AuxiliaryPictureType
 /// </summary>
 public enum MetadataType
 {
-    EXIF_METADATA = 1,
-    FRAGMENT_METADATA = 2,
-    GIF_METADATA = 5,
-    HEIFS_METADATA = 15,
-    DNG_METADATA = 16,
-    WEBP_METADATA = 17,
-    PNG_METADATA = 19,
-    JFIF_METADATA = 20,
-    TIFF_METADATA = 21,
-    XMP_METADATA = 22,
-    AVIS_METADATA = 23
+    ExifMetadata = 1,
+    FragmentMetadata = 2,
+    GifMetadata = 5,
+    HeifsMetadata = 15,
+    DngMetadata = 16,
+    WebpMetadata = 17,
+    PngMetadata = 19,
+    JfifMetadata = 20,
+    TiffMetadata = 21,
+    XmpMetadata = 22,
+    AvisMetadata = 23
 }
 
 /// <summary>
@@ -543,13 +543,13 @@ public enum MetadataType
 public enum FragmentMapPropertyKey
 {
     [Description("XInOriginal")]
-    X_IN_ORIGINAL,
+    XInOriginal,
     [Description("YInOriginal")]
-    Y_IN_ORIGINAL,
+    YInOriginal,
     [Description("FragmentImageWidth")]
-    WIDTH,
+    Width,
     [Description("FragmentImageHeight")]
-    HEIGHT
+    Height
 }
 
 /// <summary>
@@ -558,19 +558,19 @@ public enum FragmentMapPropertyKey
 public enum GifPropertyKey
 {
     [Description("GifDelayTime")]
-    GIF_DELAY_TIME,
+    GifDelayTime,
     [Description("GifDisposalType")]
-    GIF_DISPOSAL_TYPE,
+    GifDisposalType,
     [Description("GifHasGlobalColorMap")]
-    GIF_HAS_GLOBAL_COLOR_MAP,
+    GifHasGlobalColorMap,
     [Description("GifCanvasWidth")]
-    GIF_CANVAS_WIDTH,
+    GifCanvasWidth,
     [Description("GifCanvasHeight")]
-    GIF_CANVAS_HEIGHT,
+    GifCanvasHeight,
     [Description("GifLoopCount")]
-    GIF_LOOP_COUNT,
+    GifLoopCount,
     [Description("GifUnclampedDelayTime")]
-    GIF_UNCLAMPED_DELAY_TIME
+    GifUnclampedDelayTime
 }
 
 /// <summary>
@@ -579,13 +579,13 @@ public enum GifPropertyKey
 public enum HeifsPropertyKey
 {
     [Description("HeifsDelayTime")]
-    HEIFS_DELAY_TIME,
+    HeifsDelayTime,
     [Description("HeifsUnclampedDelayTime")]
-    HEIFS_UNCLAMPED_DELAY_TIME,
+    HeifsUnclampedDelayTime,
     [Description("HeifsCanvasHeight")]
-    HEIFS_CANVAS_HEIGHT,
+    HeifsCanvasHeight,
     [Description("HeifsCanvasWidth")]
-    HEIFS_CANVAS_WIDTH
+    HeifsCanvasWidth
 }
 
 /// <summary>
@@ -594,183 +594,183 @@ public enum HeifsPropertyKey
 public enum DngPropertyKey
 {
     [Description("DNGVersion")]
-    DNG_VERSION,
+    DngVersion,
     [Description("DNGBackwardVersion")]
-    DNG_BACKWARD_VERSION,
+    DngBackwardVersion,
     [Description("UniqueCameraModel")]
-    UNIQUE_CAMERA_MODEL,
+    UniqueCameraModel,
     [Description("LocalizedCameraModel")]
-    LOCALIZED_CAMERA_MODEL,
+    LocalizedCameraModel,
     [Description("CFAPlaneColor")]
-    CFA_PLANE_COLOR,
+    CfaPlaneColor,
     [Description("CFALayout")]
-    CFA_LAYOUT,
+    CfaLayout,
     [Description("LinearizationTable")]
-    LINEARIZATION_TABLE,
+    LinearizationTable,
     [Description("BlackLevelRepeatDim")]
-    BLACK_LEVEL_REPEAT_DIM,
+    BlackLevelRepeatDim,
     [Description("BlackLevel")]
-    BLACK_LEVEL,
+    BlackLevel,
     [Description("BlackLevelDeltaH")]
-    BLACK_LEVEL_DELTA_H,
+    BlackLevelDeltaH,
     [Description("BlackLevelDeltaV")]
-    BLACK_LEVEL_DELTA_V,
+    BlackLevelDeltaV,
     [Description("WhiteLevel")]
-    WHITE_LEVEL,
+    WhiteLevel,
     [Description("DefaultScale")]
-    DEFAULT_SCALE,
+    DefaultScale,
     [Description("DefaultCropOrigin")]
-    DEFAULT_CROP_ORIGIN,
+    DefaultCropOrigin,
     [Description("DefaultCropSize")]
-    DEFAULT_CROP_SIZE,
+    DefaultCropSize,
     [Description("ColorMatrix1")]
-    COLOR_MATRIX1,
+    ColorMatrix1,
     [Description("ColorMatrix2")]
-    COLOR_MATRIX2,
+    ColorMatrix2,
     [Description("CameraCalibration1")]
-    CAMERA_CALIBRATION1,
+    CameraCalibration1,
     [Description("CameraCalibration2")]
-    CAMERA_CALIBRATION2,
+    CameraCalibration2,
     [Description("ReductionMatrix1")]
-    REDUCTION_MATRIX1,
+    ReductionMatrix1,
     [Description("ReductionMatrix2")]
-    REDUCTION_MATRIX2,
+    ReductionMatrix2,
     [Description("AnalogBalance")]
-    ANALOG_BALANCE,
+    AnalogBalance,
     [Description("AsShotNeutral")]
-    AS_SHOT_NEUTRAL,
+    AsShotNeutral,
     [Description("AsShotWhiteXY")]
-    AS_SHOT_WHITEXY,
+    AsShotWhitexy,
     [Description("BaselineExposure")]
-    BASELINE_EXPOSURE,
+    BaselineExposure,
     [Description("BaselineNoise")]
-    BASELINE_NOISE,
+    BaselineNoise,
     [Description("BaselineSharpness")]
-    BASELINE_SHARPNESS,
+    BaselineSharpness,
     [Description("BayerGreenSplit")]
-    BAYER_GREEN_SPLIT,
+    BayerGreenSplit,
     [Description("LinearResponseLimit")]
-    LINEAR_RESPONSE_LIMIT,
+    LinearResponseLimit,
     [Description("CameraSerialNumber")]
-    CAMERA_SERIAL_NUMBER,
+    CameraSerialNumber,
     [Description("LensInfo")]
-    LENS_INFO,
+    LensInfo,
     [Description("ChromaBlurRadius")]
-    CHROMA_BLUR_RADIUS,
+    ChromaBlurRadius,
     [Description("AntiAliasStrength")]
-    ANTI_ALIAS_STRENGTH,
+    AntiAliasStrength,
     [Description("ShadowScale")]
-    SHADOW_SCALE,
+    ShadowScale,
     [Description("DNGPrivateData")]
-    DNG_PRIVATE_DATA,
+    DngPrivateData,
     [Description("MakerNoteSafety")]
-    MAKER_NOTE_SAFETY,
+    MakerNoteSafety,
     [Description("CalibrationIlluminant1")]
-    CALIBRATION_ILLUMINANT1,
+    CalibrationIlluminant1,
     [Description("CalibrationIlluminant2")]
-    CALIBRATION_ILLUMINANT2,
+    CalibrationIlluminant2,
     [Description("BestQualityScale")]
-    BEST_QUALITY_SCALE,
+    BestQualityScale,
     [Description("RawDataUniqueID")]
-    RAW_DATA_UNIQUE_ID,
+    RawDataUniqueId,
     [Description("OriginalRawFileName")]
-    ORIGINAL_RAW_FILE_NAME,
+    OriginalRawFileName,
     [Description("OriginalRawFileData")]
-    ORIGINAL_RAW_FILE_DATA,
+    OriginalRawFileData,
     [Description("ActiveArea")]
-    ACTIVE_AREA,
+    ActiveArea,
     [Description("MaskedAreas")]
-    MASKED_AREAS,
+    MaskedAreas,
     [Description("AsShotICCProfile")]
-    AS_SHOT_ICC_PROFILE,
+    AsShotIccProfile,
     [Description("AsShotPreProfileMatrix")]
-    AS_SHOT_PRE_PROFILE_MATRIX,
+    AsShotPreProfileMatrix,
     [Description("CurrentICCProfile")]
-    CURRENT_ICC_PROFILE,
+    CurrentIccProfile,
     [Description("CurrentPreProfileMatrix")]
-    CURRENT_PRE_PROFILE_MATRIX,
+    CurrentPreProfileMatrix,
     [Description("ColorimetricReference")]
-    COLORIMETRIC_REFERENCE,
+    ColorimetricReference,
     [Description("CameraCalibrationSignature")]
-    CAMERA_CALIBRATION_SIGNATURE,
+    CameraCalibrationSignature,
     [Description("ProfileCalibrationSignature")]
-    PROFILE_CALIBRATION_SIGNATURE,
+    ProfileCalibrationSignature,
     [Description("ExtraCameraProfiles")]
-    EXTRA_CAMERA_PROFILES,
+    ExtraCameraProfiles,
     [Description("AsShotProfileName")]
-    AS_SHOT_PROFILE_NAME,
+    AsShotProfileName,
     [Description("NoiseReductionApplied")]
-    NOISE_REDUCTION_APPLIED,
+    NoiseReductionApplied,
     [Description("ProfileName")]
-    PROFILE_NAME,
+    ProfileName,
     [Description("ProfileHueSatMapDims")]
-    PROFILE_HUE_SAT_MAP_DIMS,
+    ProfileHueSatMapDims,
     [Description("ProfileHueSatMapData1")]
-    PROFILE_HUE_SAT_MAP_DATA1,
+    ProfileHueSatMapData1,
     [Description("ProfileHueSatMapData2")]
-    PROFILE_HUE_SAT_MAP_DATA2,
+    ProfileHueSatMapData2,
     [Description("ProfileToneCurve")]
-    PROFILE_TONE_CURVE,
+    ProfileToneCurve,
     [Description("ProfileEmbedPolicy")]
-    PROFILE_EMBED_POLICY,
+    ProfileEmbedPolicy,
     [Description("ProfileCopyright")]
-    PROFILE_COPYRIGHT,
+    ProfileCopyright,
     [Description("ForwardMatrix1")]
-    FORWARD_MATRIX1,
+    ForwardMatrix1,
     [Description("ForwardMatrix2")]
-    FORWARD_MATRIX2,
+    ForwardMatrix2,
     [Description("PreviewApplicationName")]
-    PREVIEW_APPLICATION_NAME,
+    PreviewApplicationName,
     [Description("PreviewApplicationVersion")]
-    PREVIEW_APPLICATION_VERSION,
+    PreviewApplicationVersion,
     [Description("PreviewSettingsName")]
-    PREVIEW_SETTINGS_NAME,
+    PreviewSettingsName,
     [Description("PreviewSettingsDigest")]
-    PREVIEW_SETTINGS_DIGEST,
+    PreviewSettingsDigest,
     [Description("PreviewColorSpace")]
-    PREVIEW_COLOR_SPACE,
+    PreviewColorSpace,
     [Description("PreviewDateTime")]
-    PREVIEW_DATE_TIME,
+    PreviewDateTime,
     [Description("RawImageDigest")]
-    RAW_IMAGE_DIGEST,
+    RawImageDigest,
     [Description("OriginalRawFileDigest")]
-    ORIGINAL_RAW_FILE_DIGEST,
+    OriginalRawFileDigest,
     [Description("SubTileBlockSize")]
-    SUB_TILE_BLOCK_SIZE,
+    SubTileBlockSize,
     [Description("RowInterleaveFactor")]
-    ROW_INTERLEAVE_FACTOR,
+    RowInterleaveFactor,
     [Description("ProfileLookTableDims")]
-    PROFILE_LOOK_TABLE_DIMS,
+    ProfileLookTableDims,
     [Description("ProfileLookTableData")]
-    PROFILE_LOOK_TABLE_DATA,
+    ProfileLookTableData,
     [Description("OpcodeList1")]
-    OPCODE_LIST1,
+    OpcodeList1,
     [Description("OpcodeList2")]
-    OPCODE_LIST2,
+    OpcodeList2,
     [Description("OpcodeList3")]
-    OPCODE_LIST3,
+    OpcodeList3,
     [Description("NoiseProfile")]
-    NOISE_PROFILE,
+    NoiseProfile,
     [Description("OriginalDefaultFinalSize")]
-    ORIGINAL_DEFAULT_FINAL_SIZE,
+    OriginalDefaultFinalSize,
     [Description("OriginalBestQualityFinalSize")]
-    ORIGINAL_BEST_QUALITY_FINAL_SIZE,
+    OriginalBestQualityFinalSize,
     [Description("OriginalDefaultCropSize")]
-    ORIGINAL_DEFAULT_CROP_SIZE,
+    OriginalDefaultCropSize,
     [Description("ProfileHueSatMapEncoding")]
-    PROFILE_HUE_SAT_MAP_ENCODING,
+    ProfileHueSatMapEncoding,
     [Description("ProfileLookTableEncoding")]
-    PROFILE_LOOK_TABLE_ENCODING,
+    ProfileLookTableEncoding,
     [Description("BaselineExposureOffset")]
-    BASELINE_EXPOSURE_OFFSET,
+    BaselineExposureOffset,
     [Description("DefaultBlackRender")]
-    DEFAULT_BLACK_RENDER,
+    DefaultBlackRender,
     [Description("NewRawImageDigest")]
-    NEW_RAW_IMAGE_DIGEST,
+    NewRawImageDigest,
     [Description("RawToPreviewGain")]
-    RAW_TO_PREVIEW_GAIN,
+    RawToPreviewGain,
     [Description("DefaultUserCrop")]
-    DEFAULT_USER_CROP
+    DefaultUserCrop
 }
 
 /// <summary>
@@ -779,45 +779,45 @@ public enum DngPropertyKey
 public enum TiffPropertyKey
 {
     [Description("TiffCompression")]
-    COMPRESSION,
+    Compression,
     [Description("TiffPhotometricInterpretation")]
-    PHOTOMETRIC_INTERPRETATION,
+    PhotometricInterpretation,
     [Description("TiffTransferFunction")]
-    TRANSFER_FUNCTION,
+    TransferFunction,
     [Description("TiffOrientation")]
-    ORIENTATION,
+    Orientation,
     [Description("TiffXResolution")]
-    X_RESOLUTION,
+    XResolution,
     [Description("TiffYResolution")]
-    Y_RESOLUTION,
+    YResolution,
     [Description("TiffResolutionUnit")]
-    RESOLUTION_UNIT,
+    ResolutionUnit,
     [Description("TiffWhitePoint")]
-    WHITE_POINT,
+    WhitePoint,
     [Description("TiffPrimaryChromaticities")]
-    PRIMARY_CHROMATICITIES,
+    PrimaryChromaticities,
     [Description("TiffTileLength")]
-    TILE_LENGTH,
+    TileLength,
     [Description("TiffTileWidth")]
-    TILE_WIDTH,
+    TileWidth,
     [Description("TiffDocumentName")]
-    DOCUMENT_NAME,
+    DocumentName,
     [Description("TiffImageDescription")]
-    IMAGE_DESCRIPTION,
+    ImageDescription,
     [Description("TiffArtist")]
-    ARTIST,
+    Artist,
     [Description("TiffCopyright")]
-    COPYRIGHT,
+    Copyright,
     [Description("TiffDateTime")]
-    DATE_TIME,
+    DateTime,
     [Description("TiffMake")]
-    MAKE,
+    Make,
     [Description("TiffModel")]
-    MODEL,
+    Model,
     [Description("TiffSoftware")]
-    SOFTWARE,
+    Software,
     [Description("TiffHostComputer")]
-    HOST_COMPUTER
+    HostComputer
 }
 
 /// <summary>
@@ -826,15 +826,15 @@ public enum TiffPropertyKey
 public enum JfifPropertyKey
 {
     [Description("JfifXDensity")]
-    X_DENSITY,
+    XDensity,
     [Description("JfifYDensity")]
-    Y_DENSITY,
+    YDensity,
     [Description("JfifDensityUnit")]
-    DENSITY_UNIT,
+    DensityUnit,
     [Description("JfifVersion")]
-    VERSION,
+    Version,
     [Description("JfifIsProgressive")]
-    IS_PROGRESSIVE
+    IsProgressive
 }
 
 /// <summary>
@@ -843,37 +843,37 @@ public enum JfifPropertyKey
 public enum PngPropertyKey
 {
     [Description("PngXPixelsPerMeter")]
-    X_PIXELS_PER_METER,
+    XPixelsPerMeter,
     [Description("PngYPixelsPerMeter")]
-    Y_PIXELS_PER_METER,
+    YPixelsPerMeter,
     [Description("PngGamma")]
-    GAMMA,
+    Gamma,
     [Description("PngInterlaceType")]
-    INTERLACE_TYPE,
+    InterlaceType,
     [Description("PngSRGBIntent")]
-    SRGB_INTENT,
+    SrgbIntent,
     [Description("PngChromaticities")]
-    CHROMATICITIES,
+    Chromaticities,
     [Description("PngTitle")]
-    TITLE,
+    Title,
     [Description("PngDescription")]
-    DESCRIPTION,
+    Description,
     [Description("PngComment")]
-    COMMENT,
+    Comment,
     [Description("PngDisclaimer")]
-    DISCLAIMER,
+    Disclaimer,
     [Description("PngWarning")]
-    WARNING,
+    Warning,
     [Description("PngAuthor")]
-    AUTHOR,
+    Author,
     [Description("PngCopyright")]
-    COPYRIGHT,
+    Copyright,
     [Description("PngCreationTime")]
-    CREATION_TIME,
+    CreationTime,
     [Description("PngModificationTime")]
-    MODIFICATION_TIME,
+    ModificationTime,
     [Description("PngSoftware")]
-    SOFTWARE
+    Software
 }
 
 /// <summary>
@@ -881,10 +881,10 @@ public enum PngPropertyKey
 /// </summary>
 public enum XmageColorMode
 {
-    NORMAL = 0,
-    BRIGHT = 1,
-    SOFT = 2,
-    MONO = 3
+    Normal = 0,
+    Bright = 1,
+    Soft = 2,
+    Mono = 3
 }
 
 /// <summary>
@@ -893,15 +893,15 @@ public enum XmageColorMode
 public enum WebPPropertyKey
 {
     [Description("WebPCanvasWidth")]
-    CANVAS_WIDTH,
+    CanvasWidth,
     [Description("WebPCanvasHeight")]
-    CANVAS_HEIGHT,
+    CanvasHeight,
     [Description("WebPDelayTime")]
-    DELAY_TIME,
+    DelayTime,
     [Description("WebPUnclampedDelayTime")]
-    UNCLAMPED_DELAY_TIME,
+    UnclampedDelayTime,
     [Description("WebPLoopCount")]
-    LOOP_COUNT
+    LoopCount
 }
 
 /// <summary>
@@ -909,13 +909,13 @@ public enum WebPPropertyKey
 /// </summary>
 public enum XMPTagType
 {
-    UNKNOWN = 0,
-    STRING = 1,
-    UNORDERED_ARRAY = 2,
-    ORDERED_ARRAY = 3,
-    ALTERNATE_ARRAY = 4,
-    ALTERNATE_TEXT = 5,
-    STRUCTURE = 6
+    Unknown = 0,
+    String = 1,
+    UnorderedArray = 2,
+    OrderedArray = 3,
+    AlternateArray = 4,
+    AlternateText = 5,
+    Structure = 6
 }
 
 /// <summary>
@@ -924,5 +924,5 @@ public enum XMPTagType
 public enum AvisPropertyKey
 {
     [Description("AvisDelayTime")]
-    DELAY_TIME
+    DelayTime
 }

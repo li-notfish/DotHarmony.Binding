@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -22,7 +23,8 @@ public static unsafe partial class Router
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -83,7 +85,7 @@ public static unsafe partial class Router
     private static ReadOnlySpan<byte> _replaceNamedRoute => "replaceNamedRoute"u8;
 
     /// <summary>
-    /// push 方法
+    /// push
     /// </summary>
     public static void Push(IntPtr options)
     {
@@ -91,23 +93,23 @@ public static unsafe partial class Router
     }
 
     /// <summary>
-    /// pushUrl 方法
+    /// pushUrl
     /// </summary>
-    public static Task PushUrl(IntPtr options)
+    public static Task PushUrlAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, options);
     }
 
     /// <summary>
-    /// pushUrl 方法
+    /// pushUrl
     /// </summary>
-    public static Task PushUrl(IntPtr options, IntPtr mode)
+    public static Task PushUrlAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, options, mode);
     }
 
     /// <summary>
-    /// replace 方法
+    /// replace
     /// </summary>
     public static void Replace(IntPtr options)
     {
@@ -115,39 +117,39 @@ public static unsafe partial class Router
     }
 
     /// <summary>
-    /// replaceUrl 方法
+    /// replaceUrl
     /// </summary>
-    public static Task ReplaceUrl(IntPtr options)
+    public static Task ReplaceUrlAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, options);
     }
 
     /// <summary>
-    /// replaceUrl 方法
+    /// replaceUrl
     /// </summary>
-    public static Task ReplaceUrl(IntPtr options, IntPtr mode)
+    public static Task ReplaceUrlAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, options, mode);
     }
 
     /// <summary>
-    /// back 方法
+    /// back
     /// </summary>
-    public static void Back(IntPtr options)
+    public static void Back(IntPtr? options = null)
     {
         NodeApi.CallMethodVoid(Module, _back, options);
     }
 
     /// <summary>
-    /// back 方法
+    /// back
     /// </summary>
-    public static void Back(double index, IntPtr @params)
+    public static void Back(double index, IntPtr? @params = null)
     {
         NodeApi.CallMethodVoid(Module, _back, index, @params);
     }
 
     /// <summary>
-    /// clear 方法
+    /// clear
     /// </summary>
     public static void Clear()
     {
@@ -155,7 +157,7 @@ public static unsafe partial class Router
     }
 
     /// <summary>
-    /// getLength 方法
+    /// getLength
     /// </summary>
     public static string GetLength()
     {
@@ -163,7 +165,7 @@ public static unsafe partial class Router
     }
 
     /// <summary>
-    /// getState 方法
+    /// getState
     /// </summary>
     public static IntPtr GetState()
     {
@@ -171,7 +173,7 @@ public static unsafe partial class Router
     }
 
     /// <summary>
-    /// getStateByIndex 方法
+    /// getStateByIndex
     /// </summary>
     public static IntPtr GetStateByIndex(double index)
     {
@@ -179,31 +181,31 @@ public static unsafe partial class Router
     }
 
     /// <summary>
-    /// getStateByUrl 方法
+    /// getStateByUrl
     /// </summary>
     public static IntPtr[] GetStateByUrl(string url)
     {
-        return NodeApi.CallMethod<IntPtr[]>(Module, _getStateByUrl, url);
+        return NodeApi.CallMethod(Module, _getStateByUrl, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), url);
     }
 
     /// <summary>
-    /// enableAlertBeforeBackPage 方法
+    /// enableAlertBeforeBackPage
     /// </summary>
-    public static void EnableAlertBeforeBackPage(IntPtr options)
+    public static void EnableAlertBeforeBackPage(EnableAlertOptions options)
     {
         NodeApi.CallMethodVoid(Module, _enableAlertBeforeBackPage, options);
     }
 
     /// <summary>
-    /// showAlertBeforeBackPage 方法
+    /// showAlertBeforeBackPage
     /// </summary>
-    public static void ShowAlertBeforeBackPage(IntPtr options)
+    public static void ShowAlertBeforeBackPage(EnableAlertOptions options)
     {
         NodeApi.CallMethodVoid(Module, _showAlertBeforeBackPage, options);
     }
 
     /// <summary>
-    /// disableAlertBeforeBackPage 方法
+    /// disableAlertBeforeBackPage
     /// </summary>
     public static void DisableAlertBeforeBackPage()
     {
@@ -211,7 +213,7 @@ public static unsafe partial class Router
     }
 
     /// <summary>
-    /// hideAlertBeforeBackPage 方法
+    /// hideAlertBeforeBackPage
     /// </summary>
     public static void HideAlertBeforeBackPage()
     {
@@ -219,7 +221,7 @@ public static unsafe partial class Router
     }
 
     /// <summary>
-    /// getParams 方法
+    /// getParams
     /// </summary>
     public static IntPtr GetParams()
     {
@@ -227,35 +229,51 @@ public static unsafe partial class Router
     }
 
     /// <summary>
-    /// pushNamedRoute 方法
+    /// pushNamedRoute
     /// </summary>
-    public static Task PushNamedRoute(IntPtr options)
+    public static Task PushNamedRouteAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, options);
     }
 
     /// <summary>
-    /// pushNamedRoute 方法
+    /// pushNamedRoute
     /// </summary>
-    public static Task PushNamedRoute(IntPtr options, IntPtr mode)
+    public static Task PushNamedRouteAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, options, mode);
     }
 
     /// <summary>
-    /// replaceNamedRoute 方法
+    /// replaceNamedRoute
     /// </summary>
-    public static Task ReplaceNamedRoute(IntPtr options)
+    public static Task ReplaceNamedRouteAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, options);
     }
 
     /// <summary>
-    /// replaceNamedRoute 方法
+    /// replaceNamedRoute
     /// </summary>
-    public static Task ReplaceNamedRoute(IntPtr options, IntPtr mode)
+    public static Task ReplaceNamedRouteAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, options, mode);
     }
 
+}
+
+/// <summary>
+/// EnableAlertOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record EnableAlertOptions(
+    string Message
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _message = Encoding.UTF8.GetBytes("message");
+        var _messageV = NativeValue.From(Message);
+        if (_messageV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _message, _messageV);
+    }
 }

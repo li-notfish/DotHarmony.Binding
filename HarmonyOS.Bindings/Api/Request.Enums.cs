@@ -9,8 +9,8 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum Action
 {
-    DOWNLOAD,
-    UPLOAD
+    Download,
+    Upload
 }
 
 /// <summary>
@@ -18,8 +18,8 @@ public enum Action
 /// </summary>
 public enum Mode
 {
-    BACKGROUND,
-    FOREGROUND
+    Background,
+    Foreground
 }
 
 /// <summary>
@@ -27,9 +27,9 @@ public enum Mode
 /// </summary>
 public enum Network
 {
-    ANY,
-    WIFI,
-    CELLULAR
+    Any,
+    Wifi,
+    Cellular
 }
 
 /// <summary>
@@ -38,7 +38,7 @@ public enum Network
 public enum BroadcastEvent
 {
     [Description("ohos.request.event.COMPLETE")]
-    COMPLETE
+    Complete
 }
 
 /// <summary>
@@ -46,15 +46,15 @@ public enum BroadcastEvent
 /// </summary>
 public enum State
 {
-    INITIALIZED = 0,
-    WAITING = 16,
-    RUNNING = 32,
-    RETRYING = 33,
-    PAUSED = 48,
-    STOPPED = 49,
-    COMPLETED = 64,
-    FAILED = 65,
-    REMOVED = 80
+    Initialized = 0,
+    Waiting = 16,
+    Running = 32,
+    Retrying = 33,
+    Paused = 48,
+    Stopped = 49,
+    Completed = 64,
+    Failed = 65,
+    Removed = 80
 }
 
 /// <summary>
@@ -62,17 +62,17 @@ public enum State
 /// </summary>
 public enum Faults
 {
-    OTHERS = 255,
-    DISCONNECTED = 0,
-    TIMEOUT = 16,
-    PROTOCOL = 32,
-    PARAM = 48,
-    FSIO = 64,
-    DNS = 80,
-    TCP = 96,
-    SSL = 112,
-    REDIRECT = 128,
-    LOW_SPEED = 144
+    Others = 255,
+    Disconnected = 0,
+    Timeout = 16,
+    Protocol = 32,
+    Param = 48,
+    Fsio = 64,
+    Dns = 80,
+    Tcp = 96,
+    Ssl = 112,
+    Redirect = 128,
+    LowSpeed = 144
 }
 
 /// <summary>
@@ -80,8 +80,8 @@ public enum Faults
 /// </summary>
 public enum WaitingReason
 {
-    TASK_QUEUE_FULL = 0,
-    NETWORK_NOT_MATCH = 1,
-    APP_BACKGROUND = 2,
-    USER_INACTIVATED = 3
+    TaskQueueFull = 0,
+    NetworkNotMatch = 1,
+    AppBackground = 2,
+    UserInactivated = 3
 }

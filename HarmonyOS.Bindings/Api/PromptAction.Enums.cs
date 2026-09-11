@@ -7,8 +7,8 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum LevelMode
 {
-    OVERLAY = 0,
-    EMBEDDED = 1
+    Overlay = 0,
+    Embedded = 1
 }
 
 /// <summary>
@@ -16,8 +16,8 @@ public enum LevelMode
 /// </summary>
 public enum ImmersiveMode
 {
-    DEFAULT = 0,
-    EXTEND = 1
+    Default = 0,
+    Extend = 1
 }
 
 /// <summary>
@@ -25,8 +25,8 @@ public enum ImmersiveMode
 /// </summary>
 public enum ToastShowMode
 {
-    DEFAULT = 0,
-    TOP_MOST = 1
+    Default = 0,
+    TopMost = 1
 }
 
 /// <summary>
@@ -34,10 +34,10 @@ public enum ToastShowMode
 /// </summary>
 public enum CommonState
 {
-    UNINITIALIZED = 0,
-    INITIALIZED = 1,
-    APPEARING = 2,
-    APPEARED = 3,
-    DISAPPEARING = 4,
-    DISAPPEARED = 5
+    Uninitialized = 0,
+    Initialized = 1,
+    Appearing = 2,
+    Appeared = 3,
+    Disappearing = 4,
+    Disappeared = 5
 }

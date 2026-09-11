@@ -10,19 +10,19 @@ namespace HarmonyOS.ArkUI;
 public enum DeviceTypes
 {
     [Description("default")]
-    TYPE_DEFAULT,
+    TypeDefault,
     [Description("phone")]
-    TYPE_PHONE,
+    TypePhone,
     [Description("tablet")]
-    TYPE_TABLET,
+    TypeTablet,
     [Description("2in1")]
-    TYPE_2IN1,
+    Type2In1,
     [Description("tv")]
-    TYPE_TV,
+    TypeTV,
     [Description("wearable")]
-    TYPE_WEARABLE,
+    TypeWearable,
     [Description("car")]
-    TYPE_CAR
+    TypeCar
 }
 
 /// <summary>
@@ -30,7 +30,7 @@ public enum DeviceTypes
 /// </summary>
 public enum PerformanceClassLevel
 {
-    CLASS_LEVEL_HIGH,
-    CLASS_LEVEL_MEDIUM,
-    CLASS_LEVEL_LOW
+    ClassLevelHigh,
+    ClassLevelMedium,
+    ClassLevelLow
 }

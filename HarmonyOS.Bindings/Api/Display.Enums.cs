@@ -7,16 +7,16 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum FoldStatus
 {
-    FOLD_STATUS_UNKNOWN = 0,
-    FOLD_STATUS_EXPANDED = 1,
-    FOLD_STATUS_FOLDED = 2,
-    FOLD_STATUS_HALF_FOLDED = 3,
-    FOLD_STATUS_EXPANDED_WITH_SECOND_EXPANDED = 11,
-    FOLD_STATUS_EXPANDED_WITH_SECOND_HALF_FOLDED = 21,
-    FOLD_STATUS_FOLDED_WITH_SECOND_HALF_FOLDED = 22,
-    FOLD_STATUS_HALF_FOLDED_WITH_SECOND_HALF_FOLDED = 23,
-    FOLD_STATUS_FOLDED_WITH_SECOND_EXPANDED = 12,
-    FOLD_STATUS_HALF_FOLDED_WITH_SECOND_EXPANDED = 13
+    FoldStatusUnknown = 0,
+    FoldStatusExpanded = 1,
+    FoldStatusFolded = 2,
+    FoldStatusHalfFolded = 3,
+    FoldStatusExpandedWithSecondExpanded = 11,
+    FoldStatusExpandedWithSecondHalfFolded = 21,
+    FoldStatusFoldedWithSecondHalfFolded = 22,
+    FoldStatusHalfFoldedWithSecondHalfFolded = 23,
+    FoldStatusFoldedWithSecondExpanded = 12,
+    FoldStatusHalfFoldedWithSecondExpanded = 13
 }
 
 /// <summary>
@@ -24,11 +24,11 @@ public enum FoldStatus
 /// </summary>
 public enum FoldDisplayMode
 {
-    FOLD_DISPLAY_MODE_UNKNOWN = 0,
-    FOLD_DISPLAY_MODE_FULL = 1,
-    FOLD_DISPLAY_MODE_MAIN = 2,
-    FOLD_DISPLAY_MODE_SUB = 3,
-    FOLD_DISPLAY_MODE_COORDINATION
+    FoldDisplayModeUnknown = 0,
+    FoldDisplayModeFull = 1,
+    FoldDisplayModeMain = 2,
+    FoldDisplayModeSub = 3,
+    FoldDisplayModeCoordination
 }
 
 /// <summary>
@@ -36,13 +36,13 @@ public enum FoldDisplayMode
 /// </summary>
 public enum DisplayState
 {
-    STATE_UNKNOWN = 0,
-    STATE_OFF = 1,
-    STATE_ON = 2,
-    STATE_DOZE = 3,
-    STATE_DOZE_SUSPEND = 4,
-    STATE_VR = 5,
-    STATE_ON_SUSPEND = 6
+    StateUnknown = 0,
+    StateOff = 1,
+    StateOn = 2,
+    StateDoze = 3,
+    StateDozeSuspend = 4,
+    StateVR = 5,
+    StateOnSuspend = 6
 }
 
 /// <summary>
@@ -50,10 +50,10 @@ public enum DisplayState
 /// </summary>
 public enum Orientation
 {
-    PORTRAIT = 0,
-    LANDSCAPE = 1,
-    PORTRAIT_INVERTED = 2,
-    LANDSCAPE_INVERTED = 3
+    Portrait = 0,
+    Landscape = 1,
+    PortraitInverted = 2,
+    LandscapeInverted = 3
 }
 
 /// <summary>
@@ -61,8 +61,8 @@ public enum Orientation
 /// </summary>
 public enum ScreenShape
 {
-    ROUND = 1,
-    RECTANGLE = 0
+    Round = 1,
+    Rectangle = 0
 }
 
 /// <summary>
@@ -70,11 +70,11 @@ public enum ScreenShape
 /// </summary>
 public enum DisplaySourceMode
 {
-    MAIN = 1,
-    NONE = 0,
-    EXTEND = 3,
-    MIRROR = 2,
-    ALONE = 4
+    Main = 1,
+    None = 0,
+    Extend = 3,
+    Mirror = 2,
+    Alone = 4
 }
 
 /// <summary>
@@ -82,8 +82,8 @@ public enum DisplaySourceMode
 /// </summary>
 public enum CornerType
 {
-    TOP_LEFT = 0,
-    TOP_RIGHT = 1,
-    BOTTOM_RIGHT = 2,
-    BOTTOM_LEFT = 3
+    TopLeft = 0,
+    TopRight = 1,
+    BottomRight = 2,
+    BottomLeft = 3
 }

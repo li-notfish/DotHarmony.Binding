@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -23,7 +24,8 @@ public static unsafe partial class Sensor
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -92,15 +94,15 @@ public static unsafe partial class Sensor
     private static ReadOnlySpan<byte> _getOrientation => "getOrientation"u8;
 
     /// <summary>
-    /// on 方法
+    /// on
     /// </summary>
-    public static void On(IntPtr type, IntPtr callback, IntPtr options)
+    public static void On(IntPtr type, IntPtr callback, SensorOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback, options);
     }
 
     /// <summary>
-    /// once 方法
+    /// once
     /// </summary>
     public static void Once(IntPtr type, IntPtr callback)
     {
@@ -108,215 +110,215 @@ public static unsafe partial class Sensor
     }
 
     /// <summary>
-    /// off 方法
+    /// off
     /// </summary>
-    public static void Off(IntPtr type, IntPtr callback)
+    public static void Off(IntPtr type, IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// off 方法
+    /// off
     /// </summary>
-    public static void Off(IntPtr type, IntPtr sensorInfoParam, IntPtr callback)
+    public static void Off(IntPtr type, SensorInfoParam? sensorInfoParam = null, IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
     }
 
     /// <summary>
-    /// getSingleSensor 方法
+    /// getSingleSensor
     /// </summary>
-    public static Task<IntPtr> GetSingleSensor(IntPtr type)
+    public static Task<SensorObject> GetSingleSensorAsync(global::HarmonyOS.ArkUI.SensorId type)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getSingleSensor, type);
+        return NodeApi.CallMethodAsync(Module, _getSingleSensor, static h => new SensorObject(h), type);
     }
 
     /// <summary>
-    /// getSingleSensorSync 方法
+    /// getSingleSensorSync
     /// </summary>
-    public static IntPtr GetSingleSensorSync(IntPtr type)
+    public static SensorObject GetSingleSensorSync(global::HarmonyOS.ArkUI.SensorId type)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getSingleSensorSync, type);
+        return NodeApi.CallMethod(Module, _getSingleSensorSync, static h => new SensorObject(h), type);
     }
 
     /// <summary>
-    /// getSingleSensorByDeviceSync 方法
+    /// getSingleSensorByDeviceSync
     /// </summary>
-    public static IntPtr[] GetSingleSensorByDeviceSync(IntPtr type, double deviceId)
+    public static SensorObject[] GetSingleSensorByDeviceSync(global::HarmonyOS.ArkUI.SensorId type, double? deviceId = null)
     {
-        return NodeApi.CallMethod<IntPtr[]>(Module, _getSingleSensorByDeviceSync, type, deviceId);
+        return NodeApi.CallMethod(Module, _getSingleSensorByDeviceSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)), type, deviceId);
     }
 
     /// <summary>
-    /// getSensorList 方法
+    /// getSensorList
     /// </summary>
-    public static Task<IntPtr[]> GetSensorList()
+    public static Task<SensorObject[]> GetSensorListAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getSensorList);
+        return NodeApi.CallMethodAsync(Module, _getSensorList, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)));
     }
 
     /// <summary>
-    /// getSensorListSync 方法
+    /// getSensorListSync
     /// </summary>
-    public static IntPtr[] GetSensorListSync()
+    public static SensorObject[] GetSensorListSync()
     {
-        return NodeApi.CallMethod<IntPtr[]>(Module, _getSensorListSync);
+        return NodeApi.CallMethod(Module, _getSensorListSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)));
     }
 
     /// <summary>
-    /// getSensorListByDeviceSync 方法
+    /// getSensorListByDeviceSync
     /// </summary>
-    public static IntPtr[] GetSensorListByDeviceSync(double deviceId)
+    public static SensorObject[] GetSensorListByDeviceSync(double? deviceId = null)
     {
-        return NodeApi.CallMethod<IntPtr[]>(Module, _getSensorListByDeviceSync, deviceId);
+        return NodeApi.CallMethod(Module, _getSensorListByDeviceSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)), deviceId);
     }
 
     /// <summary>
-    /// getGeomagneticField 方法
+    /// getGeomagneticField
     /// </summary>
-    public static Task<IntPtr> GetGeomagneticField(IntPtr locationOptions, double timeMillis)
+    public static Task<GeomagneticResponse> GetGeomagneticFieldAsync(LocationOptions locationOptions, double timeMillis)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getGeomagneticField, locationOptions, timeMillis);
+        return NodeApi.CallMethodAsync(Module, _getGeomagneticField, static h => new GeomagneticResponse(h), locationOptions, timeMillis);
     }
 
     /// <summary>
-    /// getGeomagneticInfo 方法
+    /// getGeomagneticInfo
     /// </summary>
-    public static Task<IntPtr> GetGeomagneticInfo(IntPtr locationOptions, double timeMillis)
+    public static Task<GeomagneticResponse> GetGeomagneticInfoAsync(LocationOptions locationOptions, double timeMillis)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getGeomagneticInfo, locationOptions, timeMillis);
+        return NodeApi.CallMethodAsync(Module, _getGeomagneticInfo, static h => new GeomagneticResponse(h), locationOptions, timeMillis);
     }
 
     /// <summary>
-    /// getAltitude 方法
+    /// getAltitude
     /// </summary>
-    public static Task<double> GetAltitude(double seaPressure, double currentPressure)
+    public static Task<double> GetAltitudeAsync(double seaPressure, double currentPressure)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getAltitude, seaPressure, currentPressure);
     }
 
     /// <summary>
-    /// getDeviceAltitude 方法
+    /// getDeviceAltitude
     /// </summary>
-    public static Task<double> GetDeviceAltitude(double seaPressure, double currentPressure)
+    public static Task<double> GetDeviceAltitudeAsync(double seaPressure, double currentPressure)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getDeviceAltitude, seaPressure, currentPressure);
     }
 
     /// <summary>
-    /// getGeomagneticDip 方法
+    /// getGeomagneticDip
     /// </summary>
-    public static Task<double> GetGeomagneticDip(double[] inclinationMatrix)
+    public static Task<double> GetGeomagneticDipAsync(double[] inclinationMatrix)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getGeomagneticDip, inclinationMatrix);
     }
 
     /// <summary>
-    /// getInclination 方法
+    /// getInclination
     /// </summary>
-    public static Task<double> GetInclination(double[] inclinationMatrix)
+    public static Task<double> GetInclinationAsync(double[] inclinationMatrix)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getInclination, inclinationMatrix);
     }
 
     /// <summary>
-    /// getAngleModify 方法
+    /// getAngleModify
     /// </summary>
-    public static Task<double[]> GetAngleModify(double[] currentRotationMatrix, double[] preRotationMatrix)
+    public static Task<double[]> GetAngleModifyAsync(double[] currentRotationMatrix, double[] preRotationMatrix)
     {
-        return NodeApi.CallMethodAsync<double[]>(Module, _getAngleModify, currentRotationMatrix, preRotationMatrix);
+        return NodeApi.CallMethodAsync(Module, _getAngleModify, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), currentRotationMatrix, preRotationMatrix);
     }
 
     /// <summary>
-    /// getAngleVariation 方法
+    /// getAngleVariation
     /// </summary>
-    public static Task<double[]> GetAngleVariation(double[] currentRotationMatrix, double[] preRotationMatrix)
+    public static Task<double[]> GetAngleVariationAsync(double[] currentRotationMatrix, double[] preRotationMatrix)
     {
-        return NodeApi.CallMethodAsync<double[]>(Module, _getAngleVariation, currentRotationMatrix, preRotationMatrix);
+        return NodeApi.CallMethodAsync(Module, _getAngleVariation, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), currentRotationMatrix, preRotationMatrix);
     }
 
     /// <summary>
-    /// createRotationMatrix 方法
+    /// createRotationMatrix
     /// </summary>
-    public static Task<double[]> CreateRotationMatrix(double[] rotationVector)
+    public static Task<double[]> CreateRotationMatrixAsync(double[] rotationVector)
     {
-        return NodeApi.CallMethodAsync<double[]>(Module, _createRotationMatrix, rotationVector);
+        return NodeApi.CallMethodAsync(Module, _createRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationVector);
     }
 
     /// <summary>
-    /// getRotationMatrix 方法
+    /// getRotationMatrix
     /// </summary>
-    public static Task<double[]> GetRotationMatrix(double[] rotationVector)
+    public static Task<double[]> GetRotationMatrixAsync(double[] rotationVector)
     {
-        return NodeApi.CallMethodAsync<double[]>(Module, _getRotationMatrix, rotationVector);
+        return NodeApi.CallMethodAsync(Module, _getRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationVector);
     }
 
     /// <summary>
-    /// transformCoordinateSystem 方法
+    /// transformCoordinateSystem
     /// </summary>
-    public static Task<double[]> TransformCoordinateSystem(double[] inRotationVector, IntPtr coordinates)
+    public static Task<double[]> TransformCoordinateSystemAsync(double[] inRotationVector, CoordinatesOptions coordinates)
     {
-        return NodeApi.CallMethodAsync<double[]>(Module, _transformCoordinateSystem, inRotationVector, coordinates);
+        return NodeApi.CallMethodAsync(Module, _transformCoordinateSystem, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), inRotationVector, coordinates);
     }
 
     /// <summary>
-    /// transformRotationMatrix 方法
+    /// transformRotationMatrix
     /// </summary>
-    public static Task<double[]> TransformRotationMatrix(double[] inRotationVector, IntPtr coordinates)
+    public static Task<double[]> TransformRotationMatrixAsync(double[] inRotationVector, CoordinatesOptions coordinates)
     {
-        return NodeApi.CallMethodAsync<double[]>(Module, _transformRotationMatrix, inRotationVector, coordinates);
+        return NodeApi.CallMethodAsync(Module, _transformRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), inRotationVector, coordinates);
     }
 
     /// <summary>
-    /// createQuaternion 方法
+    /// createQuaternion
     /// </summary>
-    public static Task<double[]> CreateQuaternion(double[] rotationVector)
+    public static Task<double[]> CreateQuaternionAsync(double[] rotationVector)
     {
-        return NodeApi.CallMethodAsync<double[]>(Module, _createQuaternion, rotationVector);
+        return NodeApi.CallMethodAsync(Module, _createQuaternion, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationVector);
     }
 
     /// <summary>
-    /// getQuaternion 方法
+    /// getQuaternion
     /// </summary>
-    public static Task<double[]> GetQuaternion(double[] rotationVector)
+    public static Task<double[]> GetQuaternionAsync(double[] rotationVector)
     {
-        return NodeApi.CallMethodAsync<double[]>(Module, _getQuaternion, rotationVector);
+        return NodeApi.CallMethodAsync(Module, _getQuaternion, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationVector);
     }
 
     /// <summary>
-    /// getDirection 方法
+    /// getDirection
     /// </summary>
-    public static Task<double[]> GetDirection(double[] rotationMatrix)
+    public static Task<double[]> GetDirectionAsync(double[] rotationMatrix)
     {
-        return NodeApi.CallMethodAsync<double[]>(Module, _getDirection, rotationMatrix);
+        return NodeApi.CallMethodAsync(Module, _getDirection, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationMatrix);
     }
 
     /// <summary>
-    /// getOrientation 方法
+    /// getOrientation
     /// </summary>
-    public static Task<double[]> GetOrientation(double[] rotationMatrix)
+    public static Task<double[]> GetOrientationAsync(double[] rotationMatrix)
     {
-        return NodeApi.CallMethodAsync<double[]>(Module, _getOrientation, rotationMatrix);
+        return NodeApi.CallMethodAsync(Module, _getOrientation, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationMatrix);
     }
 
     /// <summary>
-    /// createRotationMatrix 方法
+    /// createRotationMatrix
     /// </summary>
-    public static Task<IntPtr> CreateRotationMatrix(double[] gravity, double[] geomagnetic)
+    public static Task<RotationMatrixResponse> CreateRotationMatrixAsync(double[] gravity, double[] geomagnetic)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createRotationMatrix, gravity, geomagnetic);
+        return NodeApi.CallMethodAsync(Module, _createRotationMatrix, static h => new RotationMatrixResponse(h), gravity, geomagnetic);
     }
 
     /// <summary>
-    /// getRotationMatrix 方法
+    /// getRotationMatrix
     /// </summary>
-    public static Task<IntPtr> GetRotationMatrix(double[] gravity, double[] geomagnetic)
+    public static Task<RotationMatrixResponse> GetRotationMatrixAsync(double[] gravity, double[] geomagnetic)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getRotationMatrix, gravity, geomagnetic);
+        return NodeApi.CallMethodAsync(Module, _getRotationMatrix, static h => new RotationMatrixResponse(h), gravity, geomagnetic);
     }
 
     /// <summary>
-    /// on 方法
+    /// on
     /// </summary>
     public static void On(string type, IntPtr callback)
     {
@@ -324,11 +326,271 @@ public static unsafe partial class Sensor
     }
 
     /// <summary>
-    /// off 方法
+    /// off
     /// </summary>
-    public static void Off(string type, IntPtr callback)
+    public static void Off(string type, IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
+
+}
+
+/// <summary>
+/// Options（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record SensorOptions(
+    double? Interval = null,
+    SensorInfoParam? SensorInfoParam = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _interval = Encoding.UTF8.GetBytes("interval");
+        var _intervalV = NativeValue.From(Interval);
+        if (_intervalV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _interval, _intervalV);
+        var _sensorInfoParam = Encoding.UTF8.GetBytes("sensorInfoParam");
+        var _sensorInfoParamV = NativeValue.From(SensorInfoParam);
+        if (_sensorInfoParamV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _sensorInfoParam, _sensorInfoParamV);
+    }
+}
+
+/// <summary>
+/// SensorInfoParam（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record SensorInfoParam(
+    double? DeviceId = null,
+    double? SensorIndex = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _deviceId = Encoding.UTF8.GetBytes("deviceId");
+        var _deviceIdV = NativeValue.From(DeviceId);
+        if (_deviceIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceId, _deviceIdV);
+        var _sensorIndex = Encoding.UTF8.GetBytes("sensorIndex");
+        var _sensorIndexV = NativeValue.From(SensorIndex);
+        if (_sensorIndexV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _sensorIndex, _sensorIndexV);
+    }
+}
+
+/// <summary>
+/// Sensor 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SensorObject : JsObject
+{
+    public SensorObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _sensorName => "sensorName"u8;
+    private static ReadOnlySpan<byte> _vendorName => "vendorName"u8;
+    private static ReadOnlySpan<byte> _firmwareVersion => "firmwareVersion"u8;
+    private static ReadOnlySpan<byte> _hardwareVersion => "hardwareVersion"u8;
+    private static ReadOnlySpan<byte> _sensorId => "sensorId"u8;
+    private static ReadOnlySpan<byte> _maxRange => "maxRange"u8;
+    private static ReadOnlySpan<byte> _minSamplePeriod => "minSamplePeriod"u8;
+    private static ReadOnlySpan<byte> _maxSamplePeriod => "maxSamplePeriod"u8;
+    private static ReadOnlySpan<byte> _precision => "precision"u8;
+    private static ReadOnlySpan<byte> _power => "power"u8;
+    private static ReadOnlySpan<byte> _sensorIndex => "sensorIndex"u8;
+    private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
+    private static ReadOnlySpan<byte> _deviceName => "deviceName"u8;
+    private static ReadOnlySpan<byte> _isLocalSensor => "isLocalSensor"u8;
+    private static ReadOnlySpan<byte> _isMockSensor => "isMockSensor"u8;
+    /// <summary>
+    /// sensorName
+    /// </summary>
+    public string SensorName => NativeValue.ToString(GetPropertyRaw(_sensorName)) ?? string.Empty;
+
+    /// <summary>
+    /// vendorName
+    /// </summary>
+    public string VendorName => NativeValue.ToString(GetPropertyRaw(_vendorName)) ?? string.Empty;
+
+    /// <summary>
+    /// firmwareVersion
+    /// </summary>
+    public string FirmwareVersion => NativeValue.ToString(GetPropertyRaw(_firmwareVersion)) ?? string.Empty;
+
+    /// <summary>
+    /// hardwareVersion
+    /// </summary>
+    public string HardwareVersion => NativeValue.ToString(GetPropertyRaw(_hardwareVersion)) ?? string.Empty;
+
+    /// <summary>
+    /// sensorId
+    /// </summary>
+    public double SensorId => NativeValue.ToDouble(GetPropertyRaw(_sensorId));
+
+    /// <summary>
+    /// maxRange
+    /// </summary>
+    public double MaxRange => NativeValue.ToDouble(GetPropertyRaw(_maxRange));
+
+    /// <summary>
+    /// minSamplePeriod
+    /// </summary>
+    public double MinSamplePeriod => NativeValue.ToDouble(GetPropertyRaw(_minSamplePeriod));
+
+    /// <summary>
+    /// maxSamplePeriod
+    /// </summary>
+    public double MaxSamplePeriod => NativeValue.ToDouble(GetPropertyRaw(_maxSamplePeriod));
+
+    /// <summary>
+    /// precision
+    /// </summary>
+    public double Precision => NativeValue.ToDouble(GetPropertyRaw(_precision));
+
+    /// <summary>
+    /// power
+    /// </summary>
+    public double Power => NativeValue.ToDouble(GetPropertyRaw(_power));
+
+    /// <summary>
+    /// sensorIndex
+    /// </summary>
+    public double? SensorIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_sensorIndex));
+
+    /// <summary>
+    /// deviceId
+    /// </summary>
+    public double? DeviceId => (double?)NativeValue.ToDouble(GetPropertyRaw(_deviceId));
+
+    /// <summary>
+    /// deviceName
+    /// </summary>
+    public string? DeviceName => (string?)NativeValue.ToString(GetPropertyRaw(_deviceName)) ?? string.Empty;
+
+    /// <summary>
+    /// isLocalSensor
+    /// </summary>
+    public bool? IsLocalSensor => (bool?)NativeValue.ToBool(GetPropertyRaw(_isLocalSensor));
+
+    /// <summary>
+    /// isMockSensor
+    /// </summary>
+    public bool? IsMockSensor => (bool?)NativeValue.ToBool(GetPropertyRaw(_isMockSensor));
+
+}
+
+/// <summary>
+/// GeomagneticResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class GeomagneticResponse : JsObject
+{
+    public GeomagneticResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    private static ReadOnlySpan<byte> _geomagneticDip => "geomagneticDip"u8;
+    private static ReadOnlySpan<byte> _deflectionAngle => "deflectionAngle"u8;
+    private static ReadOnlySpan<byte> _levelIntensity => "levelIntensity"u8;
+    private static ReadOnlySpan<byte> _totalIntensity => "totalIntensity"u8;
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double Z => NativeValue.ToDouble(GetPropertyRaw(_z));
+
+    /// <summary>
+    /// geomagneticDip
+    /// </summary>
+    public double GeomagneticDip => NativeValue.ToDouble(GetPropertyRaw(_geomagneticDip));
+
+    /// <summary>
+    /// deflectionAngle
+    /// </summary>
+    public double DeflectionAngle => NativeValue.ToDouble(GetPropertyRaw(_deflectionAngle));
+
+    /// <summary>
+    /// levelIntensity
+    /// </summary>
+    public double LevelIntensity => NativeValue.ToDouble(GetPropertyRaw(_levelIntensity));
+
+    /// <summary>
+    /// totalIntensity
+    /// </summary>
+    public double TotalIntensity => NativeValue.ToDouble(GetPropertyRaw(_totalIntensity));
+
+}
+
+/// <summary>
+/// LocationOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record LocationOptions(
+    double Latitude,
+    double Longitude,
+    double Altitude
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _latitude = Encoding.UTF8.GetBytes("latitude");
+        var _latitudeV = NativeValue.From(Latitude);
+        if (_latitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
+        var _longitude = Encoding.UTF8.GetBytes("longitude");
+        var _longitudeV = NativeValue.From(Longitude);
+        if (_longitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
+        var _altitude = Encoding.UTF8.GetBytes("altitude");
+        var _altitudeV = NativeValue.From(Altitude);
+        if (_altitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _altitude, _altitudeV);
+    }
+}
+
+/// <summary>
+/// CoordinatesOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record CoordinatesOptions(
+    double X,
+    double Y
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _x = Encoding.UTF8.GetBytes("x");
+        var _xV = NativeValue.From(X);
+        if (_xV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _x, _xV);
+        var _y = Encoding.UTF8.GetBytes("y");
+        var _yV = NativeValue.From(Y);
+        if (_yV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _y, _yV);
+    }
+}
+
+/// <summary>
+/// RotationMatrixResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class RotationMatrixResponse : JsObject
+{
+    public RotationMatrixResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _rotation => "rotation"u8;
+    private static ReadOnlySpan<byte> _inclination => "inclination"u8;
+    /// <summary>
+    /// rotation
+    /// </summary>
+    public double[] Rotation => ValueConverter.ConvertArray(GetPropertyRaw(_rotation), static e => ValueConverter.Convert<double>(e));
+
+    /// <summary>
+    /// inclination
+    /// </summary>
+    public double[] Inclination => ValueConverter.ConvertArray(GetPropertyRaw(_inclination), static e => ValueConverter.Convert<double>(e));
 
 }

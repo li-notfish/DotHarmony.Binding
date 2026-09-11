@@ -4,8 +4,10 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
 
@@ -22,7 +24,8 @@ public static unsafe partial class Pasteboard
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -64,12 +67,6 @@ public static unsafe partial class Pasteboard
         }
     }
 
-    private static ReadOnlySpan<byte> _MAX_RECORD_NUM => "MAX_RECORD_NUM"u8;
-    private static ReadOnlySpan<byte> _MIMETYPE_TEXT_HTML => "MIMETYPE_TEXT_HTML"u8;
-    private static ReadOnlySpan<byte> _MIMETYPE_TEXT_WANT => "MIMETYPE_TEXT_WANT"u8;
-    private static ReadOnlySpan<byte> _MIMETYPE_TEXT_PLAIN => "MIMETYPE_TEXT_PLAIN"u8;
-    private static ReadOnlySpan<byte> _MIMETYPE_TEXT_URI => "MIMETYPE_TEXT_URI"u8;
-    private static ReadOnlySpan<byte> _MIMETYPE_PIXELMAP => "MIMETYPE_PIXELMAP"u8;
     private static ReadOnlySpan<byte> _createHtmlData => "createHtmlData"u8;
     private static ReadOnlySpan<byte> _createWantData => "createWantData"u8;
     private static ReadOnlySpan<byte> _createPlainTextData => "createPlainTextData"u8;
@@ -83,99 +80,717 @@ public static unsafe partial class Pasteboard
     private static ReadOnlySpan<byte> _getSystemPasteboard => "getSystemPasteboard"u8;
 
     /// <summary>
-    /// createHtmlData 方法
+    /// createHtmlData
     /// </summary>
-    public static IntPtr CreateHtmlData(string htmlText)
+    public static PasteData CreateHtmlData(string htmlText)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createHtmlData, htmlText);
+        return NodeApi.CallMethod(Module, _createHtmlData, static h => new PasteData(h), htmlText);
     }
 
     /// <summary>
-    /// createWantData 方法
+    /// createWantData
     /// </summary>
-    public static IntPtr CreateWantData(IntPtr want)
+    public static PasteData CreateWantData(IntPtr want)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createWantData, want);
+        return NodeApi.CallMethod(Module, _createWantData, static h => new PasteData(h), want);
     }
 
     /// <summary>
-    /// createPlainTextData 方法
+    /// createPlainTextData
     /// </summary>
-    public static IntPtr CreatePlainTextData(string text)
+    public static PasteData CreatePlainTextData(string text)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createPlainTextData, text);
+        return NodeApi.CallMethod(Module, _createPlainTextData, static h => new PasteData(h), text);
     }
 
     /// <summary>
-    /// createUriData 方法
+    /// createUriData
     /// </summary>
-    public static IntPtr CreateUriData(string uri)
+    public static PasteData CreateUriData(string uri)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createUriData, uri);
+        return NodeApi.CallMethod(Module, _createUriData, static h => new PasteData(h), uri);
     }
 
     /// <summary>
-    /// createData 方法
+    /// createData
     /// </summary>
-    public static IntPtr CreateData(string mimeType, IntPtr value)
+    public static PasteData CreateData(string mimeType, IntPtr value)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createData, mimeType, value);
+        return NodeApi.CallMethod(Module, _createData, static h => new PasteData(h), mimeType, value);
     }
 
     /// <summary>
-    /// createData 方法
+    /// createData
     /// </summary>
-    public static IntPtr CreateData(IntPtr data)
+    public static PasteData CreateData(IntPtr data)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createData, data);
+        return NodeApi.CallMethod(Module, _createData, static h => new PasteData(h), data);
     }
 
     /// <summary>
-    /// createHtmlTextRecord 方法
+    /// createHtmlTextRecord
     /// </summary>
-    public static IntPtr CreateHtmlTextRecord(string htmlText)
+    public static PasteDataRecord CreateHtmlTextRecord(string htmlText)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createHtmlTextRecord, htmlText);
+        return NodeApi.CallMethod(Module, _createHtmlTextRecord, static h => new PasteDataRecord(h), htmlText);
     }
 
     /// <summary>
-    /// createWantRecord 方法
+    /// createWantRecord
     /// </summary>
-    public static IntPtr CreateWantRecord(IntPtr want)
+    public static PasteDataRecord CreateWantRecord(IntPtr want)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createWantRecord, want);
+        return NodeApi.CallMethod(Module, _createWantRecord, static h => new PasteDataRecord(h), want);
     }
 
     /// <summary>
-    /// createPlainTextRecord 方法
+    /// createPlainTextRecord
     /// </summary>
-    public static IntPtr CreatePlainTextRecord(string text)
+    public static PasteDataRecord CreatePlainTextRecord(string text)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createPlainTextRecord, text);
+        return NodeApi.CallMethod(Module, _createPlainTextRecord, static h => new PasteDataRecord(h), text);
     }
 
     /// <summary>
-    /// createUriRecord 方法
+    /// createUriRecord
     /// </summary>
-    public static IntPtr CreateUriRecord(string uri)
+    public static PasteDataRecord CreateUriRecord(string uri)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createUriRecord, uri);
+        return NodeApi.CallMethod(Module, _createUriRecord, static h => new PasteDataRecord(h), uri);
     }
 
     /// <summary>
-    /// createRecord 方法
+    /// createRecord
     /// </summary>
-    public static IntPtr CreateRecord(string mimeType, IntPtr value)
+    public static PasteDataRecord CreateRecord(string mimeType, IntPtr value)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createRecord, mimeType, value);
+        return NodeApi.CallMethod(Module, _createRecord, static h => new PasteDataRecord(h), mimeType, value);
     }
 
     /// <summary>
-    /// getSystemPasteboard 方法
+    /// getSystemPasteboard
     /// </summary>
-    public static IntPtr GetSystemPasteboard()
+    public static SystemPasteboard GetSystemPasteboard()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getSystemPasteboard);
+        return NodeApi.CallMethod(Module, _getSystemPasteboard, static h => new SystemPasteboard(h));
+    }
+
+}
+
+/// <summary>
+/// PasteData 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PasteData : JsObject
+{
+    public PasteData(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _addHtmlRecord => "addHtmlRecord"u8;
+    private static ReadOnlySpan<byte> _addWantRecord => "addWantRecord"u8;
+    private static ReadOnlySpan<byte> _addRecord => "addRecord"u8;
+    private static ReadOnlySpan<byte> _addTextRecord => "addTextRecord"u8;
+    private static ReadOnlySpan<byte> _addUriRecord => "addUriRecord"u8;
+    private static ReadOnlySpan<byte> _getMimeTypes => "getMimeTypes"u8;
+    private static ReadOnlySpan<byte> _getPrimaryHtml => "getPrimaryHtml"u8;
+    private static ReadOnlySpan<byte> _getPrimaryWant => "getPrimaryWant"u8;
+    private static ReadOnlySpan<byte> _getPrimaryMimeType => "getPrimaryMimeType"u8;
+    private static ReadOnlySpan<byte> _getPrimaryText => "getPrimaryText"u8;
+    private static ReadOnlySpan<byte> _getPrimaryUri => "getPrimaryUri"u8;
+    private static ReadOnlySpan<byte> _getPrimaryPixelMap => "getPrimaryPixelMap"u8;
+    private static ReadOnlySpan<byte> _getProperty => "getProperty"u8;
+    private static ReadOnlySpan<byte> _setProperty => "setProperty"u8;
+    private static ReadOnlySpan<byte> _getRecordAt => "getRecordAt"u8;
+    private static ReadOnlySpan<byte> _getRecord => "getRecord"u8;
+    private static ReadOnlySpan<byte> _getRecordCount => "getRecordCount"u8;
+    private static ReadOnlySpan<byte> _getTag => "getTag"u8;
+    private static ReadOnlySpan<byte> _hasMimeType => "hasMimeType"u8;
+    private static ReadOnlySpan<byte> _hasType => "hasType"u8;
+    private static ReadOnlySpan<byte> _removeRecordAt => "removeRecordAt"u8;
+    private static ReadOnlySpan<byte> _removeRecord => "removeRecord"u8;
+    private static ReadOnlySpan<byte> _replaceRecordAt => "replaceRecordAt"u8;
+    private static ReadOnlySpan<byte> _replaceRecord => "replaceRecord"u8;
+    private static ReadOnlySpan<byte> _pasteStart => "pasteStart"u8;
+    private static ReadOnlySpan<byte> _pasteComplete => "pasteComplete"u8;
+    /// <summary>
+    /// addHtmlRecord
+    /// </summary>
+    public void AddHtmlRecord(string htmlText)
+    {
+        CallMethodVoid(_addHtmlRecord, htmlText);
+    }
+
+    /// <summary>
+    /// addWantRecord
+    /// </summary>
+    public void AddWantRecord(IntPtr want)
+    {
+        CallMethodVoid(_addWantRecord, want);
+    }
+
+    /// <summary>
+    /// addRecord
+    /// </summary>
+    public void AddRecord(PasteDataRecord record)
+    {
+        CallMethodVoid(_addRecord, record);
+    }
+
+    /// <summary>
+    /// addTextRecord
+    /// </summary>
+    public void AddTextRecord(string text)
+    {
+        CallMethodVoid(_addTextRecord, text);
+    }
+
+    /// <summary>
+    /// addUriRecord
+    /// </summary>
+    public void AddUriRecord(string uri)
+    {
+        CallMethodVoid(_addUriRecord, uri);
+    }
+
+    /// <summary>
+    /// getMimeTypes
+    /// </summary>
+    public string[] GetMimeTypes()
+    {
+        return CallMethod(_getMimeTypes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
+    }
+
+    /// <summary>
+    /// getPrimaryHtml
+    /// </summary>
+    public string GetPrimaryHtml()
+    {
+        return CallMethod<string>(_getPrimaryHtml);
+    }
+
+    /// <summary>
+    /// getPrimaryWant
+    /// </summary>
+    public IntPtr GetPrimaryWant()
+    {
+        return CallMethod<IntPtr>(_getPrimaryWant);
+    }
+
+    /// <summary>
+    /// getPrimaryMimeType
+    /// </summary>
+    public string GetPrimaryMimeType()
+    {
+        return CallMethod<string>(_getPrimaryMimeType);
+    }
+
+    /// <summary>
+    /// getPrimaryText
+    /// </summary>
+    public string GetPrimaryText()
+    {
+        return CallMethod<string>(_getPrimaryText);
+    }
+
+    /// <summary>
+    /// getPrimaryUri
+    /// </summary>
+    public string GetPrimaryUri()
+    {
+        return CallMethod<string>(_getPrimaryUri);
+    }
+
+    /// <summary>
+    /// getPrimaryPixelMap
+    /// </summary>
+    public IntPtr GetPrimaryPixelMap()
+    {
+        return CallMethod<IntPtr>(_getPrimaryPixelMap);
+    }
+
+    /// <summary>
+    /// getProperty
+    /// </summary>
+    public IntPtr GetProperty()
+    {
+        return CallMethod<IntPtr>(_getProperty);
+    }
+
+    /// <summary>
+    /// setProperty
+    /// </summary>
+    public void SetProperty(IntPtr property)
+    {
+        CallMethodVoid(_setProperty, property);
+    }
+
+    /// <summary>
+    /// getRecordAt
+    /// </summary>
+    public PasteDataRecord GetRecordAt(double index)
+    {
+        return CallMethod(_getRecordAt, static h => new PasteDataRecord(h), index);
+    }
+
+    /// <summary>
+    /// getRecord
+    /// </summary>
+    public PasteDataRecord GetRecord(double index)
+    {
+        return CallMethod(_getRecord, static h => new PasteDataRecord(h), index);
+    }
+
+    /// <summary>
+    /// getRecordCount
+    /// </summary>
+    public double GetRecordCount()
+    {
+        return CallMethod<double>(_getRecordCount);
+    }
+
+    /// <summary>
+    /// getTag
+    /// </summary>
+    public string GetTag()
+    {
+        return CallMethod<string>(_getTag);
+    }
+
+    /// <summary>
+    /// hasMimeType
+    /// </summary>
+    public bool HasMimeType(string mimeType)
+    {
+        return CallMethod<bool>(_hasMimeType, mimeType);
+    }
+
+    /// <summary>
+    /// hasType
+    /// </summary>
+    public bool HasType(string mimeType)
+    {
+        return CallMethod<bool>(_hasType, mimeType);
+    }
+
+    /// <summary>
+    /// removeRecordAt
+    /// </summary>
+    public bool RemoveRecordAt(double index)
+    {
+        return CallMethod<bool>(_removeRecordAt, index);
+    }
+
+    /// <summary>
+    /// removeRecord
+    /// </summary>
+    public void RemoveRecord(double index)
+    {
+        CallMethodVoid(_removeRecord, index);
+    }
+
+    /// <summary>
+    /// replaceRecordAt
+    /// </summary>
+    public bool ReplaceRecordAt(double index, PasteDataRecord record)
+    {
+        return CallMethod<bool>(_replaceRecordAt, index, record);
+    }
+
+    /// <summary>
+    /// replaceRecord
+    /// </summary>
+    public void ReplaceRecord(double index, PasteDataRecord record)
+    {
+        CallMethodVoid(_replaceRecord, index, record);
+    }
+
+    /// <summary>
+    /// pasteStart
+    /// </summary>
+    public void PasteStart()
+    {
+        CallMethodVoid(_pasteStart);
+    }
+
+    /// <summary>
+    /// pasteComplete
+    /// </summary>
+    public void PasteComplete()
+    {
+        CallMethodVoid(_pasteComplete);
+    }
+
+}
+
+/// <summary>
+/// PasteDataRecord 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PasteDataRecord : JsObject
+{
+    public PasteDataRecord(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _htmlText => "htmlText"u8;
+    private static ReadOnlySpan<byte> _want => "want"u8;
+    private static ReadOnlySpan<byte> _mimeType => "mimeType"u8;
+    private static ReadOnlySpan<byte> _plainText => "plainText"u8;
+    private static ReadOnlySpan<byte> _uri => "uri"u8;
+    private static ReadOnlySpan<byte> _pixelMap => "pixelMap"u8;
+    private static ReadOnlySpan<byte> _data => "data"u8;
+    private static ReadOnlySpan<byte> _convertToText => "convertToText"u8;
+    private static ReadOnlySpan<byte> _toPlainText => "toPlainText"u8;
+    private static ReadOnlySpan<byte> _addEntry => "addEntry"u8;
+    private static ReadOnlySpan<byte> _getValidTypes => "getValidTypes"u8;
+    private static ReadOnlySpan<byte> _getData => "getData"u8;
+    /// <summary>
+    /// htmlText
+    /// </summary>
+    public string HtmlText => NativeValue.ToString(GetPropertyRaw(_htmlText)) ?? string.Empty;
+
+    /// <summary>
+    /// want
+    /// </summary>
+    public IntPtr Want => GetPropertyRaw(_want);
+
+    /// <summary>
+    /// mimeType
+    /// </summary>
+    public string MimeType => NativeValue.ToString(GetPropertyRaw(_mimeType)) ?? string.Empty;
+
+    /// <summary>
+    /// plainText
+    /// </summary>
+    public string PlainText => NativeValue.ToString(GetPropertyRaw(_plainText)) ?? string.Empty;
+
+    /// <summary>
+    /// uri
+    /// </summary>
+    public string Uri => NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
+
+    /// <summary>
+    /// pixelMap
+    /// </summary>
+    public IntPtr PixelMap => GetPropertyRaw(_pixelMap);
+
+    /// <summary>
+    /// data
+    /// </summary>
+    public IntPtr Data => GetPropertyRaw(_data);
+
+    /// <summary>
+    /// convertToText
+    /// </summary>
+    public void ConvertToText(IntPtr callback)
+    {
+        CallMethodVoid(_convertToText, callback);
+    }
+
+    /// <summary>
+    /// toPlainText
+    /// </summary>
+    public string ToPlainText()
+    {
+        return CallMethod<string>(_toPlainText);
+    }
+
+    /// <summary>
+    /// addEntry
+    /// </summary>
+    public void AddEntry(string type, IntPtr value)
+    {
+        CallMethodVoid(_addEntry, type, value);
+    }
+
+    /// <summary>
+    /// getValidTypes
+    /// </summary>
+    public string[] GetValidTypes(string[] types)
+    {
+        return CallMethod(_getValidTypes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), types);
+    }
+
+    /// <summary>
+    /// getData
+    /// </summary>
+    public Task<IntPtr> GetDataAsync(string type)
+    {
+        return CallMethodAsync<IntPtr>(_getData, type);
+    }
+
+}
+
+/// <summary>
+/// SystemPasteboard 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SystemPasteboard : JsObject
+{
+    public SystemPasteboard(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _onRemoteUpdate => "onRemoteUpdate"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _offRemoteUpdate => "offRemoteUpdate"u8;
+    private static ReadOnlySpan<byte> _isRemoteData => "isRemoteData"u8;
+    private static ReadOnlySpan<byte> _hasRemoteData => "hasRemoteData"u8;
+    private static ReadOnlySpan<byte> _getDataSource => "getDataSource"u8;
+    private static ReadOnlySpan<byte> _hasDataType => "hasDataType"u8;
+    private static ReadOnlySpan<byte> _clear => "clear"u8;
+    private static ReadOnlySpan<byte> _clearData => "clearData"u8;
+    private static ReadOnlySpan<byte> _clearDataSync => "clearDataSync"u8;
+    private static ReadOnlySpan<byte> _getPasteData => "getPasteData"u8;
+    private static ReadOnlySpan<byte> _getData => "getData"u8;
+    private static ReadOnlySpan<byte> _getDataSync => "getDataSync"u8;
+    private static ReadOnlySpan<byte> _hasPasteData => "hasPasteData"u8;
+    private static ReadOnlySpan<byte> _hasData => "hasData"u8;
+    private static ReadOnlySpan<byte> _hasDataSync => "hasDataSync"u8;
+    private static ReadOnlySpan<byte> _setPasteData => "setPasteData"u8;
+    private static ReadOnlySpan<byte> _setData => "setData"u8;
+    private static ReadOnlySpan<byte> _setDataSync => "setDataSync"u8;
+    private static ReadOnlySpan<byte> _getUnifiedData => "getUnifiedData"u8;
+    private static ReadOnlySpan<byte> _getUnifiedDataSync => "getUnifiedDataSync"u8;
+    private static ReadOnlySpan<byte> _setUnifiedData => "setUnifiedData"u8;
+    private static ReadOnlySpan<byte> _setUnifiedDataSync => "setUnifiedDataSync"u8;
+    private static ReadOnlySpan<byte> _setAppShareOptions => "setAppShareOptions"u8;
+    private static ReadOnlySpan<byte> _removeAppShareOptions => "removeAppShareOptions"u8;
+    private static ReadOnlySpan<byte> _detectPatterns => "detectPatterns"u8;
+    private static ReadOnlySpan<byte> _getMimeTypes => "getMimeTypes"u8;
+    private static ReadOnlySpan<byte> _getChangeCount => "getChangeCount"u8;
+    private static ReadOnlySpan<byte> _getDataWithProgress => "getDataWithProgress"u8;
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// onRemoteUpdate
+    /// </summary>
+    public void OnRemoteUpdate(IntPtr callback)
+    {
+        CallMethodVoid(_onRemoteUpdate, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, System.Action? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// offRemoteUpdate
+    /// </summary>
+    public void OffRemoteUpdate(IntPtr? callback = null)
+    {
+        CallMethodVoid(_offRemoteUpdate, callback);
+    }
+
+    /// <summary>
+    /// isRemoteData
+    /// </summary>
+    public bool IsRemoteData()
+    {
+        return CallMethod<bool>(_isRemoteData);
+    }
+
+    /// <summary>
+    /// hasRemoteData
+    /// </summary>
+    public bool HasRemoteData()
+    {
+        return CallMethod<bool>(_hasRemoteData);
+    }
+
+    /// <summary>
+    /// getDataSource
+    /// </summary>
+    public string GetDataSource()
+    {
+        return CallMethod<string>(_getDataSource);
+    }
+
+    /// <summary>
+    /// hasDataType
+    /// </summary>
+    public bool HasDataType(string mimeType)
+    {
+        return CallMethod<bool>(_hasDataType, mimeType);
+    }
+
+    /// <summary>
+    /// clear
+    /// </summary>
+    public void Clear(IntPtr callback)
+    {
+        CallMethodVoid(_clear, callback);
+    }
+
+    /// <summary>
+    /// clearData
+    /// </summary>
+    public void ClearData(IntPtr callback)
+    {
+        CallMethodVoid(_clearData, callback);
+    }
+
+    /// <summary>
+    /// clearDataSync
+    /// </summary>
+    public void ClearDataSync()
+    {
+        CallMethodVoid(_clearDataSync);
+    }
+
+    /// <summary>
+    /// getPasteData
+    /// </summary>
+    public void GetPasteData(IntPtr callback)
+    {
+        CallMethodVoid(_getPasteData, callback);
+    }
+
+    /// <summary>
+    /// getData
+    /// </summary>
+    public void GetData(IntPtr callback)
+    {
+        CallMethodVoid(_getData, callback);
+    }
+
+    /// <summary>
+    /// getDataSync
+    /// </summary>
+    public PasteData GetDataSync()
+    {
+        return CallMethod(_getDataSync, static h => new PasteData(h));
+    }
+
+    /// <summary>
+    /// hasPasteData
+    /// </summary>
+    public void HasPasteData(IntPtr callback)
+    {
+        CallMethodVoid(_hasPasteData, callback);
+    }
+
+    /// <summary>
+    /// hasData
+    /// </summary>
+    public void HasData(IntPtr callback)
+    {
+        CallMethodVoid(_hasData, callback);
+    }
+
+    /// <summary>
+    /// hasDataSync
+    /// </summary>
+    public bool HasDataSync()
+    {
+        return CallMethod<bool>(_hasDataSync);
+    }
+
+    /// <summary>
+    /// setPasteData
+    /// </summary>
+    public void SetPasteData(PasteData data, IntPtr callback)
+    {
+        CallMethodVoid(_setPasteData, data, callback);
+    }
+
+    /// <summary>
+    /// setData
+    /// </summary>
+    public void SetData(PasteData data, IntPtr callback)
+    {
+        CallMethodVoid(_setData, data, callback);
+    }
+
+    /// <summary>
+    /// setDataSync
+    /// </summary>
+    public void SetDataSync(PasteData data)
+    {
+        CallMethodVoid(_setDataSync, data);
+    }
+
+    /// <summary>
+    /// getUnifiedData
+    /// </summary>
+    public Task<IntPtr> GetUnifiedDataAsync()
+    {
+        return CallMethodAsync<IntPtr>(_getUnifiedData);
+    }
+
+    /// <summary>
+    /// getUnifiedDataSync
+    /// </summary>
+    public IntPtr GetUnifiedDataSync()
+    {
+        return CallMethod<IntPtr>(_getUnifiedDataSync);
+    }
+
+    /// <summary>
+    /// setUnifiedData
+    /// </summary>
+    public Task SetUnifiedDataAsync(IntPtr data)
+    {
+        return CallMethodAsyncVoid(_setUnifiedData, data);
+    }
+
+    /// <summary>
+    /// setUnifiedDataSync
+    /// </summary>
+    public void SetUnifiedDataSync(IntPtr data)
+    {
+        CallMethodVoid(_setUnifiedDataSync, data);
+    }
+
+    /// <summary>
+    /// setAppShareOptions
+    /// </summary>
+    public void SetAppShareOptions(global::HarmonyOS.ArkUI.ShareOption shareOptions)
+    {
+        CallMethodVoid(_setAppShareOptions, shareOptions);
+    }
+
+    /// <summary>
+    /// removeAppShareOptions
+    /// </summary>
+    public void RemoveAppShareOptions()
+    {
+        CallMethodVoid(_removeAppShareOptions);
+    }
+
+    /// <summary>
+    /// detectPatterns
+    /// </summary>
+    public Task<global::HarmonyOS.ArkUI.Pattern[]> DetectPatternsAsync(global::HarmonyOS.ArkUI.Pattern[] patterns)
+    {
+        return CallMethodAsync(_detectPatterns, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Pattern>(e)), patterns);
+    }
+
+    /// <summary>
+    /// getMimeTypes
+    /// </summary>
+    public Task<string[]> GetMimeTypesAsync()
+    {
+        return CallMethodAsync(_getMimeTypes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
+    }
+
+    /// <summary>
+    /// getChangeCount
+    /// </summary>
+    public double GetChangeCount()
+    {
+        return CallMethod<double>(_getChangeCount);
+    }
+
+    /// <summary>
+    /// getDataWithProgress
+    /// </summary>
+    public Task<PasteData> GetDataWithProgressAsync(IntPtr @params)
+    {
+        return CallMethodAsync(_getDataWithProgress, static h => new PasteData(h), @params);
     }
 
 }

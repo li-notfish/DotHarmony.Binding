@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -22,7 +23,8 @@ public static unsafe partial class Preferences
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -76,79 +78,79 @@ public static unsafe partial class Preferences
     /// <summary>
     /// MAX_KEY_LENGTH
     /// </summary>
-    public static double MAX_KEY_LENGTH => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_KEY_LENGTH));
+    public static double MaxKeyLength => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_KEY_LENGTH));
 
     /// <summary>
     /// MAX_VALUE_LENGTH
     /// </summary>
-    public static double MAX_VALUE_LENGTH => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_VALUE_LENGTH));
+    public static double MaxValueLength => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_VALUE_LENGTH));
 
     /// <summary>
-    /// getPreferences 方法
+    /// getPreferences
     /// </summary>
-    public static Task<IntPtr> GetPreferences(IntPtr context, string name)
+    public static Task<PreferencesObject> GetPreferencesAsync(IntPtr context, string name)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getPreferences, context, name);
+        return NodeApi.CallMethodAsync(Module, _getPreferences, static h => new PreferencesObject(h), context, name);
     }
 
     /// <summary>
-    /// getPreferences 方法
+    /// getPreferences
     /// </summary>
-    public static Task<IntPtr> GetPreferences(IntPtr context, IntPtr options)
+    public static Task<PreferencesObject> GetPreferencesAsync(IntPtr context, Options options)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getPreferences, context, options);
+        return NodeApi.CallMethodAsync(Module, _getPreferences, static h => new PreferencesObject(h), context, options);
     }
 
     /// <summary>
-    /// getPreferencesSync 方法
+    /// getPreferencesSync
     /// </summary>
-    public static IntPtr GetPreferencesSync(IntPtr context, IntPtr options)
+    public static PreferencesObject GetPreferencesSync(IntPtr context, Options options)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getPreferencesSync, context, options);
+        return NodeApi.CallMethod(Module, _getPreferencesSync, static h => new PreferencesObject(h), context, options);
     }
 
     /// <summary>
-    /// isStorageTypeSupported 方法
+    /// isStorageTypeSupported
     /// </summary>
-    public static bool IsStorageTypeSupported(IntPtr type)
+    public static bool IsStorageTypeSupported(global::HarmonyOS.ArkUI.StorageType type)
     {
         return NodeApi.CallMethod<bool>(Module, _isStorageTypeSupported, type);
     }
 
     /// <summary>
-    /// deletePreferences 方法
+    /// deletePreferences
     /// </summary>
-    public static Task DeletePreferences(IntPtr context, string name)
+    public static Task DeletePreferencesAsync(IntPtr context, string name)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, context, name);
     }
 
     /// <summary>
-    /// deletePreferences 方法
+    /// deletePreferences
     /// </summary>
-    public static Task DeletePreferences(IntPtr context, IntPtr options)
+    public static Task DeletePreferencesAsync(IntPtr context, Options options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, context, options);
     }
 
     /// <summary>
-    /// removePreferencesFromCache 方法
+    /// removePreferencesFromCache
     /// </summary>
-    public static Task RemovePreferencesFromCache(IntPtr context, string name)
+    public static Task RemovePreferencesFromCacheAsync(IntPtr context, string name)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, context, name);
     }
 
     /// <summary>
-    /// removePreferencesFromCache 方法
+    /// removePreferencesFromCache
     /// </summary>
-    public static Task RemovePreferencesFromCache(IntPtr context, IntPtr options)
+    public static Task RemovePreferencesFromCacheAsync(IntPtr context, Options options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, context, options);
     }
 
     /// <summary>
-    /// removePreferencesFromCacheSync 方法
+    /// removePreferencesFromCacheSync
     /// </summary>
     public static void RemovePreferencesFromCacheSync(IntPtr context, string name)
     {
@@ -156,11 +158,190 @@ public static unsafe partial class Preferences
     }
 
     /// <summary>
-    /// removePreferencesFromCacheSync 方法
+    /// removePreferencesFromCacheSync
     /// </summary>
-    public static void RemovePreferencesFromCacheSync(IntPtr context, IntPtr options)
+    public static void RemovePreferencesFromCacheSync(IntPtr context, Options options)
     {
         NodeApi.CallMethodVoid(Module, _removePreferencesFromCacheSync, context, options);
     }
 
+}
+
+/// <summary>
+/// Preferences 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PreferencesObject : JsObject
+{
+    public PreferencesObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _get => "get"u8;
+    private static ReadOnlySpan<byte> _getSync => "getSync"u8;
+    private static ReadOnlySpan<byte> _getAll => "getAll"u8;
+    private static ReadOnlySpan<byte> _getAllSync => "getAllSync"u8;
+    private static ReadOnlySpan<byte> _has => "has"u8;
+    private static ReadOnlySpan<byte> _hasSync => "hasSync"u8;
+    private static ReadOnlySpan<byte> _put => "put"u8;
+    private static ReadOnlySpan<byte> _putSync => "putSync"u8;
+    private static ReadOnlySpan<byte> _delete => "delete"u8;
+    private static ReadOnlySpan<byte> _deleteSync => "deleteSync"u8;
+    private static ReadOnlySpan<byte> _clear => "clear"u8;
+    private static ReadOnlySpan<byte> _clearSync => "clearSync"u8;
+    private static ReadOnlySpan<byte> _flush => "flush"u8;
+    private static ReadOnlySpan<byte> _flushSync => "flushSync"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    /// <summary>
+    /// get
+    /// </summary>
+    public void Get(string key, IntPtr defValue, IntPtr callback)
+    {
+        CallMethodVoid(_get, key, defValue, callback);
+    }
+
+    /// <summary>
+    /// getSync
+    /// </summary>
+    public IntPtr GetSync(string key, IntPtr defValue)
+    {
+        return CallMethod<IntPtr>(_getSync, key, defValue);
+    }
+
+    /// <summary>
+    /// getAll
+    /// </summary>
+    public void GetAll(IntPtr callback)
+    {
+        CallMethodVoid(_getAll, callback);
+    }
+
+    /// <summary>
+    /// getAllSync
+    /// </summary>
+    public IntPtr GetAllSync()
+    {
+        return CallMethod<IntPtr>(_getAllSync);
+    }
+
+    /// <summary>
+    /// has
+    /// </summary>
+    public void Has(string key, IntPtr callback)
+    {
+        CallMethodVoid(_has, key, callback);
+    }
+
+    /// <summary>
+    /// hasSync
+    /// </summary>
+    public bool HasSync(string key)
+    {
+        return CallMethod<bool>(_hasSync, key);
+    }
+
+    /// <summary>
+    /// put
+    /// </summary>
+    public void Put(string key, IntPtr value, IntPtr callback)
+    {
+        CallMethodVoid(_put, key, value, callback);
+    }
+
+    /// <summary>
+    /// putSync
+    /// </summary>
+    public void PutSync(string key, IntPtr value)
+    {
+        CallMethodVoid(_putSync, key, value);
+    }
+
+    /// <summary>
+    /// delete
+    /// </summary>
+    public void Delete(string key, IntPtr callback)
+    {
+        CallMethodVoid(_delete, key, callback);
+    }
+
+    /// <summary>
+    /// deleteSync
+    /// </summary>
+    public void DeleteSync(string key)
+    {
+        CallMethodVoid(_deleteSync, key);
+    }
+
+    /// <summary>
+    /// clear
+    /// </summary>
+    public void Clear(IntPtr callback)
+    {
+        CallMethodVoid(_clear, callback);
+    }
+
+    /// <summary>
+    /// clearSync
+    /// </summary>
+    public void ClearSync()
+    {
+        CallMethodVoid(_clearSync);
+    }
+
+    /// <summary>
+    /// flush
+    /// </summary>
+    public void Flush(IntPtr callback)
+    {
+        CallMethodVoid(_flush, callback);
+    }
+
+    /// <summary>
+    /// flushSync
+    /// </summary>
+    public void FlushSync()
+    {
+        CallMethodVoid(_flushSync);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+}
+
+/// <summary>
+/// Options（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record Options(
+    string Name,
+    string? DataGroupId = null,
+    global::HarmonyOS.ArkUI.StorageType? StorageType = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _name = Encoding.UTF8.GetBytes("name");
+        var _nameV = NativeValue.From(Name);
+        if (_nameV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
+        var _dataGroupId = Encoding.UTF8.GetBytes("dataGroupId");
+        var _dataGroupIdV = NativeValue.From(DataGroupId);
+        if (_dataGroupIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _dataGroupId, _dataGroupIdV);
+        var _storageType = Encoding.UTF8.GetBytes("storageType");
+        var _storageTypeV = NativeValue.From(StorageType);
+        if (_storageTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _storageType, _storageTypeV);
+    }
 }

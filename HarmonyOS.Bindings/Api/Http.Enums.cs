@@ -10,15 +10,15 @@ namespace HarmonyOS.ArkUI;
 public enum InterceptorType
 {
     [Description("INITIAL_REQUEST")]
-    INITIAL_REQUEST,
+    InitialRequest,
     [Description("REDIRECTION")]
-    REDIRECTION,
+    Redirection,
     [Description("READ_CACHE")]
-    CACHE_CHECKED,
+    CacheChecked,
     [Description("CONNECT_NETWORK")]
-    NETWORK_CONNECT,
+    NetworkConnect,
     [Description("FINAL_RESPONSE")]
-    FINAL_RESPONSE
+    FinalResponse
 }
 
 /// <summary>
@@ -26,10 +26,10 @@ public enum InterceptorType
 /// </summary>
 public enum TlsVersion
 {
-    TLS_V_1_0 = 4,
-    TLS_V_1_1 = 5,
-    TLS_V_1_2 = 6,
-    TLS_V_1_3 = 7
+    TlsV10 = 4,
+    TlsV11 = 5,
+    TlsV12 = 6,
+    TlsV13 = 7
 }
 
 /// <summary>
@@ -38,9 +38,9 @@ public enum TlsVersion
 public enum CertType
 {
     [Description("PEM")]
-    PEM,
+    Pem,
     [Description("DER")]
-    DER,
+    Der,
     [Description("P12")]
     P12
 }
@@ -51,11 +51,11 @@ public enum CertType
 public enum AddressFamily
 {
     [Description("CURL_IPRESOLVE_WHATEVER")]
-    DEFAULT,
+    Default,
     [Description("CURL_IPRESOLVE_V4")]
-    ONLY_V4,
+    OnlyV4,
     [Description("CURL_IPRESOLVE_V6")]
-    ONLY_V6
+    OnlyV6
 }
 
 /// <summary>
@@ -64,23 +64,23 @@ public enum AddressFamily
 public enum RequestMethod
 {
     [Description("OPTIONS")]
-    OPTIONS,
+    Options,
     [Description("GET")]
-    GET,
+    Get,
     [Description("HEAD")]
-    HEAD,
+    Head,
     [Description("POST")]
-    POST,
+    Post,
     [Description("PUT")]
-    PUT,
+    Put,
     [Description("DELETE")]
-    DELETE,
+    Delete,
     [Description("TRACE")]
-    TRACE,
+    Trace,
     [Description("CONNECT")]
-    CONNECT,
+    Connect,
     [Description("PATCH")]
-    PATCH
+    Patch
 }
 
 /// <summary>
@@ -88,42 +88,42 @@ public enum RequestMethod
 /// </summary>
 public enum ResponseCode
 {
-    OK = 200,
-    CREATED = 201,
-    ACCEPTED = 202,
-    NOT_AUTHORITATIVE = 203,
-    NO_CONTENT = 204,
-    RESET = 205,
-    PARTIAL = 206,
-    MULT_CHOICE = 300,
-    MOVED_PERM = 301,
-    MOVED_TEMP = 302,
-    SEE_OTHER = 303,
-    NOT_MODIFIED = 304,
-    USE_PROXY = 305,
-    BAD_REQUEST = 400,
-    UNAUTHORIZED = 401,
-    PAYMENT_REQUIRED = 402,
-    FORBIDDEN = 403,
-    NOT_FOUND = 404,
-    BAD_METHOD = 405,
-    NOT_ACCEPTABLE = 406,
-    PROXY_AUTH = 407,
-    CLIENT_TIMEOUT = 408,
-    CONFLICT = 409,
-    GONE = 410,
-    LENGTH_REQUIRED = 411,
-    PRECON_FAILED = 412,
-    ENTITY_TOO_LARGE = 413,
-    REQ_TOO_LONG = 414,
-    UNSUPPORTED_TYPE = 415,
-    RANGE_NOT_SATISFIABLE = 416,
-    INTERNAL_ERROR = 500,
-    NOT_IMPLEMENTED = 501,
-    BAD_GATEWAY = 502,
-    UNAVAILABLE = 503,
-    GATEWAY_TIMEOUT = 504,
-    VERSION = 505
+    Ok = 200,
+    Created = 201,
+    Accepted = 202,
+    NotAuthoritative = 203,
+    NoContent = 204,
+    Reset = 205,
+    Partial = 206,
+    MultChoice = 300,
+    MovedPerm = 301,
+    MovedTemp = 302,
+    SeeOther = 303,
+    NotModified = 304,
+    UseProxy = 305,
+    BadRequest = 400,
+    Unauthorized = 401,
+    PaymentRequired = 402,
+    Forbidden = 403,
+    NotFound = 404,
+    BadMethod = 405,
+    NotAcceptable = 406,
+    ProxyAuth = 407,
+    ClientTimeout = 408,
+    Conflict = 409,
+    Gone = 410,
+    LengthRequired = 411,
+    PreconFailed = 412,
+    EntityTooLarge = 413,
+    ReqTooLong = 414,
+    UnsupportedType = 415,
+    RangeNotSatisfiable = 416,
+    InternalError = 500,
+    NotImplemented = 501,
+    BadGateway = 502,
+    Unavailable = 503,
+    GatewayTimeout = 504,
+    Version = 505
 }
 
 /// <summary>
@@ -131,9 +131,9 @@ public enum ResponseCode
 /// </summary>
 public enum HttpProtocol
 {
-    HTTP1_1 = 0,
-    HTTP2 = 1,
-    HTTP3 = 2
+    Http11 = 0,
+    Http2 = 1,
+    Http3 = 2
 }
 
 /// <summary>
@@ -141,7 +141,7 @@ public enum HttpProtocol
 /// </summary>
 public enum HttpDataType
 {
-    STRING = 0,
-    OBJECT = 1,
-    ARRAY_BUFFER = 2
+    String = 0,
+    Object = 1,
+    ArrayBuffer = 2
 }

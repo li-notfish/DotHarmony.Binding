@@ -637,7 +637,8 @@ export async function processFullSDK(sdkArg?: string): Promise<void> {
                 result.component,
                 moduleInfo,
                 permissions,
-                newEnums
+                newEnums,
+                result.enums
             );
 
             const csPath = path.join(apiOutputDir, `${gen.className}.cs`);

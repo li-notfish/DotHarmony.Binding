@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -23,7 +24,8 @@ public static unsafe partial class Window
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -78,6 +80,7 @@ public static unsafe partial class Window
     private static ReadOnlySpan<byte> _getWindowsByCoordinate => "getWindowsByCoordinate"u8;
     private static ReadOnlySpan<byte> _getAllWindowLayoutInfo => "getAllWindowLayoutInfo"u8;
     private static ReadOnlySpan<byte> _getGlobalWindowMode => "getGlobalWindowMode"u8;
+    private static ReadOnlySpan<byte> _onApplicationFocusStateChange => "onApplicationFocusStateChange"u8;
     private static ReadOnlySpan<byte> _offApplicationFocusStateChange => "offApplicationFocusStateChange"u8;
     private static ReadOnlySpan<byte> _setStartWindowBackgroundColor => "setStartWindowBackgroundColor"u8;
     private static ReadOnlySpan<byte> _setWatermarkImageForAppWindows => "setWatermarkImageForAppWindows"u8;
@@ -85,171 +88,2201 @@ public static unsafe partial class Window
     private static ReadOnlySpan<byte> _getMainWindowSnapshot => "getMainWindowSnapshot"u8;
 
     /// <summary>
-    /// createWindow 方法
+    /// createWindow
     /// </summary>
-    public static Task<IntPtr> CreateWindow(IntPtr config)
+    public static Task<WindowObject> CreateWindowAsync(IntPtr config)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createWindow, config);
+        return NodeApi.CallMethodAsync(Module, _createWindow, static h => new WindowObject(h), config);
     }
 
     /// <summary>
-    /// create 方法
+    /// create
     /// </summary>
-    public static Task<IntPtr> Create(string id, IntPtr type)
+    public static Task<WindowObject> CreateAsync(string id, global::HarmonyOS.ArkUI.WindowType type)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _create, id, type);
+        return NodeApi.CallMethodAsync(Module, _create, static h => new WindowObject(h), id, type);
     }
 
     /// <summary>
-    /// create 方法
+    /// create
     /// </summary>
-    public static Task<IntPtr> Create(IntPtr ctx, string id, IntPtr type)
+    public static Task<WindowObject> CreateAsync(IntPtr ctx, string id, global::HarmonyOS.ArkUI.WindowType type)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _create, ctx, id, type);
+        return NodeApi.CallMethodAsync(Module, _create, static h => new WindowObject(h), ctx, id, type);
     }
 
     /// <summary>
-    /// find 方法
+    /// find
     /// </summary>
-    public static Task<IntPtr> Find(string id)
+    public static Task<WindowObject> FindAsync(string id)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _find, id);
+        return NodeApi.CallMethodAsync(Module, _find, static h => new WindowObject(h), id);
     }
 
     /// <summary>
-    /// findWindow 方法
+    /// findWindow
     /// </summary>
-    public static IntPtr FindWindow(string name)
+    public static WindowObject FindWindow(string name)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _findWindow, name);
+        return NodeApi.CallMethod(Module, _findWindow, static h => new WindowObject(h), name);
     }
 
     /// <summary>
-    /// getTopWindow 方法
+    /// getTopWindow
     /// </summary>
-    public static Task<IntPtr> GetTopWindow()
+    public static Task<WindowObject> GetTopWindowAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getTopWindow);
+        return NodeApi.CallMethodAsync(Module, _getTopWindow, static h => new WindowObject(h));
     }
 
     /// <summary>
-    /// getTopWindow 方法
+    /// getTopWindow
     /// </summary>
-    public static Task<IntPtr> GetTopWindow(IntPtr ctx)
+    public static Task<WindowObject> GetTopWindowAsync(IntPtr ctx)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getTopWindow, ctx);
+        return NodeApi.CallMethodAsync(Module, _getTopWindow, static h => new WindowObject(h), ctx);
     }
 
     /// <summary>
-    /// getLastWindow 方法
+    /// getLastWindow
     /// </summary>
-    public static Task<IntPtr> GetLastWindow(IntPtr ctx)
+    public static Task<WindowObject> GetLastWindowAsync(IntPtr ctx)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getLastWindow, ctx);
+        return NodeApi.CallMethodAsync(Module, _getLastWindow, static h => new WindowObject(h), ctx);
     }
 
     /// <summary>
-    /// shiftAppWindowFocus 方法
+    /// shiftAppWindowFocus
     /// </summary>
-    public static Task ShiftAppWindowFocus(double sourceWindowId, double targetWindowId)
+    public static Task ShiftAppWindowFocusAsync(double sourceWindowId, double targetWindowId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowFocus, sourceWindowId, targetWindowId);
     }
 
     /// <summary>
-    /// shiftAppWindowPointerEvent 方法
+    /// shiftAppWindowPointerEvent
     /// </summary>
-    public static Task ShiftAppWindowPointerEvent(double sourceWindowId, double targetWindowId)
+    public static Task ShiftAppWindowPointerEventAsync(double sourceWindowId, double targetWindowId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowPointerEvent, sourceWindowId, targetWindowId);
     }
 
     /// <summary>
-    /// shiftAppWindowTouchEvent 方法
+    /// shiftAppWindowTouchEvent
     /// </summary>
-    public static Task ShiftAppWindowTouchEvent(double sourceWindowId, double targetWindowId, double fingerId)
+    public static Task ShiftAppWindowTouchEventAsync(double sourceWindowId, double targetWindowId, double fingerId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowTouchEvent, sourceWindowId, targetWindowId, fingerId);
     }
 
     /// <summary>
-    /// getVisibleWindowInfo 方法
+    /// getVisibleWindowInfo
     /// </summary>
-    public static IntPtr GetVisibleWindowInfo()
+    public static Task<WindowInfo[]> GetVisibleWindowInfoAsync()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getVisibleWindowInfo);
+        return NodeApi.CallMethodAsync(Module, _getVisibleWindowInfo, h => ValueConverter.ConvertArray(h, static e => new WindowInfo(e)));
     }
 
     /// <summary>
-    /// getWindowsByCoordinate 方法
+    /// getWindowsByCoordinate
     /// </summary>
-    public static IntPtr GetWindowsByCoordinate(double displayId, double windowNumber, double x, double y)
+    public static Task<WindowObject[]> GetWindowsByCoordinateAsync(double displayId, double? windowNumber = null, double? x = null, double? y = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getWindowsByCoordinate, displayId, windowNumber, x, y);
+        return NodeApi.CallMethodAsync(Module, _getWindowsByCoordinate, h => ValueConverter.ConvertArray(h, static e => new WindowObject(e)), displayId, windowNumber, x, y);
     }
 
     /// <summary>
-    /// getAllWindowLayoutInfo 方法
+    /// getAllWindowLayoutInfo
     /// </summary>
-    public static IntPtr GetAllWindowLayoutInfo(double displayId)
+    public static Task<WindowLayoutInfo[]> GetAllWindowLayoutInfoAsync(double displayId)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getAllWindowLayoutInfo, displayId);
+        return NodeApi.CallMethodAsync(Module, _getAllWindowLayoutInfo, h => ValueConverter.ConvertArray(h, static e => new WindowLayoutInfo(e)), displayId);
     }
 
     /// <summary>
-    /// getAllWindowLayoutInfo 方法
+    /// getAllWindowLayoutInfo
     /// </summary>
-    public static IntPtr GetAllWindowLayoutInfo(double displayId, IntPtr option)
+    public static Task<WindowLayoutInfo[]> GetAllWindowLayoutInfoAsync(double displayId, WindowInfoOptions? option = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getAllWindowLayoutInfo, displayId, option);
+        return NodeApi.CallMethodAsync(Module, _getAllWindowLayoutInfo, h => ValueConverter.ConvertArray(h, static e => new WindowLayoutInfo(e)), displayId, option);
     }
 
     /// <summary>
-    /// getGlobalWindowMode 方法
+    /// getGlobalWindowMode
     /// </summary>
-    public static Task<double> GetGlobalWindowMode(double displayId)
+    public static Task<double> GetGlobalWindowModeAsync(double? displayId = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getGlobalWindowMode, displayId);
     }
 
     /// <summary>
-    /// offApplicationFocusStateChange 方法
+    /// onApplicationFocusStateChange
     /// </summary>
-    public static void OffApplicationFocusStateChange(IntPtr callback)
+    public static void OnApplicationFocusStateChange(IntPtr callback)
+    {
+        NodeApi.CallMethodVoid(Module, _onApplicationFocusStateChange, callback);
+    }
+
+    /// <summary>
+    /// offApplicationFocusStateChange
+    /// </summary>
+    public static void OffApplicationFocusStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offApplicationFocusStateChange, callback);
     }
 
     /// <summary>
-    /// setStartWindowBackgroundColor 方法
+    /// setStartWindowBackgroundColor
     /// </summary>
-    public static Task SetStartWindowBackgroundColor(string moduleName, string abilityName, IntPtr color)
+    public static Task SetStartWindowBackgroundColorAsync(string moduleName, string abilityName, IntPtr color)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setStartWindowBackgroundColor, moduleName, abilityName, color);
     }
 
     /// <summary>
-    /// setWatermarkImageForAppWindows 方法
+    /// setWatermarkImageForAppWindows
     /// </summary>
-    public static Task SetWatermarkImageForAppWindows(IntPtr? pixelMap = null)
+    public static Task SetWatermarkImageForAppWindowsAsync(IntPtr pixelMap)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setWatermarkImageForAppWindows, pixelMap);
     }
 
     /// <summary>
-    /// getAllMainWindowInfo 方法
+    /// getAllMainWindowInfo
     /// </summary>
-    public static IntPtr GetAllMainWindowInfo()
+    public static Task<MainWindowInfo[]> GetAllMainWindowInfoAsync()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getAllMainWindowInfo);
+        return NodeApi.CallMethodAsync(Module, _getAllMainWindowInfo, h => ValueConverter.ConvertArray(h, static e => new MainWindowInfo(e)));
     }
 
     /// <summary>
-    /// getMainWindowSnapshot 方法
+    /// getMainWindowSnapshot
     /// </summary>
-    public static IntPtr GetMainWindowSnapshot(double[] windowId, IntPtr config)
+    public static Task<IntPtr[]> GetMainWindowSnapshotAsync(double[] windowId, WindowSnapshotConfiguration config)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getMainWindowSnapshot, windowId, config);
+        return NodeApi.CallMethodAsync(Module, _getMainWindowSnapshot, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), windowId, config);
     }
 
+}
+
+/// <summary>
+/// Window 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowObject : JsObject
+{
+    public WindowObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _show => "show"u8;
+    private static ReadOnlySpan<byte> _showWindow => "showWindow"u8;
+    private static ReadOnlySpan<byte> _destroy => "destroy"u8;
+    private static ReadOnlySpan<byte> _destroyWindow => "destroyWindow"u8;
+    private static ReadOnlySpan<byte> _moveTo => "moveTo"u8;
+    private static ReadOnlySpan<byte> _moveWindowTo => "moveWindowTo"u8;
+    private static ReadOnlySpan<byte> _moveWindowToAsync => "moveWindowToAsync"u8;
+    private static ReadOnlySpan<byte> _moveWindowToGlobal => "moveWindowToGlobal"u8;
+    private static ReadOnlySpan<byte> _moveWindowToGlobalDisplay => "moveWindowToGlobalDisplay"u8;
+    private static ReadOnlySpan<byte> _resetSize => "resetSize"u8;
+    private static ReadOnlySpan<byte> _resize => "resize"u8;
+    private static ReadOnlySpan<byte> _resizeAsync => "resizeAsync"u8;
+    private static ReadOnlySpan<byte> _setFollowParentWindowLayoutEnabled => "setFollowParentWindowLayoutEnabled"u8;
+    private static ReadOnlySpan<byte> _setRelativePositionToParentWindowEnabled => "setRelativePositionToParentWindowEnabled"u8;
+    private static ReadOnlySpan<byte> _getProperties => "getProperties"u8;
+    private static ReadOnlySpan<byte> _getGlobalRect => "getGlobalRect"u8;
+    private static ReadOnlySpan<byte> _getWindowProperties => "getWindowProperties"u8;
+    private static ReadOnlySpan<byte> _getWindowDensityInfo => "getWindowDensityInfo"u8;
+    private static ReadOnlySpan<byte> _getAvoidArea => "getAvoidArea"u8;
+    private static ReadOnlySpan<byte> _getWindowAvoidAreaIgnoringVisibility => "getWindowAvoidAreaIgnoringVisibility"u8;
+    private static ReadOnlySpan<byte> _getWindowAvoidArea => "getWindowAvoidArea"u8;
+    private static ReadOnlySpan<byte> _setSystemAvoidAreaEnabled => "setSystemAvoidAreaEnabled"u8;
+    private static ReadOnlySpan<byte> _isSystemAvoidAreaEnabled => "isSystemAvoidAreaEnabled"u8;
+    private static ReadOnlySpan<byte> _setFloatNavigationAvoidAreaEnabled => "setFloatNavigationAvoidAreaEnabled"u8;
+    private static ReadOnlySpan<byte> _isFloatNavigationAvoidAreaEnabled => "isFloatNavigationAvoidAreaEnabled"u8;
+    private static ReadOnlySpan<byte> _setFullScreen => "setFullScreen"u8;
+    private static ReadOnlySpan<byte> _setLayoutFullScreen => "setLayoutFullScreen"u8;
+    private static ReadOnlySpan<byte> _setWindowLayoutFullScreen => "setWindowLayoutFullScreen"u8;
+    private static ReadOnlySpan<byte> _setSystemBarEnable => "setSystemBarEnable"u8;
+    private static ReadOnlySpan<byte> _setWindowSystemBarEnable => "setWindowSystemBarEnable"u8;
+    private static ReadOnlySpan<byte> _setSpecificSystemBarEnabled => "setSpecificSystemBarEnabled"u8;
+    private static ReadOnlySpan<byte> _setSystemBarProperties => "setSystemBarProperties"u8;
+    private static ReadOnlySpan<byte> _setWindowSystemBarProperties => "setWindowSystemBarProperties"u8;
+    private static ReadOnlySpan<byte> _getWindowSystemBarProperties => "getWindowSystemBarProperties"u8;
+    private static ReadOnlySpan<byte> _setStatusBarColor => "setStatusBarColor"u8;
+    private static ReadOnlySpan<byte> _getStatusBarProperty => "getStatusBarProperty"u8;
+    private static ReadOnlySpan<byte> _getWindowStateSnapshot => "getWindowStateSnapshot"u8;
+    private static ReadOnlySpan<byte> _setGestureBackEnabled => "setGestureBackEnabled"u8;
+    private static ReadOnlySpan<byte> _isGestureBackEnabled => "isGestureBackEnabled"u8;
+    private static ReadOnlySpan<byte> _setPreferredOrientation => "setPreferredOrientation"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _setPreferredOrientationWithResult => "setPreferredOrientationWithResult"u8;
+    private static ReadOnlySpan<byte> _getPreferredOrientation => "getPreferredOrientation"u8;
+    private static ReadOnlySpan<byte> _loadContent => "loadContent"u8;
+    private static ReadOnlySpan<byte> _getUIContext => "getUIContext"u8;
+    private static ReadOnlySpan<byte> _setUIContent => "setUIContent"u8;
+    private static ReadOnlySpan<byte> _loadContentByName => "loadContentByName"u8;
+    private static ReadOnlySpan<byte> _isShowing => "isShowing"u8;
+    private static ReadOnlySpan<byte> _isWindowShowing => "isWindowShowing"u8;
+    private static ReadOnlySpan<byte> _setDialogBackGestureEnabled => "setDialogBackGestureEnabled"u8;
+    private static ReadOnlySpan<byte> _isSupportWideGamut => "isSupportWideGamut"u8;
+    private static ReadOnlySpan<byte> _isWindowSupportWideGamut => "isWindowSupportWideGamut"u8;
+    private static ReadOnlySpan<byte> _setColorSpace => "setColorSpace"u8;
+    private static ReadOnlySpan<byte> _setWindowColorSpace => "setWindowColorSpace"u8;
+    private static ReadOnlySpan<byte> _getColorSpace => "getColorSpace"u8;
+    private static ReadOnlySpan<byte> _getWindowColorSpace => "getWindowColorSpace"u8;
+    private static ReadOnlySpan<byte> _setBackgroundColor => "setBackgroundColor"u8;
+    private static ReadOnlySpan<byte> _setWindowBackgroundColor => "setWindowBackgroundColor"u8;
+    private static ReadOnlySpan<byte> _setWindowShadowEnabled => "setWindowShadowEnabled"u8;
+    private static ReadOnlySpan<byte> _setBrightness => "setBrightness"u8;
+    private static ReadOnlySpan<byte> _setWindowTopmost => "setWindowTopmost"u8;
+    private static ReadOnlySpan<byte> _setWindowBrightness => "setWindowBrightness"u8;
+    private static ReadOnlySpan<byte> _setWindowContainerModalColor => "setWindowContainerModalColor"u8;
+    private static ReadOnlySpan<byte> _setDimBehind => "setDimBehind"u8;
+    private static ReadOnlySpan<byte> _setFocusable => "setFocusable"u8;
+    private static ReadOnlySpan<byte> _setWindowFocusable => "setWindowFocusable"u8;
+    private static ReadOnlySpan<byte> _setExclusivelyHighlighted => "setExclusivelyHighlighted"u8;
+    private static ReadOnlySpan<byte> _isWindowHighlighted => "isWindowHighlighted"u8;
+    private static ReadOnlySpan<byte> _setKeepScreenOn => "setKeepScreenOn"u8;
+    private static ReadOnlySpan<byte> _setWindowKeepScreenOn => "setWindowKeepScreenOn"u8;
+    private static ReadOnlySpan<byte> _setOutsideTouchable => "setOutsideTouchable"u8;
+    private static ReadOnlySpan<byte> _setPrivacyMode => "setPrivacyMode"u8;
+    private static ReadOnlySpan<byte> _setWindowPrivacyMode => "setWindowPrivacyMode"u8;
+    private static ReadOnlySpan<byte> _setTouchable => "setTouchable"u8;
+    private static ReadOnlySpan<byte> _setWindowTouchable => "setWindowTouchable"u8;
+    private static ReadOnlySpan<byte> _snapshot => "snapshot"u8;
+    private static ReadOnlySpan<byte> _snapshotSync => "snapshotSync"u8;
+    private static ReadOnlySpan<byte> _snapshotIgnorePrivacy => "snapshotIgnorePrivacy"u8;
+    private static ReadOnlySpan<byte> _setWindowShadowRadius => "setWindowShadowRadius"u8;
+    private static ReadOnlySpan<byte> _setWindowCornerRadius => "setWindowCornerRadius"u8;
+    private static ReadOnlySpan<byte> _getWindowCornerRadius => "getWindowCornerRadius"u8;
+    private static ReadOnlySpan<byte> _raiseToAppTop => "raiseToAppTop"u8;
+    private static ReadOnlySpan<byte> _setAspectRatio => "setAspectRatio"u8;
+    private static ReadOnlySpan<byte> _setContentAspectRatio => "setContentAspectRatio"u8;
+    private static ReadOnlySpan<byte> _resetAspectRatio => "resetAspectRatio"u8;
+    private static ReadOnlySpan<byte> _setRaiseByClickEnabled => "setRaiseByClickEnabled"u8;
+    private static ReadOnlySpan<byte> _minimize => "minimize"u8;
+    private static ReadOnlySpan<byte> _maximize => "maximize"u8;
+    private static ReadOnlySpan<byte> _maximizeWithOptions => "maximizeWithOptions"u8;
+    private static ReadOnlySpan<byte> _setResizeByDragEnabled => "setResizeByDragEnabled"u8;
+    private static ReadOnlySpan<byte> _setSupportedWindowModes => "setSupportedWindowModes"u8;
+    private static ReadOnlySpan<byte> _getWindowLimits => "getWindowLimits"u8;
+    private static ReadOnlySpan<byte> _getWindowLimitsVP => "getWindowLimitsVP"u8;
+    private static ReadOnlySpan<byte> _setWindowLimits => "setWindowLimits"u8;
+    private static ReadOnlySpan<byte> _keepKeyboardOnFocus => "keepKeyboardOnFocus"u8;
+    private static ReadOnlySpan<byte> _recover => "recover"u8;
+    private static ReadOnlySpan<byte> _restore => "restore"u8;
+    private static ReadOnlySpan<byte> _restoreMainWindow => "restoreMainWindow"u8;
+    private static ReadOnlySpan<byte> _setWindowDecorVisible => "setWindowDecorVisible"u8;
+    private static ReadOnlySpan<byte> _getWindowDecorVisible => "getWindowDecorVisible"u8;
+    private static ReadOnlySpan<byte> _setWindowTitleMoveEnabled => "setWindowTitleMoveEnabled"u8;
+    private static ReadOnlySpan<byte> _setWindowTitle => "setWindowTitle"u8;
+    private static ReadOnlySpan<byte> _setSubWindowModal => "setSubWindowModal"u8;
+    private static ReadOnlySpan<byte> _setWindowDecorHeight => "setWindowDecorHeight"u8;
+    private static ReadOnlySpan<byte> _getWindowDecorHeight => "getWindowDecorHeight"u8;
+    private static ReadOnlySpan<byte> _setDecorButtonStyle => "setDecorButtonStyle"u8;
+    private static ReadOnlySpan<byte> _getDecorButtonStyle => "getDecorButtonStyle"u8;
+    private static ReadOnlySpan<byte> _setTouchableAreas => "setTouchableAreas"u8;
+    private static ReadOnlySpan<byte> _getTitleButtonRect => "getTitleButtonRect"u8;
+    private static ReadOnlySpan<byte> _setWindowTitleButtonVisible => "setWindowTitleButtonVisible"u8;
+    private static ReadOnlySpan<byte> _enableLandscapeMultiWindow => "enableLandscapeMultiWindow"u8;
+    private static ReadOnlySpan<byte> _startMoving => "startMoving"u8;
+    private static ReadOnlySpan<byte> _stopMoving => "stopMoving"u8;
+    private static ReadOnlySpan<byte> _enableDrag => "enableDrag"u8;
+    private static ReadOnlySpan<byte> _disableLandscapeMultiWindow => "disableLandscapeMultiWindow"u8;
+    private static ReadOnlySpan<byte> _setWindowMask => "setWindowMask"u8;
+    private static ReadOnlySpan<byte> _setWindowMaskWithAlpha => "setWindowMaskWithAlpha"u8;
+    private static ReadOnlySpan<byte> _clearWindowMask => "clearWindowMask"u8;
+    private static ReadOnlySpan<byte> _clientToGlobalDisplay => "clientToGlobalDisplay"u8;
+    private static ReadOnlySpan<byte> _globalDisplayToClient => "globalDisplayToClient"u8;
+    private static ReadOnlySpan<byte> _setWindowGrayScale => "setWindowGrayScale"u8;
+    private static ReadOnlySpan<byte> _setImmersiveModeEnabledState => "setImmersiveModeEnabledState"u8;
+    private static ReadOnlySpan<byte> _getImmersiveModeEnabledState => "getImmersiveModeEnabledState"u8;
+    private static ReadOnlySpan<byte> _isImmersiveLayout => "isImmersiveLayout"u8;
+    private static ReadOnlySpan<byte> _getWindowStatus => "getWindowStatus"u8;
+    private static ReadOnlySpan<byte> _isFocused => "isFocused"u8;
+    private static ReadOnlySpan<byte> _createSubWindowWithOptions => "createSubWindowWithOptions"u8;
+    private static ReadOnlySpan<byte> _setParentWindow => "setParentWindow"u8;
+    private static ReadOnlySpan<byte> _getParentWindow => "getParentWindow"u8;
+    private static ReadOnlySpan<byte> _setFollowParentMultiScreenPolicy => "setFollowParentMultiScreenPolicy"u8;
+    private static ReadOnlySpan<byte> _setTitleAndDockHoverShown => "setTitleAndDockHoverShown"u8;
+    private static ReadOnlySpan<byte> _setWindowContainerColor => "setWindowContainerColor"u8;
+    private static ReadOnlySpan<byte> _setWindowDelayRaiseOnDrag => "setWindowDelayRaiseOnDrag"u8;
+    private static ReadOnlySpan<byte> _getSubWindowZLevel => "getSubWindowZLevel"u8;
+    private static ReadOnlySpan<byte> _setSeparationTouchEnabled => "setSeparationTouchEnabled"u8;
+    private static ReadOnlySpan<byte> _isSeparationTouchEnabled => "isSeparationTouchEnabled"u8;
+    private static ReadOnlySpan<byte> _setReceiveDragEventEnabled => "setReceiveDragEventEnabled"u8;
+    private static ReadOnlySpan<byte> _isReceiveDragEventEnabled => "isReceiveDragEventEnabled"u8;
+    private static ReadOnlySpan<byte> _convertOrientationAndRotation => "convertOrientationAndRotation"u8;
+    private static ReadOnlySpan<byte> _setDragKeyFramePolicy => "setDragKeyFramePolicy"u8;
+    private static ReadOnlySpan<byte> _isInFreeWindowMode => "isInFreeWindowMode"u8;
+    private static ReadOnlySpan<byte> _isInWindowPostureMode => "isInWindowPostureMode"u8;
+    private static ReadOnlySpan<byte> _onWindowPostureModeChange => "onWindowPostureModeChange"u8;
+    private static ReadOnlySpan<byte> _offWindowPostureModeChange => "offWindowPostureModeChange"u8;
+    private static ReadOnlySpan<byte> _setWindowTransitionAnimation => "setWindowTransitionAnimation"u8;
+    private static ReadOnlySpan<byte> _getWindowTransitionAnimation => "getWindowTransitionAnimation"u8;
+    private static ReadOnlySpan<byte> _setSubWindowZLevel => "setSubWindowZLevel"u8;
+    /// <summary>
+    /// show
+    /// </summary>
+    public void Show(IntPtr callback)
+    {
+        CallMethodVoid(_show, callback);
+    }
+
+    /// <summary>
+    /// showWindow
+    /// </summary>
+    public void ShowWindow(IntPtr callback)
+    {
+        CallMethodVoid(_showWindow, callback);
+    }
+
+    /// <summary>
+    /// destroy
+    /// </summary>
+    public void Destroy(IntPtr callback)
+    {
+        CallMethodVoid(_destroy, callback);
+    }
+
+    /// <summary>
+    /// destroyWindow
+    /// </summary>
+    public void DestroyWindow(IntPtr callback)
+    {
+        CallMethodVoid(_destroyWindow, callback);
+    }
+
+    /// <summary>
+    /// moveTo
+    /// </summary>
+    public Task MoveToAsync(double x, double y)
+    {
+        return CallMethodAsyncVoid(_moveTo, x, y);
+    }
+
+    /// <summary>
+    /// moveWindowTo
+    /// </summary>
+    public Task MoveWindowToAsync(double x, double y)
+    {
+        return CallMethodAsyncVoid(_moveWindowTo, x, y);
+    }
+
+    /// <summary>
+    /// moveWindowToGlobal
+    /// </summary>
+    public Task MoveWindowToGlobalAsync(double x, double y)
+    {
+        return CallMethodAsyncVoid(_moveWindowToGlobal, x, y);
+    }
+
+    /// <summary>
+    /// moveWindowToGlobalDisplay
+    /// </summary>
+    public Task MoveWindowToGlobalDisplayAsync(double x, double y)
+    {
+        return CallMethodAsyncVoid(_moveWindowToGlobalDisplay, x, y);
+    }
+
+    /// <summary>
+    /// resetSize
+    /// </summary>
+    public Task ResetSizeAsync(double width, double height)
+    {
+        return CallMethodAsyncVoid(_resetSize, width, height);
+    }
+
+    /// <summary>
+    /// resize
+    /// </summary>
+    public Task ResizeAsync(double width, double height)
+    {
+        return CallMethodAsyncVoid(_resize, width, height);
+    }
+
+    /// <summary>
+    /// setFollowParentWindowLayoutEnabled
+    /// </summary>
+    public Task SetFollowParentWindowLayoutEnabledAsync(bool enabled)
+    {
+        return CallMethodAsyncVoid(_setFollowParentWindowLayoutEnabled, enabled);
+    }
+
+    /// <summary>
+    /// setRelativePositionToParentWindowEnabled
+    /// </summary>
+    public Task SetRelativePositionToParentWindowEnabledAsync(bool enabled, global::HarmonyOS.ArkUI.WindowAnchor? anchor = null, double? offsetX = null, double? offsetY = null)
+    {
+        return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, enabled, anchor, offsetX, offsetY);
+    }
+
+    /// <summary>
+    /// getProperties
+    /// </summary>
+    public void GetProperties(IntPtr callback)
+    {
+        CallMethodVoid(_getProperties, callback);
+    }
+
+    /// <summary>
+    /// getGlobalRect
+    /// </summary>
+    public WindowRect GetGlobalRect()
+    {
+        return CallMethod(_getGlobalRect, static h => new WindowRect(h));
+    }
+
+    /// <summary>
+    /// getWindowProperties
+    /// </summary>
+    public WindowProperties GetWindowProperties()
+    {
+        return CallMethod(_getWindowProperties, static h => new WindowProperties(h));
+    }
+
+    /// <summary>
+    /// getWindowDensityInfo
+    /// </summary>
+    public WindowDensityInfo GetWindowDensityInfo()
+    {
+        return CallMethod(_getWindowDensityInfo, static h => new WindowDensityInfo(h));
+    }
+
+    /// <summary>
+    /// getAvoidArea
+    /// </summary>
+    public void GetAvoidArea(global::HarmonyOS.ArkUI.AvoidAreaType type, IntPtr callback)
+    {
+        CallMethodVoid(_getAvoidArea, type, callback);
+    }
+
+    /// <summary>
+    /// getWindowAvoidAreaIgnoringVisibility
+    /// </summary>
+    public AvoidArea GetWindowAvoidAreaIgnoringVisibility(global::HarmonyOS.ArkUI.AvoidAreaType type)
+    {
+        return CallMethod(_getWindowAvoidAreaIgnoringVisibility, static h => new AvoidArea(h), type);
+    }
+
+    /// <summary>
+    /// getWindowAvoidArea
+    /// </summary>
+    public AvoidArea GetWindowAvoidArea(global::HarmonyOS.ArkUI.AvoidAreaType type)
+    {
+        return CallMethod(_getWindowAvoidArea, static h => new AvoidArea(h), type);
+    }
+
+    /// <summary>
+    /// setSystemAvoidAreaEnabled
+    /// </summary>
+    public Task SetSystemAvoidAreaEnabledAsync(bool enabled)
+    {
+        return CallMethodAsyncVoid(_setSystemAvoidAreaEnabled, enabled);
+    }
+
+    /// <summary>
+    /// isSystemAvoidAreaEnabled
+    /// </summary>
+    public bool IsSystemAvoidAreaEnabled()
+    {
+        return CallMethod<bool>(_isSystemAvoidAreaEnabled);
+    }
+
+    /// <summary>
+    /// setFloatNavigationAvoidAreaEnabled
+    /// </summary>
+    public Task SetFloatNavigationAvoidAreaEnabledAsync(bool enabled)
+    {
+        return CallMethodAsyncVoid(_setFloatNavigationAvoidAreaEnabled, enabled);
+    }
+
+    /// <summary>
+    /// isFloatNavigationAvoidAreaEnabled
+    /// </summary>
+    public bool IsFloatNavigationAvoidAreaEnabled()
+    {
+        return CallMethod<bool>(_isFloatNavigationAvoidAreaEnabled);
+    }
+
+    /// <summary>
+    /// setFullScreen
+    /// </summary>
+    public void SetFullScreen(bool isFullScreen, IntPtr callback)
+    {
+        CallMethodVoid(_setFullScreen, isFullScreen, callback);
+    }
+
+    /// <summary>
+    /// setLayoutFullScreen
+    /// </summary>
+    public void SetLayoutFullScreen(bool isLayoutFullScreen, IntPtr callback)
+    {
+        CallMethodVoid(_setLayoutFullScreen, isLayoutFullScreen, callback);
+    }
+
+    /// <summary>
+    /// setWindowLayoutFullScreen
+    /// </summary>
+    public void SetWindowLayoutFullScreen(bool isLayoutFullScreen, IntPtr callback)
+    {
+        CallMethodVoid(_setWindowLayoutFullScreen, isLayoutFullScreen, callback);
+    }
+
+    /// <summary>
+    /// setSystemBarEnable
+    /// </summary>
+    public void SetSystemBarEnable(IntPtr names, IntPtr callback)
+    {
+        CallMethodVoid(_setSystemBarEnable, names, callback);
+    }
+
+    /// <summary>
+    /// setWindowSystemBarEnable
+    /// </summary>
+    public void SetWindowSystemBarEnable(IntPtr names, IntPtr callback)
+    {
+        CallMethodVoid(_setWindowSystemBarEnable, names, callback);
+    }
+
+    /// <summary>
+    /// setSpecificSystemBarEnabled
+    /// </summary>
+    public Task SetSpecificSystemBarEnabledAsync(IntPtr name, bool enable, bool? enableAnimation = null)
+    {
+        return CallMethodAsyncVoid(_setSpecificSystemBarEnabled, name, enable, enableAnimation);
+    }
+
+    /// <summary>
+    /// setSystemBarProperties
+    /// </summary>
+    public void SetSystemBarProperties(SystemBarProperties systemBarProperties, IntPtr callback)
+    {
+        CallMethodVoid(_setSystemBarProperties, systemBarProperties, callback);
+    }
+
+    /// <summary>
+    /// setWindowSystemBarProperties
+    /// </summary>
+    public void SetWindowSystemBarProperties(SystemBarProperties systemBarProperties, IntPtr callback)
+    {
+        CallMethodVoid(_setWindowSystemBarProperties, systemBarProperties, callback);
+    }
+
+    /// <summary>
+    /// getWindowSystemBarProperties
+    /// </summary>
+    public SystemBarProperties GetWindowSystemBarProperties()
+    {
+        return CallMethod(_getWindowSystemBarProperties, static h => new SystemBarProperties(h));
+    }
+
+    /// <summary>
+    /// setStatusBarColor
+    /// </summary>
+    public Task SetStatusBarColorAsync(IntPtr color)
+    {
+        return CallMethodAsyncVoid(_setStatusBarColor, color);
+    }
+
+    /// <summary>
+    /// getStatusBarProperty
+    /// </summary>
+    public StatusBarProperty GetStatusBarProperty()
+    {
+        return CallMethod(_getStatusBarProperty, static h => new StatusBarProperty(h));
+    }
+
+    /// <summary>
+    /// getWindowStateSnapshot
+    /// </summary>
+    public Task<string> GetWindowStateSnapshotAsync()
+    {
+        return CallMethodAsync<string>(_getWindowStateSnapshot);
+    }
+
+    /// <summary>
+    /// setGestureBackEnabled
+    /// </summary>
+    public Task SetGestureBackEnabledAsync(bool enabled)
+    {
+        return CallMethodAsyncVoid(_setGestureBackEnabled, enabled);
+    }
+
+    /// <summary>
+    /// isGestureBackEnabled
+    /// </summary>
+    public bool IsGestureBackEnabled()
+    {
+        return CallMethod<bool>(_isGestureBackEnabled);
+    }
+
+    /// <summary>
+    /// setPreferredOrientation
+    /// </summary>
+    public Task SetPreferredOrientationAsync(global::HarmonyOS.ArkUI.Orientation orientation)
+    {
+        return CallMethodAsyncVoid(_setPreferredOrientation, orientation);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// setPreferredOrientationWithResult
+    /// </summary>
+    public Task<OrientationResult> SetPreferredOrientationWithResultAsync(global::HarmonyOS.ArkUI.Orientation orientation)
+    {
+        return CallMethodAsync(_setPreferredOrientationWithResult, static h => new OrientationResult(h), orientation);
+    }
+
+    /// <summary>
+    /// getPreferredOrientation
+    /// </summary>
+    public global::HarmonyOS.ArkUI.Orientation GetPreferredOrientation()
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.Orientation>(_getPreferredOrientation);
+    }
+
+    /// <summary>
+    /// loadContent
+    /// </summary>
+    public void LoadContent(string path, IntPtr storage, IntPtr callback)
+    {
+        CallMethodVoid(_loadContent, path, storage, callback);
+    }
+
+    /// <summary>
+    /// getUIContext
+    /// </summary>
+    public IntPtr GetUiContext()
+    {
+        return CallMethod<IntPtr>(_getUIContext);
+    }
+
+    /// <summary>
+    /// setUIContent
+    /// </summary>
+    public void SetUiContent(string path, IntPtr callback)
+    {
+        CallMethodVoid(_setUIContent, path, callback);
+    }
+
+    /// <summary>
+    /// loadContentByName
+    /// </summary>
+    public void LoadContentByName(string name, IntPtr storage, IntPtr callback)
+    {
+        CallMethodVoid(_loadContentByName, name, storage, callback);
+    }
+
+    /// <summary>
+    /// isShowing
+    /// </summary>
+    public void IsShowing(IntPtr callback)
+    {
+        CallMethodVoid(_isShowing, callback);
+    }
+
+    /// <summary>
+    /// isWindowShowing
+    /// </summary>
+    public bool IsWindowShowing()
+    {
+        return CallMethod<bool>(_isWindowShowing);
+    }
+
+    /// <summary>
+    /// setDialogBackGestureEnabled
+    /// </summary>
+    public Task SetDialogBackGestureEnabledAsync(bool enabled)
+    {
+        return CallMethodAsyncVoid(_setDialogBackGestureEnabled, enabled);
+    }
+
+    /// <summary>
+    /// isSupportWideGamut
+    /// </summary>
+    public Task<bool> IsSupportWideGamutAsync()
+    {
+        return CallMethodAsync<bool>(_isSupportWideGamut);
+    }
+
+    /// <summary>
+    /// isWindowSupportWideGamut
+    /// </summary>
+    public Task<bool> IsWindowSupportWideGamutAsync()
+    {
+        return CallMethodAsync<bool>(_isWindowSupportWideGamut);
+    }
+
+    /// <summary>
+    /// setColorSpace
+    /// </summary>
+    public Task SetColorSpaceAsync(global::HarmonyOS.ArkUI.ColorSpace colorSpace)
+    {
+        return CallMethodAsyncVoid(_setColorSpace, colorSpace);
+    }
+
+    /// <summary>
+    /// setWindowColorSpace
+    /// </summary>
+    public Task SetWindowColorSpaceAsync(global::HarmonyOS.ArkUI.ColorSpace colorSpace)
+    {
+        return CallMethodAsyncVoid(_setWindowColorSpace, colorSpace);
+    }
+
+    /// <summary>
+    /// getColorSpace
+    /// </summary>
+    public Task<global::HarmonyOS.ArkUI.ColorSpace> GetColorSpaceAsync()
+    {
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ColorSpace>(_getColorSpace);
+    }
+
+    /// <summary>
+    /// getWindowColorSpace
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ColorSpace GetWindowColorSpace()
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.ColorSpace>(_getWindowColorSpace);
+    }
+
+    /// <summary>
+    /// setBackgroundColor
+    /// </summary>
+    public Task SetBackgroundColorAsync(string color)
+    {
+        return CallMethodAsyncVoid(_setBackgroundColor, color);
+    }
+
+    /// <summary>
+    /// setWindowBackgroundColor
+    /// </summary>
+    public void SetWindowBackgroundColor(string color)
+    {
+        CallMethodVoid(_setWindowBackgroundColor, color);
+    }
+
+    /// <summary>
+    /// setWindowShadowEnabled
+    /// </summary>
+    public Task SetWindowShadowEnabledAsync(bool enable)
+    {
+        return CallMethodAsyncVoid(_setWindowShadowEnabled, enable);
+    }
+
+    /// <summary>
+    /// setBrightness
+    /// </summary>
+    public Task SetBrightnessAsync(double brightness)
+    {
+        return CallMethodAsyncVoid(_setBrightness, brightness);
+    }
+
+    /// <summary>
+    /// setWindowTopmost
+    /// </summary>
+    public Task SetWindowTopmostAsync(bool isWindowTopmost)
+    {
+        return CallMethodAsyncVoid(_setWindowTopmost, isWindowTopmost);
+    }
+
+    /// <summary>
+    /// setWindowBrightness
+    /// </summary>
+    public Task SetWindowBrightnessAsync(double brightness)
+    {
+        return CallMethodAsyncVoid(_setWindowBrightness, brightness);
+    }
+
+    /// <summary>
+    /// setWindowContainerModalColor
+    /// </summary>
+    public void SetWindowContainerModalColor(string activeColor, string inactiveColor)
+    {
+        CallMethodVoid(_setWindowContainerModalColor, activeColor, inactiveColor);
+    }
+
+    /// <summary>
+    /// setDimBehind
+    /// </summary>
+    public void SetDimBehind(double dimBehindValue, IntPtr callback)
+    {
+        CallMethodVoid(_setDimBehind, dimBehindValue, callback);
+    }
+
+    /// <summary>
+    /// setFocusable
+    /// </summary>
+    public Task SetFocusableAsync(bool isFocusable)
+    {
+        return CallMethodAsyncVoid(_setFocusable, isFocusable);
+    }
+
+    /// <summary>
+    /// setWindowFocusable
+    /// </summary>
+    public Task SetWindowFocusableAsync(bool isFocusable)
+    {
+        return CallMethodAsyncVoid(_setWindowFocusable, isFocusable);
+    }
+
+    /// <summary>
+    /// setExclusivelyHighlighted
+    /// </summary>
+    public Task SetExclusivelyHighlightedAsync(bool exclusivelyHighlighted)
+    {
+        return CallMethodAsyncVoid(_setExclusivelyHighlighted, exclusivelyHighlighted);
+    }
+
+    /// <summary>
+    /// isWindowHighlighted
+    /// </summary>
+    public bool IsWindowHighlighted()
+    {
+        return CallMethod<bool>(_isWindowHighlighted);
+    }
+
+    /// <summary>
+    /// setKeepScreenOn
+    /// </summary>
+    public Task SetKeepScreenOnAsync(bool isKeepScreenOn)
+    {
+        return CallMethodAsyncVoid(_setKeepScreenOn, isKeepScreenOn);
+    }
+
+    /// <summary>
+    /// setWindowKeepScreenOn
+    /// </summary>
+    public Task SetWindowKeepScreenOnAsync(bool isKeepScreenOn)
+    {
+        return CallMethodAsyncVoid(_setWindowKeepScreenOn, isKeepScreenOn);
+    }
+
+    /// <summary>
+    /// setOutsideTouchable
+    /// </summary>
+    public Task SetOutsideTouchableAsync(bool touchable)
+    {
+        return CallMethodAsyncVoid(_setOutsideTouchable, touchable);
+    }
+
+    /// <summary>
+    /// setPrivacyMode
+    /// </summary>
+    public Task SetPrivacyModeAsync(bool isPrivacyMode)
+    {
+        return CallMethodAsyncVoid(_setPrivacyMode, isPrivacyMode);
+    }
+
+    /// <summary>
+    /// setWindowPrivacyMode
+    /// </summary>
+    public Task SetWindowPrivacyModeAsync(bool isPrivacyMode)
+    {
+        return CallMethodAsyncVoid(_setWindowPrivacyMode, isPrivacyMode);
+    }
+
+    /// <summary>
+    /// setTouchable
+    /// </summary>
+    public Task SetTouchableAsync(bool isTouchable)
+    {
+        return CallMethodAsyncVoid(_setTouchable, isTouchable);
+    }
+
+    /// <summary>
+    /// setWindowTouchable
+    /// </summary>
+    public Task SetWindowTouchableAsync(bool isTouchable)
+    {
+        return CallMethodAsyncVoid(_setWindowTouchable, isTouchable);
+    }
+
+    /// <summary>
+    /// snapshot
+    /// </summary>
+    public void Snapshot(IntPtr callback)
+    {
+        CallMethodVoid(_snapshot, callback);
+    }
+
+    /// <summary>
+    /// snapshotSync
+    /// </summary>
+    public IntPtr SnapshotSync()
+    {
+        return CallMethod<IntPtr>(_snapshotSync);
+    }
+
+    /// <summary>
+    /// snapshotIgnorePrivacy
+    /// </summary>
+    public Task<IntPtr> SnapshotIgnorePrivacyAsync()
+    {
+        return CallMethodAsync<IntPtr>(_snapshotIgnorePrivacy);
+    }
+
+    /// <summary>
+    /// setWindowShadowRadius
+    /// </summary>
+    public void SetWindowShadowRadius(double radius)
+    {
+        CallMethodVoid(_setWindowShadowRadius, radius);
+    }
+
+    /// <summary>
+    /// setWindowCornerRadius
+    /// </summary>
+    public Task SetWindowCornerRadiusAsync(double cornerRadius)
+    {
+        return CallMethodAsyncVoid(_setWindowCornerRadius, cornerRadius);
+    }
+
+    /// <summary>
+    /// getWindowCornerRadius
+    /// </summary>
+    public double GetWindowCornerRadius()
+    {
+        return CallMethod<double>(_getWindowCornerRadius);
+    }
+
+    /// <summary>
+    /// raiseToAppTop
+    /// </summary>
+    public Task RaiseToAppTopAsync()
+    {
+        return CallMethodAsyncVoid(_raiseToAppTop);
+    }
+
+    /// <summary>
+    /// setAspectRatio
+    /// </summary>
+    public void SetAspectRatio(double ratio, IntPtr callback)
+    {
+        CallMethodVoid(_setAspectRatio, ratio, callback);
+    }
+
+    /// <summary>
+    /// setContentAspectRatio
+    /// </summary>
+    public Task SetContentAspectRatioAsync(double ratio, bool? isPersistent = null, bool? needUpdateRect = null)
+    {
+        return CallMethodAsyncVoid(_setContentAspectRatio, ratio, isPersistent, needUpdateRect);
+    }
+
+    /// <summary>
+    /// resetAspectRatio
+    /// </summary>
+    public void ResetAspectRatio(IntPtr callback)
+    {
+        CallMethodVoid(_resetAspectRatio, callback);
+    }
+
+    /// <summary>
+    /// setRaiseByClickEnabled
+    /// </summary>
+    public Task SetRaiseByClickEnabledAsync(bool enable)
+    {
+        return CallMethodAsyncVoid(_setRaiseByClickEnabled, enable);
+    }
+
+    /// <summary>
+    /// minimize
+    /// </summary>
+    public void Minimize(IntPtr callback)
+    {
+        CallMethodVoid(_minimize, callback);
+    }
+
+    /// <summary>
+    /// maximize
+    /// </summary>
+    public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null)
+    {
+        return CallMethodAsyncVoid(_maximize, presentation);
+    }
+
+    /// <summary>
+    /// maximizeWithOptions
+    /// </summary>
+    public Task MaximizeWithOptionsAsync(MaximizeOptions? maximizeOptions = null)
+    {
+        return CallMethodAsyncVoid(_maximizeWithOptions, maximizeOptions);
+    }
+
+    /// <summary>
+    /// setResizeByDragEnabled
+    /// </summary>
+    public void SetResizeByDragEnabled(bool enable, IntPtr callback)
+    {
+        CallMethodVoid(_setResizeByDragEnabled, enable, callback);
+    }
+
+    /// <summary>
+    /// setSupportedWindowModes
+    /// </summary>
+    public Task SetSupportedWindowModesAsync(IntPtr[] supportedWindowModes)
+    {
+        return CallMethodAsyncVoid(_setSupportedWindowModes, supportedWindowModes);
+    }
+
+    /// <summary>
+    /// getWindowLimits
+    /// </summary>
+    public WindowLimits GetWindowLimits()
+    {
+        return CallMethod(_getWindowLimits, static h => new WindowLimits(h));
+    }
+
+    /// <summary>
+    /// getWindowLimitsVP
+    /// </summary>
+    public WindowLimits GetWindowLimitsVp()
+    {
+        return CallMethod(_getWindowLimitsVP, static h => new WindowLimits(h));
+    }
+
+    /// <summary>
+    /// setWindowLimits
+    /// </summary>
+    public Task<WindowLimits> SetWindowLimitsAsync(WindowLimits windowLimits)
+    {
+        return CallMethodAsync(_setWindowLimits, static h => new WindowLimits(h), windowLimits);
+    }
+
+    /// <summary>
+    /// keepKeyboardOnFocus
+    /// </summary>
+    public void KeepKeyboardOnFocus(bool keepKeyboardFlag)
+    {
+        CallMethodVoid(_keepKeyboardOnFocus, keepKeyboardFlag);
+    }
+
+    /// <summary>
+    /// recover
+    /// </summary>
+    public Task RecoverAsync()
+    {
+        return CallMethodAsyncVoid(_recover);
+    }
+
+    /// <summary>
+    /// restore
+    /// </summary>
+    public Task RestoreAsync()
+    {
+        return CallMethodAsyncVoid(_restore);
+    }
+
+    /// <summary>
+    /// restoreMainWindow
+    /// </summary>
+    public Task RestoreMainWindowAsync(IntPtr? wantParameters = null)
+    {
+        return CallMethodAsyncVoid(_restoreMainWindow, wantParameters);
+    }
+
+    /// <summary>
+    /// setWindowDecorVisible
+    /// </summary>
+    public void SetWindowDecorVisible(bool isVisible)
+    {
+        CallMethodVoid(_setWindowDecorVisible, isVisible);
+    }
+
+    /// <summary>
+    /// getWindowDecorVisible
+    /// </summary>
+    public bool GetWindowDecorVisible()
+    {
+        return CallMethod<bool>(_getWindowDecorVisible);
+    }
+
+    /// <summary>
+    /// setWindowTitleMoveEnabled
+    /// </summary>
+    public void SetWindowTitleMoveEnabled(bool enabled)
+    {
+        CallMethodVoid(_setWindowTitleMoveEnabled, enabled);
+    }
+
+    /// <summary>
+    /// setWindowTitle
+    /// </summary>
+    public Task SetWindowTitleAsync(string titleName)
+    {
+        return CallMethodAsyncVoid(_setWindowTitle, titleName);
+    }
+
+    /// <summary>
+    /// setSubWindowModal
+    /// </summary>
+    public Task SetSubWindowModalAsync(bool isModal)
+    {
+        return CallMethodAsyncVoid(_setSubWindowModal, isModal);
+    }
+
+    /// <summary>
+    /// setWindowDecorHeight
+    /// </summary>
+    public void SetWindowDecorHeight(double height)
+    {
+        CallMethodVoid(_setWindowDecorHeight, height);
+    }
+
+    /// <summary>
+    /// getWindowDecorHeight
+    /// </summary>
+    public double GetWindowDecorHeight()
+    {
+        return CallMethod<double>(_getWindowDecorHeight);
+    }
+
+    /// <summary>
+    /// setDecorButtonStyle
+    /// </summary>
+    public void SetDecorButtonStyle(IntPtr dectorStyle)
+    {
+        CallMethodVoid(_setDecorButtonStyle, dectorStyle);
+    }
+
+    /// <summary>
+    /// getDecorButtonStyle
+    /// </summary>
+    public IntPtr GetDecorButtonStyle()
+    {
+        return CallMethod<IntPtr>(_getDecorButtonStyle);
+    }
+
+    /// <summary>
+    /// setTouchableAreas
+    /// </summary>
+    public Task SetTouchableAreasAsync(WindowRect[] rects)
+    {
+        return CallMethodAsyncVoid(_setTouchableAreas, rects);
+    }
+
+    /// <summary>
+    /// getTitleButtonRect
+    /// </summary>
+    public TitleButtonRect GetTitleButtonRect()
+    {
+        return CallMethod(_getTitleButtonRect, static h => new TitleButtonRect(h));
+    }
+
+    /// <summary>
+    /// setWindowTitleButtonVisible
+    /// </summary>
+    public void SetWindowTitleButtonVisible(bool isMaximizeButtonVisible, bool isMinimizeButtonVisible, bool? isCloseButtonVisible = null)
+    {
+        CallMethodVoid(_setWindowTitleButtonVisible, isMaximizeButtonVisible, isMinimizeButtonVisible, isCloseButtonVisible);
+    }
+
+    /// <summary>
+    /// enableLandscapeMultiWindow
+    /// </summary>
+    public Task EnableLandscapeMultiWindowAsync()
+    {
+        return CallMethodAsyncVoid(_enableLandscapeMultiWindow);
+    }
+
+    /// <summary>
+    /// startMoving
+    /// </summary>
+    public Task StartMovingAsync()
+    {
+        return CallMethodAsyncVoid(_startMoving);
+    }
+
+    /// <summary>
+    /// stopMoving
+    /// </summary>
+    public Task StopMovingAsync()
+    {
+        return CallMethodAsyncVoid(_stopMoving);
+    }
+
+    /// <summary>
+    /// enableDrag
+    /// </summary>
+    public Task EnableDragAsync(bool enable)
+    {
+        return CallMethodAsyncVoid(_enableDrag, enable);
+    }
+
+    /// <summary>
+    /// disableLandscapeMultiWindow
+    /// </summary>
+    public Task DisableLandscapeMultiWindowAsync()
+    {
+        return CallMethodAsyncVoid(_disableLandscapeMultiWindow);
+    }
+
+    /// <summary>
+    /// setWindowMask
+    /// </summary>
+    public Task SetWindowMaskAsync(double[][] windowMask)
+    {
+        return CallMethodAsyncVoid(_setWindowMask, windowMask);
+    }
+
+    /// <summary>
+    /// setWindowMaskWithAlpha
+    /// </summary>
+    public Task SetWindowMaskWithAlphaAsync(IntPtr windowMask, double maskWidth, double maskHeight)
+    {
+        return CallMethodAsyncVoid(_setWindowMaskWithAlpha, windowMask, maskWidth, maskHeight);
+    }
+
+    /// <summary>
+    /// clearWindowMask
+    /// </summary>
+    public Task ClearWindowMaskAsync()
+    {
+        return CallMethodAsyncVoid(_clearWindowMask);
+    }
+
+    /// <summary>
+    /// clientToGlobalDisplay
+    /// </summary>
+    public WindowPosition ClientToGlobalDisplay(double winX, double winY)
+    {
+        return CallMethod(_clientToGlobalDisplay, static h => new WindowPosition(h), winX, winY);
+    }
+
+    /// <summary>
+    /// globalDisplayToClient
+    /// </summary>
+    public WindowPosition GlobalDisplayToClient(double globalDisplayX, double globalDisplayY)
+    {
+        return CallMethod(_globalDisplayToClient, static h => new WindowPosition(h), globalDisplayX, globalDisplayY);
+    }
+
+    /// <summary>
+    /// setWindowGrayScale
+    /// </summary>
+    public Task SetWindowGrayScaleAsync(double grayScale)
+    {
+        return CallMethodAsyncVoid(_setWindowGrayScale, grayScale);
+    }
+
+    /// <summary>
+    /// setImmersiveModeEnabledState
+    /// </summary>
+    public void SetImmersiveModeEnabledState(bool enabled)
+    {
+        CallMethodVoid(_setImmersiveModeEnabledState, enabled);
+    }
+
+    /// <summary>
+    /// getImmersiveModeEnabledState
+    /// </summary>
+    public bool GetImmersiveModeEnabledState()
+    {
+        return CallMethod<bool>(_getImmersiveModeEnabledState);
+    }
+
+    /// <summary>
+    /// isImmersiveLayout
+    /// </summary>
+    public bool IsImmersiveLayout()
+    {
+        return CallMethod<bool>(_isImmersiveLayout);
+    }
+
+    /// <summary>
+    /// getWindowStatus
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WindowStatusType GetWindowStatus()
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.WindowStatusType>(_getWindowStatus);
+    }
+
+    /// <summary>
+    /// isFocused
+    /// </summary>
+    public bool IsFocused()
+    {
+        return CallMethod<bool>(_isFocused);
+    }
+
+    /// <summary>
+    /// createSubWindowWithOptions
+    /// </summary>
+    public Task<WindowObject> CreateSubWindowWithOptionsAsync(string name, SubWindowOptions options)
+    {
+        return CallMethodAsync(_createSubWindowWithOptions, static h => new WindowObject(h), name, options);
+    }
+
+    /// <summary>
+    /// setParentWindow
+    /// </summary>
+    public Task SetParentWindowAsync(double windowId)
+    {
+        return CallMethodAsyncVoid(_setParentWindow, windowId);
+    }
+
+    /// <summary>
+    /// getParentWindow
+    /// </summary>
+    public WindowObject GetParentWindow()
+    {
+        return CallMethod(_getParentWindow, static h => new WindowObject(h));
+    }
+
+    /// <summary>
+    /// setFollowParentMultiScreenPolicy
+    /// </summary>
+    public Task SetFollowParentMultiScreenPolicyAsync(bool enabled)
+    {
+        return CallMethodAsyncVoid(_setFollowParentMultiScreenPolicy, enabled);
+    }
+
+    /// <summary>
+    /// setTitleAndDockHoverShown
+    /// </summary>
+    public Task SetTitleAndDockHoverShownAsync(bool? isTitleHoverShown = null, bool? isDockHoverShown = null)
+    {
+        return CallMethodAsyncVoid(_setTitleAndDockHoverShown, isTitleHoverShown, isDockHoverShown);
+    }
+
+    /// <summary>
+    /// setWindowContainerColor
+    /// </summary>
+    public void SetWindowContainerColor(string activeColor, string inactiveColor)
+    {
+        CallMethodVoid(_setWindowContainerColor, activeColor, inactiveColor);
+    }
+
+    /// <summary>
+    /// setWindowDelayRaiseOnDrag
+    /// </summary>
+    public void SetWindowDelayRaiseOnDrag(bool isEnabled)
+    {
+        CallMethodVoid(_setWindowDelayRaiseOnDrag, isEnabled);
+    }
+
+    /// <summary>
+    /// getSubWindowZLevel
+    /// </summary>
+    public double GetSubWindowZLevel()
+    {
+        return CallMethod<double>(_getSubWindowZLevel);
+    }
+
+    /// <summary>
+    /// setSeparationTouchEnabled
+    /// </summary>
+    public Task SetSeparationTouchEnabledAsync(bool enabled)
+    {
+        return CallMethodAsyncVoid(_setSeparationTouchEnabled, enabled);
+    }
+
+    /// <summary>
+    /// isSeparationTouchEnabled
+    /// </summary>
+    public bool IsSeparationTouchEnabled()
+    {
+        return CallMethod<bool>(_isSeparationTouchEnabled);
+    }
+
+    /// <summary>
+    /// setReceiveDragEventEnabled
+    /// </summary>
+    public Task SetReceiveDragEventEnabledAsync(bool enabled)
+    {
+        return CallMethodAsyncVoid(_setReceiveDragEventEnabled, enabled);
+    }
+
+    /// <summary>
+    /// isReceiveDragEventEnabled
+    /// </summary>
+    public bool IsReceiveDragEventEnabled()
+    {
+        return CallMethod<bool>(_isReceiveDragEventEnabled);
+    }
+
+    /// <summary>
+    /// convertOrientationAndRotation
+    /// </summary>
+    public double ConvertOrientationAndRotation(global::HarmonyOS.ArkUI.RotationInfoType from, global::HarmonyOS.ArkUI.RotationInfoType to, double value)
+    {
+        return CallMethod<double>(_convertOrientationAndRotation, from, to, value);
+    }
+
+    /// <summary>
+    /// setDragKeyFramePolicy
+    /// </summary>
+    public Task<KeyFramePolicy> SetDragKeyFramePolicyAsync(KeyFramePolicy keyFramePolicy)
+    {
+        return CallMethodAsync(_setDragKeyFramePolicy, static h => new KeyFramePolicy(h), keyFramePolicy);
+    }
+
+    /// <summary>
+    /// isInFreeWindowMode
+    /// </summary>
+    public bool IsInFreeWindowMode()
+    {
+        return CallMethod<bool>(_isInFreeWindowMode);
+    }
+
+    /// <summary>
+    /// isInWindowPostureMode
+    /// </summary>
+    public bool IsInWindowPostureMode(global::HarmonyOS.ArkUI.WindowPostureMode mode)
+    {
+        return CallMethod<bool>(_isInWindowPostureMode, mode);
+    }
+
+    /// <summary>
+    /// onWindowPostureModeChange
+    /// </summary>
+    public void OnWindowPostureModeChange(global::HarmonyOS.ArkUI.WindowPostureMode mode, IntPtr callback)
+    {
+        CallMethodVoid(_onWindowPostureModeChange, mode, callback);
+    }
+
+    /// <summary>
+    /// offWindowPostureModeChange
+    /// </summary>
+    public void OffWindowPostureModeChange(global::HarmonyOS.ArkUI.WindowPostureMode mode, IntPtr? callback = null)
+    {
+        CallMethodVoid(_offWindowPostureModeChange, mode, callback);
+    }
+
+    /// <summary>
+    /// setWindowTransitionAnimation
+    /// </summary>
+    public Task SetWindowTransitionAnimationAsync(global::HarmonyOS.ArkUI.WindowTransitionType transitionType, IntPtr animation)
+    {
+        return CallMethodAsyncVoid(_setWindowTransitionAnimation, transitionType, animation);
+    }
+
+    /// <summary>
+    /// getWindowTransitionAnimation
+    /// </summary>
+    public IntPtr GetWindowTransitionAnimation(global::HarmonyOS.ArkUI.WindowTransitionType transitionType)
+    {
+        return CallMethod<IntPtr>(_getWindowTransitionAnimation, transitionType);
+    }
+
+    /// <summary>
+    /// setSubWindowZLevel
+    /// </summary>
+    public Task SetSubWindowZLevelAsync(double zLevel)
+    {
+        return CallMethodAsyncVoid(_setSubWindowZLevel, zLevel);
+    }
+
+}
+
+/// <summary>
+/// WindowInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowInfo : JsObject
+{
+    public WindowInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _rect => "rect"u8;
+    private static ReadOnlySpan<byte> _bundleName => "bundleName"u8;
+    private static ReadOnlySpan<byte> _abilityName => "abilityName"u8;
+    private static ReadOnlySpan<byte> _windowId => "windowId"u8;
+    private static ReadOnlySpan<byte> _windowStatusType => "windowStatusType"u8;
+    private static ReadOnlySpan<byte> _isFocused => "isFocused"u8;
+    private static ReadOnlySpan<byte> _globalDisplayRect => "globalDisplayRect"u8;
+    private static ReadOnlySpan<byte> _displayId => "displayId"u8;
+    private static ReadOnlySpan<byte> _globalRect => "globalRect"u8;
+    /// <summary>
+    /// rect
+    /// </summary>
+    public WindowRect Rect => new WindowRect(GetPropertyRaw(_rect));
+
+    /// <summary>
+    /// bundleName
+    /// </summary>
+    public string BundleName => NativeValue.ToString(GetPropertyRaw(_bundleName)) ?? string.Empty;
+
+    /// <summary>
+    /// abilityName
+    /// </summary>
+    public string AbilityName => NativeValue.ToString(GetPropertyRaw(_abilityName)) ?? string.Empty;
+
+    /// <summary>
+    /// windowId
+    /// </summary>
+    public double WindowId => NativeValue.ToDouble(GetPropertyRaw(_windowId));
+
+    /// <summary>
+    /// windowStatusType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WindowStatusType WindowStatusType => (global::HarmonyOS.ArkUI.WindowStatusType)NativeValue.ToInt(GetPropertyRaw(_windowStatusType));
+
+    /// <summary>
+    /// isFocused
+    /// </summary>
+    public bool? IsFocused => (bool?)NativeValue.ToBool(GetPropertyRaw(_isFocused));
+
+    /// <summary>
+    /// globalDisplayRect
+    /// </summary>
+    public WindowRect? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect(GetPropertyRaw(_globalDisplayRect));
+
+    /// <summary>
+    /// displayId
+    /// </summary>
+    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+
+    /// <summary>
+    /// globalRect
+    /// </summary>
+    public WindowRect? GlobalRect => GetPropertyRaw(_globalRect) == IntPtr.Zero ? null : new WindowRect(GetPropertyRaw(_globalRect));
+
+}
+
+/// <summary>
+/// WindowLayoutInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowLayoutInfo : JsObject
+{
+    public WindowLayoutInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _windowRect => "windowRect"u8;
+    private static ReadOnlySpan<byte> _windowAlpha => "windowAlpha"u8;
+    /// <summary>
+    /// windowRect
+    /// </summary>
+    public WindowRect WindowRect => new WindowRect(GetPropertyRaw(_windowRect));
+
+    /// <summary>
+    /// windowAlpha
+    /// </summary>
+    public double? WindowAlpha => (double?)NativeValue.ToDouble(GetPropertyRaw(_windowAlpha));
+
+}
+
+/// <summary>
+/// WindowInfoOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record WindowInfoOptions(
+    bool? ExcludeSystemWindows = null,
+    double? ForegroundAboveWindow = null,
+    double? ForegroundBelowWindow = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _excludeSystemWindows = Encoding.UTF8.GetBytes("excludeSystemWindows");
+        var _excludeSystemWindowsV = NativeValue.From(ExcludeSystemWindows);
+        if (_excludeSystemWindowsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _excludeSystemWindows, _excludeSystemWindowsV);
+        var _foregroundAboveWindow = Encoding.UTF8.GetBytes("foregroundAboveWindow");
+        var _foregroundAboveWindowV = NativeValue.From(ForegroundAboveWindow);
+        if (_foregroundAboveWindowV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _foregroundAboveWindow, _foregroundAboveWindowV);
+        var _foregroundBelowWindow = Encoding.UTF8.GetBytes("foregroundBelowWindow");
+        var _foregroundBelowWindowV = NativeValue.From(ForegroundBelowWindow);
+        if (_foregroundBelowWindowV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _foregroundBelowWindow, _foregroundBelowWindowV);
+    }
+}
+
+/// <summary>
+/// MainWindowInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class MainWindowInfo : JsObject
+{
+    public MainWindowInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _displayId => "displayId"u8;
+    private static ReadOnlySpan<byte> _windowId => "windowId"u8;
+    private static ReadOnlySpan<byte> _showing => "showing"u8;
+    private static ReadOnlySpan<byte> _label => "label"u8;
+    /// <summary>
+    /// displayId
+    /// </summary>
+    public double DisplayId => NativeValue.ToDouble(GetPropertyRaw(_displayId));
+
+    /// <summary>
+    /// windowId
+    /// </summary>
+    public double WindowId => NativeValue.ToDouble(GetPropertyRaw(_windowId));
+
+    /// <summary>
+    /// showing
+    /// </summary>
+    public bool Showing => NativeValue.ToBool(GetPropertyRaw(_showing));
+
+    /// <summary>
+    /// label
+    /// </summary>
+    public string Label => NativeValue.ToString(GetPropertyRaw(_label)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// WindowSnapshotConfiguration（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record WindowSnapshotConfiguration(
+    bool? UseCache = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _useCache = Encoding.UTF8.GetBytes("useCache");
+        var _useCacheV = NativeValue.From(UseCache);
+        if (_useCacheV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _useCache, _useCacheV);
+    }
+}
+
+/// <summary>
+/// Rect 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowRect : JsObject
+{
+    public WindowRect(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _left => "left"u8;
+    private static ReadOnlySpan<byte> _top => "top"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// left
+    /// </summary>
+    public double Left => NativeValue.ToDouble(GetPropertyRaw(_left));
+
+    /// <summary>
+    /// top
+    /// </summary>
+    public double Top => NativeValue.ToDouble(GetPropertyRaw(_top));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+}
+
+/// <summary>
+/// WindowProperties 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowProperties : JsObject
+{
+    public WindowProperties(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _windowRect => "windowRect"u8;
+    private static ReadOnlySpan<byte> _drawableRect => "drawableRect"u8;
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _windowType => "windowType"u8;
+    private static ReadOnlySpan<byte> _isFullScreen => "isFullScreen"u8;
+    private static ReadOnlySpan<byte> _isLayoutFullScreen => "isLayoutFullScreen"u8;
+    private static ReadOnlySpan<byte> _focusable => "focusable"u8;
+    private static ReadOnlySpan<byte> _touchable => "touchable"u8;
+    private static ReadOnlySpan<byte> _brightness => "brightness"u8;
+    private static ReadOnlySpan<byte> _dimBehindValue => "dimBehindValue"u8;
+    private static ReadOnlySpan<byte> _isKeepScreenOn => "isKeepScreenOn"u8;
+    private static ReadOnlySpan<byte> _isPrivacyMode => "isPrivacyMode"u8;
+    private static ReadOnlySpan<byte> _isRoundCorner => "isRoundCorner"u8;
+    private static ReadOnlySpan<byte> _isTransparent => "isTransparent"u8;
+    private static ReadOnlySpan<byte> _id => "id"u8;
+    private static ReadOnlySpan<byte> _displayId => "displayId"u8;
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _globalDisplayRect => "globalDisplayRect"u8;
+    /// <summary>
+    /// windowRect
+    /// </summary>
+    public WindowRect WindowRect => new WindowRect(GetPropertyRaw(_windowRect));
+
+    /// <summary>
+    /// drawableRect
+    /// </summary>
+    public WindowRect DrawableRect => new WindowRect(GetPropertyRaw(_drawableRect));
+
+    /// <summary>
+    /// type
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WindowType Type => (global::HarmonyOS.ArkUI.WindowType)NativeValue.ToInt(GetPropertyRaw(_type));
+
+    /// <summary>
+    /// windowType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WindowType? WindowType => (global::HarmonyOS.ArkUI.WindowType?)(global::HarmonyOS.ArkUI.WindowType)NativeValue.ToInt(GetPropertyRaw(_windowType));
+
+    /// <summary>
+    /// isFullScreen
+    /// </summary>
+    public bool IsFullScreen => NativeValue.ToBool(GetPropertyRaw(_isFullScreen));
+
+    /// <summary>
+    /// isLayoutFullScreen
+    /// </summary>
+    public bool IsLayoutFullScreen => NativeValue.ToBool(GetPropertyRaw(_isLayoutFullScreen));
+
+    /// <summary>
+    /// focusable
+    /// </summary>
+    public bool Focusable => NativeValue.ToBool(GetPropertyRaw(_focusable));
+
+    /// <summary>
+    /// touchable
+    /// </summary>
+    public bool Touchable => NativeValue.ToBool(GetPropertyRaw(_touchable));
+
+    /// <summary>
+    /// brightness
+    /// </summary>
+    public double Brightness => NativeValue.ToDouble(GetPropertyRaw(_brightness));
+
+    /// <summary>
+    /// dimBehindValue
+    /// </summary>
+    public double DimBehindValue => NativeValue.ToDouble(GetPropertyRaw(_dimBehindValue));
+
+    /// <summary>
+    /// isKeepScreenOn
+    /// </summary>
+    public bool IsKeepScreenOn => NativeValue.ToBool(GetPropertyRaw(_isKeepScreenOn));
+
+    /// <summary>
+    /// isPrivacyMode
+    /// </summary>
+    public bool IsPrivacyMode => NativeValue.ToBool(GetPropertyRaw(_isPrivacyMode));
+
+    /// <summary>
+    /// isRoundCorner
+    /// </summary>
+    public bool IsRoundCorner => NativeValue.ToBool(GetPropertyRaw(_isRoundCorner));
+
+    /// <summary>
+    /// isTransparent
+    /// </summary>
+    public bool IsTransparent => NativeValue.ToBool(GetPropertyRaw(_isTransparent));
+
+    /// <summary>
+    /// id
+    /// </summary>
+    public double Id => NativeValue.ToDouble(GetPropertyRaw(_id));
+
+    /// <summary>
+    /// displayId
+    /// </summary>
+    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+
+    /// <summary>
+    /// name
+    /// </summary>
+    public string? Name => (string?)NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+
+    /// <summary>
+    /// globalDisplayRect
+    /// </summary>
+    public WindowRect? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect(GetPropertyRaw(_globalDisplayRect));
+
+}
+
+/// <summary>
+/// WindowDensityInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowDensityInfo : JsObject
+{
+    public WindowDensityInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _systemDensity => "systemDensity"u8;
+    private static ReadOnlySpan<byte> _defaultDensity => "defaultDensity"u8;
+    private static ReadOnlySpan<byte> _customDensity => "customDensity"u8;
+    /// <summary>
+    /// systemDensity
+    /// </summary>
+    public double SystemDensity => NativeValue.ToDouble(GetPropertyRaw(_systemDensity));
+
+    /// <summary>
+    /// defaultDensity
+    /// </summary>
+    public double DefaultDensity => NativeValue.ToDouble(GetPropertyRaw(_defaultDensity));
+
+    /// <summary>
+    /// customDensity
+    /// </summary>
+    public double CustomDensity => NativeValue.ToDouble(GetPropertyRaw(_customDensity));
+
+}
+
+/// <summary>
+/// AvoidArea 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AvoidArea : JsObject
+{
+    public AvoidArea(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _visible => "visible"u8;
+    private static ReadOnlySpan<byte> _leftRect => "leftRect"u8;
+    private static ReadOnlySpan<byte> _topRect => "topRect"u8;
+    private static ReadOnlySpan<byte> _rightRect => "rightRect"u8;
+    private static ReadOnlySpan<byte> _bottomRect => "bottomRect"u8;
+    /// <summary>
+    /// visible
+    /// </summary>
+    public bool Visible => NativeValue.ToBool(GetPropertyRaw(_visible));
+
+    /// <summary>
+    /// leftRect
+    /// </summary>
+    public WindowRect LeftRect => new WindowRect(GetPropertyRaw(_leftRect));
+
+    /// <summary>
+    /// topRect
+    /// </summary>
+    public WindowRect TopRect => new WindowRect(GetPropertyRaw(_topRect));
+
+    /// <summary>
+    /// rightRect
+    /// </summary>
+    public WindowRect RightRect => new WindowRect(GetPropertyRaw(_rightRect));
+
+    /// <summary>
+    /// bottomRect
+    /// </summary>
+    public WindowRect BottomRect => new WindowRect(GetPropertyRaw(_bottomRect));
+
+}
+
+/// <summary>
+/// SystemBarProperties 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SystemBarProperties : JsObject
+{
+    public SystemBarProperties(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _statusBarColor => "statusBarColor"u8;
+    private static ReadOnlySpan<byte> _isStatusBarLightIcon => "isStatusBarLightIcon"u8;
+    private static ReadOnlySpan<byte> _statusBarContentColor => "statusBarContentColor"u8;
+    private static ReadOnlySpan<byte> _navigationBarColor => "navigationBarColor"u8;
+    private static ReadOnlySpan<byte> _isNavigationBarLightIcon => "isNavigationBarLightIcon"u8;
+    private static ReadOnlySpan<byte> _navigationBarContentColor => "navigationBarContentColor"u8;
+    private static ReadOnlySpan<byte> _enableStatusBarAnimation => "enableStatusBarAnimation"u8;
+    private static ReadOnlySpan<byte> _enableNavigationBarAnimation => "enableNavigationBarAnimation"u8;
+    /// <summary>
+    /// statusBarColor
+    /// </summary>
+    public string? StatusBarColor => (string?)NativeValue.ToString(GetPropertyRaw(_statusBarColor)) ?? string.Empty;
+
+    /// <summary>
+    /// isStatusBarLightIcon
+    /// </summary>
+    public bool? IsStatusBarLightIcon => (bool?)NativeValue.ToBool(GetPropertyRaw(_isStatusBarLightIcon));
+
+    /// <summary>
+    /// statusBarContentColor
+    /// </summary>
+    public string? StatusBarContentColor => (string?)NativeValue.ToString(GetPropertyRaw(_statusBarContentColor)) ?? string.Empty;
+
+    /// <summary>
+    /// navigationBarColor
+    /// </summary>
+    public string? NavigationBarColor => (string?)NativeValue.ToString(GetPropertyRaw(_navigationBarColor)) ?? string.Empty;
+
+    /// <summary>
+    /// isNavigationBarLightIcon
+    /// </summary>
+    public bool? IsNavigationBarLightIcon => (bool?)NativeValue.ToBool(GetPropertyRaw(_isNavigationBarLightIcon));
+
+    /// <summary>
+    /// navigationBarContentColor
+    /// </summary>
+    public string? NavigationBarContentColor => (string?)NativeValue.ToString(GetPropertyRaw(_navigationBarContentColor)) ?? string.Empty;
+
+    /// <summary>
+    /// enableStatusBarAnimation
+    /// </summary>
+    public bool? EnableStatusBarAnimation => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableStatusBarAnimation));
+
+    /// <summary>
+    /// enableNavigationBarAnimation
+    /// </summary>
+    public bool? EnableNavigationBarAnimation => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableNavigationBarAnimation));
+
+}
+
+/// <summary>
+/// StatusBarProperty 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class StatusBarProperty : JsObject
+{
+    public StatusBarProperty(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _contentColor => "contentColor"u8;
+    /// <summary>
+    /// contentColor
+    /// </summary>
+    public string ContentColor => NativeValue.ToString(GetPropertyRaw(_contentColor)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// OrientationResult 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class OrientationResult : JsObject
+{
+    public OrientationResult(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _executionResult => "executionResult"u8;
+    /// <summary>
+    /// executionResult
+    /// </summary>
+    public global::HarmonyOS.ArkUI.OrientationExecutionResult ExecutionResult => (global::HarmonyOS.ArkUI.OrientationExecutionResult)NativeValue.ToInt(GetPropertyRaw(_executionResult));
+
+}
+
+/// <summary>
+/// MaximizeOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record MaximizeOptions(
+    global::HarmonyOS.ArkUI.MaximizePresentation? MaximizePresentation = null,
+    global::HarmonyOS.ArkUI.AcrossDisplayPresentation? AcrossDisplayPresentation = null,
+    WindowSnapshotAnimationConfig? SnapshotAnimationConfig = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _maximizePresentation = Encoding.UTF8.GetBytes("maximizePresentation");
+        var _maximizePresentationV = NativeValue.From(MaximizePresentation);
+        if (_maximizePresentationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maximizePresentation, _maximizePresentationV);
+        var _acrossDisplayPresentation = Encoding.UTF8.GetBytes("acrossDisplayPresentation");
+        var _acrossDisplayPresentationV = NativeValue.From(AcrossDisplayPresentation);
+        if (_acrossDisplayPresentationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _acrossDisplayPresentation, _acrossDisplayPresentationV);
+        var _snapshotAnimationConfig = Encoding.UTF8.GetBytes("snapshotAnimationConfig");
+        var _snapshotAnimationConfigV = NativeValue.From(SnapshotAnimationConfig);
+        if (_snapshotAnimationConfigV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _snapshotAnimationConfig, _snapshotAnimationConfigV);
+    }
+}
+
+/// <summary>
+/// WindowLimits 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowLimits : JsObject
+{
+    public WindowLimits(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _maxWidth => "maxWidth"u8;
+    private static ReadOnlySpan<byte> _maxHeight => "maxHeight"u8;
+    private static ReadOnlySpan<byte> _minWidth => "minWidth"u8;
+    private static ReadOnlySpan<byte> _minHeight => "minHeight"u8;
+    private static ReadOnlySpan<byte> _pixelUnit => "pixelUnit"u8;
+    /// <summary>
+    /// maxWidth
+    /// </summary>
+    public double? MaxWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxWidth));
+
+    /// <summary>
+    /// maxHeight
+    /// </summary>
+    public double? MaxHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxHeight));
+
+    /// <summary>
+    /// minWidth
+    /// </summary>
+    public double? MinWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_minWidth));
+
+    /// <summary>
+    /// minHeight
+    /// </summary>
+    public double? MinHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_minHeight));
+
+    /// <summary>
+    /// pixelUnit
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PixelUnit? PixelUnit => (global::HarmonyOS.ArkUI.PixelUnit?)(global::HarmonyOS.ArkUI.PixelUnit)NativeValue.ToInt(GetPropertyRaw(_pixelUnit));
+
+}
+
+/// <summary>
+/// TitleButtonRect 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class TitleButtonRect : JsObject
+{
+    public TitleButtonRect(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _right => "right"u8;
+    private static ReadOnlySpan<byte> _top => "top"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// right
+    /// </summary>
+    public double Right => NativeValue.ToDouble(GetPropertyRaw(_right));
+
+    /// <summary>
+    /// top
+    /// </summary>
+    public double Top => NativeValue.ToDouble(GetPropertyRaw(_top));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+}
+
+/// <summary>
+/// Position 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowPosition : JsObject
+{
+    public WindowPosition(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+}
+
+/// <summary>
+/// SubWindowOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record SubWindowOptions(
+    string Title,
+    bool DecorEnabled,
+    bool? IsModal = null,
+    global::HarmonyOS.ArkUI.ModalityType? ModalityType = null,
+    WindowRect? WindowRect = null,
+    bool? MaximizeSupported = null,
+    double? ZLevel = null,
+    bool? OutlineEnabled = null,
+    bool? ZLevelAboveParentLoosened = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _title = Encoding.UTF8.GetBytes("title");
+        var _titleV = NativeValue.From(Title);
+        if (_titleV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _title, _titleV);
+        var _decorEnabled = Encoding.UTF8.GetBytes("decorEnabled");
+        var _decorEnabledV = NativeValue.From(DecorEnabled);
+        if (_decorEnabledV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _decorEnabled, _decorEnabledV);
+        var _isModal = Encoding.UTF8.GetBytes("isModal");
+        var _isModalV = NativeValue.From(IsModal);
+        if (_isModalV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _isModal, _isModalV);
+        var _modalityType = Encoding.UTF8.GetBytes("modalityType");
+        var _modalityTypeV = NativeValue.From(ModalityType);
+        if (_modalityTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _modalityType, _modalityTypeV);
+        var _windowRect = Encoding.UTF8.GetBytes("windowRect");
+        var _windowRectV = NativeValue.From(WindowRect);
+        if (_windowRectV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _windowRect, _windowRectV);
+        var _maximizeSupported = Encoding.UTF8.GetBytes("maximizeSupported");
+        var _maximizeSupportedV = NativeValue.From(MaximizeSupported);
+        if (_maximizeSupportedV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maximizeSupported, _maximizeSupportedV);
+        var _zLevel = Encoding.UTF8.GetBytes("zLevel");
+        var _zLevelV = NativeValue.From(ZLevel);
+        if (_zLevelV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _zLevel, _zLevelV);
+        var _outlineEnabled = Encoding.UTF8.GetBytes("outlineEnabled");
+        var _outlineEnabledV = NativeValue.From(OutlineEnabled);
+        if (_outlineEnabledV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _outlineEnabled, _outlineEnabledV);
+        var _zLevelAboveParentLoosened = Encoding.UTF8.GetBytes("zLevelAboveParentLoosened");
+        var _zLevelAboveParentLoosenedV = NativeValue.From(ZLevelAboveParentLoosened);
+        if (_zLevelAboveParentLoosenedV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _zLevelAboveParentLoosened, _zLevelAboveParentLoosenedV);
+    }
+}
+
+/// <summary>
+/// KeyFramePolicy 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class KeyFramePolicy : JsObject
+{
+    public KeyFramePolicy(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _enable => "enable"u8;
+    private static ReadOnlySpan<byte> _interval => "interval"u8;
+    private static ReadOnlySpan<byte> _distance => "distance"u8;
+    private static ReadOnlySpan<byte> _animationDuration => "animationDuration"u8;
+    private static ReadOnlySpan<byte> _animationDelay => "animationDelay"u8;
+    /// <summary>
+    /// enable
+    /// </summary>
+    public bool Enable => NativeValue.ToBool(GetPropertyRaw(_enable));
+
+    /// <summary>
+    /// interval
+    /// </summary>
+    public double? Interval => (double?)NativeValue.ToDouble(GetPropertyRaw(_interval));
+
+    /// <summary>
+    /// distance
+    /// </summary>
+    public double? Distance => (double?)NativeValue.ToDouble(GetPropertyRaw(_distance));
+
+    /// <summary>
+    /// animationDuration
+    /// </summary>
+    public double? AnimationDuration => (double?)NativeValue.ToDouble(GetPropertyRaw(_animationDuration));
+
+    /// <summary>
+    /// animationDelay
+    /// </summary>
+    public double? AnimationDelay => (double?)NativeValue.ToDouble(GetPropertyRaw(_animationDelay));
+
+}
+
+/// <summary>
+/// WindowSnapshotAnimationConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record WindowSnapshotAnimationConfig(
+    double? Duration = null,
+    double? Delay = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _duration = Encoding.UTF8.GetBytes("duration");
+        var _durationV = NativeValue.From(Duration);
+        if (_durationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _duration, _durationV);
+        var _delay = Encoding.UTF8.GetBytes("delay");
+        var _delayV = NativeValue.From(Delay);
+        if (_delayV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _delay, _delayV);
+    }
 }

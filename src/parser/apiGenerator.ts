@@ -1,17 +1,19 @@
 /**
- * @ohos.* namespace 绑定生成器。
+ * @ohos.* namespace 绑定生成器（.NET 风格标准化版）。
  *
- * 生成模式参照手写的 DeviceInfo.cs：
- * - static unsafe partial class，ModuleName 常量
- * - napi_load_module 懒加载 + NapiReference 持有
- * - const → static property (GetString / GetNumber / GetBool)
- * - function → static method (CallMethod / CallMethodAsync)
+ * 生成模式：
+ * - static unsafe partial class，ModuleName 常量，napi_load_module 懒加载 + NapiReference
+ * - const → static property（PascalCase，缩写词归一）
+ * - function → static method（Task 返回自动加 Async 后缀）
+ * - namespace 内嵌套接口/类 → JsObject 派生包装类（有行为）或 sealed record + INapiRecord（纯入参数据）
+ * - 类型映射单一事实源在 TypeMapper：包装类/枚举名先生成映射登记，再统一映射原始 TS 类型
  *
  * 产物命名空间：HarmonyOS.Bindings.Api
  */
-import { ComponentInfo, MethodInfo, ParameterInfo, EnumInfo } from './models';
+import { ComponentInfo, MethodInfo, ParameterInfo, EnumInfo, InterfaceInfo, ClassInfo } from './models';
 import { TypeMapper } from './typeMapper';
 import { EnumGenerator } from './enumGenerator';
+import { toPascalCase, withAsyncSuffix } from './naming';
 
 export interface ApiGenResult {
     csharp: string;
@@ -21,8 +23,41 @@ export interface ApiGenResult {
     permissions: string[];
 }
 
+/** 实例类型规格（namespace 内嵌套接口/类） */
+interface TypeSpec {
+    tsName: string;
+    csharpName: string;
+    kind: 'wrapper' | 'record';
+    iface?: InterfaceInfo;
+    cls?: ClassInfo;
+}
+
+/** 映射完成的待生成成员 */
+interface EmitMember {
+    rawName: string;
+    pascalName: string;
+    /** 属性（isChained const）或方法 */
+    isProperty: boolean;
+    /** 映射后的 C# 返回类型（方法） */
+    retType: string;
+    /** 映射后的参数（方法） */
+    params: ParameterInfo[];
+}
+
+/** 跨模块类型名登记：csharpName → 登记模块类名。同名冲突时加模块前缀（如 WindowRect） */
+const takenTypeNames = new Map<string, string>();
+
+/** 与 System.* / 产物命名空间常用类型撞名的实例类型，强制加 Object 后缀 */
+const FORBIDDEN_CSHARP_NAMES = new Set(['Task', 'ValueTask', 'Action', 'Func', 'Attribute', 'Exception', 'Nullable']);
+
+const PRIMITIVE_TYPES = new Set(['bool', 'double', 'float', 'int', 'uint', 'long', 'byte', 'string', 'IntPtr']);
+
 export class ApiGenerator {
     private enumGenerator: EnumGenerator;
+    private enumNames = new Set<string>();
+    private specs: TypeSpec[] = [];
+    private specByCsharp = new Map<string, TypeSpec>();
+    private moduleClassName = '';
 
     constructor() {
         this.enumGenerator = new EnumGenerator();
@@ -64,30 +99,378 @@ export class ApiGenerator {
         component: ComponentInfo,
         moduleInfo: { module: string; className: string; local: string },
         permissions: string[],
-        enums: EnumInfo[]
+        enums: EnumInfo[],
+        allEnums: EnumInfo[] = enums
     ): ApiGenResult {
-        const lines: string[] = [];
-        const needsTask = component.methods.some(m => /^Task(<.+>)?$/.test(m.returnType || ''));
+        this.moduleClassName = moduleInfo.className;
+        // 枚举类型引用一律全限定，避免与 System.* 同名类型（如 Action）冲突（CS0104）
+        this.enumNames = new Set(allEnums.map(e => `global::HarmonyOS.ArkUI.${e.name}`));
+        this.specs = [];
+        this.specByCsharp = new Map();
 
-        // header
+        // 1. 登记映射：枚举（全部参与映射，去重只影响 Enums.cs 写盘）+ 实例类型
+        for (const e of allEnums) {
+            TypeMapper.addMapping(e.name, `global::HarmonyOS.ArkUI.${e.name}`);
+        }
+        for (const iface of component.interfaces) {
+            if (iface.typeParameters && iface.typeParameters.length > 0) continue; // 泛型接口不包装
+            const kind = iface.methods.length > 0 ? 'wrapper' : 'record';
+            this.registerSpec(iface.name, kind, iface, undefined);
+        }
+        for (const cls of component.classes) {
+            if (cls.typeParameters && cls.typeParameters.length > 0) continue;
+            this.registerSpec(cls.name, 'wrapper', undefined, cls);
+        }
+
+        // 2. record 可封送性收敛：属性含不可封送类型的 record 移除映射（参数退回 IntPtr），重映射至不动点
+        this.convergeRecordMarshaling(component);
+
+        // 3. 映射模块成员
+        const members = this.mapMembers(component);
+
+        // 4. 分类收敛：record 被返回位置引用 → 升级为 wrapper
+        this.convergeRecordUsage(members);
+
+        // 5. 可达性：只生成被模块成员（传递）引用的实例类型
+        const reachable = this.collectReachable(members);
+
+        // 6. 生成
+        const needsTask = members.some(m => /^Task(<.+>)?$/.test(m.retType));
+        const hasWrappers = [...reachable].some(n => this.specByCsharp.get(n)?.kind === 'wrapper');
+        const hasRecords = [...reachable].some(n => this.specByCsharp.get(n)?.kind === 'record');
+        const lines: string[] = [];
+        this.emitHeader(lines, moduleInfo, permissions, needsTask, hasWrappers || hasRecords);
+        this.emitModuleClass(lines, component, members, moduleInfo);
+        for (const name of reachable) {
+            const spec = this.specByCsharp.get(name)!;
+            if (spec.kind === 'wrapper') this.emitWrapper(lines, spec);
+            else this.emitRecord(lines, spec);
+        }
+
+        const csharp = lines.join('\n');
+
+        let enumCode: string | null = null;
+        if (enums.length > 0) {
+            enumCode = this.enumGenerator.generateMultipleEnums(enums);
+        }
+
+        return {
+            csharp,
+            enums: enumCode,
+            className: moduleInfo.className,
+            moduleName: moduleInfo.module,
+            permissions
+        };
+    }
+
+    // ---------- 映射登记 ----------
+
+    private registerSpec(tsName: string, kind: 'wrapper' | 'record', iface?: InterfaceInfo, cls?: ClassInfo): void {
+        let csharp = (tsName === this.moduleClassName || FORBIDDEN_CSHARP_NAMES.has(tsName))
+            ? `${tsName}Object` : tsName;
+        const owner = takenTypeNames.get(csharp);
+        if (owner !== undefined && owner !== this.moduleClassName) {
+            // 跨模块同名（如 Rect/Size）：加模块前缀避免跨文件重复定义
+            csharp = `${this.moduleClassName}${tsName}`;
+            takenTypeNames.set(csharp, this.moduleClassName);
+        } else if (owner === undefined) {
+            takenTypeNames.set(csharp, this.moduleClassName);
+        }
+        const spec: TypeSpec = { tsName, csharpName: csharp, kind, iface, cls };
+        this.specs.push(spec);
+        this.specByCsharp.set(csharp, spec);
+        TypeMapper.addMapping(tsName, csharp);
+    }
+
+    /** record 属性是否全部可封送（基元/枚举/字符串/wrapper/可封送嵌套 record） */
+    private isRecordMarshaling(spec: TypeSpec, marshalingOk: Set<string>): boolean {
+        const props = spec.iface ? this.mergedProperties(spec.iface) : (spec.cls?.properties ?? []);
+        for (const prop of props) {
+            const mapped = TypeMapper.mapType(TypeMapper.cleanOptional(prop.type));
+            if (mapped === 'IntPtr' || mapped === 'object' || mapped === 'null') return false;
+            if (PRIMITIVE_TYPES.has(mapped) || this.enumNames.has(mapped)) continue;
+            const m = /^([\w.:]+)\[\]$/.exec(mapped);
+            if (m) {
+                const elem = m[1];
+                if (!PRIMITIVE_TYPES.has(elem) && !this.enumNames.has(elem) && !marshalingOk.has(elem)) return false;
+                continue;
+            }
+            const target = this.specByCsharp.get(mapped);
+            if (target && target.kind === 'record' && !marshalingOk.has(mapped)) {
+                // 嵌套 record：假定可封送（外层收敛失败会连带移除）
+                continue;
+            }
+            if (target && target.kind === 'wrapper') continue;
+            if (!target && !PRIMITIVE_TYPES.has(mapped)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * 反复移除属性不可封送的 record 映射，直到不动点。
+     * 移除后引用它的参数/返回类型退回 IntPtr（当前行为），保证产物可编译。
+     */
+    private convergeRecordMarshaling(component: ComponentInfo): void {
+        for (let round = 0; round < 5; round++) {
+            const marshalingOk = new Set<string>();
+            let changed = false;
+            for (const spec of this.specs) {
+                if (spec.kind !== 'record') continue;
+                if (!this.isRecordMarshaling(spec, marshalingOk)) {
+                    TypeMapper.removeMapping(spec.tsName);
+                    this.specByCsharp.delete(spec.csharpName);
+                    changed = true;
+                } else {
+                    marshalingOk.add(spec.csharpName);
+                }
+            }
+            if (!changed) return;
+        }
+        // 收敛兜底：仍未登记成功的 record 全部移除
+        for (const spec of this.specs) {
+            if (spec.kind === 'record' && this.specByCsharp.has(spec.csharpName)
+                && !this.isRecordMarshaling(spec, new Set())) {
+                TypeMapper.removeMapping(spec.tsName);
+                this.specByCsharp.delete(spec.csharpName);
+            }
+        }
+        void component;
+    }
+
+    // ---------- 成员映射 ----------
+
+    private mapMembers(component: ComponentInfo): EmitMember[] {
+        const members: EmitMember[] = [];
+        const generatedSignatures = new Set<string>();
+
+        for (const method of component.methods) {
+            // 属性（const）
+            if (method.isChained && method.parameters.length === 0) {
+                const retType = this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(method.returnType)));
+                if (retType === 'void') continue;
+                const pascal = toPascalCase(method.name);
+                const sigKey = `${pascal}()`;
+                if (generatedSignatures.has(sigKey)) continue;
+                generatedSignatures.add(sigKey);
+                members.push({ rawName: method.name, pascalName: pascal, isProperty: true, retType, params: [] });
+                continue;
+            }
+
+            // AsyncCallback 处理：命名形式参数 / 解析期 inline 形式标记
+            let params = this.demoteOptionals([...method.parameters]);
+            let asyncInner: string | null = null;
+            const namedCb = params.find(p => /^AsyncCallback<(.+)>$/.test(p.type));
+            if (namedCb) {
+                asyncInner = /^AsyncCallback<(.+)>$/.exec(namedCb.type)![1];
+                params = params.filter(p => p !== namedCb);
+            } else if (method.asyncResultType !== undefined) {
+                asyncInner = method.asyncResultType;
+            }
+
+            // 映射参数
+            const mappedParams: ParameterInfo[] = params.map(p => ({
+                name: p.name,
+                type: this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(p.type))),
+                optional: p.optional,
+                defaultValue: p.defaultValue
+            }));
+
+            // 返回类型
+            let retType: string;
+            if (asyncInner !== null) {
+                const inner = this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(asyncInner)));
+                retType = inner === 'void' ? 'Task' : `Task<${inner}>`;
+            } else {
+                retType = this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(method.returnType)));
+            }
+
+            const pascal = withAsyncSuffix(toPascalCase(method.name), retType);
+            const sigKey = `${pascal}(${mappedParams.map(p => p.type).join(',')})`;
+            if (generatedSignatures.has(sigKey)) continue;
+            generatedSignatures.add(sigKey);
+
+            members.push({
+                rawName: method.name,
+                pascalName: pascal,
+                isProperty: false,
+                retType,
+                params: mappedParams
+            });
+        }
+        return members;
+    }
+
+    /** 'object'/'null' 等 C# 不可用映射归一为 IntPtr 句柄 */
+    private normalize(mapped: string): string {
+        if (mapped === 'object' || mapped === 'null' || mapped === 'dynamic') return 'IntPtr';
+        return mapped;
+    }
+
+    /**
+     * C# 可选参数必须在必需参数之后，TS 允许穿插。
+     * 可选参数后面还有必需参数时，将该可选参数降级为必需（调用方需传值）。
+     */
+    private demoteOptionals(params: ParameterInfo[]): ParameterInfo[] {
+        return params.map((p, i) => {
+            if (!p.optional) return p;
+            const hasRequiredAfter = params.slice(i + 1).some(q => !q.optional);
+            return hasRequiredAfter ? { ...p, optional: false } : p;
+        });
+    }
+
+    // ---------- 分类收敛 / 可达性 ----------
+
+    private convergeRecordUsage(members: EmitMember[]): void {
+        for (let round = 0; round < 5; round++) {
+            let changed = false;
+            // 返回位置 = 模块方法返回类型 + 全部 wrapper 方法/属性的取值类型
+            const returnStrings = members.filter(m => !m.isProperty).map(m => m.retType);
+            for (const spec of this.specs) {
+                if (spec.kind !== 'wrapper' || !this.specByCsharp.has(spec.csharpName)) continue;
+                for (const m of this.wrapperMembers(spec).methods) {
+                    returnStrings.push(TypeMapper.mapType(TypeMapper.cleanOptional(m.returnType)));
+                }
+                for (const p of this.wrapperMembers(spec).properties) {
+                    returnStrings.push(TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
+                }
+            }
+            for (const name of this.collectReferencedNames(returnStrings)) {
+                const spec = this.specByCsharp.get(name);
+                if (spec && spec.kind === 'record') {
+                    spec.kind = 'wrapper';
+                    changed = true;
+                }
+            }
+            if (!changed) return;
+        }
+    }
+
+    /** 从类型字符串提取已登记的实例类型 C# 名 */
+    private collectReferencedNames(typeStrings: string[]): Set<string> {
+        const result = new Set<string>();
+        for (const s of typeStrings) {
+            const idents = s.match(/[A-Za-z_]\w*/g) ?? [];
+            for (const id of idents) {
+                if (this.specByCsharp.has(id)) result.add(id);
+            }
+        }
+        return result;
+    }
+
+    private collectReachable(members: EmitMember[]): Set<string> {
+        const reachable = new Set<string>();
+        const queue: string[] = [];
+
+        const add = (names: Set<string>) => {
+            for (const n of names) {
+                if (!reachable.has(n)) {
+                    reachable.add(n);
+                    queue.push(n);
+                }
+            }
+        };
+
+        const memberTypeStrings = (m: EmitMember): string[] =>
+            [m.retType, ...m.params.map(p => p.type)];
+
+        add(this.collectReferencedNames(members.flatMap(memberTypeStrings)));
+
+        // 种子补充：带构造函数的嵌套类是实例化入口（如 PhotoViewPicker），即使模块无成员也生成
+        for (const spec of this.specs) {
+            if (spec.kind === 'wrapper' && spec.cls && spec.cls.constructors.length > 0
+                && this.specByCsharp.has(spec.csharpName) && !reachable.has(spec.csharpName)) {
+                reachable.add(spec.csharpName);
+                queue.push(spec.csharpName);
+            }
+        }
+
+        while (queue.length > 0) {
+            const name = queue.shift()!;
+            const spec = this.specByCsharp.get(name);
+            if (!spec) continue;
+            const strings: string[] = [];
+            if (spec.kind === 'wrapper') {
+                for (const m of this.wrapperMembers(spec).methods) {
+                    strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(m.returnType)));
+                    for (const p of m.parameters) {
+                        strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
+                    }
+                }
+                for (const p of this.wrapperMembers(spec).properties) {
+                    strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
+                }
+            } else {
+                // record 的属性类型也必须可达（嵌套 record/wrapper/枚举要生成）
+                const props = spec.iface ? this.mergedProperties(spec.iface) : (spec.cls?.properties ?? []);
+                for (const p of props) {
+                    strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
+                }
+            }
+            add(this.collectReferencedNames(strings));
+        }
+        return reachable;
+    }
+
+    /** 合并继承链后的 wrapper 成员 */
+    private wrapperMembers(spec: TypeSpec): { properties: { name: string; type: string; optional: boolean; readonly: boolean }[]; methods: MethodInfo[] } {
+        const properties: { name: string; type: string; optional: boolean; readonly: boolean }[] = [];
+        const methods: MethodInfo[] = [];
+        const seenProps = new Set<string>();
+        const seenMethods = new Set<string>();
+        const visited = new Set<string>();
+
+        const visit = (s: TypeSpec) => {
+            if (visited.has(s.tsName)) return;
+            visited.add(s.tsName);
+            const extendsList = s.iface?.extends ?? (s.cls?.extends ? [s.cls.extends] : []);
+            for (const baseName of extendsList) {
+                const base = this.specs.find(x => x.tsName === baseName);
+                if (base) visit(base);
+            }
+            const props = s.iface ? s.iface.properties : (s.cls?.properties ?? []);
+            for (const p of props) {
+                if (!seenProps.has(p.name)) {
+                    seenProps.add(p.name);
+                    properties.push(p);
+                }
+            }
+            const ms = s.iface ? s.iface.methods : (s.cls?.methods ?? []);
+            for (const m of ms) {
+                if (!seenMethods.has(m.name)) {
+                    seenMethods.add(m.name);
+                    methods.push(m);
+                }
+            }
+        };
+        visit(spec);
+        return { properties, methods };
+    }
+
+    private mergedProperties(iface: InterfaceInfo): { name: string; type: string; optional: boolean; readonly: boolean }[] {
+        return this.wrapperMembers({ tsName: iface.name, csharpName: iface.name, kind: 'wrapper', iface }).properties;
+    }
+
+    // ---------- 生成 ----------
+
+    private emitHeader(lines: string[], moduleInfo: { module: string; className: string; local: string }, permissions: string[], needsTask: boolean, needsLinq: boolean): void {
         lines.push('// <auto-generated>');
         lines.push(`// 由 apiGenerator.ts 生成（@ohos.* namespace 绑定路线）。`);
         lines.push('// 生成器输入：HarmonyOS SDK .d.ts → astParser → ComponentInfo → 本生成器');
         lines.push('// </auto-generated>');
         lines.push('#nullable enable');
         lines.push('using System;');
+        lines.push('using System.Linq;');
         lines.push('using System.Runtime.InteropServices;');
         lines.push('using System.Text;');
+        lines.push('using System.Threading.Tasks;');
         lines.push('using HarmonyOS.Bindings.Runtime;');
         lines.push('using HarmonyOS.ArkUI;');  // 枚举生成在 HarmonyOS.ArkUI 命名空间
-        if (needsTask) {
-            lines.push('using System.Threading.Tasks;');
-        }
+        void needsTask;
+        void needsLinq;
         lines.push('');
         lines.push('namespace HarmonyOS.Bindings.Api;');
         lines.push('');
 
-        // permissions 注释
         if (permissions.length > 0) {
             lines.push('/// <summary>');
             lines.push(`/// ${moduleInfo.className} 绑定（@ohos.${moduleInfo.local}）。`);
@@ -98,7 +481,14 @@ export class ApiGenerator {
             lines.push(`/// ${moduleInfo.className} 绑定（@ohos.${moduleInfo.local}）。`);
             lines.push('/// </summary>');
         }
+    }
 
+    private emitModuleClass(
+        lines: string[],
+        component: ComponentInfo,
+        members: EmitMember[],
+        moduleInfo: { module: string; className: string; local: string }
+    ): void {
         lines.push(`public static unsafe partial class ${moduleInfo.className}`);
         lines.push('{');
         lines.push(`    private const string ModuleName = "${moduleInfo.module}";`);
@@ -106,9 +496,34 @@ export class ApiGenerator {
         lines.push('    private static NapiReference? _moduleRef;');
         lines.push('    private static bool _loadAttempted;');
         lines.push('');
+        lines.push('    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>');
+        lines.push('    internal static IntPtr Module');
 
-        // Module lazy-load property (复用 DeviceInfo.cs 模式)
-        lines.push('    private static IntPtr Module');
+        this.emitModuleLoader(lines, moduleInfo);
+
+        // UTF8 名称常量
+        const u8Names = new Set<string>();
+        for (const m of members) u8Names.add(m.rawName);
+        if (u8Names.size > 0) {
+            for (const name of u8Names) {
+                lines.push(`    private static ReadOnlySpan<byte> _${name} => "${name}"u8;`);
+            }
+            lines.push('');
+        }
+
+        for (const m of members) {
+            if (m.isProperty) {
+                this.emitStaticProperty(lines, m);
+            } else {
+                this.emitStaticMethod(lines, m);
+            }
+        }
+        lines.push('}');
+        lines.push('');
+        void component;
+    }
+
+    private emitModuleLoader(lines: string[], moduleInfo: { module: string; className: string; local: string }): void {
         lines.push('    {');
         lines.push('        get');
         lines.push('        {');
@@ -150,193 +565,283 @@ export class ApiGenerator {
         lines.push('        }');
         lines.push('    }');
         lines.push('');
-
-        // 生成 UTF8 属性名常量
-        const propNames = new Set<string>();
-        component.methods.forEach(m => propNames.add(m.name));
-        if (propNames.size > 0) {
-            for (const name of propNames) {
-                lines.push(`    private static ReadOnlySpan<byte> _${name} => "${name}"u8;`);
-            }
-            lines.push('');
-        }
-
-        // 生成属性和方法
-        const generatedSignatures = new Set<string>();
-        for (const method of component.methods) {
-            // 过滤 AsyncCallback 参数后计算签名 key
-            // 使用映射后 C# 类型去重，避免不同 TS 类型映射为相同 C# 类型后重复
-            const filteredParams = method.parameters.filter(p => !/^AsyncCallback<(.+)>$/.test(p.type));
-            const mappedTypes = filteredParams.map(p => TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
-            const sigKey = `${method.name}(${mappedTypes.join(',')})`;
-            if (generatedSignatures.has(sigKey)) continue;
-            generatedSignatures.add(sigKey);
-
-            this.generateMember(method, lines);
-        }
-
-        lines.push('}');
-
-        const csharp = lines.join('\n');
-
-        // 生成枚举（如果有）
-        let enumCode: string | null = null;
-        if (enums.length > 0) {
-            enumCode = this.enumGenerator.generateMultipleEnums(enums);
-        }
-
-        return {
-            csharp,
-            enums: enumCode,
-            className: moduleInfo.className,
-            moduleName: moduleInfo.module,
-            permissions
-        };
     }
 
-    private generateMember(method: MethodInfo, lines: string[]): void {
-        const pascalName = this.capitalizeFirst(method.name);
-        const propNameVar = `_${method.name}`;
-
-        // const 属性（无参数，isChained=true，returnType 非 void）
-        if (method.isChained && method.parameters.length === 0) {
-            const retType = method.returnType || 'object';
-            const isVoid = retType === 'void';
-
-            if (isVoid) return; // 跳过 void const
-
-            lines.push('    /// <summary>');
-            lines.push(`    /// ${method.name}`);
-            lines.push('    /// </summary>');
-            lines.push(`    public static ${retType} ${pascalName} => ${this.generateGetterExpr(retType, propNameVar)};`);
-            lines.push('');
-            return;
-        }
-
-        // 检测 AsyncCallback<T> 参数：移除回调参数，方法变为 Task 返回
-        const asyncCbMatch = method.parameters.find(p => /^AsyncCallback<(.+)>$/.test(p.type));
-        const hasAsyncCallback = asyncCbMatch !== undefined;
-        const filteredParams = hasAsyncCallback
-            ? method.parameters.filter(p => !/^AsyncCallback<(.+)>$/.test(p.type))
-            : method.parameters;
-
-        // 格式化参数（过滤掉回调参数后）
-        const params = filteredParams.map(p => this.formatParameter(p));
-        const paramStr = params.join(', ');
-        const paramNames = filteredParams.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
-
+    private emitStaticProperty(lines: string[], m: EmitMember): void {
+        const { type, expr } = this.getterExpr(m.retType, `Module`, `_${m.rawName}`);
         lines.push('    /// <summary>');
-        lines.push(`    /// ${method.name} 方法`);
+        lines.push(`    /// ${m.rawName}`);
         lines.push('    /// </summary>');
-
-        const callArgs = paramNames ? `Module, ${propNameVar}, ${paramNames}` : `Module, ${propNameVar}`;
-
-        if (hasAsyncCallback) {
-            // AsyncCallback<T> 参数 → 返回 Task<T>（或 Task 如果 T=void）
-            const innerType = asyncCbMatch ? /^AsyncCallback<(.+)>$/.exec(asyncCbMatch.type)?.[1] : null;
-            const mappedInner = innerType ? TypeMapper.mapType(innerType) : 'void';
-            if (mappedInner === 'void') {
-                lines.push(`    public static Task ${pascalName}(${paramStr})`);
-                lines.push('    {');
-                lines.push(`        return NodeApi.CallMethodAsyncVoid(${callArgs});`);
-                lines.push('    }');
-            } else {
-                lines.push(`    public static Task<${mappedInner}> ${pascalName}(${paramStr})`);
-                lines.push('    {');
-                lines.push(`        return NodeApi.CallMethodAsync<${mappedInner}>(${callArgs});`);
-                lines.push('    }');
-            }
-        } else {
-            const retType = method.returnType || 'void';
-            const isVoid = retType === 'void';
-
-            if (isVoid) {
-                lines.push(`    public static void ${pascalName}(${paramStr})`);
-                lines.push('    {');
-                lines.push(`        NodeApi.CallMethodVoid(${callArgs});`);
-                lines.push('    }');
-            } else {
-                const taskMatch = /^Task<(.+)>$/.exec(retType);
-                if (taskMatch) {
-                    // Task<T> 的 T 如果是未映射类型退回 IntPtr
-                    const innerType = this.isUnmappedType(taskMatch[1]) ? 'IntPtr' : taskMatch[1];
-                    lines.push(`    public static Task<${innerType}> ${pascalName}(${paramStr})`);
-                    lines.push('    {');
-                    lines.push(`        return NodeApi.CallMethodAsync<${innerType}>(${callArgs});`);
-                    lines.push('    }');
-                } else if (retType === 'Task') {
-                    lines.push(`    public static Task ${pascalName}(${paramStr})`);
-                    lines.push('    {');
-                    lines.push(`        return NodeApi.CallMethodAsyncVoid(${callArgs});`);
-                    lines.push('    }');
-                } else {
-                    // 未映射的返回类型退回 IntPtr
-                    const safeRetType = this.isUnmappedType(retType) ? 'IntPtr' : retType;
-                    lines.push(`    public static ${safeRetType} ${pascalName}(${paramStr})`);
-                    lines.push('    {');
-                    lines.push(`        return NodeApi.CallMethod<${safeRetType}>(${callArgs});`);
-                    lines.push('    }');
-                }
-            }
-        }
+        lines.push(`    public static ${type} ${m.pascalName} => ${expr};`);
         lines.push('');
     }
 
-    private generateGetterExpr(csharpType: string, propNameVar: string): string {
-        switch (csharpType) {
-            case 'bool':
-                return `NativeValue.ToBool(NodeApi.GetProperty(Module, ${propNameVar}))`;
-            case 'double':
-                return `NativeValue.ToDouble(NodeApi.GetProperty(Module, ${propNameVar}))`;
-            case 'string':
-                return `NativeValue.ToString(NodeApi.GetProperty(Module, ${propNameVar})) ?? string.Empty`;
-            case 'long':
-                return `NativeValue.ToLong(NodeApi.GetProperty(Module, ${propNameVar}))`;
-            case 'byte':
-                return `NativeValue.ToByte(NodeApi.GetProperty(Module, ${propNameVar}))`;
-            case 'int':
-                return `(int)NativeValue.ToDouble(NodeApi.GetProperty(Module, ${propNameVar}))`;
-            case 'uint':
-                return `(uint)NativeValue.ToDouble(NodeApi.GetProperty(Module, ${propNameVar}))`;
-            case 'IntPtr':
-                return `NodeApi.GetProperty(Module, ${propNameVar})`;
+    private emitStaticMethod(lines: string[], m: EmitMember): void {
+        const paramStr = m.params.map(p => this.formatParameter(p)).join(', ');
+        const paramNames = m.params.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
+        const callArgs = paramNames ? `, ${paramNames}` : '';
+
+        lines.push('    /// <summary>');
+        lines.push(`    /// ${m.rawName}`);
+        lines.push('    /// </summary>');
+        lines.push(`    public static ${m.retType} ${m.pascalName}(${paramStr})`);
+        lines.push('    {');
+        const expr = this.callExpr(m.retType, 'Module', `_${m.rawName}`, callArgs);
+        lines.push(m.retType === 'void' ? `        ${expr};` : `        return ${expr};`);
+        lines.push('    }');
+        lines.push('');
+    }
+
+    // ---------- 实例类型（包装类 / record）生成 ----------
+
+    private emitWrapper(lines: string[], spec: TypeSpec): void {
+        const { properties, methods } = this.wrapperMembers(spec);
+        const isClass = spec.cls !== undefined;
+
+        lines.push('/// <summary>');
+        lines.push(`/// ${spec.tsName} 实例包装（@ohos 命名空间内嵌套${isClass ? '类' : '接口'}）。`);
+        lines.push('/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。');
+        lines.push('/// </summary>');
+        lines.push(`public sealed partial class ${spec.csharpName} : JsObject`);
+        lines.push('{');
+        lines.push(`    public ${spec.csharpName}(IntPtr handle) : base(handle) { }`);
+
+        // 嵌套类带构造函数：经模块对象 new 实例
+        // 注意：(IntPtr) 签名保留给句柄构造函数，映射成该签名的 JS 构造函数跳过
+        if (isClass && spec.cls!.constructors.length > 0) {
+            lines.push('');
+            lines.push(`    private static ReadOnlySpan<byte> _${spec.tsName} => "${spec.tsName}"u8;`);
+            const generatedCtorSigs = new Set<string>(['IntPtr']);
+            for (const ctor of spec.cls!.constructors) {
+                const mappedParams: ParameterInfo[] = this.demoteOptionals(ctor.parameters).map(p => ({
+                    name: p.name,
+                    type: this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(p.type))),
+                    optional: p.optional,
+                    defaultValue: p.defaultValue
+                }));
+                const ctorSig = mappedParams.map(p => p.type).join(',');
+                if (generatedCtorSigs.has(ctorSig)) continue;
+                generatedCtorSigs.add(ctorSig);
+                const paramStr = mappedParams.map(p => this.formatParameter(p)).join(', ');
+                const paramNames = mappedParams.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
+                const ctorArgs = paramNames ? `, ${paramNames}` : '';
+                lines.push('');
+                lines.push(`    public ${spec.csharpName}(${paramStr})`);
+                lines.push(`        : this(NodeApi.CreateInstance(${this.moduleClassName}.Module, _${spec.tsName}${ctorArgs})) { }`);
+            }
+        }
+
+        // UTF8 名称常量
+        const u8Names = new Set<string>();
+        for (const p of properties) u8Names.add(p.name);
+        for (const m of methods) u8Names.add(m.name);
+        u8Names.delete(spec.tsName);
+        for (const name of u8Names) {
+            lines.push(`    private static ReadOnlySpan<byte> _${name} => "${name}"u8;`);
+        }
+
+        // 属性 getter
+        for (const p of properties) {
+            const mapped = this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
+            if (mapped === 'void') continue;
+            const pascal = toPascalCase(p.name);
+            if (pascal === spec.csharpName) continue; // 与类名冲突的成员降级跳过
+            this.emitInstanceProperty(lines, pascal, p, mapped);
+        }
+
+        // 实例方法（重载按映射后签名去重：旧 Promise API 与新 *Async API 可能映射到同一 C# 签名）
+        const generatedSigs = new Set<string>();
+        for (const m of methods) {
+            if (m.name === '__call__') continue;
+            const mappedParams = this.demoteOptionals(m.parameters).map(p => ({
+                name: p.name,
+                type: this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(p.type))),
+                optional: p.optional,
+                defaultValue: p.defaultValue
+            }));
+            const pascal = withAsyncSuffix(toPascalCase(m.name), this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(m.returnType))));
+            if (pascal === spec.csharpName) continue;
+            const paramStr = mappedParams.map(p => this.formatParameter(p)).join(', ');
+            const paramNames = mappedParams.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
+            const callArgs = paramNames ? `, ${paramNames}` : '';
+            const retType = m.asyncResultType !== undefined
+                ? (() => {
+                    const inner = this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(m.asyncResultType!)));
+                    return inner === 'void' ? 'Task' : `Task<${inner}>`;
+                })()
+                : this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(m.returnType)));
+
+            const sigKey = `${pascal}(${mappedParams.map(p => p.type).join(',')})`;
+            if (generatedSigs.has(sigKey)) continue;
+            generatedSigs.add(sigKey);
+
+            lines.push('    /// <summary>');
+            lines.push(`    /// ${m.name}`);
+            lines.push('    /// </summary>');
+            lines.push(`    public ${retType} ${pascal}(${paramStr})`);
+            lines.push('    {');
+            const expr = this.callExpr(retType, 'this.Handle', `_${m.name}`, callArgs, true);
+            lines.push(retType === 'void' ? `        ${expr};` : `        return ${expr};`);
+            lines.push('    }');
+            lines.push('');
+        }
+
+        lines.push('}');
+        lines.push('');
+    }
+
+    private emitInstanceProperty(lines: string[], pascal: string, p: { name: string; type: string; optional: boolean }, mapped: string): void {
+        const u8 = `_${p.name}`;
+        lines.push('    /// <summary>');
+        lines.push(`    /// ${p.name}`);
+        lines.push('    /// </summary>');
+        if (mapped === 'IntPtr') {
+            lines.push(`    public IntPtr ${pascal} => GetPropertyRaw(${u8});`);
+            lines.push('');
+            return;
+        }
+        if (p.optional && (PRIMITIVE_TYPES.has(mapped) || this.enumNames.has(mapped))) {
+            // 可选值类型属性：undefined 语义降级为默认值，避免引入 UndefinedValue 概念
+            lines.push(`    public ${mapped}? ${pascal} => (${mapped}?)${this.primitiveGetterExpr(mapped, `GetPropertyRaw(${u8})`)};`);
+            lines.push('');
+            return;
+        }
+        const wrapperSpec = this.specByCsharp.get(mapped);
+        if (p.optional && wrapperSpec) {
+            // 可选包装属性：undefined → null
+            const raw = `GetPropertyRaw(${u8})`;
+            lines.push(`    public ${wrapperSpec.csharpName}? ${pascal} => ${raw} == IntPtr.Zero ? null : new ${wrapperSpec.csharpName}(${raw});`);
+            lines.push('');
+            return;
+        }
+        const { type, expr } = this.getterExpr(mapped, 'this', u8, true);
+        lines.push(`    public ${type} ${pascal} => ${expr};`);
+        lines.push('');
+    }
+
+    private emitRecord(lines: string[], spec: TypeSpec): void {
+        const props = spec.iface ? this.mergedProperties(spec.iface) : (spec.cls?.properties ?? []);
+        const mappedProps = props.map(p => ({
+            name: p.name,
+            pascal: toPascalCase(p.name),
+            type: this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(p.type))),
+            optional: p.optional
+        })).filter(p => p.type !== 'void');
+
+        lines.push('/// <summary>');
+        lines.push(`/// ${spec.tsName}（@ohos 命名空间内嵌套纯数据接口，入参对象）。`);
+        lines.push('/// </summary>');
+        const params = mappedProps.map((p, i) => {
+            // record 位置参数同样要求可选参数在必需参数之后（CS1737）
+            const hasRequiredAfter = mappedProps.slice(i + 1).some(q => !q.optional);
+            const nullableMark = p.optional ? '?' : '';
+            const defaultVal = p.optional && !hasRequiredAfter ? ' = null' : '';
+            return `    ${p.type}${nullableMark} ${p.pascal}${defaultVal}`;
+        }).join(',\n');
+        lines.push(`public sealed record ${spec.csharpName}(`);
+        lines.push(params);
+        lines.push(') : INapiRecord');
+        lines.push('{');
+        lines.push('    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)');
+        lines.push('    {');
+        for (const p of mappedProps) {
+            const utf8Var = this.encodePropVar(p.pascal);
+            lines.push(`        var ${utf8Var} = Encoding.UTF8.GetBytes("${p.name}");`);
+            lines.push(`        var ${utf8Var}V = NativeValue.From(${p.pascal});`);
+            lines.push(`        if (${utf8Var}V != IntPtr.Zero)`);
+            lines.push(`            NativeNodeApi.napi_set_named_property(env, obj, ${utf8Var}, ${utf8Var}V);`);
+        }
+        lines.push('    }');
+        lines.push('}');
+        lines.push('');
+    }
+
+    private encodePropVar(pascal: string): string {
+        return `_${pascal.charAt(0).toLowerCase()}${pascal.slice(1)}`;
+    }
+
+    // ---------- 表达式构造 ----------
+
+    /**
+     * 方法调用表达式。instance=true 时目标是 JsObject 派生类自身（this.Handle + 受保护助手），
+     * 否则为模块静态类（NodeApi + Module）。
+     */
+    private callExpr(retType: string, target: string, u8Var: string, callArgs: string, instance: boolean = false): string {
+        // 实例模式：JsObject 受保护助手自带句柄，只接收方法名；
+        // 静态模式：NodeApi.* + Module 句柄。
+        const call = instance
+            ? (fn: string, extra: string) => `${fn}(${u8Var}${extra}${callArgs})`
+            : (fn: string, extra: string) => `NodeApi.${fn}(${target}, ${u8Var}${extra}${callArgs})`;
+
+        if (retType === 'void') return call('CallMethodVoid', '');
+        if (retType === 'Task') return call('CallMethodAsyncVoid', '');
+
+        const taskMatch = /^Task<(.+)>$/.exec(retType);
+        const inner = taskMatch ? taskMatch[1] : retType;
+        const isTask = !!taskMatch;
+        const method = isTask ? 'CallMethodAsync' : 'CallMethod';
+
+        const wrapper = this.specByCsharp.get(inner);
+        if (wrapper) {
+            // 包装类：调用点显式工厂（AOT 安全，无反射）
+            return call(method, `, static h => new ${wrapper.csharpName}(h)`);
+        }
+        const arrMatch = /^([\w.:]+)\[\]$/.exec(inner);
+        if (arrMatch) {
+            const elem = arrMatch[1];
+            const elemWrapper = this.specByCsharp.get(elem);
+            const conv = elemWrapper
+                ? `static e => new ${elemWrapper.csharpName}(e)`
+                : `static e => ValueConverter.Convert<${elem}>(e)`;
+            return call(method, `, h => ValueConverter.ConvertArray(h, ${conv})`);
+        }
+        return call(`${method}<${inner}>`, '');
+    }
+
+    /** 属性 getter 表达式，返回（类型, 表达式） */
+    private getterExpr(mapped: string, target: string, u8Var: string, instance: boolean = false): { type: string; expr: string } {
+        const raw = instance ? `GetPropertyRaw(${u8Var})` : `NodeApi.GetProperty(${target}, ${u8Var})`;
+        if (PRIMITIVE_TYPES.has(mapped) || this.enumNames.has(mapped)) {
+            return { type: mapped, expr: this.primitiveGetterExpr(mapped, raw) };
+        }
+        const wrapper = this.specByCsharp.get(mapped);
+        if (wrapper) {
+            return { type: wrapper.csharpName, expr: `new ${wrapper.csharpName}(${raw})` };
+        }
+        const arrMatch = /^([\w.:]+)\[\]$/.exec(mapped);
+        if (arrMatch) {
+            const elem = arrMatch[1];
+            const elemWrapper = this.specByCsharp.get(elem);
+            const conv = elemWrapper
+                ? `static e => new ${elemWrapper.csharpName}(e)`
+                : `static e => ValueConverter.Convert<${elem}>(e)`;
+            return { type: mapped, expr: `ValueConverter.ConvertArray(${raw}, ${conv})` };
+        }
+        // 兜底：原始句柄
+        return { type: 'IntPtr', expr: raw };
+    }
+
+    /** 基元/枚举类型的取值表达式 */
+    private primitiveGetterExpr(mapped: string, rawExpr: string): string {
+        switch (mapped) {
+            case 'bool': return `NativeValue.ToBool(${rawExpr})`;
+            case 'double': return `NativeValue.ToDouble(${rawExpr})`;
+            case 'float': return `(float)NativeValue.ToDouble(${rawExpr})`;
+            case 'int': return `NativeValue.ToInt(${rawExpr})`;
+            case 'uint': return `NativeValue.ToUInt(${rawExpr})`;
+            case 'long': return `NativeValue.ToLong(${rawExpr})`;
+            case 'byte': return `NativeValue.ToByte(${rawExpr})`;
+            case 'string': return `NativeValue.ToString(${rawExpr}) ?? string.Empty`;
             default:
-                // 枚举或其他自定义类型：假设底层是 int 枚举
-                return `(${csharpType})NativeValue.ToInt(NodeApi.GetProperty(Module, ${propNameVar}))`;
+                if (this.enumNames.has(mapped)) return `(${mapped})NativeValue.ToInt(${rawExpr})`;
+                return rawExpr;
         }
     }
 
     private formatParameter(param: ParameterInfo): string {
-        const cleanType = TypeMapper.cleanOptional(param.type);
-        let type = TypeMapper.mapType(cleanType);
-        // 未映射的 TS 原始类型（如接口名、Callback<>, Promise<>）退回 IntPtr
-        // 但保留 C# 基础类型（string, bool, int, double, long, byte, uint）
-        if (this.isUnmappedType(type)) {
-            type = 'IntPtr';
-        }
-        const optionalMark = TypeMapper.isOptional(param.type) ? '?' : '';
+        const optionalMark = param.optional ? '?' : '';
         const defaultVal = param.defaultValue ? ` = ${param.defaultValue}` :
-                          (TypeMapper.isOptional(param.type) ? ' = null' : '');
-        return `${type}${optionalMark} ${TypeMapper.escapeCSharpKeyword(param.name)}${defaultVal}`;
-    }
-
-    private capitalizeFirst(s: string): string {
-        return s.charAt(0).toUpperCase() + s.slice(1);
-    }
-
-    /** 检测类型是否是未映射的 TS 类型（需要退回 IntPtr） */
-    private isUnmappedType(type: string): boolean {
-        // 已知的 C# 基础类型和生成类型
-        const known = new Set([
-            'bool', 'double', 'string', 'long', 'byte', 'int', 'uint', 'IntPtr',
-            'void', 'object', 'Task', 'float', 'char',
-            // 枚举类型（在 Enums.cs 中生成，但在 HarmonyOS.ArkUI 命名空间下）
-            'DeviceTypes', 'PerformanceClassLevel',
-        ]);
-        if (known.has(type)) return false;
-        // Task<T> / Action<T> / Func<T,R> / T[] 递归检查内部类型
-        if (type.startsWith('Task<') || type.startsWith('Action<') || type.startsWith('Func<') || type.endsWith('[]')) return false;
-        // 所有其他类型（小写开头的原始 TS 类型、大写开头的未生成接口名）都退回 IntPtr
-        return true;
+            (param.optional ? ' = null' : '');
+        return `${param.type}${optionalMark} ${TypeMapper.escapeCSharpKeyword(param.name)}${defaultVal}`;
     }
 }

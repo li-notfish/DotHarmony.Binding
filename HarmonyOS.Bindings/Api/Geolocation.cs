@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -23,7 +24,8 @@ public static unsafe partial class Geolocation
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -79,23 +81,23 @@ public static unsafe partial class Geolocation
     private static ReadOnlySpan<byte> _sendCommand => "sendCommand"u8;
 
     /// <summary>
-    /// on 方法
+    /// on
     /// </summary>
-    public static void On(string type, IntPtr request, IntPtr callback)
+    public static void On(string type, LocationRequest request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, request, callback);
     }
 
     /// <summary>
-    /// off 方法
+    /// off
     /// </summary>
-    public static void Off(string type, IntPtr callback)
+    public static void Off(string type, IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// on 方法
+    /// on
     /// </summary>
     public static void On(string type, IntPtr callback)
     {
@@ -103,99 +105,544 @@ public static unsafe partial class Geolocation
     }
 
     /// <summary>
-    /// off 方法
+    /// on
     /// </summary>
-    public static void Off(string type, IntPtr request, IntPtr want)
+    public static void On(string type, CachedGnssLocationsRequest request, IntPtr callback)
+    {
+        NodeApi.CallMethodVoid(Module, _on, type, request, callback);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public static void On(string type, GeofenceRequest request, IntPtr want)
+    {
+        NodeApi.CallMethodVoid(Module, _on, type, request, want);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public static void Off(string type, GeofenceRequest request, IntPtr want)
     {
         NodeApi.CallMethodVoid(Module, _off, type, request, want);
     }
 
     /// <summary>
-    /// getCurrentLocation 方法
+    /// getCurrentLocation
     /// </summary>
-    public static Task<IntPtr> GetCurrentLocation(IntPtr request)
+    public static Task<Location> GetCurrentLocationAsync(CurrentLocationRequest request)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentLocation, request);
+        return NodeApi.CallMethodAsync(Module, _getCurrentLocation, static h => new Location(h), request);
     }
 
     /// <summary>
-    /// getCurrentLocation 方法
+    /// getCurrentLocation
     /// </summary>
-    public static Task<IntPtr> GetCurrentLocation()
+    public static Task<Location> GetCurrentLocationAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentLocation);
+        return NodeApi.CallMethodAsync(Module, _getCurrentLocation, static h => new Location(h));
     }
 
     /// <summary>
-    /// getLastLocation 方法
+    /// getLastLocation
     /// </summary>
-    public static Task<IntPtr> GetLastLocation()
+    public static Task<Location> GetLastLocationAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getLastLocation);
+        return NodeApi.CallMethodAsync(Module, _getLastLocation, static h => new Location(h));
     }
 
     /// <summary>
-    /// isLocationEnabled 方法
+    /// isLocationEnabled
     /// </summary>
-    public static Task<bool> IsLocationEnabled()
+    public static Task<bool> IsLocationEnabledAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isLocationEnabled);
     }
 
     /// <summary>
-    /// requestEnableLocation 方法
+    /// requestEnableLocation
     /// </summary>
-    public static Task<bool> RequestEnableLocation()
+    public static Task<bool> RequestEnableLocationAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _requestEnableLocation);
     }
 
     /// <summary>
-    /// getAddressesFromLocation 方法
+    /// getAddressesFromLocation
     /// </summary>
-    public static Task<IntPtr[]> GetAddressesFromLocation(IntPtr request)
+    public static Task<GeoAddress[]> GetAddressesFromLocationAsync(ReverseGeoCodeRequest request)
     {
-        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAddressesFromLocation, request);
+        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocation, h => ValueConverter.ConvertArray(h, static e => new GeoAddress(e)), request);
     }
 
     /// <summary>
-    /// getAddressesFromLocationName 方法
+    /// getAddressesFromLocationName
     /// </summary>
-    public static Task<IntPtr[]> GetAddressesFromLocationName(IntPtr request)
+    public static Task<GeoAddress[]> GetAddressesFromLocationNameAsync(GeoCodeRequest request)
     {
-        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAddressesFromLocationName, request);
+        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocationName, h => ValueConverter.ConvertArray(h, static e => new GeoAddress(e)), request);
     }
 
     /// <summary>
-    /// isGeoServiceAvailable 方法
+    /// isGeoServiceAvailable
     /// </summary>
-    public static Task<bool> IsGeoServiceAvailable()
+    public static Task<bool> IsGeoServiceAvailableAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isGeoServiceAvailable);
     }
 
     /// <summary>
-    /// getCachedGnssLocationsSize 方法
+    /// getCachedGnssLocationsSize
     /// </summary>
-    public static Task<double> GetCachedGnssLocationsSize()
+    public static Task<double> GetCachedGnssLocationsSizeAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getCachedGnssLocationsSize);
     }
 
     /// <summary>
-    /// flushCachedGnssLocations 方法
+    /// flushCachedGnssLocations
     /// </summary>
-    public static Task<bool> FlushCachedGnssLocations()
+    public static Task<bool> FlushCachedGnssLocationsAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _flushCachedGnssLocations);
     }
 
     /// <summary>
-    /// sendCommand 方法
+    /// sendCommand
     /// </summary>
-    public static Task<bool> SendCommand(IntPtr command)
+    public static Task<bool> SendCommandAsync(LocationCommand command)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _sendCommand, command);
     }
 
+}
+
+/// <summary>
+/// LocationRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record LocationRequest(
+    global::HarmonyOS.ArkUI.LocationRequestPriority? Priority = null,
+    global::HarmonyOS.ArkUI.LocationRequestScenario? Scenario = null,
+    double? TimeInterval = null,
+    double? DistanceInterval = null,
+    double? MaxAccuracy = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _priority = Encoding.UTF8.GetBytes("priority");
+        var _priorityV = NativeValue.From(Priority);
+        if (_priorityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _priority, _priorityV);
+        var _scenario = Encoding.UTF8.GetBytes("scenario");
+        var _scenarioV = NativeValue.From(Scenario);
+        if (_scenarioV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _scenario, _scenarioV);
+        var _timeInterval = Encoding.UTF8.GetBytes("timeInterval");
+        var _timeIntervalV = NativeValue.From(TimeInterval);
+        if (_timeIntervalV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _timeInterval, _timeIntervalV);
+        var _distanceInterval = Encoding.UTF8.GetBytes("distanceInterval");
+        var _distanceIntervalV = NativeValue.From(DistanceInterval);
+        if (_distanceIntervalV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _distanceInterval, _distanceIntervalV);
+        var _maxAccuracy = Encoding.UTF8.GetBytes("maxAccuracy");
+        var _maxAccuracyV = NativeValue.From(MaxAccuracy);
+        if (_maxAccuracyV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxAccuracy, _maxAccuracyV);
+    }
+}
+
+/// <summary>
+/// CachedGnssLocationsRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record CachedGnssLocationsRequest(
+    double ReportingPeriodSec,
+    bool WakeUpCacheQueueFull
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _reportingPeriodSec = Encoding.UTF8.GetBytes("reportingPeriodSec");
+        var _reportingPeriodSecV = NativeValue.From(ReportingPeriodSec);
+        if (_reportingPeriodSecV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _reportingPeriodSec, _reportingPeriodSecV);
+        var _wakeUpCacheQueueFull = Encoding.UTF8.GetBytes("wakeUpCacheQueueFull");
+        var _wakeUpCacheQueueFullV = NativeValue.From(WakeUpCacheQueueFull);
+        if (_wakeUpCacheQueueFullV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _wakeUpCacheQueueFull, _wakeUpCacheQueueFullV);
+    }
+}
+
+/// <summary>
+/// GeofenceRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record GeofenceRequest(
+    global::HarmonyOS.ArkUI.LocationRequestPriority Priority,
+    global::HarmonyOS.ArkUI.LocationRequestScenario Scenario,
+    Geofence Geofence
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _priority = Encoding.UTF8.GetBytes("priority");
+        var _priorityV = NativeValue.From(Priority);
+        if (_priorityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _priority, _priorityV);
+        var _scenario = Encoding.UTF8.GetBytes("scenario");
+        var _scenarioV = NativeValue.From(Scenario);
+        if (_scenarioV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _scenario, _scenarioV);
+        var _geofence = Encoding.UTF8.GetBytes("geofence");
+        var _geofenceV = NativeValue.From(Geofence);
+        if (_geofenceV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _geofence, _geofenceV);
+    }
+}
+
+/// <summary>
+/// Location 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Location : JsObject
+{
+    public Location(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _latitude => "latitude"u8;
+    private static ReadOnlySpan<byte> _longitude => "longitude"u8;
+    private static ReadOnlySpan<byte> _altitude => "altitude"u8;
+    private static ReadOnlySpan<byte> _accuracy => "accuracy"u8;
+    private static ReadOnlySpan<byte> _speed => "speed"u8;
+    private static ReadOnlySpan<byte> _timeStamp => "timeStamp"u8;
+    private static ReadOnlySpan<byte> _direction => "direction"u8;
+    private static ReadOnlySpan<byte> _timeSinceBoot => "timeSinceBoot"u8;
+    private static ReadOnlySpan<byte> _additions => "additions"u8;
+    private static ReadOnlySpan<byte> _additionSize => "additionSize"u8;
+    /// <summary>
+    /// latitude
+    /// </summary>
+    public double Latitude => NativeValue.ToDouble(GetPropertyRaw(_latitude));
+
+    /// <summary>
+    /// longitude
+    /// </summary>
+    public double Longitude => NativeValue.ToDouble(GetPropertyRaw(_longitude));
+
+    /// <summary>
+    /// altitude
+    /// </summary>
+    public double Altitude => NativeValue.ToDouble(GetPropertyRaw(_altitude));
+
+    /// <summary>
+    /// accuracy
+    /// </summary>
+    public double Accuracy => NativeValue.ToDouble(GetPropertyRaw(_accuracy));
+
+    /// <summary>
+    /// speed
+    /// </summary>
+    public double Speed => NativeValue.ToDouble(GetPropertyRaw(_speed));
+
+    /// <summary>
+    /// timeStamp
+    /// </summary>
+    public double TimeStamp => NativeValue.ToDouble(GetPropertyRaw(_timeStamp));
+
+    /// <summary>
+    /// direction
+    /// </summary>
+    public double Direction => NativeValue.ToDouble(GetPropertyRaw(_direction));
+
+    /// <summary>
+    /// timeSinceBoot
+    /// </summary>
+    public double TimeSinceBoot => NativeValue.ToDouble(GetPropertyRaw(_timeSinceBoot));
+
+    /// <summary>
+    /// additions
+    /// </summary>
+    public string[] Additions => ValueConverter.ConvertArray(GetPropertyRaw(_additions), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// additionSize
+    /// </summary>
+    public double? AdditionSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_additionSize));
+
+}
+
+/// <summary>
+/// CurrentLocationRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record CurrentLocationRequest(
+    global::HarmonyOS.ArkUI.LocationRequestPriority? Priority = null,
+    global::HarmonyOS.ArkUI.LocationRequestScenario? Scenario = null,
+    double? MaxAccuracy = null,
+    double? TimeoutMs = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _priority = Encoding.UTF8.GetBytes("priority");
+        var _priorityV = NativeValue.From(Priority);
+        if (_priorityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _priority, _priorityV);
+        var _scenario = Encoding.UTF8.GetBytes("scenario");
+        var _scenarioV = NativeValue.From(Scenario);
+        if (_scenarioV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _scenario, _scenarioV);
+        var _maxAccuracy = Encoding.UTF8.GetBytes("maxAccuracy");
+        var _maxAccuracyV = NativeValue.From(MaxAccuracy);
+        if (_maxAccuracyV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxAccuracy, _maxAccuracyV);
+        var _timeoutMs = Encoding.UTF8.GetBytes("timeoutMs");
+        var _timeoutMsV = NativeValue.From(TimeoutMs);
+        if (_timeoutMsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _timeoutMs, _timeoutMsV);
+    }
+}
+
+/// <summary>
+/// GeoAddress 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class GeoAddress : JsObject
+{
+    public GeoAddress(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _latitude => "latitude"u8;
+    private static ReadOnlySpan<byte> _longitude => "longitude"u8;
+    private static ReadOnlySpan<byte> _locale => "locale"u8;
+    private static ReadOnlySpan<byte> _placeName => "placeName"u8;
+    private static ReadOnlySpan<byte> _countryCode => "countryCode"u8;
+    private static ReadOnlySpan<byte> _countryName => "countryName"u8;
+    private static ReadOnlySpan<byte> _administrativeArea => "administrativeArea"u8;
+    private static ReadOnlySpan<byte> _subAdministrativeArea => "subAdministrativeArea"u8;
+    private static ReadOnlySpan<byte> _locality => "locality"u8;
+    private static ReadOnlySpan<byte> _subLocality => "subLocality"u8;
+    private static ReadOnlySpan<byte> _roadName => "roadName"u8;
+    private static ReadOnlySpan<byte> _subRoadName => "subRoadName"u8;
+    private static ReadOnlySpan<byte> _premises => "premises"u8;
+    private static ReadOnlySpan<byte> _postalCode => "postalCode"u8;
+    private static ReadOnlySpan<byte> _phoneNumber => "phoneNumber"u8;
+    private static ReadOnlySpan<byte> _addressUrl => "addressUrl"u8;
+    private static ReadOnlySpan<byte> _descriptions => "descriptions"u8;
+    private static ReadOnlySpan<byte> _descriptionsSize => "descriptionsSize"u8;
+    /// <summary>
+    /// latitude
+    /// </summary>
+    public double? Latitude => (double?)NativeValue.ToDouble(GetPropertyRaw(_latitude));
+
+    /// <summary>
+    /// longitude
+    /// </summary>
+    public double? Longitude => (double?)NativeValue.ToDouble(GetPropertyRaw(_longitude));
+
+    /// <summary>
+    /// locale
+    /// </summary>
+    public string? Locale => (string?)NativeValue.ToString(GetPropertyRaw(_locale)) ?? string.Empty;
+
+    /// <summary>
+    /// placeName
+    /// </summary>
+    public string? PlaceName => (string?)NativeValue.ToString(GetPropertyRaw(_placeName)) ?? string.Empty;
+
+    /// <summary>
+    /// countryCode
+    /// </summary>
+    public string? CountryCode => (string?)NativeValue.ToString(GetPropertyRaw(_countryCode)) ?? string.Empty;
+
+    /// <summary>
+    /// countryName
+    /// </summary>
+    public string? CountryName => (string?)NativeValue.ToString(GetPropertyRaw(_countryName)) ?? string.Empty;
+
+    /// <summary>
+    /// administrativeArea
+    /// </summary>
+    public string? AdministrativeArea => (string?)NativeValue.ToString(GetPropertyRaw(_administrativeArea)) ?? string.Empty;
+
+    /// <summary>
+    /// subAdministrativeArea
+    /// </summary>
+    public string? SubAdministrativeArea => (string?)NativeValue.ToString(GetPropertyRaw(_subAdministrativeArea)) ?? string.Empty;
+
+    /// <summary>
+    /// locality
+    /// </summary>
+    public string? Locality => (string?)NativeValue.ToString(GetPropertyRaw(_locality)) ?? string.Empty;
+
+    /// <summary>
+    /// subLocality
+    /// </summary>
+    public string? SubLocality => (string?)NativeValue.ToString(GetPropertyRaw(_subLocality)) ?? string.Empty;
+
+    /// <summary>
+    /// roadName
+    /// </summary>
+    public string? RoadName => (string?)NativeValue.ToString(GetPropertyRaw(_roadName)) ?? string.Empty;
+
+    /// <summary>
+    /// subRoadName
+    /// </summary>
+    public string? SubRoadName => (string?)NativeValue.ToString(GetPropertyRaw(_subRoadName)) ?? string.Empty;
+
+    /// <summary>
+    /// premises
+    /// </summary>
+    public string? Premises => (string?)NativeValue.ToString(GetPropertyRaw(_premises)) ?? string.Empty;
+
+    /// <summary>
+    /// postalCode
+    /// </summary>
+    public string? PostalCode => (string?)NativeValue.ToString(GetPropertyRaw(_postalCode)) ?? string.Empty;
+
+    /// <summary>
+    /// phoneNumber
+    /// </summary>
+    public string? PhoneNumber => (string?)NativeValue.ToString(GetPropertyRaw(_phoneNumber)) ?? string.Empty;
+
+    /// <summary>
+    /// addressUrl
+    /// </summary>
+    public string? AddressUrl => (string?)NativeValue.ToString(GetPropertyRaw(_addressUrl)) ?? string.Empty;
+
+    /// <summary>
+    /// descriptions
+    /// </summary>
+    public string[] Descriptions => ValueConverter.ConvertArray(GetPropertyRaw(_descriptions), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// descriptionsSize
+    /// </summary>
+    public double? DescriptionsSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_descriptionsSize));
+
+}
+
+/// <summary>
+/// ReverseGeoCodeRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ReverseGeoCodeRequest(
+    string? Locale,
+    double Latitude,
+    double Longitude,
+    double? MaxItems = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _locale = Encoding.UTF8.GetBytes("locale");
+        var _localeV = NativeValue.From(Locale);
+        if (_localeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _locale, _localeV);
+        var _latitude = Encoding.UTF8.GetBytes("latitude");
+        var _latitudeV = NativeValue.From(Latitude);
+        if (_latitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
+        var _longitude = Encoding.UTF8.GetBytes("longitude");
+        var _longitudeV = NativeValue.From(Longitude);
+        if (_longitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
+        var _maxItems = Encoding.UTF8.GetBytes("maxItems");
+        var _maxItemsV = NativeValue.From(MaxItems);
+        if (_maxItemsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxItems, _maxItemsV);
+    }
+}
+
+/// <summary>
+/// GeoCodeRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record GeoCodeRequest(
+    string? Locale,
+    string Description,
+    double? MaxItems = null,
+    double? MinLatitude = null,
+    double? MinLongitude = null,
+    double? MaxLatitude = null,
+    double? MaxLongitude = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _locale = Encoding.UTF8.GetBytes("locale");
+        var _localeV = NativeValue.From(Locale);
+        if (_localeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _locale, _localeV);
+        var _description = Encoding.UTF8.GetBytes("description");
+        var _descriptionV = NativeValue.From(Description);
+        if (_descriptionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _description, _descriptionV);
+        var _maxItems = Encoding.UTF8.GetBytes("maxItems");
+        var _maxItemsV = NativeValue.From(MaxItems);
+        if (_maxItemsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxItems, _maxItemsV);
+        var _minLatitude = Encoding.UTF8.GetBytes("minLatitude");
+        var _minLatitudeV = NativeValue.From(MinLatitude);
+        if (_minLatitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _minLatitude, _minLatitudeV);
+        var _minLongitude = Encoding.UTF8.GetBytes("minLongitude");
+        var _minLongitudeV = NativeValue.From(MinLongitude);
+        if (_minLongitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _minLongitude, _minLongitudeV);
+        var _maxLatitude = Encoding.UTF8.GetBytes("maxLatitude");
+        var _maxLatitudeV = NativeValue.From(MaxLatitude);
+        if (_maxLatitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxLatitude, _maxLatitudeV);
+        var _maxLongitude = Encoding.UTF8.GetBytes("maxLongitude");
+        var _maxLongitudeV = NativeValue.From(MaxLongitude);
+        if (_maxLongitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxLongitude, _maxLongitudeV);
+    }
+}
+
+/// <summary>
+/// LocationCommand（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record LocationCommand(
+    global::HarmonyOS.ArkUI.LocationRequestScenario Scenario,
+    string Command
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _scenario = Encoding.UTF8.GetBytes("scenario");
+        var _scenarioV = NativeValue.From(Scenario);
+        if (_scenarioV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _scenario, _scenarioV);
+        var _command = Encoding.UTF8.GetBytes("command");
+        var _commandV = NativeValue.From(Command);
+        if (_commandV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _command, _commandV);
+    }
+}
+
+/// <summary>
+/// Geofence（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record Geofence(
+    double Latitude,
+    double Longitude,
+    double Radius,
+    double Expiration
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _latitude = Encoding.UTF8.GetBytes("latitude");
+        var _latitudeV = NativeValue.From(Latitude);
+        if (_latitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
+        var _longitude = Encoding.UTF8.GetBytes("longitude");
+        var _longitudeV = NativeValue.From(Longitude);
+        if (_longitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
+        var _radius = Encoding.UTF8.GetBytes("radius");
+        var _radiusV = NativeValue.From(Radius);
+        if (_radiusV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _radius, _radiusV);
+        var _expiration = Encoding.UTF8.GetBytes("expiration");
+        var _expirationV = NativeValue.From(Expiration);
+        if (_expirationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _expiration, _expirationV);
+    }
 }

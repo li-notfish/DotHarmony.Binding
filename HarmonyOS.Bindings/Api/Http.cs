@@ -4,8 +4,10 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
 
@@ -22,7 +24,8 @@ public static unsafe partial class Http
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -68,19 +71,127 @@ public static unsafe partial class Http
     private static ReadOnlySpan<byte> _createHttpResponseCache => "createHttpResponseCache"u8;
 
     /// <summary>
-    /// createHttp 方法
+    /// createHttp
     /// </summary>
-    public static IntPtr CreateHttp()
+    public static HttpRequest CreateHttp()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createHttp);
+        return NodeApi.CallMethod(Module, _createHttp, static h => new HttpRequest(h));
     }
 
     /// <summary>
-    /// createHttpResponseCache 方法
+    /// createHttpResponseCache
     /// </summary>
-    public static IntPtr CreateHttpResponseCache(double cacheSize)
+    public static HttpResponseCache CreateHttpResponseCache(double? cacheSize = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createHttpResponseCache, cacheSize);
+        return NodeApi.CallMethod(Module, _createHttpResponseCache, static h => new HttpResponseCache(h), cacheSize);
+    }
+
+}
+
+/// <summary>
+/// HttpRequest 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class HttpRequest : JsObject
+{
+    public HttpRequest(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _request => "request"u8;
+    private static ReadOnlySpan<byte> _requestSync => "requestSync"u8;
+    private static ReadOnlySpan<byte> _requestInStream => "requestInStream"u8;
+    private static ReadOnlySpan<byte> _destroy => "destroy"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _once => "once"u8;
+    private static ReadOnlySpan<byte> _enableAutoCookie => "enableAutoCookie"u8;
+    /// <summary>
+    /// request
+    /// </summary>
+    public void Request(string url, IntPtr callback)
+    {
+        CallMethodVoid(_request, url, callback);
+    }
+
+    /// <summary>
+    /// requestSync
+    /// </summary>
+    public IntPtr RequestSync(string url, IntPtr? options = null)
+    {
+        return CallMethod<IntPtr>(_requestSync, url, options);
+    }
+
+    /// <summary>
+    /// requestInStream
+    /// </summary>
+    public void RequestInStream(string url, IntPtr callback)
+    {
+        CallMethodVoid(_requestInStream, url, callback);
+    }
+
+    /// <summary>
+    /// destroy
+    /// </summary>
+    public void Destroy()
+    {
+        CallMethodVoid(_destroy);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// once
+    /// </summary>
+    public void Once(string type, IntPtr callback)
+    {
+        CallMethodVoid(_once, type, callback);
+    }
+
+    /// <summary>
+    /// enableAutoCookie
+    /// </summary>
+    public void EnableAutoCookie(bool enable)
+    {
+        CallMethodVoid(_enableAutoCookie, enable);
+    }
+
+}
+
+/// <summary>
+/// HttpResponseCache 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class HttpResponseCache : JsObject
+{
+    public HttpResponseCache(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _flush => "flush"u8;
+    private static ReadOnlySpan<byte> _delete => "delete"u8;
+    /// <summary>
+    /// flush
+    /// </summary>
+    public void Flush(IntPtr callback)
+    {
+        CallMethodVoid(_flush, callback);
+    }
+
+    /// <summary>
+    /// delete
+    /// </summary>
+    public void Delete(IntPtr callback)
+    {
+        CallMethodVoid(_delete, callback);
     }
 
 }

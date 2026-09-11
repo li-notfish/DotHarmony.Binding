@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -23,7 +24,8 @@ public static unsafe partial class Settings
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -167,436 +169,436 @@ public static unsafe partial class Settings
     /// <summary>
     /// DEVICE_SHARED
     /// </summary>
-    public static string DEVICE_SHARED => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVICE_SHARED)) ?? string.Empty;
+    public static string DeviceShared => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVICE_SHARED)) ?? string.Empty;
 
     /// <summary>
     /// USER_PROPERTY
     /// </summary>
-    public static string USER_PROPERTY => NativeValue.ToString(NodeApi.GetProperty(Module, _USER_PROPERTY)) ?? string.Empty;
+    public static string UserProperty => NativeValue.ToString(NodeApi.GetProperty(Module, _USER_PROPERTY)) ?? string.Empty;
 
     /// <summary>
     /// DATE_FORMAT
     /// </summary>
-    public static string DATE_FORMAT => NativeValue.ToString(NodeApi.GetProperty(Module, _DATE_FORMAT)) ?? string.Empty;
+    public static string DateFormat => NativeValue.ToString(NodeApi.GetProperty(Module, _DATE_FORMAT)) ?? string.Empty;
 
     /// <summary>
     /// TIME_FORMAT
     /// </summary>
-    public static string TIME_FORMAT => NativeValue.ToString(NodeApi.GetProperty(Module, _TIME_FORMAT)) ?? string.Empty;
+    public static string TimeFormat => NativeValue.ToString(NodeApi.GetProperty(Module, _TIME_FORMAT)) ?? string.Empty;
 
     /// <summary>
     /// AUTO_GAIN_TIME
     /// </summary>
-    public static string AUTO_GAIN_TIME => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_GAIN_TIME)) ?? string.Empty;
+    public static string AutoGainTime => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_GAIN_TIME)) ?? string.Empty;
 
     /// <summary>
     /// AUTO_GAIN_TIME_ZONE
     /// </summary>
-    public static string AUTO_GAIN_TIME_ZONE => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_GAIN_TIME_ZONE)) ?? string.Empty;
+    public static string AutoGainTimeZone => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_GAIN_TIME_ZONE)) ?? string.Empty;
 
     /// <summary>
     /// FONT_SCALE
     /// </summary>
-    public static string FONT_SCALE => NativeValue.ToString(NodeApi.GetProperty(Module, _FONT_SCALE)) ?? string.Empty;
+    public static string FontScale => NativeValue.ToString(NodeApi.GetProperty(Module, _FONT_SCALE)) ?? string.Empty;
 
     /// <summary>
     /// SCREEN_BRIGHTNESS_STATUS
     /// </summary>
-    public static string SCREEN_BRIGHTNESS_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _SCREEN_BRIGHTNESS_STATUS)) ?? string.Empty;
+    public static string ScreenBrightnessStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _SCREEN_BRIGHTNESS_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// AUTO_SCREEN_BRIGHTNESS
     /// </summary>
-    public static string AUTO_SCREEN_BRIGHTNESS => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_SCREEN_BRIGHTNESS)) ?? string.Empty;
+    public static string AutoScreenBrightness => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_SCREEN_BRIGHTNESS)) ?? string.Empty;
 
     /// <summary>
     /// AUTO_SCREEN_BRIGHTNESS_MODE
     /// </summary>
-    public static double AUTO_SCREEN_BRIGHTNESS_MODE => NativeValue.ToDouble(NodeApi.GetProperty(Module, _AUTO_SCREEN_BRIGHTNESS_MODE));
+    public static double AutoScreenBrightnessMode => NativeValue.ToDouble(NodeApi.GetProperty(Module, _AUTO_SCREEN_BRIGHTNESS_MODE));
 
     /// <summary>
     /// MANUAL_SCREEN_BRIGHTNESS_MODE
     /// </summary>
-    public static double MANUAL_SCREEN_BRIGHTNESS_MODE => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MANUAL_SCREEN_BRIGHTNESS_MODE));
+    public static double ManualScreenBrightnessMode => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MANUAL_SCREEN_BRIGHTNESS_MODE));
 
     /// <summary>
     /// SCREEN_OFF_TIMEOUT
     /// </summary>
-    public static string SCREEN_OFF_TIMEOUT => NativeValue.ToString(NodeApi.GetProperty(Module, _SCREEN_OFF_TIMEOUT)) ?? string.Empty;
+    public static string ScreenOffTimeout => NativeValue.ToString(NodeApi.GetProperty(Module, _SCREEN_OFF_TIMEOUT)) ?? string.Empty;
 
     /// <summary>
     /// DEFAULT_SCREEN_ROTATION
     /// </summary>
-    public static string DEFAULT_SCREEN_ROTATION => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_SCREEN_ROTATION)) ?? string.Empty;
+    public static string DefaultScreenRotation => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_SCREEN_ROTATION)) ?? string.Empty;
 
     /// <summary>
     /// ANIMATOR_DURATION_SCALE
     /// </summary>
-    public static string ANIMATOR_DURATION_SCALE => NativeValue.ToString(NodeApi.GetProperty(Module, _ANIMATOR_DURATION_SCALE)) ?? string.Empty;
+    public static string AnimatorDurationScale => NativeValue.ToString(NodeApi.GetProperty(Module, _ANIMATOR_DURATION_SCALE)) ?? string.Empty;
 
     /// <summary>
     /// TRANSITION_ANIMATION_SCALE
     /// </summary>
-    public static string TRANSITION_ANIMATION_SCALE => NativeValue.ToString(NodeApi.GetProperty(Module, _TRANSITION_ANIMATION_SCALE)) ?? string.Empty;
+    public static string TransitionAnimationScale => NativeValue.ToString(NodeApi.GetProperty(Module, _TRANSITION_ANIMATION_SCALE)) ?? string.Empty;
 
     /// <summary>
     /// WINDOW_ANIMATION_SCALE
     /// </summary>
-    public static string WINDOW_ANIMATION_SCALE => NativeValue.ToString(NodeApi.GetProperty(Module, _WINDOW_ANIMATION_SCALE)) ?? string.Empty;
+    public static string WindowAnimationScale => NativeValue.ToString(NodeApi.GetProperty(Module, _WINDOW_ANIMATION_SCALE)) ?? string.Empty;
 
     /// <summary>
     /// DISPLAY_INVERSION_STATUS
     /// </summary>
-    public static string DISPLAY_INVERSION_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _DISPLAY_INVERSION_STATUS)) ?? string.Empty;
+    public static string DisplayInversionStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _DISPLAY_INVERSION_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// SETUP_WIZARD_FINISHED
     /// </summary>
-    public static string SETUP_WIZARD_FINISHED => NativeValue.ToString(NodeApi.GetProperty(Module, _SETUP_WIZARD_FINISHED)) ?? string.Empty;
+    public static string SetupWizardFinished => NativeValue.ToString(NodeApi.GetProperty(Module, _SETUP_WIZARD_FINISHED)) ?? string.Empty;
 
     /// <summary>
     /// END_BUTTON_ACTION
     /// </summary>
-    public static string END_BUTTON_ACTION => NativeValue.ToString(NodeApi.GetProperty(Module, _END_BUTTON_ACTION)) ?? string.Empty;
+    public static string EndButtonAction => NativeValue.ToString(NodeApi.GetProperty(Module, _END_BUTTON_ACTION)) ?? string.Empty;
 
     /// <summary>
     /// ACCELEROMETER_ROTATION_STATUS
     /// </summary>
-    public static string ACCELEROMETER_ROTATION_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _ACCELEROMETER_ROTATION_STATUS)) ?? string.Empty;
+    public static string AccelerometerRotationStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _ACCELEROMETER_ROTATION_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// AIRPLANE_MODE_STATUS
     /// </summary>
-    public static string AIRPLANE_MODE_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _AIRPLANE_MODE_STATUS)) ?? string.Empty;
+    public static string AirplaneModeStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _AIRPLANE_MODE_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// DEVICE_PROVISION_STATUS
     /// </summary>
-    public static string DEVICE_PROVISION_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVICE_PROVISION_STATUS)) ?? string.Empty;
+    public static string DeviceProvisionStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVICE_PROVISION_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// HDC_STATUS
     /// </summary>
-    public static string HDC_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _HDC_STATUS)) ?? string.Empty;
+    public static string HdcStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _HDC_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// BOOT_COUNTING
     /// </summary>
-    public static string BOOT_COUNTING => NativeValue.ToString(NodeApi.GetProperty(Module, _BOOT_COUNTING)) ?? string.Empty;
+    public static string BootCounting => NativeValue.ToString(NodeApi.GetProperty(Module, _BOOT_COUNTING)) ?? string.Empty;
 
     /// <summary>
     /// CONTACT_METADATA_SYNC_STATUS
     /// </summary>
-    public static string CONTACT_METADATA_SYNC_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _CONTACT_METADATA_SYNC_STATUS)) ?? string.Empty;
+    public static string ContactMetadataSyncStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _CONTACT_METADATA_SYNC_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// DEVELOPMENT_SETTINGS_STATUS
     /// </summary>
-    public static string DEVELOPMENT_SETTINGS_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVELOPMENT_SETTINGS_STATUS)) ?? string.Empty;
+    public static string DevelopmentSettingsStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVELOPMENT_SETTINGS_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// DEVICE_NAME
     /// </summary>
-    public static string DEVICE_NAME => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVICE_NAME)) ?? string.Empty;
+    public static string DeviceName => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVICE_NAME)) ?? string.Empty;
 
     /// <summary>
     /// USB_STORAGE_STATUS
     /// </summary>
-    public static string USB_STORAGE_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _USB_STORAGE_STATUS)) ?? string.Empty;
+    public static string UsbStorageStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _USB_STORAGE_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// DEBUGGER_WAITING
     /// </summary>
-    public static string DEBUGGER_WAITING => NativeValue.ToString(NodeApi.GetProperty(Module, _DEBUGGER_WAITING)) ?? string.Empty;
+    public static string DebuggerWaiting => NativeValue.ToString(NodeApi.GetProperty(Module, _DEBUGGER_WAITING)) ?? string.Empty;
 
     /// <summary>
     /// DEBUG_APP_PACKAGE
     /// </summary>
-    public static string DEBUG_APP_PACKAGE => NativeValue.ToString(NodeApi.GetProperty(Module, _DEBUG_APP_PACKAGE)) ?? string.Empty;
+    public static string DebugAppPackage => NativeValue.ToString(NodeApi.GetProperty(Module, _DEBUG_APP_PACKAGE)) ?? string.Empty;
 
     /// <summary>
     /// ACCESSIBILITY_STATUS
     /// </summary>
-    public static string ACCESSIBILITY_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _ACCESSIBILITY_STATUS)) ?? string.Empty;
+    public static string AccessibilityStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _ACCESSIBILITY_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// ACTIVATED_ACCESSIBILITY_SERVICES
     /// </summary>
-    public static string ACTIVATED_ACCESSIBILITY_SERVICES => NativeValue.ToString(NodeApi.GetProperty(Module, _ACTIVATED_ACCESSIBILITY_SERVICES)) ?? string.Empty;
+    public static string ActivatedAccessibilityServices => NativeValue.ToString(NodeApi.GetProperty(Module, _ACTIVATED_ACCESSIBILITY_SERVICES)) ?? string.Empty;
 
     /// <summary>
     /// GEOLOCATION_ORIGINS_ALLOWED
     /// </summary>
-    public static string GEOLOCATION_ORIGINS_ALLOWED => NativeValue.ToString(NodeApi.GetProperty(Module, _GEOLOCATION_ORIGINS_ALLOWED)) ?? string.Empty;
+    public static string GeolocationOriginsAllowed => NativeValue.ToString(NodeApi.GetProperty(Module, _GEOLOCATION_ORIGINS_ALLOWED)) ?? string.Empty;
 
     /// <summary>
     /// SKIP_USE_HINTS
     /// </summary>
-    public static string SKIP_USE_HINTS => NativeValue.ToString(NodeApi.GetProperty(Module, _SKIP_USE_HINTS)) ?? string.Empty;
+    public static string SkipUseHints => NativeValue.ToString(NodeApi.GetProperty(Module, _SKIP_USE_HINTS)) ?? string.Empty;
 
     /// <summary>
     /// TOUCH_EXPLORATION_STATUS
     /// </summary>
-    public static string TOUCH_EXPLORATION_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _TOUCH_EXPLORATION_STATUS)) ?? string.Empty;
+    public static string TouchExplorationStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _TOUCH_EXPLORATION_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// DEFAULT_INPUT_METHOD
     /// </summary>
-    public static string DEFAULT_INPUT_METHOD => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_INPUT_METHOD)) ?? string.Empty;
+    public static string DefaultInputMethod => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_INPUT_METHOD)) ?? string.Empty;
 
     /// <summary>
     /// ACTIVATED_INPUT_METHOD_SUB_MODE
     /// </summary>
-    public static string ACTIVATED_INPUT_METHOD_SUB_MODE => NativeValue.ToString(NodeApi.GetProperty(Module, _ACTIVATED_INPUT_METHOD_SUB_MODE)) ?? string.Empty;
+    public static string ActivatedInputMethodSubMode => NativeValue.ToString(NodeApi.GetProperty(Module, _ACTIVATED_INPUT_METHOD_SUB_MODE)) ?? string.Empty;
 
     /// <summary>
     /// ACTIVATED_INPUT_METHODS
     /// </summary>
-    public static string ACTIVATED_INPUT_METHODS => NativeValue.ToString(NodeApi.GetProperty(Module, _ACTIVATED_INPUT_METHODS)) ?? string.Empty;
+    public static string ActivatedInputMethods => NativeValue.ToString(NodeApi.GetProperty(Module, _ACTIVATED_INPUT_METHODS)) ?? string.Empty;
 
     /// <summary>
     /// SELECTOR_VISIBILITY_FOR_INPUT_METHOD
     /// </summary>
-    public static string SELECTOR_VISIBILITY_FOR_INPUT_METHOD => NativeValue.ToString(NodeApi.GetProperty(Module, _SELECTOR_VISIBILITY_FOR_INPUT_METHOD)) ?? string.Empty;
+    public static string SelectorVisibilityForInputMethod => NativeValue.ToString(NodeApi.GetProperty(Module, _SELECTOR_VISIBILITY_FOR_INPUT_METHOD)) ?? string.Empty;
 
     /// <summary>
     /// AUTO_CAPS_TEXT_INPUT
     /// </summary>
-    public static string AUTO_CAPS_TEXT_INPUT => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_CAPS_TEXT_INPUT)) ?? string.Empty;
+    public static string AutoCapsTextInput => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_CAPS_TEXT_INPUT)) ?? string.Empty;
 
     /// <summary>
     /// AUTO_PUNCTUATE_TEXT_INPUT
     /// </summary>
-    public static string AUTO_PUNCTUATE_TEXT_INPUT => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_PUNCTUATE_TEXT_INPUT)) ?? string.Empty;
+    public static string AutoPunctuateTextInput => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_PUNCTUATE_TEXT_INPUT)) ?? string.Empty;
 
     /// <summary>
     /// AUTO_REPLACE_TEXT_INPUT
     /// </summary>
-    public static string AUTO_REPLACE_TEXT_INPUT => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_REPLACE_TEXT_INPUT)) ?? string.Empty;
+    public static string AutoReplaceTextInput => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_REPLACE_TEXT_INPUT)) ?? string.Empty;
 
     /// <summary>
     /// SHOW_PASSWORD_TEXT_INPUT
     /// </summary>
-    public static string SHOW_PASSWORD_TEXT_INPUT => NativeValue.ToString(NodeApi.GetProperty(Module, _SHOW_PASSWORD_TEXT_INPUT)) ?? string.Empty;
+    public static string ShowPasswordTextInput => NativeValue.ToString(NodeApi.GetProperty(Module, _SHOW_PASSWORD_TEXT_INPUT)) ?? string.Empty;
 
     /// <summary>
     /// DATA_ROAMING_STATUS
     /// </summary>
-    public static string DATA_ROAMING_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _DATA_ROAMING_STATUS)) ?? string.Empty;
+    public static string DataRoamingStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _DATA_ROAMING_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// HTTP_PROXY_CFG
     /// </summary>
-    public static string HTTP_PROXY_CFG => NativeValue.ToString(NodeApi.GetProperty(Module, _HTTP_PROXY_CFG)) ?? string.Empty;
+    public static string HttpProxyCfg => NativeValue.ToString(NodeApi.GetProperty(Module, _HTTP_PROXY_CFG)) ?? string.Empty;
 
     /// <summary>
     /// NETWORK_PREFERENCE_USAGE
     /// </summary>
-    public static string NETWORK_PREFERENCE_USAGE => NativeValue.ToString(NodeApi.GetProperty(Module, _NETWORK_PREFERENCE_USAGE)) ?? string.Empty;
+    public static string NetworkPreferenceUsage => NativeValue.ToString(NodeApi.GetProperty(Module, _NETWORK_PREFERENCE_USAGE)) ?? string.Empty;
 
     /// <summary>
     /// RTT_CALLING_STATUS
     /// </summary>
-    public static string RTT_CALLING_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _RTT_CALLING_STATUS)) ?? string.Empty;
+    public static string RttCallingStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _RTT_CALLING_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// VIBRATE_WHILE_RINGING
     /// </summary>
-    public static string VIBRATE_WHILE_RINGING => NativeValue.ToString(NodeApi.GetProperty(Module, _VIBRATE_WHILE_RINGING)) ?? string.Empty;
+    public static string VibrateWhileRinging => NativeValue.ToString(NodeApi.GetProperty(Module, _VIBRATE_WHILE_RINGING)) ?? string.Empty;
 
     /// <summary>
     /// DEFAULT_ALARM_ALERT
     /// </summary>
-    public static string DEFAULT_ALARM_ALERT => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_ALARM_ALERT)) ?? string.Empty;
+    public static string DefaultAlarmAlert => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_ALARM_ALERT)) ?? string.Empty;
 
     /// <summary>
     /// DTMF_TONE_TYPE_WHILE_DIALING
     /// </summary>
-    public static string DTMF_TONE_TYPE_WHILE_DIALING => NativeValue.ToString(NodeApi.GetProperty(Module, _DTMF_TONE_TYPE_WHILE_DIALING)) ?? string.Empty;
+    public static string DtmfToneTypeWhileDialing => NativeValue.ToString(NodeApi.GetProperty(Module, _DTMF_TONE_TYPE_WHILE_DIALING)) ?? string.Empty;
 
     /// <summary>
     /// DTMF_TONE_WHILE_DIALING
     /// </summary>
-    public static string DTMF_TONE_WHILE_DIALING => NativeValue.ToString(NodeApi.GetProperty(Module, _DTMF_TONE_WHILE_DIALING)) ?? string.Empty;
+    public static string DtmfToneWhileDialing => NativeValue.ToString(NodeApi.GetProperty(Module, _DTMF_TONE_WHILE_DIALING)) ?? string.Empty;
 
     /// <summary>
     /// AFFECTED_MODE_RINGER_STREAMS
     /// </summary>
-    public static string AFFECTED_MODE_RINGER_STREAMS => NativeValue.ToString(NodeApi.GetProperty(Module, _AFFECTED_MODE_RINGER_STREAMS)) ?? string.Empty;
+    public static string AffectedModeRingerStreams => NativeValue.ToString(NodeApi.GetProperty(Module, _AFFECTED_MODE_RINGER_STREAMS)) ?? string.Empty;
 
     /// <summary>
     /// AFFECTED_MUTE_STREAMS
     /// </summary>
-    public static string AFFECTED_MUTE_STREAMS => NativeValue.ToString(NodeApi.GetProperty(Module, _AFFECTED_MUTE_STREAMS)) ?? string.Empty;
+    public static string AffectedMuteStreams => NativeValue.ToString(NodeApi.GetProperty(Module, _AFFECTED_MUTE_STREAMS)) ?? string.Empty;
 
     /// <summary>
     /// DEFAULT_NOTIFICATION_SOUND
     /// </summary>
-    public static string DEFAULT_NOTIFICATION_SOUND => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_NOTIFICATION_SOUND)) ?? string.Empty;
+    public static string DefaultNotificationSound => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_NOTIFICATION_SOUND)) ?? string.Empty;
 
     /// <summary>
     /// DEFAULT_RINGTONE
     /// </summary>
-    public static string DEFAULT_RINGTONE => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_RINGTONE)) ?? string.Empty;
+    public static string DefaultRingtone => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_RINGTONE)) ?? string.Empty;
 
     /// <summary>
     /// SOUND_EFFECTS_STATUS
     /// </summary>
-    public static string SOUND_EFFECTS_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _SOUND_EFFECTS_STATUS)) ?? string.Empty;
+    public static string SoundEffectsStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _SOUND_EFFECTS_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// VIBRATE_STATUS
     /// </summary>
-    public static string VIBRATE_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _VIBRATE_STATUS)) ?? string.Empty;
+    public static string VibrateStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _VIBRATE_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// HAPTIC_FEEDBACK_STATUS
     /// </summary>
-    public static string HAPTIC_FEEDBACK_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _HAPTIC_FEEDBACK_STATUS)) ?? string.Empty;
+    public static string HapticFeedbackStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _HAPTIC_FEEDBACK_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// DEFAULT_TTS_PITCH
     /// </summary>
-    public static string DEFAULT_TTS_PITCH => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_TTS_PITCH)) ?? string.Empty;
+    public static string DefaultTtsPitch => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_TTS_PITCH)) ?? string.Empty;
 
     /// <summary>
     /// DEFAULT_TTS_RATE
     /// </summary>
-    public static string DEFAULT_TTS_RATE => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_TTS_RATE)) ?? string.Empty;
+    public static string DefaultTtsRate => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_TTS_RATE)) ?? string.Empty;
 
     /// <summary>
     /// DEFAULT_TTS_SYNTH
     /// </summary>
-    public static string DEFAULT_TTS_SYNTH => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_TTS_SYNTH)) ?? string.Empty;
+    public static string DefaultTtsSynth => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_TTS_SYNTH)) ?? string.Empty;
 
     /// <summary>
     /// ENABLED_TTS_PLUGINS
     /// </summary>
-    public static string ENABLED_TTS_PLUGINS => NativeValue.ToString(NodeApi.GetProperty(Module, _ENABLED_TTS_PLUGINS)) ?? string.Empty;
+    public static string EnabledTtsPlugins => NativeValue.ToString(NodeApi.GetProperty(Module, _ENABLED_TTS_PLUGINS)) ?? string.Empty;
 
     /// <summary>
     /// BLUETOOTH_DISCOVER_ABILITY_STATUS
     /// </summary>
-    public static string BLUETOOTH_DISCOVER_ABILITY_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_DISCOVER_ABILITY_STATUS)) ?? string.Empty;
+    public static string BluetoothDiscoverAbilityStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_DISCOVER_ABILITY_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// BLUETOOTH_DISCOVER_TIMEOUT
     /// </summary>
-    public static string BLUETOOTH_DISCOVER_TIMEOUT => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_DISCOVER_TIMEOUT)) ?? string.Empty;
+    public static string BluetoothDiscoverTimeout => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_DISCOVER_TIMEOUT)) ?? string.Empty;
 
     /// <summary>
     /// AIRPLANE_MODE_RADIOS
     /// </summary>
-    public static string AIRPLANE_MODE_RADIOS => NativeValue.ToString(NodeApi.GetProperty(Module, _AIRPLANE_MODE_RADIOS)) ?? string.Empty;
+    public static string AirplaneModeRadios => NativeValue.ToString(NodeApi.GetProperty(Module, _AIRPLANE_MODE_RADIOS)) ?? string.Empty;
 
     /// <summary>
     /// BLUETOOTH_STATUS
     /// </summary>
-    public static string BLUETOOTH_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_STATUS)) ?? string.Empty;
+    public static string BluetoothStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// BLUETOOTH_RADIO
     /// </summary>
-    public static string BLUETOOTH_RADIO => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_RADIO)) ?? string.Empty;
+    public static string BluetoothRadio => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_RADIO)) ?? string.Empty;
 
     /// <summary>
     /// CELL_RADIO
     /// </summary>
-    public static string CELL_RADIO => NativeValue.ToString(NodeApi.GetProperty(Module, _CELL_RADIO)) ?? string.Empty;
+    public static string CellRadio => NativeValue.ToString(NodeApi.GetProperty(Module, _CELL_RADIO)) ?? string.Empty;
 
     /// <summary>
     /// NFC_RADIO
     /// </summary>
-    public static string NFC_RADIO => NativeValue.ToString(NodeApi.GetProperty(Module, _NFC_RADIO)) ?? string.Empty;
+    public static string NfcRadio => NativeValue.ToString(NodeApi.GetProperty(Module, _NFC_RADIO)) ?? string.Empty;
 
     /// <summary>
     /// WIFI_RADIO
     /// </summary>
-    public static string WIFI_RADIO => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_RADIO)) ?? string.Empty;
+    public static string WifiRadio => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_RADIO)) ?? string.Empty;
 
     /// <summary>
     /// OWNER_LOCKDOWN_WIFI_CFG
     /// </summary>
-    public static string OWNER_LOCKDOWN_WIFI_CFG => NativeValue.ToString(NodeApi.GetProperty(Module, _OWNER_LOCKDOWN_WIFI_CFG)) ?? string.Empty;
+    public static string OwnerLockdownWifiCfg => NativeValue.ToString(NodeApi.GetProperty(Module, _OWNER_LOCKDOWN_WIFI_CFG)) ?? string.Empty;
 
     /// <summary>
     /// WIFI_DHCP_MAX_RETRY_COUNT
     /// </summary>
-    public static string WIFI_DHCP_MAX_RETRY_COUNT => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_DHCP_MAX_RETRY_COUNT)) ?? string.Empty;
+    public static string WifiDhcpMaxRetryCount => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_DHCP_MAX_RETRY_COUNT)) ?? string.Empty;
 
     /// <summary>
     /// WIFI_TO_MOBILE_DATA_AWAKE_TIMEOUT
     /// </summary>
-    public static string WIFI_TO_MOBILE_DATA_AWAKE_TIMEOUT => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_TO_MOBILE_DATA_AWAKE_TIMEOUT)) ?? string.Empty;
+    public static string WifiToMobileDataAwakeTimeout => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_TO_MOBILE_DATA_AWAKE_TIMEOUT)) ?? string.Empty;
 
     /// <summary>
     /// WIFI_STATUS
     /// </summary>
-    public static string WIFI_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_STATUS)) ?? string.Empty;
+    public static string WifiStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_STATUS)) ?? string.Empty;
 
     /// <summary>
     /// WIFI_WATCHDOG_STATUS
     /// </summary>
-    public static string WIFI_WATCHDOG_STATUS => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_WATCHDOG_STATUS)) ?? string.Empty;
+    public static string WifiWatchdogStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_WATCHDOG_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// getURI 方法
+    /// getURI
     /// </summary>
-    public static Task<object> GetURI(string name)
+    public static Task<IntPtr> GetUriAsync(string name)
     {
-        return NodeApi.CallMethodAsync<object>(Module, _getURI, name);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getURI, name);
     }
 
     /// <summary>
-    /// getValue 方法
+    /// getValue
     /// </summary>
-    public static Task<object> GetValue(IntPtr dataAbilityHelper, string name)
+    public static Task<IntPtr> GetValueAsync(IntPtr dataAbilityHelper, string name)
     {
-        return NodeApi.CallMethodAsync<object>(Module, _getValue, dataAbilityHelper, name);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getValue, dataAbilityHelper, name);
     }
 
     /// <summary>
-    /// getValue 方法
+    /// getValue
     /// </summary>
-    public static Task<string> GetValue(IntPtr context, string name, string domainName)
+    public static Task<string> GetValueAsync(IntPtr context, string name, string domainName)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getValue, context, name, domainName);
     }
 
     /// <summary>
-    /// setValue 方法
+    /// setValue
     /// </summary>
-    public static Task<bool> SetValue(IntPtr context, string name, string value)
+    public static Task<bool> SetValueAsync(IntPtr context, string name, string value)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _setValue, context, name, value);
     }
 
     /// <summary>
-    /// setValue 方法
+    /// setValue
     /// </summary>
-    public static Task<bool> SetValue(IntPtr context, string name, string value, string domainName)
+    public static Task<bool> SetValueAsync(IntPtr context, string name, string value, string domainName)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _setValue, context, name, value, domainName);
     }
 
     /// <summary>
-    /// enableAirplaneMode 方法
+    /// enableAirplaneMode
     /// </summary>
-    public static Task EnableAirplaneMode(bool enable)
+    public static Task EnableAirplaneModeAsync(bool enable)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _enableAirplaneMode, enable);
     }
 
     /// <summary>
-    /// canShowFloating 方法
+    /// canShowFloating
     /// </summary>
-    public static Task<bool> CanShowFloating()
+    public static Task<bool> CanShowFloatingAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _canShowFloating);
     }
 
     /// <summary>
-    /// getUriSync 方法
+    /// getUriSync
     /// </summary>
     public static string GetUriSync(string name)
     {
@@ -604,7 +606,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// getValueSync 方法
+    /// getValueSync
     /// </summary>
     public static string GetValueSync(IntPtr dataAbilityHelper, string name, string defValue)
     {
@@ -612,7 +614,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// getValueSync 方法
+    /// getValueSync
     /// </summary>
     public static string GetValueSync(IntPtr context, string name, string defValue, string domainName)
     {
@@ -620,7 +622,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// setValueSync 方法
+    /// setValueSync
     /// </summary>
     public static bool SetValueSync(IntPtr dataAbilityHelper, string name, string value)
     {
@@ -628,7 +630,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// setValueSync 方法
+    /// setValueSync
     /// </summary>
     public static bool SetValueSync(IntPtr context, string name, string value, string domainName)
     {
@@ -636,15 +638,15 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// registerKeyObserver 方法
+    /// registerKeyObserver
     /// </summary>
-    public static Task RegisterKeyObserver(IntPtr context, string name, string domainName)
+    public static Task RegisterKeyObserverAsync(IntPtr context, string name, string domainName)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _registerKeyObserver, context, name, domainName);
     }
 
     /// <summary>
-    /// unregisterKeyObserver 方法
+    /// unregisterKeyObserver
     /// </summary>
     public static bool UnregisterKeyObserver(IntPtr context, string name, string domainName)
     {
@@ -652,15 +654,15 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// openNetworkManagerSettings 方法
+    /// openNetworkManagerSettings
     /// </summary>
-    public static Task<bool> OpenNetworkManagerSettings(IntPtr context)
+    public static Task<bool> OpenNetworkManagerSettingsAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _openNetworkManagerSettings, context);
     }
 
     /// <summary>
-    /// openInputMethodSettings 方法
+    /// openInputMethodSettings
     /// </summary>
     public static void OpenInputMethodSettings(IntPtr context)
     {
@@ -668,7 +670,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// openInputMethodDetail 方法
+    /// openInputMethodDetail
     /// </summary>
     public static void OpenInputMethodDetail(IntPtr context, string bundleName, string inputMethodId)
     {
@@ -676,7 +678,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// openMobileNetworkSettingsPage 方法
+    /// openMobileNetworkSettingsPage
     /// </summary>
     public static void OpenMobileNetworkSettingsPage(IntPtr context)
     {
@@ -684,7 +686,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// openDisplaySettingsPage 方法
+    /// openDisplaySettingsPage
     /// </summary>
     public static void OpenDisplaySettingsPage(IntPtr context)
     {
@@ -692,7 +694,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// openScreenRefreshRateSettingsPage 方法
+    /// openScreenRefreshRateSettingsPage
     /// </summary>
     public static void OpenScreenRefreshRateSettingsPage(IntPtr context)
     {
@@ -700,7 +702,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// openSoundSettingsPage 方法
+    /// openSoundSettingsPage
     /// </summary>
     public static void OpenSoundSettingsPage(IntPtr context)
     {
@@ -708,7 +710,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// openBiometricsSettingsPage 方法
+    /// openBiometricsSettingsPage
     /// </summary>
     public static void OpenBiometricsSettingsPage(IntPtr context)
     {
@@ -716,7 +718,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// openAboutDeviceSettingsPage 方法
+    /// openAboutDeviceSettingsPage
     /// </summary>
     public static void OpenAboutDeviceSettingsPage(IntPtr context)
     {
@@ -724,7 +726,7 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// openNfcSettingsPage 方法
+    /// openNfcSettingsPage
     /// </summary>
     public static void OpenNfcSettingsPage(IntPtr context)
     {
@@ -732,15 +734,15 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// openAppDetailSettingsPage 方法
+    /// openAppDetailSettingsPage
     /// </summary>
-    public static void OpenAppDetailSettingsPage(IntPtr context, string bundleName, double appIndex)
+    public static void OpenAppDetailSettingsPage(IntPtr context, string bundleName, double? appIndex = null)
     {
         NodeApi.CallMethodVoid(Module, _openAppDetailSettingsPage, context, bundleName, appIndex);
     }
 
     /// <summary>
-    /// openDoubleClickSettingsPage 方法
+    /// openDoubleClickSettingsPage
     /// </summary>
     public static void OpenDoubleClickSettingsPage(IntPtr context)
     {
@@ -748,9 +750,9 @@ public static unsafe partial class Settings
     }
 
     /// <summary>
-    /// isDoubleClickAppForSelf 方法
+    /// isDoubleClickAppForSelf
     /// </summary>
-    public static Task<bool> IsDoubleClickAppForSelf()
+    public static Task<bool> IsDoubleClickAppForSelfAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isDoubleClickAppForSelf);
     }

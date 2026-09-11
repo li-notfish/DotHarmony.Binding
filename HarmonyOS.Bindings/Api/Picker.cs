@@ -4,8 +4,10 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
 
@@ -21,7 +23,8 @@ public static unsafe partial class Picker
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -62,5 +65,308 @@ public static unsafe partial class Picker
             return _moduleRef.Value;
         }
     }
+
+}
+
+/// <summary>
+/// PhotoViewPicker 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PhotoViewPicker : JsObject
+{
+    public PhotoViewPicker(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _PhotoViewPicker => "PhotoViewPicker"u8;
+
+    public PhotoViewPicker()
+        : this(NodeApi.CreateInstance(Picker.Module, _PhotoViewPicker)) { }
+    private static ReadOnlySpan<byte> _select => "select"u8;
+    private static ReadOnlySpan<byte> _save => "save"u8;
+    /// <summary>
+    /// select
+    /// </summary>
+    public Task<PhotoSelectResult> SelectAsync(PhotoSelectOptions? option = null)
+    {
+        return CallMethodAsync(_select, static h => new PhotoSelectResult(h), option);
+    }
+
+    /// <summary>
+    /// save
+    /// </summary>
+    public Task<string[]> SaveAsync(PhotoSaveOptions? option = null)
+    {
+        return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+    }
+
+}
+
+/// <summary>
+/// DocumentViewPicker 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DocumentViewPicker : JsObject
+{
+    public DocumentViewPicker(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _DocumentViewPicker => "DocumentViewPicker"u8;
+
+    public DocumentViewPicker()
+        : this(NodeApi.CreateInstance(Picker.Module, _DocumentViewPicker)) { }
+
+    public DocumentViewPicker(IntPtr context, IntPtr window)
+        : this(NodeApi.CreateInstance(Picker.Module, _DocumentViewPicker, context, window)) { }
+    private static ReadOnlySpan<byte> _select => "select"u8;
+    private static ReadOnlySpan<byte> _save => "save"u8;
+    private static ReadOnlySpan<byte> _getSelectedIndex => "getSelectedIndex"u8;
+    /// <summary>
+    /// select
+    /// </summary>
+    public Task<string[]> SelectAsync(DocumentSelectOptions? option = null)
+    {
+        return CallMethodAsync(_select, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+    }
+
+    /// <summary>
+    /// save
+    /// </summary>
+    public Task<string[]> SaveAsync(DocumentSaveOptions? option = null)
+    {
+        return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+    }
+
+    /// <summary>
+    /// getSelectedIndex
+    /// </summary>
+    public double GetSelectedIndex()
+    {
+        return CallMethod<double>(_getSelectedIndex);
+    }
+
+}
+
+/// <summary>
+/// AudioViewPicker 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AudioViewPicker : JsObject
+{
+    public AudioViewPicker(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _AudioViewPicker => "AudioViewPicker"u8;
+
+    public AudioViewPicker()
+        : this(NodeApi.CreateInstance(Picker.Module, _AudioViewPicker)) { }
+    private static ReadOnlySpan<byte> _select => "select"u8;
+    private static ReadOnlySpan<byte> _save => "save"u8;
+    /// <summary>
+    /// select
+    /// </summary>
+    public Task<string[]> SelectAsync(AudioSelectOptions? option = null)
+    {
+        return CallMethodAsync(_select, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+    }
+
+    /// <summary>
+    /// save
+    /// </summary>
+    public Task<string[]> SaveAsync(AudioSaveOptions? option = null)
+    {
+        return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+    }
+
+}
+
+/// <summary>
+/// PhotoSelectResult 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PhotoSelectResult : JsObject
+{
+    public PhotoSelectResult(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _photoUris => "photoUris"u8;
+    private static ReadOnlySpan<byte> _isOriginalPhoto => "isOriginalPhoto"u8;
+    /// <summary>
+    /// photoUris
+    /// </summary>
+    public string[] PhotoUris => ValueConverter.ConvertArray(GetPropertyRaw(_photoUris), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// isOriginalPhoto
+    /// </summary>
+    public bool IsOriginalPhoto => NativeValue.ToBool(GetPropertyRaw(_isOriginalPhoto));
+
+}
+
+/// <summary>
+/// PhotoSelectOptions 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PhotoSelectOptions : JsObject
+{
+    public PhotoSelectOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _MIMEType => "MIMEType"u8;
+    private static ReadOnlySpan<byte> _maxSelectNumber => "maxSelectNumber"u8;
+    /// <summary>
+    /// MIMEType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PhotoViewMIMETypes? MimeType => (global::HarmonyOS.ArkUI.PhotoViewMIMETypes?)(global::HarmonyOS.ArkUI.PhotoViewMIMETypes)NativeValue.ToInt(GetPropertyRaw(_MIMEType));
+
+    /// <summary>
+    /// maxSelectNumber
+    /// </summary>
+    public double? MaxSelectNumber => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxSelectNumber));
+
+}
+
+/// <summary>
+/// PhotoSaveOptions 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PhotoSaveOptions : JsObject
+{
+    public PhotoSaveOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _newFileNames => "newFileNames"u8;
+    /// <summary>
+    /// newFileNames
+    /// </summary>
+    public string[] NewFileNames => ValueConverter.ConvertArray(GetPropertyRaw(_newFileNames), static e => ValueConverter.Convert<string>(e));
+
+}
+
+/// <summary>
+/// DocumentSelectOptions 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DocumentSelectOptions : JsObject
+{
+    public DocumentSelectOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _defaultFilePathUri => "defaultFilePathUri"u8;
+    private static ReadOnlySpan<byte> _fileSuffixFilters => "fileSuffixFilters"u8;
+    private static ReadOnlySpan<byte> _maxSelectNumber => "maxSelectNumber"u8;
+    private static ReadOnlySpan<byte> _selectMode => "selectMode"u8;
+    private static ReadOnlySpan<byte> _authMode => "authMode"u8;
+    private static ReadOnlySpan<byte> _multiAuthMode => "multiAuthMode"u8;
+    private static ReadOnlySpan<byte> _multiUriArray => "multiUriArray"u8;
+    private static ReadOnlySpan<byte> _mergeMode => "mergeMode"u8;
+    private static ReadOnlySpan<byte> _isEncryptionSupported => "isEncryptionSupported"u8;
+    private static ReadOnlySpan<byte> _allowsMulFolderSelection => "allowsMulFolderSelection"u8;
+    /// <summary>
+    /// defaultFilePathUri
+    /// </summary>
+    public string? DefaultFilePathUri => (string?)NativeValue.ToString(GetPropertyRaw(_defaultFilePathUri)) ?? string.Empty;
+
+    /// <summary>
+    /// fileSuffixFilters
+    /// </summary>
+    public string[] FileSuffixFilters => ValueConverter.ConvertArray(GetPropertyRaw(_fileSuffixFilters), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// maxSelectNumber
+    /// </summary>
+    public double? MaxSelectNumber => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxSelectNumber));
+
+    /// <summary>
+    /// selectMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DocumentSelectMode? SelectMode => (global::HarmonyOS.ArkUI.DocumentSelectMode?)(global::HarmonyOS.ArkUI.DocumentSelectMode)NativeValue.ToInt(GetPropertyRaw(_selectMode));
+
+    /// <summary>
+    /// authMode
+    /// </summary>
+    public bool? AuthMode => (bool?)NativeValue.ToBool(GetPropertyRaw(_authMode));
+
+    /// <summary>
+    /// multiAuthMode
+    /// </summary>
+    public bool? MultiAuthMode => (bool?)NativeValue.ToBool(GetPropertyRaw(_multiAuthMode));
+
+    /// <summary>
+    /// multiUriArray
+    /// </summary>
+    public string[] MultiUriArray => ValueConverter.ConvertArray(GetPropertyRaw(_multiUriArray), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// mergeMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.MergeTypeMode? MergeMode => (global::HarmonyOS.ArkUI.MergeTypeMode?)(global::HarmonyOS.ArkUI.MergeTypeMode)NativeValue.ToInt(GetPropertyRaw(_mergeMode));
+
+    /// <summary>
+    /// isEncryptionSupported
+    /// </summary>
+    public bool? IsEncryptionSupported => (bool?)NativeValue.ToBool(GetPropertyRaw(_isEncryptionSupported));
+
+    /// <summary>
+    /// allowsMulFolderSelection
+    /// </summary>
+    public bool? AllowsMulFolderSelection => (bool?)NativeValue.ToBool(GetPropertyRaw(_allowsMulFolderSelection));
+
+}
+
+/// <summary>
+/// DocumentSaveOptions 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DocumentSaveOptions : JsObject
+{
+    public DocumentSaveOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _newFileNames => "newFileNames"u8;
+    private static ReadOnlySpan<byte> _defaultFilePathUri => "defaultFilePathUri"u8;
+    private static ReadOnlySpan<byte> _fileSuffixChoices => "fileSuffixChoices"u8;
+    private static ReadOnlySpan<byte> _pickerMode => "pickerMode"u8;
+    private static ReadOnlySpan<byte> _autoCreateEmptyFile => "autoCreateEmptyFile"u8;
+    /// <summary>
+    /// newFileNames
+    /// </summary>
+    public string[] NewFileNames => ValueConverter.ConvertArray(GetPropertyRaw(_newFileNames), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// defaultFilePathUri
+    /// </summary>
+    public string? DefaultFilePathUri => (string?)NativeValue.ToString(GetPropertyRaw(_defaultFilePathUri)) ?? string.Empty;
+
+    /// <summary>
+    /// fileSuffixChoices
+    /// </summary>
+    public string[] FileSuffixChoices => ValueConverter.ConvertArray(GetPropertyRaw(_fileSuffixChoices), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// pickerMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DocumentPickerMode? PickerMode => (global::HarmonyOS.ArkUI.DocumentPickerMode?)(global::HarmonyOS.ArkUI.DocumentPickerMode)NativeValue.ToInt(GetPropertyRaw(_pickerMode));
+
+    /// <summary>
+    /// autoCreateEmptyFile
+    /// </summary>
+    public bool? AutoCreateEmptyFile => (bool?)NativeValue.ToBool(GetPropertyRaw(_autoCreateEmptyFile));
+
+}
+
+/// <summary>
+/// AudioSelectOptions 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AudioSelectOptions : JsObject
+{
+    public AudioSelectOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _maxSelectNumber => "maxSelectNumber"u8;
+    /// <summary>
+    /// maxSelectNumber
+    /// </summary>
+    public double? MaxSelectNumber => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxSelectNumber));
+
+}
+
+/// <summary>
+/// AudioSaveOptions 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AudioSaveOptions : JsObject
+{
+    public AudioSaveOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _newFileNames => "newFileNames"u8;
+    /// <summary>
+    /// newFileNames
+    /// </summary>
+    public string[] NewFileNames => ValueConverter.ConvertArray(GetPropertyRaw(_newFileNames), static e => ValueConverter.Convert<string>(e));
 
 }

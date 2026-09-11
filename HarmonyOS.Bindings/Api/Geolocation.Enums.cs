@@ -7,10 +7,10 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum LocationRequestPriority
 {
-    UNSET = 512,
-    ACCURACY,
-    LOW_POWER,
-    FIRST_FIX
+    Unset = 512,
+    Accuracy,
+    LowPower,
+    FirstFix
 }
 
 /// <summary>
@@ -18,12 +18,12 @@ public enum LocationRequestPriority
 /// </summary>
 public enum LocationRequestScenario
 {
-    UNSET = 768,
-    NAVIGATION,
-    TRAJECTORY_TRACKING,
-    CAR_HAILING,
-    DAILY_LIFE_SERVICE,
-    NO_POWER
+    Unset = 768,
+    Navigation,
+    TrajectoryTracking,
+    CarHailing,
+    DailyLifeService,
+    NoPower
 }
 
 /// <summary>
@@ -31,13 +31,13 @@ public enum LocationRequestScenario
 /// </summary>
 public enum GeoLocationErrorCode
 {
-    INPUT_PARAMS_ERROR,
-    REVERSE_GEOCODE_ERROR,
-    GEOCODE_ERROR,
-    LOCATOR_ERROR,
-    LOCATION_SWITCH_ERROR,
-    LAST_KNOWN_LOCATION_ERROR,
-    LOCATION_REQUEST_TIMEOUT_ERROR
+    InputParamsError,
+    ReverseGeocodeError,
+    GeocodeError,
+    LocatorError,
+    LocationSwitchError,
+    LastKnownLocationError,
+    LocationRequestTimeoutError
 }
 
 /// <summary>
@@ -45,7 +45,7 @@ public enum GeoLocationErrorCode
 /// </summary>
 public enum LocationPrivacyType
 {
-    OTHERS = 0,
-    STARTUP,
-    CORE_LOCATION
+    Others = 0,
+    Startup,
+    CoreLocation
 }

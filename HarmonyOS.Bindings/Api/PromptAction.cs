@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -22,7 +23,8 @@ public static unsafe partial class PromptAction
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -73,7 +75,7 @@ public static unsafe partial class PromptAction
     private static ReadOnlySpan<byte> _showActionMenu => "showActionMenu"u8;
 
     /// <summary>
-    /// showToast 方法
+    /// showToast
     /// </summary>
     public static void ShowToast(IntPtr options)
     {
@@ -81,15 +83,15 @@ public static unsafe partial class PromptAction
     }
 
     /// <summary>
-    /// openToast 方法
+    /// openToast
     /// </summary>
-    public static Task<double> OpenToast(IntPtr options)
+    public static Task<double> OpenToastAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsync<double>(Module, _openToast, options);
     }
 
     /// <summary>
-    /// closeToast 方法
+    /// closeToast
     /// </summary>
     public static void CloseToast(double toastId)
     {
@@ -97,23 +99,23 @@ public static unsafe partial class PromptAction
     }
 
     /// <summary>
-    /// showDialog 方法
+    /// showDialog
     /// </summary>
-    public static Task<IntPtr> ShowDialog(IntPtr options)
+    public static Task<ShowDialogSuccessResponse> ShowDialogAsync(IntPtr options)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _showDialog, options);
+        return NodeApi.CallMethodAsync(Module, _showDialog, static h => new ShowDialogSuccessResponse(h), options);
     }
 
     /// <summary>
-    /// openCustomDialog 方法
+    /// openCustomDialog
     /// </summary>
-    public static Task<double> OpenCustomDialog(IntPtr options)
+    public static Task<double> OpenCustomDialogAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsync<double>(Module, _openCustomDialog, options);
     }
 
     /// <summary>
-    /// closeCustomDialog 方法
+    /// closeCustomDialog
     /// </summary>
     public static void CloseCustomDialog(double dialogId)
     {
@@ -121,11 +123,73 @@ public static unsafe partial class PromptAction
     }
 
     /// <summary>
-    /// showActionMenu 方法
+    /// showActionMenu
     /// </summary>
-    public static Task<IntPtr> ShowActionMenu(IntPtr options)
+    public static Task<ActionMenuSuccessResponse> ShowActionMenuAsync(IntPtr options)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _showActionMenu, options);
+        return NodeApi.CallMethodAsync(Module, _showActionMenu, static h => new ActionMenuSuccessResponse(h), options);
+    }
+
+}
+
+/// <summary>
+/// ShowDialogSuccessResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ShowDialogSuccessResponse : JsObject
+{
+    public ShowDialogSuccessResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _index => "index"u8;
+    /// <summary>
+    /// index
+    /// </summary>
+    public double Index => NativeValue.ToDouble(GetPropertyRaw(_index));
+
+}
+
+/// <summary>
+/// ActionMenuSuccessResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ActionMenuSuccessResponse : JsObject
+{
+    public ActionMenuSuccessResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _index => "index"u8;
+    /// <summary>
+    /// index
+    /// </summary>
+    public double Index => NativeValue.ToDouble(GetPropertyRaw(_index));
+
+}
+
+/// <summary>
+/// CommonController 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CommonController : JsObject
+{
+    public CommonController(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _CommonController => "CommonController"u8;
+
+    public CommonController()
+        : this(NodeApi.CreateInstance(PromptAction.Module, _CommonController)) { }
+    private static ReadOnlySpan<byte> _close => "close"u8;
+    private static ReadOnlySpan<byte> _getState => "getState"u8;
+    /// <summary>
+    /// close
+    /// </summary>
+    public void Close()
+    {
+        CallMethodVoid(_close);
+    }
+
+    /// <summary>
+    /// getState
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CommonState GetState()
+    {
+        return CallMethod<global::HarmonyOS.ArkUI.CommonState>(_getState);
     }
 
 }

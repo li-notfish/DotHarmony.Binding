@@ -7,9 +7,9 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum MappingMode
 {
-    READ_ONLY = 0,
-    READ_WRITE = 1,
-    PRIVATE = 2
+    ReadOnly = 0,
+    ReadWrite = 1,
+    Private = 2
 }
 
 /// <summary>
@@ -17,9 +17,9 @@ public enum MappingMode
 /// </summary>
 public enum WhenceType
 {
-    SEEK_SET = 0,
-    SEEK_CUR = 1,
-    SEEK_END = 2
+    SeekSet = 0,
+    SeekCur = 1,
+    SeekEnd = 2
 }
 
 [Flags]
@@ -28,8 +28,8 @@ public enum WhenceType
 /// </summary>
 public enum LocationType
 {
-    LOCAL = 1,
-    CLOUD = 2
+    Local = 1,
+    Cloud = 2
 }
 
 /// <summary>
@@ -37,10 +37,10 @@ public enum LocationType
 /// </summary>
 public enum AccessModeType
 {
-    EXIST = 0,
-    WRITE = 2,
-    READ = 4,
-    READ_WRITE = 6
+    Exist = 0,
+    Write = 2,
+    Read = 4,
+    ReadWrite = 6
 }
 
 /// <summary>
@@ -48,5 +48,5 @@ public enum AccessModeType
 /// </summary>
 public enum AccessFlagType
 {
-    LOCAL = 0
+    Local = 0
 }

@@ -10,11 +10,11 @@ namespace HarmonyOS.ArkUI;
 public enum PhotoViewMIMETypes
 {
     [Description("image/*")]
-    IMAGE_TYPE,
+    ImageType,
     [Description("video/*")]
-    VIDEO_TYPE,
+    VideoType,
     [Description("*/*")]
-    IMAGE_VIDEO_TYPE
+    ImageVideoType
 }
 
 /// <summary>
@@ -22,9 +22,9 @@ public enum PhotoViewMIMETypes
 /// </summary>
 public enum DocumentSelectMode
 {
-    FILE = 0,
-    FOLDER = 1,
-    MIXED = 2
+    File = 0,
+    Folder = 1,
+    Mixed = 2
 }
 
 /// <summary>
@@ -32,8 +32,8 @@ public enum DocumentSelectMode
 /// </summary>
 public enum DocumentPickerMode
 {
-    DEFAULT = 0,
-    DOWNLOAD = 1
+    Default = 0,
+    Download = 1
 }
 
 /// <summary>
@@ -41,9 +41,9 @@ public enum DocumentPickerMode
 /// </summary>
 public enum MergeTypeMode
 {
-    DEFAULT = 0,
-    AUDIO = 1,
-    VIDEO = 2,
-    DOCUMENT = 3,
-    PICTURE = 4
+    Default = 0,
+    Audio = 1,
+    Video = 2,
+    Document = 3,
+    Picture = 4
 }

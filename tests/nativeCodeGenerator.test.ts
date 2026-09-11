@@ -26,6 +26,8 @@ function makeResult(name: string, options: {
             events: options.events || [],
             delegates: [],
             namespace: 'HarmonyOS.ArkUI',
+            interfaces: [],
+            classes: [],
         },
         enums: [],
         imports: [],

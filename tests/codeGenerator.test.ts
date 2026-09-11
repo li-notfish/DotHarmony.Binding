@@ -123,10 +123,10 @@ describe('Code Generation Tests', () => {
         const enumsCsPath = path.join(outputDir, 'enums.Enums.cs');
         const content = fs.readFileSync(enumsCsPath, 'utf-8');
         
-        // 验证数值枚举
+        // 验证数值枚举（成员名经 .NET 命名规范化：SCREAMING_SNAKE → PascalCase）
         expect(content).toContain('public enum CheckBoxShape');
-        expect(content).toContain('CIRCLE = 0');
-        expect(content).toContain('ROUNDED_SQUARE = 1');
+        expect(content).toContain('Circle = 0');
+        expect(content).toContain('RoundedSquare = 1');
     });
 
     test('should generate string enums with Description attribute', () => {
@@ -137,9 +137,9 @@ describe('Code Generation Tests', () => {
         expect(content).toContain('public enum ColoringStrategy');
         expect(content).toContain('[Description("invert")]');
         // 字符串枚举不再使用 = "value" 语法（C# 枚举不支持）
-        expect(content).toContain('INVERT,');
+        expect(content).toContain('Invert,');
         expect(content).toContain('[Description("average")]');
-        expect(content).toContain('AVERAGE,');
+        expect(content).toContain('Average,');
     });
 
     test('should generate enums without explicit values', () => {
@@ -320,19 +320,19 @@ describe('Code Generation Tests', () => {
         expect(TypeMapper.mapType('ClassA & InterfaceB')).toBe('IntPtr');
     });
 
-    test('should map conditional types to dynamic', () => {
+    test('should map conditional types to object (AOT-safe)', () => {
         const { TypeMapper } = require('../src/parser/typeMapper');
-        
+
         // 测试条件类型映射
-        expect(TypeMapper.mapType('T extends string ? string : number')).toBe('dynamic');
+        expect(TypeMapper.mapType('T extends string ? string : number')).toBe('object');
     });
 
-    test('should map mapped types to dynamic', () => {
+    test('should map mapped types to object (AOT-safe)', () => {
         const { TypeMapper } = require('../src/parser/typeMapper');
-        
+
         // 测试映射类型映射
-        expect(TypeMapper.mapType('keyof T')).toBe('dynamic');
-        expect(TypeMapper.mapType('[K in keyof T]')).toBe('dynamic');
+        expect(TypeMapper.mapType('keyof T')).toBe('object');
+        expect(TypeMapper.mapType('[K in keyof T]')).toBe('object');
     });
 
     test('should map readonly types', () => {

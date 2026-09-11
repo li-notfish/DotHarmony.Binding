@@ -7,9 +7,9 @@ namespace HarmonyOS.ArkUI;
 /// </summary>
 public enum ShareOption
 {
-    INAPP = 0,
-    LOCALDEVICE = 1,
-    CROSSDEVICE = 2
+    Inapp = 0,
+    Localdevice = 1,
+    Crossdevice = 2
 }
 
 /// <summary>
@@ -17,11 +17,11 @@ public enum ShareOption
 /// </summary>
 public enum Pattern
 {
-    URL = 0,
-    NUMBER = 1,
-    EMAIL_ADDRESS = 2,
-    HTTP_URL = 3,
-    FLIGHT_NUMBER = 4
+    Url = 0,
+    Number = 1,
+    EmailAddress = 2,
+    HttpUrl = 3,
+    FlightNumber = 4
 }
 
 /// <summary>
@@ -29,8 +29,8 @@ public enum Pattern
 /// </summary>
 public enum FileConflictOptions
 {
-    OVERWRITE = 0,
-    SKIP = 1
+    Overwrite = 0,
+    Skip = 1
 }
 
 /// <summary>
@@ -38,6 +38,6 @@ public enum FileConflictOptions
 /// </summary>
 public enum ProgressIndicator
 {
-    NONE = 0,
-    DEFAULT = 1
+    None = 0,
+    Default = 1
 }

@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -23,7 +24,8 @@ public static unsafe partial class Display
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -73,6 +75,7 @@ public static unsafe partial class Display
     private static ReadOnlySpan<byte> _getAllDisplays => "getAllDisplays"u8;
     private static ReadOnlySpan<byte> _getAllDisplayPhysicalResolution => "getAllDisplayPhysicalResolution"u8;
     private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _onChangeWithAttribute => "onChangeWithAttribute"u8;
     private static ReadOnlySpan<byte> _off => "off"u8;
     private static ReadOnlySpan<byte> _isFoldable => "isFoldable"u8;
     private static ReadOnlySpan<byte> _getFoldStatus => "getFoldStatus"u8;
@@ -88,63 +91,63 @@ public static unsafe partial class Display
     private static ReadOnlySpan<byte> _getBrightnessInfo => "getBrightnessInfo"u8;
 
     /// <summary>
-    /// getDefaultDisplay 方法
+    /// getDefaultDisplay
     /// </summary>
-    public static Task<IntPtr> GetDefaultDisplay()
+    public static Task<DisplayObject> GetDefaultDisplayAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getDefaultDisplay);
+        return NodeApi.CallMethodAsync(Module, _getDefaultDisplay, static h => new DisplayObject(h));
     }
 
     /// <summary>
-    /// getDefaultDisplaySync 方法
+    /// getDefaultDisplaySync
     /// </summary>
-    public static IntPtr GetDefaultDisplaySync()
+    public static DisplayObject GetDefaultDisplaySync()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getDefaultDisplaySync);
+        return NodeApi.CallMethod(Module, _getDefaultDisplaySync, static h => new DisplayObject(h));
     }
 
     /// <summary>
-    /// getPrimaryDisplaySync 方法
+    /// getPrimaryDisplaySync
     /// </summary>
-    public static IntPtr GetPrimaryDisplaySync()
+    public static DisplayObject GetPrimaryDisplaySync()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getPrimaryDisplaySync);
+        return NodeApi.CallMethod(Module, _getPrimaryDisplaySync, static h => new DisplayObject(h));
     }
 
     /// <summary>
-    /// getDisplayByIdSync 方法
+    /// getDisplayByIdSync
     /// </summary>
-    public static IntPtr GetDisplayByIdSync(double displayId)
+    public static DisplayObject GetDisplayByIdSync(double displayId)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getDisplayByIdSync, displayId);
+        return NodeApi.CallMethod(Module, _getDisplayByIdSync, static h => new DisplayObject(h), displayId);
     }
 
     /// <summary>
-    /// getAllDisplay 方法
+    /// getAllDisplay
     /// </summary>
-    public static Task<IntPtr[]> GetAllDisplay()
+    public static Task<DisplayObject[]> GetAllDisplayAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAllDisplay);
+        return NodeApi.CallMethodAsync(Module, _getAllDisplay, h => ValueConverter.ConvertArray(h, static e => new DisplayObject(e)));
     }
 
     /// <summary>
-    /// getAllDisplays 方法
+    /// getAllDisplays
     /// </summary>
-    public static Task<IntPtr[]> GetAllDisplays()
+    public static Task<DisplayObject[]> GetAllDisplaysAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAllDisplays);
+        return NodeApi.CallMethodAsync(Module, _getAllDisplays, h => ValueConverter.ConvertArray(h, static e => new DisplayObject(e)));
     }
 
     /// <summary>
-    /// getAllDisplayPhysicalResolution 方法
+    /// getAllDisplayPhysicalResolution
     /// </summary>
-    public static IntPtr GetAllDisplayPhysicalResolution()
+    public static Task<DisplayPhysicalResolution[]> GetAllDisplayPhysicalResolutionAsync()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getAllDisplayPhysicalResolution);
+        return NodeApi.CallMethodAsync(Module, _getAllDisplayPhysicalResolution, h => ValueConverter.ConvertArray(h, static e => new DisplayPhysicalResolution(e)));
     }
 
     /// <summary>
-    /// on 方法
+    /// on
     /// </summary>
     public static void On(string type, IntPtr callback)
     {
@@ -152,15 +155,23 @@ public static unsafe partial class Display
     }
 
     /// <summary>
-    /// off 方法
+    /// onChangeWithAttribute
     /// </summary>
-    public static void Off(string type, IntPtr callback)
+    public static void OnChangeWithAttribute(string[] displayAttributeOption, IntPtr callback)
+    {
+        NodeApi.CallMethodVoid(Module, _onChangeWithAttribute, displayAttributeOption, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public static void Off(string type, IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// isFoldable 方法
+    /// isFoldable
     /// </summary>
     public static bool IsFoldable()
     {
@@ -168,15 +179,15 @@ public static unsafe partial class Display
     }
 
     /// <summary>
-    /// getFoldStatus 方法
+    /// getFoldStatus
     /// </summary>
-    public static IntPtr GetFoldStatus()
+    public static global::HarmonyOS.ArkUI.FoldStatus GetFoldStatus()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getFoldStatus);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.FoldStatus>(Module, _getFoldStatus);
     }
 
     /// <summary>
-    /// isCaptured 方法
+    /// isCaptured
     /// </summary>
     public static bool IsCaptured()
     {
@@ -184,7 +195,7 @@ public static unsafe partial class Display
     }
 
     /// <summary>
-    /// isCaptured 方法
+    /// isCaptured
     /// </summary>
     public static bool IsCaptured(string[] bundleNameList)
     {
@@ -192,15 +203,15 @@ public static unsafe partial class Display
     }
 
     /// <summary>
-    /// getFoldDisplayMode 方法
+    /// getFoldDisplayMode
     /// </summary>
-    public static IntPtr GetFoldDisplayMode()
+    public static global::HarmonyOS.ArkUI.FoldDisplayMode GetFoldDisplayMode()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getFoldDisplayMode);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.FoldDisplayMode>(Module, _getFoldDisplayMode);
     }
 
     /// <summary>
-    /// getCurrentFoldCreaseRegion 方法
+    /// getCurrentFoldCreaseRegion
     /// </summary>
     public static IntPtr GetCurrentFoldCreaseRegion()
     {
@@ -208,59 +219,472 @@ public static unsafe partial class Display
     }
 
     /// <summary>
-    /// createVirtualScreen 方法
+    /// createVirtualScreen
     /// </summary>
-    public static Task<double> CreateVirtualScreen(IntPtr config)
+    public static Task<double> CreateVirtualScreenAsync(VirtualScreenConfig config)
     {
         return NodeApi.CallMethodAsync<double>(Module, _createVirtualScreen, config);
     }
 
     /// <summary>
-    /// destroyVirtualScreen 方法
+    /// destroyVirtualScreen
     /// </summary>
-    public static Task DestroyVirtualScreen(double screenId)
+    public static Task DestroyVirtualScreenAsync(double screenId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _destroyVirtualScreen, screenId);
     }
 
     /// <summary>
-    /// setVirtualScreenSurface 方法
+    /// setVirtualScreenSurface
     /// </summary>
-    public static Task SetVirtualScreenSurface(double screenId, string surfaceId)
+    public static Task SetVirtualScreenSurfaceAsync(double screenId, string surfaceId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setVirtualScreenSurface, screenId, surfaceId);
     }
 
     /// <summary>
-    /// makeUnique 方法
+    /// makeUnique
     /// </summary>
-    public static Task MakeUnique(double screenId)
+    public static Task MakeUniqueAsync(double screenId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _makeUnique, screenId);
     }
 
     /// <summary>
-    /// convertRelativeToGlobalCoordinate 方法
+    /// convertRelativeToGlobalCoordinate
     /// </summary>
-    public static IntPtr ConvertRelativeToGlobalCoordinate(IntPtr relativePosition)
+    public static Position ConvertRelativeToGlobalCoordinate(RelativePosition relativePosition)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _convertRelativeToGlobalCoordinate, relativePosition);
+        return NodeApi.CallMethod(Module, _convertRelativeToGlobalCoordinate, static h => new Position(h), relativePosition);
     }
 
     /// <summary>
-    /// convertGlobalToRelativeCoordinate 方法
+    /// convertGlobalToRelativeCoordinate
     /// </summary>
-    public static IntPtr ConvertGlobalToRelativeCoordinate(IntPtr position, double displayId)
+    public static RelativePosition ConvertGlobalToRelativeCoordinate(Position position, double? displayId = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _convertGlobalToRelativeCoordinate, position, displayId);
+        return NodeApi.CallMethod(Module, _convertGlobalToRelativeCoordinate, static h => new RelativePosition(h), position, displayId);
     }
 
     /// <summary>
-    /// getBrightnessInfo 方法
+    /// getBrightnessInfo
     /// </summary>
-    public static IntPtr GetBrightnessInfo(double displayId)
+    public static BrightnessInfo GetBrightnessInfo(double displayId)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getBrightnessInfo, displayId);
+        return NodeApi.CallMethod(Module, _getBrightnessInfo, static h => new BrightnessInfo(h), displayId);
     }
+
+}
+
+/// <summary>
+/// Display 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DisplayObject : JsObject
+{
+    public DisplayObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _id => "id"u8;
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _alive => "alive"u8;
+    private static ReadOnlySpan<byte> _state => "state"u8;
+    private static ReadOnlySpan<byte> _refreshRate => "refreshRate"u8;
+    private static ReadOnlySpan<byte> _rotation => "rotation"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    private static ReadOnlySpan<byte> _availableWidth => "availableWidth"u8;
+    private static ReadOnlySpan<byte> _availableHeight => "availableHeight"u8;
+    private static ReadOnlySpan<byte> _densityDPI => "densityDPI"u8;
+    private static ReadOnlySpan<byte> _orientation => "orientation"u8;
+    private static ReadOnlySpan<byte> _densityPixels => "densityPixels"u8;
+    private static ReadOnlySpan<byte> _scaledDensity => "scaledDensity"u8;
+    private static ReadOnlySpan<byte> _xDPI => "xDPI"u8;
+    private static ReadOnlySpan<byte> _yDPI => "yDPI"u8;
+    private static ReadOnlySpan<byte> _colorSpaces => "colorSpaces"u8;
+    private static ReadOnlySpan<byte> _hdrFormats => "hdrFormats"u8;
+    private static ReadOnlySpan<byte> _sourceMode => "sourceMode"u8;
+    private static ReadOnlySpan<byte> _screenShape => "screenShape"u8;
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _supportedRefreshRates => "supportedRefreshRates"u8;
+    private static ReadOnlySpan<byte> _getCutoutInfo => "getCutoutInfo"u8;
+    private static ReadOnlySpan<byte> _getAvailableArea => "getAvailableArea"u8;
+    private static ReadOnlySpan<byte> _getLiveCreaseRegion => "getLiveCreaseRegion"u8;
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    private static ReadOnlySpan<byte> _getDisplayCapability => "getDisplayCapability"u8;
+    private static ReadOnlySpan<byte> _getRoundedCorner => "getRoundedCorner"u8;
+    /// <summary>
+    /// id
+    /// </summary>
+    public double Id => NativeValue.ToDouble(GetPropertyRaw(_id));
+
+    /// <summary>
+    /// name
+    /// </summary>
+    public string Name => NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+
+    /// <summary>
+    /// alive
+    /// </summary>
+    public bool Alive => NativeValue.ToBool(GetPropertyRaw(_alive));
+
+    /// <summary>
+    /// state
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DisplayState State => (global::HarmonyOS.ArkUI.DisplayState)NativeValue.ToInt(GetPropertyRaw(_state));
+
+    /// <summary>
+    /// refreshRate
+    /// </summary>
+    public double RefreshRate => NativeValue.ToDouble(GetPropertyRaw(_refreshRate));
+
+    /// <summary>
+    /// rotation
+    /// </summary>
+    public double Rotation => NativeValue.ToDouble(GetPropertyRaw(_rotation));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+    /// <summary>
+    /// availableWidth
+    /// </summary>
+    public double AvailableWidth => NativeValue.ToDouble(GetPropertyRaw(_availableWidth));
+
+    /// <summary>
+    /// availableHeight
+    /// </summary>
+    public double AvailableHeight => NativeValue.ToDouble(GetPropertyRaw(_availableHeight));
+
+    /// <summary>
+    /// densityDPI
+    /// </summary>
+    public double DensityDpi => NativeValue.ToDouble(GetPropertyRaw(_densityDPI));
+
+    /// <summary>
+    /// orientation
+    /// </summary>
+    public global::HarmonyOS.ArkUI.Orientation Orientation => (global::HarmonyOS.ArkUI.Orientation)NativeValue.ToInt(GetPropertyRaw(_orientation));
+
+    /// <summary>
+    /// densityPixels
+    /// </summary>
+    public double DensityPixels => NativeValue.ToDouble(GetPropertyRaw(_densityPixels));
+
+    /// <summary>
+    /// scaledDensity
+    /// </summary>
+    public double ScaledDensity => NativeValue.ToDouble(GetPropertyRaw(_scaledDensity));
+
+    /// <summary>
+    /// xDPI
+    /// </summary>
+    public double XDpi => NativeValue.ToDouble(GetPropertyRaw(_xDPI));
+
+    /// <summary>
+    /// yDPI
+    /// </summary>
+    public double YDpi => NativeValue.ToDouble(GetPropertyRaw(_yDPI));
+
+    /// <summary>
+    /// colorSpaces
+    /// </summary>
+    public IntPtr[] ColorSpaces => ValueConverter.ConvertArray(GetPropertyRaw(_colorSpaces), static e => ValueConverter.Convert<IntPtr>(e));
+
+    /// <summary>
+    /// hdrFormats
+    /// </summary>
+    public IntPtr[] HdrFormats => ValueConverter.ConvertArray(GetPropertyRaw(_hdrFormats), static e => ValueConverter.Convert<IntPtr>(e));
+
+    /// <summary>
+    /// sourceMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DisplaySourceMode? SourceMode => (global::HarmonyOS.ArkUI.DisplaySourceMode?)(global::HarmonyOS.ArkUI.DisplaySourceMode)NativeValue.ToInt(GetPropertyRaw(_sourceMode));
+
+    /// <summary>
+    /// screenShape
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ScreenShape? ScreenShape => (global::HarmonyOS.ArkUI.ScreenShape?)(global::HarmonyOS.ArkUI.ScreenShape)NativeValue.ToInt(GetPropertyRaw(_screenShape));
+
+    /// <summary>
+    /// x
+    /// </summary>
+    public double? X => (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double? Y => (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// supportedRefreshRates
+    /// </summary>
+    public double[] SupportedRefreshRates => ValueConverter.ConvertArray(GetPropertyRaw(_supportedRefreshRates), static e => ValueConverter.Convert<double>(e));
+
+    /// <summary>
+    /// getCutoutInfo
+    /// </summary>
+    public void GetCutoutInfo(IntPtr callback)
+    {
+        CallMethodVoid(_getCutoutInfo, callback);
+    }
+
+    /// <summary>
+    /// getAvailableArea
+    /// </summary>
+    public Task<Rect> GetAvailableAreaAsync()
+    {
+        return CallMethodAsync(_getAvailableArea, static h => new Rect(h));
+    }
+
+    /// <summary>
+    /// getLiveCreaseRegion
+    /// </summary>
+    public IntPtr GetLiveCreaseRegion()
+    {
+        return CallMethod<IntPtr>(_getLiveCreaseRegion);
+    }
+
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string type, IntPtr? callback = null)
+    {
+        CallMethodVoid(_off, type, callback);
+    }
+
+    /// <summary>
+    /// getDisplayCapability
+    /// </summary>
+    public string GetDisplayCapability()
+    {
+        return CallMethod<string>(_getDisplayCapability);
+    }
+
+    /// <summary>
+    /// getRoundedCorner
+    /// </summary>
+    public RoundedCorner[] GetRoundedCorner()
+    {
+        return CallMethod(_getRoundedCorner, h => ValueConverter.ConvertArray(h, static e => new RoundedCorner(e)));
+    }
+
+}
+
+/// <summary>
+/// DisplayPhysicalResolution 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DisplayPhysicalResolution : JsObject
+{
+    public DisplayPhysicalResolution(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _foldDisplayMode => "foldDisplayMode"u8;
+    private static ReadOnlySpan<byte> _physicalWidth => "physicalWidth"u8;
+    private static ReadOnlySpan<byte> _physicalHeight => "physicalHeight"u8;
+    /// <summary>
+    /// foldDisplayMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.FoldDisplayMode FoldDisplayMode => (global::HarmonyOS.ArkUI.FoldDisplayMode)NativeValue.ToInt(GetPropertyRaw(_foldDisplayMode));
+
+    /// <summary>
+    /// physicalWidth
+    /// </summary>
+    public double PhysicalWidth => NativeValue.ToDouble(GetPropertyRaw(_physicalWidth));
+
+    /// <summary>
+    /// physicalHeight
+    /// </summary>
+    public double PhysicalHeight => NativeValue.ToDouble(GetPropertyRaw(_physicalHeight));
+
+}
+
+/// <summary>
+/// VirtualScreenConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record VirtualScreenConfig(
+    string Name,
+    double Width,
+    double Height,
+    double Density,
+    string SurfaceId,
+    bool? SupportsFocus = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _name = Encoding.UTF8.GetBytes("name");
+        var _nameV = NativeValue.From(Name);
+        if (_nameV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
+        var _width = Encoding.UTF8.GetBytes("width");
+        var _widthV = NativeValue.From(Width);
+        if (_widthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
+        var _height = Encoding.UTF8.GetBytes("height");
+        var _heightV = NativeValue.From(Height);
+        if (_heightV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
+        var _density = Encoding.UTF8.GetBytes("density");
+        var _densityV = NativeValue.From(Density);
+        if (_densityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _density, _densityV);
+        var _surfaceId = Encoding.UTF8.GetBytes("surfaceId");
+        var _surfaceIdV = NativeValue.From(SurfaceId);
+        if (_surfaceIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _surfaceId, _surfaceIdV);
+        var _supportsFocus = Encoding.UTF8.GetBytes("supportsFocus");
+        var _supportsFocusV = NativeValue.From(SupportsFocus);
+        if (_supportsFocusV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _supportsFocus, _supportsFocusV);
+    }
+}
+
+/// <summary>
+/// Position 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Position : JsObject
+{
+    public Position(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
+}
+
+/// <summary>
+/// RelativePosition 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class RelativePosition : JsObject
+{
+    public RelativePosition(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _displayId => "displayId"u8;
+    private static ReadOnlySpan<byte> _position => "position"u8;
+    /// <summary>
+    /// displayId
+    /// </summary>
+    public double DisplayId => NativeValue.ToDouble(GetPropertyRaw(_displayId));
+
+    /// <summary>
+    /// position
+    /// </summary>
+    public Position Position => new Position(GetPropertyRaw(_position));
+
+}
+
+/// <summary>
+/// BrightnessInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class BrightnessInfo : JsObject
+{
+    public BrightnessInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _sdrNits => "sdrNits"u8;
+    private static ReadOnlySpan<byte> _currentHeadroom => "currentHeadroom"u8;
+    private static ReadOnlySpan<byte> _maxHeadroom => "maxHeadroom"u8;
+    private static ReadOnlySpan<byte> _brightnessPosition => "brightnessPosition"u8;
+    /// <summary>
+    /// sdrNits
+    /// </summary>
+    public double SdrNits => NativeValue.ToDouble(GetPropertyRaw(_sdrNits));
+
+    /// <summary>
+    /// currentHeadroom
+    /// </summary>
+    public double CurrentHeadroom => NativeValue.ToDouble(GetPropertyRaw(_currentHeadroom));
+
+    /// <summary>
+    /// maxHeadroom
+    /// </summary>
+    public double MaxHeadroom => NativeValue.ToDouble(GetPropertyRaw(_maxHeadroom));
+
+    /// <summary>
+    /// brightnessPosition
+    /// </summary>
+    public double? BrightnessPosition => (double?)NativeValue.ToDouble(GetPropertyRaw(_brightnessPosition));
+
+}
+
+/// <summary>
+/// Rect 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Rect : JsObject
+{
+    public Rect(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _left => "left"u8;
+    private static ReadOnlySpan<byte> _top => "top"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// left
+    /// </summary>
+    public double Left => NativeValue.ToDouble(GetPropertyRaw(_left));
+
+    /// <summary>
+    /// top
+    /// </summary>
+    public double Top => NativeValue.ToDouble(GetPropertyRaw(_top));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+}
+
+/// <summary>
+/// RoundedCorner 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class RoundedCorner : JsObject
+{
+    public RoundedCorner(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _position => "position"u8;
+    private static ReadOnlySpan<byte> _radius => "radius"u8;
+    /// <summary>
+    /// type
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CornerType Type => (global::HarmonyOS.ArkUI.CornerType)NativeValue.ToInt(GetPropertyRaw(_type));
+
+    /// <summary>
+    /// position
+    /// </summary>
+    public Position Position => new Position(GetPropertyRaw(_position));
+
+    /// <summary>
+    /// radius
+    /// </summary>
+    public double Radius => NativeValue.ToDouble(GetPropertyRaw(_radius));
 
 }

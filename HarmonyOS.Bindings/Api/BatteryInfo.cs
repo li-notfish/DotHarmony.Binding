@@ -4,8 +4,10 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
 
@@ -21,7 +23,8 @@ public static unsafe partial class BatteryInfo
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -77,22 +80,22 @@ public static unsafe partial class BatteryInfo
     /// <summary>
     /// batterySOC
     /// </summary>
-    public static double BatterySOC => NativeValue.ToDouble(NodeApi.GetProperty(Module, _batterySOC));
+    public static double BatterySoc => NativeValue.ToDouble(NodeApi.GetProperty(Module, _batterySOC));
 
     /// <summary>
     /// chargingStatus
     /// </summary>
-    public static IntPtr ChargingStatus => NodeApi.GetProperty(Module, _chargingStatus);
+    public static global::HarmonyOS.ArkUI.BatteryChargeState ChargingStatus => (global::HarmonyOS.ArkUI.BatteryChargeState)NativeValue.ToInt(NodeApi.GetProperty(Module, _chargingStatus));
 
     /// <summary>
     /// healthStatus
     /// </summary>
-    public static IntPtr HealthStatus => NodeApi.GetProperty(Module, _healthStatus);
+    public static global::HarmonyOS.ArkUI.BatteryHealthState HealthStatus => (global::HarmonyOS.ArkUI.BatteryHealthState)NativeValue.ToInt(NodeApi.GetProperty(Module, _healthStatus));
 
     /// <summary>
     /// pluggedType
     /// </summary>
-    public static IntPtr PluggedType => NodeApi.GetProperty(Module, _pluggedType);
+    public static global::HarmonyOS.ArkUI.BatteryPluggedType PluggedType => (global::HarmonyOS.ArkUI.BatteryPluggedType)NativeValue.ToInt(NodeApi.GetProperty(Module, _pluggedType));
 
     /// <summary>
     /// voltage
@@ -117,7 +120,7 @@ public static unsafe partial class BatteryInfo
     /// <summary>
     /// batteryCapacityLevel
     /// </summary>
-    public static IntPtr BatteryCapacityLevel => NodeApi.GetProperty(Module, _batteryCapacityLevel);
+    public static global::HarmonyOS.ArkUI.BatteryCapacityLevel BatteryCapacityLevel => (global::HarmonyOS.ArkUI.BatteryCapacityLevel)NativeValue.ToInt(NodeApi.GetProperty(Module, _batteryCapacityLevel));
 
     /// <summary>
     /// nowCurrent

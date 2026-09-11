@@ -4,8 +4,10 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
 
@@ -22,7 +24,8 @@ public static unsafe partial class DeviceInfo
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -278,32 +281,32 @@ public static unsafe partial class DeviceInfo
     /// <summary>
     /// distributionOSName
     /// </summary>
-    public static string DistributionOSName => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSName)) ?? string.Empty;
+    public static string DistributionOsName => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSName)) ?? string.Empty;
 
     /// <summary>
     /// distributionOSVersion
     /// </summary>
-    public static string DistributionOSVersion => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSVersion)) ?? string.Empty;
+    public static string DistributionOsVersion => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSVersion)) ?? string.Empty;
 
     /// <summary>
     /// distributionOSApiVersion
     /// </summary>
-    public static double DistributionOSApiVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _distributionOSApiVersion));
+    public static double DistributionOsApiVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _distributionOSApiVersion));
 
     /// <summary>
     /// distributionOSApiName
     /// </summary>
-    public static string DistributionOSApiName => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSApiName)) ?? string.Empty;
+    public static string DistributionOsApiName => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSApiName)) ?? string.Empty;
 
     /// <summary>
     /// distributionOSReleaseType
     /// </summary>
-    public static string DistributionOSReleaseType => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSReleaseType)) ?? string.Empty;
+    public static string DistributionOsReleaseType => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSReleaseType)) ?? string.Empty;
 
     /// <summary>
     /// ODID
     /// </summary>
-    public static string ODID => NativeValue.ToString(NodeApi.GetProperty(Module, _ODID)) ?? string.Empty;
+    public static string Odid => NativeValue.ToString(NodeApi.GetProperty(Module, _ODID)) ?? string.Empty;
 
     /// <summary>
     /// diskSN
@@ -313,7 +316,7 @@ public static unsafe partial class DeviceInfo
     /// <summary>
     /// performanceClass
     /// </summary>
-    public static IntPtr PerformanceClass => NodeApi.GetProperty(Module, _performanceClass);
+    public static global::HarmonyOS.ArkUI.PerformanceClassLevel PerformanceClass => (global::HarmonyOS.ArkUI.PerformanceClassLevel)NativeValue.ToInt(NodeApi.GetProperty(Module, _performanceClass));
 
     /// <summary>
     /// chipType
@@ -326,7 +329,7 @@ public static unsafe partial class DeviceInfo
     public static double BootCount => NativeValue.ToDouble(NodeApi.GetProperty(Module, _bootCount));
 
     /// <summary>
-    /// apiAvailable 方法
+    /// apiAvailable
     /// </summary>
     public static bool ApiAvailable(string version)
     {

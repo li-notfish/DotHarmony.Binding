@@ -4,11 +4,12 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyOS.Bindings.Runtime;
 using HarmonyOS.ArkUI;
-using System.Threading.Tasks;
 
 namespace HarmonyOS.Bindings.Api;
 
@@ -23,7 +24,8 @@ public static unsafe partial class Connection
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
 
-    private static IntPtr Module
+    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
+    internal static IntPtr Module
     {
         get
         {
@@ -110,119 +112,119 @@ public static unsafe partial class Connection
     private static ReadOnlySpan<byte> _queryProbeResult => "queryProbeResult"u8;
 
     /// <summary>
-    /// createNetConnection 方法
+    /// createNetConnection
     /// </summary>
-    public static IntPtr CreateNetConnection(IntPtr netSpecifier, double timeout)
+    public static NetConnection CreateNetConnection(NetSpecifier? netSpecifier = null, double? timeout = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createNetConnection, netSpecifier, timeout);
+        return NodeApi.CallMethod(Module, _createNetConnection, static h => new NetConnection(h), netSpecifier, timeout);
     }
 
     /// <summary>
-    /// getDefaultNet 方法
+    /// getDefaultNet
     /// </summary>
-    public static Task<IntPtr> GetDefaultNet()
+    public static Task<NetHandle> GetDefaultNetAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getDefaultNet);
+        return NodeApi.CallMethodAsync(Module, _getDefaultNet, static h => new NetHandle(h));
     }
 
     /// <summary>
-    /// getDefaultNetSync 方法
+    /// getDefaultNetSync
     /// </summary>
-    public static IntPtr GetDefaultNetSync()
+    public static NetHandle GetDefaultNetSync()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getDefaultNetSync);
+        return NodeApi.CallMethod(Module, _getDefaultNetSync, static h => new NetHandle(h));
     }
 
     /// <summary>
-    /// getAllNets 方法
+    /// getAllNets
     /// </summary>
-    public static Task<IntPtr[]> GetAllNets()
+    public static Task<NetHandle[]> GetAllNetsAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAllNets);
+        return NodeApi.CallMethodAsync(Module, _getAllNets, h => ValueConverter.ConvertArray(h, static e => new NetHandle(e)));
     }
 
     /// <summary>
-    /// getAllNetsSync 方法
+    /// getAllNetsSync
     /// </summary>
-    public static IntPtr[] GetAllNetsSync()
+    public static NetHandle[] GetAllNetsSync()
     {
-        return NodeApi.CallMethod<IntPtr[]>(Module, _getAllNetsSync);
+        return NodeApi.CallMethod(Module, _getAllNetsSync, h => ValueConverter.ConvertArray(h, static e => new NetHandle(e)));
     }
 
     /// <summary>
-    /// getConnectionProperties 方法
+    /// getConnectionProperties
     /// </summary>
-    public static Task<IntPtr> GetConnectionProperties(IntPtr netHandle)
+    public static Task<IntPtr> GetConnectionPropertiesAsync(NetHandle netHandle)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getConnectionProperties, netHandle);
     }
 
     /// <summary>
-    /// getConnectionPropertiesSync 方法
+    /// getConnectionPropertiesSync
     /// </summary>
-    public static IntPtr GetConnectionPropertiesSync(IntPtr netHandle)
+    public static IntPtr GetConnectionPropertiesSync(NetHandle netHandle)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getConnectionPropertiesSync, netHandle);
     }
 
     /// <summary>
-    /// getNetCapabilities 方法
+    /// getNetCapabilities
     /// </summary>
-    public static Task<IntPtr> GetNetCapabilities(IntPtr netHandle)
+    public static Task<NetCapabilities> GetNetCapabilitiesAsync(NetHandle netHandle)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getNetCapabilities, netHandle);
+        return NodeApi.CallMethodAsync(Module, _getNetCapabilities, static h => new NetCapabilities(h), netHandle);
     }
 
     /// <summary>
-    /// getNetCapabilitiesSync 方法
+    /// getNetCapabilitiesSync
     /// </summary>
-    public static IntPtr GetNetCapabilitiesSync(IntPtr netHandle)
+    public static NetCapabilities GetNetCapabilitiesSync(NetHandle netHandle)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNetCapabilitiesSync, netHandle);
+        return NodeApi.CallMethod(Module, _getNetCapabilitiesSync, static h => new NetCapabilities(h), netHandle);
     }
 
     /// <summary>
-    /// setNetExtAttribute 方法
+    /// setNetExtAttribute
     /// </summary>
-    public static Task SetNetExtAttribute(IntPtr netHandle, string netExtAttribute)
+    public static Task SetNetExtAttributeAsync(NetHandle netHandle, string netExtAttribute)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setNetExtAttribute, netHandle, netExtAttribute);
     }
 
     /// <summary>
-    /// setNetExtAttributeSync 方法
+    /// setNetExtAttributeSync
     /// </summary>
-    public static void SetNetExtAttributeSync(IntPtr netHandle, string netExtAttribute)
+    public static void SetNetExtAttributeSync(NetHandle netHandle, string netExtAttribute)
     {
         NodeApi.CallMethodVoid(Module, _setNetExtAttributeSync, netHandle, netExtAttribute);
     }
 
     /// <summary>
-    /// getNetExtAttribute 方法
+    /// getNetExtAttribute
     /// </summary>
-    public static Task<string> GetNetExtAttribute(IntPtr netHandle)
+    public static Task<string> GetNetExtAttributeAsync(NetHandle netHandle)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getNetExtAttribute, netHandle);
     }
 
     /// <summary>
-    /// getNetExtAttributeSync 方法
+    /// getNetExtAttributeSync
     /// </summary>
-    public static string GetNetExtAttributeSync(IntPtr netHandle)
+    public static string GetNetExtAttributeSync(NetHandle netHandle)
     {
         return NodeApi.CallMethod<string>(Module, _getNetExtAttributeSync, netHandle);
     }
 
     /// <summary>
-    /// isDefaultNetMetered 方法
+    /// isDefaultNetMetered
     /// </summary>
-    public static Task<bool> IsDefaultNetMetered()
+    public static Task<bool> IsDefaultNetMeteredAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isDefaultNetMetered);
     }
 
     /// <summary>
-    /// isDefaultNetMeteredSync 方法
+    /// isDefaultNetMeteredSync
     /// </summary>
     public static bool IsDefaultNetMeteredSync()
     {
@@ -230,15 +232,15 @@ public static unsafe partial class Connection
     }
 
     /// <summary>
-    /// hasDefaultNet 方法
+    /// hasDefaultNet
     /// </summary>
-    public static Task<bool> HasDefaultNet()
+    public static Task<bool> HasDefaultNetAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _hasDefaultNet);
     }
 
     /// <summary>
-    /// hasDefaultNetSync 方法
+    /// hasDefaultNetSync
     /// </summary>
     public static bool HasDefaultNetSync()
     {
@@ -246,87 +248,87 @@ public static unsafe partial class Connection
     }
 
     /// <summary>
-    /// reportNetConnected 方法
+    /// reportNetConnected
     /// </summary>
-    public static Task ReportNetConnected(IntPtr netHandle)
+    public static Task ReportNetConnectedAsync(NetHandle netHandle)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _reportNetConnected, netHandle);
     }
 
     /// <summary>
-    /// reportNetDisconnected 方法
+    /// reportNetDisconnected
     /// </summary>
-    public static Task ReportNetDisconnected(IntPtr netHandle)
+    public static Task ReportNetDisconnectedAsync(NetHandle netHandle)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _reportNetDisconnected, netHandle);
     }
 
     /// <summary>
-    /// getAddressesByName 方法
+    /// getAddressesByName
     /// </summary>
-    public static Task<IntPtr[]> GetAddressesByName(string host)
+    public static Task<NetAddress[]> GetAddressesByNameAsync(string host)
     {
-        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAddressesByName, host);
+        return NodeApi.CallMethodAsync(Module, _getAddressesByName, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host);
     }
 
     /// <summary>
-    /// getAddressesByNameWithOptions 方法
+    /// getAddressesByNameWithOptions
     /// </summary>
-    public static IntPtr GetAddressesByNameWithOptions(string host, IntPtr option)
+    public static Task<NetAddress[]> GetAddressesByNameWithOptionsAsync(string host, QueryOptions? option = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getAddressesByNameWithOptions, host, option);
+        return NodeApi.CallMethodAsync(Module, _getAddressesByNameWithOptions, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host, option);
     }
 
     /// <summary>
-    /// getAppNet 方法
+    /// getAppNet
     /// </summary>
-    public static Task<IntPtr> GetAppNet()
+    public static Task<NetHandle> GetAppNetAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getAppNet);
+        return NodeApi.CallMethodAsync(Module, _getAppNet, static h => new NetHandle(h));
     }
 
     /// <summary>
-    /// getAppNetSync 方法
+    /// getAppNetSync
     /// </summary>
-    public static IntPtr GetAppNetSync()
+    public static NetHandle GetAppNetSync()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getAppNetSync);
+        return NodeApi.CallMethod(Module, _getAppNetSync, static h => new NetHandle(h));
     }
 
     /// <summary>
-    /// setAppNet 方法
+    /// setAppNet
     /// </summary>
-    public static Task SetAppNet(IntPtr netHandle)
+    public static Task SetAppNetAsync(NetHandle netHandle)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setAppNet, netHandle);
     }
 
     /// <summary>
-    /// getDefaultHttpProxy 方法
+    /// getDefaultHttpProxy
     /// </summary>
-    public static Task<IntPtr> GetDefaultHttpProxy()
+    public static Task<HttpProxy> GetDefaultHttpProxyAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getDefaultHttpProxy);
+        return NodeApi.CallMethodAsync(Module, _getDefaultHttpProxy, static h => new HttpProxy(h));
     }
 
     /// <summary>
-    /// setAppHttpProxy 方法
+    /// setAppHttpProxy
     /// </summary>
-    public static void SetAppHttpProxy(IntPtr httpProxy)
+    public static void SetAppHttpProxy(HttpProxy httpProxy)
     {
         NodeApi.CallMethodVoid(Module, _setAppHttpProxy, httpProxy);
     }
 
     /// <summary>
-    /// refreshGlobalHttpProxy 方法
+    /// refreshGlobalHttpProxy
     /// </summary>
-    public static Task<IntPtr> RefreshGlobalHttpProxy()
+    public static Task<HttpProxy> RefreshGlobalHttpProxyAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _refreshGlobalHttpProxy);
+        return NodeApi.CallMethodAsync(Module, _refreshGlobalHttpProxy, static h => new HttpProxy(h));
     }
 
     /// <summary>
-    /// setPacUrl 方法
+    /// setPacUrl
     /// </summary>
     public static void SetPacUrl(string pacUrl)
     {
@@ -334,7 +336,7 @@ public static unsafe partial class Connection
     }
 
     /// <summary>
-    /// getPacUrl 方法
+    /// getPacUrl
     /// </summary>
     public static string GetPacUrl()
     {
@@ -342,7 +344,7 @@ public static unsafe partial class Connection
     }
 
     /// <summary>
-    /// setPacFileUrl 方法
+    /// setPacFileUrl
     /// </summary>
     public static void SetPacFileUrl(string pacFileUrl)
     {
@@ -350,7 +352,7 @@ public static unsafe partial class Connection
     }
 
     /// <summary>
-    /// getPacFileUrl 方法
+    /// getPacFileUrl
     /// </summary>
     public static string GetPacFileUrl()
     {
@@ -358,7 +360,7 @@ public static unsafe partial class Connection
     }
 
     /// <summary>
-    /// findProxyForUrl 方法
+    /// findProxyForUrl
     /// </summary>
     public static string FindProxyForUrl(string url)
     {
@@ -366,91 +368,410 @@ public static unsafe partial class Connection
     }
 
     /// <summary>
-    /// addCustomDnsRule 方法
+    /// addCustomDnsRule
     /// </summary>
-    public static Task AddCustomDnsRule(string host, string[] ip)
+    public static Task AddCustomDnsRuleAsync(string host, string[] ip)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _addCustomDnsRule, host, ip);
     }
 
     /// <summary>
-    /// removeCustomDnsRule 方法
+    /// removeCustomDnsRule
     /// </summary>
-    public static Task RemoveCustomDnsRule(string host)
+    public static Task RemoveCustomDnsRuleAsync(string host)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeCustomDnsRule, host);
     }
 
     /// <summary>
-    /// clearCustomDnsRules 方法
+    /// clearCustomDnsRules
     /// </summary>
-    public static Task ClearCustomDnsRules()
+    public static Task ClearCustomDnsRulesAsync()
     {
         return NodeApi.CallMethodAsyncVoid(Module, _clearCustomDnsRules);
     }
 
     /// <summary>
-    /// getConnectOwnerUid 方法
+    /// getConnectOwnerUid
     /// </summary>
-    public static Task<double> GetConnectOwnerUid(IntPtr protocol, IntPtr local, IntPtr remote)
+    public static Task<double> GetConnectOwnerUidAsync(global::HarmonyOS.ArkUI.ProtocolType protocol, NetAddress local, NetAddress remote)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getConnectOwnerUid, protocol, local, remote);
     }
 
     /// <summary>
-    /// getConnectOwnerUidSync 方法
+    /// getConnectOwnerUidSync
     /// </summary>
-    public static double GetConnectOwnerUidSync(IntPtr protocol, IntPtr local, IntPtr remote)
+    public static double GetConnectOwnerUidSync(global::HarmonyOS.ArkUI.ProtocolType protocol, NetAddress local, NetAddress remote)
     {
         return NodeApi.CallMethod<double>(Module, _getConnectOwnerUidSync, protocol, local, remote);
     }
 
     /// <summary>
-    /// getIpNeighTable 方法
+    /// getIpNeighTable
     /// </summary>
-    public static IntPtr GetIpNeighTable()
+    public static Task<NetIpMacInfo[]> GetIPNeighTableAsync()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getIpNeighTable);
+        return NodeApi.CallMethodAsync(Module, _getIpNeighTable, h => ValueConverter.ConvertArray(h, static e => new NetIpMacInfo(e)));
     }
 
     /// <summary>
-    /// getDnsAscii 方法
+    /// getDnsAscii
     /// </summary>
-    public static string GetDnsAscii(string host, IntPtr flag)
+    public static string GetDnsAscii(string host, global::HarmonyOS.ArkUI.ConversionProcess? flag = null)
     {
         return NodeApi.CallMethod<string>(Module, _getDnsAscii, host, flag);
     }
 
     /// <summary>
-    /// getDnsUnicode 方法
+    /// getDnsUnicode
     /// </summary>
-    public static string GetDnsUnicode(string host, IntPtr flag)
+    public static string GetDnsUnicode(string host, global::HarmonyOS.ArkUI.ConversionProcess? flag = null)
     {
         return NodeApi.CallMethod<string>(Module, _getDnsUnicode, host, flag);
     }
 
     /// <summary>
-    /// getSystemNetPortStates 方法
+    /// getSystemNetPortStates
     /// </summary>
-    public static Task<IntPtr> GetSystemNetPortStates()
+    public static Task<IntPtr> GetSystemNetPortStatesAsync()
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getSystemNetPortStates);
     }
 
     /// <summary>
-    /// queryTraceRoute 方法
+    /// queryTraceRoute
     /// </summary>
-    public static Task<IntPtr> QueryTraceRoute(string destination, IntPtr option)
+    public static Task<TraceRouteInfo[]> QueryTraceRouteAsync(string destination, TraceRouteOptions? option = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _queryTraceRoute, destination, option);
+        return NodeApi.CallMethodAsync(Module, _queryTraceRoute, h => ValueConverter.ConvertArray(h, static e => new TraceRouteInfo(e)), destination, option);
     }
 
     /// <summary>
-    /// queryProbeResult 方法
+    /// queryProbeResult
     /// </summary>
-    public static Task<IntPtr> QueryProbeResult(string destination, double duration)
+    public static Task<ProbeResultInfo> QueryProbeResultAsync(string destination, double duration)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _queryProbeResult, destination, duration);
+        return NodeApi.CallMethodAsync(Module, _queryProbeResult, static h => new ProbeResultInfo(h), destination, duration);
     }
+
+}
+
+/// <summary>
+/// NetConnection 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class NetConnection : JsObject
+{
+    public NetConnection(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _register => "register"u8;
+    private static ReadOnlySpan<byte> _unregister => "unregister"u8;
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string type, IntPtr callback)
+    {
+        CallMethodVoid(_on, type, callback);
+    }
+
+    /// <summary>
+    /// register
+    /// </summary>
+    public void Register(IntPtr callback)
+    {
+        CallMethodVoid(_register, callback);
+    }
+
+    /// <summary>
+    /// unregister
+    /// </summary>
+    public void Unregister(IntPtr callback)
+    {
+        CallMethodVoid(_unregister, callback);
+    }
+
+}
+
+/// <summary>
+/// NetSpecifier（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record NetSpecifier(
+    NetCapabilities NetCapabilities,
+    string? BearerPrivateIdentifier = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _netCapabilities = Encoding.UTF8.GetBytes("netCapabilities");
+        var _netCapabilitiesV = NativeValue.From(NetCapabilities);
+        if (_netCapabilitiesV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _netCapabilities, _netCapabilitiesV);
+        var _bearerPrivateIdentifier = Encoding.UTF8.GetBytes("bearerPrivateIdentifier");
+        var _bearerPrivateIdentifierV = NativeValue.From(BearerPrivateIdentifier);
+        if (_bearerPrivateIdentifierV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _bearerPrivateIdentifier, _bearerPrivateIdentifierV);
+    }
+}
+
+/// <summary>
+/// NetHandle 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class NetHandle : JsObject
+{
+    public NetHandle(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _netId => "netId"u8;
+    private static ReadOnlySpan<byte> _bindSocket => "bindSocket"u8;
+    private static ReadOnlySpan<byte> _getAddressesByName => "getAddressesByName"u8;
+    private static ReadOnlySpan<byte> _getAddressesByNameWithOptions => "getAddressesByNameWithOptions"u8;
+    private static ReadOnlySpan<byte> _getAddressByName => "getAddressByName"u8;
+    /// <summary>
+    /// netId
+    /// </summary>
+    public double NetId => NativeValue.ToDouble(GetPropertyRaw(_netId));
+
+    /// <summary>
+    /// bindSocket
+    /// </summary>
+    public void BindSocket(IntPtr socketParam, IntPtr callback)
+    {
+        CallMethodVoid(_bindSocket, socketParam, callback);
+    }
+
+    /// <summary>
+    /// getAddressesByName
+    /// </summary>
+    public void GetAddressesByName(string host, IntPtr callback)
+    {
+        CallMethodVoid(_getAddressesByName, host, callback);
+    }
+
+    /// <summary>
+    /// getAddressesByNameWithOptions
+    /// </summary>
+    public Task<NetAddress[]> GetAddressesByNameWithOptionsAsync(string host, QueryOptions? option = null)
+    {
+        return CallMethodAsync(_getAddressesByNameWithOptions, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host, option);
+    }
+
+    /// <summary>
+    /// getAddressByName
+    /// </summary>
+    public void GetAddressByName(string host, IntPtr callback)
+    {
+        CallMethodVoid(_getAddressByName, host, callback);
+    }
+
+}
+
+/// <summary>
+/// NetCapabilities 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class NetCapabilities : JsObject
+{
+    public NetCapabilities(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _linkUpBandwidthKbps => "linkUpBandwidthKbps"u8;
+    private static ReadOnlySpan<byte> _linkDownBandwidthKbps => "linkDownBandwidthKbps"u8;
+    private static ReadOnlySpan<byte> _networkCap => "networkCap"u8;
+    private static ReadOnlySpan<byte> _bearerTypes => "bearerTypes"u8;
+    /// <summary>
+    /// linkUpBandwidthKbps
+    /// </summary>
+    public double? LinkUpBandwidthKbps => (double?)NativeValue.ToDouble(GetPropertyRaw(_linkUpBandwidthKbps));
+
+    /// <summary>
+    /// linkDownBandwidthKbps
+    /// </summary>
+    public double? LinkDownBandwidthKbps => (double?)NativeValue.ToDouble(GetPropertyRaw(_linkDownBandwidthKbps));
+
+    /// <summary>
+    /// networkCap
+    /// </summary>
+    public global::HarmonyOS.ArkUI.NetCap[] NetworkCap => ValueConverter.ConvertArray(GetPropertyRaw(_networkCap), static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.NetCap>(e));
+
+    /// <summary>
+    /// bearerTypes
+    /// </summary>
+    public global::HarmonyOS.ArkUI.NetBearType[] BearerTypes => ValueConverter.ConvertArray(GetPropertyRaw(_bearerTypes), static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.NetBearType>(e));
+
+}
+
+/// <summary>
+/// NetAddress 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class NetAddress : JsObject
+{
+    public NetAddress(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _address => "address"u8;
+    private static ReadOnlySpan<byte> _family => "family"u8;
+    private static ReadOnlySpan<byte> _port => "port"u8;
+    /// <summary>
+    /// address
+    /// </summary>
+    public string Address => NativeValue.ToString(GetPropertyRaw(_address)) ?? string.Empty;
+
+    /// <summary>
+    /// family
+    /// </summary>
+    public double? Family => (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
+
+    /// <summary>
+    /// port
+    /// </summary>
+    public double? Port => (double?)NativeValue.ToDouble(GetPropertyRaw(_port));
+
+}
+
+/// <summary>
+/// QueryOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record QueryOptions(
+    global::HarmonyOS.ArkUI.FamilyType? Family = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _family = Encoding.UTF8.GetBytes("family");
+        var _familyV = NativeValue.From(Family);
+        if (_familyV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _family, _familyV);
+    }
+}
+
+/// <summary>
+/// HttpProxy 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class HttpProxy : JsObject
+{
+    public HttpProxy(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _host => "host"u8;
+    private static ReadOnlySpan<byte> _port => "port"u8;
+    private static ReadOnlySpan<byte> _username => "username"u8;
+    private static ReadOnlySpan<byte> _password => "password"u8;
+    private static ReadOnlySpan<byte> _exclusionList => "exclusionList"u8;
+    /// <summary>
+    /// host
+    /// </summary>
+    public string Host => NativeValue.ToString(GetPropertyRaw(_host)) ?? string.Empty;
+
+    /// <summary>
+    /// port
+    /// </summary>
+    public double Port => NativeValue.ToDouble(GetPropertyRaw(_port));
+
+    /// <summary>
+    /// username
+    /// </summary>
+    public string? Username => (string?)NativeValue.ToString(GetPropertyRaw(_username)) ?? string.Empty;
+
+    /// <summary>
+    /// password
+    /// </summary>
+    public string? Password => (string?)NativeValue.ToString(GetPropertyRaw(_password)) ?? string.Empty;
+
+    /// <summary>
+    /// exclusionList
+    /// </summary>
+    public string[] ExclusionList => ValueConverter.ConvertArray(GetPropertyRaw(_exclusionList), static e => ValueConverter.Convert<string>(e));
+
+}
+
+/// <summary>
+/// NetIpMacInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class NetIpMacInfo : JsObject
+{
+    public NetIpMacInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _ipAddress => "ipAddress"u8;
+    private static ReadOnlySpan<byte> _iface => "iface"u8;
+    private static ReadOnlySpan<byte> _macAddress => "macAddress"u8;
+    /// <summary>
+    /// ipAddress
+    /// </summary>
+    public NetAddress IPAddress => new NetAddress(GetPropertyRaw(_ipAddress));
+
+    /// <summary>
+    /// iface
+    /// </summary>
+    public string Iface => NativeValue.ToString(GetPropertyRaw(_iface)) ?? string.Empty;
+
+    /// <summary>
+    /// macAddress
+    /// </summary>
+    public string MacAddress => NativeValue.ToString(GetPropertyRaw(_macAddress)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// TraceRouteInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class TraceRouteInfo : JsObject
+{
+    public TraceRouteInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _jumpNo => "jumpNo"u8;
+    private static ReadOnlySpan<byte> _address => "address"u8;
+    private static ReadOnlySpan<byte> _rtt => "rtt"u8;
+    /// <summary>
+    /// jumpNo
+    /// </summary>
+    public double JumpNo => NativeValue.ToDouble(GetPropertyRaw(_jumpNo));
+
+    /// <summary>
+    /// address
+    /// </summary>
+    public string Address => NativeValue.ToString(GetPropertyRaw(_address)) ?? string.Empty;
+
+    /// <summary>
+    /// rtt
+    /// </summary>
+    public double[] Rtt => ValueConverter.ConvertArray(GetPropertyRaw(_rtt), static e => ValueConverter.Convert<double>(e));
+
+}
+
+/// <summary>
+/// TraceRouteOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record TraceRouteOptions(
+    double? MaxJumpNumber = null,
+    global::HarmonyOS.ArkUI.PacketsType? PacketsType = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _maxJumpNumber = Encoding.UTF8.GetBytes("maxJumpNumber");
+        var _maxJumpNumberV = NativeValue.From(MaxJumpNumber);
+        if (_maxJumpNumberV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxJumpNumber, _maxJumpNumberV);
+        var _packetsType = Encoding.UTF8.GetBytes("packetsType");
+        var _packetsTypeV = NativeValue.From(PacketsType);
+        if (_packetsTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _packetsType, _packetsTypeV);
+    }
+}
+
+/// <summary>
+/// ProbeResultInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ProbeResultInfo : JsObject
+{
+    public ProbeResultInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _lossRate => "lossRate"u8;
+    private static ReadOnlySpan<byte> _rtt => "rtt"u8;
+    /// <summary>
+    /// lossRate
+    /// </summary>
+    public double LossRate => NativeValue.ToDouble(GetPropertyRaw(_lossRate));
+
+    /// <summary>
+    /// rtt
+    /// </summary>
+    public double[] Rtt => ValueConverter.ConvertArray(GetPropertyRaw(_rtt), static e => ValueConverter.Convert<double>(e));
 
 }
