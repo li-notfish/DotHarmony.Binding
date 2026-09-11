@@ -110,6 +110,14 @@
 - 明确不做：Set 容器（试点 0 使用）、DataView、Int32Array 等精确 TypedArray 类型（一律按字节拷贝，有损）、BigInt words 全精度、NativeCallbacks 反射兜底的替换
 - ~~待手动验证：模拟器端到端（事件触发、ArrayBuffer 读写、Map 迭代）~~ → 见 2.7（事件订阅/退订回路已实测；ArrayBuffer 读写、Map 迭代仍待专项用例）
 
+**2.8 AsyncCallback 正式通道 + 批量扩展（2026-09-12 完成）**：
+- `CallbackTaskBridge`：仅 callback 形式 API（无 Promise 重载，如 `settings.registerKeyObserver`、`thermal.subscribeThermalLevel`、fs 实例方法）→ `Task<T>`。运行时 `napi_create_function` 创建 err-first JS 回调作末参传入，JS 触发时解析 (err, data)：成功 → SetResult(convert(data))，BusinessError → `ArkTSException`（读 err.code/err.message）。TCS 同步续体保持 NapiEnv 可用（同 PromiseTaskBridge 语义）
+- 关键认知：**双形态 API 之前是"碰巧能工作"**——原生实现按末参是否为函数自适应返回 Promise，剥掉 callback 调用即进 Promise 模式；真正坏掉的只有 callback-only API（无回调调用会同步抛 401）。生成器双形态判定：同名且剥回调后参数一致的 Promise 重载存在 → Promise 通道；否则 bridge 通道
+- 包装类 junk 重载清理：`void Show(IntPtr callback)` 之类手搓回调指针的产物折叠为单一 `ShowAsync()`（Window -380 行）
+- 生成器修复（批量扩展暴露）：非标识符成员名过滤（url 的 `[Symbol.iterator]`）；服务模块顶层 `export interface/class` 解析为实例类型（intl.LocaleOptions 等被引用但从未生成）；可达性 BFS 补 wrapper 构造函数参数种子（输入位 record）；record WriteTo 中 `System.Text.Encoding` 完全限定（属性名撞名）
+- 批量扩展：PILOT_MODULES 21 → **46 全部转正编译**（+thermal/power/wallpaper/wifiManager/telephony.radio/sms/usbManager/inputMethod/hilog/hiAppEvent/i18n/intl/mediaquery/font/measure/uri/url/matrix4/curves/net.webSocket/net.socket/data.dataShare/bundle.bundleManager/app.ability.appManager/app.ability.context/notification）
+- 遗留：CS1737 修复（demoteOptionals 必须在事件回调强制必需之后，Sensor off 重载）；后续批次向 143 模块推进时同法筛选
+
 **2.7 端到端模拟器验证（2026-09-12 完成，x86_64 模拟器 / API 26）**：
 - 全链路：generator 重出 → WSL NativeAOT 双架构 libapp.so → hvigor HAP → hdc 部署 → 实机点击验证
 - 实测通过：`napi_load_module` 各模块加载；同步属性（DeviceInfo Brand/Model/OsFullName=OpenHarmony-7.0.0.105）；Promise→Task 全类型桥（string/double/bool/int/uint/void/reject——reject 正确抛 `ArkTSException` 携带 reason）；wrapper 属性 await 后可读（`GetDefaultDisplayAsync()` → 1320x2856 @560dpi）；`.NET event` 订阅/退订回路（Display.Change +=/-=）
