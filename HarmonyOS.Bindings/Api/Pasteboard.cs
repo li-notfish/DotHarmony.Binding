@@ -85,7 +85,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createHtmlData 方法
     /// </summary>
-    public static IntPtr CreateHtmlData(IntPtr htmlText)
+    public static IntPtr CreateHtmlData(string htmlText)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createHtmlData, htmlText);
     }
@@ -93,7 +93,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createWantData 方法
     /// </summary>
-    public static IntPtr CreateWantData(Want want)
+    public static IntPtr CreateWantData(IntPtr want)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createWantData, want);
     }
@@ -101,7 +101,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createPlainTextData 方法
     /// </summary>
-    public static IntPtr CreatePlainTextData(IntPtr text)
+    public static IntPtr CreatePlainTextData(string text)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPlainTextData, text);
     }
@@ -109,7 +109,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createUriData 方法
     /// </summary>
-    public static IntPtr CreateUriData(IntPtr uri)
+    public static IntPtr CreateUriData(string uri)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createUriData, uri);
     }
@@ -117,7 +117,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createData 方法
     /// </summary>
-    public static IntPtr CreateData(IntPtr mimeType, ValueType value)
+    public static IntPtr CreateData(string mimeType, IntPtr value)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createData, mimeType, value);
     }
@@ -133,7 +133,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createHtmlTextRecord 方法
     /// </summary>
-    public static IntPtr CreateHtmlTextRecord(IntPtr htmlText)
+    public static IntPtr CreateHtmlTextRecord(string htmlText)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createHtmlTextRecord, htmlText);
     }
@@ -141,7 +141,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createWantRecord 方法
     /// </summary>
-    public static IntPtr CreateWantRecord(Want want)
+    public static IntPtr CreateWantRecord(IntPtr want)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createWantRecord, want);
     }
@@ -149,7 +149,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createPlainTextRecord 方法
     /// </summary>
-    public static IntPtr CreatePlainTextRecord(IntPtr text)
+    public static IntPtr CreatePlainTextRecord(string text)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPlainTextRecord, text);
     }
@@ -157,7 +157,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createUriRecord 方法
     /// </summary>
-    public static IntPtr CreateUriRecord(IntPtr uri)
+    public static IntPtr CreateUriRecord(string uri)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createUriRecord, uri);
     }
@@ -165,7 +165,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createRecord 方法
     /// </summary>
-    public static IntPtr CreateRecord(IntPtr mimeType, ValueType value)
+    public static IntPtr CreateRecord(string mimeType, IntPtr value)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createRecord, mimeType, value);
     }

@@ -85,7 +85,7 @@ public static unsafe partial class Router
     /// <summary>
     /// push 方法
     /// </summary>
-    public static void Push(RouterOptions options)
+    public static void Push(IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _push, options);
     }
@@ -93,7 +93,7 @@ public static unsafe partial class Router
     /// <summary>
     /// pushUrl 方法
     /// </summary>
-    public static Task PushUrl(RouterOptions options)
+    public static Task PushUrl(IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, options);
     }
@@ -101,7 +101,7 @@ public static unsafe partial class Router
     /// <summary>
     /// pushUrl 方法
     /// </summary>
-    public static Task PushUrl(RouterOptions options, RouterMode mode)
+    public static Task PushUrl(IntPtr options, IntPtr mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, options, mode);
     }
@@ -109,7 +109,7 @@ public static unsafe partial class Router
     /// <summary>
     /// replace 方法
     /// </summary>
-    public static void Replace(RouterOptions options)
+    public static void Replace(IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _replace, options);
     }
@@ -117,7 +117,7 @@ public static unsafe partial class Router
     /// <summary>
     /// replaceUrl 方法
     /// </summary>
-    public static Task ReplaceUrl(RouterOptions options)
+    public static Task ReplaceUrl(IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, options);
     }
@@ -125,7 +125,7 @@ public static unsafe partial class Router
     /// <summary>
     /// replaceUrl 方法
     /// </summary>
-    public static Task ReplaceUrl(RouterOptions options, RouterMode mode)
+    public static Task ReplaceUrl(IntPtr options, IntPtr mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, options, mode);
     }
@@ -133,7 +133,7 @@ public static unsafe partial class Router
     /// <summary>
     /// back 方法
     /// </summary>
-    public static void Back(RouterOptions options)
+    public static void Back(IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _back, options);
     }
@@ -141,9 +141,9 @@ public static unsafe partial class Router
     /// <summary>
     /// back 方法
     /// </summary>
-    public static void Back(IntPtr index, Object params)
+    public static void Back(double index, IntPtr @params)
     {
-        NodeApi.CallMethodVoid(Module, _back, index, params);
+        NodeApi.CallMethodVoid(Module, _back, index, @params);
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ public static unsafe partial class Router
     /// <summary>
     /// getStateByIndex 方法
     /// </summary>
-    public static IntPtr GetStateByIndex(IntPtr index)
+    public static IntPtr GetStateByIndex(double index)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getStateByIndex, index);
     }
@@ -181,15 +181,15 @@ public static unsafe partial class Router
     /// <summary>
     /// getStateByUrl 方法
     /// </summary>
-    public static RouterState[] GetStateByUrl(IntPtr url)
+    public static IntPtr[] GetStateByUrl(string url)
     {
-        return NodeApi.CallMethod<RouterState[]>(Module, _getStateByUrl, url);
+        return NodeApi.CallMethod<IntPtr[]>(Module, _getStateByUrl, url);
     }
 
     /// <summary>
     /// enableAlertBeforeBackPage 方法
     /// </summary>
-    public static void EnableAlertBeforeBackPage(EnableAlertOptions options)
+    public static void EnableAlertBeforeBackPage(IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _enableAlertBeforeBackPage, options);
     }
@@ -197,7 +197,7 @@ public static unsafe partial class Router
     /// <summary>
     /// showAlertBeforeBackPage 方法
     /// </summary>
-    public static void ShowAlertBeforeBackPage(EnableAlertOptions options)
+    public static void ShowAlertBeforeBackPage(IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _showAlertBeforeBackPage, options);
     }
@@ -229,7 +229,7 @@ public static unsafe partial class Router
     /// <summary>
     /// pushNamedRoute 方法
     /// </summary>
-    public static Task PushNamedRoute(NamedRouterOptions options)
+    public static Task PushNamedRoute(IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, options);
     }
@@ -237,7 +237,7 @@ public static unsafe partial class Router
     /// <summary>
     /// pushNamedRoute 方法
     /// </summary>
-    public static Task PushNamedRoute(NamedRouterOptions options, RouterMode mode)
+    public static Task PushNamedRoute(IntPtr options, IntPtr mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, options, mode);
     }
@@ -245,7 +245,7 @@ public static unsafe partial class Router
     /// <summary>
     /// replaceNamedRoute 方法
     /// </summary>
-    public static Task ReplaceNamedRoute(NamedRouterOptions options)
+    public static Task ReplaceNamedRoute(IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, options);
     }
@@ -253,7 +253,7 @@ public static unsafe partial class Router
     /// <summary>
     /// replaceNamedRoute 方法
     /// </summary>
-    public static Task ReplaceNamedRoute(NamedRouterOptions options, RouterMode mode)
+    public static Task ReplaceNamedRoute(IntPtr options, IntPtr mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, options, mode);
     }

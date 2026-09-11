@@ -147,31 +147,6 @@ public enum OcclusionState
 }
 
 /// <summary>
-/// Orientation 枚举
-/// </summary>
-public enum Orientation
-{
-    UNSPECIFIED = 0,
-    PORTRAIT = 1,
-    LANDSCAPE = 2,
-    PORTRAIT_INVERTED = 3,
-    LANDSCAPE_INVERTED = 4,
-    AUTO_ROTATION = 5,
-    AUTO_ROTATION_PORTRAIT = 6,
-    AUTO_ROTATION_LANDSCAPE = 7,
-    AUTO_ROTATION_RESTRICTED = 8,
-    AUTO_ROTATION_PORTRAIT_RESTRICTED = 9,
-    AUTO_ROTATION_LANDSCAPE_RESTRICTED = 10,
-    LOCKED = 11,
-    AUTO_ROTATION_UNSPECIFIED = 12,
-    USER_ROTATION_PORTRAIT = 13,
-    USER_ROTATION_LANDSCAPE = 14,
-    USER_ROTATION_PORTRAIT_INVERTED = 15,
-    USER_ROTATION_LANDSCAPE_INVERTED = 16,
-    FOLLOW_DESKTOP = 17
-}
-
-/// <summary>
 /// OrientationExecutionResult 枚举
 /// </summary>
 public enum OrientationExecutionResult

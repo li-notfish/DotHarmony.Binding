@@ -81,7 +81,7 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// on 方法
     /// </summary>
-    public static void On(IntPtr type, LocationRequest request, IntPtr callback)
+    public static void On(string type, IntPtr request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, request, callback);
     }
@@ -89,7 +89,7 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// off 方法
     /// </summary>
-    public static void Off(IntPtr type, IntPtr callback)
+    public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
@@ -97,39 +97,15 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// on 方法
     /// </summary>
-    public static void On(IntPtr type, IntPtr callback)
+    public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(IntPtr type, CachedGnssLocationsRequest request, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, request, callback);
-    }
-
-    /// <summary>
     /// off 方法
     /// </summary>
-    public static void Off(IntPtr type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(IntPtr type, GeofenceRequest request, WantAgent want)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, request, want);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(IntPtr type, GeofenceRequest request, WantAgent want)
+    public static void Off(string type, IntPtr request, IntPtr want)
     {
         NodeApi.CallMethodVoid(Module, _off, type, request, want);
     }
@@ -137,25 +113,25 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// getCurrentLocation 方法
     /// </summary>
-    public static Task<Location> GetCurrentLocation(CurrentLocationRequest request)
+    public static Task<IntPtr> GetCurrentLocation(IntPtr request)
     {
-        return NodeApi.CallMethodAsync<Location>(Module, _getCurrentLocation, request);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentLocation, request);
     }
 
     /// <summary>
     /// getCurrentLocation 方法
     /// </summary>
-    public static Task<Location> GetCurrentLocation()
+    public static Task<IntPtr> GetCurrentLocation()
     {
-        return NodeApi.CallMethodAsync<Location>(Module, _getCurrentLocation);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentLocation);
     }
 
     /// <summary>
     /// getLastLocation 方法
     /// </summary>
-    public static Task<Location> GetLastLocation()
+    public static Task<IntPtr> GetLastLocation()
     {
-        return NodeApi.CallMethodAsync<Location>(Module, _getLastLocation);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getLastLocation);
     }
 
     /// <summary>
@@ -177,17 +153,17 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// getAddressesFromLocation 方法
     /// </summary>
-    public static Task<GeoAddress[]> GetAddressesFromLocation(ReverseGeoCodeRequest request)
+    public static Task<IntPtr[]> GetAddressesFromLocation(IntPtr request)
     {
-        return NodeApi.CallMethodAsync<GeoAddress[]>(Module, _getAddressesFromLocation, request);
+        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAddressesFromLocation, request);
     }
 
     /// <summary>
     /// getAddressesFromLocationName 方法
     /// </summary>
-    public static Task<GeoAddress[]> GetAddressesFromLocationName(GeoCodeRequest request)
+    public static Task<IntPtr[]> GetAddressesFromLocationName(IntPtr request)
     {
-        return NodeApi.CallMethodAsync<GeoAddress[]>(Module, _getAddressesFromLocationName, request);
+        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAddressesFromLocationName, request);
     }
 
     /// <summary>
@@ -217,7 +193,7 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// sendCommand 方法
     /// </summary>
-    public static Task<bool> SendCommand(LocationCommand command)
+    public static Task<bool> SendCommand(IntPtr command)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _sendCommand, command);
     }

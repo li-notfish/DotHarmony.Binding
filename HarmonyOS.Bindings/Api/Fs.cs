@@ -149,7 +149,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// access 方法
     /// </summary>
-    public static Task<bool> Access(IntPtr path, AccessModeType mode)
+    public static Task<bool> Access(string path, IntPtr mode)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _access, path, mode);
     }
@@ -157,7 +157,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// access 方法
     /// </summary>
-    public static Task<bool> Access(IntPtr path)
+    public static Task<bool> Access(string path)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _access, path);
     }
@@ -165,7 +165,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// access 方法
     /// </summary>
-    public static Task<bool> Access(IntPtr path, AccessModeType mode, AccessFlagType flag)
+    public static Task<bool> Access(string path, IntPtr mode, IntPtr flag)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _access, path, mode, flag);
     }
@@ -173,7 +173,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// accessSync 方法
     /// </summary>
-    public static bool AccessSync(IntPtr path, AccessModeType mode)
+    public static bool AccessSync(string path, IntPtr mode)
     {
         return NodeApi.CallMethod<bool>(Module, _accessSync, path, mode);
     }
@@ -181,7 +181,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// accessSync 方法
     /// </summary>
-    public static bool AccessSync(IntPtr path, AccessModeType mode, AccessFlagType flag)
+    public static bool AccessSync(string path, IntPtr mode, IntPtr flag)
     {
         return NodeApi.CallMethod<bool>(Module, _accessSync, path, mode, flag);
     }
@@ -189,7 +189,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// close 方法
     /// </summary>
-    public static Task Close(IntPtr file)
+    public static Task Close(double file)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _close, file);
     }
@@ -197,7 +197,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// closeSync 方法
     /// </summary>
-    public static void CloseSync(IntPtr file)
+    public static void CloseSync(double file)
     {
         NodeApi.CallMethodVoid(Module, _closeSync, file);
     }
@@ -205,7 +205,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// copy 方法
     /// </summary>
-    public static Task Copy(IntPtr srcUri, IntPtr destUri, CopyOptions options)
+    public static Task Copy(string srcUri, string destUri, IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copy, srcUri, destUri, options);
     }
@@ -213,7 +213,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// copy 方法
     /// </summary>
-    public static Task Copy(IntPtr srcUri, IntPtr destUri)
+    public static Task Copy(string srcUri, string destUri)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copy, srcUri, destUri);
     }
@@ -221,7 +221,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// copyDir 方法
     /// </summary>
-    public static Task CopyDir(IntPtr src, IntPtr dest, IntPtr mode)
+    public static Task CopyDir(string src, string dest, double mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copyDir, src, dest, mode);
     }
@@ -229,7 +229,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// copyDir 方法
     /// </summary>
-    public static Task CopyDir(IntPtr src, IntPtr dest)
+    public static Task CopyDir(string src, string dest)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copyDir, src, dest);
     }
@@ -237,7 +237,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// copyDirSync 方法
     /// </summary>
-    public static void CopyDirSync(IntPtr src, IntPtr dest, IntPtr mode)
+    public static void CopyDirSync(string src, string dest, double mode)
     {
         NodeApi.CallMethodVoid(Module, _copyDirSync, src, dest, mode);
     }
@@ -245,7 +245,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// copyFile 方法
     /// </summary>
-    public static Task CopyFile(IntPtr src, IntPtr dest, IntPtr mode)
+    public static Task CopyFile(string src, string dest, double mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest, mode);
     }
@@ -253,7 +253,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// copyFile 方法
     /// </summary>
-    public static Task CopyFile(IntPtr src, IntPtr dest)
+    public static Task CopyFile(string src, string dest)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest);
     }
@@ -261,7 +261,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// copyFileSync 方法
     /// </summary>
-    public static void CopyFileSync(IntPtr src, IntPtr dest, IntPtr mode)
+    public static void CopyFileSync(string src, string dest, double mode)
     {
         NodeApi.CallMethodVoid(Module, _copyFileSync, src, dest, mode);
     }
@@ -269,7 +269,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// createStream 方法
     /// </summary>
-    public static Task<IntPtr> CreateStream(IntPtr path, IntPtr mode)
+    public static Task<IntPtr> CreateStream(string path, string mode)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createStream, path, mode);
     }
@@ -277,7 +277,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// createStreamSync 方法
     /// </summary>
-    public static IntPtr CreateStreamSync(IntPtr path, IntPtr mode)
+    public static IntPtr CreateStreamSync(string path, string mode)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createStreamSync, path, mode);
     }
@@ -285,7 +285,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// createRandomAccessFile 方法
     /// </summary>
-    public static Task<IntPtr> CreateRandomAccessFile(IntPtr file, IntPtr mode, RandomAccessFileOptions options)
+    public static Task<IntPtr> CreateRandomAccessFile(string file, double mode, IntPtr options)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file, mode, options);
     }
@@ -293,23 +293,23 @@ public static unsafe partial class Fs
     /// <summary>
     /// createRandomAccessFile 方法
     /// </summary>
-    public static Task<RandomAccessFile> CreateRandomAccessFile(IntPtr file)
+    public static Task<IntPtr> CreateRandomAccessFile(string file)
     {
-        return NodeApi.CallMethodAsync<RandomAccessFile>(Module, _createRandomAccessFile, file);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file);
     }
 
     /// <summary>
     /// createRandomAccessFile 方法
     /// </summary>
-    public static Task<RandomAccessFile> CreateRandomAccessFile(IntPtr file, IntPtr mode)
+    public static Task<IntPtr> CreateRandomAccessFile(string file, double mode)
     {
-        return NodeApi.CallMethodAsync<RandomAccessFile>(Module, _createRandomAccessFile, file, mode);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file, mode);
     }
 
     /// <summary>
     /// createRandomAccessFileSync 方法
     /// </summary>
-    public static IntPtr CreateRandomAccessFileSync(IntPtr file, IntPtr mode, RandomAccessFileOptions options)
+    public static IntPtr CreateRandomAccessFileSync(string file, double mode, IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createRandomAccessFileSync, file, mode, options);
     }
@@ -317,7 +317,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// createReadStream 方法
     /// </summary>
-    public static IntPtr CreateReadStream(IntPtr path, ReadStreamOptions options)
+    public static IntPtr CreateReadStream(string path, IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createReadStream, path, options);
     }
@@ -325,7 +325,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// createWriteStream 方法
     /// </summary>
-    public static IntPtr CreateWriteStream(IntPtr path, WriteStreamOptions options)
+    public static IntPtr CreateWriteStream(string path, IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createWriteStream, path, options);
     }
@@ -333,7 +333,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// createWatcher 方法
     /// </summary>
-    public static IntPtr CreateWatcher(IntPtr path, IntPtr events, WatchEventListener listener)
+    public static IntPtr CreateWatcher(string path, double events, IntPtr listener)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createWatcher, path, events, listener);
     }
@@ -341,7 +341,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// dup 方法
     /// </summary>
-    public static IntPtr Dup(IntPtr fd)
+    public static IntPtr Dup(double fd)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _dup, fd);
     }
@@ -349,7 +349,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// fdatasync 方法
     /// </summary>
-    public static Task Fdatasync(IntPtr fd)
+    public static Task Fdatasync(double fd)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _fdatasync, fd);
     }
@@ -357,7 +357,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// fdatasyncSync 方法
     /// </summary>
-    public static void FdatasyncSync(IntPtr fd)
+    public static void FdatasyncSync(double fd)
     {
         NodeApi.CallMethodVoid(Module, _fdatasyncSync, fd);
     }
@@ -365,7 +365,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// fdopenStream 方法
     /// </summary>
-    public static Task<IntPtr> FdopenStream(IntPtr fd, IntPtr mode)
+    public static Task<IntPtr> FdopenStream(double fd, string mode)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _fdopenStream, fd, mode);
     }
@@ -373,7 +373,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// fdopenStreamSync 方法
     /// </summary>
-    public static IntPtr FdopenStreamSync(IntPtr fd, IntPtr mode)
+    public static IntPtr FdopenStreamSync(double fd, string mode)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _fdopenStreamSync, fd, mode);
     }
@@ -381,7 +381,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// fsync 方法
     /// </summary>
-    public static Task Fsync(IntPtr fd)
+    public static Task Fsync(double fd)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _fsync, fd);
     }
@@ -389,7 +389,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// fsyncSync 方法
     /// </summary>
-    public static void FsyncSync(IntPtr fd)
+    public static void FsyncSync(double fd)
     {
         NodeApi.CallMethodVoid(Module, _fsyncSync, fd);
     }
@@ -397,7 +397,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// listFile 方法
     /// </summary>
-    public static Task<IntPtr> ListFile(IntPtr path, ListFileOptions options)
+    public static Task<IntPtr> ListFile(string path, IntPtr options)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _listFile, path, options);
     }
@@ -405,7 +405,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// listFile 方法
     /// </summary>
-    public static Task<string[]> ListFile(IntPtr path)
+    public static Task<string[]> ListFile(string path)
     {
         return NodeApi.CallMethodAsync<string[]>(Module, _listFile, path);
     }
@@ -413,7 +413,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// listFileSync 方法
     /// </summary>
-    public static string[] ListFileSync(IntPtr path, ListFileOptions options)
+    public static string[] ListFileSync(string path, IntPtr options)
     {
         return NodeApi.CallMethod<string[]>(Module, _listFileSync, path, options);
     }
@@ -421,7 +421,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// listFileExt 方法
     /// </summary>
-    public static Task<IntPtr> ListFileExt(IntPtr path, ListFileExtOptions options)
+    public static Task<IntPtr> ListFileExt(string path, IntPtr options)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _listFileExt, path, options);
     }
@@ -429,7 +429,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// listFileExtSync 方法
     /// </summary>
-    public static string[] ListFileExtSync(IntPtr path, ListFileExtOptions options)
+    public static string[] ListFileExtSync(string path, IntPtr options)
     {
         return NodeApi.CallMethod<string[]>(Module, _listFileExtSync, path, options);
     }
@@ -437,7 +437,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// lseek 方法
     /// </summary>
-    public static double Lseek(IntPtr fd, IntPtr offset, WhenceType whence)
+    public static double Lseek(double fd, double offset, IntPtr whence)
     {
         return NodeApi.CallMethod<double>(Module, _lseek, fd, offset, whence);
     }
@@ -445,7 +445,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// lstat 方法
     /// </summary>
-    public static Task<IntPtr> Lstat(IntPtr path)
+    public static Task<IntPtr> Lstat(string path)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _lstat, path);
     }
@@ -453,7 +453,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// lstatSync 方法
     /// </summary>
-    public static IntPtr LstatSync(IntPtr path)
+    public static IntPtr LstatSync(string path)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _lstatSync, path);
     }
@@ -461,7 +461,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// mkdir 方法
     /// </summary>
-    public static Task Mkdir(IntPtr path)
+    public static Task Mkdir(string path)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _mkdir, path);
     }
@@ -469,7 +469,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// mkdir 方法
     /// </summary>
-    public static Task Mkdir(IntPtr path, IntPtr recursion)
+    public static Task Mkdir(string path, bool recursion)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _mkdir, path, recursion);
     }
@@ -477,7 +477,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// mkdirSync 方法
     /// </summary>
-    public static void MkdirSync(IntPtr path)
+    public static void MkdirSync(string path)
     {
         NodeApi.CallMethodVoid(Module, _mkdirSync, path);
     }
@@ -485,7 +485,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// mkdirSync 方法
     /// </summary>
-    public static void MkdirSync(IntPtr path, IntPtr recursion)
+    public static void MkdirSync(string path, bool recursion)
     {
         NodeApi.CallMethodVoid(Module, _mkdirSync, path, recursion);
     }
@@ -493,7 +493,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// mkdtemp 方法
     /// </summary>
-    public static Task<string> Mkdtemp(IntPtr prefix)
+    public static Task<string> Mkdtemp(string prefix)
     {
         return NodeApi.CallMethodAsync<string>(Module, _mkdtemp, prefix);
     }
@@ -501,7 +501,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// mkdtempSync 方法
     /// </summary>
-    public static string MkdtempSync(IntPtr prefix)
+    public static string MkdtempSync(string prefix)
     {
         return NodeApi.CallMethod<string>(Module, _mkdtempSync, prefix);
     }
@@ -509,7 +509,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// mmap 方法
     /// </summary>
-    public static Task<IntPtr> Mmap(IntPtr file, MappingMode mode, IntPtr offset, IntPtr size)
+    public static Task<IntPtr> Mmap(double file, IntPtr mode, double offset, double size)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _mmap, file, mode, offset, size);
     }
@@ -517,7 +517,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// mmapSync 方法
     /// </summary>
-    public static IntPtr MmapSync(IntPtr file, MappingMode mode, IntPtr offset, IntPtr size)
+    public static IntPtr MmapSync(double file, IntPtr mode, double offset, double size)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _mmapSync, file, mode, offset, size);
     }
@@ -525,7 +525,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// moveDir 方法
     /// </summary>
-    public static Task MoveDir(IntPtr src, IntPtr dest, IntPtr mode)
+    public static Task MoveDir(string src, string dest, double mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _moveDir, src, dest, mode);
     }
@@ -533,7 +533,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// moveDir 方法
     /// </summary>
-    public static Task MoveDir(IntPtr src, IntPtr dest)
+    public static Task MoveDir(string src, string dest)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _moveDir, src, dest);
     }
@@ -541,7 +541,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// moveDirSync 方法
     /// </summary>
-    public static void MoveDirSync(IntPtr src, IntPtr dest, IntPtr mode)
+    public static void MoveDirSync(string src, string dest, double mode)
     {
         NodeApi.CallMethodVoid(Module, _moveDirSync, src, dest, mode);
     }
@@ -549,7 +549,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// moveFile 方法
     /// </summary>
-    public static Task MoveFile(IntPtr src, IntPtr dest, IntPtr mode)
+    public static Task MoveFile(string src, string dest, double mode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _moveFile, src, dest, mode);
     }
@@ -557,7 +557,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// moveFile 方法
     /// </summary>
-    public static Task MoveFile(IntPtr src, IntPtr dest)
+    public static Task MoveFile(string src, string dest)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _moveFile, src, dest);
     }
@@ -565,7 +565,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// moveFileSync 方法
     /// </summary>
-    public static void MoveFileSync(IntPtr src, IntPtr dest, IntPtr mode)
+    public static void MoveFileSync(string src, string dest, double mode)
     {
         NodeApi.CallMethodVoid(Module, _moveFileSync, src, dest, mode);
     }
@@ -573,7 +573,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// open 方法
     /// </summary>
-    public static Task<IntPtr> Open(IntPtr path, IntPtr mode)
+    public static Task<IntPtr> Open(string path, double mode)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _open, path, mode);
     }
@@ -581,15 +581,15 @@ public static unsafe partial class Fs
     /// <summary>
     /// open 方法
     /// </summary>
-    public static Task<File> Open(IntPtr path)
+    public static Task<IntPtr> Open(string path)
     {
-        return NodeApi.CallMethodAsync<File>(Module, _open, path);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _open, path);
     }
 
     /// <summary>
     /// openSync 方法
     /// </summary>
-    public static IntPtr OpenSync(IntPtr path, IntPtr mode)
+    public static IntPtr OpenSync(string path, double mode)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _openSync, path, mode);
     }
@@ -597,7 +597,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// read 方法
     /// </summary>
-    public static Task<double> Read(IntPtr fd, ArrayBuffer buffer, ReadOptions options)
+    public static Task<double> Read(double fd, IntPtr buffer, IntPtr options)
     {
         return NodeApi.CallMethodAsync<double>(Module, _read, fd, buffer, options);
     }
@@ -605,7 +605,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// read 方法
     /// </summary>
-    public static Task<double> Read(IntPtr fd, ArrayBuffer buffer)
+    public static Task<double> Read(double fd, IntPtr buffer)
     {
         return NodeApi.CallMethodAsync<double>(Module, _read, fd, buffer);
     }
@@ -613,7 +613,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// readSync 方法
     /// </summary>
-    public static double ReadSync(IntPtr fd, ArrayBuffer buffer, ReadOptions options)
+    public static double ReadSync(double fd, IntPtr buffer, IntPtr options)
     {
         return NodeApi.CallMethod<double>(Module, _readSync, fd, buffer, options);
     }
@@ -621,7 +621,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// readLines 方法
     /// </summary>
-    public static Task<IntPtr> ReadLines(IntPtr filePath, Options options)
+    public static Task<IntPtr> ReadLines(string filePath, IntPtr options)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _readLines, filePath, options);
     }
@@ -629,15 +629,15 @@ public static unsafe partial class Fs
     /// <summary>
     /// readLines 方法
     /// </summary>
-    public static Task<ReaderIterator> ReadLines(IntPtr filePath)
+    public static Task<IntPtr> ReadLines(string filePath)
     {
-        return NodeApi.CallMethodAsync<ReaderIterator>(Module, _readLines, filePath);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _readLines, filePath);
     }
 
     /// <summary>
     /// readLinesSync 方法
     /// </summary>
-    public static IntPtr ReadLinesSync(IntPtr filePath, Options options)
+    public static IntPtr ReadLinesSync(string filePath, IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _readLinesSync, filePath, options);
     }
@@ -645,7 +645,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// readText 方法
     /// </summary>
-    public static Task<string> ReadText(IntPtr filePath, ReadTextOptions options)
+    public static Task<string> ReadText(string filePath, IntPtr options)
     {
         return NodeApi.CallMethodAsync<string>(Module, _readText, filePath, options);
     }
@@ -653,7 +653,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// readText 方法
     /// </summary>
-    public static Task<string> ReadText(IntPtr filePath)
+    public static Task<string> ReadText(string filePath)
     {
         return NodeApi.CallMethodAsync<string>(Module, _readText, filePath);
     }
@@ -661,7 +661,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// readTextSync 方法
     /// </summary>
-    public static string ReadTextSync(IntPtr filePath, ReadTextOptions options)
+    public static string ReadTextSync(string filePath, IntPtr options)
     {
         return NodeApi.CallMethod<string>(Module, _readTextSync, filePath, options);
     }
@@ -669,7 +669,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// rename 方法
     /// </summary>
-    public static Task Rename(IntPtr oldPath, IntPtr newPath)
+    public static Task Rename(string oldPath, string newPath)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _rename, oldPath, newPath);
     }
@@ -677,7 +677,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// renameSync 方法
     /// </summary>
-    public static void RenameSync(IntPtr oldPath, IntPtr newPath)
+    public static void RenameSync(string oldPath, string newPath)
     {
         NodeApi.CallMethodVoid(Module, _renameSync, oldPath, newPath);
     }
@@ -685,7 +685,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// rmdir 方法
     /// </summary>
-    public static Task Rmdir(IntPtr path)
+    public static Task Rmdir(string path)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _rmdir, path);
     }
@@ -693,7 +693,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// rmdirSync 方法
     /// </summary>
-    public static void RmdirSync(IntPtr path)
+    public static void RmdirSync(string path)
     {
         NodeApi.CallMethodVoid(Module, _rmdirSync, path);
     }
@@ -701,7 +701,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// stat 方法
     /// </summary>
-    public static Task<IntPtr> Stat(IntPtr file)
+    public static Task<IntPtr> Stat(string file)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _stat, file);
     }
@@ -709,7 +709,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// statSync 方法
     /// </summary>
-    public static IntPtr StatSync(IntPtr file)
+    public static IntPtr StatSync(string file)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _statSync, file);
     }
@@ -717,7 +717,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// symlink 方法
     /// </summary>
-    public static Task Symlink(IntPtr target, IntPtr srcPath)
+    public static Task Symlink(string target, string srcPath)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _symlink, target, srcPath);
     }
@@ -725,7 +725,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// symlinkSync 方法
     /// </summary>
-    public static void SymlinkSync(IntPtr target, IntPtr srcPath)
+    public static void SymlinkSync(string target, string srcPath)
     {
         NodeApi.CallMethodVoid(Module, _symlinkSync, target, srcPath);
     }
@@ -733,7 +733,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// truncate 方法
     /// </summary>
-    public static Task Truncate(IntPtr file, IntPtr len)
+    public static Task Truncate(string file, double len)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _truncate, file, len);
     }
@@ -741,7 +741,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// truncate 方法
     /// </summary>
-    public static Task Truncate(IntPtr file)
+    public static Task Truncate(string file)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _truncate, file);
     }
@@ -749,7 +749,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// truncateSync 方法
     /// </summary>
-    public static void TruncateSync(IntPtr file, IntPtr len)
+    public static void TruncateSync(string file, double len)
     {
         NodeApi.CallMethodVoid(Module, _truncateSync, file, len);
     }
@@ -757,7 +757,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// unlink 方法
     /// </summary>
-    public static Task Unlink(IntPtr path)
+    public static Task Unlink(string path)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _unlink, path);
     }
@@ -765,7 +765,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// unlinkSync 方法
     /// </summary>
-    public static void UnlinkSync(IntPtr path)
+    public static void UnlinkSync(string path)
     {
         NodeApi.CallMethodVoid(Module, _unlinkSync, path);
     }
@@ -773,7 +773,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// utimes 方法
     /// </summary>
-    public static void Utimes(IntPtr path, IntPtr mtime)
+    public static void Utimes(string path, double mtime)
     {
         NodeApi.CallMethodVoid(Module, _utimes, path, mtime);
     }
@@ -781,7 +781,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// write 方法
     /// </summary>
-    public static Task<double> Write(IntPtr fd, ArrayBuffer buffer, WriteOptions options)
+    public static Task<double> Write(double fd, string buffer, IntPtr options)
     {
         return NodeApi.CallMethodAsync<double>(Module, _write, fd, buffer, options);
     }
@@ -789,7 +789,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// write 方法
     /// </summary>
-    public static Task<double> Write(IntPtr fd, ArrayBuffer buffer)
+    public static Task<double> Write(double fd, string buffer)
     {
         return NodeApi.CallMethodAsync<double>(Module, _write, fd, buffer);
     }
@@ -797,7 +797,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// writeSync 方法
     /// </summary>
-    public static double WriteSync(IntPtr fd, ArrayBuffer buffer, WriteOptions options)
+    public static double WriteSync(double fd, string buffer, IntPtr options)
     {
         return NodeApi.CallMethod<double>(Module, _writeSync, fd, buffer, options);
     }
@@ -805,7 +805,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// connectDfs 方法
     /// </summary>
-    public static Task ConnectDfs(IntPtr networkId, DfsListeners listeners)
+    public static Task ConnectDfs(string networkId, IntPtr listeners)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _connectDfs, networkId, listeners);
     }
@@ -813,7 +813,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// disconnectDfs 方法
     /// </summary>
-    public static Task DisconnectDfs(IntPtr networkId)
+    public static Task DisconnectDfs(string networkId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _disconnectDfs, networkId);
     }
@@ -821,7 +821,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// setxattr 方法
     /// </summary>
-    public static Task Setxattr(IntPtr path, IntPtr key, IntPtr value)
+    public static Task Setxattr(string path, string key, string value)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setxattr, path, key, value);
     }
@@ -829,7 +829,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// setxattrSync 方法
     /// </summary>
-    public static void SetxattrSync(IntPtr path, IntPtr key, IntPtr value)
+    public static void SetxattrSync(string path, string key, string value)
     {
         NodeApi.CallMethodVoid(Module, _setxattrSync, path, key, value);
     }
@@ -837,7 +837,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// getxattr 方法
     /// </summary>
-    public static Task<string> Getxattr(IntPtr path, IntPtr key)
+    public static Task<string> Getxattr(string path, string key)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getxattr, path, key);
     }
@@ -845,7 +845,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// getxattrSync 方法
     /// </summary>
-    public static string GetxattrSync(IntPtr path, IntPtr key)
+    public static string GetxattrSync(string path, string key)
     {
         return NodeApi.CallMethod<string>(Module, _getxattrSync, path, key);
     }

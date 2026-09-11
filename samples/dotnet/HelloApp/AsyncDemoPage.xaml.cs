@@ -9,7 +9,7 @@ public partial class AsyncDemoPage : ContentPage
         InitializeComponent();
     }
 
-    private async void OnTestPromiseString(object sender, EventArgs e)
+    private async void OnTestPromiseString(object? sender, EventArgs e)
     {
         try
         {
@@ -26,7 +26,7 @@ public partial class AsyncDemoPage : ContentPage
         }
     }
 
-    private async void OnTestPromiseDouble(object sender, EventArgs e)
+    private async void OnTestPromiseDouble(object? sender, EventArgs e)
     {
         try
         {
@@ -41,7 +41,7 @@ public partial class AsyncDemoPage : ContentPage
         }
     }
 
-    private async void OnTestPromiseBool(object sender, EventArgs e)
+    private async void OnTestPromiseBool(object? sender, EventArgs e)
     {
         try
         {
@@ -56,7 +56,7 @@ public partial class AsyncDemoPage : ContentPage
         }
     }
 
-    private async void OnTestPromiseInt(object sender, EventArgs e)
+    private async void OnTestPromiseInt(object? sender, EventArgs e)
     {
         try
         {
@@ -71,7 +71,7 @@ public partial class AsyncDemoPage : ContentPage
         }
     }
 
-    private async void OnTestPromiseUInt(object sender, EventArgs e)
+    private async void OnTestPromiseUInt(object? sender, EventArgs e)
     {
         try
         {
@@ -86,7 +86,7 @@ public partial class AsyncDemoPage : ContentPage
         }
     }
 
-    private async void OnTestPromiseLong(object sender, EventArgs e)
+    private async void OnTestPromiseLong(object? sender, EventArgs e)
     {
         try
         {
@@ -101,7 +101,7 @@ public partial class AsyncDemoPage : ContentPage
         }
     }
 
-    private async void OnTestPromiseByte(object sender, EventArgs e)
+    private async void OnTestPromiseByte(object? sender, EventArgs e)
     {
         try
         {
@@ -116,7 +116,7 @@ public partial class AsyncDemoPage : ContentPage
         }
     }
 
-    private async void OnTestPromiseVoid(object sender, EventArgs e)
+    private async void OnTestPromiseVoid(object? sender, EventArgs e)
     {
         try
         {
@@ -131,7 +131,7 @@ public partial class AsyncDemoPage : ContentPage
         }
     }
 
-    private async void OnTestPromiseReject(object sender, EventArgs e)
+    private async void OnTestPromiseReject(object? sender, EventArgs e)
     {
         try
         {

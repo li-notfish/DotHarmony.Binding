@@ -86,17 +86,17 @@ public static unsafe partial class Media
     /// <summary>
     /// createAVPlayer 方法
     /// </summary>
-    public static Task<AVPlayer> CreateAVPlayer()
+    public static Task<IntPtr> CreateAVPlayer()
     {
-        return NodeApi.CallMethodAsync<AVPlayer>(Module, _createAVPlayer);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVPlayer);
     }
 
     /// <summary>
     /// createAVRecorder 方法
     /// </summary>
-    public static Task<AVRecorder> CreateAVRecorder()
+    public static Task<IntPtr> CreateAVRecorder()
     {
-        return NodeApi.CallMethodAsync<AVRecorder>(Module, _createAVRecorder);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVRecorder);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public static unsafe partial class Media
     /// <summary>
     /// createMediaSourceWithFd 方法
     /// </summary>
-    public static IntPtr CreateMediaSourceWithFd(AVFileDescriptor fdSrc)
+    public static IntPtr CreateMediaSourceWithFd(IntPtr fdSrc)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createMediaSourceWithFd, fdSrc);
     }
@@ -126,7 +126,7 @@ public static unsafe partial class Media
     /// <summary>
     /// createMediaSourceWithDataSource 方法
     /// </summary>
-    public static IntPtr CreateMediaSourceWithDataSource(AVDataSrcDescriptor dataSrc)
+    public static IntPtr CreateMediaSourceWithDataSource(IntPtr dataSrc)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createMediaSourceWithDataSource, dataSrc);
     }
@@ -134,7 +134,7 @@ public static unsafe partial class Media
     /// <summary>
     /// createMediaSourceWithUrl 方法
     /// </summary>
-    public static IntPtr CreateMediaSourceWithUrl(IntPtr url, IntPtr headers)
+    public static IntPtr CreateMediaSourceWithUrl(string url, IntPtr headers)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createMediaSourceWithUrl, url, headers);
     }
@@ -142,7 +142,7 @@ public static unsafe partial class Media
     /// <summary>
     /// createMediaSourceWithStreamData 方法
     /// </summary>
-    public static IntPtr CreateMediaSourceWithStreamData(MediaStream[] streams)
+    public static IntPtr CreateMediaSourceWithStreamData(IntPtr[] streams)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createMediaSourceWithStreamData, streams);
     }
@@ -150,7 +150,7 @@ public static unsafe partial class Media
     /// <summary>
     /// createAVAdsController 方法
     /// </summary>
-    public static Task<IntPtr> CreateAVAdsController(AVPlayer player)
+    public static Task<IntPtr> CreateAVAdsController(IntPtr player)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createAVAdsController, player);
     }
@@ -158,17 +158,17 @@ public static unsafe partial class Media
     /// <summary>
     /// createVideoPlayer 方法
     /// </summary>
-    public static Task<VideoPlayer> CreateVideoPlayer()
+    public static Task<IntPtr> CreateVideoPlayer()
     {
-        return NodeApi.CallMethodAsync<VideoPlayer>(Module, _createVideoPlayer);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createVideoPlayer);
     }
 
     /// <summary>
     /// createSoundPool 方法
     /// </summary>
-    public static Task<SoundPool> CreateSoundPool(IntPtr maxStreams, IntPtr audioRenderInfo)
+    public static Task<IntPtr> CreateSoundPool(double maxStreams, IntPtr audioRenderInfo)
     {
-        return NodeApi.CallMethodAsync<SoundPool>(Module, _createSoundPool, maxStreams, audioRenderInfo);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createSoundPool, maxStreams, audioRenderInfo);
     }
 
     /// <summary>
@@ -206,7 +206,7 @@ public static unsafe partial class Media
     /// <summary>
     /// createMediaSourceWithDirectory 方法
     /// </summary>
-    public static Task<IntPtr> CreateMediaSourceWithDirectory(IntPtr path)
+    public static Task<IntPtr> CreateMediaSourceWithDirectory(string path)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createMediaSourceWithDirectory, path);
     }

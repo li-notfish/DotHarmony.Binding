@@ -313,7 +313,7 @@ public static unsafe partial class DeviceInfo
     /// <summary>
     /// performanceClass
     /// </summary>
-    public static PerformanceClassLevel PerformanceClass => (PerformanceClassLevel)NativeValue.ToInt(NodeApi.GetProperty(Module, _performanceClass));
+    public static IntPtr PerformanceClass => NodeApi.GetProperty(Module, _performanceClass);
 
     /// <summary>
     /// chipType
@@ -328,7 +328,7 @@ public static unsafe partial class DeviceInfo
     /// <summary>
     /// apiAvailable 方法
     /// </summary>
-    public static bool ApiAvailable(IntPtr version)
+    public static bool ApiAvailable(string version)
     {
         return NodeApi.CallMethod<bool>(Module, _apiAvailable, version);
     }

@@ -90,9 +90,9 @@ public static unsafe partial class Display
     /// <summary>
     /// getDefaultDisplay 方法
     /// </summary>
-    public static Task<Display> GetDefaultDisplay()
+    public static Task<IntPtr> GetDefaultDisplay()
     {
-        return NodeApi.CallMethodAsync<Display>(Module, _getDefaultDisplay);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getDefaultDisplay);
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public static unsafe partial class Display
     /// <summary>
     /// getDisplayByIdSync 方法
     /// </summary>
-    public static IntPtr GetDisplayByIdSync(IntPtr displayId)
+    public static IntPtr GetDisplayByIdSync(double displayId)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getDisplayByIdSync, displayId);
     }
@@ -122,17 +122,17 @@ public static unsafe partial class Display
     /// <summary>
     /// getAllDisplay 方法
     /// </summary>
-    public static Task<Display[]> GetAllDisplay()
+    public static Task<IntPtr[]> GetAllDisplay()
     {
-        return NodeApi.CallMethodAsync<Display[]>(Module, _getAllDisplay);
+        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAllDisplay);
     }
 
     /// <summary>
     /// getAllDisplays 方法
     /// </summary>
-    public static Task<Display[]> GetAllDisplays()
+    public static Task<IntPtr[]> GetAllDisplays()
     {
-        return NodeApi.CallMethodAsync<Display[]>(Module, _getAllDisplays);
+        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAllDisplays);
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public static unsafe partial class Display
     /// <summary>
     /// on 方法
     /// </summary>
-    public static void On(IntPtr type, IntPtr callback)
+    public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
@@ -154,7 +154,7 @@ public static unsafe partial class Display
     /// <summary>
     /// off 方法
     /// </summary>
-    public static void Off(IntPtr type, IntPtr callback)
+    public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
@@ -176,22 +176,6 @@ public static unsafe partial class Display
     }
 
     /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(IntPtr type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(IntPtr type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
     /// isCaptured 方法
     /// </summary>
     public static bool IsCaptured()
@@ -202,7 +186,7 @@ public static unsafe partial class Display
     /// <summary>
     /// isCaptured 方法
     /// </summary>
-    public static bool IsCaptured(IntPtr bundleNameList)
+    public static bool IsCaptured(string[] bundleNameList)
     {
         return NodeApi.CallMethod<bool>(Module, _isCaptured, bundleNameList);
     }
@@ -226,7 +210,7 @@ public static unsafe partial class Display
     /// <summary>
     /// createVirtualScreen 方法
     /// </summary>
-    public static Task<double> CreateVirtualScreen(VirtualScreenConfig config)
+    public static Task<double> CreateVirtualScreen(IntPtr config)
     {
         return NodeApi.CallMethodAsync<double>(Module, _createVirtualScreen, config);
     }
@@ -234,7 +218,7 @@ public static unsafe partial class Display
     /// <summary>
     /// destroyVirtualScreen 方法
     /// </summary>
-    public static Task DestroyVirtualScreen(IntPtr screenId)
+    public static Task DestroyVirtualScreen(double screenId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _destroyVirtualScreen, screenId);
     }
@@ -242,7 +226,7 @@ public static unsafe partial class Display
     /// <summary>
     /// setVirtualScreenSurface 方法
     /// </summary>
-    public static Task SetVirtualScreenSurface(IntPtr screenId, IntPtr surfaceId)
+    public static Task SetVirtualScreenSurface(double screenId, string surfaceId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setVirtualScreenSurface, screenId, surfaceId);
     }
@@ -250,7 +234,7 @@ public static unsafe partial class Display
     /// <summary>
     /// makeUnique 方法
     /// </summary>
-    public static Task MakeUnique(IntPtr screenId)
+    public static Task MakeUnique(double screenId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _makeUnique, screenId);
     }
@@ -258,7 +242,7 @@ public static unsafe partial class Display
     /// <summary>
     /// convertRelativeToGlobalCoordinate 方法
     /// </summary>
-    public static IntPtr ConvertRelativeToGlobalCoordinate(RelativePosition relativePosition)
+    public static IntPtr ConvertRelativeToGlobalCoordinate(IntPtr relativePosition)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _convertRelativeToGlobalCoordinate, relativePosition);
     }
@@ -266,7 +250,7 @@ public static unsafe partial class Display
     /// <summary>
     /// convertGlobalToRelativeCoordinate 方法
     /// </summary>
-    public static IntPtr ConvertGlobalToRelativeCoordinate(Position position, IntPtr displayId)
+    public static IntPtr ConvertGlobalToRelativeCoordinate(IntPtr position, double displayId)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _convertGlobalToRelativeCoordinate, position, displayId);
     }
@@ -274,25 +258,9 @@ public static unsafe partial class Display
     /// <summary>
     /// getBrightnessInfo 方法
     /// </summary>
-    public static IntPtr GetBrightnessInfo(IntPtr displayId)
+    public static IntPtr GetBrightnessInfo(double displayId)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getBrightnessInfo, displayId);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(IntPtr type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(IntPtr type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
 }

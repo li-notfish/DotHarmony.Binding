@@ -877,32 +877,6 @@ public enum PngPropertyKey
 }
 
 /// <summary>
-/// Orientation 枚举
-/// </summary>
-public enum Orientation
-{
-    TOP_LEFT = 1,
-    TOP_RIGHT = 2,
-    BOTTOM_RIGHT = 3,
-    BOTTOM_LEFT = 4,
-    LEFT_TOP = 5,
-    RIGHT_TOP = 6,
-    RIGHT_BOTTOM = 7,
-    LEFT_BOTTOM = 8
-}
-
-/// <summary>
-/// FocusMode 枚举
-/// </summary>
-public enum FocusMode
-{
-    AF_A = 0,
-    AF_S = 1,
-    AF_C = 2,
-    MF = 3
-}
-
-/// <summary>
 /// XmageColorMode 枚举
 /// </summary>
 public enum XmageColorMode

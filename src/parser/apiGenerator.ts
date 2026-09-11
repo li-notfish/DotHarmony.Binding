@@ -164,9 +164,11 @@ export class ApiGenerator {
         // 生成属性和方法
         const generatedSignatures = new Set<string>();
         for (const method of component.methods) {
-            // 过滤 AsyncCallback 参数后计算签名 key，避免回调重载与 Promise 重载产生重复 C# 签名
+            // 过滤 AsyncCallback 参数后计算签名 key
+            // 使用映射后 C# 类型去重，避免不同 TS 类型映射为相同 C# 类型后重复
             const filteredParams = method.parameters.filter(p => !/^AsyncCallback<(.+)>$/.test(p.type));
-            const sigKey = `${method.name}(${filteredParams.map(p => TypeMapper.mapType(TypeMapper.cleanOptional(p.type))).join(',')})`;
+            const mappedTypes = filteredParams.map(p => TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
+            const sigKey = `${method.name}(${mappedTypes.join(',')})`;
             if (generatedSignatures.has(sigKey)) continue;
             generatedSignatures.add(sigKey);
 
@@ -221,7 +223,7 @@ export class ApiGenerator {
         // 格式化参数（过滤掉回调参数后）
         const params = filteredParams.map(p => this.formatParameter(p));
         const paramStr = params.join(', ');
-        const paramNames = filteredParams.map(p => p.name).join(', ');
+        const paramNames = filteredParams.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
 
         lines.push('    /// <summary>');
         lines.push(`    /// ${method.name} 方法`);
@@ -308,13 +310,14 @@ export class ApiGenerator {
         const cleanType = TypeMapper.cleanOptional(param.type);
         let type = TypeMapper.mapType(cleanType);
         // 未映射的 TS 原始类型（如接口名、Callback<>, Promise<>）退回 IntPtr
-        if (/^[a-z]/.test(type) || type.includes('<') && !type.startsWith('Task<') && !type.startsWith('Action<') && !type.startsWith('Func<') && !type.endsWith('[]')) {
+        // 但保留 C# 基础类型（string, bool, int, double, long, byte, uint）
+        if (this.isUnmappedType(type)) {
             type = 'IntPtr';
         }
         const optionalMark = TypeMapper.isOptional(param.type) ? '?' : '';
         const defaultVal = param.defaultValue ? ` = ${param.defaultValue}` :
                           (TypeMapper.isOptional(param.type) ? ' = null' : '');
-        return `${type}${optionalMark} ${param.name}${defaultVal}`;
+        return `${type}${optionalMark} ${TypeMapper.escapeCSharpKeyword(param.name)}${defaultVal}`;
     }
 
     private capitalizeFirst(s: string): string {

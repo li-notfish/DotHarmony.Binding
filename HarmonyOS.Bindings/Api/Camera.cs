@@ -69,7 +69,7 @@ public static unsafe partial class Camera
     /// <summary>
     /// getCameraManager 方法
     /// </summary>
-    public static IntPtr GetCameraManager(Context context)
+    public static IntPtr GetCameraManager(IntPtr context)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getCameraManager, context);
     }

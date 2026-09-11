@@ -21,42 +21,42 @@ public partial class ModuleVerifyPage : ContentPage
     }
 
     // Basic Info
-    private void OnVerifyDeviceInfo(object sender, EventArgs e)
+    private void OnVerifyDeviceInfo(object? sender, EventArgs e)
     {
         try
         {
-            var brand = DeviceInfo.Brand;
-            var manufacturer = DeviceInfo.Manufacturer;
-            var model = DeviceInfo.ProductModel;
-            var osFullName = DeviceInfo.OsFullName;
+            var brand = HarmonyOS.Bindings.Api.DeviceInfo.Brand;
+            var manufacture = HarmonyOS.Bindings.Api.DeviceInfo.Manufacture;
+            var model = HarmonyOS.Bindings.Api.DeviceInfo.ProductModel;
+            var osFullName = HarmonyOS.Bindings.Api.DeviceInfo.OsFullName;
             ShowResult("DeviceInfo", $"Brand={brand}, Model={model}, OS={osFullName}");
         }
         catch (Exception ex) { ShowError("DeviceInfo", ex); }
     }
 
-    private void OnVerifyBatteryInfo(object sender, EventArgs e)
+    private void OnVerifyBatteryInfo(object? sender, EventArgs e)
     {
         try
         {
-            var soc = BatteryInfo.BatterySOC;
-            var charging = BatteryInfo.ChargingStatus;
+            var soc = HarmonyOS.Bindings.Api.BatteryInfo.BatterySOC;
+            var charging = HarmonyOS.Bindings.Api.BatteryInfo.ChargingStatus;
             ShowResult("BatteryInfo", $"SOC={soc}, Charging={charging}");
         }
         catch (Exception ex) { ShowError("BatteryInfo", ex); }
     }
 
-    private void OnVerifyDisplay(object sender, EventArgs e)
+    private void OnVerifyDisplay(object? sender, EventArgs e)
     {
         try
         {
-            var id = Display.Id;
-            var name = Display.Name;
-            ShowResult("Display", $"Id={id}, Name={name}");
+            // Display 接口属性（id/name）需要通过实例访问，静态 API 先测试加载
+            var isFoldable = HarmonyOS.Bindings.Api.Display.IsFoldable();
+            ShowResult("Display", $"IsFoldable={isFoldable} (module loaded OK)");
         }
         catch (Exception ex) { ShowError("Display", ex); }
     }
 
-    private void OnVerifySettings(object sender, EventArgs e)
+    private void OnVerifySettings(object? sender, EventArgs e)
     {
         try
         {
@@ -66,7 +66,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Settings", ex); }
     }
 
-    private void OnVerifySensor(object sender, EventArgs e)
+    private void OnVerifySensor(object? sender, EventArgs e)
     {
         try
         {
@@ -77,7 +77,7 @@ public partial class ModuleVerifyPage : ContentPage
     }
 
     // Network
-    private void OnVerifyHttp(object sender, EventArgs e)
+    private void OnVerifyHttp(object? sender, EventArgs e)
     {
         try
         {
@@ -86,7 +86,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Http", ex); }
     }
 
-    private void OnVerifyConnection(object sender, EventArgs e)
+    private void OnVerifyConnection(object? sender, EventArgs e)
     {
         try
         {
@@ -96,7 +96,7 @@ public partial class ModuleVerifyPage : ContentPage
     }
 
     // File
-    private void OnVerifyFs(object sender, EventArgs e)
+    private void OnVerifyFs(object? sender, EventArgs e)
     {
         try
         {
@@ -105,7 +105,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Fs", ex); }
     }
 
-    private void OnVerifyPicker(object sender, EventArgs e)
+    private void OnVerifyPicker(object? sender, EventArgs e)
     {
         try
         {
@@ -114,7 +114,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Picker", ex); }
     }
 
-    private void OnVerifyPreferences(object sender, EventArgs e)
+    private void OnVerifyPreferences(object? sender, EventArgs e)
     {
         try
         {
@@ -124,7 +124,7 @@ public partial class ModuleVerifyPage : ContentPage
     }
 
     // Multimedia
-    private void OnVerifyMedia(object sender, EventArgs e)
+    private void OnVerifyMedia(object? sender, EventArgs e)
     {
         try
         {
@@ -133,7 +133,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Media", ex); }
     }
 
-    private void OnVerifyImage(object sender, EventArgs e)
+    private void OnVerifyImage(object? sender, EventArgs e)
     {
         try
         {
@@ -142,7 +142,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Image", ex); }
     }
 
-    private void OnVerifyCamera(object sender, EventArgs e)
+    private void OnVerifyCamera(object? sender, EventArgs e)
     {
         try
         {
@@ -152,7 +152,7 @@ public partial class ModuleVerifyPage : ContentPage
     }
 
     // UI
-    private void OnVerifyWindow(object sender, EventArgs e)
+    private void OnVerifyWindow(object? sender, EventArgs e)
     {
         try
         {
@@ -161,7 +161,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Window", ex); }
     }
 
-    private void OnVerifyRouter(object sender, EventArgs e)
+    private void OnVerifyRouter(object? sender, EventArgs e)
     {
         try
         {
@@ -170,7 +170,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Router", ex); }
     }
 
-    private void OnVerifyPromptAction(object sender, EventArgs e)
+    private void OnVerifyPromptAction(object? sender, EventArgs e)
     {
         try
         {
@@ -180,7 +180,7 @@ public partial class ModuleVerifyPage : ContentPage
     }
 
     // Others
-    private void OnVerifyPasteboard(object sender, EventArgs e)
+    private void OnVerifyPasteboard(object? sender, EventArgs e)
     {
         try
         {
@@ -189,7 +189,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Pasteboard", ex); }
     }
 
-    private void OnVerifyRequest(object sender, EventArgs e)
+    private void OnVerifyRequest(object? sender, EventArgs e)
     {
         try
         {
@@ -198,7 +198,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Request", ex); }
     }
 
-    private void OnVerifyVibrator(object sender, EventArgs e)
+    private void OnVerifyVibrator(object? sender, EventArgs e)
     {
         try
         {
@@ -207,7 +207,7 @@ public partial class ModuleVerifyPage : ContentPage
         catch (Exception ex) { ShowError("Vibrator", ex); }
     }
 
-    private void OnVerifyGeolocation(object sender, EventArgs e)
+    private void OnVerifyGeolocation(object? sender, EventArgs e)
     {
         try
         {

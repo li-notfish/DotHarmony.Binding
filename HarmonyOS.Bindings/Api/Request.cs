@@ -264,49 +264,49 @@ public static unsafe partial class Request
     /// <summary>
     /// download 方法
     /// </summary>
-    public static Task<DownloadTask> Download(DownloadConfig config)
+    public static Task<IntPtr> Download(IntPtr config)
     {
-        return NodeApi.CallMethodAsync<DownloadTask>(Module, _download, config);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _download, config);
     }
 
     /// <summary>
     /// downloadFile 方法
     /// </summary>
-    public static Task<DownloadTask> DownloadFile(BaseContext context, DownloadConfig config)
+    public static Task<IntPtr> DownloadFile(IntPtr context, IntPtr config)
     {
-        return NodeApi.CallMethodAsync<DownloadTask>(Module, _downloadFile, context, config);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _downloadFile, context, config);
     }
 
     /// <summary>
     /// upload 方法
     /// </summary>
-    public static Task<UploadTask> Upload(UploadConfig config)
+    public static Task<IntPtr> Upload(IntPtr config)
     {
-        return NodeApi.CallMethodAsync<UploadTask>(Module, _upload, config);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _upload, config);
     }
 
     /// <summary>
     /// uploadFile 方法
     /// </summary>
-    public static Task<UploadTask> UploadFile(BaseContext context, UploadConfig config)
+    public static Task<IntPtr> UploadFile(IntPtr context, IntPtr config)
     {
-        return NodeApi.CallMethodAsync<UploadTask>(Module, _uploadFile, context, config);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _uploadFile, context, config);
     }
 
     /// <summary>
     /// VISIBILITY_COMPLETION
     /// </summary>
-    public static 1 VISIBILITY_COMPLETION => (1)NativeValue.ToInt(NodeApi.GetProperty(Module, _VISIBILITY_COMPLETION));
+    public static IntPtr VISIBILITY_COMPLETION => NodeApi.GetProperty(Module, _VISIBILITY_COMPLETION);
 
     /// <summary>
     /// VISIBILITY_PROGRESS
     /// </summary>
-    public static 2 VISIBILITY_PROGRESS => (2)NativeValue.ToInt(NodeApi.GetProperty(Module, _VISIBILITY_PROGRESS));
+    public static IntPtr VISIBILITY_PROGRESS => NodeApi.GetProperty(Module, _VISIBILITY_PROGRESS);
 
     /// <summary>
     /// create 方法
     /// </summary>
-    public static Task<Task> Create(BaseContext context, Config config)
+    public static Task<Task> Create(IntPtr context, IntPtr config)
     {
         return NodeApi.CallMethodAsync<Task>(Module, _create, context, config);
     }
@@ -314,7 +314,7 @@ public static unsafe partial class Request
     /// <summary>
     /// getTask 方法
     /// </summary>
-    public static Task<IntPtr> GetTask(BaseContext context, IntPtr id, IntPtr token)
+    public static Task<IntPtr> GetTask(IntPtr context, string id, string token)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getTask, context, id, token);
     }
@@ -322,7 +322,7 @@ public static unsafe partial class Request
     /// <summary>
     /// remove 方法
     /// </summary>
-    public static Task Remove(IntPtr id)
+    public static Task Remove(string id)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _remove, id);
     }
@@ -330,17 +330,17 @@ public static unsafe partial class Request
     /// <summary>
     /// show 方法
     /// </summary>
-    public static Task<TaskInfo> Show(IntPtr id)
+    public static Task<IntPtr> Show(string id)
     {
-        return NodeApi.CallMethodAsync<TaskInfo>(Module, _show, id);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _show, id);
     }
 
     /// <summary>
     /// touch 方法
     /// </summary>
-    public static Task<TaskInfo> Touch(IntPtr id, IntPtr token)
+    public static Task<IntPtr> Touch(string id, string token)
     {
-        return NodeApi.CallMethodAsync<TaskInfo>(Module, _touch, id, token);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _touch, id, token);
     }
 
     /// <summary>
@@ -354,7 +354,7 @@ public static unsafe partial class Request
     /// <summary>
     /// search 方法
     /// </summary>
-    public static Task<string[]> Search(Filter filter)
+    public static Task<string[]> Search(IntPtr filter)
     {
         return NodeApi.CallMethodAsync<string[]>(Module, _search, filter);
     }
@@ -362,7 +362,7 @@ public static unsafe partial class Request
     /// <summary>
     /// createGroup 方法
     /// </summary>
-    public static Task<string> CreateGroup(GroupConfig config)
+    public static Task<string> CreateGroup(IntPtr config)
     {
         return NodeApi.CallMethodAsync<string>(Module, _createGroup, config);
     }
@@ -370,7 +370,7 @@ public static unsafe partial class Request
     /// <summary>
     /// attachGroup 方法
     /// </summary>
-    public static Task AttachGroup(IntPtr gid, IntPtr tids)
+    public static Task AttachGroup(string gid, string[] tids)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _attachGroup, gid, tids);
     }
@@ -378,7 +378,7 @@ public static unsafe partial class Request
     /// <summary>
     /// deleteGroup 方法
     /// </summary>
-    public static Task DeleteGroup(IntPtr gid)
+    public static Task DeleteGroup(string gid)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteGroup, gid);
     }

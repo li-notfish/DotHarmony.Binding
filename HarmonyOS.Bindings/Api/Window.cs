@@ -87,23 +87,23 @@ public static unsafe partial class Window
     /// <summary>
     /// createWindow 方法
     /// </summary>
-    public static Task<Window> CreateWindow(Configuration config)
+    public static Task<IntPtr> CreateWindow(IntPtr config)
     {
-        return NodeApi.CallMethodAsync<Window>(Module, _createWindow, config);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createWindow, config);
     }
 
     /// <summary>
     /// create 方法
     /// </summary>
-    public static Task<Window> Create(IntPtr id, WindowType type)
+    public static Task<IntPtr> Create(string id, IntPtr type)
     {
-        return NodeApi.CallMethodAsync<Window>(Module, _create, id, type);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _create, id, type);
     }
 
     /// <summary>
     /// create 方法
     /// </summary>
-    public static Task<IntPtr> Create(BaseContext ctx, IntPtr id, WindowType type)
+    public static Task<IntPtr> Create(IntPtr ctx, string id, IntPtr type)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _create, ctx, id, type);
     }
@@ -111,15 +111,15 @@ public static unsafe partial class Window
     /// <summary>
     /// find 方法
     /// </summary>
-    public static Task<Window> Find(IntPtr id)
+    public static Task<IntPtr> Find(string id)
     {
-        return NodeApi.CallMethodAsync<Window>(Module, _find, id);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _find, id);
     }
 
     /// <summary>
     /// findWindow 方法
     /// </summary>
-    public static IntPtr FindWindow(IntPtr name)
+    public static IntPtr FindWindow(string name)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _findWindow, name);
     }
@@ -127,15 +127,15 @@ public static unsafe partial class Window
     /// <summary>
     /// getTopWindow 方法
     /// </summary>
-    public static Task<Window> GetTopWindow()
+    public static Task<IntPtr> GetTopWindow()
     {
-        return NodeApi.CallMethodAsync<Window>(Module, _getTopWindow);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getTopWindow);
     }
 
     /// <summary>
     /// getTopWindow 方法
     /// </summary>
-    public static Task<IntPtr> GetTopWindow(BaseContext ctx)
+    public static Task<IntPtr> GetTopWindow(IntPtr ctx)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getTopWindow, ctx);
     }
@@ -143,15 +143,15 @@ public static unsafe partial class Window
     /// <summary>
     /// getLastWindow 方法
     /// </summary>
-    public static Task<Window> GetLastWindow(BaseContext ctx)
+    public static Task<IntPtr> GetLastWindow(IntPtr ctx)
     {
-        return NodeApi.CallMethodAsync<Window>(Module, _getLastWindow, ctx);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getLastWindow, ctx);
     }
 
     /// <summary>
     /// shiftAppWindowFocus 方法
     /// </summary>
-    public static Task ShiftAppWindowFocus(IntPtr sourceWindowId, IntPtr targetWindowId)
+    public static Task ShiftAppWindowFocus(double sourceWindowId, double targetWindowId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowFocus, sourceWindowId, targetWindowId);
     }
@@ -159,7 +159,7 @@ public static unsafe partial class Window
     /// <summary>
     /// shiftAppWindowPointerEvent 方法
     /// </summary>
-    public static Task ShiftAppWindowPointerEvent(IntPtr sourceWindowId, IntPtr targetWindowId)
+    public static Task ShiftAppWindowPointerEvent(double sourceWindowId, double targetWindowId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowPointerEvent, sourceWindowId, targetWindowId);
     }
@@ -167,7 +167,7 @@ public static unsafe partial class Window
     /// <summary>
     /// shiftAppWindowTouchEvent 方法
     /// </summary>
-    public static Task ShiftAppWindowTouchEvent(IntPtr sourceWindowId, IntPtr targetWindowId, IntPtr fingerId)
+    public static Task ShiftAppWindowTouchEvent(double sourceWindowId, double targetWindowId, double fingerId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowTouchEvent, sourceWindowId, targetWindowId, fingerId);
     }
@@ -183,7 +183,7 @@ public static unsafe partial class Window
     /// <summary>
     /// getWindowsByCoordinate 方法
     /// </summary>
-    public static IntPtr GetWindowsByCoordinate(IntPtr displayId, IntPtr windowNumber, IntPtr x, IntPtr y)
+    public static IntPtr GetWindowsByCoordinate(double displayId, double windowNumber, double x, double y)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getWindowsByCoordinate, displayId, windowNumber, x, y);
     }
@@ -191,7 +191,7 @@ public static unsafe partial class Window
     /// <summary>
     /// getAllWindowLayoutInfo 方法
     /// </summary>
-    public static IntPtr GetAllWindowLayoutInfo(IntPtr displayId)
+    public static IntPtr GetAllWindowLayoutInfo(double displayId)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getAllWindowLayoutInfo, displayId);
     }
@@ -199,7 +199,7 @@ public static unsafe partial class Window
     /// <summary>
     /// getAllWindowLayoutInfo 方法
     /// </summary>
-    public static IntPtr GetAllWindowLayoutInfo(IntPtr displayId, WindowInfoOptions option)
+    public static IntPtr GetAllWindowLayoutInfo(double displayId, IntPtr option)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getAllWindowLayoutInfo, displayId, option);
     }
@@ -207,7 +207,7 @@ public static unsafe partial class Window
     /// <summary>
     /// getGlobalWindowMode 方法
     /// </summary>
-    public static Task<double> GetGlobalWindowMode(IntPtr displayId)
+    public static Task<double> GetGlobalWindowMode(double displayId)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getGlobalWindowMode, displayId);
     }
@@ -223,7 +223,7 @@ public static unsafe partial class Window
     /// <summary>
     /// setStartWindowBackgroundColor 方法
     /// </summary>
-    public static Task SetStartWindowBackgroundColor(IntPtr moduleName, IntPtr abilityName, ColorMetrics color)
+    public static Task SetStartWindowBackgroundColor(string moduleName, string abilityName, IntPtr color)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setStartWindowBackgroundColor, moduleName, abilityName, color);
     }
@@ -247,7 +247,7 @@ public static unsafe partial class Window
     /// <summary>
     /// getMainWindowSnapshot 方法
     /// </summary>
-    public static IntPtr GetMainWindowSnapshot(IntPtr windowId, WindowSnapshotConfiguration config)
+    public static IntPtr GetMainWindowSnapshot(double[] windowId, IntPtr config)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getMainWindowSnapshot, windowId, config);
     }

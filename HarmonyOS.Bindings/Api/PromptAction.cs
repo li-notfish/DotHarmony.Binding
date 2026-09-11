@@ -75,7 +75,7 @@ public static unsafe partial class PromptAction
     /// <summary>
     /// showToast 方法
     /// </summary>
-    public static void ShowToast(ShowToastOptions options)
+    public static void ShowToast(IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _showToast, options);
     }
@@ -83,7 +83,7 @@ public static unsafe partial class PromptAction
     /// <summary>
     /// openToast 方法
     /// </summary>
-    public static Task<double> OpenToast(ShowToastOptions options)
+    public static Task<double> OpenToast(IntPtr options)
     {
         return NodeApi.CallMethodAsync<double>(Module, _openToast, options);
     }
@@ -91,7 +91,7 @@ public static unsafe partial class PromptAction
     /// <summary>
     /// closeToast 方法
     /// </summary>
-    public static void CloseToast(IntPtr toastId)
+    public static void CloseToast(double toastId)
     {
         NodeApi.CallMethodVoid(Module, _closeToast, toastId);
     }
@@ -99,15 +99,15 @@ public static unsafe partial class PromptAction
     /// <summary>
     /// showDialog 方法
     /// </summary>
-    public static Task<ShowDialogSuccessResponse> ShowDialog(ShowDialogOptions options)
+    public static Task<IntPtr> ShowDialog(IntPtr options)
     {
-        return NodeApi.CallMethodAsync<ShowDialogSuccessResponse>(Module, _showDialog, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _showDialog, options);
     }
 
     /// <summary>
     /// openCustomDialog 方法
     /// </summary>
-    public static Task<double> OpenCustomDialog(CustomDialogOptions options)
+    public static Task<double> OpenCustomDialog(IntPtr options)
     {
         return NodeApi.CallMethodAsync<double>(Module, _openCustomDialog, options);
     }
@@ -115,7 +115,7 @@ public static unsafe partial class PromptAction
     /// <summary>
     /// closeCustomDialog 方法
     /// </summary>
-    public static void CloseCustomDialog(IntPtr dialogId)
+    public static void CloseCustomDialog(double dialogId)
     {
         NodeApi.CallMethodVoid(Module, _closeCustomDialog, dialogId);
     }
@@ -123,9 +123,9 @@ public static unsafe partial class PromptAction
     /// <summary>
     /// showActionMenu 方法
     /// </summary>
-    public static Task<ActionMenuSuccessResponse> ShowActionMenu(ActionMenuOptions options)
+    public static Task<IntPtr> ShowActionMenu(IntPtr options)
     {
-        return NodeApi.CallMethodAsync<ActionMenuSuccessResponse>(Module, _showActionMenu, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _showActionMenu, options);
     }
 
 }

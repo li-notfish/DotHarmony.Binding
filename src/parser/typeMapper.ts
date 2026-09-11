@@ -37,7 +37,14 @@ export class TypeMapper {
         'undefined': { typescript: 'undefined', csharp: 'null', isNative: false },
     };
 
+    private static readonly CS_PRIMITIVES = new Set(['string', 'bool', 'double', 'int', 'uint', 'long', 'byte', 'nint', 'IntPtr', 'object', 'void', 'Task', 'ValueTask']);
+
     static mapType(typescriptType: string): string {
+        // 0. 已是合法 C# 基本类型，直接返回（避免二次映射把 double 变 IntPtr）
+        if (this.CS_PRIMITIVES.has(typescriptType)) {
+            return typescriptType;
+        }
+
         // 1. 处理 Optional<T> 类型
         if (typescriptType.startsWith('Optional<')) {
             return this.mapOptionalType(typescriptType);
@@ -102,19 +109,16 @@ export class TypeMapper {
             return 'object';
         }
         
-        // 11. 处理 Options 类型（直接返回类名，会生成真实的 C# record）
-        if (this.isOptionsType(typescriptType)) {
-            return typescriptType;
-        }
+        // 11. Options 类型由 codeGenerator 生成 record，此处不再特殊处理
 
         // 11.5. 处理字符串字面量类型（'literal'）→ string
         if (/^['"].+['"]$/.test(typescriptType.trim())) {
             return 'string';
         }
 
-        // 12. 直接映射
+        // 12. 直接映射：已知类型返回 C# 类型名，未知类型退回 IntPtr 句柄
         const mapping = this.TYPE_MAP[typescriptType];
-        return mapping ? mapping.csharp : typescriptType;
+        return mapping ? mapping.csharp : 'IntPtr';
     }
 
     private static mapOptionalType(optionalType: string): string {
@@ -289,9 +293,13 @@ export class TypeMapper {
                 return 'IntPtr';
             }
 
-            // 对于未映射的泛型类型，尝试保持结构
-            // 例如 MyType<number, boolean> → MyType<double, bool>
-            return `${baseType}<${typeArgs.join(', ')}>`;
+            // 对于未映射的泛型类型，检查是否已经是有效的 C# 泛型类型
+            // （如 Task<T>, Action<T>, Func<T,R> 等由先前映射产生的类型）
+            if (baseType === 'Task' || baseType === 'Action' || baseType === 'Func') {
+                return `${baseType}<${typeArgs.join(', ')}>`;
+            }
+            // 其他未映射的泛型类型退回 IntPtr
+            return 'IntPtr';
         }
         return 'IntPtr';
     }
@@ -420,5 +428,24 @@ export class TypeMapper {
             }
         }
         return { isAsync: false, resultType: null, callbackIndex: -1 };
+    }
+
+    /** C# 保留字列表（用作参数名时需加 @ 前缀） */
+    private static readonly CSHARP_KEYWORDS = new Set([
+        'abstract', 'as', 'base', 'bool', 'break', 'byte', 'case', 'catch', 'char',
+        'checked', 'class', 'const', 'continue', 'decimal', 'default', 'delegate', 'do',
+        'double', 'else', 'enum', 'event', 'explicit', 'extern', 'false', 'finally',
+        'fixed', 'float', 'for', 'foreach', 'goto', 'if', 'implicit', 'in', 'int',
+        'interface', 'internal', 'is', 'lock', 'long', 'namespace', 'new', 'null',
+        'object', 'operator', 'out', 'override', 'params', 'private', 'protected',
+        'public', 'readonly', 'ref', 'return', 'sbyte', 'sealed', 'short', 'sizeof',
+        'stackalloc', 'static', 'string', 'struct', 'switch', 'this', 'throw', 'true',
+        'try', 'typeof', 'uint', 'ulong', 'unchecked', 'unsafe', 'ushort', 'using',
+        'virtual', 'void', 'volatile', 'while',
+    ]);
+
+    /** 转义 C# 保留字：params → @params */
+    static escapeCSharpKeyword(name: string): string {
+        return this.CSHARP_KEYWORDS.has(name) ? `@${name}` : name;
     }
 }

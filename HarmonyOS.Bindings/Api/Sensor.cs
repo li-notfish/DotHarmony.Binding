@@ -94,175 +94,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// on 方法
     /// </summary>
-    public static void On(SensorId.ACCELEROMETER type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.ACCELEROMETER_UNCALIBRATED type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.AMBIENT_LIGHT type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.AMBIENT_TEMPERATURE type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.BAROMETER type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.GRAVITY type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.GYROSCOPE type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.GYROSCOPE_UNCALIBRATED type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.HALL type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.HEART_RATE type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.HUMIDITY type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.LINEAR_ACCELEROMETER type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.MAGNETIC_FIELD type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.MAGNETIC_FIELD_UNCALIBRATED type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.ORIENTATION type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.PEDOMETER type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.PEDOMETER_DETECTION type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.PROXIMITY type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.ROTATION_VECTOR type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.SIGNIFICANT_MOTION type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.WEAR_DETECTION type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorId.FUSION_PRESSURE type, IntPtr callback, Options options)
+    public static void On(IntPtr type, IntPtr callback, IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback, options);
     }
@@ -270,167 +102,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// once 方法
     /// </summary>
-    public static void Once(SensorId.ACCELEROMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.ACCELEROMETER_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.AMBIENT_LIGHT type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.AMBIENT_TEMPERATURE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.BAROMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.GRAVITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.GYROSCOPE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.GYROSCOPE_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.HALL type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.HEART_RATE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.HUMIDITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.LINEAR_ACCELEROMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.MAGNETIC_FIELD type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.MAGNETIC_FIELD_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.ORIENTATION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.PEDOMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.PEDOMETER_DETECTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.PROXIMITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.ROTATION_VECTOR type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.SIGNIFICANT_MOTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorId.WEAR_DETECTION type, IntPtr callback)
+    public static void Once(IntPtr type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _once, type, callback);
     }
@@ -438,7 +110,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// off 方法
     /// </summary>
-    public static void Off(SensorId.ACCELEROMETER type, IntPtr callback)
+    public static void Off(IntPtr type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
@@ -446,855 +118,23 @@ public static unsafe partial class Sensor
     /// <summary>
     /// off 方法
     /// </summary>
-    public static void Off(SensorId.ACCELEROMETER type, SensorInfoParam sensorInfoParam, IntPtr callback)
+    public static void Off(IntPtr type, IntPtr sensorInfoParam, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.ACCELEROMETER_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.ACCELEROMETER_UNCALIBRATED type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.AMBIENT_LIGHT type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.AMBIENT_LIGHT type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.AMBIENT_TEMPERATURE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.AMBIENT_TEMPERATURE type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.BAROMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.BAROMETER type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.GRAVITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.GRAVITY type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.GYROSCOPE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.GYROSCOPE type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.GYROSCOPE_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.GYROSCOPE_UNCALIBRATED type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.HALL type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.HALL type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.HEART_RATE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.HEART_RATE type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.HUMIDITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.HUMIDITY type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.LINEAR_ACCELEROMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.LINEAR_ACCELEROMETER type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.MAGNETIC_FIELD type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.MAGNETIC_FIELD type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.MAGNETIC_FIELD_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.MAGNETIC_FIELD_UNCALIBRATED type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.ORIENTATION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.ORIENTATION type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.PEDOMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.PEDOMETER type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.PEDOMETER_DETECTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.PEDOMETER_DETECTION type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.PROXIMITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.PROXIMITY type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.ROTATION_VECTOR type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.ROTATION_VECTOR type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.SIGNIFICANT_MOTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.SIGNIFICANT_MOTION type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.WEAR_DETECTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.FUSION_PRESSURE type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorId.WEAR_DETECTION type, SensorInfoParam sensorInfoParam, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_ACCELEROMETER type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_ACCELEROMETER_UNCALIBRATED type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_AMBIENT_LIGHT type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_AMBIENT_TEMPERATURE type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_BAROMETER type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_GRAVITY type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_GYROSCOPE type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_GYROSCOPE_UNCALIBRATED type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_HALL type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_HEART_RATE type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_HUMIDITY type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_LINEAR_ACCELERATION type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_MAGNETIC_FIELD type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_MAGNETIC_FIELD_UNCALIBRATED type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_ORIENTATION type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_PEDOMETER type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_PEDOMETER_DETECTION type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_PROXIMITY type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_ROTATION_VECTOR type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_SIGNIFICANT_MOTION type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// on 方法
-    /// </summary>
-    public static void On(SensorType.SENSOR_TYPE_ID_WEAR_DETECTION type, IntPtr callback, Options options)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_ACCELEROMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_ACCELEROMETER_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_AMBIENT_LIGHT type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_AMBIENT_TEMPERATURE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_BAROMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_GRAVITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_GYROSCOPE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_GYROSCOPE_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_HALL type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_HEART_RATE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_HUMIDITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_LINEAR_ACCELERATION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_MAGNETIC_FIELD type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_MAGNETIC_FIELD_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_ORIENTATION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_PEDOMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_PEDOMETER_DETECTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_PROXIMITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_ROTATION_VECTOR type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_SIGNIFICANT_MOTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// once 方法
-    /// </summary>
-    public static void Once(SensorType.SENSOR_TYPE_ID_WEAR_DETECTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _once, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_ACCELEROMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_ACCELEROMETER_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_AMBIENT_LIGHT type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_AMBIENT_TEMPERATURE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_BAROMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_GRAVITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_GYROSCOPE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_GYROSCOPE_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_HALL type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_HEART_RATE type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_HUMIDITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_LINEAR_ACCELERATION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_MAGNETIC_FIELD type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_MAGNETIC_FIELD_UNCALIBRATED type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_ORIENTATION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_PEDOMETER type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_PEDOMETER_DETECTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_PROXIMITY type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_ROTATION_VECTOR type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_SIGNIFICANT_MOTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// off 方法
-    /// </summary>
-    public static void Off(SensorType.SENSOR_TYPE_ID_WEAR_DETECTION type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
     /// getSingleSensor 方法
     /// </summary>
-    public static Task<Sensor> GetSingleSensor(SensorId type)
+    public static Task<IntPtr> GetSingleSensor(IntPtr type)
     {
-        return NodeApi.CallMethodAsync<Sensor>(Module, _getSingleSensor, type);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getSingleSensor, type);
     }
 
     /// <summary>
     /// getSingleSensorSync 方法
     /// </summary>
-    public static IntPtr GetSingleSensorSync(SensorId type)
+    public static IntPtr GetSingleSensorSync(IntPtr type)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getSingleSensorSync, type);
     }
@@ -1302,55 +142,55 @@ public static unsafe partial class Sensor
     /// <summary>
     /// getSingleSensorByDeviceSync 方法
     /// </summary>
-    public static Sensor[] GetSingleSensorByDeviceSync(SensorId type, IntPtr deviceId)
+    public static IntPtr[] GetSingleSensorByDeviceSync(IntPtr type, double deviceId)
     {
-        return NodeApi.CallMethod<Sensor[]>(Module, _getSingleSensorByDeviceSync, type, deviceId);
+        return NodeApi.CallMethod<IntPtr[]>(Module, _getSingleSensorByDeviceSync, type, deviceId);
     }
 
     /// <summary>
     /// getSensorList 方法
     /// </summary>
-    public static Task<Sensor[]> GetSensorList()
+    public static Task<IntPtr[]> GetSensorList()
     {
-        return NodeApi.CallMethodAsync<Sensor[]>(Module, _getSensorList);
+        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getSensorList);
     }
 
     /// <summary>
     /// getSensorListSync 方法
     /// </summary>
-    public static Sensor[] GetSensorListSync()
+    public static IntPtr[] GetSensorListSync()
     {
-        return NodeApi.CallMethod<Sensor[]>(Module, _getSensorListSync);
+        return NodeApi.CallMethod<IntPtr[]>(Module, _getSensorListSync);
     }
 
     /// <summary>
     /// getSensorListByDeviceSync 方法
     /// </summary>
-    public static Sensor[] GetSensorListByDeviceSync(IntPtr deviceId)
+    public static IntPtr[] GetSensorListByDeviceSync(double deviceId)
     {
-        return NodeApi.CallMethod<Sensor[]>(Module, _getSensorListByDeviceSync, deviceId);
+        return NodeApi.CallMethod<IntPtr[]>(Module, _getSensorListByDeviceSync, deviceId);
     }
 
     /// <summary>
     /// getGeomagneticField 方法
     /// </summary>
-    public static Task<GeomagneticResponse> GetGeomagneticField(LocationOptions locationOptions, IntPtr timeMillis)
+    public static Task<IntPtr> GetGeomagneticField(IntPtr locationOptions, double timeMillis)
     {
-        return NodeApi.CallMethodAsync<GeomagneticResponse>(Module, _getGeomagneticField, locationOptions, timeMillis);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getGeomagneticField, locationOptions, timeMillis);
     }
 
     /// <summary>
     /// getGeomagneticInfo 方法
     /// </summary>
-    public static Task<GeomagneticResponse> GetGeomagneticInfo(LocationOptions locationOptions, IntPtr timeMillis)
+    public static Task<IntPtr> GetGeomagneticInfo(IntPtr locationOptions, double timeMillis)
     {
-        return NodeApi.CallMethodAsync<GeomagneticResponse>(Module, _getGeomagneticInfo, locationOptions, timeMillis);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getGeomagneticInfo, locationOptions, timeMillis);
     }
 
     /// <summary>
     /// getAltitude 方法
     /// </summary>
-    public static Task<double> GetAltitude(IntPtr seaPressure, IntPtr currentPressure)
+    public static Task<double> GetAltitude(double seaPressure, double currentPressure)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getAltitude, seaPressure, currentPressure);
     }
@@ -1358,7 +198,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// getDeviceAltitude 方法
     /// </summary>
-    public static Task<double> GetDeviceAltitude(IntPtr seaPressure, IntPtr currentPressure)
+    public static Task<double> GetDeviceAltitude(double seaPressure, double currentPressure)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getDeviceAltitude, seaPressure, currentPressure);
     }
@@ -1366,7 +206,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// getGeomagneticDip 方法
     /// </summary>
-    public static Task<double> GetGeomagneticDip(IntPtr inclinationMatrix)
+    public static Task<double> GetGeomagneticDip(double[] inclinationMatrix)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getGeomagneticDip, inclinationMatrix);
     }
@@ -1374,7 +214,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// getInclination 方法
     /// </summary>
-    public static Task<double> GetInclination(IntPtr inclinationMatrix)
+    public static Task<double> GetInclination(double[] inclinationMatrix)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getInclination, inclinationMatrix);
     }
@@ -1382,7 +222,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// getAngleModify 方法
     /// </summary>
-    public static Task<double[]> GetAngleModify(IntPtr currentRotationMatrix, IntPtr preRotationMatrix)
+    public static Task<double[]> GetAngleModify(double[] currentRotationMatrix, double[] preRotationMatrix)
     {
         return NodeApi.CallMethodAsync<double[]>(Module, _getAngleModify, currentRotationMatrix, preRotationMatrix);
     }
@@ -1390,7 +230,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// getAngleVariation 方法
     /// </summary>
-    public static Task<double[]> GetAngleVariation(IntPtr currentRotationMatrix, IntPtr preRotationMatrix)
+    public static Task<double[]> GetAngleVariation(double[] currentRotationMatrix, double[] preRotationMatrix)
     {
         return NodeApi.CallMethodAsync<double[]>(Module, _getAngleVariation, currentRotationMatrix, preRotationMatrix);
     }
@@ -1398,7 +238,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// createRotationMatrix 方法
     /// </summary>
-    public static Task<double[]> CreateRotationMatrix(IntPtr rotationVector)
+    public static Task<double[]> CreateRotationMatrix(double[] rotationVector)
     {
         return NodeApi.CallMethodAsync<double[]>(Module, _createRotationMatrix, rotationVector);
     }
@@ -1406,7 +246,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// getRotationMatrix 方法
     /// </summary>
-    public static Task<double[]> GetRotationMatrix(IntPtr rotationVector)
+    public static Task<double[]> GetRotationMatrix(double[] rotationVector)
     {
         return NodeApi.CallMethodAsync<double[]>(Module, _getRotationMatrix, rotationVector);
     }
@@ -1414,7 +254,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// transformCoordinateSystem 方法
     /// </summary>
-    public static Task<double[]> TransformCoordinateSystem(IntPtr inRotationVector, CoordinatesOptions coordinates)
+    public static Task<double[]> TransformCoordinateSystem(double[] inRotationVector, IntPtr coordinates)
     {
         return NodeApi.CallMethodAsync<double[]>(Module, _transformCoordinateSystem, inRotationVector, coordinates);
     }
@@ -1422,7 +262,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// transformRotationMatrix 方法
     /// </summary>
-    public static Task<double[]> TransformRotationMatrix(IntPtr inRotationVector, CoordinatesOptions coordinates)
+    public static Task<double[]> TransformRotationMatrix(double[] inRotationVector, IntPtr coordinates)
     {
         return NodeApi.CallMethodAsync<double[]>(Module, _transformRotationMatrix, inRotationVector, coordinates);
     }
@@ -1430,7 +270,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// createQuaternion 方法
     /// </summary>
-    public static Task<double[]> CreateQuaternion(IntPtr rotationVector)
+    public static Task<double[]> CreateQuaternion(double[] rotationVector)
     {
         return NodeApi.CallMethodAsync<double[]>(Module, _createQuaternion, rotationVector);
     }
@@ -1438,7 +278,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// getQuaternion 方法
     /// </summary>
-    public static Task<double[]> GetQuaternion(IntPtr rotationVector)
+    public static Task<double[]> GetQuaternion(double[] rotationVector)
     {
         return NodeApi.CallMethodAsync<double[]>(Module, _getQuaternion, rotationVector);
     }
@@ -1446,7 +286,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// getDirection 方法
     /// </summary>
-    public static Task<double[]> GetDirection(IntPtr rotationMatrix)
+    public static Task<double[]> GetDirection(double[] rotationMatrix)
     {
         return NodeApi.CallMethodAsync<double[]>(Module, _getDirection, rotationMatrix);
     }
@@ -1454,7 +294,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// getOrientation 方法
     /// </summary>
-    public static Task<double[]> GetOrientation(IntPtr rotationMatrix)
+    public static Task<double[]> GetOrientation(double[] rotationMatrix)
     {
         return NodeApi.CallMethodAsync<double[]>(Module, _getOrientation, rotationMatrix);
     }
@@ -1462,23 +302,23 @@ public static unsafe partial class Sensor
     /// <summary>
     /// createRotationMatrix 方法
     /// </summary>
-    public static Task<RotationMatrixResponse> CreateRotationMatrix(IntPtr gravity, IntPtr geomagnetic)
+    public static Task<IntPtr> CreateRotationMatrix(double[] gravity, double[] geomagnetic)
     {
-        return NodeApi.CallMethodAsync<RotationMatrixResponse>(Module, _createRotationMatrix, gravity, geomagnetic);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createRotationMatrix, gravity, geomagnetic);
     }
 
     /// <summary>
     /// getRotationMatrix 方法
     /// </summary>
-    public static Task<RotationMatrixResponse> GetRotationMatrix(IntPtr gravity, IntPtr geomagnetic)
+    public static Task<IntPtr> GetRotationMatrix(double[] gravity, double[] geomagnetic)
     {
-        return NodeApi.CallMethodAsync<RotationMatrixResponse>(Module, _getRotationMatrix, gravity, geomagnetic);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getRotationMatrix, gravity, geomagnetic);
     }
 
     /// <summary>
     /// on 方法
     /// </summary>
-    public static void On(IntPtr type, IntPtr callback)
+    public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
@@ -1486,7 +326,7 @@ public static unsafe partial class Sensor
     /// <summary>
     /// off 方法
     /// </summary>
-    public static void Off(IntPtr type, IntPtr callback)
+    public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }

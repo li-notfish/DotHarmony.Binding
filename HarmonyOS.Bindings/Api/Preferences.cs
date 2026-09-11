@@ -86,23 +86,23 @@ public static unsafe partial class Preferences
     /// <summary>
     /// getPreferences 方法
     /// </summary>
-    public static Task<Preferences> GetPreferences(Context context, IntPtr name)
+    public static Task<IntPtr> GetPreferences(IntPtr context, string name)
     {
-        return NodeApi.CallMethodAsync<Preferences>(Module, _getPreferences, context, name);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getPreferences, context, name);
     }
 
     /// <summary>
     /// getPreferences 方法
     /// </summary>
-    public static Task<Preferences> GetPreferences(Context context, Options options)
+    public static Task<IntPtr> GetPreferences(IntPtr context, IntPtr options)
     {
-        return NodeApi.CallMethodAsync<Preferences>(Module, _getPreferences, context, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getPreferences, context, options);
     }
 
     /// <summary>
     /// getPreferencesSync 方法
     /// </summary>
-    public static IntPtr GetPreferencesSync(Context context, Options options)
+    public static IntPtr GetPreferencesSync(IntPtr context, IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getPreferencesSync, context, options);
     }
@@ -110,7 +110,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// isStorageTypeSupported 方法
     /// </summary>
-    public static bool IsStorageTypeSupported(StorageType type)
+    public static bool IsStorageTypeSupported(IntPtr type)
     {
         return NodeApi.CallMethod<bool>(Module, _isStorageTypeSupported, type);
     }
@@ -118,7 +118,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// deletePreferences 方法
     /// </summary>
-    public static Task DeletePreferences(Context context, IntPtr name)
+    public static Task DeletePreferences(IntPtr context, string name)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, context, name);
     }
@@ -126,7 +126,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// deletePreferences 方法
     /// </summary>
-    public static Task DeletePreferences(Context context, Options options)
+    public static Task DeletePreferences(IntPtr context, IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, context, options);
     }
@@ -134,7 +134,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// removePreferencesFromCache 方法
     /// </summary>
-    public static Task RemovePreferencesFromCache(Context context, IntPtr name)
+    public static Task RemovePreferencesFromCache(IntPtr context, string name)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, context, name);
     }
@@ -142,7 +142,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// removePreferencesFromCache 方法
     /// </summary>
-    public static Task RemovePreferencesFromCache(Context context, Options options)
+    public static Task RemovePreferencesFromCache(IntPtr context, IntPtr options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, context, options);
     }
@@ -150,7 +150,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// removePreferencesFromCacheSync 方法
     /// </summary>
-    public static void RemovePreferencesFromCacheSync(Context context, IntPtr name)
+    public static void RemovePreferencesFromCacheSync(IntPtr context, string name)
     {
         NodeApi.CallMethodVoid(Module, _removePreferencesFromCacheSync, context, name);
     }
@@ -158,7 +158,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// removePreferencesFromCacheSync 方法
     /// </summary>
-    public static void RemovePreferencesFromCacheSync(Context context, Options options)
+    public static void RemovePreferencesFromCacheSync(IntPtr context, IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _removePreferencesFromCacheSync, context, options);
     }

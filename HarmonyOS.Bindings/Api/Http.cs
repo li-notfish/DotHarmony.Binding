@@ -78,7 +78,7 @@ public static unsafe partial class Http
     /// <summary>
     /// createHttpResponseCache 方法
     /// </summary>
-    public static IntPtr CreateHttpResponseCache(IntPtr cacheSize)
+    public static IntPtr CreateHttpResponseCache(double cacheSize)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createHttpResponseCache, cacheSize);
     }

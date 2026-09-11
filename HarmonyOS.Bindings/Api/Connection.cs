@@ -112,7 +112,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// createNetConnection 方法
     /// </summary>
-    public static IntPtr CreateNetConnection(NetSpecifier netSpecifier, IntPtr timeout)
+    public static IntPtr CreateNetConnection(IntPtr netSpecifier, double timeout)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createNetConnection, netSpecifier, timeout);
     }
@@ -120,9 +120,9 @@ public static unsafe partial class Connection
     /// <summary>
     /// getDefaultNet 方法
     /// </summary>
-    public static Task<NetHandle> GetDefaultNet()
+    public static Task<IntPtr> GetDefaultNet()
     {
-        return NodeApi.CallMethodAsync<NetHandle>(Module, _getDefaultNet);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getDefaultNet);
     }
 
     /// <summary>
@@ -136,31 +136,31 @@ public static unsafe partial class Connection
     /// <summary>
     /// getAllNets 方法
     /// </summary>
-    public static Task<NetHandle[]> GetAllNets()
+    public static Task<IntPtr[]> GetAllNets()
     {
-        return NodeApi.CallMethodAsync<NetHandle[]>(Module, _getAllNets);
+        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAllNets);
     }
 
     /// <summary>
     /// getAllNetsSync 方法
     /// </summary>
-    public static NetHandle[] GetAllNetsSync()
+    public static IntPtr[] GetAllNetsSync()
     {
-        return NodeApi.CallMethod<NetHandle[]>(Module, _getAllNetsSync);
+        return NodeApi.CallMethod<IntPtr[]>(Module, _getAllNetsSync);
     }
 
     /// <summary>
     /// getConnectionProperties 方法
     /// </summary>
-    public static Task<ConnectionProperties> GetConnectionProperties(NetHandle netHandle)
+    public static Task<IntPtr> GetConnectionProperties(IntPtr netHandle)
     {
-        return NodeApi.CallMethodAsync<ConnectionProperties>(Module, _getConnectionProperties, netHandle);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getConnectionProperties, netHandle);
     }
 
     /// <summary>
     /// getConnectionPropertiesSync 方法
     /// </summary>
-    public static IntPtr GetConnectionPropertiesSync(NetHandle netHandle)
+    public static IntPtr GetConnectionPropertiesSync(IntPtr netHandle)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getConnectionPropertiesSync, netHandle);
     }
@@ -168,15 +168,15 @@ public static unsafe partial class Connection
     /// <summary>
     /// getNetCapabilities 方法
     /// </summary>
-    public static Task<NetCapabilities> GetNetCapabilities(NetHandle netHandle)
+    public static Task<IntPtr> GetNetCapabilities(IntPtr netHandle)
     {
-        return NodeApi.CallMethodAsync<NetCapabilities>(Module, _getNetCapabilities, netHandle);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getNetCapabilities, netHandle);
     }
 
     /// <summary>
     /// getNetCapabilitiesSync 方法
     /// </summary>
-    public static IntPtr GetNetCapabilitiesSync(NetHandle netHandle)
+    public static IntPtr GetNetCapabilitiesSync(IntPtr netHandle)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNetCapabilitiesSync, netHandle);
     }
@@ -184,7 +184,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// setNetExtAttribute 方法
     /// </summary>
-    public static Task SetNetExtAttribute(NetHandle netHandle, IntPtr netExtAttribute)
+    public static Task SetNetExtAttribute(IntPtr netHandle, string netExtAttribute)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setNetExtAttribute, netHandle, netExtAttribute);
     }
@@ -192,7 +192,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// setNetExtAttributeSync 方法
     /// </summary>
-    public static void SetNetExtAttributeSync(NetHandle netHandle, IntPtr netExtAttribute)
+    public static void SetNetExtAttributeSync(IntPtr netHandle, string netExtAttribute)
     {
         NodeApi.CallMethodVoid(Module, _setNetExtAttributeSync, netHandle, netExtAttribute);
     }
@@ -200,7 +200,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// getNetExtAttribute 方法
     /// </summary>
-    public static Task<string> GetNetExtAttribute(NetHandle netHandle)
+    public static Task<string> GetNetExtAttribute(IntPtr netHandle)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getNetExtAttribute, netHandle);
     }
@@ -208,7 +208,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// getNetExtAttributeSync 方法
     /// </summary>
-    public static string GetNetExtAttributeSync(NetHandle netHandle)
+    public static string GetNetExtAttributeSync(IntPtr netHandle)
     {
         return NodeApi.CallMethod<string>(Module, _getNetExtAttributeSync, netHandle);
     }
@@ -248,7 +248,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// reportNetConnected 方法
     /// </summary>
-    public static Task ReportNetConnected(NetHandle netHandle)
+    public static Task ReportNetConnected(IntPtr netHandle)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _reportNetConnected, netHandle);
     }
@@ -256,7 +256,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// reportNetDisconnected 方法
     /// </summary>
-    public static Task ReportNetDisconnected(NetHandle netHandle)
+    public static Task ReportNetDisconnected(IntPtr netHandle)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _reportNetDisconnected, netHandle);
     }
@@ -264,15 +264,15 @@ public static unsafe partial class Connection
     /// <summary>
     /// getAddressesByName 方法
     /// </summary>
-    public static Task<NetAddress[]> GetAddressesByName(IntPtr host)
+    public static Task<IntPtr[]> GetAddressesByName(string host)
     {
-        return NodeApi.CallMethodAsync<NetAddress[]>(Module, _getAddressesByName, host);
+        return NodeApi.CallMethodAsync<IntPtr[]>(Module, _getAddressesByName, host);
     }
 
     /// <summary>
     /// getAddressesByNameWithOptions 方法
     /// </summary>
-    public static IntPtr GetAddressesByNameWithOptions(IntPtr host, QueryOptions option)
+    public static IntPtr GetAddressesByNameWithOptions(string host, IntPtr option)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getAddressesByNameWithOptions, host, option);
     }
@@ -280,9 +280,9 @@ public static unsafe partial class Connection
     /// <summary>
     /// getAppNet 方法
     /// </summary>
-    public static Task<NetHandle> GetAppNet()
+    public static Task<IntPtr> GetAppNet()
     {
-        return NodeApi.CallMethodAsync<NetHandle>(Module, _getAppNet);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getAppNet);
     }
 
     /// <summary>
@@ -296,7 +296,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// setAppNet 方法
     /// </summary>
-    public static Task SetAppNet(NetHandle netHandle)
+    public static Task SetAppNet(IntPtr netHandle)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setAppNet, netHandle);
     }
@@ -304,15 +304,15 @@ public static unsafe partial class Connection
     /// <summary>
     /// getDefaultHttpProxy 方法
     /// </summary>
-    public static Task<HttpProxy> GetDefaultHttpProxy()
+    public static Task<IntPtr> GetDefaultHttpProxy()
     {
-        return NodeApi.CallMethodAsync<HttpProxy>(Module, _getDefaultHttpProxy);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getDefaultHttpProxy);
     }
 
     /// <summary>
     /// setAppHttpProxy 方法
     /// </summary>
-    public static void SetAppHttpProxy(HttpProxy httpProxy)
+    public static void SetAppHttpProxy(IntPtr httpProxy)
     {
         NodeApi.CallMethodVoid(Module, _setAppHttpProxy, httpProxy);
     }
@@ -328,7 +328,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// setPacUrl 方法
     /// </summary>
-    public static void SetPacUrl(IntPtr pacUrl)
+    public static void SetPacUrl(string pacUrl)
     {
         NodeApi.CallMethodVoid(Module, _setPacUrl, pacUrl);
     }
@@ -344,7 +344,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// setPacFileUrl 方法
     /// </summary>
-    public static void SetPacFileUrl(IntPtr pacFileUrl)
+    public static void SetPacFileUrl(string pacFileUrl)
     {
         NodeApi.CallMethodVoid(Module, _setPacFileUrl, pacFileUrl);
     }
@@ -360,7 +360,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// findProxyForUrl 方法
     /// </summary>
-    public static string FindProxyForUrl(IntPtr url)
+    public static string FindProxyForUrl(string url)
     {
         return NodeApi.CallMethod<string>(Module, _findProxyForUrl, url);
     }
@@ -368,7 +368,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// addCustomDnsRule 方法
     /// </summary>
-    public static Task AddCustomDnsRule(IntPtr host, IntPtr ip)
+    public static Task AddCustomDnsRule(string host, string[] ip)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _addCustomDnsRule, host, ip);
     }
@@ -376,7 +376,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// removeCustomDnsRule 方法
     /// </summary>
-    public static Task RemoveCustomDnsRule(IntPtr host)
+    public static Task RemoveCustomDnsRule(string host)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeCustomDnsRule, host);
     }
@@ -392,7 +392,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// getConnectOwnerUid 方法
     /// </summary>
-    public static Task<double> GetConnectOwnerUid(ProtocolType protocol, NetAddress local, NetAddress remote)
+    public static Task<double> GetConnectOwnerUid(IntPtr protocol, IntPtr local, IntPtr remote)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getConnectOwnerUid, protocol, local, remote);
     }
@@ -400,7 +400,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// getConnectOwnerUidSync 方法
     /// </summary>
-    public static double GetConnectOwnerUidSync(ProtocolType protocol, NetAddress local, NetAddress remote)
+    public static double GetConnectOwnerUidSync(IntPtr protocol, IntPtr local, IntPtr remote)
     {
         return NodeApi.CallMethod<double>(Module, _getConnectOwnerUidSync, protocol, local, remote);
     }
@@ -416,7 +416,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// getDnsAscii 方法
     /// </summary>
-    public static string GetDnsAscii(IntPtr host, ConversionProcess flag)
+    public static string GetDnsAscii(string host, IntPtr flag)
     {
         return NodeApi.CallMethod<string>(Module, _getDnsAscii, host, flag);
     }
@@ -424,7 +424,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// getDnsUnicode 方法
     /// </summary>
-    public static string GetDnsUnicode(IntPtr host, ConversionProcess flag)
+    public static string GetDnsUnicode(string host, IntPtr flag)
     {
         return NodeApi.CallMethod<string>(Module, _getDnsUnicode, host, flag);
     }
@@ -440,7 +440,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// queryTraceRoute 方法
     /// </summary>
-    public static Task<IntPtr> QueryTraceRoute(IntPtr destination, TraceRouteOptions option)
+    public static Task<IntPtr> QueryTraceRoute(string destination, IntPtr option)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _queryTraceRoute, destination, option);
     }
@@ -448,7 +448,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// queryProbeResult 方法
     /// </summary>
-    public static Task<IntPtr> QueryProbeResult(IntPtr destination, IntPtr duration)
+    public static Task<IntPtr> QueryProbeResult(string destination, double duration)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _queryProbeResult, destination, duration);
     }

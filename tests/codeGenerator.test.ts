@@ -42,8 +42,8 @@ describe('Code Generation Tests', () => {
         expect(content).toContain('public partial class Column');
         expect(content).toContain('ArkUIComponentBase');
         expect(content).toContain('public Column()');
-        expect(content).toContain('public HorizontalAlign AlignItems');
-        expect(content).toContain('public FlexAlign JustifyContent');
+        expect(content).toContain('public IntPtr AlignItems');
+        expect(content).toContain('public IntPtr JustifyContent');
     });
 
     test('should have correct namespace', () => {
@@ -76,8 +76,8 @@ describe('Code Generation Tests', () => {
         
         // 验证有两个构造函数（无参和有参）
         expect(content).toContain('public Column()');
-        // ColumnOptions 现在被生成为真正的 C# record
-        expect(content).toContain('public Column(ColumnOptions options)');
+        // Options 类型现在映射为 IntPtr
+        expect(content).toContain('public Column(IntPtr options)');
     });
 
     test('should handle optional types correctly', () => {
@@ -197,8 +197,8 @@ describe('Code Generation Tests', () => {
         const content = fs.readFileSync(rowCsPath, 'utf-8');
         expect(content).toContain('public partial class Row');
         expect(content).toContain('public Row()');
-        expect(content).toContain('public Row(RowOptions options)');
-        expect(content).toContain('public VerticalAlign AlignItems');
+        expect(content).toContain('public Row(IntPtr options)');
+        expect(content).toContain('public IntPtr AlignItems');
     });
 
     test('should generate Button.cs', () => {
@@ -208,7 +208,7 @@ describe('Code Generation Tests', () => {
         const content = fs.readFileSync(buttonCsPath, 'utf-8');
         expect(content).toContain('public partial class Button');
         expect(content).toContain('public Button()');
-        expect(content).toContain('public ButtonType Type');
+        expect(content).toContain('public IntPtr Type');
     });
 
     test('should generate Image.cs', () => {
@@ -218,7 +218,7 @@ describe('Code Generation Tests', () => {
         const content = fs.readFileSync(imageCsPath, 'utf-8');
         expect(content).toContain('public partial class Image');
         // src 类型是 PixelMap | ResourceStr | DrawableDescriptor，取第一个具体类型
-        expect(content).toContain('public Image(PixelMap src)');
+        expect(content).toContain('public Image(IntPtr src)');
     });
 
     test('should generate List.cs with events', () => {
@@ -315,9 +315,9 @@ describe('Code Generation Tests', () => {
     test('should map intersection types correctly', () => {
         const { TypeMapper } = require('../src/parser/typeMapper');
         
-        // 测试交叉类型映射
-        expect(TypeMapper.mapType('A & B')).toBe('A');
-        expect(TypeMapper.mapType('ClassA & InterfaceB')).toBe('ClassA');
+        // 测试交叉类型映射：所有未映射类型退回 IntPtr
+        expect(TypeMapper.mapType('A & B')).toBe('IntPtr');
+        expect(TypeMapper.mapType('ClassA & InterfaceB')).toBe('IntPtr');
     });
 
     test('should map conditional types to dynamic', () => {

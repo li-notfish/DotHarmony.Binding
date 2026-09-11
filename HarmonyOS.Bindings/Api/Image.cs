@@ -113,7 +113,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapFromPixels 方法
     /// </summary>
-    public static Task<IntPtr> CreatePixelMapFromPixels(ArrayBuffer pixels, InitializationOptions param)
+    public static Task<IntPtr> CreatePixelMapFromPixels(IntPtr pixels, IntPtr param)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createPixelMapFromPixels, pixels, param);
     }
@@ -121,7 +121,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapFromPixelsSync 方法
     /// </summary>
-    public static IntPtr CreatePixelMapFromPixelsSync(ArrayBuffer pixels, InitializationOptions param)
+    public static IntPtr CreatePixelMapFromPixelsSync(IntPtr pixels, IntPtr param)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPixelMapFromPixelsSync, pixels, param);
     }
@@ -129,15 +129,15 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMap 方法
     /// </summary>
-    public static Task<PixelMap> CreatePixelMap(ArrayBuffer colors, InitializationOptions options)
+    public static Task<IntPtr> CreatePixelMap(IntPtr colors, IntPtr options)
     {
-        return NodeApi.CallMethodAsync<PixelMap>(Module, _createPixelMap, colors, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createPixelMap, colors, options);
     }
 
     /// <summary>
     /// createPixelMapSync 方法
     /// </summary>
-    public static IntPtr CreatePixelMapSync(ArrayBuffer colors, InitializationOptions options)
+    public static IntPtr CreatePixelMapSync(IntPtr colors, IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPixelMapSync, colors, options);
     }
@@ -145,7 +145,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapUsingAllocator 方法
     /// </summary>
-    public static Task<IntPtr> CreatePixelMapUsingAllocator(ArrayBuffer colors, InitializationOptions param, AllocatorType allocatorType)
+    public static Task<IntPtr> CreatePixelMapUsingAllocator(IntPtr colors, IntPtr param, IntPtr allocatorType)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createPixelMapUsingAllocator, colors, param, allocatorType);
     }
@@ -153,7 +153,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapUsingAllocatorSync 方法
     /// </summary>
-    public static IntPtr CreatePixelMapUsingAllocatorSync(ArrayBuffer colors, InitializationOptions param, AllocatorType allocatorType)
+    public static IntPtr CreatePixelMapUsingAllocatorSync(IntPtr colors, IntPtr param, IntPtr allocatorType)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPixelMapUsingAllocatorSync, colors, param, allocatorType);
     }
@@ -161,7 +161,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createEmptyPixelMap 方法
     /// </summary>
-    public static IntPtr CreateEmptyPixelMap(InitializationOptions param)
+    public static IntPtr CreateEmptyPixelMap(IntPtr param)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createEmptyPixelMap, param);
     }
@@ -169,7 +169,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapSync 方法
     /// </summary>
-    public static IntPtr CreatePixelMapSync(InitializationOptions options)
+    public static IntPtr CreatePixelMapSync(IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPixelMapSync, options);
     }
@@ -177,7 +177,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapUsingAllocatorSync 方法
     /// </summary>
-    public static IntPtr CreatePixelMapUsingAllocatorSync(InitializationOptions param, AllocatorType allocatorType)
+    public static IntPtr CreatePixelMapUsingAllocatorSync(IntPtr param, IntPtr allocatorType)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPixelMapUsingAllocatorSync, param, allocatorType);
     }
@@ -185,7 +185,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPremultipliedPixelMap 方法
     /// </summary>
-    public static Task CreatePremultipliedPixelMap(PixelMap src, PixelMap dst)
+    public static Task CreatePremultipliedPixelMap(IntPtr src, IntPtr dst)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _createPremultipliedPixelMap, src, dst);
     }
@@ -193,7 +193,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createUnpremultipliedPixelMap 方法
     /// </summary>
-    public static Task CreateUnpremultipliedPixelMap(PixelMap src, PixelMap dst)
+    public static Task CreateUnpremultipliedPixelMap(IntPtr src, IntPtr dst)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _createUnpremultipliedPixelMap, src, dst);
     }
@@ -209,7 +209,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapFromSurface 方法
     /// </summary>
-    public static Task<IntPtr> CreatePixelMapFromSurface(IntPtr surfaceId, Region region)
+    public static Task<IntPtr> CreatePixelMapFromSurface(string surfaceId, IntPtr region)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createPixelMapFromSurface, surfaceId, region);
     }
@@ -217,7 +217,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapFromSurfaceSync 方法
     /// </summary>
-    public static IntPtr CreatePixelMapFromSurfaceSync(IntPtr surfaceId, Region region)
+    public static IntPtr CreatePixelMapFromSurfaceSync(string surfaceId, IntPtr region)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPixelMapFromSurfaceSync, surfaceId, region);
     }
@@ -225,7 +225,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapFromSurface 方法
     /// </summary>
-    public static Task<IntPtr> CreatePixelMapFromSurface(IntPtr surfaceId)
+    public static Task<IntPtr> CreatePixelMapFromSurface(string surfaceId)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createPixelMapFromSurface, surfaceId);
     }
@@ -233,7 +233,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapFromSurfaceSync 方法
     /// </summary>
-    public static IntPtr CreatePixelMapFromSurfaceSync(IntPtr surfaceId)
+    public static IntPtr CreatePixelMapFromSurfaceSync(string surfaceId)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPixelMapFromSurfaceSync, surfaceId);
     }
@@ -241,7 +241,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapFromSurfaceWithTransformation 方法
     /// </summary>
-    public static Task<IntPtr> CreatePixelMapFromSurfaceWithTransformation(IntPtr surfaceId, IntPtr transformEnabled)
+    public static Task<IntPtr> CreatePixelMapFromSurfaceWithTransformation(string surfaceId, bool transformEnabled)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createPixelMapFromSurfaceWithTransformation, surfaceId, transformEnabled);
     }
@@ -249,7 +249,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPixelMapFromSurfaceWithTransformationSync 方法
     /// </summary>
-    public static IntPtr CreatePixelMapFromSurfaceWithTransformationSync(IntPtr surfaceId, IntPtr transformEnabled)
+    public static IntPtr CreatePixelMapFromSurfaceWithTransformationSync(string surfaceId, bool transformEnabled)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPixelMapFromSurfaceWithTransformationSync, surfaceId, transformEnabled);
     }
@@ -257,7 +257,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageSource 方法
     /// </summary>
-    public static IntPtr CreateImageSource(IntPtr uri)
+    public static IntPtr CreateImageSource(string uri)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageSource, uri);
     }
@@ -265,7 +265,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageSource 方法
     /// </summary>
-    public static IntPtr CreateImageSource(IntPtr uri, SourceOptions options)
+    public static IntPtr CreateImageSource(string uri, IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageSource, uri, options);
     }
@@ -273,7 +273,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageSource 方法
     /// </summary>
-    public static IntPtr CreateImageSource(IntPtr fd)
+    public static IntPtr CreateImageSource(double fd)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageSource, fd);
     }
@@ -281,7 +281,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageSource 方法
     /// </summary>
-    public static IntPtr CreateImageSource(IntPtr fd, SourceOptions options)
+    public static IntPtr CreateImageSource(double fd, IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageSource, fd, options);
     }
@@ -289,7 +289,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageSource 方法
     /// </summary>
-    public static IntPtr CreateImageSource(ArrayBuffer buf)
+    public static IntPtr CreateImageSource(IntPtr buf)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageSource, buf);
     }
@@ -297,23 +297,15 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageSource 方法
     /// </summary>
-    public static IntPtr CreateImageSource(ArrayBuffer buf, SourceOptions options)
+    public static IntPtr CreateImageSource(IntPtr buf, IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageSource, buf, options);
     }
 
     /// <summary>
-    /// createImageSource 方法
-    /// </summary>
-    public static IntPtr CreateImageSource(IntPtr rawfile, SourceOptions options)
-    {
-        return NodeApi.CallMethod<IntPtr>(Module, _createImageSource, rawfile, options);
-    }
-
-    /// <summary>
     /// CreateIncrementalSource 方法
     /// </summary>
-    public static IntPtr CreateIncrementalSource(ArrayBuffer buf)
+    public static IntPtr CreateIncrementalSource(IntPtr buf)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _CreateIncrementalSource, buf);
     }
@@ -321,7 +313,7 @@ public static unsafe partial class Image
     /// <summary>
     /// CreateIncrementalSource 方法
     /// </summary>
-    public static IntPtr CreateIncrementalSource(ArrayBuffer buf, SourceOptions options)
+    public static IntPtr CreateIncrementalSource(IntPtr buf, IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _CreateIncrementalSource, buf, options);
     }
@@ -337,7 +329,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageReceiver 方法
     /// </summary>
-    public static IntPtr CreateImageReceiver(IntPtr width, IntPtr height, IntPtr format, IntPtr capacity)
+    public static IntPtr CreateImageReceiver(double width, double height, double format, double capacity)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageReceiver, width, height, format, capacity);
     }
@@ -345,7 +337,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageReceiver 方法
     /// </summary>
-    public static IntPtr CreateImageReceiver(Size size, ImageFormat format, IntPtr capacity)
+    public static IntPtr CreateImageReceiver(IntPtr size, IntPtr format, double capacity)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageReceiver, size, format, capacity);
     }
@@ -353,7 +345,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageReceiver 方法
     /// </summary>
-    public static IntPtr CreateImageReceiver(ImageReceiverOptions options)
+    public static IntPtr CreateImageReceiver(IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageReceiver, options);
     }
@@ -361,7 +353,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageCreator 方法
     /// </summary>
-    public static IntPtr CreateImageCreator(IntPtr width, IntPtr height, IntPtr format, IntPtr capacity)
+    public static IntPtr CreateImageCreator(double width, double height, double format, double capacity)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageCreator, width, height, format, capacity);
     }
@@ -369,7 +361,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createImageCreator 方法
     /// </summary>
-    public static IntPtr CreateImageCreator(Size size, ImageFormat format, IntPtr capacity)
+    public static IntPtr CreateImageCreator(IntPtr size, IntPtr format, double capacity)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createImageCreator, size, format, capacity);
     }
@@ -377,7 +369,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createPicture 方法
     /// </summary>
-    public static IntPtr CreatePicture(PixelMap mainPixelmap)
+    public static IntPtr CreatePicture(IntPtr mainPixelmap)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createPicture, mainPixelmap);
     }
@@ -393,7 +385,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createAuxiliaryPicture 方法
     /// </summary>
-    public static IntPtr CreateAuxiliaryPicture(ArrayBuffer buffer, Size size, AuxiliaryPictureType type)
+    public static IntPtr CreateAuxiliaryPicture(IntPtr buffer, IntPtr size, IntPtr type)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createAuxiliaryPicture, buffer, size, type);
     }
@@ -401,7 +393,7 @@ public static unsafe partial class Image
     /// <summary>
     /// createAuxiliaryPictureUsingAllocator 方法
     /// </summary>
-    public static IntPtr CreateAuxiliaryPictureUsingAllocator(AuxiliaryPictureInfo auxiliaryPictureInfo, AllocatorType allocatorType, ArrayBuffer pixels)
+    public static IntPtr CreateAuxiliaryPictureUsingAllocator(IntPtr auxiliaryPictureInfo, IntPtr allocatorType, IntPtr pixels)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createAuxiliaryPictureUsingAllocator, auxiliaryPictureInfo, allocatorType, pixels);
     }
@@ -484,27 +476,27 @@ public static unsafe partial class Image
     /// <summary>
     /// XMP_BASIC
     /// </summary>
-    public static XMPNamespace XMP_BASIC => (XMPNamespace)NativeValue.ToInt(NodeApi.GetProperty(Module, _XMP_BASIC));
+    public static IntPtr XMP_BASIC => NodeApi.GetProperty(Module, _XMP_BASIC);
 
     /// <summary>
     /// XMP_RIGHTS
     /// </summary>
-    public static XMPNamespace XMP_RIGHTS => (XMPNamespace)NativeValue.ToInt(NodeApi.GetProperty(Module, _XMP_RIGHTS));
+    public static IntPtr XMP_RIGHTS => NodeApi.GetProperty(Module, _XMP_RIGHTS);
 
     /// <summary>
     /// EXIF
     /// </summary>
-    public static XMPNamespace EXIF => (XMPNamespace)NativeValue.ToInt(NodeApi.GetProperty(Module, _EXIF));
+    public static IntPtr EXIF => NodeApi.GetProperty(Module, _EXIF);
 
     /// <summary>
     /// DUBLIN_CORE
     /// </summary>
-    public static XMPNamespace DUBLIN_CORE => (XMPNamespace)NativeValue.ToInt(NodeApi.GetProperty(Module, _DUBLIN_CORE));
+    public static IntPtr DUBLIN_CORE => NodeApi.GetProperty(Module, _DUBLIN_CORE);
 
     /// <summary>
     /// TIFF
     /// </summary>
-    public static XMPNamespace TIFF => (XMPNamespace)NativeValue.ToInt(NodeApi.GetProperty(Module, _TIFF));
+    public static IntPtr TIFF => NodeApi.GetProperty(Module, _TIFF);
 
     /// <summary>
     /// getImageSourceSupportedFormats 方法

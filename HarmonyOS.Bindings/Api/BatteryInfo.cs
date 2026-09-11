@@ -82,17 +82,17 @@ public static unsafe partial class BatteryInfo
     /// <summary>
     /// chargingStatus
     /// </summary>
-    public static BatteryChargeState ChargingStatus => (BatteryChargeState)NativeValue.ToInt(NodeApi.GetProperty(Module, _chargingStatus));
+    public static IntPtr ChargingStatus => NodeApi.GetProperty(Module, _chargingStatus);
 
     /// <summary>
     /// healthStatus
     /// </summary>
-    public static BatteryHealthState HealthStatus => (BatteryHealthState)NativeValue.ToInt(NodeApi.GetProperty(Module, _healthStatus));
+    public static IntPtr HealthStatus => NodeApi.GetProperty(Module, _healthStatus);
 
     /// <summary>
     /// pluggedType
     /// </summary>
-    public static BatteryPluggedType PluggedType => (BatteryPluggedType)NativeValue.ToInt(NodeApi.GetProperty(Module, _pluggedType));
+    public static IntPtr PluggedType => NodeApi.GetProperty(Module, _pluggedType);
 
     /// <summary>
     /// voltage
@@ -117,7 +117,7 @@ public static unsafe partial class BatteryInfo
     /// <summary>
     /// batteryCapacityLevel
     /// </summary>
-    public static BatteryCapacityLevel BatteryCapacityLevel => (BatteryCapacityLevel)NativeValue.ToInt(NodeApi.GetProperty(Module, _batteryCapacityLevel));
+    public static IntPtr BatteryCapacityLevel => NodeApi.GetProperty(Module, _batteryCapacityLevel);
 
     /// <summary>
     /// nowCurrent

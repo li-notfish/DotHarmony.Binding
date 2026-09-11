@@ -81,7 +81,7 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// vibrate 方法
     /// </summary>
-    public static Task Vibrate(IntPtr duration)
+    public static Task Vibrate(double duration)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _vibrate, duration);
     }
@@ -89,7 +89,7 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// vibrate 方法
     /// </summary>
-    public static Task Vibrate(EffectId effectId)
+    public static Task Vibrate(IntPtr effectId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _vibrate, effectId);
     }
@@ -97,7 +97,7 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// startVibration 方法
     /// </summary>
-    public static Task StartVibration(VibrateEffect effect, VibrateAttribute attribute)
+    public static Task StartVibration(IntPtr effect, IntPtr attribute)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startVibration, effect, attribute);
     }
@@ -105,7 +105,7 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// stopVibration 方法
     /// </summary>
-    public static Task StopVibration(VibratorStopMode stopMode)
+    public static Task StopVibration(IntPtr stopMode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, stopMode);
     }
@@ -127,17 +127,9 @@ public static unsafe partial class Vibrator
     }
 
     /// <summary>
-    /// stopVibration 方法
-    /// </summary>
-    public static Task StopVibration(VibratorInfoParam param)
-    {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, param);
-    }
-
-    /// <summary>
     /// isSupportEffect 方法
     /// </summary>
-    public static Task<bool> IsSupportEffect(IntPtr effectId)
+    public static Task<bool> IsSupportEffect(string effectId)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isSupportEffect, effectId);
     }
@@ -145,7 +137,7 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// isSupportEffectSync 方法
     /// </summary>
-    public static bool IsSupportEffectSync(IntPtr effectId)
+    public static bool IsSupportEffectSync(string effectId)
     {
         return NodeApi.CallMethod<bool>(Module, _isSupportEffectSync, effectId);
     }
@@ -153,7 +145,7 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// getEffectInfoSync 方法
     /// </summary>
-    public static IntPtr GetEffectInfoSync(IntPtr effectId, VibratorInfoParam param)
+    public static IntPtr GetEffectInfoSync(string effectId, IntPtr param)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getEffectInfoSync, effectId, param);
     }
@@ -161,7 +153,7 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// stop 方法
     /// </summary>
-    public static Task Stop(VibratorStopMode stopMode)
+    public static Task Stop(IntPtr stopMode)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stop, stopMode);
     }
@@ -177,15 +169,15 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// getVibratorInfoSync 方法
     /// </summary>
-    public static VibratorInfo[] GetVibratorInfoSync(VibratorInfoParam param)
+    public static IntPtr[] GetVibratorInfoSync(IntPtr param)
     {
-        return NodeApi.CallMethod<VibratorInfo[]>(Module, _getVibratorInfoSync, param);
+        return NodeApi.CallMethod<IntPtr[]>(Module, _getVibratorInfoSync, param);
     }
 
     /// <summary>
     /// on 方法
     /// </summary>
-    public static void On(IntPtr type, IntPtr callback)
+    public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
@@ -193,7 +185,7 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// off 方法
     /// </summary>
-    public static void Off(IntPtr type, IntPtr callback)
+    public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }

@@ -542,7 +542,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// getURI 方法
     /// </summary>
-    public static Task<object> GetURI(IntPtr name)
+    public static Task<object> GetURI(string name)
     {
         return NodeApi.CallMethodAsync<object>(Module, _getURI, name);
     }
@@ -550,7 +550,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// getValue 方法
     /// </summary>
-    public static Task<object> GetValue(DataAbilityHelper dataAbilityHelper, IntPtr name)
+    public static Task<object> GetValue(IntPtr dataAbilityHelper, string name)
     {
         return NodeApi.CallMethodAsync<object>(Module, _getValue, dataAbilityHelper, name);
     }
@@ -558,15 +558,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// getValue 方法
     /// </summary>
-    public static Task<string> GetValue(Context context, IntPtr name)
-    {
-        return NodeApi.CallMethodAsync<string>(Module, _getValue, context, name);
-    }
-
-    /// <summary>
-    /// getValue 方法
-    /// </summary>
-    public static Task<string> GetValue(Context context, IntPtr name, IntPtr domainName)
+    public static Task<string> GetValue(IntPtr context, string name, string domainName)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getValue, context, name, domainName);
     }
@@ -574,7 +566,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// setValue 方法
     /// </summary>
-    public static Task<bool> SetValue(Context context, IntPtr name, IntPtr value)
+    public static Task<bool> SetValue(IntPtr context, string name, string value)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _setValue, context, name, value);
     }
@@ -582,7 +574,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// setValue 方法
     /// </summary>
-    public static Task<bool> SetValue(Context context, IntPtr name, IntPtr value, IntPtr domainName)
+    public static Task<bool> SetValue(IntPtr context, string name, string value, string domainName)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _setValue, context, name, value, domainName);
     }
@@ -590,7 +582,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// enableAirplaneMode 方法
     /// </summary>
-    public static Task EnableAirplaneMode(IntPtr enable)
+    public static Task EnableAirplaneMode(bool enable)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _enableAirplaneMode, enable);
     }
@@ -606,7 +598,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// getUriSync 方法
     /// </summary>
-    public static string GetUriSync(IntPtr name)
+    public static string GetUriSync(string name)
     {
         return NodeApi.CallMethod<string>(Module, _getUriSync, name);
     }
@@ -614,7 +606,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// getValueSync 方法
     /// </summary>
-    public static string GetValueSync(DataAbilityHelper dataAbilityHelper, IntPtr name, IntPtr defValue)
+    public static string GetValueSync(IntPtr dataAbilityHelper, string name, string defValue)
     {
         return NodeApi.CallMethod<string>(Module, _getValueSync, dataAbilityHelper, name, defValue);
     }
@@ -622,15 +614,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// getValueSync 方法
     /// </summary>
-    public static string GetValueSync(Context context, IntPtr name, IntPtr defValue)
-    {
-        return NodeApi.CallMethod<string>(Module, _getValueSync, context, name, defValue);
-    }
-
-    /// <summary>
-    /// getValueSync 方法
-    /// </summary>
-    public static string GetValueSync(Context context, IntPtr name, IntPtr defValue, IntPtr domainName)
+    public static string GetValueSync(IntPtr context, string name, string defValue, string domainName)
     {
         return NodeApi.CallMethod<string>(Module, _getValueSync, context, name, defValue, domainName);
     }
@@ -638,7 +622,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// setValueSync 方法
     /// </summary>
-    public static bool SetValueSync(DataAbilityHelper dataAbilityHelper, IntPtr name, IntPtr value)
+    public static bool SetValueSync(IntPtr dataAbilityHelper, string name, string value)
     {
         return NodeApi.CallMethod<bool>(Module, _setValueSync, dataAbilityHelper, name, value);
     }
@@ -646,15 +630,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// setValueSync 方法
     /// </summary>
-    public static bool SetValueSync(Context context, IntPtr name, IntPtr value)
-    {
-        return NodeApi.CallMethod<bool>(Module, _setValueSync, context, name, value);
-    }
-
-    /// <summary>
-    /// setValueSync 方法
-    /// </summary>
-    public static bool SetValueSync(Context context, IntPtr name, IntPtr value, IntPtr domainName)
+    public static bool SetValueSync(IntPtr context, string name, string value, string domainName)
     {
         return NodeApi.CallMethod<bool>(Module, _setValueSync, context, name, value, domainName);
     }
@@ -662,7 +638,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// registerKeyObserver 方法
     /// </summary>
-    public static Task RegisterKeyObserver(Context context, IntPtr name, IntPtr domainName)
+    public static Task RegisterKeyObserver(IntPtr context, string name, string domainName)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _registerKeyObserver, context, name, domainName);
     }
@@ -670,7 +646,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// unregisterKeyObserver 方法
     /// </summary>
-    public static bool UnregisterKeyObserver(Context context, IntPtr name, IntPtr domainName)
+    public static bool UnregisterKeyObserver(IntPtr context, string name, string domainName)
     {
         return NodeApi.CallMethod<bool>(Module, _unregisterKeyObserver, context, name, domainName);
     }
@@ -678,7 +654,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openNetworkManagerSettings 方法
     /// </summary>
-    public static Task<bool> OpenNetworkManagerSettings(Context context)
+    public static Task<bool> OpenNetworkManagerSettings(IntPtr context)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _openNetworkManagerSettings, context);
     }
@@ -686,7 +662,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openInputMethodSettings 方法
     /// </summary>
-    public static void OpenInputMethodSettings(Context context)
+    public static void OpenInputMethodSettings(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openInputMethodSettings, context);
     }
@@ -694,7 +670,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openInputMethodDetail 方法
     /// </summary>
-    public static void OpenInputMethodDetail(Context context, IntPtr bundleName, IntPtr inputMethodId)
+    public static void OpenInputMethodDetail(IntPtr context, string bundleName, string inputMethodId)
     {
         NodeApi.CallMethodVoid(Module, _openInputMethodDetail, context, bundleName, inputMethodId);
     }
@@ -702,7 +678,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openMobileNetworkSettingsPage 方法
     /// </summary>
-    public static void OpenMobileNetworkSettingsPage(Context context)
+    public static void OpenMobileNetworkSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openMobileNetworkSettingsPage, context);
     }
@@ -710,7 +686,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openDisplaySettingsPage 方法
     /// </summary>
-    public static void OpenDisplaySettingsPage(Context context)
+    public static void OpenDisplaySettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openDisplaySettingsPage, context);
     }
@@ -718,7 +694,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openScreenRefreshRateSettingsPage 方法
     /// </summary>
-    public static void OpenScreenRefreshRateSettingsPage(Context context)
+    public static void OpenScreenRefreshRateSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openScreenRefreshRateSettingsPage, context);
     }
@@ -726,7 +702,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openSoundSettingsPage 方法
     /// </summary>
-    public static void OpenSoundSettingsPage(Context context)
+    public static void OpenSoundSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openSoundSettingsPage, context);
     }
@@ -734,7 +710,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openBiometricsSettingsPage 方法
     /// </summary>
-    public static void OpenBiometricsSettingsPage(Context context)
+    public static void OpenBiometricsSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openBiometricsSettingsPage, context);
     }
@@ -742,7 +718,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openAboutDeviceSettingsPage 方法
     /// </summary>
-    public static void OpenAboutDeviceSettingsPage(Context context)
+    public static void OpenAboutDeviceSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openAboutDeviceSettingsPage, context);
     }
@@ -750,7 +726,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openNfcSettingsPage 方法
     /// </summary>
-    public static void OpenNfcSettingsPage(Context context)
+    public static void OpenNfcSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openNfcSettingsPage, context);
     }
@@ -758,7 +734,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openAppDetailSettingsPage 方法
     /// </summary>
-    public static void OpenAppDetailSettingsPage(Context context, IntPtr bundleName, IntPtr appIndex)
+    public static void OpenAppDetailSettingsPage(IntPtr context, string bundleName, double appIndex)
     {
         NodeApi.CallMethodVoid(Module, _openAppDetailSettingsPage, context, bundleName, appIndex);
     }
@@ -766,7 +742,7 @@ public static unsafe partial class Settings
     /// <summary>
     /// openDoubleClickSettingsPage 方法
     /// </summary>
-    public static void OpenDoubleClickSettingsPage(Context context)
+    public static void OpenDoubleClickSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openDoubleClickSettingsPage, context);
     }

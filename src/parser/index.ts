@@ -26,6 +26,8 @@ export class ArkTsParser {
     private enumGenerator: EnumGenerator;
     private nativeGenerator: NativeCodeGenerator | null = null;
     private nativeGaps: NativeGap[] = [];
+    /** 全局枚举名去重：同一枚举（如 Orientation）可能出现在多个模块的 .d.ts 中 */
+    private generatedEnumNames = new Set<string>();
 
     constructor(enumMetadata?: EnumMetadata) {
         this.parser = new AstParser();
@@ -50,6 +52,31 @@ export class ArkTsParser {
         }
 
         return this.parser.parseEnums(inputPath);
+    }
+
+    /** 过滤掉已生成的枚举，返回仅新增的枚举 */
+    private filterNewEnums(enums: EnumInfo[]): EnumInfo[] {
+        const newEnums: EnumInfo[] = [];
+        for (const e of enums) {
+            if (!this.generatedEnumNames.has(e.name)) {
+                this.generatedEnumNames.add(e.name);
+                newEnums.push(e);
+            }
+        }
+        return newEnums;
+    }
+
+    /** 从生成的 C# 枚举代码中提取枚举名 */
+    private extractEnumNamesFromCode(code: string): string[] {
+        const names: string[] = [];
+        const lines = code.split('\n');
+        for (const line of lines) {
+            const match = line.match(/^\s*public\s+enum\s+(\w+)/);
+            if (match) {
+                names.push(match[1]);
+            }
+        }
+        return names;
     }
 
     /** 解析 CommonMethod<T> 共享接口到上下文（--native 模式用） */
@@ -112,8 +139,8 @@ export class ArkTsParser {
             console.log(`Generated: ${outputPath}`);
         }
         
-        // 解析并生成枚举
-        const enums = this.parseEnums(inputPath);
+        // 解析并生成枚举（去重：同一枚举只写一次）
+        const enums = this.filterNewEnums(this.parseEnums(inputPath));
         if (enums.length > 0) {
             const enumOutputPath = outputPath.replace('.cs', '.Enums.cs');
             const enumCode = this.generateEnumsCode(enums);
@@ -168,8 +195,8 @@ export class ArkTsParser {
             console.log(`Generated: ${outputPath}`);
         }
         
-        // 解析并生成枚举
-        const enums = this.parseEnums(inputPath);
+        // 解析并生成枚举（去重：同一枚举只写一次）
+        const enums = this.filterNewEnums(this.parseEnums(inputPath));
         if (enums.length > 0) {
             const enumOutputPath = outputPath.replace('.cs', '.Enums.cs');
             const enumCode = this.generateEnumsCode(enums);
@@ -538,6 +565,19 @@ const PILOT_MODULES = [
     '@ohos.promptAction',
 ];
 
+/** 全局枚举名去重（processFullSDK 作用域内） */
+const writtenEnumNames = new Set<string>();
+
+/** 从生成的 C# 枚举代码中提取枚举名 */
+function extractEnumNamesFromCode(code: string): string[] {
+    const names: string[] = [];
+    for (const line of code.split('\n')) {
+        const match = line.match(/^\s*public\s+enum\s+(\w+)/);
+        if (match) names.push(match[1]);
+    }
+    return names;
+}
+
 export async function processFullSDK(sdkArg?: string): Promise<void> {
     const sdkBase = detectSdkBase(sdkArg);
     const componentDir = path.join(sdkBase, 'ets', 'component');
@@ -589,11 +629,15 @@ export async function processFullSDK(sdkArg?: string): Promise<void> {
                 continue;
             }
 
+            // 过滤已生成的枚举，避免不同模块的同名枚举重复定义
+            const newEnums = result.enums.filter(e => !writtenEnumNames.has(e.name));
+            newEnums.forEach(e => writtenEnumNames.add(e.name));
+
             const gen = apiGen.generate(
                 result.component,
                 moduleInfo,
                 permissions,
-                result.enums
+                newEnums
             );
 
             const csPath = path.join(apiOutputDir, `${gen.className}.cs`);
@@ -670,11 +714,37 @@ function writeModuleJson5Permissions(perms: string[]): void {
     ].join('\n');
 
     if (content.includes('"requestPermissions"')) {
-        // 替换已有的 requestPermissions 块（匹配到闭合 ] ）
-        content = content.replace(
-            /\s*"requestPermissions"\s*:\s*\[[\s\S]*?\]/,
-            '\n' + permBlock
-        );
+        // 替换已有的 requestPermissions 块（用括号计数匹配到正确的闭合 ]）
+        const startIdx = content.indexOf('"requestPermissions"');
+        if (startIdx !== -1) {
+            // 找到 [ 的位置
+            let bracketStart = content.indexOf('[', startIdx);
+            if (bracketStart !== -1) {
+                let depth = 0;
+                let bracketEnd = -1;
+                for (let i = bracketStart; i < content.length; i++) {
+                    if (content[i] === '[') depth++;
+                    else if (content[i] === ']') {
+                        depth--;
+                        if (depth === 0) { bracketEnd = i; break; }
+                    }
+                }
+                if (bracketEnd !== -1) {
+                    // 找到 ] 前面的冒号和空白
+                    let deleteStart = startIdx;
+                    while (deleteStart > 0 && content[deleteStart - 1] !== '\n' && content[deleteStart - 1] !== '\r') {
+                        deleteStart--;
+                    }
+                    // 从 "requestPermissions" 行首到 ] 之后全部替换
+                    let deleteEnd = bracketEnd + 1;
+                    // 跳过 ] 后可能的逗号
+                    while (deleteEnd < content.length && (content[deleteEnd] === ',' || content[deleteEnd] === ' ' || content[deleteEnd] === '\t')) {
+                        deleteEnd++;
+                    }
+                    content = content.substring(0, deleteStart) + permBlock + ',' + content.substring(deleteEnd);
+                }
+            }
+        }
     } else {
         // 在 "module": { 之后插入
         content = content.replace(
@@ -694,10 +764,10 @@ const APPROVED_MODULES = new Set([
     'Display',
     'Settings',
     'Vibrator',
-    // M2.3 全部转正
+    // M2.3 转正（17 个可编译模块）
     'Camera',
     'Connection',
-    'Fs',
+    // 'Fs',        // 含 ArrayBuffer/WriteOptions/DfsListeners 等未映射类型，待修复
     'Geolocation',
     'Http',
     'Image',
@@ -708,7 +778,8 @@ const APPROVED_MODULES = new Set([
     'PromptAction',
     'Request',
     'Router',
-    'Sensor',
+    // 'Sensor',    // 含 SensorId/SensorType/SensorInfoParam 等复杂类型，待修复
+    // 'Settings',  // 含 Context/DataAbilityHelper 等未映射类型，待修复
     'Window',
 ]);
 
