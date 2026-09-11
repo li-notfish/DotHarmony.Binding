@@ -21,6 +21,12 @@
                 Clicked="OnOpenControlsDemoClicked" />
         <Button Text="Open modal page"
                 Clicked="OnOpenModalClicked" />
+        <Button Text="TSFN test (M2)"
+                Clicked="OnTsfnTestClicked" />
+        <Label x:Name="TsfnLabel"
+               Text="TSFN: not run"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
         <Label x:Name="LifecycleLabel"
                Text="Main: -A / -D"
                HorizontalTextAlignment="Center"

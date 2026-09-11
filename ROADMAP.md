@@ -92,9 +92,17 @@
 > 端到端模拟器验证待手动执行。
 
 
-### 2.1 TSFN 异步层（大，M2 的核心难点）
+### 2.1 TSFN 异步层（大，M2 的核心难点）——✅ 最小实验已通过
 
 **做什么**：让 `@ohos.*` 的 `Promise<T>` / callback 风格 API 在 C# 里以 `Task<T>` 可用。当前全部映射为 `IntPtr` 占位。
+
+**最小实验结论**（2026-09-11，模拟器，HelloApp "TSFN test" 按钮 / `Runtime/TsfnExperiment.cs`）：
+- `CallJsTrampoline` 已实装（原为空壳）：context 解析回 ThreadSafeFunction 实例，转发 `OnCallJs`
+- 后台 .NET 线程 `Call()` → libuv 在 **JS（宿主主）线程**触发回调（managed thread id 与 UI 线程一致，实测吻合）
+- 回调内 `NapiEnv.Current` 可用，NAPI 字符串创建+读取往返成功
+- 封送开销 ~13ms（worker 睡 300ms，端到端 313ms）；回调内直接更新 ArkUI 控件无崩溃
+- 生命周期完成路径（回调末尾 `Release()`）实测无泄漏/UAF；连点两次（两个实例并发）无竞态
+- ⚠️ 未验证：abort 路径、release 后 call 的防御、跨 TSFN 实例 GC 压力——收编正式通道时补
 
 **怎么做**：
 1. `napi_create_threadsafe_function` 封装（`Runtime/ThreadSafeFunction.cs`）：

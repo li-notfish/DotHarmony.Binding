@@ -66,6 +66,14 @@ public partial class MainPage : ContentPage
         // 模态：标准 INavigation API（经 RootNavigationAdapter 转接到宿主模态层）
         Navigation.PushModalAsync(new ModalPage()).FireAndForgetNavigation();
     }
+
+    private void OnTsfnTestClicked(object? sender, EventArgs e)
+    {
+        // M2 TSFN 最小实验：后台 .NET 线程经 TSFN 排队回 JS 线程回调。
+        // report 在 JS（宿主主）线程触发，可直接更新控件。
+        TsfnLabel.Text = "TSFN: running...";
+        HarmonyOS.Bindings.Runtime.TsfnExperiment.Run(s => TsfnLabel.Text = s);
+    }
 }
 
 internal static class NavigationFireAndForget

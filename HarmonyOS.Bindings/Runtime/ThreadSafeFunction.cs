@@ -63,14 +63,16 @@ internal sealed class ThreadSafeFunction : IDisposable
         return tcs.Task.ContinueWith(t => (T)t.Result!, TaskScheduler.Default);
     }
 
+    // JS 线程回调（CallJsTrampoline 在 JS 线程上触发）
+    internal Action<IntPtr>? OnCallJs;
+
     /// <summary>
-    /// 从任意线程调用 JS 回调
+    /// 从任意线程调用（data 原样穿透到 JS 线程的 OnCallJs）
     /// </summary>
-    public void Call(Action<IntPtr> callback)
+    public void Call(IntPtr data)
     {
         ThrowIfDisposed();
-        var ptr = Marshal.GetFunctionPointerForDelegate(callback);
-        NativeNodeApi.napi_call_threadsafe_function(_tsfnHandle, ptr,
+        NativeNodeApi.napi_call_threadsafe_function(_tsfnHandle, data,
             NativeNodeApi.napi_threadsafe_function_call_mode.napi_tsfn_nonblocking).ThrowIfFailed();
     }
 
@@ -252,8 +254,13 @@ internal sealed class ThreadSafeFunction : IDisposable
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static void CallJsTrampoline(IntPtr env, IntPtr js_callback, IntPtr context, IntPtr data)
     {
-        // TSFN 回调入口，暂时留空
-        // 完整实现需要根据 context 解析调用目标
+        // TSFN 回调：libuv 在 JS 线程上触发。context = Create() 里存的 GCHandle<ThreadSafeFunction>。
+        if (context == IntPtr.Zero)
+            return;
+        var handle = GCHandle.FromIntPtr(context);
+        if (handle.Target is not ThreadSafeFunction tsfn)
+            return;
+        tsfn.OnCallJs?.Invoke(data);
     }
 
     #endregion
