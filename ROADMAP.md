@@ -103,6 +103,13 @@
 - 服务模块 `on*` 函数不再误判为组件事件；嵌套类构造函数支持（Picker 空壳修复）；无注解字面量常量类型推断（Pasteboard MIMETYPE_* 恢复）
 - 明确不做（后续立项）：ArrayBuffer/BigInt 封送、Map/Set 容器映射、EventHandler/EventArgs 事件模型、模拟器端到端手动验证（TSFN abort 路径）
 
+**2.6 封送补全与事件模型（2026-09-12 完成）**：
+- ArrayBuffer/TypedArray ↔ `byte[]` 拷贝语义（typedarray_info 取字节切片）；bigint → `JsBigInt`（long 语义，经 `napi_create_bigint_int64` 通道与 JS number 区分；超出 int64/uint64 抛异常）
+- `JsMap<TKey,TValue>` 活视图：map.get/set/has/delete + entries() 迭代器协议；`Map<number, Geofence>` → `Task<JsMap<double, Geofence>>`（PILOT_MODULES 增加 @ohos.geoLocationManager）
+- 完整 .NET 事件模型：199 个事件访问器（`Display.Change += handler`），add/remove 经 `EventListenerRegistry` 配对 on/off（JS off 按函数实例匹配，GCHandle/napi_ref 生命周期托管）；类型化 `On(type, Action<T>)` 重载；单一共享 `ArgsTrampoline`（Action<IntPtr[]>）+ 生成器调用点适配器，任意回调形状 AOT 安全
+- 明确不做：Set 容器（试点 0 使用）、DataView、Int32Array 等精确 TypedArray 类型（一律按字节拷贝，有损）、BigInt words 全精度、NativeCallbacks 反射兜底的替换
+- 待手动验证：模拟器端到端（事件触发、ArrayBuffer 读写、Map 迭代）
+
 **最小实验结论**（2026-09-11，模拟器，HelloApp "TSFN test" 按钮 / `Runtime/TsfnExperiment.cs`）：
 - `CallJsTrampoline` 已实装（原为空壳）：context 解析回 ThreadSafeFunction 实例，转发 `OnCallJs`
 - 后台 .NET 线程 `Call()` → libuv 在 **JS（宿主主）线程**触发回调（managed thread id 与 UI 线程一致，实测吻合）
