@@ -25,6 +25,8 @@
                 Clicked="OnTsfnTestClicked" />
         <Button Text="Async Demo (Promise → Task)"
                 Clicked="OnAsyncDemoClicked" />
+        <Button Text="Module Verify (@ohos.* APIs)"
+                Clicked="OnModuleVerifyClicked" />
         <Label x:Name="TsfnLabel"
                Text="TSFN: not run"
                HorizontalTextAlignment="Center"

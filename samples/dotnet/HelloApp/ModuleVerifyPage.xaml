@@ -1,0 +1,57 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HelloApp.ModuleVerifyPage"
+             Title="Module Verify"
+             BackgroundColor="LightGray">
+    <ScrollView>
+        <StackLayout Spacing="8" Padding="12">
+            <Label Text="@ohos.* Module Verification"
+                   FontSize="20"
+                   HorizontalTextAlignment="Center"
+                   BackgroundColor="White" Padding="8" />
+            
+            <!-- 基础信息模块 -->
+            <Label Text="--- Basic Info ---" FontSize="14" FontAttributes="Bold" />
+            <Button Text="DeviceInfo" Clicked="OnVerifyDeviceInfo" />
+            <Button Text="BatteryInfo" Clicked="OnVerifyBatteryInfo" />
+            <Button Text="Display" Clicked="OnVerifyDisplay" />
+            <Button Text="Settings" Clicked="OnVerifySettings" />
+            <Button Text="Sensor" Clicked="OnVerifySensor" />
+            
+            <!-- 网络模块 -->
+            <Label Text="--- Network ---" FontSize="14" FontAttributes="Bold" />
+            <Button Text="Http" Clicked="OnVerifyHttp" />
+            <Button Text="Connection" Clicked="OnVerifyConnection" />
+            
+            <!-- 文件模块 -->
+            <Label Text="--- File ---" FontSize="14" FontAttributes="Bold" />
+            <Button Text="Fs" Clicked="OnVerifyFs" />
+            <Button Text="Picker" Clicked="OnVerifyPicker" />
+            <Button Text="Preferences" Clicked="OnVerifyPreferences" />
+            
+            <!-- 多媒体模块 -->
+            <Label Text="--- Multimedia ---" FontSize="14" FontAttributes="Bold" />
+            <Button Text="Media" Clicked="OnVerifyMedia" />
+            <Button Text="Image" Clicked="OnVerifyImage" />
+            <Button Text="Camera" Clicked="OnVerifyCamera" />
+            
+            <!-- UI 模块 -->
+            <Label Text="--- UI ---" FontSize="14" FontAttributes="Bold" />
+            <Button Text="Window" Clicked="OnVerifyWindow" />
+            <Button Text="Router" Clicked="OnVerifyRouter" />
+            <Button Text="PromptAction" Clicked="OnVerifyPromptAction" />
+            
+            <!-- 其他模块 -->
+            <Label Text="--- Others ---" FontSize="14" FontAttributes="Bold" />
+            <Button Text="Pasteboard" Clicked="OnVerifyPasteboard" />
+            <Button Text="Request" Clicked="OnVerifyRequest" />
+            <Button Text="Vibrator" Clicked="OnVerifyVibrator" />
+            <Button Text="Geolocation" Clicked="OnVerifyGeolocation" />
+            
+            <Label x:Name="ResultLabel"
+                   Text="Click a button to verify module"
+                   HorizontalTextAlignment="Center"
+                   BackgroundColor="White" Padding="8" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

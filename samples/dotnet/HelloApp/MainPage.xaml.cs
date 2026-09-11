@@ -79,6 +79,11 @@ public partial class MainPage : ContentPage
     {
         Navigation.PushAsync(new AsyncDemoPage()).FireAndForgetNavigation();
     }
+
+    private void OnModuleVerifyClicked(object? sender, EventArgs e)
+    {
+        Navigation.PushAsync(new ModuleVerifyPage()).FireAndForgetNavigation();
+    }
 }
 
 internal static class NavigationFireAndForget
