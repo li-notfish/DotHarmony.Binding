@@ -110,6 +110,12 @@
 - 明确不做：Set 容器（试点 0 使用）、DataView、Int32Array 等精确 TypedArray 类型（一律按字节拷贝，有损）、BigInt words 全精度、NativeCallbacks 反射兜底的替换
 - ~~待手动验证：模拟器端到端（事件触发、ArrayBuffer 读写、Map 迭代）~~ → 见 2.7（事件订阅/退订回路已实测；ArrayBuffer 读写、Map 迭代仍待专项用例）
 
+**2.9 事件触发路径实测 + 第四批扩展（2026-09-12 完成）**：
+- **事件触发路径首次全链路实测通过**（模拟器）：`Sensor.Accelerometer += handler` 订阅 → JS 持续触发 → ArgsTrampoline → 类型化 `AccelerometerResponse` 载荷（X/Y/Z 属性读取，实测 y=9.80 标准重力值）→ handler 内第 5 次自动退订（off 按函数实例匹配）。示例：ModuleVerifyPage Sensor 按钮
+- 批量扩展 46 → **74 全部转正编译**（+util 容器 9 个、events.emitter、commonEventManager、resourceManager、taskpool、worker、data.relationalStore/dataSharePredicates、file.hash/statvfs/securityLabel、multimedia.audio、graphics.displaySync/colorSpaceManager、screenLock、accounts.osAccount、formBindingData/formProvider、convertxml、zlib）
+- 新暴露并修复的生成器缺陷：① 枚举撞手写 Nodes 类型名（relationalStore.Progress 撞 Nodes/progress.cs，CS0101）→ 从 Nodes/*.cs 扫描保留名集，撞名枚举加模块前缀；② 枚举值超 int32 → long 基底（audio 声道布局位掩码，CS0266）；③ 事件成员 extra 参数撞名 type/callback → 改名（CS0100）；④ 事件成员签名去重补齐 event 键类型维度并跳过普通成员已发射的签名（emitter Off(string) 重复，CS0111）
+- 待续：后续批次同法御用（生成→全批转正→编译筛选→修复/回灰），向 143 模块目标推进
+
 **2.8 AsyncCallback 正式通道 + 批量扩展（2026-09-12 完成）**：
 - `CallbackTaskBridge`：仅 callback 形式 API（无 Promise 重载，如 `settings.registerKeyObserver`、`thermal.subscribeThermalLevel`、fs 实例方法）→ `Task<T>`。运行时 `napi_create_function` 创建 err-first JS 回调作末参传入，JS 触发时解析 (err, data)：成功 → SetResult(convert(data))，BusinessError → `ArkTSException`（读 err.code/err.message）。TCS 同步续体保持 NapiEnv 可用（同 PromiseTaskBridge 语义）
 - 关键认知：**双形态 API 之前是"碰巧能工作"**——原生实现按末参是否为函数自适应返回 Promise，剥掉 callback 调用即进 Promise 模式；真正坏掉的只有 callback-only API（无回调调用会同步抛 401）。生成器双形态判定：同名且剥回调后参数一致的 Promise 重载存在 → Promise 通道；否则 bridge 通道
