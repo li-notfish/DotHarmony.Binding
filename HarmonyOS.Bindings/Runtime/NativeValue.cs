@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace HarmonyOS.Bindings.Runtime;
-
 /// <summary>
 /// C# 类型与 napi_value 之间的转换工具
 /// </summary>
@@ -98,6 +97,29 @@ internal static class NativeValue
     public static IntPtr From(Enum? value) => value == null ? IntPtr.Zero : From(Convert.ToInt32(value));
 
     /// <summary>
+    /// 将字节数组封送为新的 JS ArrayBuffer（拷贝语义：后续修改 C# 数组不影响 JS 侧）
+    /// </summary>
+    public static IntPtr From(byte[] value)
+    {
+        if (value == null) return IntPtr.Zero;
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_create_arraybuffer(env, (IntPtr)value.Length, out var data, out var result).ThrowIfFailed();
+        if (value.Length > 0)
+            Marshal.Copy(value, 0, data, value.Length);
+        return result;
+    }
+
+    /// <summary>
+    /// 将 JsBigInt 封送为 JS bigint（napi_create_bigint_int64——不是 number！）
+    /// </summary>
+    public static IntPtr From(JsBigInt value)
+    {
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_create_bigint_int64(env, value.Value, out var result).ThrowIfFailed();
+        return result;
+    }
+
+    /// <summary>
     /// 将 JsObject 包装实例转换为 napi_value（取强引用当前值；null 返回 IntPtr.Zero）
     /// </summary>
     public static IntPtr From(JsObject? value)
@@ -122,6 +144,8 @@ internal static class NativeValue
         bool b => From(b),
         IntPtr p => From(p),
         Enum e => From(e),
+        JsBigInt bi => From(bi),
+        byte[] buf => From(buf),
         JsObject j => From(j),
         Delegate d => From(d),
         _ => FromRecord(value)
@@ -260,6 +284,56 @@ internal static class NativeValue
         var buf = new byte[(int)length + 1];
         NativeNodeApi.napi_get_value_string_utf8(env, value, buf, (IntPtr)buf.Length, out length).ThrowIfFailed();
         return Encoding.UTF8.GetString(buf, 0, (int)length);
+    }
+
+    /// <summary>
+    /// 将 napi bigint 转换为 C# long（int64 无损优先，其次 uint64，超出两者范围抛 NotSupportedException）
+    /// </summary>
+    public static JsBigInt ToBigInt(IntPtr value)
+    {
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_value_bigint_int64(env, value, out var i64, out var lossless).ThrowIfFailed();
+        if (lossless) return new JsBigInt(i64);
+        NativeNodeApi.napi_get_value_bigint_uint64(env, value, out var u64, out lossless).ThrowIfFailed();
+        if (lossless) return new JsBigInt(unchecked((long)u64));
+        throw new NotSupportedException(
+            "BigInt value does not fit in int64/uint64 range (full-precision words marshaling is not supported).");
+    }
+
+    /// <summary>
+    /// 将 JS ArrayBuffer / TypedArray（如 Uint8Array）拷出为 C# 字节数组。
+    /// TypedArray 取其实际字节范围（data+offset..length）；非缓冲区类型抛 NotSupportedException。
+    /// </summary>
+    public static byte[] ToByteArray(IntPtr value)
+    {
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_is_typedarray(env, value, out var isTypedArray).ThrowIfFailed();
+        if (isTypedArray)
+        {
+            NativeNodeApi.napi_get_typedarray_info(env, value, out _, out var length,
+                out var data, out _, out _).ThrowIfFailed();
+            var bytes = new byte[(int)length];
+            if (bytes.Length > 0)
+                Marshal.Copy(data, bytes, 0, bytes.Length);
+            return bytes;
+        }
+        NativeNodeApi.napi_is_arraybuffer(env, value, out var isArrayBuffer).ThrowIfFailed();
+        if (isArrayBuffer)
+        {
+            return ReadArrayBuffer(env, value);
+        }
+        throw new NotSupportedException("Value is neither an ArrayBuffer nor a TypedArray.");
+    }
+
+    private static unsafe byte[] ReadArrayBuffer(IntPtr env, IntPtr value)
+    {
+        byte* data;
+        IntPtr length;
+        NativeNodeApi.napi_get_arraybuffer_info(env, value, &data, out length).ThrowIfFailed();
+        var bytes = new byte[(int)length];
+        if (bytes.Length > 0)
+            Marshal.Copy((IntPtr)data, bytes, 0, bytes.Length);
+        return bytes;
     }
 }
 #endif

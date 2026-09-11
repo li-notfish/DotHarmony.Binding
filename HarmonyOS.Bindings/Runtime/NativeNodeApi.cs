@@ -237,6 +237,76 @@ internal static partial class NativeNodeApi
 
     #endregion
 
+    #region ArrayBuffer / TypedArray
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_is_arraybuffer(
+        napi_env env,
+        napi_value value,
+        [MarshalAs(UnmanagedType.U1)] out bool result);
+
+    [LibraryImport(NApiLib)]
+    internal static unsafe partial napi_status napi_get_arraybuffer_info(
+        napi_env env,
+        napi_value arraybuffer,
+        byte** data,
+        out IntPtr byte_length);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_create_arraybuffer(
+        napi_env env,
+        IntPtr byte_length,
+        out IntPtr data,
+        out napi_value result);
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_is_typedarray(
+        napi_env env,
+        napi_value value,
+        [MarshalAs(UnmanagedType.U1)] out bool result);
+
+    /// <summary>napi_typedarray_type：Int8=0, Uint8=1, Uint8Clamped=2, Int16=3, Uint16=4, Int32=5, Uint32=6, Float32=7, Float64=8, BigInt64=9, Uint64=10</summary>
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_get_typedarray_info(
+        napi_env env,
+        napi_value typedarray,
+        out int type,
+        out IntPtr length,
+        out IntPtr data,
+        out napi_value arraybuffer,
+        out IntPtr byte_offset);
+
+    #endregion
+
+    #region BigInt
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_get_value_bigint_int64(
+        napi_env env,
+        napi_value value,
+        out long result,
+        [MarshalAs(UnmanagedType.U1)] out bool lossless);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_get_value_bigint_uint64(
+        napi_env env,
+        napi_value value,
+        out ulong result,
+        [MarshalAs(UnmanagedType.U1)] out bool lossless);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_create_bigint_int64(
+        napi_env env,
+        long value,
+        out napi_value result);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_create_bigint_uint64(
+        napi_env env,
+        ulong value,
+        out napi_value result);
+
+    #endregion
+
     #region 生命周期
 
     [LibraryImport(NApiLib)]

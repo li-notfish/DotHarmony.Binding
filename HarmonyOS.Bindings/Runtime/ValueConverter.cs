@@ -30,6 +30,9 @@ internal static class ValueConverter
         if (type == typeof(byte)) return NativeValue.ToByte(value);
         if (type == typeof(string)) return NativeValue.ToString(value);
         if (type == typeof(IntPtr)) return value;
+        if (type == typeof(JsBigInt)) return NativeValue.ToBigInt(value);
+        if (type == typeof(byte[])) return NativeValue.ToByteArray(value);
+        if (type == typeof(object)) return value;
         throw new NotSupportedException(
             $"Unsupported conversion target: {type.Name}. " +
             "Arrays and JsObject wrappers must use explicit Func<IntPtr, T> converters at generated call sites.");

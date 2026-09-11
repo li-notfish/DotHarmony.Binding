@@ -329,6 +329,39 @@ public static class NodeApi
 #endif
     }
 
+    /// <summary>读取数组的单个元素句柄（JsMap 迭代键值对等场景）。</summary>
+    public static IntPtr GetElement(IntPtr array, uint index)
+    {
+#if HARMONYOS
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_element(env, array, index, out var element).ThrowIfFailed();
+        return element;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>
+    /// 把 C# 委托包装为 JS 回调函数（单一共享跳板：JS 侧以 IntPtr[] 形参调用 adapted）。
+    /// 调用方负责通过 <see cref="FreeEventHandle"/> 释放返回的 GCHandle。
+    /// </summary>
+    public static (IntPtr jsFunc, GCHandle Handle) CreateCallbackFunction(Delegate adapted)
+    {
+#if HARMONYOS
+        if (adapted == null)
+            throw new ArgumentNullException(nameof(adapted));
+        var gch = GCHandle.Alloc(adapted);
+        var env = NapiEnv.Current;
+        var nameBytes = "callback"u8.ToArray();
+        NativeNodeApi.napi_create_function(
+            env, nameBytes, (IntPtr)nameBytes.Length,
+            CallbackTrampolines.ArgsTrampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc).ThrowIfFailed();
+        return (jsFunc, gch);
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
     /// <summary>
     /// 调用组件方法（非链式）
     /// </summary>
