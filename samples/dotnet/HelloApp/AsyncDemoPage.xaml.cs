@@ -1,3 +1,4 @@
+using HarmonyOS.Bindings.Api;
 using HarmonyOS.Bindings.Runtime;
 
 namespace HelloApp;
@@ -13,12 +14,9 @@ public partial class AsyncDemoPage : ContentPage
     {
         try
         {
-            // 示例：调用真实的 @ohos.* API（如 ability.getBundleName()）
-            // var jsObject = NodeApi.GetGlobal();
-            // var result = await NodeApi.CallMethodAsync<string>(jsObject, "getDeviceName");
-            // ResultLabel.Text = $"Promise<string> result: {result}";
-            
-            ResultLabel.Text = "Promise<string> - 需要连接真实 @ohos.* API";
+            // .NET 标准化后：Promise<Array<Display>> → Task<DisplayObject[]>，实例属性直接可读
+            var display = await Display.GetDefaultDisplayAsync();
+            ResultLabel.Text = $"Task<string> result: {display.Name}";
         }
         catch (ArkTSException ex)
         {
@@ -30,10 +28,8 @@ public partial class AsyncDemoPage : ContentPage
     {
         try
         {
-            // var result = await NodeApi.CallMethodAsync<double>(jsObject, "getScreenDensity");
-            // ResultLabel.Text = $"Promise<double> result: {result}";
-            
-            ResultLabel.Text = "Promise<double> - 需要连接真实 @ohos.* API";
+            var dpi = (await Display.GetDefaultDisplayAsync()).DensityDpi;
+            ResultLabel.Text = $"Task<double> result: {dpi}";
         }
         catch (ArkTSException ex)
         {
@@ -45,10 +41,8 @@ public partial class AsyncDemoPage : ContentPage
     {
         try
         {
-            // var result = await NodeApi.CallMethodAsync<bool>(jsObject, "isInDarkMode");
-            // ResultLabel.Text = $"Promise<bool> result: {result}";
-            
-            ResultLabel.Text = "Promise<bool> - 需要连接真实 @ohos.* API";
+            var isFoldable = Display.IsFoldable();
+            ResultLabel.Text = $"bool result: {isFoldable}";
         }
         catch (ArkTSException ex)
         {
@@ -60,10 +54,8 @@ public partial class AsyncDemoPage : ContentPage
     {
         try
         {
-            // var result = await NodeApi.CallMethodAsync<int>(jsObject, "getDeviceType");
-            // ResultLabel.Text = $"Promise<int> result: {result}";
-            
-            ResultLabel.Text = "Promise<int> - 需要连接真实 @ohos.* API";
+            var apiVersion = (int)HarmonyOS.Bindings.Api.DeviceInfo.SdkApiVersion;
+            ResultLabel.Text = $"int result: {apiVersion}";
         }
         catch (ArkTSException ex)
         {
@@ -75,10 +67,10 @@ public partial class AsyncDemoPage : ContentPage
     {
         try
         {
-            // var result = await NodeApi.CallMethodAsync<uint>(jsObject, "getApiVersion");
-            // ResultLabel.Text = $"Promise<uint> result: {result}";
-            
-            ResultLabel.Text = "Promise<uint> - 需要连接真实 @ohos.* API";
+            // 原始句柄路线：经 NodeApi.CallMethodAsync<T> + globalThis（GetGlobal 已在运行时可用）
+            var jsObject = NodeApi.GetGlobal();
+            var result = await NodeApi.CallMethodAsync<double>(jsObject, "somePromiseApi");
+            ResultLabel.Text = $"Task<double> result: {(uint)result}";
         }
         catch (ArkTSException ex)
         {
@@ -90,10 +82,8 @@ public partial class AsyncDemoPage : ContentPage
     {
         try
         {
-            // var result = await NodeApi.CallMethodAsync<long>(jsObject, "getCurrentTime");
-            // ResultLabel.Text = $"Promise<long> result: {result}";
-            
-            ResultLabel.Text = "Promise<long> - 需要连接真实 @ohos.* API";
+            // 需要连接真实 @ohos.* API（Task<long> 映射已就绪）
+            ResultLabel.Text = "Task<long> - 需要连接真实 @ohos.* API";
         }
         catch (ArkTSException ex)
         {
@@ -105,10 +95,8 @@ public partial class AsyncDemoPage : ContentPage
     {
         try
         {
-            // var result = await NodeApi.CallMethodAsync<byte>(jsObject, "getBatteryLevel");
-            // ResultLabel.Text = $"Promise<byte> result: {result}";
-            
-            ResultLabel.Text = "Promise<byte> - 需要连接真实 @ohos.* API";
+            // 需要连接真实 @ohos.* API（Task<byte> 映射已就绪）
+            ResultLabel.Text = "Task<byte> - 需要连接真实 @ohos.* API";
         }
         catch (ArkTSException ex)
         {
@@ -120,10 +108,8 @@ public partial class AsyncDemoPage : ContentPage
     {
         try
         {
-            // await NodeApi.CallMethodAsyncVoid(jsObject, "vibrateShort");
-            // ResultLabel.Text = "Promise<void> completed";
-            
-            ResultLabel.Text = "Promise<void> - 需要连接真实 @ohos.* API";
+            // 需要连接真实 @ohos.* API（Promise<void> → Task 已就绪）
+            ResultLabel.Text = "Task (Promise<void>) - 需要连接真实 @ohos.* API";
         }
         catch (ArkTSException ex)
         {
@@ -135,11 +121,10 @@ public partial class AsyncDemoPage : ContentPage
     {
         try
         {
-            // 这是一个会 reject 的 Promise
-            // var result = await NodeApi.CallMethodAsync<string>(jsObject, "willFail");
-            // ResultLabel.Text = $"Should not reach here: {result}";
-            
-            ResultLabel.Text = "Promise Reject - 需要连接真实 @ohos.* API";
+            // 调用一个会 reject 的 Promise 验证 ArkTSException 通路
+            var jsObject = NodeApi.GetGlobal();
+            var result = await NodeApi.CallMethodAsync<string>(jsObject, "willFail");
+            ResultLabel.Text = $"Should not reach here: {result}";
         }
         catch (ArkTSException ex)
         {

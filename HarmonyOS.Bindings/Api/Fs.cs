@@ -67,6 +67,17 @@ public static unsafe partial class Fs
         }
     }
 
+    private static ReadOnlySpan<byte> _READ_ONLY => "READ_ONLY"u8;
+    private static ReadOnlySpan<byte> _WRITE_ONLY => "WRITE_ONLY"u8;
+    private static ReadOnlySpan<byte> _READ_WRITE => "READ_WRITE"u8;
+    private static ReadOnlySpan<byte> _CREATE => "CREATE"u8;
+    private static ReadOnlySpan<byte> _TRUNC => "TRUNC"u8;
+    private static ReadOnlySpan<byte> _APPEND => "APPEND"u8;
+    private static ReadOnlySpan<byte> _NONBLOCK => "NONBLOCK"u8;
+    private static ReadOnlySpan<byte> _DIR => "DIR"u8;
+    private static ReadOnlySpan<byte> _NOFOLLOW => "NOFOLLOW"u8;
+    private static ReadOnlySpan<byte> _SYNC => "SYNC"u8;
+    private static ReadOnlySpan<byte> _UNCACHE => "UNCACHE"u8;
     private static ReadOnlySpan<byte> _access => "access"u8;
     private static ReadOnlySpan<byte> _accessSync => "accessSync"u8;
     private static ReadOnlySpan<byte> _close => "close"u8;
@@ -136,6 +147,61 @@ public static unsafe partial class Fs
     private static ReadOnlySpan<byte> _setxattrSync => "setxattrSync"u8;
     private static ReadOnlySpan<byte> _getxattr => "getxattr"u8;
     private static ReadOnlySpan<byte> _getxattrSync => "getxattrSync"u8;
+
+    /// <summary>
+    /// READ_ONLY
+    /// </summary>
+    public static double ReadOnly => NativeValue.ToDouble(NodeApi.GetProperty(Module, _READ_ONLY));
+
+    /// <summary>
+    /// WRITE_ONLY
+    /// </summary>
+    public static double WriteOnly => NativeValue.ToDouble(NodeApi.GetProperty(Module, _WRITE_ONLY));
+
+    /// <summary>
+    /// READ_WRITE
+    /// </summary>
+    public static double ReadWrite => NativeValue.ToDouble(NodeApi.GetProperty(Module, _READ_WRITE));
+
+    /// <summary>
+    /// CREATE
+    /// </summary>
+    public static double Create => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CREATE));
+
+    /// <summary>
+    /// TRUNC
+    /// </summary>
+    public static double Trunc => NativeValue.ToDouble(NodeApi.GetProperty(Module, _TRUNC));
+
+    /// <summary>
+    /// APPEND
+    /// </summary>
+    public static double Append => NativeValue.ToDouble(NodeApi.GetProperty(Module, _APPEND));
+
+    /// <summary>
+    /// NONBLOCK
+    /// </summary>
+    public static double Nonblock => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NONBLOCK));
+
+    /// <summary>
+    /// DIR
+    /// </summary>
+    public static double Dir => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DIR));
+
+    /// <summary>
+    /// NOFOLLOW
+    /// </summary>
+    public static double Nofollow => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NOFOLLOW));
+
+    /// <summary>
+    /// SYNC
+    /// </summary>
+    public static double Sync => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SYNC));
+
+    /// <summary>
+    /// UNCACHE
+    /// </summary>
+    public static double Uncache => NativeValue.ToDouble(NodeApi.GetProperty(Module, _UNCACHE));
 
     /// <summary>
     /// access

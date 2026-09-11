@@ -67,6 +67,12 @@ public static unsafe partial class Pasteboard
         }
     }
 
+    private static ReadOnlySpan<byte> _MAX_RECORD_NUM => "MAX_RECORD_NUM"u8;
+    private static ReadOnlySpan<byte> _MIMETYPE_TEXT_HTML => "MIMETYPE_TEXT_HTML"u8;
+    private static ReadOnlySpan<byte> _MIMETYPE_TEXT_WANT => "MIMETYPE_TEXT_WANT"u8;
+    private static ReadOnlySpan<byte> _MIMETYPE_TEXT_PLAIN => "MIMETYPE_TEXT_PLAIN"u8;
+    private static ReadOnlySpan<byte> _MIMETYPE_TEXT_URI => "MIMETYPE_TEXT_URI"u8;
+    private static ReadOnlySpan<byte> _MIMETYPE_PIXELMAP => "MIMETYPE_PIXELMAP"u8;
     private static ReadOnlySpan<byte> _createHtmlData => "createHtmlData"u8;
     private static ReadOnlySpan<byte> _createWantData => "createWantData"u8;
     private static ReadOnlySpan<byte> _createPlainTextData => "createPlainTextData"u8;
@@ -78,6 +84,36 @@ public static unsafe partial class Pasteboard
     private static ReadOnlySpan<byte> _createUriRecord => "createUriRecord"u8;
     private static ReadOnlySpan<byte> _createRecord => "createRecord"u8;
     private static ReadOnlySpan<byte> _getSystemPasteboard => "getSystemPasteboard"u8;
+
+    /// <summary>
+    /// MAX_RECORD_NUM
+    /// </summary>
+    public static double MaxRecordNum => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_RECORD_NUM));
+
+    /// <summary>
+    /// MIMETYPE_TEXT_HTML
+    /// </summary>
+    public static string MimeTypeTextHtml => NativeValue.ToString(NodeApi.GetProperty(Module, _MIMETYPE_TEXT_HTML)) ?? string.Empty;
+
+    /// <summary>
+    /// MIMETYPE_TEXT_WANT
+    /// </summary>
+    public static string MimeTypeTextWant => NativeValue.ToString(NodeApi.GetProperty(Module, _MIMETYPE_TEXT_WANT)) ?? string.Empty;
+
+    /// <summary>
+    /// MIMETYPE_TEXT_PLAIN
+    /// </summary>
+    public static string MimeTypeTextPlain => NativeValue.ToString(NodeApi.GetProperty(Module, _MIMETYPE_TEXT_PLAIN)) ?? string.Empty;
+
+    /// <summary>
+    /// MIMETYPE_TEXT_URI
+    /// </summary>
+    public static string MimeTypeTextUri => NativeValue.ToString(NodeApi.GetProperty(Module, _MIMETYPE_TEXT_URI)) ?? string.Empty;
+
+    /// <summary>
+    /// MIMETYPE_PIXELMAP
+    /// </summary>
+    public static string MimeTypePixelmap => NativeValue.ToString(NodeApi.GetProperty(Module, _MIMETYPE_PIXELMAP)) ?? string.Empty;
 
     /// <summary>
     /// createHtmlData

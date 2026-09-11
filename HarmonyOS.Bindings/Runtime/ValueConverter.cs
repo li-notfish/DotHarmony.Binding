@@ -36,5 +36,15 @@ internal static class ValueConverter
     }
 
     public static T Convert<T>(IntPtr value) => (T)ConvertTo(typeof(T), value)!;
+
+    /// <summary>把 napi 数组逐元素转换（生成代码的数组返回值/参数转换基础件）。</summary>
+    public static TArr[] ConvertArray<TArr>(IntPtr array, Func<IntPtr, TArr> convertElement)
+    {
+        var elements = NodeApi.GetArrayElements(array);
+        var result = new TArr[elements.Length];
+        for (int i = 0; i < elements.Length; i++)
+            result[i] = convertElement(elements[i])!;
+        return result;
+    }
 }
 #endif

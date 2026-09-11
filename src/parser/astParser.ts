@@ -106,7 +106,19 @@ export class AstParser {
                     if (decl.name && ts.isIdentifier(decl.name)) {
                         // const → C# static property (getter)
                         // 服务模块：存原始 TS 类型，ApiGenerator 登记包装类/枚举映射后统一转换
-                        const propType = this.getTypeName(decl.type);
+                        let propType = this.getTypeName(decl.type);
+                        // 无类型注解的字面量常量（const X = 'text/html'）按初始值推断类型，
+                        // 否则推断为 void 而被生成器跳过
+                        if (!decl.type && decl.initializer) {
+                            if (ts.isStringLiteral(decl.initializer) || ts.isNoSubstitutionTemplateLiteral(decl.initializer)) {
+                                propType = 'string';
+                            } else if (ts.isNumericLiteral(decl.initializer)) {
+                                propType = 'number';
+                            } else if (decl.initializer.kind === ts.SyntaxKind.TrueKeyword
+                                || decl.initializer.kind === ts.SyntaxKind.FalseKeyword) {
+                                propType = 'boolean';
+                            }
+                        }
                         const mappedType = isServiceModule ? propType : TypeMapper.mapType(propType);
                         const method: MethodInfo = {
                             name: decl.name.text,

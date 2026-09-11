@@ -93,14 +93,14 @@ internal static class NativeValue
     public static IntPtr From(IntPtr value) => value;
 
     /// <summary>
-    /// 将 C# 枚举转换为 napi_value（通过 int）
+    /// 将 C# 枚举转换为 napi_value（通过 int；null 返回 IntPtr.Zero，由调用方决定是否跳过赋值）
     /// </summary>
-    public static IntPtr From(Enum value) => From(Convert.ToInt32(value));
+    public static IntPtr From(Enum? value) => value == null ? IntPtr.Zero : From(Convert.ToInt32(value));
 
     /// <summary>
-    /// 将 JsObject 包装实例转换为 napi_value（取强引用当前值）
+    /// 将 JsObject 包装实例转换为 napi_value（取强引用当前值；null 返回 IntPtr.Zero）
     /// </summary>
-    public static IntPtr From(JsObject value)
+    public static IntPtr From(JsObject? value)
     {
         if (value == null) return IntPtr.Zero;
         return value.PinnedValue;

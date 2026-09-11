@@ -38,20 +38,20 @@ public partial class ModuleVerifyPage : ContentPage
     {
         try
         {
-            var soc = HarmonyOS.Bindings.Api.BatteryInfo.BatterySOC;
+            var soc = HarmonyOS.Bindings.Api.BatteryInfo.BatterySoc;
             var charging = HarmonyOS.Bindings.Api.BatteryInfo.ChargingStatus;
             ShowResult("BatteryInfo", $"SOC={soc}, Charging={charging}");
         }
         catch (Exception ex) { ShowError("BatteryInfo", ex); }
     }
 
-    private void OnVerifyDisplay(object? sender, EventArgs e)
+    private async void OnVerifyDisplay(object? sender, EventArgs e)
     {
         try
         {
-            // Display 接口属性（id/name）需要通过实例访问，静态 API 先测试加载
-            var isFoldable = HarmonyOS.Bindings.Api.Display.IsFoldable();
-            ShowResult("Display", $"IsFoldable={isFoldable} (module loaded OK)");
+            // .NET 风格标准化后的实例包装：Promise<Array<Display>> → Task<DisplayObject[]>
+            var display = await HarmonyOS.Bindings.Api.Display.GetDefaultDisplayAsync();
+            ShowResult("Display", $"#{(int)display.Id} {display.Name} {display.Width}x{display.Height} @{display.DensityDpi}dpi");
         }
         catch (Exception ex) { ShowError("Display", ex); }
     }

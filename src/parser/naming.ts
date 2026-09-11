@@ -12,7 +12,7 @@ const ACRONYM_MAP: Record<string, string> = {
     ABI: 'Abi', API: 'Api', APN: 'Apn', BSSID: 'Bssid', CPU: 'Cpu', DPI: 'Dpi',
     DNS: 'Dns', EAP: 'Eap', GNSS: 'Gnss', GPU: 'Gpu', HD: 'HD', HTML: 'Html',
     HTTP: 'Http', HTTPS: 'Https', ID: 'Id', IMEI: 'Imei', IMSI: 'Imsi',
-    JSON: 'Json', LAN: 'Lan', LED: 'Led', MD5: 'Md5', MIME: 'Mime', MTU: 'Mtu',
+    JSON: 'Json', LAN: 'Lan', LED: 'Led', MD5: 'Md5', MIME: 'Mime', MIMETYPE: 'MimeType', MTU: 'Mtu',
     NFC: 'Nfc', OEM: 'Oem', OK: 'Ok', RAM: 'Ram', RSSI: 'Rssi', SDK: 'Sdk',
     SD: 'SD', SIM: 'Sim', SN: 'SN', SOC: 'Soc', SSID: 'Ssid', TCP: 'Tcp',
     TV: 'TV', UDISK: 'Udisk', UDID: 'Udid', UDP: 'Udp', URI: 'Uri', URL: 'Url',
