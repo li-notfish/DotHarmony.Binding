@@ -2,6 +2,7 @@
   <Folder Name="/samples/" />
   <Folder Name="/samples/dotnet/">
     <Project Path="samples/dotnet/HelloApp/HelloApp.csproj" />
+    <Project Path="samples/dotnet/ApiDemo/ApiDemo.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/HarmonyOS.Maui/HarmonyOS.Maui.csproj" />

@@ -18,6 +18,9 @@ $BUILD  = if ($env:BUILD)  { $env:BUILD  } else { "/tmp/arktsbinding" }
 $tarArgs = Get-Content (Join-Path $scriptDir "build-files.txt") |
     Where-Object { $_ -notmatch '^\s*(#|$)' }
 
+$DemoApp = if ($env:DEMO_APP) { $env:DEMO_APP } else { "HelloApp" }
+Write-Host "=== demo app: $DemoApp ==="
+
 # LOCAL 模式——仍走"打包 → 复制进 WSL 原生文件系统 → 构建 → 取回"。
 # 不要直接在 /mnt/*（9p 挂载）上构建：海量小文件 I/O 会慢一个数量级以上。
 if ($env:LOCAL -eq "true") {
@@ -36,11 +39,11 @@ if ($env:LOCAL -eq "true") {
     if ($LASTEXITCODE -ne 0) { throw "WSL 解压失败" }
 
     Write-Host "=== 3. WSL 原生文件系统构建 ==="
-    & wsl bash -c "bash '$BUILD/scripts/build-libapp.sh'"
+    & wsl bash -c "DEMO_APP='$DemoApp' bash '$BUILD/scripts/build-libapp.sh'"
     if ($LASTEXITCODE -ne 0) { throw "本地 WSL 构建失败" }
 
     Write-Host "=== 4. 取回 libapp.so（双架构） ==="
-    & wsl bash -c "mkdir -p '$wslRoot/samples/HarmonyHost/entry/libs/arm64-v8a' '$wslRoot/samples/HarmonyHost/entry/libs/x86_64' && cp '$BUILD/samples/dotnet/HelloApp/bin/Release/net10.0/linux-musl-arm64/publish/app.so' '$wslRoot/samples/HarmonyHost/entry/libs/arm64-v8a/libapp.so' && cp '$BUILD/samples/dotnet/HelloApp/bin/Release/net10.0/linux-musl-x64/publish/app.so' '$wslRoot/samples/HarmonyHost/entry/libs/x86_64/libapp.so'"
+    & wsl bash -c "mkdir -p '$wslRoot/samples/HarmonyHost/entry/libs/arm64-v8a' '$wslRoot/samples/HarmonyHost/entry/libs/x86_64' && cp '$BUILD/samples/dotnet/$DemoApp/bin/Release/net10.0/linux-musl-arm64/publish/app.so' '$wslRoot/samples/HarmonyHost/entry/libs/arm64-v8a/libapp.so' && cp '$BUILD/samples/dotnet/$DemoApp/bin/Release/net10.0/linux-musl-x64/publish/app.so' '$wslRoot/samples/HarmonyHost/entry/libs/x86_64/libapp.so'"
     if ($LASTEXITCODE -ne 0) { throw "复制 libapp.so 失败" }
 
     Get-ChildItem "samples\HarmonyHost\entry\libs\arm64-v8a\libapp.so", "samples\HarmonyHost\entry\libs\x86_64\libapp.so" | Format-Table -AutoSize
@@ -73,11 +76,11 @@ Write-Host "=== 4. 取回 libapp.so（双架构） ==="
 New-Item -ItemType Directory -Force -Path "samples/HarmonyHost/entry/libs/arm64-v8a" | Out-Null
 New-Item -ItemType Directory -Force -Path "samples/HarmonyHost/entry/libs/x86_64"   | Out-Null
 
-& scp -q "$($REMOTE):$BUILD/samples/dotnet/HelloApp/bin/Release/net10.0/linux-musl-arm64/publish/app.so" `
+& scp -q "$($REMOTE):$BUILD/samples/dotnet/$DemoApp/bin/Release/net10.0/linux-musl-arm64/publish/app.so" `
        "samples/HarmonyHost/entry/libs/arm64-v8a/libapp.so"
 if ($LASTEXITCODE -ne 0) { throw "取回 arm64 架构文件失败" }
 
-& scp -q "$($REMOTE):$BUILD/samples/dotnet/HelloApp/bin/Release/net10.0/linux-musl-x64/publish/app.so" `
+& scp -q "$($REMOTE):$BUILD/samples/dotnet/$DemoApp/bin/Release/net10.0/linux-musl-x64/publish/app.so" `
        "samples/HarmonyHost/entry/libs/x86_64/libapp.so"
 if ($LASTEXITCODE -ne 0) { throw "取回 x86_64 架构文件失败" }
 

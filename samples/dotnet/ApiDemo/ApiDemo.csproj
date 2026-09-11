@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 目标：linux-musl-arm64 NativeAOT 共享库 → libs/arm64-v8a/libapp.so（API 绑定 demo） -->
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
+    <LangVersion>preview</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- NativeAOT 共享库（dlopen 由宿主 C shim 完成） -->
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+
+    <!-- 鸿蒙 musl 环境：绕开 ICU 初始化依赖（shim 亦设 ICU_DATA，双保险） -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <!-- 事件跳板依赖完整根（UnmanagedCallersOnly），保守裁剪 -->
+    <TrimMode>full</TrimMode>
+    <IlcGenerateStackTraceData>true</IlcGenerateStackTraceData>
+
+    <OutputType>Library</OutputType>
+    <AssemblyName>app</AssemblyName>
+
+    <!-- 本工程即应用入口：ModuleInitializer 在宿主 dlopen 后、任何导出调用前注册 RootBuilder，CA2255 不适用 -->
+    <NoWarn>$(NoWarn);CA2255</NoWarn>
+
+    <!-- XAML：启用 Controls 包 buildTransitive targets（XamlC/SourceGen/自动 xaml 收集） -->
+    <EnableDefaultMauiItems>true</EnableDefaultMauiItems>
+    <!-- 单一生成器：SourceGen 产出编译期 InitializeComponent（AOT 安全），避免与 XamlC IL 织入重复生成字段 -->
+    <MauiXamlInflator>SourceGen</MauiXamlInflator>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
+  </ItemGroup>
+
+</Project>

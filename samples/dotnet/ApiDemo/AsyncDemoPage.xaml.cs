@@ -1,7 +1,7 @@
 using HarmonyOS.Bindings.Api;
 using HarmonyOS.Bindings.Runtime;
 
-namespace HelloApp;
+namespace ApiDemo;
 
 public partial class AsyncDemoPage : ContentPage
 {
