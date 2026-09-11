@@ -660,8 +660,9 @@ export async function processFullSDK(sdkArg?: string): Promise<void> {
     // 写 ohosImports.ets
     writeOhosImports(boundModules);
 
-    // 写 module.json5 的 requestPermissions
-    writeModuleJson5Permissions([...allPermissions].sort());
+    // 写 module.json5 的 requestPermissions（过滤掉 SDK 中不存在的权限）
+    const validPerms = filterSdkPermissions([...allPermissions].sort(), sdkBase);
+    writeModuleJson5Permissions(validPerms);
 
     // 写灰度策略到 csproj
     writeGrayscaleCompileRemove(boundModules);
@@ -670,6 +671,30 @@ export async function processFullSDK(sdkArg?: string): Promise<void> {
     console.log(`  Permissions: ${allPermissions.size} unique → module.json5`);
     console.log('');
     console.log('=== SDK Processing Complete ===');
+}
+
+/**
+ * 从 SDK permissions.d.ts 加载合法权限列表，过滤掉不存在的权限。
+ */
+function filterSdkPermissions(perms: string[], sdkBase: string): string[] {
+    const sdkPermissionsPath = path.join(sdkBase, 'ets', 'api', 'permissions.d.ts');
+    if (!fs.existsSync(sdkPermissionsPath)) {
+        console.log(`  permissions.d.ts not found at ${sdkPermissionsPath}, skipping filter`);
+        return perms;
+    }
+    const content = fs.readFileSync(sdkPermissionsPath, 'utf-8');
+    const validPerms = new Set<string>();
+    const regex = /'(ohos\.permission\.[^']+)'/g;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(content)) !== null) {
+        validPerms.add(match[1]);
+    }
+    const filtered = perms.filter(p => validPerms.has(p));
+    const removed = perms.length - filtered.length;
+    if (removed > 0) {
+        console.log(`  Filtered out ${removed} permissions not in SDK`);
+    }
+    return filtered;
 }
 
 /**

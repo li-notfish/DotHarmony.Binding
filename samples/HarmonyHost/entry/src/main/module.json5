@@ -82,22 +82,6 @@
         }
       },
       {
-        "name": "ohos.permission.HEALTH_DATA",
-        "reason": "$string:permission_HEALTH_DATA_reason",
-        "usedScene": {
-          "abilities": ["EntryAbility"],
-          "when": "always"
-        }
-      },
-      {
-        "name": "ohos.permission.HEART_RATE",
-        "reason": "$string:permission_HEART_RATE_reason",
-        "usedScene": {
-          "abilities": ["EntryAbility"],
-          "when": "always"
-        }
-      },
-      {
         "name": "ohos.permission.INTERNET",
         "reason": "$string:permission_INTERNET_reason",
         "usedScene": {
