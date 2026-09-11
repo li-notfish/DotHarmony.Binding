@@ -1,0 +1,40 @@
+<!-- HarmonyOS 应用构建编排（对齐 MAUI 单项目体验：dotnet build -t:Run 的等价物）。
+     应用工程以 <Import Project=".../HarmonyOS.Maui.App.targets" /> 引入；
+     平台启动代码放应用工程的 Platforms/HarmonyOS/（默认 Compile 通配已包含）。
+
+     可用属性：
+       HarmonyHostRoot   ArkTS 宿主工程根目录（默认 samples/HarmonyHost，工作负载级模板）
+       HarmonyPowerShell pwsh 可执行文件（默认 pwsh，需 PowerShell 7+） -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <!-- libapp.so 打包的 demo 工程名 = 应用工程名（对齐 remote-build 的 DEMO_APP 约定） -->
+    <HarmonyDemoApp>$(HarmonyDemoApp)</HarmonyDemoApp>
+    <HarmonyDemoApp Condition="'$(HarmonyDemoApp)' == ''">$(MSBuildProjectName)</HarmonyDemoApp>
+    <HarmonyPowerShell Condition="'$(HarmonyPowerShell)' == ''">pwsh</HarmonyPowerShell>
+    <_HarmonyRepoRoot>$(MSBuildThisFileDirectory)../../../</_HarmonyRepoRoot>
+    <_HarmonyScripts>$(_HarmonyRepoRoot)scripts\</_HarmonyScripts>
+  </PropertyGroup>
+
+  <!-- 1/3：NativeAOT 交叉编译 libapp.so（arm64 + x86_64），LOCAL=true 走本地 WSL -->
+  <Target Name="HarmonyBuildLibApp">
+    <Exec Command="set LOCAL=true&amp;&amp; set DEMO_APP=$(HarmonyDemoApp)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)remote-build.ps1&quot;"
+          WorkingDirectory="$(_HarmonyRepoRoot)" />
+  </Target>
+
+  <!-- 2/3：hvigor 打 HAP（DevEco 路径自动探测） -->
+  <Target Name="HarmonyBuildHap">
+    <Exec Command="&quot;$(_HarmonyScripts)build-hap.cmd&quot;"
+          WorkingDirectory="$(_HarmonyRepoRoot)" />
+  </Target>
+
+  <!-- 3/3：hdc 安装 → 启动 → 抓取日志 -->
+  <Target Name="HarmonyDeploy">
+    <Exec Command="&quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)deploy-hap.ps1&quot;"
+          WorkingDirectory="$(_HarmonyRepoRoot)" />
+  </Target>
+
+  <!-- 一键：编译 libapp.so → 打 HAP → 部署运行（dotnet build -t:HarmonyRun） -->
+  <Target Name="HarmonyRun" DependsOnTargets="HarmonyBuildLibApp;HarmonyBuildHap;HarmonyDeploy" />
+
+</Project>

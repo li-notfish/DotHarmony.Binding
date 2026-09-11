@@ -147,6 +147,9 @@ src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/Content
 samples/HarmonyHost/         鸿蒙宿主工程（ArkTS + C shim + CMake + ohosImports.ets 模块登记）
 samples/dotnet/HelloApp/     M1 控件 demo（XAML + NativeAOT → libapp.so）
 samples/dotnet/ApiDemo/      M2 API 绑定 demo（模块验证/Promise→Task/TSFN；DEMO_APP=ApiDemo 切换）
+                             两者的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
+                             对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
+                             由 src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets 提供
 scripts/                     remote-build / build-hap / deploy-hap 一键工具链
 tests/                       jest（解析器/生成器 76 用例）
 ```
