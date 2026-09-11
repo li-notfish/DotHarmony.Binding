@@ -383,25 +383,9 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// prepare
     /// </summary>
-    public void Prepare(IntPtr callback)
-    {
-        CallMethodVoid(_prepare, callback);
-    }
-
-    /// <summary>
-    /// prepare
-    /// </summary>
     public Task PrepareAsync()
     {
         return CallMethodAsyncVoid(_prepare);
-    }
-
-    /// <summary>
-    /// play
-    /// </summary>
-    public void Play(IntPtr callback)
-    {
-        CallMethodVoid(_play, callback);
     }
 
     /// <summary>
@@ -415,25 +399,9 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// pause
     /// </summary>
-    public void Pause(IntPtr callback)
-    {
-        CallMethodVoid(_pause, callback);
-    }
-
-    /// <summary>
-    /// pause
-    /// </summary>
     public Task PauseAsync()
     {
         return CallMethodAsyncVoid(_pause);
-    }
-
-    /// <summary>
-    /// stop
-    /// </summary>
-    public void Stop(IntPtr callback)
-    {
-        CallMethodVoid(_stop, callback);
     }
 
     /// <summary>
@@ -447,25 +415,9 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// reset
     /// </summary>
-    public void Reset(IntPtr callback)
-    {
-        CallMethodVoid(_reset, callback);
-    }
-
-    /// <summary>
-    /// reset
-    /// </summary>
     public Task ResetAsync()
     {
         return CallMethodAsyncVoid(_reset);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
     }
 
     /// <summary>
@@ -490,14 +442,6 @@ public sealed partial class AVPlayer : JsObject
     public void SetVolume(double volume)
     {
         CallMethodVoid(_setVolume, volume);
-    }
-
-    /// <summary>
-    /// getTrackDescription
-    /// </summary>
-    public void GetTrackDescription(IntPtr callback)
-    {
-        CallMethodVoid(_getTrackDescription, callback);
     }
 
     /// <summary>
@@ -1465,14 +1409,6 @@ public sealed partial class AVRecorder : JsObject
     /// <summary>
     /// prepare
     /// </summary>
-    public void Prepare(IntPtr config, IntPtr callback)
-    {
-        CallMethodVoid(_prepare, config, callback);
-    }
-
-    /// <summary>
-    /// prepare
-    /// </summary>
     public Task PrepareAsync(IntPtr config)
     {
         return CallMethodAsyncVoid(_prepare, config);
@@ -1481,25 +1417,9 @@ public sealed partial class AVRecorder : JsObject
     /// <summary>
     /// getAVRecorderConfig
     /// </summary>
-    public void GetAVRecorderConfig(IntPtr callback)
-    {
-        CallMethodVoid(_getAVRecorderConfig, callback);
-    }
-
-    /// <summary>
-    /// getAVRecorderConfig
-    /// </summary>
     public Task<IntPtr> GetAVRecorderConfigAsync()
     {
         return CallMethodAsync<IntPtr>(_getAVRecorderConfig);
-    }
-
-    /// <summary>
-    /// getInputSurface
-    /// </summary>
-    public void GetInputSurface(IntPtr callback)
-    {
-        CallMethodVoid(_getInputSurface, callback);
     }
 
     /// <summary>
@@ -1545,25 +1465,9 @@ public sealed partial class AVRecorder : JsObject
     /// <summary>
     /// start
     /// </summary>
-    public void Start(IntPtr callback)
-    {
-        CallMethodVoid(_start, callback);
-    }
-
-    /// <summary>
-    /// start
-    /// </summary>
     public Task StartAsync()
     {
         return CallMethodAsyncVoid(_start);
-    }
-
-    /// <summary>
-    /// pause
-    /// </summary>
-    public void Pause(IntPtr callback)
-    {
-        CallMethodVoid(_pause, callback);
     }
 
     /// <summary>
@@ -1577,25 +1481,9 @@ public sealed partial class AVRecorder : JsObject
     /// <summary>
     /// resume
     /// </summary>
-    public void Resume(IntPtr callback)
-    {
-        CallMethodVoid(_resume, callback);
-    }
-
-    /// <summary>
-    /// resume
-    /// </summary>
     public Task ResumeAsync()
     {
         return CallMethodAsyncVoid(_resume);
-    }
-
-    /// <summary>
-    /// stop
-    /// </summary>
-    public void Stop(IntPtr callback)
-    {
-        CallMethodVoid(_stop, callback);
     }
 
     /// <summary>
@@ -1609,25 +1497,9 @@ public sealed partial class AVRecorder : JsObject
     /// <summary>
     /// reset
     /// </summary>
-    public void Reset(IntPtr callback)
-    {
-        CallMethodVoid(_reset, callback);
-    }
-
-    /// <summary>
-    /// reset
-    /// </summary>
     public Task ResetAsync()
     {
         return CallMethodAsyncVoid(_reset);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
     }
 
     /// <summary>
@@ -1641,14 +1513,6 @@ public sealed partial class AVRecorder : JsObject
     /// <summary>
     /// getCurrentAudioCapturerInfo
     /// </summary>
-    public void GetCurrentAudioCapturerInfo(IntPtr callback)
-    {
-        CallMethodVoid(_getCurrentAudioCapturerInfo, callback);
-    }
-
-    /// <summary>
-    /// getCurrentAudioCapturerInfo
-    /// </summary>
     public Task<IntPtr> GetCurrentAudioCapturerInfoAsync()
     {
         return CallMethodAsync<IntPtr>(_getCurrentAudioCapturerInfo);
@@ -1657,25 +1521,9 @@ public sealed partial class AVRecorder : JsObject
     /// <summary>
     /// getAudioCapturerMaxAmplitude
     /// </summary>
-    public void GetAudioCapturerMaxAmplitude(IntPtr callback)
-    {
-        CallMethodVoid(_getAudioCapturerMaxAmplitude, callback);
-    }
-
-    /// <summary>
-    /// getAudioCapturerMaxAmplitude
-    /// </summary>
     public Task<double> GetAudioCapturerMaxAmplitudeAsync()
     {
         return CallMethodAsync<double>(_getAudioCapturerMaxAmplitude);
-    }
-
-    /// <summary>
-    /// getAvailableEncoder
-    /// </summary>
-    public void GetAvailableEncoder(IntPtr callback)
-    {
-        CallMethodVoid(_getAvailableEncoder, callback);
     }
 
     /// <summary>
@@ -1930,14 +1778,6 @@ public sealed partial class AudioPlayer : JsObject
     public void Release()
     {
         CallMethodVoid(_release);
-    }
-
-    /// <summary>
-    /// getTrackDescription
-    /// </summary>
-    public void GetTrackDescription(IntPtr callback)
-    {
-        CallMethodVoid(_getTrackDescription, callback);
     }
 
     /// <summary>
@@ -2711,25 +2551,9 @@ public sealed partial class VideoPlayer : JsObject
     /// <summary>
     /// setDisplaySurface
     /// </summary>
-    public void SetDisplaySurface(string surfaceId, IntPtr callback)
-    {
-        CallMethodVoid(_setDisplaySurface, surfaceId, callback);
-    }
-
-    /// <summary>
-    /// setDisplaySurface
-    /// </summary>
     public Task SetDisplaySurfaceAsync(string surfaceId)
     {
         return CallMethodAsyncVoid(_setDisplaySurface, surfaceId);
-    }
-
-    /// <summary>
-    /// prepare
-    /// </summary>
-    public void Prepare(IntPtr callback)
-    {
-        CallMethodVoid(_prepare, callback);
     }
 
     /// <summary>
@@ -2743,25 +2567,9 @@ public sealed partial class VideoPlayer : JsObject
     /// <summary>
     /// play
     /// </summary>
-    public void Play(IntPtr callback)
-    {
-        CallMethodVoid(_play, callback);
-    }
-
-    /// <summary>
-    /// play
-    /// </summary>
     public Task PlayAsync()
     {
         return CallMethodAsyncVoid(_play);
-    }
-
-    /// <summary>
-    /// pause
-    /// </summary>
-    public void Pause(IntPtr callback)
-    {
-        CallMethodVoid(_pause, callback);
     }
 
     /// <summary>
@@ -2775,25 +2583,9 @@ public sealed partial class VideoPlayer : JsObject
     /// <summary>
     /// stop
     /// </summary>
-    public void Stop(IntPtr callback)
-    {
-        CallMethodVoid(_stop, callback);
-    }
-
-    /// <summary>
-    /// stop
-    /// </summary>
     public Task StopAsync()
     {
         return CallMethodAsyncVoid(_stop);
-    }
-
-    /// <summary>
-    /// reset
-    /// </summary>
-    public void Reset(IntPtr callback)
-    {
-        CallMethodVoid(_reset, callback);
     }
 
     /// <summary>
@@ -2807,33 +2599,17 @@ public sealed partial class VideoPlayer : JsObject
     /// <summary>
     /// seek
     /// </summary>
-    public void Seek(double timeMs, IntPtr callback)
+    public Task<double> SeekAsync(double timeMs)
     {
-        CallMethodVoid(_seek, timeMs, callback);
+        return CallMethodAsyncCallback<double>(_seek, null, timeMs);
     }
 
     /// <summary>
     /// seek
     /// </summary>
-    public void Seek(double timeMs, global::HarmonyOS.ArkUI.SeekMode mode, IntPtr callback)
-    {
-        CallMethodVoid(_seek, timeMs, mode, callback);
-    }
-
-    /// <summary>
-    /// seek
-    /// </summary>
-    public Task<double> SeekAsync(double timeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null)
+    public Task<double> SeekAsync(double timeMs, global::HarmonyOS.ArkUI.SeekMode mode)
     {
         return CallMethodAsync<double>(_seek, timeMs, mode);
-    }
-
-    /// <summary>
-    /// setVolume
-    /// </summary>
-    public void SetVolume(double vol, IntPtr callback)
-    {
-        CallMethodVoid(_setVolume, vol, callback);
     }
 
     /// <summary>
@@ -2847,14 +2623,6 @@ public sealed partial class VideoPlayer : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
     public Task ReleaseAsync()
     {
         return CallMethodAsyncVoid(_release);
@@ -2863,25 +2631,9 @@ public sealed partial class VideoPlayer : JsObject
     /// <summary>
     /// getTrackDescription
     /// </summary>
-    public void GetTrackDescription(IntPtr callback)
-    {
-        CallMethodVoid(_getTrackDescription, callback);
-    }
-
-    /// <summary>
-    /// getTrackDescription
-    /// </summary>
     public Task<MediaDescription[]> GetTrackDescriptionAsync()
     {
         return CallMethodAsync(_getTrackDescription, h => ValueConverter.ConvertArray(h, static e => new MediaDescription(e)));
-    }
-
-    /// <summary>
-    /// setSpeed
-    /// </summary>
-    public void SetSpeed(double speed, IntPtr callback)
-    {
-        CallMethodVoid(_setSpeed, speed, callback);
     }
 
     /// <summary>
@@ -3473,14 +3225,6 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// <summary>
     /// fetchMetadata
     /// </summary>
-    public void FetchMetadata(IntPtr callback)
-    {
-        CallMethodVoid(_fetchMetadata, callback);
-    }
-
-    /// <summary>
-    /// fetchMetadata
-    /// </summary>
     public Task<IntPtr> FetchMetadataAsync()
     {
         return CallMethodAsync<IntPtr>(_fetchMetadata);
@@ -3492,14 +3236,6 @@ public sealed partial class AVMetadataExtractor : JsObject
     public Task<IntPtr> FetchMetadataWithTimeoutAsync(double timeoutMs)
     {
         return CallMethodAsync<IntPtr>(_fetchMetadataWithTimeout, timeoutMs);
-    }
-
-    /// <summary>
-    /// fetchAlbumCover
-    /// </summary>
-    public void FetchAlbumCover(IntPtr callback)
-    {
-        CallMethodVoid(_fetchAlbumCover, callback);
     }
 
     /// <summary>
@@ -3561,14 +3297,6 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
     public Task ReleaseAsync()
     {
         return CallMethodAsyncVoid(_release);
@@ -3595,14 +3323,6 @@ public sealed partial class AVImageGenerator : JsObject
     /// <summary>
     /// fetchFrameByTime
     /// </summary>
-    public void FetchFrameByTime(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param, IntPtr callback)
-    {
-        CallMethodVoid(_fetchFrameByTime, timeUs, options, param, callback);
-    }
-
-    /// <summary>
-    /// fetchFrameByTime
-    /// </summary>
     public Task<IntPtr> FetchFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param)
     {
         return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, options, param);
@@ -3614,14 +3334,6 @@ public sealed partial class AVImageGenerator : JsObject
     public Task<IntPtr> FetchScaledFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryMode, OutputSize? outputSize = null)
     {
         return CallMethodAsync<IntPtr>(_fetchScaledFrameByTime, timeUs, queryMode, outputSize);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
     }
 
     /// <summary>

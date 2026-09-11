@@ -106,23 +106,15 @@ public sealed partial class HttpRequest : JsObject
     /// <summary>
     /// request
     /// </summary>
-    public void Request(string url, IntPtr callback)
+    public Task<IntPtr> RequestAsync(string url)
     {
-        CallMethodVoid(_request, url, callback);
+        return CallMethodAsyncCallback<IntPtr>(_request, null, url);
     }
 
     /// <summary>
     /// request
     /// </summary>
-    public void Request(string url, IntPtr options, IntPtr callback)
-    {
-        CallMethodVoid(_request, url, options, callback);
-    }
-
-    /// <summary>
-    /// request
-    /// </summary>
-    public Task<IntPtr> RequestAsync(string url, IntPtr? options = null)
+    public Task<IntPtr> RequestAsync(string url, IntPtr options)
     {
         return CallMethodAsync<IntPtr>(_request, url, options);
     }
@@ -138,23 +130,15 @@ public sealed partial class HttpRequest : JsObject
     /// <summary>
     /// requestInStream
     /// </summary>
-    public void RequestInStream(string url, IntPtr callback)
+    public Task<double> RequestInStreamAsync(string url)
     {
-        CallMethodVoid(_requestInStream, url, callback);
+        return CallMethodAsyncCallback<double>(_requestInStream, null, url);
     }
 
     /// <summary>
     /// requestInStream
     /// </summary>
-    public void RequestInStream(string url, IntPtr options, IntPtr callback)
-    {
-        CallMethodVoid(_requestInStream, url, options, callback);
-    }
-
-    /// <summary>
-    /// requestInStream
-    /// </summary>
-    public Task<double> RequestInStreamAsync(string url, IntPtr? options = null)
+    public Task<double> RequestInStreamAsync(string url, IntPtr options)
     {
         return CallMethodAsync<double>(_requestInStream, url, options);
     }
@@ -425,25 +409,9 @@ public sealed partial class HttpResponseCache : JsObject
     /// <summary>
     /// flush
     /// </summary>
-    public void Flush(IntPtr callback)
-    {
-        CallMethodVoid(_flush, callback);
-    }
-
-    /// <summary>
-    /// flush
-    /// </summary>
     public Task FlushAsync()
     {
         return CallMethodAsyncVoid(_flush);
-    }
-
-    /// <summary>
-    /// delete
-    /// </summary>
-    public void Delete(IntPtr callback)
-    {
-        CallMethodVoid(_delete, callback);
     }
 
     /// <summary>

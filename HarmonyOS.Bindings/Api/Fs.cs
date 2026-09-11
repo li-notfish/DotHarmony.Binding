@@ -216,7 +216,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<bool> AccessAsync(string path)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _access, path);
+        return NodeApi.CallMethodAsyncCallback<bool>(Module, _access, null, path);
     }
 
     /// <summary>
@@ -272,7 +272,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task CopyAsync(string srcUri, string destUri)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copy, srcUri, destUri);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copy, srcUri, destUri);
     }
 
     /// <summary>
@@ -288,7 +288,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task CopyDirAsync(string src, string dest)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copyDir, src, dest);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copyDir, src, dest);
     }
 
     /// <summary>
@@ -312,7 +312,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task CopyFileAsync(string src, string dest)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copyFile, src, dest);
     }
 
     /// <summary>
@@ -352,7 +352,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<IntPtr> CreateRandomAccessFileAsync(string file)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file);
+        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _createRandomAccessFile, null, file);
     }
 
     /// <summary>
@@ -360,7 +360,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<IntPtr> CreateRandomAccessFileAsync(string file, double mode)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file, mode);
+        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _createRandomAccessFile, null, file, mode);
     }
 
     /// <summary>
@@ -464,7 +464,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<string[]> ListFileAsync(string path)
     {
-        return NodeApi.CallMethodAsync(Module, _listFile, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path);
+        return NodeApi.CallMethodAsyncCallback(Module, _listFile, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path);
     }
 
     /// <summary>
@@ -592,7 +592,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task MoveDirAsync(string src, string dest)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _moveDir, src, dest);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _moveDir, src, dest);
     }
 
     /// <summary>
@@ -616,7 +616,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task MoveFileAsync(string src, string dest)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _moveFile, src, dest);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _moveFile, src, dest);
     }
 
     /// <summary>
@@ -640,7 +640,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<IntPtr> OpenAsync(string path)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _open, path);
+        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _open, null, path);
     }
 
     /// <summary>
@@ -664,7 +664,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<double> ReadAsync(double fd, byte[] buffer)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _read, fd, buffer);
+        return NodeApi.CallMethodAsyncCallback<double>(Module, _read, null, fd, buffer);
     }
 
     /// <summary>
@@ -688,7 +688,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<IntPtr> ReadLinesAsync(string filePath)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _readLines, filePath);
+        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _readLines, null, filePath);
     }
 
     /// <summary>
@@ -712,7 +712,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<string> ReadTextAsync(string filePath)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _readText, filePath);
+        return NodeApi.CallMethodAsyncCallback<string>(Module, _readText, null, filePath);
     }
 
     /// <summary>
@@ -800,7 +800,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task TruncateAsync(string file)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _truncate, file);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _truncate, file);
     }
 
     /// <summary>
@@ -848,7 +848,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<double> WriteAsync(double fd, byte[] buffer)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _write, fd, buffer);
+        return NodeApi.CallMethodAsyncCallback<double>(Module, _write, null, fd, buffer);
     }
 
     /// <summary>

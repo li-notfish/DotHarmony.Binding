@@ -685,14 +685,6 @@ public sealed partial class DisplayObject : JsObject
     /// <summary>
     /// getCutoutInfo
     /// </summary>
-    public void GetCutoutInfo(IntPtr callback)
-    {
-        CallMethodVoid(_getCutoutInfo, callback);
-    }
-
-    /// <summary>
-    /// getCutoutInfo
-    /// </summary>
     public Task<IntPtr> GetCutoutInfoAsync()
     {
         return CallMethodAsync<IntPtr>(_getCutoutInfo);

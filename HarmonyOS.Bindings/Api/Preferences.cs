@@ -193,14 +193,6 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// get
     /// </summary>
-    public void Get(string key, IntPtr defValue, IntPtr callback)
-    {
-        CallMethodVoid(_get, key, defValue, callback);
-    }
-
-    /// <summary>
-    /// get
-    /// </summary>
     public Task<IntPtr> GetAsync(string key, IntPtr defValue)
     {
         return CallMethodAsync<IntPtr>(_get, key, defValue);
@@ -212,14 +204,6 @@ public sealed partial class PreferencesObject : JsObject
     public IntPtr GetSync(string key, IntPtr defValue)
     {
         return CallMethod<IntPtr>(_getSync, key, defValue);
-    }
-
-    /// <summary>
-    /// getAll
-    /// </summary>
-    public void GetAll(IntPtr callback)
-    {
-        CallMethodVoid(_getAll, callback);
     }
 
     /// <summary>
@@ -241,14 +225,6 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// has
     /// </summary>
-    public void Has(string key, IntPtr callback)
-    {
-        CallMethodVoid(_has, key, callback);
-    }
-
-    /// <summary>
-    /// has
-    /// </summary>
     public Task<bool> HasAsync(string key)
     {
         return CallMethodAsync<bool>(_has, key);
@@ -260,14 +236,6 @@ public sealed partial class PreferencesObject : JsObject
     public bool HasSync(string key)
     {
         return CallMethod<bool>(_hasSync, key);
-    }
-
-    /// <summary>
-    /// put
-    /// </summary>
-    public void Put(string key, IntPtr value, IntPtr callback)
-    {
-        CallMethodVoid(_put, key, value, callback);
     }
 
     /// <summary>
@@ -289,14 +257,6 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// delete
     /// </summary>
-    public void Delete(string key, IntPtr callback)
-    {
-        CallMethodVoid(_delete, key, callback);
-    }
-
-    /// <summary>
-    /// delete
-    /// </summary>
     public Task DeleteAsync(string key)
     {
         return CallMethodAsyncVoid(_delete, key);
@@ -313,14 +273,6 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// clear
     /// </summary>
-    public void Clear(IntPtr callback)
-    {
-        CallMethodVoid(_clear, callback);
-    }
-
-    /// <summary>
-    /// clear
-    /// </summary>
     public Task ClearAsync()
     {
         return CallMethodAsyncVoid(_clear);
@@ -332,14 +284,6 @@ public sealed partial class PreferencesObject : JsObject
     public void ClearSync()
     {
         CallMethodVoid(_clearSync);
-    }
-
-    /// <summary>
-    /// flush
-    /// </summary>
-    public void Flush(IntPtr callback)
-    {
-        CallMethodVoid(_flush, callback);
     }
 
     /// <summary>

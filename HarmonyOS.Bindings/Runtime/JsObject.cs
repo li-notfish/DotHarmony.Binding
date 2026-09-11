@@ -141,6 +141,31 @@ public abstract class JsObject : IDisposable
 #endif
     }
 
+    /// <summary>
+    /// 调用仅 callback 形式的实例方法（末参 AsyncCallback&lt;T&gt;）并接为 Task&lt;T&gt;，
+    /// 运行时创建 err-first JS 回调作为最后一个实参传入。
+    /// </summary>
+    protected Task<T> CallMethodAsyncCallback<T>(ReadOnlySpan<byte> methodName, Func<IntPtr, T>? convert, params object?[]? args)
+    {
+#if HARMONYOS
+        ThrowIfDisposed();
+        return NodeApi.CallMethodAsyncCallback<T>(Handle, methodName.ToArray(), convert, args);
+#else
+        throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>CallMethodAsyncCallback 的 void 结果对应物（AsyncCallback&lt;void&gt;）。</summary>
+    protected Task CallMethodAsyncCallbackVoid(ReadOnlySpan<byte> methodName, params object?[]? args)
+    {
+#if HARMONYOS
+        ThrowIfDisposed();
+        return NodeApi.CallMethodAsyncCallbackVoid(Handle, methodName.ToArray(), args);
+#else
+        throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
+#endif
+    }
+
     /// <summary>把 napi 数组拆为元素句柄数组（生成代码的数组转换器基础件）。</summary>
     protected static IntPtr[] GetArrayElements(IntPtr array) => NodeApi.GetArrayElements(array);
 }

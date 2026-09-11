@@ -423,25 +423,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// show
     /// </summary>
-    public void Show(IntPtr callback)
-    {
-        CallMethodVoid(_show, callback);
-    }
-
-    /// <summary>
-    /// show
-    /// </summary>
     public Task ShowAsync()
     {
         return CallMethodAsyncVoid(_show);
-    }
-
-    /// <summary>
-    /// showWindow
-    /// </summary>
-    public void ShowWindow(IntPtr callback)
-    {
-        CallMethodVoid(_showWindow, callback);
     }
 
     /// <summary>
@@ -463,25 +447,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// destroy
     /// </summary>
-    public void Destroy(IntPtr callback)
-    {
-        CallMethodVoid(_destroy, callback);
-    }
-
-    /// <summary>
-    /// destroy
-    /// </summary>
     public Task DestroyAsync()
     {
         return CallMethodAsyncVoid(_destroy);
-    }
-
-    /// <summary>
-    /// destroyWindow
-    /// </summary>
-    public void DestroyWindow(IntPtr callback)
-    {
-        CallMethodVoid(_destroyWindow, callback);
     }
 
     /// <summary>
@@ -501,27 +469,11 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// moveTo
-    /// </summary>
-    public void MoveTo(double x, double y, IntPtr callback)
-    {
-        CallMethodVoid(_moveTo, x, y, callback);
-    }
-
-    /// <summary>
     /// moveWindowTo
     /// </summary>
     public Task MoveWindowToAsync(double x, double y)
     {
         return CallMethodAsyncVoid(_moveWindowTo, x, y);
-    }
-
-    /// <summary>
-    /// moveWindowTo
-    /// </summary>
-    public void MoveWindowTo(double x, double y, IntPtr callback)
-    {
-        CallMethodVoid(_moveWindowTo, x, y, callback);
     }
 
     /// <summary>
@@ -565,27 +517,11 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// resetSize
-    /// </summary>
-    public void ResetSize(double width, double height, IntPtr callback)
-    {
-        CallMethodVoid(_resetSize, width, height, callback);
-    }
-
-    /// <summary>
     /// resize
     /// </summary>
     public Task ResizeAsync(double width, double height)
     {
         return CallMethodAsyncVoid(_resize, width, height);
-    }
-
-    /// <summary>
-    /// resize
-    /// </summary>
-    public void Resize(double width, double height, IntPtr callback)
-    {
-        CallMethodVoid(_resize, width, height, callback);
     }
 
     /// <summary>
@@ -607,9 +543,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// getProperties
     /// </summary>
-    public void GetProperties(IntPtr callback)
+    public Task<WindowProperties> GetPropertiesAsync()
     {
-        CallMethodVoid(_getProperties, callback);
+        return CallMethodAsync(_getProperties, static h => new WindowProperties(h));
     }
 
     /// <summary>
@@ -618,14 +554,6 @@ public sealed partial class WindowObject : JsObject
     public WindowRect GetGlobalRect()
     {
         return CallMethod(_getGlobalRect, static h => new WindowRect(h));
-    }
-
-    /// <summary>
-    /// getProperties
-    /// </summary>
-    public Task<WindowProperties> GetPropertiesAsync()
-    {
-        return CallMethodAsync(_getProperties, static h => new WindowProperties(h));
     }
 
     /// <summary>
@@ -642,14 +570,6 @@ public sealed partial class WindowObject : JsObject
     public WindowDensityInfo GetWindowDensityInfo()
     {
         return CallMethod(_getWindowDensityInfo, static h => new WindowDensityInfo(h));
-    }
-
-    /// <summary>
-    /// getAvoidArea
-    /// </summary>
-    public void GetAvoidArea(global::HarmonyOS.ArkUI.AvoidAreaType type, IntPtr callback)
-    {
-        CallMethodVoid(_getAvoidArea, type, callback);
     }
 
     /// <summary>
@@ -711,25 +631,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setFullScreen
     /// </summary>
-    public void SetFullScreen(bool isFullScreen, IntPtr callback)
-    {
-        CallMethodVoid(_setFullScreen, isFullScreen, callback);
-    }
-
-    /// <summary>
-    /// setFullScreen
-    /// </summary>
     public Task SetFullScreenAsync(bool isFullScreen)
     {
         return CallMethodAsyncVoid(_setFullScreen, isFullScreen);
-    }
-
-    /// <summary>
-    /// setLayoutFullScreen
-    /// </summary>
-    public void SetLayoutFullScreen(bool isLayoutFullScreen, IntPtr callback)
-    {
-        CallMethodVoid(_setLayoutFullScreen, isLayoutFullScreen, callback);
     }
 
     /// <summary>
@@ -743,14 +647,6 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setWindowLayoutFullScreen
     /// </summary>
-    public void SetWindowLayoutFullScreen(bool isLayoutFullScreen, IntPtr callback)
-    {
-        CallMethodVoid(_setWindowLayoutFullScreen, isLayoutFullScreen, callback);
-    }
-
-    /// <summary>
-    /// setWindowLayoutFullScreen
-    /// </summary>
     public Task SetWindowLayoutFullScreenAsync(bool isLayoutFullScreen)
     {
         return CallMethodAsyncVoid(_setWindowLayoutFullScreen, isLayoutFullScreen);
@@ -759,25 +655,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setSystemBarEnable
     /// </summary>
-    public void SetSystemBarEnable(IntPtr names, IntPtr callback)
-    {
-        CallMethodVoid(_setSystemBarEnable, names, callback);
-    }
-
-    /// <summary>
-    /// setSystemBarEnable
-    /// </summary>
     public Task SetSystemBarEnableAsync(IntPtr names)
     {
         return CallMethodAsyncVoid(_setSystemBarEnable, names);
-    }
-
-    /// <summary>
-    /// setWindowSystemBarEnable
-    /// </summary>
-    public void SetWindowSystemBarEnable(IntPtr names, IntPtr callback)
-    {
-        CallMethodVoid(_setWindowSystemBarEnable, names, callback);
     }
 
     /// <summary>
@@ -799,25 +679,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setSystemBarProperties
     /// </summary>
-    public void SetSystemBarProperties(SystemBarProperties systemBarProperties, IntPtr callback)
-    {
-        CallMethodVoid(_setSystemBarProperties, systemBarProperties, callback);
-    }
-
-    /// <summary>
-    /// setSystemBarProperties
-    /// </summary>
     public Task SetSystemBarPropertiesAsync(SystemBarProperties systemBarProperties)
     {
         return CallMethodAsyncVoid(_setSystemBarProperties, systemBarProperties);
-    }
-
-    /// <summary>
-    /// setWindowSystemBarProperties
-    /// </summary>
-    public void SetWindowSystemBarProperties(SystemBarProperties systemBarProperties, IntPtr callback)
-    {
-        CallMethodVoid(_setWindowSystemBarProperties, systemBarProperties, callback);
     }
 
     /// <summary>
@@ -901,14 +765,6 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// setPreferredOrientation
-    /// </summary>
-    public void SetPreferredOrientation(global::HarmonyOS.ArkUI.Orientation orientation, IntPtr callback)
-    {
-        CallMethodVoid(_setPreferredOrientation, orientation, callback);
-    }
-
-    /// <summary>
     /// setPreferredOrientationWithResult
     /// </summary>
     public Task<OrientationResult> SetPreferredOrientationWithResultAsync(global::HarmonyOS.ArkUI.Orientation orientation)
@@ -927,25 +783,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// loadContent
     /// </summary>
-    public void LoadContent(string path, IntPtr storage, IntPtr callback)
-    {
-        CallMethodVoid(_loadContent, path, storage, callback);
-    }
-
-    /// <summary>
-    /// loadContent
-    /// </summary>
     public Task LoadContentAsync(string path, IntPtr storage)
     {
         return CallMethodAsyncVoid(_loadContent, path, storage);
-    }
-
-    /// <summary>
-    /// loadContent
-    /// </summary>
-    public void LoadContent(string path, IntPtr callback)
-    {
-        CallMethodVoid(_loadContent, path, callback);
     }
 
     /// <summary>
@@ -967,14 +807,6 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setUIContent
     /// </summary>
-    public void SetUiContent(string path, IntPtr callback)
-    {
-        CallMethodVoid(_setUIContent, path, callback);
-    }
-
-    /// <summary>
-    /// setUIContent
-    /// </summary>
     public Task SetUiContentAsync(string path)
     {
         return CallMethodAsyncVoid(_setUIContent, path);
@@ -983,33 +815,17 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// loadContentByName
     /// </summary>
-    public void LoadContentByName(string name, IntPtr storage, IntPtr callback)
-    {
-        CallMethodVoid(_loadContentByName, name, storage, callback);
-    }
-
-    /// <summary>
-    /// loadContentByName
-    /// </summary>
-    public void LoadContentByName(string name, IntPtr callback)
-    {
-        CallMethodVoid(_loadContentByName, name, callback);
-    }
-
-    /// <summary>
-    /// loadContentByName
-    /// </summary>
-    public Task LoadContentByNameAsync(string name, IntPtr? storage = null)
+    public Task LoadContentByNameAsync(string name, IntPtr storage)
     {
         return CallMethodAsyncVoid(_loadContentByName, name, storage);
     }
 
     /// <summary>
-    /// isShowing
+    /// loadContentByName
     /// </summary>
-    public void IsShowing(IntPtr callback)
+    public Task LoadContentByNameAsync(string name)
     {
-        CallMethodVoid(_isShowing, callback);
+        return CallMethodAsyncCallbackVoid(_loadContentByName, name);
     }
 
     /// <summary>
@@ -1053,27 +869,11 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// isSupportWideGamut
-    /// </summary>
-    public void IsSupportWideGamut(IntPtr callback)
-    {
-        CallMethodVoid(_isSupportWideGamut, callback);
-    }
-
-    /// <summary>
     /// isWindowSupportWideGamut
     /// </summary>
     public Task<bool> IsWindowSupportWideGamutAsync()
     {
         return CallMethodAsync<bool>(_isWindowSupportWideGamut);
-    }
-
-    /// <summary>
-    /// isWindowSupportWideGamut
-    /// </summary>
-    public void IsWindowSupportWideGamut(IntPtr callback)
-    {
-        CallMethodVoid(_isWindowSupportWideGamut, callback);
     }
 
     /// <summary>
@@ -1085,14 +885,6 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// setColorSpace
-    /// </summary>
-    public void SetColorSpace(global::HarmonyOS.ArkUI.ColorSpace colorSpace, IntPtr callback)
-    {
-        CallMethodVoid(_setColorSpace, colorSpace, callback);
-    }
-
-    /// <summary>
     /// setWindowColorSpace
     /// </summary>
     public Task SetWindowColorSpaceAsync(global::HarmonyOS.ArkUI.ColorSpace colorSpace)
@@ -1101,27 +893,11 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// setWindowColorSpace
-    /// </summary>
-    public void SetWindowColorSpace(global::HarmonyOS.ArkUI.ColorSpace colorSpace, IntPtr callback)
-    {
-        CallMethodVoid(_setWindowColorSpace, colorSpace, callback);
-    }
-
-    /// <summary>
     /// getColorSpace
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ColorSpace> GetColorSpaceAsync()
     {
         return CallMethodAsync<global::HarmonyOS.ArkUI.ColorSpace>(_getColorSpace);
-    }
-
-    /// <summary>
-    /// getColorSpace
-    /// </summary>
-    public void GetColorSpace(IntPtr callback)
-    {
-        CallMethodVoid(_getColorSpace, callback);
     }
 
     /// <summary>
@@ -1138,14 +914,6 @@ public sealed partial class WindowObject : JsObject
     public Task SetBackgroundColorAsync(string color)
     {
         return CallMethodAsyncVoid(_setBackgroundColor, color);
-    }
-
-    /// <summary>
-    /// setBackgroundColor
-    /// </summary>
-    public void SetBackgroundColor(string color, IntPtr callback)
-    {
-        CallMethodVoid(_setBackgroundColor, color, callback);
     }
 
     /// <summary>
@@ -1173,14 +941,6 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// setBrightness
-    /// </summary>
-    public void SetBrightness(double brightness, IntPtr callback)
-    {
-        CallMethodVoid(_setBrightness, brightness, callback);
-    }
-
-    /// <summary>
     /// setWindowTopmost
     /// </summary>
     public Task SetWindowTopmostAsync(bool isWindowTopmost)
@@ -1197,27 +957,11 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// setWindowBrightness
-    /// </summary>
-    public void SetWindowBrightness(double brightness, IntPtr callback)
-    {
-        CallMethodVoid(_setWindowBrightness, brightness, callback);
-    }
-
-    /// <summary>
     /// setWindowContainerModalColor
     /// </summary>
     public void SetWindowContainerModalColor(string activeColor, string inactiveColor)
     {
         CallMethodVoid(_setWindowContainerModalColor, activeColor, inactiveColor);
-    }
-
-    /// <summary>
-    /// setDimBehind
-    /// </summary>
-    public void SetDimBehind(double dimBehindValue, IntPtr callback)
-    {
-        CallMethodVoid(_setDimBehind, dimBehindValue, callback);
     }
 
     /// <summary>
@@ -1237,27 +981,11 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// setFocusable
-    /// </summary>
-    public void SetFocusable(bool isFocusable, IntPtr callback)
-    {
-        CallMethodVoid(_setFocusable, isFocusable, callback);
-    }
-
-    /// <summary>
     /// setWindowFocusable
     /// </summary>
     public Task SetWindowFocusableAsync(bool isFocusable)
     {
         return CallMethodAsyncVoid(_setWindowFocusable, isFocusable);
-    }
-
-    /// <summary>
-    /// setWindowFocusable
-    /// </summary>
-    public void SetWindowFocusable(bool isFocusable, IntPtr callback)
-    {
-        CallMethodVoid(_setWindowFocusable, isFocusable, callback);
     }
 
     /// <summary>
@@ -1285,27 +1013,11 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// setKeepScreenOn
-    /// </summary>
-    public void SetKeepScreenOn(bool isKeepScreenOn, IntPtr callback)
-    {
-        CallMethodVoid(_setKeepScreenOn, isKeepScreenOn, callback);
-    }
-
-    /// <summary>
     /// setWindowKeepScreenOn
     /// </summary>
     public Task SetWindowKeepScreenOnAsync(bool isKeepScreenOn)
     {
         return CallMethodAsyncVoid(_setWindowKeepScreenOn, isKeepScreenOn);
-    }
-
-    /// <summary>
-    /// setWindowKeepScreenOn
-    /// </summary>
-    public void SetWindowKeepScreenOn(bool isKeepScreenOn, IntPtr callback)
-    {
-        CallMethodVoid(_setWindowKeepScreenOn, isKeepScreenOn, callback);
     }
 
     /// <summary>
@@ -1317,27 +1029,11 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// setOutsideTouchable
-    /// </summary>
-    public void SetOutsideTouchable(bool touchable, IntPtr callback)
-    {
-        CallMethodVoid(_setOutsideTouchable, touchable, callback);
-    }
-
-    /// <summary>
     /// setPrivacyMode
     /// </summary>
     public Task SetPrivacyModeAsync(bool isPrivacyMode)
     {
         return CallMethodAsyncVoid(_setPrivacyMode, isPrivacyMode);
-    }
-
-    /// <summary>
-    /// setPrivacyMode
-    /// </summary>
-    public void SetPrivacyMode(bool isPrivacyMode, IntPtr callback)
-    {
-        CallMethodVoid(_setPrivacyMode, isPrivacyMode, callback);
     }
 
     /// <summary>
@@ -1349,14 +1045,6 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// setWindowPrivacyMode
-    /// </summary>
-    public void SetWindowPrivacyMode(bool isPrivacyMode, IntPtr callback)
-    {
-        CallMethodVoid(_setWindowPrivacyMode, isPrivacyMode, callback);
-    }
-
-    /// <summary>
     /// setTouchable
     /// </summary>
     public Task SetTouchableAsync(bool isTouchable)
@@ -1365,35 +1053,11 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// setTouchable
-    /// </summary>
-    public void SetTouchable(bool isTouchable, IntPtr callback)
-    {
-        CallMethodVoid(_setTouchable, isTouchable, callback);
-    }
-
-    /// <summary>
     /// setWindowTouchable
     /// </summary>
     public Task SetWindowTouchableAsync(bool isTouchable)
     {
         return CallMethodAsyncVoid(_setWindowTouchable, isTouchable);
-    }
-
-    /// <summary>
-    /// setWindowTouchable
-    /// </summary>
-    public void SetWindowTouchable(bool isTouchable, IntPtr callback)
-    {
-        CallMethodVoid(_setWindowTouchable, isTouchable, callback);
-    }
-
-    /// <summary>
-    /// snapshot
-    /// </summary>
-    public void Snapshot(IntPtr callback)
-    {
-        CallMethodVoid(_snapshot, callback);
     }
 
     /// <summary>
@@ -1455,14 +1119,6 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setAspectRatio
     /// </summary>
-    public void SetAspectRatio(double ratio, IntPtr callback)
-    {
-        CallMethodVoid(_setAspectRatio, ratio, callback);
-    }
-
-    /// <summary>
-    /// setAspectRatio
-    /// </summary>
     public Task SetAspectRatioAsync(double ratio)
     {
         return CallMethodAsyncVoid(_setAspectRatio, ratio);
@@ -1479,14 +1135,6 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// resetAspectRatio
     /// </summary>
-    public void ResetAspectRatio(IntPtr callback)
-    {
-        CallMethodVoid(_resetAspectRatio, callback);
-    }
-
-    /// <summary>
-    /// resetAspectRatio
-    /// </summary>
     public Task ResetAspectRatioAsync()
     {
         return CallMethodAsyncVoid(_resetAspectRatio);
@@ -1498,14 +1146,6 @@ public sealed partial class WindowObject : JsObject
     public Task SetRaiseByClickEnabledAsync(bool enable)
     {
         return CallMethodAsyncVoid(_setRaiseByClickEnabled, enable);
-    }
-
-    /// <summary>
-    /// minimize
-    /// </summary>
-    public void Minimize(IntPtr callback)
-    {
-        CallMethodVoid(_minimize, callback);
     }
 
     /// <summary>
@@ -1538,14 +1178,6 @@ public sealed partial class WindowObject : JsObject
     public Task MaximizeWithOptionsAsync(MaximizeOptions? maximizeOptions = null)
     {
         return CallMethodAsyncVoid(_maximizeWithOptions, maximizeOptions);
-    }
-
-    /// <summary>
-    /// setResizeByDragEnabled
-    /// </summary>
-    public void SetResizeByDragEnabled(bool enable, IntPtr callback)
-    {
-        CallMethodVoid(_setResizeByDragEnabled, enable, callback);
     }
 
     /// <summary>

@@ -350,7 +350,7 @@ public static unsafe partial class Request
     /// </summary>
     public static Task<string[]> SearchAsync()
     {
-        return NodeApi.CallMethodAsync(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
+        return NodeApi.CallMethodAsyncCallback(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
@@ -425,25 +425,9 @@ public sealed partial class DownloadTask : JsObject
     /// <summary>
     /// remove
     /// </summary>
-    public void Remove(IntPtr callback)
-    {
-        CallMethodVoid(_remove, callback);
-    }
-
-    /// <summary>
-    /// remove
-    /// </summary>
     public Task<bool> RemoveAsync()
     {
         return CallMethodAsync<bool>(_remove);
-    }
-
-    /// <summary>
-    /// pause
-    /// </summary>
-    public void Pause(IntPtr callback)
-    {
-        CallMethodVoid(_pause, callback);
     }
 
     /// <summary>
@@ -457,25 +441,9 @@ public sealed partial class DownloadTask : JsObject
     /// <summary>
     /// resume
     /// </summary>
-    public void Resume(IntPtr callback)
-    {
-        CallMethodVoid(_resume, callback);
-    }
-
-    /// <summary>
-    /// resume
-    /// </summary>
     public Task ResumeAsync()
     {
         return CallMethodAsyncVoid(_resume);
-    }
-
-    /// <summary>
-    /// query
-    /// </summary>
-    public void Query(IntPtr callback)
-    {
-        CallMethodVoid(_query, callback);
     }
 
     /// <summary>
@@ -489,25 +457,9 @@ public sealed partial class DownloadTask : JsObject
     /// <summary>
     /// queryMimeType
     /// </summary>
-    public void QueryMimeType(IntPtr callback)
-    {
-        CallMethodVoid(_queryMimeType, callback);
-    }
-
-    /// <summary>
-    /// queryMimeType
-    /// </summary>
     public Task<string> QueryMimeTypeAsync()
     {
         return CallMethodAsync<string>(_queryMimeType);
-    }
-
-    /// <summary>
-    /// delete
-    /// </summary>
-    public void Delete(IntPtr callback)
-    {
-        CallMethodVoid(_delete, callback);
     }
 
     /// <summary>
@@ -521,25 +473,9 @@ public sealed partial class DownloadTask : JsObject
     /// <summary>
     /// suspend
     /// </summary>
-    public void Suspend(IntPtr callback)
-    {
-        CallMethodVoid(_suspend, callback);
-    }
-
-    /// <summary>
-    /// suspend
-    /// </summary>
     public Task<bool> SuspendAsync()
     {
         return CallMethodAsync<bool>(_suspend);
-    }
-
-    /// <summary>
-    /// restore
-    /// </summary>
-    public void Restore(IntPtr callback)
-    {
-        CallMethodVoid(_restore, callback);
     }
 
     /// <summary>
@@ -553,25 +489,9 @@ public sealed partial class DownloadTask : JsObject
     /// <summary>
     /// getTaskInfo
     /// </summary>
-    public void GetTaskInfo(IntPtr callback)
-    {
-        CallMethodVoid(_getTaskInfo, callback);
-    }
-
-    /// <summary>
-    /// getTaskInfo
-    /// </summary>
     public Task<DownloadInfo> GetTaskInfoAsync()
     {
         return CallMethodAsync(_getTaskInfo, static h => new DownloadInfo(h));
-    }
-
-    /// <summary>
-    /// getTaskMimeType
-    /// </summary>
-    public void GetTaskMimeType(IntPtr callback)
-    {
-        CallMethodVoid(_getTaskMimeType, callback);
     }
 
     /// <summary>
@@ -727,25 +647,9 @@ public sealed partial class UploadTask : JsObject
     /// <summary>
     /// remove
     /// </summary>
-    public void Remove(IntPtr callback)
-    {
-        CallMethodVoid(_remove, callback);
-    }
-
-    /// <summary>
-    /// remove
-    /// </summary>
     public Task<bool> RemoveAsync()
     {
         return CallMethodAsync<bool>(_remove);
-    }
-
-    /// <summary>
-    /// delete
-    /// </summary>
-    public void Delete(IntPtr callback)
-    {
-        CallMethodVoid(_delete, callback);
     }
 
     /// <summary>

@@ -521,14 +521,6 @@ public sealed partial class PasteDataRecord : JsObject
     /// <summary>
     /// convertToText
     /// </summary>
-    public void ConvertToText(IntPtr callback)
-    {
-        CallMethodVoid(_convertToText, callback);
-    }
-
-    /// <summary>
-    /// convertToText
-    /// </summary>
     public Task<string> ConvertToTextAsync()
     {
         return CallMethodAsync<string>(_convertToText);
@@ -672,25 +664,9 @@ public sealed partial class SystemPasteboard : JsObject
     /// <summary>
     /// clear
     /// </summary>
-    public void Clear(IntPtr callback)
-    {
-        CallMethodVoid(_clear, callback);
-    }
-
-    /// <summary>
-    /// clear
-    /// </summary>
     public Task ClearAsync()
     {
         return CallMethodAsyncVoid(_clear);
-    }
-
-    /// <summary>
-    /// clearData
-    /// </summary>
-    public void ClearData(IntPtr callback)
-    {
-        CallMethodVoid(_clearData, callback);
     }
 
     /// <summary>
@@ -712,25 +688,9 @@ public sealed partial class SystemPasteboard : JsObject
     /// <summary>
     /// getPasteData
     /// </summary>
-    public void GetPasteData(IntPtr callback)
-    {
-        CallMethodVoid(_getPasteData, callback);
-    }
-
-    /// <summary>
-    /// getPasteData
-    /// </summary>
     public Task<PasteData> GetPasteDataAsync()
     {
         return CallMethodAsync(_getPasteData, static h => new PasteData(h));
-    }
-
-    /// <summary>
-    /// getData
-    /// </summary>
-    public void GetData(IntPtr callback)
-    {
-        CallMethodVoid(_getData, callback);
     }
 
     /// <summary>
@@ -752,25 +712,9 @@ public sealed partial class SystemPasteboard : JsObject
     /// <summary>
     /// hasPasteData
     /// </summary>
-    public void HasPasteData(IntPtr callback)
-    {
-        CallMethodVoid(_hasPasteData, callback);
-    }
-
-    /// <summary>
-    /// hasPasteData
-    /// </summary>
     public Task<bool> HasPasteDataAsync()
     {
         return CallMethodAsync<bool>(_hasPasteData);
-    }
-
-    /// <summary>
-    /// hasData
-    /// </summary>
-    public void HasData(IntPtr callback)
-    {
-        CallMethodVoid(_hasData, callback);
     }
 
     /// <summary>
@@ -792,25 +736,9 @@ public sealed partial class SystemPasteboard : JsObject
     /// <summary>
     /// setPasteData
     /// </summary>
-    public void SetPasteData(PasteData data, IntPtr callback)
-    {
-        CallMethodVoid(_setPasteData, data, callback);
-    }
-
-    /// <summary>
-    /// setPasteData
-    /// </summary>
     public Task SetPasteDataAsync(PasteData data)
     {
         return CallMethodAsyncVoid(_setPasteData, data);
-    }
-
-    /// <summary>
-    /// setData
-    /// </summary>
-    public void SetData(PasteData data, IntPtr callback)
-    {
-        CallMethodVoid(_setData, data, callback);
     }
 
     /// <summary>

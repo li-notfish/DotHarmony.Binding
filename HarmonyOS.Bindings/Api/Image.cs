@@ -639,14 +639,6 @@ public sealed partial class PixelMap : JsObject
     }
 
     /// <summary>
-    /// readPixelsToBuffer
-    /// </summary>
-    public void ReadPixelsToBuffer(byte[] dst, IntPtr callback)
-    {
-        CallMethodVoid(_readPixelsToBuffer, dst, callback);
-    }
-
-    /// <summary>
     /// readPixelsToBufferSync
     /// </summary>
     public void ReadPixelsToBufferSync(byte[] dst)
@@ -676,14 +668,6 @@ public sealed partial class PixelMap : JsObject
     public Task ReadPixelsAsync(PositionArea area)
     {
         return CallMethodAsyncVoid(_readPixels, area);
-    }
-
-    /// <summary>
-    /// readPixels
-    /// </summary>
-    public void ReadPixels(PositionArea area, IntPtr callback)
-    {
-        CallMethodVoid(_readPixels, area, callback);
     }
 
     /// <summary>
@@ -719,14 +703,6 @@ public sealed partial class PixelMap : JsObject
     }
 
     /// <summary>
-    /// writePixels
-    /// </summary>
-    public void WritePixels(PositionArea area, IntPtr callback)
-    {
-        CallMethodVoid(_writePixels, area, callback);
-    }
-
-    /// <summary>
     /// writePixelsSync
     /// </summary>
     public void WritePixelsSync(PositionArea area)
@@ -759,14 +735,6 @@ public sealed partial class PixelMap : JsObject
     }
 
     /// <summary>
-    /// writeBufferToPixels
-    /// </summary>
-    public void WriteBufferToPixels(byte[] src, IntPtr callback)
-    {
-        CallMethodVoid(_writeBufferToPixels, src, callback);
-    }
-
-    /// <summary>
     /// writeBufferToPixelsSync
     /// </summary>
     public void WriteBufferToPixelsSync(byte[] src)
@@ -788,14 +756,6 @@ public sealed partial class PixelMap : JsObject
     public Task<ImageInfo> GetImageInfoAsync()
     {
         return CallMethodAsync(_getImageInfo, static h => new ImageInfo(h));
-    }
-
-    /// <summary>
-    /// getImageInfo
-    /// </summary>
-    public void GetImageInfo(IntPtr callback)
-    {
-        CallMethodVoid(_getImageInfo, callback);
     }
 
     /// <summary>
@@ -849,14 +809,6 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// opacity
     /// </summary>
-    public void Opacity(double rate, IntPtr callback)
-    {
-        CallMethodVoid(_opacity, rate, callback);
-    }
-
-    /// <summary>
-    /// opacity
-    /// </summary>
     public Task OpacityAsync(double rate)
     {
         return CallMethodAsyncVoid(_opacity, rate);
@@ -895,14 +847,6 @@ public sealed partial class PixelMap : JsObject
     }
 
     /// <summary>
-    /// createAlphaPixelmap
-    /// </summary>
-    public void CreateAlphaPixelmap(IntPtr callback)
-    {
-        CallMethodVoid(_createAlphaPixelmap, callback);
-    }
-
-    /// <summary>
     /// createAlphaPixelmapSync
     /// </summary>
     public PixelMap CreateAlphaPixelmapSync()
@@ -924,14 +868,6 @@ public sealed partial class PixelMap : JsObject
     public void ApplyScaleSync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel? level = null)
     {
         CallMethodVoid(_applyScaleSync, x, y, level);
-    }
-
-    /// <summary>
-    /// scale
-    /// </summary>
-    public void Scale(double x, double y, IntPtr callback)
-    {
-        CallMethodVoid(_scale, x, y, callback);
     }
 
     /// <summary>
@@ -1001,14 +937,6 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// translate
     /// </summary>
-    public void Translate(double x, double y, IntPtr callback)
-    {
-        CallMethodVoid(_translate, x, y, callback);
-    }
-
-    /// <summary>
-    /// translate
-    /// </summary>
     public Task TranslateAsync(double x, double y)
     {
         return CallMethodAsyncVoid(_translate, x, y);
@@ -1036,14 +964,6 @@ public sealed partial class PixelMap : JsObject
     public void ApplyRotateSync(double angle)
     {
         CallMethodVoid(_applyRotateSync, angle);
-    }
-
-    /// <summary>
-    /// rotate
-    /// </summary>
-    public void Rotate(double angle, IntPtr callback)
-    {
-        CallMethodVoid(_rotate, angle, callback);
     }
 
     /// <summary>
@@ -1081,14 +1001,6 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// flip
     /// </summary>
-    public void Flip(bool horizontal, bool vertical, IntPtr callback)
-    {
-        CallMethodVoid(_flip, horizontal, vertical, callback);
-    }
-
-    /// <summary>
-    /// flip
-    /// </summary>
     public Task FlipAsync(bool horizontal, bool vertical)
     {
         return CallMethodAsyncVoid(_flip, horizontal, vertical);
@@ -1116,14 +1028,6 @@ public sealed partial class PixelMap : JsObject
     public void ApplyCropSync(Region region)
     {
         CallMethodVoid(_applyCropSync, region);
-    }
-
-    /// <summary>
-    /// crop
-    /// </summary>
-    public void Crop(Region region, IntPtr callback)
-    {
-        CallMethodVoid(_crop, region, callback);
     }
 
     /// <summary>
@@ -1177,14 +1081,6 @@ public sealed partial class PixelMap : JsObject
     /// <summary>
     /// applyColorSpace
     /// </summary>
-    public void ApplyColorSpace(IntPtr targetColorSpace, IntPtr callback)
-    {
-        CallMethodVoid(_applyColorSpace, targetColorSpace, callback);
-    }
-
-    /// <summary>
-    /// applyColorSpace
-    /// </summary>
     public Task ApplyColorSpaceAsync(IntPtr targetColorSpace)
     {
         return CallMethodAsyncVoid(_applyColorSpace, targetColorSpace);
@@ -1196,14 +1092,6 @@ public sealed partial class PixelMap : JsObject
     public Task ConvertPixelFormatAsync(global::HarmonyOS.ArkUI.PixelMapFormat targetPixelFormat)
     {
         return CallMethodAsyncVoid(_convertPixelFormat, targetPixelFormat);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
     }
 
     /// <summary>
@@ -1406,25 +1294,17 @@ public sealed partial class ImageSource : JsObject
     /// <summary>
     /// getImageInfo
     /// </summary>
-    public void GetImageInfo(double index, IntPtr callback)
-    {
-        CallMethodVoid(_getImageInfo, index, callback);
-    }
-
-    /// <summary>
-    /// getImageInfo
-    /// </summary>
-    public void GetImageInfo(IntPtr callback)
-    {
-        CallMethodVoid(_getImageInfo, callback);
-    }
-
-    /// <summary>
-    /// getImageInfo
-    /// </summary>
-    public Task<ImageInfo> GetImageInfoAsync(double? index = null)
+    public Task<ImageInfo> GetImageInfoAsync(double index)
     {
         return CallMethodAsync(_getImageInfo, static h => new ImageInfo(h), index);
+    }
+
+    /// <summary>
+    /// getImageInfo
+    /// </summary>
+    public Task<ImageInfo> GetImageInfoAsync()
+    {
+        return CallMethodAsyncCallback(_getImageInfo, static h => new ImageInfo(h));
     }
 
     /// <summary>
@@ -1446,17 +1326,9 @@ public sealed partial class ImageSource : JsObject
     /// <summary>
     /// createPixelMap
     /// </summary>
-    public void CreatePixelMap(IntPtr callback)
+    public Task<PixelMap> CreatePixelMapAsync()
     {
-        CallMethodVoid(_createPixelMap, callback);
-    }
-
-    /// <summary>
-    /// createPixelMap
-    /// </summary>
-    public void CreatePixelMap(IntPtr options, IntPtr callback)
-    {
-        CallMethodVoid(_createPixelMap, options, callback);
+        return CallMethodAsyncCallback(_createPixelMap, static h => new PixelMap(h));
     }
 
     /// <summary>
@@ -1494,17 +1366,9 @@ public sealed partial class ImageSource : JsObject
     /// <summary>
     /// createPixelMapList
     /// </summary>
-    public void CreatePixelMapList(IntPtr callback)
+    public Task<PixelMap[]> CreatePixelMapListAsync()
     {
-        CallMethodVoid(_createPixelMapList, callback);
-    }
-
-    /// <summary>
-    /// createPixelMapList
-    /// </summary>
-    public void CreatePixelMapList(IntPtr options, IntPtr callback)
-    {
-        CallMethodVoid(_createPixelMapList, options, callback);
+        return CallMethodAsyncCallback(_createPixelMapList, h => ValueConverter.ConvertArray(h, static e => new PixelMap(e)));
     }
 
     /// <summary>
@@ -1513,14 +1377,6 @@ public sealed partial class ImageSource : JsObject
     public Task<double[]> GetDelayTimeListAsync()
     {
         return CallMethodAsync(_getDelayTimeList, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)));
-    }
-
-    /// <summary>
-    /// getDelayTimeList
-    /// </summary>
-    public void GetDelayTimeList(IntPtr callback)
-    {
-        CallMethodVoid(_getDelayTimeList, callback);
     }
 
     /// <summary>
@@ -1537,14 +1393,6 @@ public sealed partial class ImageSource : JsObject
     public Task<double> GetFrameCountAsync()
     {
         return CallMethodAsync<double>(_getFrameCount);
-    }
-
-    /// <summary>
-    /// getFrameCount
-    /// </summary>
-    public void GetFrameCount(IntPtr callback)
-    {
-        CallMethodVoid(_getFrameCount, callback);
     }
 
     /// <summary>
@@ -1566,17 +1414,9 @@ public sealed partial class ImageSource : JsObject
     /// <summary>
     /// getImageProperty
     /// </summary>
-    public void GetImageProperty(string key, IntPtr callback)
+    public Task<string> GetImagePropertyAsync(string key)
     {
-        CallMethodVoid(_getImageProperty, key, callback);
-    }
-
-    /// <summary>
-    /// getImageProperty
-    /// </summary>
-    public void GetImageProperty(string key, GetImagePropertyOptions options, IntPtr callback)
-    {
-        CallMethodVoid(_getImageProperty, key, options, callback);
+        return CallMethodAsyncCallback<string>(_getImageProperty, null, key);
     }
 
     /// <summary>
@@ -1612,14 +1452,6 @@ public sealed partial class ImageSource : JsObject
     }
 
     /// <summary>
-    /// modifyImageProperty
-    /// </summary>
-    public void ModifyImageProperty(string key, string value, IntPtr callback)
-    {
-        CallMethodVoid(_modifyImageProperty, key, value, callback);
-    }
-
-    /// <summary>
     /// modifyImageProperties
     /// </summary>
     public Task ModifyImagePropertiesAsync(IntPtr records)
@@ -1641,22 +1473,6 @@ public sealed partial class ImageSource : JsObject
     public Task UpdateDataAsync(byte[] buf, bool isFinished, double offset, double length)
     {
         return CallMethodAsyncVoid(_updateData, buf, isFinished, offset, length);
-    }
-
-    /// <summary>
-    /// updateData
-    /// </summary>
-    public void UpdateData(byte[] buf, bool isFinished, double offset, double length, IntPtr callback)
-    {
-        CallMethodVoid(_updateData, buf, isFinished, offset, length, callback);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
     }
 
     /// <summary>
@@ -1783,14 +1599,6 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packing
     /// </summary>
-    public void Packing(ImageSource source, PackingOption option, IntPtr callback)
-    {
-        CallMethodVoid(_packing, source, option, callback);
-    }
-
-    /// <summary>
-    /// packing
-    /// </summary>
     public Task<byte[]> PackingAsync(ImageSource source, PackingOption option)
     {
         return CallMethodAsync(_packing, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), source, option);
@@ -1802,14 +1610,6 @@ public sealed partial class ImagePacker : JsObject
     public Task<byte[]> PackToDataAsync(ImageSource source, PackingOption options)
     {
         return CallMethodAsync(_packToData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), source, options);
-    }
-
-    /// <summary>
-    /// packing
-    /// </summary>
-    public void Packing(PixelMap source, PackingOption option, IntPtr callback)
-    {
-        CallMethodVoid(_packing, source, option, callback);
     }
 
     /// <summary>
@@ -1839,25 +1639,9 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packToFile
     /// </summary>
-    public void PackToFile(ImageSource source, double fd, PackingOption options, IntPtr callback)
-    {
-        CallMethodVoid(_packToFile, source, fd, options, callback);
-    }
-
-    /// <summary>
-    /// packToFile
-    /// </summary>
     public Task PackToFileAsync(ImageSource source, double fd, PackingOption options)
     {
         return CallMethodAsyncVoid(_packToFile, source, fd, options);
-    }
-
-    /// <summary>
-    /// packToFile
-    /// </summary>
-    public void PackToFile(PixelMap source, double fd, PackingOption options, IntPtr callback)
-    {
-        CallMethodVoid(_packToFile, source, fd, options, callback);
     }
 
     /// <summary>
@@ -1874,14 +1658,6 @@ public sealed partial class ImagePacker : JsObject
     public Task PackToFileFromPixelmapSequenceAsync(PixelMap[] pixelmapSequence, double fd, PackingOptionsForSequence options)
     {
         return CallMethodAsyncVoid(_packToFileFromPixelmapSequence, pixelmapSequence, fd, options);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
     }
 
     /// <summary>
@@ -1960,14 +1736,6 @@ public sealed partial class ImageReceiver : JsObject
     /// <summary>
     /// getReceivingSurfaceId
     /// </summary>
-    public void GetReceivingSurfaceId(IntPtr callback)
-    {
-        CallMethodVoid(_getReceivingSurfaceId, callback);
-    }
-
-    /// <summary>
-    /// getReceivingSurfaceId
-    /// </summary>
     public Task<string> GetReceivingSurfaceIdAsync()
     {
         return CallMethodAsync<string>(_getReceivingSurfaceId);
@@ -1976,25 +1744,9 @@ public sealed partial class ImageReceiver : JsObject
     /// <summary>
     /// readLatestImage
     /// </summary>
-    public void ReadLatestImage(IntPtr callback)
-    {
-        CallMethodVoid(_readLatestImage, callback);
-    }
-
-    /// <summary>
-    /// readLatestImage
-    /// </summary>
     public Task<ImageObject> ReadLatestImageAsync()
     {
         return CallMethodAsync(_readLatestImage, static h => new ImageObject(h));
-    }
-
-    /// <summary>
-    /// readNextImage
-    /// </summary>
-    public void ReadNextImage(IntPtr callback)
-    {
-        CallMethodVoid(_readNextImage, callback);
     }
 
     /// <summary>
@@ -2019,14 +1771,6 @@ public sealed partial class ImageReceiver : JsObject
     public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
     }
 
     /// <summary>
@@ -2153,25 +1897,9 @@ public sealed partial class ImageCreator : JsObject
     /// <summary>
     /// dequeueImage
     /// </summary>
-    public void DequeueImage(IntPtr callback)
-    {
-        CallMethodVoid(_dequeueImage, callback);
-    }
-
-    /// <summary>
-    /// dequeueImage
-    /// </summary>
     public Task<ImageObject> DequeueImageAsync()
     {
         return CallMethodAsync(_dequeueImage, static h => new ImageObject(h));
-    }
-
-    /// <summary>
-    /// queueImage
-    /// </summary>
-    public void QueueImage(ImageObject image, IntPtr callback)
-    {
-        CallMethodVoid(_queueImage, image, callback);
     }
 
     /// <summary>
@@ -2196,14 +1924,6 @@ public sealed partial class ImageCreator : JsObject
     public void Off(string type, IntPtr callback)
     {
         CallMethodVoid(_off, type, callback);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
     }
 
     /// <summary>
@@ -2936,25 +2656,9 @@ public sealed partial class ImageObject : JsObject
     /// <summary>
     /// getComponent
     /// </summary>
-    public void GetComponent(global::HarmonyOS.ArkUI.ComponentType componentType, IntPtr callback)
-    {
-        CallMethodVoid(_getComponent, componentType, callback);
-    }
-
-    /// <summary>
-    /// getComponent
-    /// </summary>
     public Task<Component> GetComponentAsync(global::HarmonyOS.ArkUI.ComponentType componentType)
     {
         return CallMethodAsync(_getComponent, static h => new Component(h), componentType);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
     }
 
     /// <summary>

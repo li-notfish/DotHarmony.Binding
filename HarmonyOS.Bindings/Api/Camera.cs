@@ -698,14 +698,6 @@ public sealed partial class CameraInput : JsObject
     /// <summary>
     /// open
     /// </summary>
-    public void Open(IntPtr callback)
-    {
-        CallMethodVoid(_open, callback);
-    }
-
-    /// <summary>
-    /// open
-    /// </summary>
     public Task OpenAsync()
     {
         return CallMethodAsyncVoid(_open);
@@ -717,14 +709,6 @@ public sealed partial class CameraInput : JsObject
     public Task<JsBigInt> OpenAsync(bool isSecureEnabled)
     {
         return CallMethodAsync<JsBigInt>(_open, isSecureEnabled);
-    }
-
-    /// <summary>
-    /// close
-    /// </summary>
-    public void Close(IntPtr callback)
-    {
-        CallMethodVoid(_close, callback);
     }
 
     /// <summary>
@@ -907,14 +891,6 @@ public sealed partial class PreviewOutput : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
     public Task ReleaseAsync()
     {
         return CallMethodAsyncVoid(_release);
@@ -923,25 +899,9 @@ public sealed partial class PreviewOutput : JsObject
     /// <summary>
     /// start
     /// </summary>
-    public void Start(IntPtr callback)
-    {
-        CallMethodVoid(_start, callback);
-    }
-
-    /// <summary>
-    /// start
-    /// </summary>
     public Task StartAsync()
     {
         return CallMethodAsyncVoid(_start);
-    }
-
-    /// <summary>
-    /// stop
-    /// </summary>
-    public void Stop(IntPtr callback)
-    {
-        CallMethodVoid(_stop, callback);
     }
 
     /// <summary>
@@ -1186,14 +1146,6 @@ public sealed partial class PhotoOutput : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
     public Task ReleaseAsync()
     {
         return CallMethodAsyncVoid(_release);
@@ -1202,25 +1154,9 @@ public sealed partial class PhotoOutput : JsObject
     /// <summary>
     /// capture
     /// </summary>
-    public void Capture(IntPtr callback)
-    {
-        CallMethodVoid(_capture, callback);
-    }
-
-    /// <summary>
-    /// capture
-    /// </summary>
     public Task CaptureAsync()
     {
         return CallMethodAsyncVoid(_capture);
-    }
-
-    /// <summary>
-    /// capture
-    /// </summary>
-    public void Capture(PhotoCaptureSetting setting, IntPtr callback)
-    {
-        CallMethodVoid(_capture, setting, callback);
     }
 
     /// <summary>
@@ -1707,14 +1643,6 @@ public sealed partial class VideoOutput : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
     public Task ReleaseAsync()
     {
         return CallMethodAsyncVoid(_release);
@@ -1723,25 +1651,9 @@ public sealed partial class VideoOutput : JsObject
     /// <summary>
     /// start
     /// </summary>
-    public void Start(IntPtr callback)
-    {
-        CallMethodVoid(_start, callback);
-    }
-
-    /// <summary>
-    /// start
-    /// </summary>
     public Task StartAsync()
     {
         return CallMethodAsyncVoid(_start);
-    }
-
-    /// <summary>
-    /// stop
-    /// </summary>
-    public void Stop(IntPtr callback)
-    {
-        CallMethodVoid(_stop, callback);
     }
 
     /// <summary>
@@ -1952,14 +1864,6 @@ public sealed partial class MetadataOutput : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
     public Task ReleaseAsync()
     {
         return CallMethodAsyncVoid(_release);
@@ -1968,25 +1872,9 @@ public sealed partial class MetadataOutput : JsObject
     /// <summary>
     /// start
     /// </summary>
-    public void Start(IntPtr callback)
-    {
-        CallMethodVoid(_start, callback);
-    }
-
-    /// <summary>
-    /// start
-    /// </summary>
     public Task StartAsync()
     {
         return CallMethodAsyncVoid(_start);
-    }
-
-    /// <summary>
-    /// stop
-    /// </summary>
-    public void Stop(IntPtr callback)
-    {
-        CallMethodVoid(_stop, callback);
     }
 
     /// <summary>
@@ -2188,14 +2076,6 @@ public sealed partial class CaptureSession : JsObject
     /// <summary>
     /// commitConfig
     /// </summary>
-    public void CommitConfig(IntPtr callback)
-    {
-        CallMethodVoid(_commitConfig, callback);
-    }
-
-    /// <summary>
-    /// commitConfig
-    /// </summary>
     public Task CommitConfigAsync()
     {
         return CallMethodAsyncVoid(_commitConfig);
@@ -2236,14 +2116,6 @@ public sealed partial class CaptureSession : JsObject
     /// <summary>
     /// start
     /// </summary>
-    public void Start(IntPtr callback)
-    {
-        CallMethodVoid(_start, callback);
-    }
-
-    /// <summary>
-    /// start
-    /// </summary>
     public Task StartAsync()
     {
         return CallMethodAsyncVoid(_start);
@@ -2252,25 +2124,9 @@ public sealed partial class CaptureSession : JsObject
     /// <summary>
     /// stop
     /// </summary>
-    public void Stop(IntPtr callback)
-    {
-        CallMethodVoid(_stop, callback);
-    }
-
-    /// <summary>
-    /// stop
-    /// </summary>
     public Task StopAsync()
     {
         return CallMethodAsyncVoid(_stop);
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
     }
 
     /// <summary>
@@ -2711,14 +2567,6 @@ public sealed partial class CameraOutput : JsObject
 {
     public CameraOutput(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _release => "release"u8;
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release(IntPtr callback)
-    {
-        CallMethodVoid(_release, callback);
-    }
-
     /// <summary>
     /// release
     /// </summary>

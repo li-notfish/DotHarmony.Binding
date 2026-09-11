@@ -138,3 +138,50 @@ declare namespace testsvc {
         expect(cs).toContain('public static string MimeTypeText =>');
     });
 });
+
+describe('AsyncCallback 双形态判定（callback-only → CallbackTaskBridge）', () => {
+    test('仅 callback 形式（无 Promise 重载）→ CallMethodAsyncCallback 传入回调', () => {
+        const cs = generate(`
+declare namespace testsvc {
+    function subscribe(callback: AsyncCallback<number>): void;
+}
+`);
+        expect(cs).toContain('public static Task<double> SubscribeAsync()');
+        expect(cs).toContain('NodeApi.CallMethodAsyncCallback<double>(Module, _subscribe, null)');
+    });
+
+    test('双形态（callback + Promise 重载）→ 仍走 Promise 通道并折叠为单一 Task 方法', () => {
+        const cs = generate(`
+declare namespace testsvc {
+    function get(key: string, callback: AsyncCallback<string>): void;
+    function get(key: string): Promise<string>;
+}
+`);
+        expect(cs).toContain('NodeApi.CallMethodAsync<string>(Module, _get');
+        expect(cs).not.toContain('CallMethodAsyncCallback');
+        expect(cs.match(/Task<string> GetAsync\(/g)?.length).toBe(1);
+    });
+
+    test('AsyncCallback<void> 仅 callback 形式 → CallMethodAsyncCallbackVoid', () => {
+        const cs = generate(`
+declare namespace testsvc {
+    function unsubscribe(callback?: AsyncCallback<void>): void;
+}
+`);
+        expect(cs).toContain('public static Task UnsubscribeAsync()');
+        expect(cs).toContain('NodeApi.CallMethodAsyncCallbackVoid(Module, _unsubscribe)');
+    });
+
+    test('实例方法仅 callback 形式 → 实例 CallMethodAsyncCallback 助手', () => {
+        const cs = generate(`
+declare namespace testsvc {
+    interface File {
+        read(len: number, callback: AsyncCallback<number>): void;
+    }
+    function open(): File;
+}
+`);
+        expect(cs).toContain('public Task<double> ReadAsync(double len)');
+        expect(cs).toContain('CallMethodAsyncCallback<double>(_read, null, len)');
+    });
+});

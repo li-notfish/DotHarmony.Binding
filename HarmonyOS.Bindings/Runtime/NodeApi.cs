@@ -509,6 +509,36 @@ public static class NodeApi
     public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params object?[]? args)
         => CallMethodAsync(jsObject, methodName.AsSpan(), convert, args);
 
+    /// <summary>
+    /// 调用仅 callback 形式的 API（末参 AsyncCallback&lt;T&gt;，无 Promise 重载）并接为 Task&lt;T&gt;。
+    /// 运行时创建 err-first JS 回调作为最后一个实参传入；JS 触发回调时完成 Task
+    /// （err 非 undefined/null 时抛 ArkTSException，读 BusinessError 的 code/message）。
+    /// convert 为复杂结果类型（数组/JsObject 包装类）的显式转换委托；基元传 null。
+    /// </summary>
+    public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, byte[] methodName, Func<IntPtr, T>? convert, params object?[]? args)
+    {
+#if HARMONYOS
+        var (jsFunc, task) = CallbackTaskBridge.CreateCallback(convert);
+        var argv = args == null ? new object?[] { jsFunc } : [.. args, jsFunc];
+        _ = InvokeMethod(jsObject, methodName, argv);
+        return task;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>CallMethodAsyncCallback 的 Promise&lt;void&gt; 对应物（AsyncCallback&lt;void&gt;）</summary>
+    public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, byte[] methodName, params object?[]? args)
+        => CallMethodAsyncCallback<object>(jsObject, methodName, null, args);
+
+    /// <summary>CallMethodAsyncCallback 的 ReadOnlySpan&lt;byte&gt; 方法名重载</summary>
+    public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, T>? convert, params object?[]? args)
+        => CallMethodAsyncCallback<T>(jsObject, methodName.ToArray(), convert, args);
+
+    /// <summary>CallMethodAsyncCallbackVoid 的 ReadOnlySpan&lt;byte&gt; 方法名重载</summary>
+    public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object?[]? args)
+        => CallMethodAsyncCallbackVoid(jsObject, methodName.ToArray(), args);
+
     /// <summary>调用组件方法并接为 Task（ReadOnlySpan&lt;byte&gt; 方法名，void Promise 路线）</summary>
     public static Task CallMethodAsyncVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object?[]? args)
         => CallMethodAsyncVoid(jsObject, methodName.ToArray(), args);

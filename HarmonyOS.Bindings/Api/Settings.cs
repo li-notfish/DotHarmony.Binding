@@ -642,7 +642,7 @@ public static unsafe partial class Settings
     /// </summary>
     public static Task RegisterKeyObserverAsync(IntPtr context, string name, string domainName)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _registerKeyObserver, context, name, domainName);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _registerKeyObserver, context, name, domainName);
     }
 
     /// <summary>

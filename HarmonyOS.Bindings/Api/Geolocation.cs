@@ -141,7 +141,7 @@ public static unsafe partial class Geolocation
     /// </summary>
     public static Task<Location> GetCurrentLocationAsync()
     {
-        return NodeApi.CallMethodAsync(Module, _getCurrentLocation, static h => new Location(h));
+        return NodeApi.CallMethodAsyncCallback(Module, _getCurrentLocation, static h => new Location(h));
     }
 
     /// <summary>

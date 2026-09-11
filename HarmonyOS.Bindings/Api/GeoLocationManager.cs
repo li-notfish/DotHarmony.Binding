@@ -179,7 +179,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static Task<IntPtr> GetCurrentLocationAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentLocation);
+        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _getCurrentLocation, null);
     }
 
     /// <summary>

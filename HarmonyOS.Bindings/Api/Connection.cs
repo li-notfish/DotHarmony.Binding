@@ -478,17 +478,17 @@ public sealed partial class NetConnection : JsObject
     /// <summary>
     /// register
     /// </summary>
-    public void Register(IntPtr callback)
+    public Task RegisterAsync()
     {
-        CallMethodVoid(_register, callback);
+        return CallMethodAsyncCallbackVoid(_register);
     }
 
     /// <summary>
     /// unregister
     /// </summary>
-    public void Unregister(IntPtr callback)
+    public Task UnregisterAsync()
     {
-        CallMethodVoid(_unregister, callback);
+        return CallMethodAsyncCallbackVoid(_unregister);
     }
 
     private static ReadOnlySpan<byte> _off => "off"u8;
@@ -690,25 +690,9 @@ public sealed partial class NetHandle : JsObject
     /// <summary>
     /// bindSocket
     /// </summary>
-    public void BindSocket(IntPtr socketParam, IntPtr callback)
-    {
-        CallMethodVoid(_bindSocket, socketParam, callback);
-    }
-
-    /// <summary>
-    /// bindSocket
-    /// </summary>
     public Task BindSocketAsync(IntPtr socketParam)
     {
         return CallMethodAsyncVoid(_bindSocket, socketParam);
-    }
-
-    /// <summary>
-    /// getAddressesByName
-    /// </summary>
-    public void GetAddressesByName(string host, IntPtr callback)
-    {
-        CallMethodVoid(_getAddressesByName, host, callback);
     }
 
     /// <summary>
@@ -725,14 +709,6 @@ public sealed partial class NetHandle : JsObject
     public Task<NetAddress[]> GetAddressesByNameWithOptionsAsync(string host, QueryOptions? option = null)
     {
         return CallMethodAsync(_getAddressesByNameWithOptions, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host, option);
-    }
-
-    /// <summary>
-    /// getAddressByName
-    /// </summary>
-    public void GetAddressByName(string host, IntPtr callback)
-    {
-        CallMethodVoid(_getAddressByName, host, callback);
     }
 
     /// <summary>
