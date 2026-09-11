@@ -5,6 +5,7 @@ import { AstParser } from './astParser';
 import { CodeGenerator } from './codeGenerator';
 import { EnumGenerator } from './enumGenerator';
 import { NativeCodeGenerator, EnumMetadata, NativeGap } from './nativeCodeGenerator';
+import { ApiGenerator } from './apiGenerator';
 import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo } from './models';
 
 interface CacheEntry {
@@ -473,89 +474,274 @@ export async function processNativeSDK(): Promise<void> {
     console.log('=== Native Generation Complete ===');
 }
 
-export async function processFullSDK(): Promise<void> {
-    const parser = new ArkTsParser();
-    const context = createParseContext();
-    
-    // HarmonyOS SDK 目录
-    const sdkBase = 'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony';
-    const componentDir = path.join(sdkBase, 'ets', 'component');
-    const apiDir = path.join(sdkBase, 'ets', 'api');
-    
-    // 输出到 HarmonyOS.Bindings 项目
-    const bindingsDir = path.join(__dirname, '../../HarmonyOS.Bindings');
-    const componentOutputDir = path.join(bindingsDir, 'Components');
-    const apiOutputDir = path.join(bindingsDir, 'Api');
-    
-    console.log('=== Processing HarmonyOS SDK ===');
-    
-    // 1. 处理组件
-    console.log('\n--- Components ---');
-    console.log(`Input: ${componentDir}`);
-    console.log(`Output: ${componentOutputDir}`);
-    
-    if (!fs.existsSync(componentOutputDir)) {
-        fs.mkdirSync(componentOutputDir, { recursive: true });
-    }
-    
-    await parser.processDirectoryWithContext(componentDir, componentOutputDir, context);
-    
-    // 2. 处理全部 API
-    console.log('\n--- APIs ---');
-    console.log(`Input: ${apiDir}`);
-    console.log(`Output: ${apiOutputDir}`);
-    
-    if (!fs.existsSync(apiOutputDir)) {
-        fs.mkdirSync(apiOutputDir, { recursive: true });
-    }
-    
-    const apiFiles = fs.readdirSync(apiDir).filter(f => f.endsWith('.d.ts'));
-    let apiSuccess = 0;
-    let apiSkipped = 0;
-    const boundModules: { module: string; local: string }[] = [];
+/**
+ * 探测 HarmonyOS SDK 基础路径。
+ * 优先级：--sdk <path> > OHOS_SDK_HOME > OHOS_SDK_BASE > 默认路径
+ */
+function detectSdkBase(cliSdkArg?: string): string {
+    if (cliSdkArg) return cliSdkArg;
 
-    for (const file of apiFiles) {
-        const apiPath = path.join(apiDir, file);
-        // 文件名转换: @ohos.ability.ability.d.ts → Ability.Ability.cs
-        const csFileName = convertApiFileName(file);
-        const csPath = path.join(apiOutputDir, csFileName);
+    const envPaths = [
+        process.env.OHOS_SDK_HOME,
+        process.env.OHOS_SDK_BASE,
+        process.env.OHSDK_HOME,
+    ].filter(Boolean) as string[];
 
-        try {
-            const result = parser.parseFile(apiPath);
-            if (result.component.name) {
-                result.component.namespace = 'HarmonyOS.Bindings.Api';
-                const code = parser.generateCode(result);
-                fs.mkdirSync(path.dirname(csPath), { recursive: true });
-                fs.writeFileSync(csPath, code);
-                boundModules.push(dtsToModuleName(file));
-                apiSuccess++;
-            } else {
-                apiSkipped++;
-            }
-            const enums = parser.parseEnums(apiPath);
-            if (enums.length > 0) {
-                const enumCsPath = csFileName.replace('.cs', '.Enums.cs');
-                const enumCode = parser.generateEnumsCode(enums);
-                fs.writeFileSync(path.join(apiOutputDir, enumCsPath), enumCode);
-            }
-        } catch (e: any) {
-            console.error(`  Error: ${file} - ${e.message}`);
+    for (const p of envPaths) {
+        // env 可能指向 .../openharmony 或 .../Sdk/<version>
+        if (fs.existsSync(path.join(p, 'ets', 'api'))) return p;
+        // 尝试下一层
+        const dirs = fs.readdirSync(p, { withFileTypes: true })
+            .filter(d => d.isDirectory()).map(d => d.name);
+        for (const d of dirs) {
+            if (fs.existsSync(path.join(p, d, 'ets', 'api'))) return path.join(p, d);
         }
     }
 
+    // 默认路径
+    const defaults = [
+        'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony',
+        'D:\\Harmony\\OpenHarmony\\Sdk\\26.0.0',
+    ];
+    for (const d of defaults) {
+        if (fs.existsSync(path.join(d, 'ets', 'api'))) return d;
+    }
+
+    throw new Error(
+        'HarmonyOS SDK not found. Use --sdk <path>, set OHOS_SDK_HOME, or install DevEco Studio.'
+    );
+}
+
+/** pilot 模式：第一批绑定目标模块 */
+const PILOT_MODULES = [
+    // M2.3 第一批：基础系统信息
+    '@ohos.deviceInfo',
+    '@ohos.batteryInfo',
+    '@ohos.display',
+    '@ohos.settings',
+    '@ohos.pasteboard',
+    '@ohos.vibrator',
+    '@ohos.sensor',
+    '@ohos.geolocation',
+    // M2.3 第二批：常用系统 API
+    '@ohos.net.http',
+    '@ohos.net.connection',
+    '@ohos.file.fs',
+    '@ohos.file.picker',
+    '@ohos.multimedia.media',
+    '@ohos.multimedia.image',
+    '@ohos.multimedia.camera',
+    '@ohos.window',
+    '@ohos.router',
+    '@ohos.data.preferences',
+    '@ohos.request',
+    '@ohos.promptAction',
+];
+
+export async function processFullSDK(sdkArg?: string): Promise<void> {
+    const sdkBase = detectSdkBase(sdkArg);
+    const componentDir = path.join(sdkBase, 'ets', 'component');
+    const apiDir = path.join(sdkBase, 'ets', 'api');
+
+    const parser = new ArkTsParser();
+    const context = createParseContext();
+
+    // 输出到 HarmonyOS.Bindings 项目
+    const bindingsDir = path.join(__dirname, '../../HarmonyOS.Bindings');
+    const apiOutputDir = path.join(bindingsDir, 'Api');
+
+    console.log('=== Processing HarmonyOS SDK ===');
+    console.log(`SDK:     ${sdkBase}`);
+    console.log(`API dir: ${apiDir}`);
+    console.log(`Output:  ${apiOutputDir}`);
+
+    if (!fs.existsSync(apiOutputDir)) {
+        fs.mkdirSync(apiOutputDir, { recursive: true });
+    }
+
+    // pilot 模式：只处理指定模块；否则全量
+    const pilotSet = new Set(PILOT_MODULES.map(m => m + '.d.ts'));
+    const allApiFiles = fs.existsSync(apiDir)
+        ? fs.readdirSync(apiDir).filter(f => f.endsWith('.d.ts'))
+        : [];
+    const apiFiles = allApiFiles.filter(f => pilotSet.has(f));
+
+    console.log(`\n--- APIs (${apiFiles.length} pilot modules) ---`);
+
+    const apiGen = new ApiGenerator();
+    let apiSuccess = 0;
+    let apiSkipped = 0;
+    const boundModules: { module: string; local: string }[] = [];
+    const allPermissions = new Set<string>();
+
+    for (const file of apiFiles) {
+        const apiPath = path.join(apiDir, file);
+        const moduleInfo = ApiGenerator.dtsToModuleInfo(file);
+        const source = fs.readFileSync(apiPath, 'utf-8');
+        const permissions = ApiGenerator.extractPermissions(source);
+        permissions.forEach(p => allPermissions.add(p));
+
+        try {
+            const result = parser.parseFile(apiPath);
+            if (!result.component.name) {
+                console.log(`  Skipped (no namespace): ${file}`);
+                apiSkipped++;
+                continue;
+            }
+
+            const gen = apiGen.generate(
+                result.component,
+                moduleInfo,
+                permissions,
+                result.enums
+            );
+
+            const csPath = path.join(apiOutputDir, `${gen.className}.cs`);
+            fs.writeFileSync(csPath, gen.csharp);
+            console.log(`  Generated: ${gen.className}.cs (${gen.permissions.length} perms)`);
+            apiSuccess++;
+
+            if (gen.enums) {
+                const enumCsPath = path.join(apiOutputDir, `${gen.className}.Enums.cs`);
+                fs.writeFileSync(enumCsPath, gen.enums);
+            }
+
+            boundModules.push({ module: moduleInfo.module, local: moduleInfo.local });
+        } catch (e: any) {
+            console.error(`  Error: ${file} - ${e.message}`);
+            apiSkipped++;
+        }
+    }
+
+    // 写 ohosImports.ets
     writeOhosImports(boundModules);
 
-    console.log(`  Generated: ${apiSuccess}, Skipped: ${apiSkipped}`);
+    // 写 module.json5 的 requestPermissions
+    writeModuleJson5Permissions([...allPermissions].sort());
+
+    // 写灰度策略到 csproj
+    writeGrayscaleCompileRemove(boundModules);
+
+    console.log(`\n  Generated: ${apiSuccess}, Skipped: ${apiSkipped}`);
+    console.log(`  Permissions: ${allPermissions.size} unique → module.json5`);
     console.log('');
     console.log('=== SDK Processing Complete ===');
 }
 
 /**
- * @ohos.deviceInfo.d.ts → { module: "@ohos.deviceInfo", local: "deviceInfo" }
+ * 更新 module.json5：注入 requestPermissions 清单。
+ * 策略：在 "module": { 之后插入 requestPermissions 数组（或替换已有块）。
  */
-function dtsToModuleName(dtsFileName: string): { module: string; local: string } {
-    const stem = dtsFileName.replace(/\.d\.ts$/, '');
-    return { module: stem, local: stem.replace(/^@ohos\./, '').replace(/^@system\./, 'system.') };
+function writeModuleJson5Permissions(perms: string[]): void {
+    const moduleJson5Path = path.join(
+        __dirname, '../../samples/HarmonyHost/entry/src/main/module.json5'
+    );
+
+    if (!fs.existsSync(moduleJson5Path)) {
+        console.log(`  module.json5 not found at ${moduleJson5Path}, skipping permissions`);
+        return;
+    }
+
+    if (perms.length === 0) {
+        console.log('  No permissions needed, module.json5 unchanged');
+        return;
+    }
+
+    let content = fs.readFileSync(moduleJson5Path, 'utf-8');
+
+    // 构造 requestPermissions 块
+    const permEntries = perms
+        .map(p => [
+            '      {',
+            `        "name": "${p}",`,
+            `        "reason": "$string:permission_${p.replace(/.*\./, '')}_reason",`,
+            '        "usedScene": {',
+            '          "abilities": ["EntryAbility"],',
+            '          "when": "always"',
+            '        }',
+            '      }',
+        ].join('\n'))
+        .join(',\n');
+
+    const permBlock = [
+        '    "requestPermissions": [',
+        permEntries,
+        '    ]',
+    ].join('\n');
+
+    if (content.includes('"requestPermissions"')) {
+        // 替换已有的 requestPermissions 块（匹配到闭合 ] ）
+        content = content.replace(
+            /\s*"requestPermissions"\s*:\s*\[[\s\S]*?\]/,
+            '\n' + permBlock
+        );
+    } else {
+        // 在 "module": { 之后插入
+        content = content.replace(
+            /("module"\s*:\s*\{)(\r?\n)/,
+            `$1$2${permBlock},\n`
+        );
+    }
+
+    fs.writeFileSync(moduleJson5Path, content);
+    console.log(`  module.json5 updated: ${perms.length} permissions`);
+}
+
+/** 已转正的模块（参与编译，不生成 Compile Remove） */
+const APPROVED_MODULES = new Set([
+    'DeviceInfo',    // 手写
+    'BatteryInfo',
+    'Display',
+    'Settings',
+    'Vibrator',
+]);
+
+/**
+ * 灰度策略：生成的 Api/*.cs 默认不参与编译（Compile Remove），
+ * 逐个转正时从 APPROVED_MODULES 中添加模块名。
+ */
+function writeGrayscaleCompileRemove(modules: { module: string; local: string }[]): void {
+    const csprojPath = path.join(__dirname, '../../HarmonyOS.Bindings/HarmonyOS.Bindings.csproj');
+    let content = fs.readFileSync(csprojPath, 'utf-8');
+
+    const classNames = modules
+        .map(m => {
+            const parts = m.local.split('.');
+            return parts[parts.length - 1].charAt(0).toUpperCase()
+                + parts[parts.length - 1].slice(1);
+        })
+        .sort();
+
+    const pending = classNames.filter(n => !APPROVED_MODULES.has(n));
+
+    const removeItems = pending
+        .map(n => `    <Compile Remove="Api\\${n}.cs" />`)
+        .join('\n');
+    const enumRemoveItems = pending
+        .map(n => `    <Compile Remove="Api\\${n}.Enums.cs" />`)
+        .join('\n');
+
+    const approvedList = [...APPROVED_MODULES].sort().join(', ');
+    const block = `  <!-- 灰度策略：已转正 ${approvedList}（共 ${APPROVED_MODULES.size} 个）。
+       未转正模块默认不参与编译，逐个验证后加入 APPROVED_MODULES。 -->
+  <ItemGroup Condition="'$(SkipGeneratedApi)' != 'false'">
+${removeItems}
+${enumRemoveItems}
+  </ItemGroup>`;
+
+    // 替换已有的灰度块或追加
+    if (content.includes('灰度策略')) {
+        content = content.replace(
+            /  <!-- 灰度策略[\s\S]*?<\/ItemGroup>/,
+            block
+        );
+    } else {
+        content = content.replace('</Project>', `${block}\n</Project>`);
+    }
+
+    fs.writeFileSync(csprojPath, content);
+    const approved = classNames.length - pending.length;
+    console.log(`  HarmonyOS.Bindings.csproj: ${approved}/${classNames.length} approved, ${pending.length} in grayscale`);
 }
 
 /**
@@ -611,7 +797,10 @@ if (require.main === module) {
     if (args.includes('--native')) {
         processNativeSDK().catch(console.error);
     } else if (args.includes('--sdk')) {
-        processFullSDK().catch(console.error);
+        const sdkIdx = args.indexOf('--sdk');
+        const sdkArg = args[sdkIdx + 1] && !args[sdkIdx + 1].startsWith('--')
+            ? args[sdkIdx + 1] : undefined;
+        processFullSDK(sdkArg).catch(console.error);
     } else {
         main().catch(console.error);
     }

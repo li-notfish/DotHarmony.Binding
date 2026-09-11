@@ -59,7 +59,8 @@ export class TypeMapper {
         }
         
         // 5. 处理数组类型 (Array<T>) 和 (T[])
-        if (typescriptType.includes('Array<')) {
+        //    注意：只匹配以 Array< 开头的类型，避免 Promise<Array<...>> 被误匹配
+        if (/^Array<.+>$/.test(typescriptType.trim())) {
             return this.mapArrayType(typescriptType);
         }
         if (/\w+\[\]$/.test(typescriptType)) {
@@ -105,7 +106,12 @@ export class TypeMapper {
         if (this.isOptionsType(typescriptType)) {
             return typescriptType;
         }
-        
+
+        // 11.5. 处理字符串字面量类型（'literal'）→ string
+        if (/^['"].+['"]$/.test(typescriptType.trim())) {
+            return 'string';
+        }
+
         // 12. 直接映射
         const mapping = this.TYPE_MAP[typescriptType];
         return mapping ? mapping.csharp : typescriptType;

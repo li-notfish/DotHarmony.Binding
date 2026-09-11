@@ -205,6 +205,46 @@ public static class NodeApi
     }
 
     /// <summary>
+    /// 获取对象属性值（ReadOnlySpan&lt;byte&gt; 重载：生成器以 "name"u8 常量携带）
+    /// </summary>
+    public static IntPtr GetProperty(IntPtr jsObject, ReadOnlySpan<byte> name)
+    {
+#if HARMONYOS
+        if (jsObject == IntPtr.Zero)
+            throw new ArgumentNullException(nameof(jsObject));
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_named_property(env, jsObject, name.ToArray(), out var result)
+            .ThrowIfFailed();
+        return result;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>
+    /// 获取对象属性值（byte[] 重载）
+    /// </summary>
+    public static IntPtr GetProperty(IntPtr jsObject, byte[] name)
+    {
+#if HARMONYOS
+        if (jsObject == IntPtr.Zero)
+            throw new ArgumentNullException(nameof(jsObject));
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_named_property(env, jsObject, name, out var result)
+            .ThrowIfFailed();
+        return result;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>
+    /// 获取对象属性值（string 重载）
+    /// </summary>
+    public static IntPtr GetProperty(IntPtr jsObject, string name)
+        => GetProperty(jsObject, Encoding.UTF8.GetBytes(name));
+
+    /// <summary>
     /// 调用组件方法（非链式）
     /// </summary>
     /// <typeparam name="T">返回类型</typeparam>
@@ -233,6 +273,12 @@ public static class NodeApi
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif
     }
+
+    /// <summary>
+    /// 调用组件方法（ReadOnlySpan&lt;byte&gt; 方法名重载：生成器 "name"u8 → ReadOnlySpan&lt;byte&gt;）
+    /// </summary>
+    public static T CallMethod<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object[] args)
+        => CallMethod<T>(jsObject, methodName.ToArray(), args);
 
     /// <summary>
     /// 调用组件方法（无返回值/void 返回：C# 泛型不支持 CallMethod&lt;void&gt;，void 调用走此重载）
@@ -307,6 +353,18 @@ public static class NodeApi
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif
     }
+
+    /// <summary>调用组件方法（ReadOnlySpan&lt;byte&gt; 方法名，void 返回）</summary>
+    public static void CallMethodVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object[] args)
+        => CallMethodVoid(jsObject, methodName.ToArray(), args);
+
+    /// <summary>调用组件方法并接为 Task&lt;T&gt;（ReadOnlySpan&lt;byte&gt; 方法名重载）</summary>
+    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object[] args)
+        => CallMethodAsync<T>(jsObject, methodName.ToArray(), args);
+
+    /// <summary>调用组件方法并接为 Task（ReadOnlySpan&lt;byte&gt; 方法名，void Promise 路线）</summary>
+    public static Task CallMethodAsyncVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object[] args)
+        => CallMethodAsyncVoid(jsObject, methodName.ToArray(), args);
 
 #if HARMONYOS
     private static IntPtr InvokeMethod(IntPtr jsObject, byte[] methodName, object[] args)

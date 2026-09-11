@@ -25,4 +25,38 @@
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
   </ItemGroup>
 
+  <!-- 灰度策略：已转正 BatteryInfo, DeviceInfo, Display, Settings, Vibrator（共 5 个）。
+       未转正模块默认不参与编译，逐个验证后加入 APPROVED_MODULES。 -->
+  <ItemGroup Condition="'$(SkipGeneratedApi)' != 'false'">
+    <Compile Remove="Api\Camera.cs" />
+    <Compile Remove="Api\Connection.cs" />
+    <Compile Remove="Api\Fs.cs" />
+    <Compile Remove="Api\Geolocation.cs" />
+    <Compile Remove="Api\Http.cs" />
+    <Compile Remove="Api\Image.cs" />
+    <Compile Remove="Api\Media.cs" />
+    <Compile Remove="Api\Pasteboard.cs" />
+    <Compile Remove="Api\Picker.cs" />
+    <Compile Remove="Api\Preferences.cs" />
+    <Compile Remove="Api\PromptAction.cs" />
+    <Compile Remove="Api\Request.cs" />
+    <Compile Remove="Api\Router.cs" />
+    <Compile Remove="Api\Sensor.cs" />
+    <Compile Remove="Api\Window.cs" />
+    <Compile Remove="Api\Camera.Enums.cs" />
+    <Compile Remove="Api\Connection.Enums.cs" />
+    <Compile Remove="Api\Fs.Enums.cs" />
+    <Compile Remove="Api\Geolocation.Enums.cs" />
+    <Compile Remove="Api\Http.Enums.cs" />
+    <Compile Remove="Api\Image.Enums.cs" />
+    <Compile Remove="Api\Media.Enums.cs" />
+    <Compile Remove="Api\Pasteboard.Enums.cs" />
+    <Compile Remove="Api\Picker.Enums.cs" />
+    <Compile Remove="Api\Preferences.Enums.cs" />
+    <Compile Remove="Api\PromptAction.Enums.cs" />
+    <Compile Remove="Api\Request.Enums.cs" />
+    <Compile Remove="Api\Router.Enums.cs" />
+    <Compile Remove="Api\Sensor.Enums.cs" />
+    <Compile Remove="Api\Window.Enums.cs" />
+  </ItemGroup>
 </Project>

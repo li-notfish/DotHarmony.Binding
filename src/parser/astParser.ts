@@ -43,6 +43,9 @@ export class AstParser {
                 if (importInfo) {
                     imports.push(importInfo);
                 }
+            } else if (ts.isModuleDeclaration(node) && node.name) {
+                // @ohos.* 模块：declare namespace xxx { const/function/enum }
+                this.parseNamespace(node, component, warnings, enums);
             } else if (ts.isInterfaceDeclaration(node)) {
                 this.parseInterface(node, component, warnings);
             } else if (ts.isClassDeclaration(node)) {
@@ -70,6 +73,58 @@ export class AstParser {
             imports,
             warnings
         };
+    }
+
+    /**
+     * 解析 declare namespace xxx { ... } 块（@ohos.* API 模块格式）。
+     * 提取 const（属性）、function（方法）、export enum（枚举）。
+     */
+    private parseNamespace(
+        node: ts.ModuleDeclaration,
+        component: ComponentInfo,
+        warnings: string[],
+        enums: EnumInfo[]
+    ): void {
+        const nsName = node.name.text;
+        if (!component.name) {
+            component.name = nsName;
+            component.interfaceName = nsName;
+        }
+
+        const body = node.body;
+        if (!body || !ts.isModuleBlock(body)) return;
+
+        ts.forEachChild(body, (child) => {
+            if (ts.isVariableStatement(child)) {
+                for (const decl of child.declarationList.declarations) {
+                    if (decl.name && ts.isIdentifier(decl.name)) {
+                        const propType = this.getTypeName(decl.type);
+                        const mappedType = TypeMapper.mapType(propType);
+                        // const → C# static property (getter)
+                        const method: MethodInfo = {
+                            name: decl.name.text,
+                            returnType: mappedType,
+                            parameters: [],
+                            isChained: true // 标记为属性（单参数链式路径在生成器里产 property getter）
+                        };
+                        component.methods.push(method);
+                    }
+                }
+            } else if (ts.isFunctionDeclaration(child) && child.name) {
+                this.parseMethod(child as unknown as ts.MethodDeclaration, component, warnings);
+            } else if (ts.isEnumDeclaration(child)) {
+                const enumInfo = this.parseEnum(child);
+                if (enumInfo) {
+                    enums.push(enumInfo);
+                }
+            } else if (ts.isInterfaceDeclaration(child)) {
+                // namespace 内部嵌套接口（如 Display、DisplayInfo 等）
+                this.parseInterface(child, component, warnings);
+            } else if (ts.isModuleDeclaration(child) && child.name) {
+                // 嵌套 namespace（如 settings.date、settings.general）
+                this.parseNamespace(child, component, warnings, enums);
+            }
+        });
     }
 
     private parseApiFile(sourceFile: ts.SourceFile, component: ComponentInfo, warnings: string[]): void {
