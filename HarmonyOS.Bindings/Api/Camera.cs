@@ -40,7 +40,7 @@ public static unsafe partial class Camera
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -2515,23 +2515,23 @@ public sealed record PhotoCaptureSetting(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _quality = Encoding.UTF8.GetBytes("quality");
+        var _quality = System.Text.Encoding.UTF8.GetBytes("quality");
         var _qualityV = NativeValue.From(Quality);
         if (_qualityV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _quality, _qualityV);
-        var _rotation = Encoding.UTF8.GetBytes("rotation");
+        var _rotation = System.Text.Encoding.UTF8.GetBytes("rotation");
         var _rotationV = NativeValue.From(Rotation);
         if (_rotationV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _rotation, _rotationV);
-        var _location = Encoding.UTF8.GetBytes("location");
+        var _location = System.Text.Encoding.UTF8.GetBytes("location");
         var _locationV = NativeValue.From(Location);
         if (_locationV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _location, _locationV);
-        var _mirror = Encoding.UTF8.GetBytes("mirror");
+        var _mirror = System.Text.Encoding.UTF8.GetBytes("mirror");
         var _mirrorV = NativeValue.From(Mirror);
         if (_mirrorV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _mirror, _mirrorV);
-        var _compressionQuality = Encoding.UTF8.GetBytes("compressionQuality");
+        var _compressionQuality = System.Text.Encoding.UTF8.GetBytes("compressionQuality");
         var _compressionQualityV = NativeValue.From(CompressionQuality);
         if (_compressionQualityV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _compressionQuality, _compressionQualityV);
@@ -2588,15 +2588,15 @@ public sealed record CameraLocation(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _latitude = Encoding.UTF8.GetBytes("latitude");
+        var _latitude = System.Text.Encoding.UTF8.GetBytes("latitude");
         var _latitudeV = NativeValue.From(Latitude);
         if (_latitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
-        var _longitude = Encoding.UTF8.GetBytes("longitude");
+        var _longitude = System.Text.Encoding.UTF8.GetBytes("longitude");
         var _longitudeV = NativeValue.From(Longitude);
         if (_longitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
-        var _altitude = Encoding.UTF8.GetBytes("altitude");
+        var _altitude = System.Text.Encoding.UTF8.GetBytes("altitude");
         var _altitudeV = NativeValue.From(Altitude);
         if (_altitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _altitude, _altitudeV);

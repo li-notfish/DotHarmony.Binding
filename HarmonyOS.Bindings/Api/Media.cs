@@ -40,7 +40,7 @@ public static unsafe partial class Media
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -543,17 +543,17 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// getLoadedTimeRanges
     /// </summary>
-    public Task<Range[]> GetLoadedTimeRangesAsync()
+    public Task<MediaRange[]> GetLoadedTimeRangesAsync()
     {
-        return CallMethodAsync(_getLoadedTimeRanges, h => ValueConverter.ConvertArray(h, static e => new Range(e)));
+        return CallMethodAsync(_getLoadedTimeRanges, h => ValueConverter.ConvertArray(h, static e => new MediaRange(e)));
     }
 
     /// <summary>
     /// getSeekableTimeRanges
     /// </summary>
-    public Task<Range[]> GetSeekableTimeRangesAsync()
+    public Task<MediaRange[]> GetSeekableTimeRangesAsync()
     {
-        return CallMethodAsync(_getSeekableTimeRanges, h => ValueConverter.ConvertArray(h, static e => new Range(e)));
+        return CallMethodAsync(_getSeekableTimeRanges, h => ValueConverter.ConvertArray(h, static e => new MediaRange(e)));
     }
 
     /// <summary>
@@ -2324,19 +2324,19 @@ public sealed record MediaStream(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _url = Encoding.UTF8.GetBytes("url");
+        var _url = System.Text.Encoding.UTF8.GetBytes("url");
         var _urlV = NativeValue.From(Url);
         if (_urlV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _url, _urlV);
-        var _width = Encoding.UTF8.GetBytes("width");
+        var _width = System.Text.Encoding.UTF8.GetBytes("width");
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = Encoding.UTF8.GetBytes("height");
+        var _height = System.Text.Encoding.UTF8.GetBytes("height");
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
-        var _bitrate = Encoding.UTF8.GetBytes("bitrate");
+        var _bitrate = System.Text.Encoding.UTF8.GetBytes("bitrate");
         var _bitrateV = NativeValue.From(Bitrate);
         if (_bitrateV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _bitrate, _bitrateV);
@@ -3546,51 +3546,51 @@ public sealed record PlaybackStrategy(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _preferredWidth = Encoding.UTF8.GetBytes("preferredWidth");
+        var _preferredWidth = System.Text.Encoding.UTF8.GetBytes("preferredWidth");
         var _preferredWidthV = NativeValue.From(PreferredWidth);
         if (_preferredWidthV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _preferredWidth, _preferredWidthV);
-        var _preferredHeight = Encoding.UTF8.GetBytes("preferredHeight");
+        var _preferredHeight = System.Text.Encoding.UTF8.GetBytes("preferredHeight");
         var _preferredHeightV = NativeValue.From(PreferredHeight);
         if (_preferredHeightV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _preferredHeight, _preferredHeightV);
-        var _preferredBufferDuration = Encoding.UTF8.GetBytes("preferredBufferDuration");
+        var _preferredBufferDuration = System.Text.Encoding.UTF8.GetBytes("preferredBufferDuration");
         var _preferredBufferDurationV = NativeValue.From(PreferredBufferDuration);
         if (_preferredBufferDurationV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _preferredBufferDuration, _preferredBufferDurationV);
-        var _preferredHdr = Encoding.UTF8.GetBytes("preferredHdr");
+        var _preferredHdr = System.Text.Encoding.UTF8.GetBytes("preferredHdr");
         var _preferredHdrV = NativeValue.From(PreferredHdr);
         if (_preferredHdrV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _preferredHdr, _preferredHdrV);
-        var _mutedMediaType = Encoding.UTF8.GetBytes("mutedMediaType");
+        var _mutedMediaType = System.Text.Encoding.UTF8.GetBytes("mutedMediaType");
         var _mutedMediaTypeV = NativeValue.From(MutedMediaType);
         if (_mutedMediaTypeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _mutedMediaType, _mutedMediaTypeV);
-        var _preferredAudioLanguage = Encoding.UTF8.GetBytes("preferredAudioLanguage");
+        var _preferredAudioLanguage = System.Text.Encoding.UTF8.GetBytes("preferredAudioLanguage");
         var _preferredAudioLanguageV = NativeValue.From(PreferredAudioLanguage);
         if (_preferredAudioLanguageV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _preferredAudioLanguage, _preferredAudioLanguageV);
-        var _preferredSubtitleLanguage = Encoding.UTF8.GetBytes("preferredSubtitleLanguage");
+        var _preferredSubtitleLanguage = System.Text.Encoding.UTF8.GetBytes("preferredSubtitleLanguage");
         var _preferredSubtitleLanguageV = NativeValue.From(PreferredSubtitleLanguage);
         if (_preferredSubtitleLanguageV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _preferredSubtitleLanguage, _preferredSubtitleLanguageV);
-        var _showFirstFrameOnPrepare = Encoding.UTF8.GetBytes("showFirstFrameOnPrepare");
+        var _showFirstFrameOnPrepare = System.Text.Encoding.UTF8.GetBytes("showFirstFrameOnPrepare");
         var _showFirstFrameOnPrepareV = NativeValue.From(ShowFirstFrameOnPrepare);
         if (_showFirstFrameOnPrepareV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _showFirstFrameOnPrepare, _showFirstFrameOnPrepareV);
-        var _preferredBufferDurationForPlaying = Encoding.UTF8.GetBytes("preferredBufferDurationForPlaying");
+        var _preferredBufferDurationForPlaying = System.Text.Encoding.UTF8.GetBytes("preferredBufferDurationForPlaying");
         var _preferredBufferDurationForPlayingV = NativeValue.From(PreferredBufferDurationForPlaying);
         if (_preferredBufferDurationForPlayingV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _preferredBufferDurationForPlaying, _preferredBufferDurationForPlayingV);
-        var _enableSuperResolution = Encoding.UTF8.GetBytes("enableSuperResolution");
+        var _enableSuperResolution = System.Text.Encoding.UTF8.GetBytes("enableSuperResolution");
         var _enableSuperResolutionV = NativeValue.From(EnableSuperResolution);
         if (_enableSuperResolutionV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _enableSuperResolution, _enableSuperResolutionV);
-        var _thresholdForAutoQuickPlay = Encoding.UTF8.GetBytes("thresholdForAutoQuickPlay");
+        var _thresholdForAutoQuickPlay = System.Text.Encoding.UTF8.GetBytes("thresholdForAutoQuickPlay");
         var _thresholdForAutoQuickPlayV = NativeValue.From(ThresholdForAutoQuickPlay);
         if (_thresholdForAutoQuickPlayV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _thresholdForAutoQuickPlay, _thresholdForAutoQuickPlayV);
-        var _keepDecodingOnMute = Encoding.UTF8.GetBytes("keepDecodingOnMute");
+        var _keepDecodingOnMute = System.Text.Encoding.UTF8.GetBytes("keepDecodingOnMute");
         var _keepDecodingOnMuteV = NativeValue.From(KeepDecodingOnMute);
         if (_keepDecodingOnMuteV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _keepDecodingOnMute, _keepDecodingOnMuteV);
@@ -3697,9 +3697,9 @@ public sealed partial class PlaybackInfo : JsObject
 /// Range 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class Range : JsObject
+public sealed partial class MediaRange : JsObject
 {
-    public Range(IntPtr handle) : base(handle) { }
+    public MediaRange(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _min => "min"u8;
     private static ReadOnlySpan<byte> _max => "max"u8;
     /// <summary>
@@ -3726,19 +3726,19 @@ public sealed record WatermarkConfiguration(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _top = Encoding.UTF8.GetBytes("top");
+        var _top = System.Text.Encoding.UTF8.GetBytes("top");
         var _topV = NativeValue.From(Top);
         if (_topV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _top, _topV);
-        var _left = Encoding.UTF8.GetBytes("left");
+        var _left = System.Text.Encoding.UTF8.GetBytes("left");
         var _leftV = NativeValue.From(Left);
         if (_leftV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _left, _leftV);
-        var _width = Encoding.UTF8.GetBytes("width");
+        var _width = System.Text.Encoding.UTF8.GetBytes("width");
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = Encoding.UTF8.GetBytes("height");
+        var _height = System.Text.Encoding.UTF8.GetBytes("height");
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
@@ -3773,27 +3773,27 @@ public sealed partial class EncoderInfo : JsObject
     /// <summary>
     /// bitRate
     /// </summary>
-    public Range? BitRate => GetPropertyRaw(_bitRate) == IntPtr.Zero ? null : new Range(GetPropertyRaw(_bitRate));
+    public MediaRange? BitRate => GetPropertyRaw(_bitRate) == IntPtr.Zero ? null : new MediaRange(GetPropertyRaw(_bitRate));
 
     /// <summary>
     /// frameRate
     /// </summary>
-    public Range? FrameRate => GetPropertyRaw(_frameRate) == IntPtr.Zero ? null : new Range(GetPropertyRaw(_frameRate));
+    public MediaRange? FrameRate => GetPropertyRaw(_frameRate) == IntPtr.Zero ? null : new MediaRange(GetPropertyRaw(_frameRate));
 
     /// <summary>
     /// width
     /// </summary>
-    public Range? Width => GetPropertyRaw(_width) == IntPtr.Zero ? null : new Range(GetPropertyRaw(_width));
+    public MediaRange? Width => GetPropertyRaw(_width) == IntPtr.Zero ? null : new MediaRange(GetPropertyRaw(_width));
 
     /// <summary>
     /// height
     /// </summary>
-    public Range? Height => GetPropertyRaw(_height) == IntPtr.Zero ? null : new Range(GetPropertyRaw(_height));
+    public MediaRange? Height => GetPropertyRaw(_height) == IntPtr.Zero ? null : new MediaRange(GetPropertyRaw(_height));
 
     /// <summary>
     /// channels
     /// </summary>
-    public Range? Channels => GetPropertyRaw(_channels) == IntPtr.Zero ? null : new Range(GetPropertyRaw(_channels));
+    public MediaRange? Channels => GetPropertyRaw(_channels) == IntPtr.Zero ? null : new MediaRange(GetPropertyRaw(_channels));
 
     /// <summary>
     /// sampleRate
@@ -3819,39 +3819,39 @@ public sealed record AudioRecorderConfig(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _audioEncoder = Encoding.UTF8.GetBytes("audioEncoder");
+        var _audioEncoder = System.Text.Encoding.UTF8.GetBytes("audioEncoder");
         var _audioEncoderV = NativeValue.From(AudioEncoder);
         if (_audioEncoderV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _audioEncoder, _audioEncoderV);
-        var _audioEncodeBitRate = Encoding.UTF8.GetBytes("audioEncodeBitRate");
+        var _audioEncodeBitRate = System.Text.Encoding.UTF8.GetBytes("audioEncodeBitRate");
         var _audioEncodeBitRateV = NativeValue.From(AudioEncodeBitRate);
         if (_audioEncodeBitRateV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _audioEncodeBitRate, _audioEncodeBitRateV);
-        var _audioSampleRate = Encoding.UTF8.GetBytes("audioSampleRate");
+        var _audioSampleRate = System.Text.Encoding.UTF8.GetBytes("audioSampleRate");
         var _audioSampleRateV = NativeValue.From(AudioSampleRate);
         if (_audioSampleRateV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _audioSampleRate, _audioSampleRateV);
-        var _numberOfChannels = Encoding.UTF8.GetBytes("numberOfChannels");
+        var _numberOfChannels = System.Text.Encoding.UTF8.GetBytes("numberOfChannels");
         var _numberOfChannelsV = NativeValue.From(NumberOfChannels);
         if (_numberOfChannelsV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _numberOfChannels, _numberOfChannelsV);
-        var _format = Encoding.UTF8.GetBytes("format");
+        var _format = System.Text.Encoding.UTF8.GetBytes("format");
         var _formatV = NativeValue.From(Format);
         if (_formatV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _format, _formatV);
-        var _uri = Encoding.UTF8.GetBytes("uri");
+        var _uri = System.Text.Encoding.UTF8.GetBytes("uri");
         var _uriV = NativeValue.From(Uri);
         if (_uriV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _uri, _uriV);
-        var _location = Encoding.UTF8.GetBytes("location");
+        var _location = System.Text.Encoding.UTF8.GetBytes("location");
         var _locationV = NativeValue.From(Location);
         if (_locationV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _location, _locationV);
-        var _audioEncoderMime = Encoding.UTF8.GetBytes("audioEncoderMime");
+        var _audioEncoderMime = System.Text.Encoding.UTF8.GetBytes("audioEncoderMime");
         var _audioEncoderMimeV = NativeValue.From(AudioEncoderMime);
         if (_audioEncoderMimeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _audioEncoderMime, _audioEncoderMimeV);
-        var _fileFormat = Encoding.UTF8.GetBytes("fileFormat");
+        var _fileFormat = System.Text.Encoding.UTF8.GetBytes("fileFormat");
         var _fileFormatV = NativeValue.From(FileFormat);
         if (_fileFormatV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _fileFormat, _fileFormatV);
@@ -3877,47 +3877,47 @@ public sealed record AVScreenCaptureRecordConfig(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _fd = Encoding.UTF8.GetBytes("fd");
+        var _fd = System.Text.Encoding.UTF8.GetBytes("fd");
         var _fdV = NativeValue.From(Fd);
         if (_fdV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _fd, _fdV);
-        var _frameWidth = Encoding.UTF8.GetBytes("frameWidth");
+        var _frameWidth = System.Text.Encoding.UTF8.GetBytes("frameWidth");
         var _frameWidthV = NativeValue.From(FrameWidth);
         if (_frameWidthV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _frameWidth, _frameWidthV);
-        var _frameHeight = Encoding.UTF8.GetBytes("frameHeight");
+        var _frameHeight = System.Text.Encoding.UTF8.GetBytes("frameHeight");
         var _frameHeightV = NativeValue.From(FrameHeight);
         if (_frameHeightV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _frameHeight, _frameHeightV);
-        var _videoBitrate = Encoding.UTF8.GetBytes("videoBitrate");
+        var _videoBitrate = System.Text.Encoding.UTF8.GetBytes("videoBitrate");
         var _videoBitrateV = NativeValue.From(VideoBitrate);
         if (_videoBitrateV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _videoBitrate, _videoBitrateV);
-        var _audioSampleRate = Encoding.UTF8.GetBytes("audioSampleRate");
+        var _audioSampleRate = System.Text.Encoding.UTF8.GetBytes("audioSampleRate");
         var _audioSampleRateV = NativeValue.From(AudioSampleRate);
         if (_audioSampleRateV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _audioSampleRate, _audioSampleRateV);
-        var _audioChannelCount = Encoding.UTF8.GetBytes("audioChannelCount");
+        var _audioChannelCount = System.Text.Encoding.UTF8.GetBytes("audioChannelCount");
         var _audioChannelCountV = NativeValue.From(AudioChannelCount);
         if (_audioChannelCountV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _audioChannelCount, _audioChannelCountV);
-        var _audioBitrate = Encoding.UTF8.GetBytes("audioBitrate");
+        var _audioBitrate = System.Text.Encoding.UTF8.GetBytes("audioBitrate");
         var _audioBitrateV = NativeValue.From(AudioBitrate);
         if (_audioBitrateV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _audioBitrate, _audioBitrateV);
-        var _preset = Encoding.UTF8.GetBytes("preset");
+        var _preset = System.Text.Encoding.UTF8.GetBytes("preset");
         var _presetV = NativeValue.From(Preset);
         if (_presetV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _preset, _presetV);
-        var _displayId = Encoding.UTF8.GetBytes("displayId");
+        var _displayId = System.Text.Encoding.UTF8.GetBytes("displayId");
         var _displayIdV = NativeValue.From(DisplayId);
         if (_displayIdV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _displayId, _displayIdV);
-        var _fillMode = Encoding.UTF8.GetBytes("fillMode");
+        var _fillMode = System.Text.Encoding.UTF8.GetBytes("fillMode");
         var _fillModeV = NativeValue.From(FillMode);
         if (_fillModeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _fillMode, _fillModeV);
-        var _strategy = Encoding.UTF8.GetBytes("strategy");
+        var _strategy = System.Text.Encoding.UTF8.GetBytes("strategy");
         var _strategyV = NativeValue.From(Strategy);
         if (_strategyV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _strategy, _strategyV);
@@ -3941,39 +3941,39 @@ public sealed record AVTranscoderConfig(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _audioBitrate = Encoding.UTF8.GetBytes("audioBitrate");
+        var _audioBitrate = System.Text.Encoding.UTF8.GetBytes("audioBitrate");
         var _audioBitrateV = NativeValue.From(AudioBitrate);
         if (_audioBitrateV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _audioBitrate, _audioBitrateV);
-        var _audioCodec = Encoding.UTF8.GetBytes("audioCodec");
+        var _audioCodec = System.Text.Encoding.UTF8.GetBytes("audioCodec");
         var _audioCodecV = NativeValue.From(AudioCodec);
         if (_audioCodecV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _audioCodec, _audioCodecV);
-        var _audioCodecV2 = Encoding.UTF8.GetBytes("audioCodecV2");
+        var _audioCodecV2 = System.Text.Encoding.UTF8.GetBytes("audioCodecV2");
         var _audioCodecV2V = NativeValue.From(AudioCodecV2);
         if (_audioCodecV2V != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _audioCodecV2, _audioCodecV2V);
-        var _fileFormat = Encoding.UTF8.GetBytes("fileFormat");
+        var _fileFormat = System.Text.Encoding.UTF8.GetBytes("fileFormat");
         var _fileFormatV = NativeValue.From(FileFormat);
         if (_fileFormatV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _fileFormat, _fileFormatV);
-        var _videoBitrate = Encoding.UTF8.GetBytes("videoBitrate");
+        var _videoBitrate = System.Text.Encoding.UTF8.GetBytes("videoBitrate");
         var _videoBitrateV = NativeValue.From(VideoBitrate);
         if (_videoBitrateV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _videoBitrate, _videoBitrateV);
-        var _videoCodec = Encoding.UTF8.GetBytes("videoCodec");
+        var _videoCodec = System.Text.Encoding.UTF8.GetBytes("videoCodec");
         var _videoCodecV = NativeValue.From(VideoCodec);
         if (_videoCodecV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _videoCodec, _videoCodecV);
-        var _videoFrameWidth = Encoding.UTF8.GetBytes("videoFrameWidth");
+        var _videoFrameWidth = System.Text.Encoding.UTF8.GetBytes("videoFrameWidth");
         var _videoFrameWidthV = NativeValue.From(VideoFrameWidth);
         if (_videoFrameWidthV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _videoFrameWidth, _videoFrameWidthV);
-        var _videoFrameHeight = Encoding.UTF8.GetBytes("videoFrameHeight");
+        var _videoFrameHeight = System.Text.Encoding.UTF8.GetBytes("videoFrameHeight");
         var _videoFrameHeightV = NativeValue.From(VideoFrameHeight);
         if (_videoFrameHeightV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _videoFrameHeight, _videoFrameHeightV);
-        var _enableBFrame = Encoding.UTF8.GetBytes("enableBFrame");
+        var _enableBFrame = System.Text.Encoding.UTF8.GetBytes("enableBFrame");
         var _enableBFrameV = NativeValue.From(EnableBFrame);
         if (_enableBFrameV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _enableBFrame, _enableBFrameV);
@@ -3990,11 +3990,11 @@ public sealed record PixelMapParams(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _width = Encoding.UTF8.GetBytes("width");
+        var _width = System.Text.Encoding.UTF8.GetBytes("width");
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = Encoding.UTF8.GetBytes("height");
+        var _height = System.Text.Encoding.UTF8.GetBytes("height");
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
@@ -4011,11 +4011,11 @@ public sealed record OutputSize(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _width = Encoding.UTF8.GetBytes("width");
+        var _width = System.Text.Encoding.UTF8.GetBytes("width");
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = Encoding.UTF8.GetBytes("height");
+        var _height = System.Text.Encoding.UTF8.GetBytes("height");
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
@@ -4053,11 +4053,11 @@ public sealed record MediaLocation(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _latitude = Encoding.UTF8.GetBytes("latitude");
+        var _latitude = System.Text.Encoding.UTF8.GetBytes("latitude");
         var _latitudeV = NativeValue.From(Latitude);
         if (_latitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
-        var _longitude = Encoding.UTF8.GetBytes("longitude");
+        var _longitude = System.Text.Encoding.UTF8.GetBytes("longitude");
         var _longitudeV = NativeValue.From(Longitude);
         if (_longitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
@@ -4076,19 +4076,19 @@ public sealed record AVScreenCaptureStrategy(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _keepCaptureDuringCall = Encoding.UTF8.GetBytes("keepCaptureDuringCall");
+        var _keepCaptureDuringCall = System.Text.Encoding.UTF8.GetBytes("keepCaptureDuringCall");
         var _keepCaptureDuringCallV = NativeValue.From(KeepCaptureDuringCall);
         if (_keepCaptureDuringCallV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _keepCaptureDuringCall, _keepCaptureDuringCallV);
-        var _enableBFrame = Encoding.UTF8.GetBytes("enableBFrame");
+        var _enableBFrame = System.Text.Encoding.UTF8.GetBytes("enableBFrame");
         var _enableBFrameV = NativeValue.From(EnableBFrame);
         if (_enableBFrameV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _enableBFrame, _enableBFrameV);
-        var _privacyMaskMode = Encoding.UTF8.GetBytes("privacyMaskMode");
+        var _privacyMaskMode = System.Text.Encoding.UTF8.GetBytes("privacyMaskMode");
         var _privacyMaskModeV = NativeValue.From(PrivacyMaskMode);
         if (_privacyMaskModeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _privacyMaskMode, _privacyMaskModeV);
-        var _enablePause = Encoding.UTF8.GetBytes("enablePause");
+        var _enablePause = System.Text.Encoding.UTF8.GetBytes("enablePause");
         var _enablePauseV = NativeValue.From(EnablePause);
         if (_enablePauseV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _enablePause, _enablePauseV);

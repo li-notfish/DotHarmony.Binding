@@ -564,7 +564,36 @@ const PILOT_MODULES = [
     '@ohos.data.preferences',
     '@ohos.request',
     '@ohos.promptAction',
-];
+    // M2.3 第三批：扩展常用模块（2026-09-12）
+    '@ohos.thermal',
+    '@ohos.power',
+    '@ohos.brightness',
+    '@ohos.wallpaper',
+    '@ohos.wifiManager',
+    '@ohos.telephony.radio',
+    '@ohos.telephony.sms',
+    '@ohos.usbManager',
+    '@ohos.inputMethod',
+    '@ohos.hilog',
+    '@ohos.hiAppEvent',
+    '@ohos.i18n',
+    '@ohos.intl',
+    '@ohos.mediaquery',
+    '@ohos.screen',
+    '@ohos.font',
+    '@ohos.measure',
+    '@ohos.uri',
+    '@ohos.url',
+    '@ohos.matrix4',
+    '@ohos.curves',
+    '@ohos.net.webSocket',
+    '@ohos.net.socket',
+    '@ohos.data.dataShare',
+    '@ohos.bundle.bundleManager',
+    '@ohos.app.ability.appManager',
+    '@ohos.app.ability.context',
+    '@ohos.notification',
+]
 
 /** 全局枚举名去重（processFullSDK 作用域内） */
 const writtenEnumNames = new Set<string>();
@@ -853,7 +882,12 @@ const APPROVED_MODULES = new Set([
     'Sensor',        // 2026-09-12 转正：事件回调强制必需后的可选参数降级修复（CS1737）
     // 'Settings',  // 含 Context/DataAbilityHelper 等未映射类型，待修复
     'Window',
+    'Thermal','Power','Wallpaper','WifiManager','Radio','Sms','UsbManager',
+    'InputMethod','Hilog','HiAppEvent','I18n','Intl','Mediaquery','Screen',
+    'Font','Measure','Uri','Url','Matrix4','Curves','WebSocket','Socket',
+    'DataShare','BundleManager','AppManager','Notification',
 ]);
+
 
 /**
  * 灰度策略：生成的 Api/*.cs 默认不参与编译（Compile Remove），

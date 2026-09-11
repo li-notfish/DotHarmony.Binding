@@ -40,7 +40,7 @@ public static unsafe partial class Window
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -2555,15 +2555,15 @@ public sealed record WindowInfoOptions(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _excludeSystemWindows = Encoding.UTF8.GetBytes("excludeSystemWindows");
+        var _excludeSystemWindows = System.Text.Encoding.UTF8.GetBytes("excludeSystemWindows");
         var _excludeSystemWindowsV = NativeValue.From(ExcludeSystemWindows);
         if (_excludeSystemWindowsV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _excludeSystemWindows, _excludeSystemWindowsV);
-        var _foregroundAboveWindow = Encoding.UTF8.GetBytes("foregroundAboveWindow");
+        var _foregroundAboveWindow = System.Text.Encoding.UTF8.GetBytes("foregroundAboveWindow");
         var _foregroundAboveWindowV = NativeValue.From(ForegroundAboveWindow);
         if (_foregroundAboveWindowV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _foregroundAboveWindow, _foregroundAboveWindowV);
-        var _foregroundBelowWindow = Encoding.UTF8.GetBytes("foregroundBelowWindow");
+        var _foregroundBelowWindow = System.Text.Encoding.UTF8.GetBytes("foregroundBelowWindow");
         var _foregroundBelowWindowV = NativeValue.From(ForegroundBelowWindow);
         if (_foregroundBelowWindowV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _foregroundBelowWindow, _foregroundBelowWindowV);
@@ -2612,7 +2612,7 @@ public sealed record WindowSnapshotConfiguration(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _useCache = Encoding.UTF8.GetBytes("useCache");
+        var _useCache = System.Text.Encoding.UTF8.GetBytes("useCache");
         var _useCacheV = NativeValue.From(UseCache);
         if (_useCacheV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _useCache, _useCacheV);
@@ -2796,7 +2796,7 @@ public sealed record ShowWindowOptions(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _focusOnShow = Encoding.UTF8.GetBytes("focusOnShow");
+        var _focusOnShow = System.Text.Encoding.UTF8.GetBytes("focusOnShow");
         var _focusOnShowV = NativeValue.From(FocusOnShow);
         if (_focusOnShowV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _focusOnShow, _focusOnShowV);
@@ -2812,7 +2812,7 @@ public sealed record MoveConfiguration(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _displayId = Encoding.UTF8.GetBytes("displayId");
+        var _displayId = System.Text.Encoding.UTF8.GetBytes("displayId");
         var _displayIdV = NativeValue.From(DisplayId);
         if (_displayIdV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _displayId, _displayIdV);
@@ -3094,15 +3094,15 @@ public sealed record MaximizeOptions(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _maximizePresentation = Encoding.UTF8.GetBytes("maximizePresentation");
+        var _maximizePresentation = System.Text.Encoding.UTF8.GetBytes("maximizePresentation");
         var _maximizePresentationV = NativeValue.From(MaximizePresentation);
         if (_maximizePresentationV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _maximizePresentation, _maximizePresentationV);
-        var _acrossDisplayPresentation = Encoding.UTF8.GetBytes("acrossDisplayPresentation");
+        var _acrossDisplayPresentation = System.Text.Encoding.UTF8.GetBytes("acrossDisplayPresentation");
         var _acrossDisplayPresentationV = NativeValue.From(AcrossDisplayPresentation);
         if (_acrossDisplayPresentationV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _acrossDisplayPresentation, _acrossDisplayPresentationV);
-        var _snapshotAnimationConfig = Encoding.UTF8.GetBytes("snapshotAnimationConfig");
+        var _snapshotAnimationConfig = System.Text.Encoding.UTF8.GetBytes("snapshotAnimationConfig");
         var _snapshotAnimationConfigV = NativeValue.From(SnapshotAnimationConfig);
         if (_snapshotAnimationConfigV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _snapshotAnimationConfig, _snapshotAnimationConfigV);
@@ -3158,11 +3158,11 @@ public sealed record WindowSnapshotAnimationConfig(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _duration = Encoding.UTF8.GetBytes("duration");
+        var _duration = System.Text.Encoding.UTF8.GetBytes("duration");
         var _durationV = NativeValue.From(Duration);
         if (_durationV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _duration, _durationV);
-        var _delay = Encoding.UTF8.GetBytes("delay");
+        var _delay = System.Text.Encoding.UTF8.GetBytes("delay");
         var _delayV = NativeValue.From(Delay);
         if (_delayV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _delay, _delayV);
@@ -3207,39 +3207,39 @@ public sealed record SubWindowOptions(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _title = Encoding.UTF8.GetBytes("title");
+        var _title = System.Text.Encoding.UTF8.GetBytes("title");
         var _titleV = NativeValue.From(Title);
         if (_titleV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _title, _titleV);
-        var _decorEnabled = Encoding.UTF8.GetBytes("decorEnabled");
+        var _decorEnabled = System.Text.Encoding.UTF8.GetBytes("decorEnabled");
         var _decorEnabledV = NativeValue.From(DecorEnabled);
         if (_decorEnabledV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _decorEnabled, _decorEnabledV);
-        var _isModal = Encoding.UTF8.GetBytes("isModal");
+        var _isModal = System.Text.Encoding.UTF8.GetBytes("isModal");
         var _isModalV = NativeValue.From(IsModal);
         if (_isModalV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _isModal, _isModalV);
-        var _modalityType = Encoding.UTF8.GetBytes("modalityType");
+        var _modalityType = System.Text.Encoding.UTF8.GetBytes("modalityType");
         var _modalityTypeV = NativeValue.From(ModalityType);
         if (_modalityTypeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _modalityType, _modalityTypeV);
-        var _windowRect = Encoding.UTF8.GetBytes("windowRect");
+        var _windowRect = System.Text.Encoding.UTF8.GetBytes("windowRect");
         var _windowRectV = NativeValue.From(WindowRect);
         if (_windowRectV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _windowRect, _windowRectV);
-        var _maximizeSupported = Encoding.UTF8.GetBytes("maximizeSupported");
+        var _maximizeSupported = System.Text.Encoding.UTF8.GetBytes("maximizeSupported");
         var _maximizeSupportedV = NativeValue.From(MaximizeSupported);
         if (_maximizeSupportedV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _maximizeSupported, _maximizeSupportedV);
-        var _zLevel = Encoding.UTF8.GetBytes("zLevel");
+        var _zLevel = System.Text.Encoding.UTF8.GetBytes("zLevel");
         var _zLevelV = NativeValue.From(ZLevel);
         if (_zLevelV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _zLevel, _zLevelV);
-        var _outlineEnabled = Encoding.UTF8.GetBytes("outlineEnabled");
+        var _outlineEnabled = System.Text.Encoding.UTF8.GetBytes("outlineEnabled");
         var _outlineEnabledV = NativeValue.From(OutlineEnabled);
         if (_outlineEnabledV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _outlineEnabled, _outlineEnabledV);
-        var _zLevelAboveParentLoosened = Encoding.UTF8.GetBytes("zLevelAboveParentLoosened");
+        var _zLevelAboveParentLoosened = System.Text.Encoding.UTF8.GetBytes("zLevelAboveParentLoosened");
         var _zLevelAboveParentLoosenedV = NativeValue.From(ZLevelAboveParentLoosened);
         if (_zLevelAboveParentLoosenedV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _zLevelAboveParentLoosened, _zLevelAboveParentLoosenedV);

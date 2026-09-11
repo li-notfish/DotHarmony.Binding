@@ -40,7 +40,7 @@ public static unsafe partial class Display
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -826,27 +826,27 @@ public sealed record VirtualScreenConfig(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _name = Encoding.UTF8.GetBytes("name");
+        var _name = System.Text.Encoding.UTF8.GetBytes("name");
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _width = Encoding.UTF8.GetBytes("width");
+        var _width = System.Text.Encoding.UTF8.GetBytes("width");
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = Encoding.UTF8.GetBytes("height");
+        var _height = System.Text.Encoding.UTF8.GetBytes("height");
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
-        var _density = Encoding.UTF8.GetBytes("density");
+        var _density = System.Text.Encoding.UTF8.GetBytes("density");
         var _densityV = NativeValue.From(Density);
         if (_densityV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _density, _densityV);
-        var _surfaceId = Encoding.UTF8.GetBytes("surfaceId");
+        var _surfaceId = System.Text.Encoding.UTF8.GetBytes("surfaceId");
         var _surfaceIdV = NativeValue.From(SurfaceId);
         if (_surfaceIdV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _surfaceId, _surfaceIdV);
-        var _supportsFocus = Encoding.UTF8.GetBytes("supportsFocus");
+        var _supportsFocus = System.Text.Encoding.UTF8.GetBytes("supportsFocus");
         var _supportsFocusV = NativeValue.From(SupportsFocus);
         if (_supportsFocusV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _supportsFocus, _supportsFocusV);

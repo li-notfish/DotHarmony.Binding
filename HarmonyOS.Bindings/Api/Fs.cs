@@ -40,7 +40,7 @@ public static unsafe partial class Fs
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -342,7 +342,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// createRandomAccessFile
     /// </summary>
-    public static Task<IntPtr> CreateRandomAccessFileAsync(string file, double? mode = null, IntPtr? options = null)
+    public static Task<IntPtr> CreateRandomAccessFileAsync(string file, double? mode = null, RandomAccessFileOptions? options = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file, mode, options);
     }
@@ -350,23 +350,23 @@ public static unsafe partial class Fs
     /// <summary>
     /// createRandomAccessFile
     /// </summary>
-    public static Task<IntPtr> CreateRandomAccessFileAsync(string file)
+    public static Task<RandomAccessFile> CreateRandomAccessFileAsync(string file)
     {
-        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _createRandomAccessFile, null, file);
+        return NodeApi.CallMethodAsyncCallback(Module, _createRandomAccessFile, static h => new RandomAccessFile(h), file);
     }
 
     /// <summary>
     /// createRandomAccessFile
     /// </summary>
-    public static Task<IntPtr> CreateRandomAccessFileAsync(string file, double mode)
+    public static Task<RandomAccessFile> CreateRandomAccessFileAsync(string file, double mode)
     {
-        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _createRandomAccessFile, null, file, mode);
+        return NodeApi.CallMethodAsyncCallback(Module, _createRandomAccessFile, static h => new RandomAccessFile(h), file, mode);
     }
 
     /// <summary>
     /// createRandomAccessFileSync
     /// </summary>
-    public static IntPtr CreateRandomAccessFileSync(string file, double? mode = null, IntPtr? options = null)
+    public static IntPtr CreateRandomAccessFileSync(string file, double? mode = null, RandomAccessFileOptions? options = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createRandomAccessFileSync, file, mode, options);
     }
@@ -374,7 +374,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// createReadStream
     /// </summary>
-    public static IntPtr CreateReadStream(string path, IntPtr? options = null)
+    public static IntPtr CreateReadStream(string path, ReadStreamOptions? options = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createReadStream, path, options);
     }
@@ -382,7 +382,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// createWriteStream
     /// </summary>
-    public static IntPtr CreateWriteStream(string path, IntPtr? options = null)
+    public static IntPtr CreateWriteStream(string path, WriteStreamOptions? options = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createWriteStream, path, options);
     }
@@ -390,7 +390,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// createWatcher
     /// </summary>
-    public static IntPtr CreateWatcher(string path, double events, IntPtr listener)
+    public static IntPtr CreateWatcher(string path, double events, WatchEventListener listener)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createWatcher, path, events, listener);
     }
@@ -454,7 +454,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// listFile
     /// </summary>
-    public static Task<string[]> ListFileAsync(string path, IntPtr? options = null)
+    public static Task<string[]> ListFileAsync(string path, ListFileOptions? options = null)
     {
         return NodeApi.CallMethodAsync(Module, _listFile, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
     }
@@ -470,7 +470,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// listFileSync
     /// </summary>
-    public static string[] ListFileSync(string path, IntPtr? options = null)
+    public static string[] ListFileSync(string path, ListFileOptions? options = null)
     {
         return NodeApi.CallMethod(Module, _listFileSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
     }
@@ -478,7 +478,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// listFileExt
     /// </summary>
-    public static Task<string[]> ListFileExtAsync(string path, IntPtr? options = null)
+    public static Task<string[]> ListFileExtAsync(string path, ListFileExtOptions? options = null)
     {
         return NodeApi.CallMethodAsync(Module, _listFileExt, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
     }
@@ -486,7 +486,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// listFileExtSync
     /// </summary>
-    public static string[] ListFileExtSync(string path, IntPtr? options = null)
+    public static string[] ListFileExtSync(string path, ListFileExtOptions? options = null)
     {
         return NodeApi.CallMethod(Module, _listFileExtSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
     }
@@ -638,9 +638,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// open
     /// </summary>
-    public static Task<IntPtr> OpenAsync(string path)
+    public static Task<File> OpenAsync(string path)
     {
-        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _open, null, path);
+        return NodeApi.CallMethodAsyncCallback(Module, _open, static h => new File(h), path);
     }
 
     /// <summary>
@@ -654,7 +654,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// read
     /// </summary>
-    public static Task<double> ReadAsync(double fd, byte[] buffer, IntPtr? options = null)
+    public static Task<double> ReadAsync(double fd, byte[] buffer, ReadOptions? options = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _read, fd, buffer, options);
     }
@@ -670,7 +670,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// readSync
     /// </summary>
-    public static double ReadSync(double fd, byte[] buffer, IntPtr? options = null)
+    public static double ReadSync(double fd, byte[] buffer, ReadOptions? options = null)
     {
         return NodeApi.CallMethod<double>(Module, _readSync, fd, buffer, options);
     }
@@ -678,7 +678,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// readLines
     /// </summary>
-    public static Task<IntPtr> ReadLinesAsync(string filePath, Options? options = null)
+    public static Task<IntPtr> ReadLinesAsync(string filePath, FsOptions? options = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _readLines, filePath, options);
     }
@@ -686,15 +686,15 @@ public static unsafe partial class Fs
     /// <summary>
     /// readLines
     /// </summary>
-    public static Task<IntPtr> ReadLinesAsync(string filePath)
+    public static Task<ReaderIterator> ReadLinesAsync(string filePath)
     {
-        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _readLines, null, filePath);
+        return NodeApi.CallMethodAsyncCallback(Module, _readLines, static h => new ReaderIterator(h), filePath);
     }
 
     /// <summary>
     /// readLinesSync
     /// </summary>
-    public static IntPtr ReadLinesSync(string filePath, Options? options = null)
+    public static IntPtr ReadLinesSync(string filePath, FsOptions? options = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _readLinesSync, filePath, options);
     }
@@ -702,7 +702,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// readText
     /// </summary>
-    public static Task<string> ReadTextAsync(string filePath, IntPtr? options = null)
+    public static Task<string> ReadTextAsync(string filePath, ReadTextOptions? options = null)
     {
         return NodeApi.CallMethodAsync<string>(Module, _readText, filePath, options);
     }
@@ -718,7 +718,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// readTextSync
     /// </summary>
-    public static string ReadTextSync(string filePath, IntPtr? options = null)
+    public static string ReadTextSync(string filePath, ReadTextOptions? options = null)
     {
         return NodeApi.CallMethod<string>(Module, _readTextSync, filePath, options);
     }
@@ -838,7 +838,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// write
     /// </summary>
-    public static Task<double> WriteAsync(double fd, byte[] buffer, IntPtr? options = null)
+    public static Task<double> WriteAsync(double fd, byte[] buffer, WriteOptions? options = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _write, fd, buffer, options);
     }
@@ -854,7 +854,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// writeSync
     /// </summary>
-    public static double WriteSync(double fd, byte[] buffer, IntPtr? options = null)
+    public static double WriteSync(double fd, byte[] buffer, WriteOptions? options = null)
     {
         return NodeApi.CallMethod<double>(Module, _writeSync, fd, buffer, options);
     }
@@ -862,7 +862,7 @@ public static unsafe partial class Fs
     /// <summary>
     /// connectDfs
     /// </summary>
-    public static Task ConnectDfsAsync(string networkId, IntPtr listeners)
+    public static Task ConnectDfsAsync(string networkId, DfsListeners listeners)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _connectDfs, networkId, listeners);
     }
@@ -906,5 +906,706 @@ public static unsafe partial class Fs
     {
         return NodeApi.CallMethod<string>(Module, _getxattrSync, path, key);
     }
+
+}
+
+/// <summary>
+/// RandomAccessFileOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record RandomAccessFileOptions(
+    double? Start = null,
+    double? End = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _start = System.Text.Encoding.UTF8.GetBytes("start");
+        var _startV = NativeValue.From(Start);
+        if (_startV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _start, _startV);
+        var _end = System.Text.Encoding.UTF8.GetBytes("end");
+        var _endV = NativeValue.From(End);
+        if (_endV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _end, _endV);
+    }
+}
+
+/// <summary>
+/// RandomAccessFile 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class RandomAccessFile : JsObject
+{
+    public RandomAccessFile(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _fd => "fd"u8;
+    private static ReadOnlySpan<byte> _filePointer => "filePointer"u8;
+    private static ReadOnlySpan<byte> _setFilePointer => "setFilePointer"u8;
+    private static ReadOnlySpan<byte> _close => "close"u8;
+    private static ReadOnlySpan<byte> _write => "write"u8;
+    private static ReadOnlySpan<byte> _writeSync => "writeSync"u8;
+    private static ReadOnlySpan<byte> _read => "read"u8;
+    private static ReadOnlySpan<byte> _readSync => "readSync"u8;
+    private static ReadOnlySpan<byte> _getReadStream => "getReadStream"u8;
+    private static ReadOnlySpan<byte> _getWriteStream => "getWriteStream"u8;
+    /// <summary>
+    /// fd
+    /// </summary>
+    public double Fd => NativeValue.ToDouble(GetPropertyRaw(_fd));
+
+    /// <summary>
+    /// filePointer
+    /// </summary>
+    public double FilePointer => NativeValue.ToDouble(GetPropertyRaw(_filePointer));
+
+    /// <summary>
+    /// setFilePointer
+    /// </summary>
+    public void SetFilePointer(double filePointer)
+    {
+        CallMethodVoid(_setFilePointer, filePointer);
+    }
+
+    /// <summary>
+    /// close
+    /// </summary>
+    public void Close()
+    {
+        CallMethodVoid(_close);
+    }
+
+    /// <summary>
+    /// write
+    /// </summary>
+    public Task<double> WriteAsync(byte[] buffer, WriteOptions? options = null)
+    {
+        return CallMethodAsync<double>(_write, buffer, options);
+    }
+
+    /// <summary>
+    /// write
+    /// </summary>
+    public Task<double> WriteAsync(byte[] buffer)
+    {
+        return CallMethodAsyncCallback<double>(_write, null, buffer);
+    }
+
+    /// <summary>
+    /// writeSync
+    /// </summary>
+    public double WriteSync(byte[] buffer, WriteOptions? options = null)
+    {
+        return CallMethod<double>(_writeSync, buffer, options);
+    }
+
+    /// <summary>
+    /// read
+    /// </summary>
+    public Task<double> ReadAsync(byte[] buffer, ReadOptions? options = null)
+    {
+        return CallMethodAsync<double>(_read, buffer, options);
+    }
+
+    /// <summary>
+    /// read
+    /// </summary>
+    public Task<double> ReadAsync(byte[] buffer)
+    {
+        return CallMethodAsyncCallback<double>(_read, null, buffer);
+    }
+
+    /// <summary>
+    /// readSync
+    /// </summary>
+    public double ReadSync(byte[] buffer, ReadOptions? options = null)
+    {
+        return CallMethod<double>(_readSync, buffer, options);
+    }
+
+    /// <summary>
+    /// getReadStream
+    /// </summary>
+    public ReadStream GetReadStream()
+    {
+        return CallMethod(_getReadStream, static h => new ReadStream(h));
+    }
+
+    /// <summary>
+    /// getWriteStream
+    /// </summary>
+    public WriteStream GetWriteStream()
+    {
+        return CallMethod(_getWriteStream, static h => new WriteStream(h));
+    }
+
+}
+
+/// <summary>
+/// ReadStreamOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ReadStreamOptions(
+    double? Start = null,
+    double? End = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _start = System.Text.Encoding.UTF8.GetBytes("start");
+        var _startV = NativeValue.From(Start);
+        if (_startV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _start, _startV);
+        var _end = System.Text.Encoding.UTF8.GetBytes("end");
+        var _endV = NativeValue.From(End);
+        if (_endV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _end, _endV);
+    }
+}
+
+/// <summary>
+/// WriteStreamOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record WriteStreamOptions(
+    double? Mode = null,
+    double? Start = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _mode = System.Text.Encoding.UTF8.GetBytes("mode");
+        var _modeV = NativeValue.From(Mode);
+        if (_modeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _mode, _modeV);
+        var _start = System.Text.Encoding.UTF8.GetBytes("start");
+        var _startV = NativeValue.From(Start);
+        if (_startV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _start, _startV);
+    }
+}
+
+/// <summary>
+/// WatchEventListener 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WatchEventListener : JsObject
+{
+    public WatchEventListener(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> ___call__ => "__call__"u8;
+}
+
+/// <summary>
+/// ListFileOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ListFileOptions(
+    bool? Recursion = null,
+    double? ListNum = null,
+    Filter? Filter = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _recursion = System.Text.Encoding.UTF8.GetBytes("recursion");
+        var _recursionV = NativeValue.From(Recursion);
+        if (_recursionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _recursion, _recursionV);
+        var _listNum = System.Text.Encoding.UTF8.GetBytes("listNum");
+        var _listNumV = NativeValue.From(ListNum);
+        if (_listNumV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _listNum, _listNumV);
+        var _filter = System.Text.Encoding.UTF8.GetBytes("filter");
+        var _filterV = NativeValue.From(Filter);
+        if (_filterV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _filter, _filterV);
+    }
+}
+
+/// <summary>
+/// ListFileExtOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ListFileExtOptions(
+    bool? Recursion = null,
+    double? ListNum = null,
+    FileFilter? FileFilter = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _recursion = System.Text.Encoding.UTF8.GetBytes("recursion");
+        var _recursionV = NativeValue.From(Recursion);
+        if (_recursionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _recursion, _recursionV);
+        var _listNum = System.Text.Encoding.UTF8.GetBytes("listNum");
+        var _listNumV = NativeValue.From(ListNum);
+        if (_listNumV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _listNum, _listNumV);
+        var _fileFilter = System.Text.Encoding.UTF8.GetBytes("fileFilter");
+        var _fileFilterV = NativeValue.From(FileFilter);
+        if (_fileFilterV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fileFilter, _fileFilterV);
+    }
+}
+
+/// <summary>
+/// File 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class File : JsObject
+{
+    public File(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _fd => "fd"u8;
+    private static ReadOnlySpan<byte> _path => "path"u8;
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _getParent => "getParent"u8;
+    private static ReadOnlySpan<byte> _lock => "lock"u8;
+    private static ReadOnlySpan<byte> _tryLock => "tryLock"u8;
+    private static ReadOnlySpan<byte> _unlock => "unlock"u8;
+    /// <summary>
+    /// fd
+    /// </summary>
+    public double Fd => NativeValue.ToDouble(GetPropertyRaw(_fd));
+
+    /// <summary>
+    /// path
+    /// </summary>
+    public string Path => NativeValue.ToString(GetPropertyRaw(_path)) ?? string.Empty;
+
+    /// <summary>
+    /// name
+    /// </summary>
+    public string Name => NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+
+    /// <summary>
+    /// getParent
+    /// </summary>
+    public string GetParent()
+    {
+        return CallMethod<string>(_getParent);
+    }
+
+    /// <summary>
+    /// lock
+    /// </summary>
+    public Task LockAsync(bool? exclusive = null)
+    {
+        return CallMethodAsyncVoid(_lock, exclusive);
+    }
+
+    /// <summary>
+    /// lock
+    /// </summary>
+    public Task LockAsync()
+    {
+        return CallMethodAsyncCallbackVoid(_lock);
+    }
+
+    /// <summary>
+    /// tryLock
+    /// </summary>
+    public void TryLock(bool? exclusive = null)
+    {
+        CallMethodVoid(_tryLock, exclusive);
+    }
+
+    /// <summary>
+    /// unlock
+    /// </summary>
+    public void Unlock()
+    {
+        CallMethodVoid(_unlock);
+    }
+
+}
+
+/// <summary>
+/// ReadOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ReadOptions(
+    double? Offset = null,
+    double? Length = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _offset = System.Text.Encoding.UTF8.GetBytes("offset");
+        var _offsetV = NativeValue.From(Offset);
+        if (_offsetV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
+        var _length = System.Text.Encoding.UTF8.GetBytes("length");
+        var _lengthV = NativeValue.From(Length);
+        if (_lengthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _length, _lengthV);
+    }
+}
+
+/// <summary>
+/// Options（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record FsOptions(
+    string? Encoding = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _encoding = System.Text.Encoding.UTF8.GetBytes("encoding");
+        var _encodingV = NativeValue.From(Encoding);
+        if (_encodingV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _encoding, _encodingV);
+    }
+}
+
+/// <summary>
+/// ReaderIterator 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ReaderIterator : JsObject
+{
+    public ReaderIterator(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _next => "next"u8;
+    /// <summary>
+    /// next
+    /// </summary>
+    public ReaderIteratorResult Next()
+    {
+        return CallMethod(_next, static h => new ReaderIteratorResult(h));
+    }
+
+}
+
+/// <summary>
+/// ReadTextOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ReadTextOptions(
+    double? Offset = null,
+    double? Length = null,
+    string? Encoding = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _offset = System.Text.Encoding.UTF8.GetBytes("offset");
+        var _offsetV = NativeValue.From(Offset);
+        if (_offsetV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
+        var _length = System.Text.Encoding.UTF8.GetBytes("length");
+        var _lengthV = NativeValue.From(Length);
+        if (_lengthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _length, _lengthV);
+        var _encoding = System.Text.Encoding.UTF8.GetBytes("encoding");
+        var _encodingV = NativeValue.From(Encoding);
+        if (_encodingV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _encoding, _encodingV);
+    }
+}
+
+/// <summary>
+/// WriteOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record WriteOptions(
+    string? Encoding = null,
+    double? Offset = null,
+    double? Length = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _encoding = System.Text.Encoding.UTF8.GetBytes("encoding");
+        var _encodingV = NativeValue.From(Encoding);
+        if (_encodingV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _encoding, _encodingV);
+        var _offset = System.Text.Encoding.UTF8.GetBytes("offset");
+        var _offsetV = NativeValue.From(Offset);
+        if (_offsetV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
+        var _length = System.Text.Encoding.UTF8.GetBytes("length");
+        var _lengthV = NativeValue.From(Length);
+        if (_lengthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _length, _lengthV);
+    }
+}
+
+/// <summary>
+/// DfsListeners 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DfsListeners : JsObject
+{
+    public DfsListeners(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _onStatus => "onStatus"u8;
+    /// <summary>
+    /// onStatus
+    /// </summary>
+    public void OnStatus(string networkId, double status)
+    {
+        CallMethodVoid(_onStatus, networkId, status);
+    }
+
+}
+
+/// <summary>
+/// ReadStream 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ReadStream : JsObject
+{
+    public ReadStream(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _ReadStream => "ReadStream"u8;
+
+    public ReadStream()
+        : this(NodeApi.CreateInstance(Fs.Module, _ReadStream)) { }
+    private static ReadOnlySpan<byte> _bytesRead => "bytesRead"u8;
+    private static ReadOnlySpan<byte> _path => "path"u8;
+    private static ReadOnlySpan<byte> _seek => "seek"u8;
+    private static ReadOnlySpan<byte> _close => "close"u8;
+    /// <summary>
+    /// bytesRead
+    /// </summary>
+    public double BytesRead => NativeValue.ToDouble(GetPropertyRaw(_bytesRead));
+
+    /// <summary>
+    /// path
+    /// </summary>
+    public string Path => NativeValue.ToString(GetPropertyRaw(_path)) ?? string.Empty;
+
+    /// <summary>
+    /// seek
+    /// </summary>
+    public double Seek(double offset, global::HarmonyOS.ArkUI.WhenceType? whence = null)
+    {
+        return CallMethod<double>(_seek, offset, whence);
+    }
+
+    /// <summary>
+    /// close
+    /// </summary>
+    public void Close()
+    {
+        CallMethodVoid(_close);
+    }
+
+}
+
+/// <summary>
+/// WriteStream 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WriteStream : JsObject
+{
+    public WriteStream(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _WriteStream => "WriteStream"u8;
+
+    public WriteStream()
+        : this(NodeApi.CreateInstance(Fs.Module, _WriteStream)) { }
+    private static ReadOnlySpan<byte> _bytesWritten => "bytesWritten"u8;
+    private static ReadOnlySpan<byte> _path => "path"u8;
+    private static ReadOnlySpan<byte> _seek => "seek"u8;
+    private static ReadOnlySpan<byte> _close => "close"u8;
+    /// <summary>
+    /// bytesWritten
+    /// </summary>
+    public double BytesWritten => NativeValue.ToDouble(GetPropertyRaw(_bytesWritten));
+
+    /// <summary>
+    /// path
+    /// </summary>
+    public string Path => NativeValue.ToString(GetPropertyRaw(_path)) ?? string.Empty;
+
+    /// <summary>
+    /// seek
+    /// </summary>
+    public double Seek(double offset, global::HarmonyOS.ArkUI.WhenceType? whence = null)
+    {
+        return CallMethod<double>(_seek, offset, whence);
+    }
+
+    /// <summary>
+    /// close
+    /// </summary>
+    public void Close()
+    {
+        CallMethodVoid(_close);
+    }
+
+}
+
+/// <summary>
+/// AtomicFile 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AtomicFile : JsObject
+{
+    public AtomicFile(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _AtomicFile => "AtomicFile"u8;
+
+    public AtomicFile(string path)
+        : this(NodeApi.CreateInstance(Fs.Module, _AtomicFile, path)) { }
+    private static ReadOnlySpan<byte> _getBaseFile => "getBaseFile"u8;
+    private static ReadOnlySpan<byte> _openRead => "openRead"u8;
+    private static ReadOnlySpan<byte> _readFully => "readFully"u8;
+    private static ReadOnlySpan<byte> _startWrite => "startWrite"u8;
+    private static ReadOnlySpan<byte> _finishWrite => "finishWrite"u8;
+    private static ReadOnlySpan<byte> _failWrite => "failWrite"u8;
+    private static ReadOnlySpan<byte> _delete => "delete"u8;
+    /// <summary>
+    /// getBaseFile
+    /// </summary>
+    public File GetBaseFile()
+    {
+        return CallMethod(_getBaseFile, static h => new File(h));
+    }
+
+    /// <summary>
+    /// openRead
+    /// </summary>
+    public ReadStream OpenRead()
+    {
+        return CallMethod(_openRead, static h => new ReadStream(h));
+    }
+
+    /// <summary>
+    /// readFully
+    /// </summary>
+    public byte[] ReadFully()
+    {
+        return CallMethod(_readFully, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)));
+    }
+
+    /// <summary>
+    /// startWrite
+    /// </summary>
+    public WriteStream StartWrite()
+    {
+        return CallMethod(_startWrite, static h => new WriteStream(h));
+    }
+
+    /// <summary>
+    /// finishWrite
+    /// </summary>
+    public void FinishWrite()
+    {
+        CallMethodVoid(_finishWrite);
+    }
+
+    /// <summary>
+    /// failWrite
+    /// </summary>
+    public void FailWrite()
+    {
+        CallMethodVoid(_failWrite);
+    }
+
+    /// <summary>
+    /// delete
+    /// </summary>
+    public void Delete()
+    {
+        CallMethodVoid(_delete);
+    }
+
+}
+
+/// <summary>
+/// WatchEvent（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record WatchEvent(
+    string FileName,
+    double Event,
+    double Cookie
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _fileName = System.Text.Encoding.UTF8.GetBytes("fileName");
+        var _fileNameV = NativeValue.From(FileName);
+        if (_fileNameV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fileName, _fileNameV);
+        var _event = System.Text.Encoding.UTF8.GetBytes("event");
+        var _eventV = NativeValue.From(Event);
+        if (_eventV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _event, _eventV);
+        var _cookie = System.Text.Encoding.UTF8.GetBytes("cookie");
+        var _cookieV = NativeValue.From(Cookie);
+        if (_cookieV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _cookie, _cookieV);
+    }
+}
+
+/// <summary>
+/// Filter（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record Filter(
+    string[]? Suffix = null,
+    string[]? DisplayName = null,
+    string[]? MimeType = null,
+    double? FileSizeOver = null,
+    double? LastModifiedAfter = null,
+    bool? ExcludeMedia = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _suffix = System.Text.Encoding.UTF8.GetBytes("suffix");
+        var _suffixV = NativeValue.From(Suffix);
+        if (_suffixV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _suffix, _suffixV);
+        var _displayName = System.Text.Encoding.UTF8.GetBytes("displayName");
+        var _displayNameV = NativeValue.From(DisplayName);
+        if (_displayNameV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _displayName, _displayNameV);
+        var _mimeType = System.Text.Encoding.UTF8.GetBytes("mimeType");
+        var _mimeTypeV = NativeValue.From(MimeType);
+        if (_mimeTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _mimeType, _mimeTypeV);
+        var _fileSizeOver = System.Text.Encoding.UTF8.GetBytes("fileSizeOver");
+        var _fileSizeOverV = NativeValue.From(FileSizeOver);
+        if (_fileSizeOverV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fileSizeOver, _fileSizeOverV);
+        var _lastModifiedAfter = System.Text.Encoding.UTF8.GetBytes("lastModifiedAfter");
+        var _lastModifiedAfterV = NativeValue.From(LastModifiedAfter);
+        if (_lastModifiedAfterV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _lastModifiedAfter, _lastModifiedAfterV);
+        var _excludeMedia = System.Text.Encoding.UTF8.GetBytes("excludeMedia");
+        var _excludeMediaV = NativeValue.From(ExcludeMedia);
+        if (_excludeMediaV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _excludeMedia, _excludeMediaV);
+    }
+}
+
+/// <summary>
+/// FileFilter 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class FileFilter : JsObject
+{
+    public FileFilter(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _filter => "filter"u8;
+    /// <summary>
+    /// filter
+    /// </summary>
+    public bool Filter(string name)
+    {
+        return CallMethod<bool>(_filter, name);
+    }
+
+}
+
+/// <summary>
+/// ReaderIteratorResult 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ReaderIteratorResult : JsObject
+{
+    public ReaderIteratorResult(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _done => "done"u8;
+    private static ReadOnlySpan<byte> _value => "value"u8;
+    /// <summary>
+    /// done
+    /// </summary>
+    public bool Done => NativeValue.ToBool(GetPropertyRaw(_done));
+
+    /// <summary>
+    /// value
+    /// </summary>
+    public string Value => NativeValue.ToString(GetPropertyRaw(_value)) ?? string.Empty;
 
 }

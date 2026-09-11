@@ -39,7 +39,7 @@ public static unsafe partial class Preferences
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -444,15 +444,15 @@ public sealed record Options(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _name = Encoding.UTF8.GetBytes("name");
+        var _name = System.Text.Encoding.UTF8.GetBytes("name");
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _dataGroupId = Encoding.UTF8.GetBytes("dataGroupId");
+        var _dataGroupId = System.Text.Encoding.UTF8.GetBytes("dataGroupId");
         var _dataGroupIdV = NativeValue.From(DataGroupId);
         if (_dataGroupIdV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _dataGroupId, _dataGroupIdV);
-        var _storageType = Encoding.UTF8.GetBytes("storageType");
+        var _storageType = System.Text.Encoding.UTF8.GetBytes("storageType");
         var _storageTypeV = NativeValue.From(StorageType);
         if (_storageTypeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _storageType, _storageTypeV);

@@ -98,9 +98,18 @@ export class AstParser {
                 // @ohos.* 模块：declare namespace xxx { const/function/enum }
                 this.parseNamespace(node, component, warnings, enums, isServiceModule);
             } else if (ts.isInterfaceDeclaration(node)) {
-                this.parseInterface(node, component, warnings);
-            } else if (ts.isClassDeclaration(node)) {
-                this.parseClass(node, component, warnings);
+                // 服务模块顶层 export interface（如 intl.LocaleOptions）→ 实例类型
+                if (isServiceModule) {
+                    component.interfaces.push(this.parseInterfaceFull(node, '', true));
+                } else {
+                    this.parseInterface(node, component, warnings);
+                }
+            } else if (ts.isClassDeclaration(node) && node.name) {
+                if (isServiceModule) {
+                    component.classes.push(this.parseClassFull(node, '', true));
+                } else {
+                    this.parseClass(node, component, warnings);
+                }
             } else if (ts.isTypeAliasDeclaration(node)) {
                 this.parseTypeAlias(node, component);
             } else if (ts.isEnumDeclaration(node)) {

@@ -40,7 +40,7 @@ public static unsafe partial class Vibrator
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -257,11 +257,11 @@ public sealed record VibratorInfoParam(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _deviceId = Encoding.UTF8.GetBytes("deviceId");
+        var _deviceId = System.Text.Encoding.UTF8.GetBytes("deviceId");
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _deviceId, _deviceIdV);
-        var _vibratorId = Encoding.UTF8.GetBytes("vibratorId");
+        var _vibratorId = System.Text.Encoding.UTF8.GetBytes("vibratorId");
         var _vibratorIdV = NativeValue.From(VibratorId);
         if (_vibratorIdV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _vibratorId, _vibratorIdV);

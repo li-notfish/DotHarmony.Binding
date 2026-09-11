@@ -39,7 +39,7 @@ public static unsafe partial class Router
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -271,7 +271,7 @@ public sealed record EnableAlertOptions(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _message = Encoding.UTF8.GetBytes("message");
+        var _message = System.Text.Encoding.UTF8.GetBytes("message");
         var _messageV = NativeValue.From(Message);
         if (_messageV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _message, _messageV);

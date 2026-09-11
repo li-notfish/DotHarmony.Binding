@@ -25,7 +25,7 @@
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
   </ItemGroup>
 
-  <!-- 灰度策略：已转正 BatteryInfo, Camera, Connection, DeviceInfo, Display, Fs, GeoLocationManager, Geolocation, Http, Image, Media, Pasteboard, Picker, Preferences, PromptAction, Request, Router, Sensor, Settings, Vibrator, Window（共 21 个）。
+  <!-- 灰度策略：已转正 AppManager, BatteryInfo, BundleManager, Camera, Connection, Curves, DataShare, DeviceInfo, Display, Font, Fs, GeoLocationManager, Geolocation, HiAppEvent, Hilog, Http, I18n, Image, InputMethod, Intl, Matrix4, Measure, Media, Mediaquery, Notification, Pasteboard, Picker, Power, Preferences, PromptAction, Radio, Request, Router, Screen, Sensor, Settings, Sms, Socket, Thermal, Uri, Url, UsbManager, Vibrator, Wallpaper, WebSocket, WifiManager, Window（共 47 个）。
        未转正模块默认不参与编译，逐个验证后加入 APPROVED_MODULES。 -->
   <ItemGroup Condition="'$(SkipGeneratedApi)' != 'false'">
 

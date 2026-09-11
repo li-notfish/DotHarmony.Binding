@@ -68,6 +68,11 @@ const takenTypeNames = new Map<string, string>();
 /** 与 System.* / 产物命名空间常用类型撞名的实例类型，强制加 Object 后缀 */
 const FORBIDDEN_CSHARP_NAMES = new Set(['Task', 'ValueTask', 'Action', 'Func', 'Attribute', 'Exception', 'Nullable']);
 
+/** TS 成员名能否映射为 C# 成员名（[Symbol.iterator]、带点号/引号的名字无法映射，直接跳过） */
+function isValidCSharpName(tsName: string): boolean {
+    return /^[A-Za-z_][A-Za-z0-9_]*$/.test(tsName);
+}
+
 const PRIMITIVE_TYPES = new Set(['bool', 'double', 'float', 'int', 'uint', 'long', 'byte', 'string', 'IntPtr']);
 
 export class ApiGenerator {
@@ -276,6 +281,7 @@ export class ApiGenerator {
         const generatedSignatures = new Set<string>();
 
         for (const method of component.methods) {
+            if (!isValidCSharpName(method.name)) continue;
             // 属性（const）
             if (method.isChained && method.parameters.length === 0) {
                 const retType = this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(method.returnType)));
@@ -462,6 +468,15 @@ export class ApiGenerator {
                 for (const p of this.wrapperMembers(spec).properties) {
                     strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
                 }
+                // 构造函数参数（输入位，如 intl.Locale(locale, options?: LocaleOptions)）：
+                // 引用的 record 必须可达才会生成
+                if (spec.cls) {
+                    for (const ctor of spec.cls.constructors) {
+                        for (const p of ctor.parameters) {
+                            strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
+                        }
+                    }
+                }
             } else {
                 // record 的属性类型也必须可达（嵌套 record/wrapper/枚举要生成）
                 const props = spec.iface ? this.mergedProperties(spec.iface) : (spec.cls?.properties ?? []);
@@ -492,6 +507,7 @@ export class ApiGenerator {
             }
             const props = s.iface ? s.iface.properties : (s.cls?.properties ?? []);
             for (const p of props) {
+                if (!isValidCSharpName(p.name)) continue;
                 if (!seenProps.has(p.name)) {
                     seenProps.add(p.name);
                     properties.push(p);
@@ -499,6 +515,7 @@ export class ApiGenerator {
             }
             const ms = s.iface ? s.iface.methods : (s.cls?.methods ?? []);
             for (const m of ms) {
+                if (!isValidCSharpName(m.name)) continue; // [Symbol.iterator] 等非标识符成员无法映射
                 // 按 名字+参数类型 去重（同名重载必须保留，否则 on 的 30 个字面量重载会被折叠成 1 个）
                 const key = `${m.name}(${m.parameters.map(p => p.type).join(',')})`;
                 if (!seenMethods.has(key)) {
@@ -607,7 +624,7 @@ export class ApiGenerator {
         lines.push('            {');
         lines.push('                foreach (var name in new[] { "=" + ModuleName, ModuleName })');
         lines.push('                {');
-        lines.push('                    var utf8 = Encoding.UTF8.GetBytes(name);');
+        lines.push('                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);');
         lines.push('                    fixed (byte* p = utf8)');
         lines.push('                    {');
         lines.push('                        var status = NativeNodeApi.napi_load_module(env, p, out var module);');
@@ -839,7 +856,7 @@ export class ApiGenerator {
         lines.push('    {');
         for (const p of mappedProps) {
             const utf8Var = this.encodePropVar(p.pascal);
-            lines.push(`        var ${utf8Var} = Encoding.UTF8.GetBytes("${p.name}");`);
+            lines.push(`        var ${utf8Var} = System.Text.Encoding.UTF8.GetBytes("${p.name}");`);
             lines.push(`        var ${utf8Var}V = NativeValue.From(${p.pascal});`);
             lines.push(`        if (${utf8Var}V != IntPtr.Zero)`);
             lines.push(`            NativeNodeApi.napi_set_named_property(env, obj, ${utf8Var}, ${utf8Var}V);`);

@@ -40,7 +40,7 @@ public static unsafe partial class Request
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -356,7 +356,7 @@ public static unsafe partial class Request
     /// <summary>
     /// search
     /// </summary>
-    public static Task<string[]> SearchAsync(Filter filter)
+    public static Task<string[]> SearchAsync(RequestFilter filter)
     {
         return NodeApi.CallMethodAsync(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), filter);
     }
@@ -779,7 +779,7 @@ public sealed partial class UploadTask : JsObject
 /// <summary>
 /// Filter（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record Filter(
+public sealed record RequestFilter(
     double? Before = null,
     double? After = null,
     global::HarmonyOS.ArkUI.State? State = null,
@@ -789,23 +789,23 @@ public sealed record Filter(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _before = Encoding.UTF8.GetBytes("before");
+        var _before = System.Text.Encoding.UTF8.GetBytes("before");
         var _beforeV = NativeValue.From(Before);
         if (_beforeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _before, _beforeV);
-        var _after = Encoding.UTF8.GetBytes("after");
+        var _after = System.Text.Encoding.UTF8.GetBytes("after");
         var _afterV = NativeValue.From(After);
         if (_afterV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _after, _afterV);
-        var _state = Encoding.UTF8.GetBytes("state");
+        var _state = System.Text.Encoding.UTF8.GetBytes("state");
         var _stateV = NativeValue.From(State);
         if (_stateV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _state, _stateV);
-        var _action = Encoding.UTF8.GetBytes("action");
+        var _action = System.Text.Encoding.UTF8.GetBytes("action");
         var _actionV = NativeValue.From(Action);
         if (_actionV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _action, _actionV);
-        var _mode = Encoding.UTF8.GetBytes("mode");
+        var _mode = System.Text.Encoding.UTF8.GetBytes("mode");
         var _modeV = NativeValue.From(Mode);
         if (_modeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _mode, _modeV);

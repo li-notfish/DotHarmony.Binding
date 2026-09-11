@@ -40,7 +40,7 @@ public static unsafe partial class GeoLocationManager
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -754,23 +754,23 @@ public sealed record GeoLocationManagerLocationRequest(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _priority = Encoding.UTF8.GetBytes("priority");
+        var _priority = System.Text.Encoding.UTF8.GetBytes("priority");
         var _priorityV = NativeValue.From(Priority);
         if (_priorityV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _priority, _priorityV);
-        var _scenario = Encoding.UTF8.GetBytes("scenario");
+        var _scenario = System.Text.Encoding.UTF8.GetBytes("scenario");
         var _scenarioV = NativeValue.From(Scenario);
         if (_scenarioV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _scenario, _scenarioV);
-        var _timeInterval = Encoding.UTF8.GetBytes("timeInterval");
+        var _timeInterval = System.Text.Encoding.UTF8.GetBytes("timeInterval");
         var _timeIntervalV = NativeValue.From(TimeInterval);
         if (_timeIntervalV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _timeInterval, _timeIntervalV);
-        var _distanceInterval = Encoding.UTF8.GetBytes("distanceInterval");
+        var _distanceInterval = System.Text.Encoding.UTF8.GetBytes("distanceInterval");
         var _distanceIntervalV = NativeValue.From(DistanceInterval);
         if (_distanceIntervalV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _distanceInterval, _distanceIntervalV);
-        var _maxAccuracy = Encoding.UTF8.GetBytes("maxAccuracy");
+        var _maxAccuracy = System.Text.Encoding.UTF8.GetBytes("maxAccuracy");
         var _maxAccuracyV = NativeValue.From(MaxAccuracy);
         if (_maxAccuracyV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _maxAccuracy, _maxAccuracyV);
@@ -787,11 +787,11 @@ public sealed record GeoLocationManagerCachedGnssLocationsRequest(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _reportingPeriodSec = Encoding.UTF8.GetBytes("reportingPeriodSec");
+        var _reportingPeriodSec = System.Text.Encoding.UTF8.GetBytes("reportingPeriodSec");
         var _reportingPeriodSecV = NativeValue.From(ReportingPeriodSec);
         if (_reportingPeriodSecV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _reportingPeriodSec, _reportingPeriodSecV);
-        var _wakeUpCacheQueueFull = Encoding.UTF8.GetBytes("wakeUpCacheQueueFull");
+        var _wakeUpCacheQueueFull = System.Text.Encoding.UTF8.GetBytes("wakeUpCacheQueueFull");
         var _wakeUpCacheQueueFullV = NativeValue.From(WakeUpCacheQueueFull);
         if (_wakeUpCacheQueueFullV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _wakeUpCacheQueueFull, _wakeUpCacheQueueFullV);
@@ -808,11 +808,11 @@ public sealed record GeoLocationManagerGeofenceRequest(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _scenario = Encoding.UTF8.GetBytes("scenario");
+        var _scenario = System.Text.Encoding.UTF8.GetBytes("scenario");
         var _scenarioV = NativeValue.From(Scenario);
         if (_scenarioV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _scenario, _scenarioV);
-        var _geofence = Encoding.UTF8.GetBytes("geofence");
+        var _geofence = System.Text.Encoding.UTF8.GetBytes("geofence");
         var _geofenceV = NativeValue.From(Geofence);
         if (_geofenceV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _geofence, _geofenceV);
@@ -831,19 +831,19 @@ public sealed record GeoLocationManagerCurrentLocationRequest(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _priority = Encoding.UTF8.GetBytes("priority");
+        var _priority = System.Text.Encoding.UTF8.GetBytes("priority");
         var _priorityV = NativeValue.From(Priority);
         if (_priorityV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _priority, _priorityV);
-        var _scenario = Encoding.UTF8.GetBytes("scenario");
+        var _scenario = System.Text.Encoding.UTF8.GetBytes("scenario");
         var _scenarioV = NativeValue.From(Scenario);
         if (_scenarioV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _scenario, _scenarioV);
-        var _maxAccuracy = Encoding.UTF8.GetBytes("maxAccuracy");
+        var _maxAccuracy = System.Text.Encoding.UTF8.GetBytes("maxAccuracy");
         var _maxAccuracyV = NativeValue.From(MaxAccuracy);
         if (_maxAccuracyV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _maxAccuracy, _maxAccuracyV);
-        var _timeoutMs = Encoding.UTF8.GetBytes("timeoutMs");
+        var _timeoutMs = System.Text.Encoding.UTF8.GetBytes("timeoutMs");
         var _timeoutMsV = NativeValue.From(TimeoutMs);
         if (_timeoutMsV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _timeoutMs, _timeoutMsV);
@@ -980,23 +980,23 @@ public sealed record GeoLocationManagerReverseGeoCodeRequest(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _locale = Encoding.UTF8.GetBytes("locale");
+        var _locale = System.Text.Encoding.UTF8.GetBytes("locale");
         var _localeV = NativeValue.From(Locale);
         if (_localeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _locale, _localeV);
-        var _country = Encoding.UTF8.GetBytes("country");
+        var _country = System.Text.Encoding.UTF8.GetBytes("country");
         var _countryV = NativeValue.From(Country);
         if (_countryV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _country, _countryV);
-        var _latitude = Encoding.UTF8.GetBytes("latitude");
+        var _latitude = System.Text.Encoding.UTF8.GetBytes("latitude");
         var _latitudeV = NativeValue.From(Latitude);
         if (_latitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
-        var _longitude = Encoding.UTF8.GetBytes("longitude");
+        var _longitude = System.Text.Encoding.UTF8.GetBytes("longitude");
         var _longitudeV = NativeValue.From(Longitude);
         if (_longitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
-        var _maxItems = Encoding.UTF8.GetBytes("maxItems");
+        var _maxItems = System.Text.Encoding.UTF8.GetBytes("maxItems");
         var _maxItemsV = NativeValue.From(MaxItems);
         if (_maxItemsV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _maxItems, _maxItemsV);
@@ -1019,35 +1019,35 @@ public sealed record GeoLocationManagerGeoCodeRequest(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _locale = Encoding.UTF8.GetBytes("locale");
+        var _locale = System.Text.Encoding.UTF8.GetBytes("locale");
         var _localeV = NativeValue.From(Locale);
         if (_localeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _locale, _localeV);
-        var _country = Encoding.UTF8.GetBytes("country");
+        var _country = System.Text.Encoding.UTF8.GetBytes("country");
         var _countryV = NativeValue.From(Country);
         if (_countryV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _country, _countryV);
-        var _description = Encoding.UTF8.GetBytes("description");
+        var _description = System.Text.Encoding.UTF8.GetBytes("description");
         var _descriptionV = NativeValue.From(Description);
         if (_descriptionV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _description, _descriptionV);
-        var _maxItems = Encoding.UTF8.GetBytes("maxItems");
+        var _maxItems = System.Text.Encoding.UTF8.GetBytes("maxItems");
         var _maxItemsV = NativeValue.From(MaxItems);
         if (_maxItemsV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _maxItems, _maxItemsV);
-        var _minLatitude = Encoding.UTF8.GetBytes("minLatitude");
+        var _minLatitude = System.Text.Encoding.UTF8.GetBytes("minLatitude");
         var _minLatitudeV = NativeValue.From(MinLatitude);
         if (_minLatitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _minLatitude, _minLatitudeV);
-        var _minLongitude = Encoding.UTF8.GetBytes("minLongitude");
+        var _minLongitude = System.Text.Encoding.UTF8.GetBytes("minLongitude");
         var _minLongitudeV = NativeValue.From(MinLongitude);
         if (_minLongitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _minLongitude, _minLongitudeV);
-        var _maxLatitude = Encoding.UTF8.GetBytes("maxLatitude");
+        var _maxLatitude = System.Text.Encoding.UTF8.GetBytes("maxLatitude");
         var _maxLatitudeV = NativeValue.From(MaxLatitude);
         if (_maxLatitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _maxLatitude, _maxLatitudeV);
-        var _maxLongitude = Encoding.UTF8.GetBytes("maxLongitude");
+        var _maxLongitude = System.Text.Encoding.UTF8.GetBytes("maxLongitude");
         var _maxLongitudeV = NativeValue.From(MaxLongitude);
         if (_maxLongitudeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _maxLongitude, _maxLongitudeV);
@@ -1064,11 +1064,11 @@ public sealed record GeoLocationManagerLocationCommand(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _scenario = Encoding.UTF8.GetBytes("scenario");
+        var _scenario = System.Text.Encoding.UTF8.GetBytes("scenario");
         var _scenarioV = NativeValue.From(Scenario);
         if (_scenarioV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _scenario, _scenarioV);
-        var _command = Encoding.UTF8.GetBytes("command");
+        var _command = System.Text.Encoding.UTF8.GetBytes("command");
         var _commandV = NativeValue.From(Command);
         if (_commandV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _command, _commandV);
@@ -1146,15 +1146,15 @@ public sealed record BeaconFence(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _identifier = Encoding.UTF8.GetBytes("identifier");
+        var _identifier = System.Text.Encoding.UTF8.GetBytes("identifier");
         var _identifierV = NativeValue.From(Identifier);
         if (_identifierV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _identifier, _identifierV);
-        var _beaconFenceInfoType = Encoding.UTF8.GetBytes("beaconFenceInfoType");
+        var _beaconFenceInfoType = System.Text.Encoding.UTF8.GetBytes("beaconFenceInfoType");
         var _beaconFenceInfoTypeV = NativeValue.From(BeaconFenceInfoType);
         if (_beaconFenceInfoTypeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _beaconFenceInfoType, _beaconFenceInfoTypeV);
-        var _manufactureData = Encoding.UTF8.GetBytes("manufactureData");
+        var _manufactureData = System.Text.Encoding.UTF8.GetBytes("manufactureData");
         var _manufactureDataV = NativeValue.From(ManufactureData);
         if (_manufactureDataV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _manufactureData, _manufactureDataV);
@@ -1243,11 +1243,11 @@ public sealed record DistrictRequestParams(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _locale = Encoding.UTF8.GetBytes("locale");
+        var _locale = System.Text.Encoding.UTF8.GetBytes("locale");
         var _localeV = NativeValue.From(Locale);
         if (_localeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _locale, _localeV);
-        var _timeoutMs = Encoding.UTF8.GetBytes("timeoutMs");
+        var _timeoutMs = System.Text.Encoding.UTF8.GetBytes("timeoutMs");
         var _timeoutMsV = NativeValue.From(TimeoutMs);
         if (_timeoutMsV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _timeoutMs, _timeoutMsV);
@@ -1264,11 +1264,11 @@ public sealed record BluetoothSearchRequestParams(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _deviceIdArray = Encoding.UTF8.GetBytes("deviceIdArray");
+        var _deviceIdArray = System.Text.Encoding.UTF8.GetBytes("deviceIdArray");
         var _deviceIdArrayV = NativeValue.From(DeviceIdArray);
         if (_deviceIdArrayV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _deviceIdArray, _deviceIdArrayV);
-        var _rssiThreshold = Encoding.UTF8.GetBytes("rssiThreshold");
+        var _rssiThreshold = System.Text.Encoding.UTF8.GetBytes("rssiThreshold");
         var _rssiThresholdV = NativeValue.From(RssiThreshold);
         if (_rssiThresholdV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _rssiThreshold, _rssiThresholdV);
@@ -1382,15 +1382,15 @@ public sealed record BeaconManufactureData(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _manufactureId = Encoding.UTF8.GetBytes("manufactureId");
+        var _manufactureId = System.Text.Encoding.UTF8.GetBytes("manufactureId");
         var _manufactureIdV = NativeValue.From(ManufactureId);
         if (_manufactureIdV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _manufactureId, _manufactureIdV);
-        var _manufactureData = Encoding.UTF8.GetBytes("manufactureData");
+        var _manufactureData = System.Text.Encoding.UTF8.GetBytes("manufactureData");
         var _manufactureDataV = NativeValue.From(ManufactureData);
         if (_manufactureDataV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _manufactureData, _manufactureDataV);
-        var _manufactureDataMask = Encoding.UTF8.GetBytes("manufactureDataMask");
+        var _manufactureDataMask = System.Text.Encoding.UTF8.GetBytes("manufactureDataMask");
         var _manufactureDataMaskV = NativeValue.From(ManufactureDataMask);
         if (_manufactureDataMaskV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _manufactureDataMask, _manufactureDataMaskV);

@@ -40,7 +40,7 @@ public static unsafe partial class Connection
             {
                 foreach (var name in new[] { "=" + ModuleName, ModuleName })
                 {
-                    var utf8 = Encoding.UTF8.GetBytes(name);
+                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
@@ -659,11 +659,11 @@ public sealed record NetSpecifier(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _netCapabilities = Encoding.UTF8.GetBytes("netCapabilities");
+        var _netCapabilities = System.Text.Encoding.UTF8.GetBytes("netCapabilities");
         var _netCapabilitiesV = NativeValue.From(NetCapabilities);
         if (_netCapabilitiesV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _netCapabilities, _netCapabilitiesV);
-        var _bearerPrivateIdentifier = Encoding.UTF8.GetBytes("bearerPrivateIdentifier");
+        var _bearerPrivateIdentifier = System.Text.Encoding.UTF8.GetBytes("bearerPrivateIdentifier");
         var _bearerPrivateIdentifierV = NativeValue.From(BearerPrivateIdentifier);
         if (_bearerPrivateIdentifierV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _bearerPrivateIdentifier, _bearerPrivateIdentifierV);
@@ -790,7 +790,7 @@ public sealed record QueryOptions(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _family = Encoding.UTF8.GetBytes("family");
+        var _family = System.Text.Encoding.UTF8.GetBytes("family");
         var _familyV = NativeValue.From(Family);
         if (_familyV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _family, _familyV);
@@ -900,11 +900,11 @@ public sealed record TraceRouteOptions(
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _maxJumpNumber = Encoding.UTF8.GetBytes("maxJumpNumber");
+        var _maxJumpNumber = System.Text.Encoding.UTF8.GetBytes("maxJumpNumber");
         var _maxJumpNumberV = NativeValue.From(MaxJumpNumber);
         if (_maxJumpNumberV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _maxJumpNumber, _maxJumpNumberV);
-        var _packetsType = Encoding.UTF8.GetBytes("packetsType");
+        var _packetsType = System.Text.Encoding.UTF8.GetBytes("packetsType");
         var _packetsTypeV = NativeValue.From(PacketsType);
         if (_packetsTypeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _packetsType, _packetsTypeV);
