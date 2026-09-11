@@ -694,6 +694,22 @@ const APPROVED_MODULES = new Set([
     'Display',
     'Settings',
     'Vibrator',
+    // M2.3 全部转正
+    'Camera',
+    'Connection',
+    'Fs',
+    'Geolocation',
+    'Http',
+    'Image',
+    'Media',
+    'Pasteboard',
+    'Picker',
+    'Preferences',
+    'PromptAction',
+    'Request',
+    'Router',
+    'Sensor',
+    'Window',
 ]);
 
 /**
