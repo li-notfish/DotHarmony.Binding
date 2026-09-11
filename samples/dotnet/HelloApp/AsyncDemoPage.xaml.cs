@@ -22,6 +22,10 @@ public partial class AsyncDemoPage : ContentPage
         {
             ResultLabel.Text = $"ArkTS Error: {ex.Reason}";
         }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"Error: {ex.GetType().Name}: {ex.Message}";
+        }
     }
 
     private async void OnTestPromiseDouble(object? sender, EventArgs e)
@@ -34,6 +38,10 @@ public partial class AsyncDemoPage : ContentPage
         catch (ArkTSException ex)
         {
             ResultLabel.Text = $"ArkTS Error: {ex.Reason}";
+        }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"Error: {ex.GetType().Name}: {ex.Message}";
         }
     }
 
@@ -48,6 +56,10 @@ public partial class AsyncDemoPage : ContentPage
         {
             ResultLabel.Text = $"ArkTS Error: {ex.Reason}";
         }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"Error: {ex.GetType().Name}: {ex.Message}";
+        }
     }
 
     private async void OnTestPromiseInt(object? sender, EventArgs e)
@@ -60,6 +72,10 @@ public partial class AsyncDemoPage : ContentPage
         catch (ArkTSException ex)
         {
             ResultLabel.Text = $"ArkTS Error: {ex.Reason}";
+        }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"Error: {ex.GetType().Name}: {ex.Message}";
         }
     }
 
@@ -76,6 +92,10 @@ public partial class AsyncDemoPage : ContentPage
         {
             ResultLabel.Text = $"ArkTS Error: {ex.Reason}";
         }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"Error: {ex.GetType().Name}: {ex.Message}";
+        }
     }
 
     private async void OnTestPromiseLong(object? sender, EventArgs e)
@@ -88,6 +108,10 @@ public partial class AsyncDemoPage : ContentPage
         catch (ArkTSException ex)
         {
             ResultLabel.Text = $"ArkTS Error: {ex.Reason}";
+        }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"Error: {ex.GetType().Name}: {ex.Message}";
         }
     }
 
@@ -102,6 +126,10 @@ public partial class AsyncDemoPage : ContentPage
         {
             ResultLabel.Text = $"ArkTS Error: {ex.Reason}";
         }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"Error: {ex.GetType().Name}: {ex.Message}";
+        }
     }
 
     private async void OnTestPromiseVoid(object? sender, EventArgs e)
@@ -114,6 +142,10 @@ public partial class AsyncDemoPage : ContentPage
         catch (ArkTSException ex)
         {
             ResultLabel.Text = $"ArkTS Error: {ex.Reason}";
+        }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"Error: {ex.GetType().Name}: {ex.Message}";
         }
     }
 
@@ -129,6 +161,10 @@ public partial class AsyncDemoPage : ContentPage
         catch (ArkTSException ex)
         {
             ResultLabel.Text = $"ArkTS Error caught: {ex.Reason}\nFull message: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"Error: {ex.GetType().Name}: {ex.Message}";
         }
     }
 }

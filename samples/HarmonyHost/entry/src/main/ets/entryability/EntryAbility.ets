@@ -7,6 +7,14 @@ const TAG: string = 'HarmonyHost';
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, TAG, 'Ability onCreate');
+    // .NET 侧 Promise 桥测试用的全局函数：
+    // somePromiseApi → resolve(number)；willFail → reject(string reason)
+    globalThis.somePromiseApi = (): Promise<number> => {
+      return new Promise<number>((resolve) => { resolve(42); });
+    };
+    globalThis.willFail = (): Promise<string> => {
+      return new Promise<string>((_, reject) => { reject('intentional failure for test'); });
+    };
   }
 
   onDestroy(): void {

@@ -89,7 +89,7 @@
 > - 最小切片：`Promise<T>`→`Task<T>` 映射接通（TypeMapper + CodeGenerator + 47/47 测试）
 > - AsyncCallback 支持：`(result: T, err?: Error) => void` → `Task<T>` parser + 生成器
 > 2.2 已完成——using 生成、CallMethodVoid 重载、方法折叠、Promise→Task 映射。
-> 端到端模拟器验证待手动执行。
+> ~~端到端模拟器验证待手动执行。~~ → **2026-09-12 已实测通过**（见 2.7）。
 
 
 ### 2.1 TSFN 异步层（大，M2 的核心难点）——✅ 最小实验已通过；✅ .NET 风格标准化已落地
@@ -108,7 +108,14 @@
 - `JsMap<TKey,TValue>` 活视图：map.get/set/has/delete + entries() 迭代器协议；`Map<number, Geofence>` → `Task<JsMap<double, Geofence>>`（PILOT_MODULES 增加 @ohos.geoLocationManager）
 - 完整 .NET 事件模型：199 个事件访问器（`Display.Change += handler`），add/remove 经 `EventListenerRegistry` 配对 on/off（JS off 按函数实例匹配，GCHandle/napi_ref 生命周期托管）；类型化 `On(type, Action<T>)` 重载；单一共享 `ArgsTrampoline`（Action<IntPtr[]>）+ 生成器调用点适配器，任意回调形状 AOT 安全
 - 明确不做：Set 容器（试点 0 使用）、DataView、Int32Array 等精确 TypedArray 类型（一律按字节拷贝，有损）、BigInt words 全精度、NativeCallbacks 反射兜底的替换
-- 待手动验证：模拟器端到端（事件触发、ArrayBuffer 读写、Map 迭代）
+- ~~待手动验证：模拟器端到端（事件触发、ArrayBuffer 读写、Map 迭代）~~ → 见 2.7（事件订阅/退订回路已实测；ArrayBuffer 读写、Map 迭代仍待专项用例）
+
+**2.7 端到端模拟器验证（2026-09-12 完成，x86_64 模拟器 / API 26）**：
+- 全链路：generator 重出 → WSL NativeAOT 双架构 libapp.so → hvigor HAP → hdc 部署 → 实机点击验证
+- 实测通过：`napi_load_module` 各模块加载；同步属性（DeviceInfo Brand/Model/OsFullName=OpenHarmony-7.0.0.105）；Promise→Task 全类型桥（string/double/bool/int/uint/void/reject——reject 正确抛 `ArkTSException` 携带 reason）；wrapper 属性 await 后可读（`GetDefaultDisplayAsync()` → 1320x2856 @560dpi）；`.NET event` 订阅/退订回路（Display.Change +=/-=）
+- **实测修复 1**：生成器注入 `$string:permission_XXX_reason` 但从不写 string.json 资源 → hvigor CompileResource 直接失败；`writeModuleJson5Permissions` 现同步写 32 条 reason 字符串（merge 保留既有条目）
+- **实测修复 2（架构级）**：PromiseTaskBridge 原用 `RunContinuationsAsynchronously` + `ContinueWith` 把续体调度到线程池——wrapper 结果 await 后访问属性时 `NapiEnv.Current`（[ThreadStatic]）无 env 直接抛异常。改为 TCS 同步续体：Promise resolve 的 trampoline 在 JS 线程内联执行用户续体（与 JS await 微任务语义一致）；副作用：用户续体长耗时工作须自行 `Task.Run` 切走
+- **实测修复 3**：`async void` 事件处理器仅 catch `ArkTSException`，其它异常（如调用不存在的 JS 函数）未处理直接杀进程；samples 兜底 `catch (Exception)`，宿主 EntryAbility 补 `globalThis.somePromiseApi/willFail` 测试函数
 
 **最小实验结论**（2026-09-11，模拟器，HelloApp "TSFN test" 按钮 / `Runtime/TsfnExperiment.cs`）：
 - `CallJsTrampoline` 已实装（原为空壳）：context 解析回 ThreadSafeFunction 实例，转发 `OnCallJs`
