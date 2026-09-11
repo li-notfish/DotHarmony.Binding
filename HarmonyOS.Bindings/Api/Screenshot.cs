@@ -96,15 +96,15 @@ public sealed record CaptureOption(
     double[]? BlackWindowIds = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _displayIdName => "displayId"u8;
+    private static ReadOnlySpan<byte> _blackWindowIdsName => "blackWindowIds"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _displayId = System.Text.Encoding.UTF8.GetBytes("displayId");
         var _displayIdV = NativeValue.From(DisplayId);
         if (_displayIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayId, _displayIdV);
-        var _blackWindowIds = System.Text.Encoding.UTF8.GetBytes("blackWindowIds");
+            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV);
         var _blackWindowIdsV = NativeValue.From(BlackWindowIds);
         if (_blackWindowIdsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _blackWindowIds, _blackWindowIdsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _blackWindowIdsName, _blackWindowIdsV);
     }
 }

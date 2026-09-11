@@ -358,19 +358,19 @@ public sealed record SsapServerResponse(
     byte[] Value
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _addressName => "address"u8;
+    private static ReadOnlySpan<byte> _requestIdName => "requestId"u8;
+    private static ReadOnlySpan<byte> _valueName => "value"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _address = System.Text.Encoding.UTF8.GetBytes("address");
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _address, _addressV);
-        var _requestId = System.Text.Encoding.UTF8.GetBytes("requestId");
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
         var _requestIdV = NativeValue.From(RequestId);
         if (_requestIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _requestId, _requestIdV);
-        var _value = System.Text.Encoding.UTF8.GetBytes("value");
+            NativeNodeApi.napi_set_named_property(env, obj, _requestIdName, _requestIdV);
         var _valueV = NativeValue.From(Value);
         if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _value, _valueV);
+            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
     }
 }

@@ -123,15 +123,15 @@ public sealed record PolicyInfo(
     double OperationMode
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _uriName => "uri"u8;
+    private static ReadOnlySpan<byte> _operationModeName => "operationMode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _uri = System.Text.Encoding.UTF8.GetBytes("uri");
         var _uriV = NativeValue.From(Uri);
         if (_uriV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uri, _uriV);
-        var _operationMode = System.Text.Encoding.UTF8.GetBytes("operationMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _uriName, _uriV);
         var _operationModeV = NativeValue.From(OperationMode);
         if (_operationModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _operationMode, _operationModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _operationModeName, _operationModeV);
     }
 }

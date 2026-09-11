@@ -455,32 +455,32 @@ public sealed record PrintAttributes(
     global::HarmonyOS.ArkUI.PrintDuplexMode? DuplexMode = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _copyNumberName => "copyNumber"u8;
+    private static ReadOnlySpan<byte> _pageRangeName => "pageRange"u8;
+    private static ReadOnlySpan<byte> _pageSizeName => "pageSize"u8;
+    private static ReadOnlySpan<byte> _directionModeName => "directionMode"u8;
+    private static ReadOnlySpan<byte> _colorModeName => "colorMode"u8;
+    private static ReadOnlySpan<byte> _duplexModeName => "duplexMode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _copyNumber = System.Text.Encoding.UTF8.GetBytes("copyNumber");
         var _copyNumberV = NativeValue.From(CopyNumber);
         if (_copyNumberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _copyNumber, _copyNumberV);
-        var _pageRange = System.Text.Encoding.UTF8.GetBytes("pageRange");
+            NativeNodeApi.napi_set_named_property(env, obj, _copyNumberName, _copyNumberV);
         var _pageRangeV = NativeValue.From(PageRange);
         if (_pageRangeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageRange, _pageRangeV);
-        var _pageSize = System.Text.Encoding.UTF8.GetBytes("pageSize");
+            NativeNodeApi.napi_set_named_property(env, obj, _pageRangeName, _pageRangeV);
         var _pageSizeV = NativeValue.From(PageSize);
         if (_pageSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSize, _pageSizeV);
-        var _directionMode = System.Text.Encoding.UTF8.GetBytes("directionMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSizeName, _pageSizeV);
         var _directionModeV = NativeValue.From(DirectionMode);
         if (_directionModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _directionMode, _directionModeV);
-        var _colorMode = System.Text.Encoding.UTF8.GetBytes("colorMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _directionModeName, _directionModeV);
         var _colorModeV = NativeValue.From(ColorMode);
         if (_colorModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _colorMode, _colorModeV);
-        var _duplexMode = System.Text.Encoding.UTF8.GetBytes("duplexMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _colorModeName, _colorModeV);
         var _duplexModeV = NativeValue.From(DuplexMode);
         if (_duplexModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _duplexMode, _duplexModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _duplexModeName, _duplexModeV);
     }
 }
 
@@ -511,92 +511,92 @@ public sealed record PrintJobData(
     string? VendorOptions = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _printerIdName => "printerId"u8;
+    private static ReadOnlySpan<byte> _jobNameName => "jobName"u8;
+    private static ReadOnlySpan<byte> _documentFormatName => "documentFormat"u8;
+    private static ReadOnlySpan<byte> _docFlavorName => "docFlavor"u8;
+    private static ReadOnlySpan<byte> _copyNumberName => "copyNumber"u8;
+    private static ReadOnlySpan<byte> _isLandscapeName => "isLandscape"u8;
+    private static ReadOnlySpan<byte> _colorModeName => "colorMode"u8;
+    private static ReadOnlySpan<byte> _duplexModeName => "duplexMode"u8;
+    private static ReadOnlySpan<byte> _pageSizeName => "pageSize"u8;
+    private static ReadOnlySpan<byte> _jobIdName => "jobId"u8;
+    private static ReadOnlySpan<byte> _fdListName => "fdList"u8;
+    private static ReadOnlySpan<byte> _binaryDataName => "binaryData"u8;
+    private static ReadOnlySpan<byte> _printQualityName => "printQuality"u8;
+    private static ReadOnlySpan<byte> _mediaTypeName => "mediaType"u8;
+    private static ReadOnlySpan<byte> _isBorderlessName => "isBorderless"u8;
+    private static ReadOnlySpan<byte> _isAutoRotateName => "isAutoRotate"u8;
+    private static ReadOnlySpan<byte> _isReverseName => "isReverse"u8;
+    private static ReadOnlySpan<byte> _isCollateName => "isCollate"u8;
+    private static ReadOnlySpan<byte> _isSequentialName => "isSequential"u8;
+    private static ReadOnlySpan<byte> _optionsName => "options"u8;
+    private static ReadOnlySpan<byte> _vendorOptionsName => "vendorOptions"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _printerId = System.Text.Encoding.UTF8.GetBytes("printerId");
         var _printerIdV = NativeValue.From(PrinterId);
         if (_printerIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _printerId, _printerIdV);
-        var _jobName = System.Text.Encoding.UTF8.GetBytes("jobName");
+            NativeNodeApi.napi_set_named_property(env, obj, _printerIdName, _printerIdV);
         var _jobNameV = NativeValue.From(JobName);
         if (_jobNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _jobName, _jobNameV);
-        var _documentFormat = System.Text.Encoding.UTF8.GetBytes("documentFormat");
+            NativeNodeApi.napi_set_named_property(env, obj, _jobNameName, _jobNameV);
         var _documentFormatV = NativeValue.From(DocumentFormat);
         if (_documentFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _documentFormat, _documentFormatV);
-        var _docFlavor = System.Text.Encoding.UTF8.GetBytes("docFlavor");
+            NativeNodeApi.napi_set_named_property(env, obj, _documentFormatName, _documentFormatV);
         var _docFlavorV = NativeValue.From(DocFlavor);
         if (_docFlavorV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _docFlavor, _docFlavorV);
-        var _copyNumber = System.Text.Encoding.UTF8.GetBytes("copyNumber");
+            NativeNodeApi.napi_set_named_property(env, obj, _docFlavorName, _docFlavorV);
         var _copyNumberV = NativeValue.From(CopyNumber);
         if (_copyNumberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _copyNumber, _copyNumberV);
-        var _isLandscape = System.Text.Encoding.UTF8.GetBytes("isLandscape");
+            NativeNodeApi.napi_set_named_property(env, obj, _copyNumberName, _copyNumberV);
         var _isLandscapeV = NativeValue.From(IsLandscape);
         if (_isLandscapeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isLandscape, _isLandscapeV);
-        var _colorMode = System.Text.Encoding.UTF8.GetBytes("colorMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _isLandscapeName, _isLandscapeV);
         var _colorModeV = NativeValue.From(ColorMode);
         if (_colorModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _colorMode, _colorModeV);
-        var _duplexMode = System.Text.Encoding.UTF8.GetBytes("duplexMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _colorModeName, _colorModeV);
         var _duplexModeV = NativeValue.From(DuplexMode);
         if (_duplexModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _duplexMode, _duplexModeV);
-        var _pageSize = System.Text.Encoding.UTF8.GetBytes("pageSize");
+            NativeNodeApi.napi_set_named_property(env, obj, _duplexModeName, _duplexModeV);
         var _pageSizeV = NativeValue.From(PageSize);
         if (_pageSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSize, _pageSizeV);
-        var _jobId = System.Text.Encoding.UTF8.GetBytes("jobId");
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSizeName, _pageSizeV);
         var _jobIdV = NativeValue.From(JobId);
         if (_jobIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _jobId, _jobIdV);
-        var _fdList = System.Text.Encoding.UTF8.GetBytes("fdList");
+            NativeNodeApi.napi_set_named_property(env, obj, _jobIdName, _jobIdV);
         var _fdListV = NativeValue.From(FdList);
         if (_fdListV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fdList, _fdListV);
-        var _binaryData = System.Text.Encoding.UTF8.GetBytes("binaryData");
+            NativeNodeApi.napi_set_named_property(env, obj, _fdListName, _fdListV);
         var _binaryDataV = NativeValue.From(BinaryData);
         if (_binaryDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _binaryData, _binaryDataV);
-        var _printQuality = System.Text.Encoding.UTF8.GetBytes("printQuality");
+            NativeNodeApi.napi_set_named_property(env, obj, _binaryDataName, _binaryDataV);
         var _printQualityV = NativeValue.From(PrintQuality);
         if (_printQualityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _printQuality, _printQualityV);
-        var _mediaType = System.Text.Encoding.UTF8.GetBytes("mediaType");
+            NativeNodeApi.napi_set_named_property(env, obj, _printQualityName, _printQualityV);
         var _mediaTypeV = NativeValue.From(MediaType);
         if (_mediaTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mediaType, _mediaTypeV);
-        var _isBorderless = System.Text.Encoding.UTF8.GetBytes("isBorderless");
+            NativeNodeApi.napi_set_named_property(env, obj, _mediaTypeName, _mediaTypeV);
         var _isBorderlessV = NativeValue.From(IsBorderless);
         if (_isBorderlessV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isBorderless, _isBorderlessV);
-        var _isAutoRotate = System.Text.Encoding.UTF8.GetBytes("isAutoRotate");
+            NativeNodeApi.napi_set_named_property(env, obj, _isBorderlessName, _isBorderlessV);
         var _isAutoRotateV = NativeValue.From(IsAutoRotate);
         if (_isAutoRotateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isAutoRotate, _isAutoRotateV);
-        var _isReverse = System.Text.Encoding.UTF8.GetBytes("isReverse");
+            NativeNodeApi.napi_set_named_property(env, obj, _isAutoRotateName, _isAutoRotateV);
         var _isReverseV = NativeValue.From(IsReverse);
         if (_isReverseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isReverse, _isReverseV);
-        var _isCollate = System.Text.Encoding.UTF8.GetBytes("isCollate");
+            NativeNodeApi.napi_set_named_property(env, obj, _isReverseName, _isReverseV);
         var _isCollateV = NativeValue.From(IsCollate);
         if (_isCollateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isCollate, _isCollateV);
-        var _isSequential = System.Text.Encoding.UTF8.GetBytes("isSequential");
+            NativeNodeApi.napi_set_named_property(env, obj, _isCollateName, _isCollateV);
         var _isSequentialV = NativeValue.From(IsSequential);
         if (_isSequentialV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isSequential, _isSequentialV);
-        var _options = System.Text.Encoding.UTF8.GetBytes("options");
+            NativeNodeApi.napi_set_named_property(env, obj, _isSequentialName, _isSequentialV);
         var _optionsV = NativeValue.From(Options);
         if (_optionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _options, _optionsV);
-        var _vendorOptions = System.Text.Encoding.UTF8.GetBytes("vendorOptions");
+            NativeNodeApi.napi_set_named_property(env, obj, _optionsName, _optionsV);
         var _vendorOptionsV = NativeValue.From(VendorOptions);
         if (_vendorOptionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _vendorOptions, _vendorOptionsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _vendorOptionsName, _vendorOptionsV);
     }
 }
 
@@ -690,20 +690,20 @@ public sealed record PrintPageRange(
     double[]? Pages = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _startPageName => "startPage"u8;
+    private static ReadOnlySpan<byte> _endPageName => "endPage"u8;
+    private static ReadOnlySpan<byte> _pagesName => "pages"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _startPage = System.Text.Encoding.UTF8.GetBytes("startPage");
         var _startPageV = NativeValue.From(StartPage);
         if (_startPageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _startPage, _startPageV);
-        var _endPage = System.Text.Encoding.UTF8.GetBytes("endPage");
+            NativeNodeApi.napi_set_named_property(env, obj, _startPageName, _startPageV);
         var _endPageV = NativeValue.From(EndPage);
         if (_endPageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _endPage, _endPageV);
-        var _pages = System.Text.Encoding.UTF8.GetBytes("pages");
+            NativeNodeApi.napi_set_named_property(env, obj, _endPageName, _endPageV);
         var _pagesV = NativeValue.From(Pages);
         if (_pagesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pages, _pagesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pagesName, _pagesV);
     }
 }
 
@@ -717,24 +717,24 @@ public sealed record PrintPageSize(
     double Height
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _idName => "id"u8;
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _widthName => "width"u8;
+    private static ReadOnlySpan<byte> _heightName => "height"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _id = System.Text.Encoding.UTF8.GetBytes("id");
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _id, _idV);
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _width = System.Text.Encoding.UTF8.GetBytes("width");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = System.Text.Encoding.UTF8.GetBytes("height");
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
     }
 }
 

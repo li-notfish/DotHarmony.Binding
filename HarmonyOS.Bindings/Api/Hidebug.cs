@@ -686,24 +686,24 @@ public sealed record RequestTraceConfig(
     double Reserved
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _identifierName => "identifier"u8;
+    private static ReadOnlySpan<byte> _bufferSizeKbName => "bufferSizeKb"u8;
+    private static ReadOnlySpan<byte> _durationMsName => "durationMs"u8;
+    private static ReadOnlySpan<byte> _reservedName => "reserved"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _identifier = System.Text.Encoding.UTF8.GetBytes("identifier");
         var _identifierV = NativeValue.From(Identifier);
         if (_identifierV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _identifier, _identifierV);
-        var _bufferSizeKb = System.Text.Encoding.UTF8.GetBytes("bufferSizeKb");
+            NativeNodeApi.napi_set_named_property(env, obj, _identifierName, _identifierV);
         var _bufferSizeKbV = NativeValue.From(BufferSizeKb);
         if (_bufferSizeKbV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bufferSizeKb, _bufferSizeKbV);
-        var _durationMs = System.Text.Encoding.UTF8.GetBytes("durationMs");
+            NativeNodeApi.napi_set_named_property(env, obj, _bufferSizeKbName, _bufferSizeKbV);
         var _durationMsV = NativeValue.From(DurationMs);
         if (_durationMsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _durationMs, _durationMsV);
-        var _reserved = System.Text.Encoding.UTF8.GetBytes("reserved");
+            NativeNodeApi.napi_set_named_property(env, obj, _durationMsName, _durationMsV);
         var _reservedV = NativeValue.From(Reserved);
         if (_reservedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reserved, _reservedV);
+            NativeNodeApi.napi_set_named_property(env, obj, _reservedName, _reservedV);
     }
 }
 
@@ -738,23 +738,23 @@ public sealed record GwpAsanOptions(
     bool? IsRecover = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _alwaysEnabledName => "alwaysEnabled"u8;
+    private static ReadOnlySpan<byte> _sampleRateName => "sampleRate"u8;
+    private static ReadOnlySpan<byte> _maxSimutaneousAllocationsName => "maxSimutaneousAllocations"u8;
+    private static ReadOnlySpan<byte> _isRecoverName => "isRecover"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _alwaysEnabled = System.Text.Encoding.UTF8.GetBytes("alwaysEnabled");
         var _alwaysEnabledV = NativeValue.From(AlwaysEnabled);
         if (_alwaysEnabledV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _alwaysEnabled, _alwaysEnabledV);
-        var _sampleRate = System.Text.Encoding.UTF8.GetBytes("sampleRate");
+            NativeNodeApi.napi_set_named_property(env, obj, _alwaysEnabledName, _alwaysEnabledV);
         var _sampleRateV = NativeValue.From(SampleRate);
         if (_sampleRateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sampleRate, _sampleRateV);
-        var _maxSimutaneousAllocations = System.Text.Encoding.UTF8.GetBytes("maxSimutaneousAllocations");
+            NativeNodeApi.napi_set_named_property(env, obj, _sampleRateName, _sampleRateV);
         var _maxSimutaneousAllocationsV = NativeValue.From(MaxSimutaneousAllocations);
         if (_maxSimutaneousAllocationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxSimutaneousAllocations, _maxSimutaneousAllocationsV);
-        var _isRecover = System.Text.Encoding.UTF8.GetBytes("isRecover");
+            NativeNodeApi.napi_set_named_property(env, obj, _maxSimutaneousAllocationsName, _maxSimutaneousAllocationsV);
         var _isRecoverV = NativeValue.From(IsRecover);
         if (_isRecoverV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isRecover, _isRecoverV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isRecoverName, _isRecoverV);
     }
 }

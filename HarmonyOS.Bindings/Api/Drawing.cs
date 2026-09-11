@@ -2522,16 +2522,16 @@ public sealed record FontFeature(
     double Value
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _valueName => "value"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _value = System.Text.Encoding.UTF8.GetBytes("value");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _valueV = NativeValue.From(Value);
         if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _value, _valueV);
+            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
     }
 }
 
@@ -3115,19 +3115,19 @@ public sealed record TextBlobRunBuffer(
     double PositionY
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _glyphName => "glyph"u8;
+    private static ReadOnlySpan<byte> _positionXName => "positionX"u8;
+    private static ReadOnlySpan<byte> _positionYName => "positionY"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _glyph = System.Text.Encoding.UTF8.GetBytes("glyph");
         var _glyphV = NativeValue.From(Glyph);
         if (_glyphV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _glyph, _glyphV);
-        var _positionX = System.Text.Encoding.UTF8.GetBytes("positionX");
+            NativeNodeApi.napi_set_named_property(env, obj, _glyphName, _glyphV);
         var _positionXV = NativeValue.From(PositionX);
         if (_positionXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _positionX, _positionXV);
-        var _positionY = System.Text.Encoding.UTF8.GetBytes("positionY");
+            NativeNodeApi.napi_set_named_property(env, obj, _positionXName, _positionXV);
         var _positionYV = NativeValue.From(PositionY);
         if (_positionYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _positionY, _positionYV);
+            NativeNodeApi.napi_set_named_property(env, obj, _positionYName, _positionYV);
     }
 }

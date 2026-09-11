@@ -252,12 +252,12 @@ public sealed record DialOptions(
     bool? Extras = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _extrasName => "extras"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _extras = System.Text.Encoding.UTF8.GetBytes("extras");
         var _extrasV = NativeValue.From(Extras);
         if (_extrasV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extras, _extrasV);
+            NativeNodeApi.napi_set_named_property(env, obj, _extrasName, _extrasV);
     }
 }
 
@@ -269,16 +269,16 @@ public sealed record MakeCallOptions(
     bool? IsCustomAccessibility = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _isHideDialScreenName => "isHideDialScreen"u8;
+    private static ReadOnlySpan<byte> _isCustomAccessibilityName => "isCustomAccessibility"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _isHideDialScreen = System.Text.Encoding.UTF8.GetBytes("isHideDialScreen");
         var _isHideDialScreenV = NativeValue.From(IsHideDialScreen);
         if (_isHideDialScreenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isHideDialScreen, _isHideDialScreenV);
-        var _isCustomAccessibility = System.Text.Encoding.UTF8.GetBytes("isCustomAccessibility");
+            NativeNodeApi.napi_set_named_property(env, obj, _isHideDialScreenName, _isHideDialScreenV);
         var _isCustomAccessibilityV = NativeValue.From(IsCustomAccessibility);
         if (_isCustomAccessibilityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isCustomAccessibility, _isCustomAccessibilityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isCustomAccessibilityName, _isCustomAccessibilityV);
     }
 }
 
@@ -289,12 +289,12 @@ public sealed record EmergencyNumberOptions(
     double? SlotId = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _slotIdName => "slotId"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _slotId = System.Text.Encoding.UTF8.GetBytes("slotId");
         var _slotIdV = NativeValue.From(SlotId);
         if (_slotIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _slotId, _slotIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _slotIdName, _slotIdV);
     }
 }
 
@@ -305,12 +305,12 @@ public sealed record NumberFormatOptions(
     string? CountryCode = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _countryCodeName => "countryCode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _countryCode = System.Text.Encoding.UTF8.GetBytes("countryCode");
         var _countryCodeV = NativeValue.From(CountryCode);
         if (_countryCodeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _countryCode, _countryCodeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _countryCodeName, _countryCodeV);
     }
 }
 

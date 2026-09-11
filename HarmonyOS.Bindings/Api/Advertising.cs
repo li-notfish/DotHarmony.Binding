@@ -133,28 +133,28 @@ public sealed record AdDisplayOptions(
     double? AudioFocusType = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _customDataName => "customData"u8;
+    private static ReadOnlySpan<byte> _userIdName => "userId"u8;
+    private static ReadOnlySpan<byte> _useMobileDataReminderName => "useMobileDataReminder"u8;
+    private static ReadOnlySpan<byte> _muteName => "mute"u8;
+    private static ReadOnlySpan<byte> _audioFocusTypeName => "audioFocusType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _customData = System.Text.Encoding.UTF8.GetBytes("customData");
         var _customDataV = NativeValue.From(CustomData);
         if (_customDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _customData, _customDataV);
-        var _userId = System.Text.Encoding.UTF8.GetBytes("userId");
+            NativeNodeApi.napi_set_named_property(env, obj, _customDataName, _customDataV);
         var _userIdV = NativeValue.From(UserId);
         if (_userIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userId, _userIdV);
-        var _useMobileDataReminder = System.Text.Encoding.UTF8.GetBytes("useMobileDataReminder");
+            NativeNodeApi.napi_set_named_property(env, obj, _userIdName, _userIdV);
         var _useMobileDataReminderV = NativeValue.From(UseMobileDataReminder);
         if (_useMobileDataReminderV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _useMobileDataReminder, _useMobileDataReminderV);
-        var _mute = System.Text.Encoding.UTF8.GetBytes("mute");
+            NativeNodeApi.napi_set_named_property(env, obj, _useMobileDataReminderName, _useMobileDataReminderV);
         var _muteV = NativeValue.From(Mute);
         if (_muteV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mute, _muteV);
-        var _audioFocusType = System.Text.Encoding.UTF8.GetBytes("audioFocusType");
+            NativeNodeApi.napi_set_named_property(env, obj, _muteName, _muteV);
         var _audioFocusTypeV = NativeValue.From(AudioFocusType);
         if (_audioFocusTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioFocusType, _audioFocusTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _audioFocusTypeName, _audioFocusTypeV);
     }
 }
 
@@ -170,32 +170,32 @@ public sealed record AdRequestParams(
     string? AdSearchKeyword = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _adIdName => "adId"u8;
+    private static ReadOnlySpan<byte> _adTypeName => "adType"u8;
+    private static ReadOnlySpan<byte> _adCountName => "adCount"u8;
+    private static ReadOnlySpan<byte> _adWidthName => "adWidth"u8;
+    private static ReadOnlySpan<byte> _adHeightName => "adHeight"u8;
+    private static ReadOnlySpan<byte> _adSearchKeywordName => "adSearchKeyword"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _adId = System.Text.Encoding.UTF8.GetBytes("adId");
         var _adIdV = NativeValue.From(AdId);
         if (_adIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adId, _adIdV);
-        var _adType = System.Text.Encoding.UTF8.GetBytes("adType");
+            NativeNodeApi.napi_set_named_property(env, obj, _adIdName, _adIdV);
         var _adTypeV = NativeValue.From(AdType);
         if (_adTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adType, _adTypeV);
-        var _adCount = System.Text.Encoding.UTF8.GetBytes("adCount");
+            NativeNodeApi.napi_set_named_property(env, obj, _adTypeName, _adTypeV);
         var _adCountV = NativeValue.From(AdCount);
         if (_adCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adCount, _adCountV);
-        var _adWidth = System.Text.Encoding.UTF8.GetBytes("adWidth");
+            NativeNodeApi.napi_set_named_property(env, obj, _adCountName, _adCountV);
         var _adWidthV = NativeValue.From(AdWidth);
         if (_adWidthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adWidth, _adWidthV);
-        var _adHeight = System.Text.Encoding.UTF8.GetBytes("adHeight");
+            NativeNodeApi.napi_set_named_property(env, obj, _adWidthName, _adWidthV);
         var _adHeightV = NativeValue.From(AdHeight);
         if (_adHeightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adHeight, _adHeightV);
-        var _adSearchKeyword = System.Text.Encoding.UTF8.GetBytes("adSearchKeyword");
+            NativeNodeApi.napi_set_named_property(env, obj, _adHeightName, _adHeightV);
         var _adSearchKeywordV = NativeValue.From(AdSearchKeyword);
         if (_adSearchKeywordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adSearchKeyword, _adSearchKeywordV);
+            NativeNodeApi.napi_set_named_property(env, obj, _adSearchKeywordName, _adSearchKeywordV);
     }
 }
 
@@ -208,20 +208,20 @@ public sealed record AdOptions(
     double? NonPersonalizedAd = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _tagForChildProtectionName => "tagForChildProtection"u8;
+    private static ReadOnlySpan<byte> _adContentClassificationName => "adContentClassification"u8;
+    private static ReadOnlySpan<byte> _nonPersonalizedAdName => "nonPersonalizedAd"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _tagForChildProtection = System.Text.Encoding.UTF8.GetBytes("tagForChildProtection");
         var _tagForChildProtectionV = NativeValue.From(TagForChildProtection);
         if (_tagForChildProtectionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tagForChildProtection, _tagForChildProtectionV);
-        var _adContentClassification = System.Text.Encoding.UTF8.GetBytes("adContentClassification");
+            NativeNodeApi.napi_set_named_property(env, obj, _tagForChildProtectionName, _tagForChildProtectionV);
         var _adContentClassificationV = NativeValue.From(AdContentClassification);
         if (_adContentClassificationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adContentClassification, _adContentClassificationV);
-        var _nonPersonalizedAd = System.Text.Encoding.UTF8.GetBytes("nonPersonalizedAd");
+            NativeNodeApi.napi_set_named_property(env, obj, _adContentClassificationName, _adContentClassificationV);
         var _nonPersonalizedAdV = NativeValue.From(NonPersonalizedAd);
         if (_nonPersonalizedAdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nonPersonalizedAd, _nonPersonalizedAdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _nonPersonalizedAdName, _nonPersonalizedAdV);
     }
 }
 

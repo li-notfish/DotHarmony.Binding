@@ -804,11 +804,11 @@ public sealed record ReadableOptions(
     string? Encoding = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _encodingName => "encoding"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _encoding = System.Text.Encoding.UTF8.GetBytes("encoding");
         var _encodingV = NativeValue.From(Encoding);
         if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encoding, _encodingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
     }
 }

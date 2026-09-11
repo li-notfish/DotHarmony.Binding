@@ -228,19 +228,19 @@ public sealed record KeyPressedConfig(
     bool IsRepeat
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _keyName => "key"u8;
+    private static ReadOnlySpan<byte> _actionName => "action"u8;
+    private static ReadOnlySpan<byte> _isRepeatName => "isRepeat"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _key = System.Text.Encoding.UTF8.GetBytes("key");
         var _keyV = NativeValue.From(Key);
         if (_keyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _key, _keyV);
-        var _action = System.Text.Encoding.UTF8.GetBytes("action");
+            NativeNodeApi.napi_set_named_property(env, obj, _keyName, _keyV);
         var _actionV = NativeValue.From(Action);
         if (_actionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _action, _actionV);
-        var _isRepeat = System.Text.Encoding.UTF8.GetBytes("isRepeat");
+            NativeNodeApi.napi_set_named_property(env, obj, _actionName, _actionV);
         var _isRepeatV = NativeValue.From(IsRepeat);
         if (_isRepeatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isRepeat, _isRepeatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isRepeatName, _isRepeatV);
     }
 }

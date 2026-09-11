@@ -165,15 +165,15 @@ public sealed record RangingParams(
     global::HarmonyOS.ArkUI.RangingTypes CapabilityType
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _deviceIdName => "deviceId"u8;
+    private static ReadOnlySpan<byte> _capabilityTypeName => "capabilityType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _deviceId = System.Text.Encoding.UTF8.GetBytes("deviceId");
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceId, _deviceIdV);
-        var _capabilityType = System.Text.Encoding.UTF8.GetBytes("capabilityType");
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
         var _capabilityTypeV = NativeValue.From(CapabilityType);
         if (_capabilityTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _capabilityType, _capabilityTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _capabilityTypeName, _capabilityTypeV);
     }
 }

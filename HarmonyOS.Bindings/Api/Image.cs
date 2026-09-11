@@ -1196,32 +1196,32 @@ public sealed record InitializationOptions(
     global::HarmonyOS.ArkUI.ScaleMode? ScaleMode = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _sizeName => "size"u8;
+    private static ReadOnlySpan<byte> _srcPixelFormatName => "srcPixelFormat"u8;
+    private static ReadOnlySpan<byte> _pixelFormatName => "pixelFormat"u8;
+    private static ReadOnlySpan<byte> _editableName => "editable"u8;
+    private static ReadOnlySpan<byte> _alphaTypeName => "alphaType"u8;
+    private static ReadOnlySpan<byte> _scaleModeName => "scaleMode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _size = System.Text.Encoding.UTF8.GetBytes("size");
         var _sizeV = NativeValue.From(Size);
         if (_sizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _size, _sizeV);
-        var _srcPixelFormat = System.Text.Encoding.UTF8.GetBytes("srcPixelFormat");
+            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV);
         var _srcPixelFormatV = NativeValue.From(SrcPixelFormat);
         if (_srcPixelFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _srcPixelFormat, _srcPixelFormatV);
-        var _pixelFormat = System.Text.Encoding.UTF8.GetBytes("pixelFormat");
+            NativeNodeApi.napi_set_named_property(env, obj, _srcPixelFormatName, _srcPixelFormatV);
         var _pixelFormatV = NativeValue.From(PixelFormat);
         if (_pixelFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pixelFormat, _pixelFormatV);
-        var _editable = System.Text.Encoding.UTF8.GetBytes("editable");
+            NativeNodeApi.napi_set_named_property(env, obj, _pixelFormatName, _pixelFormatV);
         var _editableV = NativeValue.From(Editable);
         if (_editableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _editable, _editableV);
-        var _alphaType = System.Text.Encoding.UTF8.GetBytes("alphaType");
+            NativeNodeApi.napi_set_named_property(env, obj, _editableName, _editableV);
         var _alphaTypeV = NativeValue.From(AlphaType);
         if (_alphaTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _alphaType, _alphaTypeV);
-        var _scaleMode = System.Text.Encoding.UTF8.GetBytes("scaleMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _alphaTypeName, _alphaTypeV);
         var _scaleModeV = NativeValue.From(ScaleMode);
         if (_scaleModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _scaleMode, _scaleModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _scaleModeName, _scaleModeV);
     }
 }
 
@@ -1558,20 +1558,20 @@ public sealed record SourceOptions(
     ImageSize? SourceSize = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _sourceDensityName => "sourceDensity"u8;
+    private static ReadOnlySpan<byte> _sourcePixelFormatName => "sourcePixelFormat"u8;
+    private static ReadOnlySpan<byte> _sourceSizeName => "sourceSize"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _sourceDensity = System.Text.Encoding.UTF8.GetBytes("sourceDensity");
         var _sourceDensityV = NativeValue.From(SourceDensity);
         if (_sourceDensityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sourceDensity, _sourceDensityV);
-        var _sourcePixelFormat = System.Text.Encoding.UTF8.GetBytes("sourcePixelFormat");
+            NativeNodeApi.napi_set_named_property(env, obj, _sourceDensityName, _sourceDensityV);
         var _sourcePixelFormatV = NativeValue.From(SourcePixelFormat);
         if (_sourcePixelFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sourcePixelFormat, _sourcePixelFormatV);
-        var _sourceSize = System.Text.Encoding.UTF8.GetBytes("sourceSize");
+            NativeNodeApi.napi_set_named_property(env, obj, _sourcePixelFormatName, _sourcePixelFormatV);
         var _sourceSizeV = NativeValue.From(SourceSize);
         if (_sourceSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sourceSize, _sourceSizeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sourceSizeName, _sourceSizeV);
     }
 }
 
@@ -1857,16 +1857,16 @@ public sealed record ImageReceiverOptions(
     double? Capacity = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _sizeName => "size"u8;
+    private static ReadOnlySpan<byte> _capacityName => "capacity"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _size = System.Text.Encoding.UTF8.GetBytes("size");
         var _sizeV = NativeValue.From(Size);
         if (_sizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _size, _sizeV);
-        var _capacity = System.Text.Encoding.UTF8.GetBytes("capacity");
+            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV);
         var _capacityV = NativeValue.From(Capacity);
         if (_capacityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _capacity, _capacityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _capacityName, _capacityV);
     }
 }
 
@@ -2201,24 +2201,24 @@ public sealed record PositionArea(
     ImageRegion Region
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _pixelsName => "pixels"u8;
+    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
+    private static ReadOnlySpan<byte> _strideName => "stride"u8;
+    private static ReadOnlySpan<byte> _regionName => "region"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _pixels = System.Text.Encoding.UTF8.GetBytes("pixels");
         var _pixelsV = NativeValue.From(Pixels);
         if (_pixelsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pixels, _pixelsV);
-        var _offset = System.Text.Encoding.UTF8.GetBytes("offset");
+            NativeNodeApi.napi_set_named_property(env, obj, _pixelsName, _pixelsV);
         var _offsetV = NativeValue.From(Offset);
         if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
-        var _stride = System.Text.Encoding.UTF8.GetBytes("stride");
+            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
         var _strideV = NativeValue.From(Stride);
         if (_strideV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _stride, _strideV);
-        var _region = System.Text.Encoding.UTF8.GetBytes("region");
+            NativeNodeApi.napi_set_named_property(env, obj, _strideName, _strideV);
         var _regionV = NativeValue.From(Region);
         if (_regionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _region, _regionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _regionName, _regionV);
     }
 }
 
@@ -2281,16 +2281,16 @@ public sealed record ImagePropertyOptions(
     string? DefaultValue = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _indexName => "index"u8;
+    private static ReadOnlySpan<byte> _defaultValueName => "defaultValue"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _index = System.Text.Encoding.UTF8.GetBytes("index");
         var _indexV = NativeValue.From(Index);
         if (_indexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _index, _indexV);
-        var _defaultValue = System.Text.Encoding.UTF8.GetBytes("defaultValue");
+            NativeNodeApi.napi_set_named_property(env, obj, _indexName, _indexV);
         var _defaultValueV = NativeValue.From(DefaultValue);
         if (_defaultValueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _defaultValue, _defaultValueV);
+            NativeNodeApi.napi_set_named_property(env, obj, _defaultValueName, _defaultValueV);
     }
 }
 
@@ -2302,16 +2302,16 @@ public sealed record GetImagePropertyOptions(
     string? DefaultValue = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _indexName => "index"u8;
+    private static ReadOnlySpan<byte> _defaultValueName => "defaultValue"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _index = System.Text.Encoding.UTF8.GetBytes("index");
         var _indexV = NativeValue.From(Index);
         if (_indexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _index, _indexV);
-        var _defaultValue = System.Text.Encoding.UTF8.GetBytes("defaultValue");
+            NativeNodeApi.napi_set_named_property(env, obj, _indexName, _indexV);
         var _defaultValueV = NativeValue.From(DefaultValue);
         if (_defaultValueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _defaultValue, _defaultValueV);
+            NativeNodeApi.napi_set_named_property(env, obj, _defaultValueName, _defaultValueV);
     }
 }
 
@@ -2324,20 +2324,20 @@ public sealed record DecodingOptionsForPicture(
     global::HarmonyOS.ArkUI.PixelMapFormat? DesiredPixelFormat = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _desiredAuxiliaryPicturesName => "desiredAuxiliaryPictures"u8;
+    private static ReadOnlySpan<byte> _desiredSizeForMainPixelMapName => "desiredSizeForMainPixelMap"u8;
+    private static ReadOnlySpan<byte> _desiredPixelFormatName => "desiredPixelFormat"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _desiredAuxiliaryPictures = System.Text.Encoding.UTF8.GetBytes("desiredAuxiliaryPictures");
         var _desiredAuxiliaryPicturesV = NativeValue.From(DesiredAuxiliaryPictures);
         if (_desiredAuxiliaryPicturesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _desiredAuxiliaryPictures, _desiredAuxiliaryPicturesV);
-        var _desiredSizeForMainPixelMap = System.Text.Encoding.UTF8.GetBytes("desiredSizeForMainPixelMap");
+            NativeNodeApi.napi_set_named_property(env, obj, _desiredAuxiliaryPicturesName, _desiredAuxiliaryPicturesV);
         var _desiredSizeForMainPixelMapV = NativeValue.From(DesiredSizeForMainPixelMap);
         if (_desiredSizeForMainPixelMapV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _desiredSizeForMainPixelMap, _desiredSizeForMainPixelMapV);
-        var _desiredPixelFormat = System.Text.Encoding.UTF8.GetBytes("desiredPixelFormat");
+            NativeNodeApi.napi_set_named_property(env, obj, _desiredSizeForMainPixelMapName, _desiredSizeForMainPixelMapV);
         var _desiredPixelFormatV = NativeValue.From(DesiredPixelFormat);
         if (_desiredPixelFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _desiredPixelFormat, _desiredPixelFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _desiredPixelFormatName, _desiredPixelFormatV);
     }
 }
 
@@ -2445,16 +2445,16 @@ public sealed record DecodingOptionsForThumbnail(
     double? MaxGeneratedPixelDimension = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _generateThumbnailIfAbsentName => "generateThumbnailIfAbsent"u8;
+    private static ReadOnlySpan<byte> _maxGeneratedPixelDimensionName => "maxGeneratedPixelDimension"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _generateThumbnailIfAbsent = System.Text.Encoding.UTF8.GetBytes("generateThumbnailIfAbsent");
         var _generateThumbnailIfAbsentV = NativeValue.From(GenerateThumbnailIfAbsent);
         if (_generateThumbnailIfAbsentV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _generateThumbnailIfAbsent, _generateThumbnailIfAbsentV);
-        var _maxGeneratedPixelDimension = System.Text.Encoding.UTF8.GetBytes("maxGeneratedPixelDimension");
+            NativeNodeApi.napi_set_named_property(env, obj, _generateThumbnailIfAbsentName, _generateThumbnailIfAbsentV);
         var _maxGeneratedPixelDimensionV = NativeValue.From(MaxGeneratedPixelDimension);
         if (_maxGeneratedPixelDimensionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxGeneratedPixelDimension, _maxGeneratedPixelDimensionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxGeneratedPixelDimensionName, _maxGeneratedPixelDimensionV);
     }
 }
 
@@ -2468,24 +2468,24 @@ public sealed record PackingOptionsForSequence(
     double? LoopCount = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _frameCountName => "frameCount"u8;
+    private static ReadOnlySpan<byte> _delayTimeListName => "delayTimeList"u8;
+    private static ReadOnlySpan<byte> _disposalTypesName => "disposalTypes"u8;
+    private static ReadOnlySpan<byte> _loopCountName => "loopCount"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _frameCount = System.Text.Encoding.UTF8.GetBytes("frameCount");
         var _frameCountV = NativeValue.From(FrameCount);
         if (_frameCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _frameCount, _frameCountV);
-        var _delayTimeList = System.Text.Encoding.UTF8.GetBytes("delayTimeList");
+            NativeNodeApi.napi_set_named_property(env, obj, _frameCountName, _frameCountV);
         var _delayTimeListV = NativeValue.From(DelayTimeList);
         if (_delayTimeListV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _delayTimeList, _delayTimeListV);
-        var _disposalTypes = System.Text.Encoding.UTF8.GetBytes("disposalTypes");
+            NativeNodeApi.napi_set_named_property(env, obj, _delayTimeListName, _delayTimeListV);
         var _disposalTypesV = NativeValue.From(DisposalTypes);
         if (_disposalTypesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disposalTypes, _disposalTypesV);
-        var _loopCount = System.Text.Encoding.UTF8.GetBytes("loopCount");
+            NativeNodeApi.napi_set_named_property(env, obj, _disposalTypesName, _disposalTypesV);
         var _loopCountV = NativeValue.From(LoopCount);
         if (_loopCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _loopCount, _loopCountV);
+            NativeNodeApi.napi_set_named_property(env, obj, _loopCountName, _loopCountV);
     }
 }
 
@@ -2498,20 +2498,20 @@ public sealed record BinaryBufferInfo(
     double? BytesPerRow = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _sizeName => "size"u8;
+    private static ReadOnlySpan<byte> _dataName => "data"u8;
+    private static ReadOnlySpan<byte> _bytesPerRowName => "bytesPerRow"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _size = System.Text.Encoding.UTF8.GetBytes("size");
         var _sizeV = NativeValue.From(Size);
         if (_sizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _size, _sizeV);
-        var _data = System.Text.Encoding.UTF8.GetBytes("data");
+            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV);
         var _dataV = NativeValue.From(Data);
         if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _data, _dataV);
-        var _bytesPerRow = System.Text.Encoding.UTF8.GetBytes("bytesPerRow");
+            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
         var _bytesPerRowV = NativeValue.From(BytesPerRow);
         if (_bytesPerRowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bytesPerRow, _bytesPerRowV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bytesPerRowName, _bytesPerRowV);
     }
 }
 
@@ -2597,12 +2597,12 @@ public sealed record HdrComposeOptions(
     global::HarmonyOS.ArkUI.PixelMapFormat? DesiredPixelFormat = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _desiredPixelFormatName => "desiredPixelFormat"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _desiredPixelFormat = System.Text.Encoding.UTF8.GetBytes("desiredPixelFormat");
         var _desiredPixelFormatV = NativeValue.From(DesiredPixelFormat);
         if (_desiredPixelFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _desiredPixelFormat, _desiredPixelFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _desiredPixelFormatName, _desiredPixelFormatV);
     }
 }
 
@@ -5038,15 +5038,15 @@ public sealed record XMPEnumerateOptions(
     bool? OnlyQualifier = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _isRecursiveName => "isRecursive"u8;
+    private static ReadOnlySpan<byte> _onlyQualifierName => "onlyQualifier"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _isRecursive = System.Text.Encoding.UTF8.GetBytes("isRecursive");
         var _isRecursiveV = NativeValue.From(IsRecursive);
         if (_isRecursiveV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isRecursive, _isRecursiveV);
-        var _onlyQualifier = System.Text.Encoding.UTF8.GetBytes("onlyQualifier");
+            NativeNodeApi.napi_set_named_property(env, obj, _isRecursiveName, _isRecursiveV);
         var _onlyQualifierV = NativeValue.From(OnlyQualifier);
         if (_onlyQualifierV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _onlyQualifier, _onlyQualifierV);
+            NativeNodeApi.napi_set_named_property(env, obj, _onlyQualifierName, _onlyQualifierV);
     }
 }

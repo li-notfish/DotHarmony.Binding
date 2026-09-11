@@ -2481,16 +2481,16 @@ public sealed record SensorOptions(
     SensorInfoParam? SensorInfoParam = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _intervalName => "interval"u8;
+    private static ReadOnlySpan<byte> _sensorInfoParamName => "sensorInfoParam"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _interval = System.Text.Encoding.UTF8.GetBytes("interval");
         var _intervalV = NativeValue.From(Interval);
         if (_intervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _interval, _intervalV);
-        var _sensorInfoParam = System.Text.Encoding.UTF8.GetBytes("sensorInfoParam");
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
         var _sensorInfoParamV = NativeValue.From(SensorInfoParam);
         if (_sensorInfoParamV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sensorInfoParam, _sensorInfoParamV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sensorInfoParamName, _sensorInfoParamV);
     }
 }
 
@@ -2502,16 +2502,16 @@ public sealed record SensorInfoParam(
     double? SensorIndex = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _deviceIdName => "deviceId"u8;
+    private static ReadOnlySpan<byte> _sensorIndexName => "sensorIndex"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _deviceId = System.Text.Encoding.UTF8.GetBytes("deviceId");
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceId, _deviceIdV);
-        var _sensorIndex = System.Text.Encoding.UTF8.GetBytes("sensorIndex");
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
         var _sensorIndexV = NativeValue.From(SensorIndex);
         if (_sensorIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sensorIndex, _sensorIndexV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sensorIndexName, _sensorIndexV);
     }
 }
 
@@ -2674,20 +2674,20 @@ public sealed record LocationOptions(
     double Altitude
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _latitudeName => "latitude"u8;
+    private static ReadOnlySpan<byte> _longitudeName => "longitude"u8;
+    private static ReadOnlySpan<byte> _altitudeName => "altitude"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _latitude = System.Text.Encoding.UTF8.GetBytes("latitude");
         var _latitudeV = NativeValue.From(Latitude);
         if (_latitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
-        var _longitude = System.Text.Encoding.UTF8.GetBytes("longitude");
+            NativeNodeApi.napi_set_named_property(env, obj, _latitudeName, _latitudeV);
         var _longitudeV = NativeValue.From(Longitude);
         if (_longitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
-        var _altitude = System.Text.Encoding.UTF8.GetBytes("altitude");
+            NativeNodeApi.napi_set_named_property(env, obj, _longitudeName, _longitudeV);
         var _altitudeV = NativeValue.From(Altitude);
         if (_altitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _altitude, _altitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _altitudeName, _altitudeV);
     }
 }
 
@@ -2699,16 +2699,16 @@ public sealed record CoordinatesOptions(
     double Y
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _xName => "x"u8;
+    private static ReadOnlySpan<byte> _yName => "y"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _x = System.Text.Encoding.UTF8.GetBytes("x");
         var _xV = NativeValue.From(X);
         if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _x, _xV);
-        var _y = System.Text.Encoding.UTF8.GetBytes("y");
+            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
         var _yV = NativeValue.From(Y);
         if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _y, _yV);
+            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
     }
 }
 

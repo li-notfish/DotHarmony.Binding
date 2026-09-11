@@ -136,39 +136,39 @@ public sealed record LeakWatcherConfig(
     string[]? ExclusionList = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _monitorObjectTypesName => "monitorObjectTypes"u8;
+    private static ReadOnlySpan<byte> _objectUniqueIDsName => "objectUniqueIDs"u8;
+    private static ReadOnlySpan<byte> _checkIntervalName => "checkInterval"u8;
+    private static ReadOnlySpan<byte> _fgLeakCountThresholdName => "fgLeakCountThreshold"u8;
+    private static ReadOnlySpan<byte> _bgLeakCountThresholdName => "bgLeakCountThreshold"u8;
+    private static ReadOnlySpan<byte> _maxStoredHeapDumpsName => "maxStoredHeapDumps"u8;
+    private static ReadOnlySpan<byte> _dumpHeapWaitTimeMsName => "dumpHeapWaitTimeMs"u8;
+    private static ReadOnlySpan<byte> _exclusionListName => "exclusionList"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _monitorObjectTypes = System.Text.Encoding.UTF8.GetBytes("monitorObjectTypes");
         var _monitorObjectTypesV = NativeValue.From(MonitorObjectTypes);
         if (_monitorObjectTypesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _monitorObjectTypes, _monitorObjectTypesV);
-        var _objectUniqueIDs = System.Text.Encoding.UTF8.GetBytes("objectUniqueIDs");
+            NativeNodeApi.napi_set_named_property(env, obj, _monitorObjectTypesName, _monitorObjectTypesV);
         var _objectUniqueIDsV = NativeValue.From(ObjectUniqueIDs);
         if (_objectUniqueIDsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _objectUniqueIDs, _objectUniqueIDsV);
-        var _checkInterval = System.Text.Encoding.UTF8.GetBytes("checkInterval");
+            NativeNodeApi.napi_set_named_property(env, obj, _objectUniqueIDsName, _objectUniqueIDsV);
         var _checkIntervalV = NativeValue.From(CheckInterval);
         if (_checkIntervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _checkInterval, _checkIntervalV);
-        var _fgLeakCountThreshold = System.Text.Encoding.UTF8.GetBytes("fgLeakCountThreshold");
+            NativeNodeApi.napi_set_named_property(env, obj, _checkIntervalName, _checkIntervalV);
         var _fgLeakCountThresholdV = NativeValue.From(FgLeakCountThreshold);
         if (_fgLeakCountThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fgLeakCountThreshold, _fgLeakCountThresholdV);
-        var _bgLeakCountThreshold = System.Text.Encoding.UTF8.GetBytes("bgLeakCountThreshold");
+            NativeNodeApi.napi_set_named_property(env, obj, _fgLeakCountThresholdName, _fgLeakCountThresholdV);
         var _bgLeakCountThresholdV = NativeValue.From(BgLeakCountThreshold);
         if (_bgLeakCountThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bgLeakCountThreshold, _bgLeakCountThresholdV);
-        var _maxStoredHeapDumps = System.Text.Encoding.UTF8.GetBytes("maxStoredHeapDumps");
+            NativeNodeApi.napi_set_named_property(env, obj, _bgLeakCountThresholdName, _bgLeakCountThresholdV);
         var _maxStoredHeapDumpsV = NativeValue.From(MaxStoredHeapDumps);
         if (_maxStoredHeapDumpsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxStoredHeapDumps, _maxStoredHeapDumpsV);
-        var _dumpHeapWaitTimeMs = System.Text.Encoding.UTF8.GetBytes("dumpHeapWaitTimeMs");
+            NativeNodeApi.napi_set_named_property(env, obj, _maxStoredHeapDumpsName, _maxStoredHeapDumpsV);
         var _dumpHeapWaitTimeMsV = NativeValue.From(DumpHeapWaitTimeMs);
         if (_dumpHeapWaitTimeMsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dumpHeapWaitTimeMs, _dumpHeapWaitTimeMsV);
-        var _exclusionList = System.Text.Encoding.UTF8.GetBytes("exclusionList");
+            NativeNodeApi.napi_set_named_property(env, obj, _dumpHeapWaitTimeMsName, _dumpHeapWaitTimeMsV);
         var _exclusionListV = NativeValue.From(ExclusionList);
         if (_exclusionListV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _exclusionList, _exclusionListV);
+            NativeNodeApi.napi_set_named_property(env, obj, _exclusionListName, _exclusionListV);
     }
 }

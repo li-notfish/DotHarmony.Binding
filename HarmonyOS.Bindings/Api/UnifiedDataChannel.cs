@@ -142,20 +142,20 @@ public sealed record UnifiedDataChannelOptions(
     global::HarmonyOS.ArkUI.Visibility? Visibility = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _intentionName => "intention"u8;
+    private static ReadOnlySpan<byte> _keyName => "key"u8;
+    private static ReadOnlySpan<byte> _visibilityName => "visibility"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _intention = System.Text.Encoding.UTF8.GetBytes("intention");
         var _intentionV = NativeValue.From(Intention);
         if (_intentionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _intention, _intentionV);
-        var _key = System.Text.Encoding.UTF8.GetBytes("key");
+            NativeNodeApi.napi_set_named_property(env, obj, _intentionName, _intentionV);
         var _keyV = NativeValue.From(Key);
         if (_keyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _key, _keyV);
-        var _visibility = System.Text.Encoding.UTF8.GetBytes("visibility");
+            NativeNodeApi.napi_set_named_property(env, obj, _keyName, _keyV);
         var _visibilityV = NativeValue.From(Visibility);
         if (_visibilityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _visibility, _visibilityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _visibilityName, _visibilityV);
     }
 }
 

@@ -657,16 +657,16 @@ public sealed record NetSpecifier(
     string? BearerPrivateIdentifier = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _netCapabilitiesName => "netCapabilities"u8;
+    private static ReadOnlySpan<byte> _bearerPrivateIdentifierName => "bearerPrivateIdentifier"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _netCapabilities = System.Text.Encoding.UTF8.GetBytes("netCapabilities");
         var _netCapabilitiesV = NativeValue.From(NetCapabilities);
         if (_netCapabilitiesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _netCapabilities, _netCapabilitiesV);
-        var _bearerPrivateIdentifier = System.Text.Encoding.UTF8.GetBytes("bearerPrivateIdentifier");
+            NativeNodeApi.napi_set_named_property(env, obj, _netCapabilitiesName, _netCapabilitiesV);
         var _bearerPrivateIdentifierV = NativeValue.From(BearerPrivateIdentifier);
         if (_bearerPrivateIdentifierV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bearerPrivateIdentifier, _bearerPrivateIdentifierV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bearerPrivateIdentifierName, _bearerPrivateIdentifierV);
     }
 }
 
@@ -788,12 +788,12 @@ public sealed record QueryOptions(
     global::HarmonyOS.ArkUI.FamilyType? Family = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _familyName => "family"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _family = System.Text.Encoding.UTF8.GetBytes("family");
         var _familyV = NativeValue.From(Family);
         if (_familyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _family, _familyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _familyName, _familyV);
     }
 }
 
@@ -898,16 +898,16 @@ public sealed record TraceRouteOptions(
     global::HarmonyOS.ArkUI.PacketsType? PacketsType = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _maxJumpNumberName => "maxJumpNumber"u8;
+    private static ReadOnlySpan<byte> _packetsTypeName => "packetsType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _maxJumpNumber = System.Text.Encoding.UTF8.GetBytes("maxJumpNumber");
         var _maxJumpNumberV = NativeValue.From(MaxJumpNumber);
         if (_maxJumpNumberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxJumpNumber, _maxJumpNumberV);
-        var _packetsType = System.Text.Encoding.UTF8.GetBytes("packetsType");
+            NativeNodeApi.napi_set_named_property(env, obj, _maxJumpNumberName, _maxJumpNumberV);
         var _packetsTypeV = NativeValue.From(PacketsType);
         if (_packetsTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _packetsType, _packetsTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _packetsTypeName, _packetsTypeV);
     }
 }
 

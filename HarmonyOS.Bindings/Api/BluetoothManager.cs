@@ -1182,52 +1182,52 @@ public sealed record BluetoothManagerScanFilter(
     byte[]? ManufactureDataMask = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _deviceIdName => "deviceId"u8;
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _serviceUuidName => "serviceUuid"u8;
+    private static ReadOnlySpan<byte> _serviceUuidMaskName => "serviceUuidMask"u8;
+    private static ReadOnlySpan<byte> _serviceSolicitationUuidName => "serviceSolicitationUuid"u8;
+    private static ReadOnlySpan<byte> _serviceSolicitationUuidMaskName => "serviceSolicitationUuidMask"u8;
+    private static ReadOnlySpan<byte> _serviceDataName => "serviceData"u8;
+    private static ReadOnlySpan<byte> _serviceDataMaskName => "serviceDataMask"u8;
+    private static ReadOnlySpan<byte> _manufactureIdName => "manufactureId"u8;
+    private static ReadOnlySpan<byte> _manufactureDataName => "manufactureData"u8;
+    private static ReadOnlySpan<byte> _manufactureDataMaskName => "manufactureDataMask"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _deviceId = System.Text.Encoding.UTF8.GetBytes("deviceId");
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceId, _deviceIdV);
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _serviceUuid = System.Text.Encoding.UTF8.GetBytes("serviceUuid");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _serviceUuidV = NativeValue.From(ServiceUuid);
         if (_serviceUuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuid, _serviceUuidV);
-        var _serviceUuidMask = System.Text.Encoding.UTF8.GetBytes("serviceUuidMask");
+            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuidName, _serviceUuidV);
         var _serviceUuidMaskV = NativeValue.From(ServiceUuidMask);
         if (_serviceUuidMaskV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuidMask, _serviceUuidMaskV);
-        var _serviceSolicitationUuid = System.Text.Encoding.UTF8.GetBytes("serviceSolicitationUuid");
+            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuidMaskName, _serviceUuidMaskV);
         var _serviceSolicitationUuidV = NativeValue.From(ServiceSolicitationUuid);
         if (_serviceSolicitationUuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceSolicitationUuid, _serviceSolicitationUuidV);
-        var _serviceSolicitationUuidMask = System.Text.Encoding.UTF8.GetBytes("serviceSolicitationUuidMask");
+            NativeNodeApi.napi_set_named_property(env, obj, _serviceSolicitationUuidName, _serviceSolicitationUuidV);
         var _serviceSolicitationUuidMaskV = NativeValue.From(ServiceSolicitationUuidMask);
         if (_serviceSolicitationUuidMaskV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceSolicitationUuidMask, _serviceSolicitationUuidMaskV);
-        var _serviceData = System.Text.Encoding.UTF8.GetBytes("serviceData");
+            NativeNodeApi.napi_set_named_property(env, obj, _serviceSolicitationUuidMaskName, _serviceSolicitationUuidMaskV);
         var _serviceDataV = NativeValue.From(ServiceData);
         if (_serviceDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceData, _serviceDataV);
-        var _serviceDataMask = System.Text.Encoding.UTF8.GetBytes("serviceDataMask");
+            NativeNodeApi.napi_set_named_property(env, obj, _serviceDataName, _serviceDataV);
         var _serviceDataMaskV = NativeValue.From(ServiceDataMask);
         if (_serviceDataMaskV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceDataMask, _serviceDataMaskV);
-        var _manufactureId = System.Text.Encoding.UTF8.GetBytes("manufactureId");
+            NativeNodeApi.napi_set_named_property(env, obj, _serviceDataMaskName, _serviceDataMaskV);
         var _manufactureIdV = NativeValue.From(ManufactureId);
         if (_manufactureIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufactureId, _manufactureIdV);
-        var _manufactureData = System.Text.Encoding.UTF8.GetBytes("manufactureData");
+            NativeNodeApi.napi_set_named_property(env, obj, _manufactureIdName, _manufactureIdV);
         var _manufactureDataV = NativeValue.From(ManufactureData);
         if (_manufactureDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufactureData, _manufactureDataV);
-        var _manufactureDataMask = System.Text.Encoding.UTF8.GetBytes("manufactureDataMask");
+            NativeNodeApi.napi_set_named_property(env, obj, _manufactureDataName, _manufactureDataV);
         var _manufactureDataMaskV = NativeValue.From(ManufactureDataMask);
         if (_manufactureDataMaskV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufactureDataMask, _manufactureDataMaskV);
+            NativeNodeApi.napi_set_named_property(env, obj, _manufactureDataMaskName, _manufactureDataMaskV);
     }
 }
 
@@ -1492,20 +1492,20 @@ public sealed record BluetoothManagerAdvertiseSetting(
     bool? Connectable = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _intervalName => "interval"u8;
+    private static ReadOnlySpan<byte> _txPowerName => "txPower"u8;
+    private static ReadOnlySpan<byte> _connectableName => "connectable"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _interval = System.Text.Encoding.UTF8.GetBytes("interval");
         var _intervalV = NativeValue.From(Interval);
         if (_intervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _interval, _intervalV);
-        var _txPower = System.Text.Encoding.UTF8.GetBytes("txPower");
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
         var _txPowerV = NativeValue.From(TxPower);
         if (_txPowerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _txPower, _txPowerV);
-        var _connectable = System.Text.Encoding.UTF8.GetBytes("connectable");
+            NativeNodeApi.napi_set_named_property(env, obj, _txPowerName, _txPowerV);
         var _connectableV = NativeValue.From(Connectable);
         if (_connectableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _connectable, _connectableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _connectableName, _connectableV);
     }
 }
 
@@ -1519,24 +1519,24 @@ public sealed record BluetoothManagerNotifyCharacteristic(
     bool Confirm
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _serviceUuidName => "serviceUuid"u8;
+    private static ReadOnlySpan<byte> _characteristicUuidName => "characteristicUuid"u8;
+    private static ReadOnlySpan<byte> _characteristicValueName => "characteristicValue"u8;
+    private static ReadOnlySpan<byte> _confirmName => "confirm"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _serviceUuid = System.Text.Encoding.UTF8.GetBytes("serviceUuid");
         var _serviceUuidV = NativeValue.From(ServiceUuid);
         if (_serviceUuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuid, _serviceUuidV);
-        var _characteristicUuid = System.Text.Encoding.UTF8.GetBytes("characteristicUuid");
+            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuidName, _serviceUuidV);
         var _characteristicUuidV = NativeValue.From(CharacteristicUuid);
         if (_characteristicUuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _characteristicUuid, _characteristicUuidV);
-        var _characteristicValue = System.Text.Encoding.UTF8.GetBytes("characteristicValue");
+            NativeNodeApi.napi_set_named_property(env, obj, _characteristicUuidName, _characteristicUuidV);
         var _characteristicValueV = NativeValue.From(CharacteristicValue);
         if (_characteristicValueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _characteristicValue, _characteristicValueV);
-        var _confirm = System.Text.Encoding.UTF8.GetBytes("confirm");
+            NativeNodeApi.napi_set_named_property(env, obj, _characteristicValueName, _characteristicValueV);
         var _confirmV = NativeValue.From(Confirm);
         if (_confirmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _confirm, _confirmV);
+            NativeNodeApi.napi_set_named_property(env, obj, _confirmName, _confirmV);
     }
 }
 
@@ -1551,28 +1551,28 @@ public sealed record BluetoothManagerServerResponse(
     byte[] Value
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _deviceIdName => "deviceId"u8;
+    private static ReadOnlySpan<byte> _transIdName => "transId"u8;
+    private static ReadOnlySpan<byte> _statusName => "status"u8;
+    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
+    private static ReadOnlySpan<byte> _valueName => "value"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _deviceId = System.Text.Encoding.UTF8.GetBytes("deviceId");
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceId, _deviceIdV);
-        var _transId = System.Text.Encoding.UTF8.GetBytes("transId");
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
         var _transIdV = NativeValue.From(TransId);
         if (_transIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _transId, _transIdV);
-        var _status = System.Text.Encoding.UTF8.GetBytes("status");
+            NativeNodeApi.napi_set_named_property(env, obj, _transIdName, _transIdV);
         var _statusV = NativeValue.From(Status);
         if (_statusV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _status, _statusV);
-        var _offset = System.Text.Encoding.UTF8.GetBytes("offset");
+            NativeNodeApi.napi_set_named_property(env, obj, _statusName, _statusV);
         var _offsetV = NativeValue.From(Offset);
         if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
-        var _value = System.Text.Encoding.UTF8.GetBytes("value");
+            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
         var _valueV = NativeValue.From(Value);
         if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _value, _valueV);
+            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
     }
 }
 

@@ -270,28 +270,28 @@ public sealed record HidDeviceSdp(
     byte[] Descriptors
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _descriptionName => "description"u8;
+    private static ReadOnlySpan<byte> _providerName => "provider"u8;
+    private static ReadOnlySpan<byte> _subclassName => "subclass"u8;
+    private static ReadOnlySpan<byte> _descriptorsName => "descriptors"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _description = System.Text.Encoding.UTF8.GetBytes("description");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _descriptionV = NativeValue.From(Description);
         if (_descriptionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _description, _descriptionV);
-        var _provider = System.Text.Encoding.UTF8.GetBytes("provider");
+            NativeNodeApi.napi_set_named_property(env, obj, _descriptionName, _descriptionV);
         var _providerV = NativeValue.From(Provider);
         if (_providerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _provider, _providerV);
-        var _subclass = System.Text.Encoding.UTF8.GetBytes("subclass");
+            NativeNodeApi.napi_set_named_property(env, obj, _providerName, _providerV);
         var _subclassV = NativeValue.From(Subclass);
         if (_subclassV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _subclass, _subclassV);
-        var _descriptors = System.Text.Encoding.UTF8.GetBytes("descriptors");
+            NativeNodeApi.napi_set_named_property(env, obj, _subclassName, _subclassV);
         var _descriptorsV = NativeValue.From(Descriptors);
         if (_descriptorsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _descriptors, _descriptorsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _descriptorsName, _descriptorsV);
     }
 }
 
@@ -307,31 +307,31 @@ public sealed record HidDeviceQos(
     double? DelayVariation = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _serviceTypeName => "serviceType"u8;
+    private static ReadOnlySpan<byte> _tokenRateName => "tokenRate"u8;
+    private static ReadOnlySpan<byte> _tokenBucketSizeName => "tokenBucketSize"u8;
+    private static ReadOnlySpan<byte> _peakBandwidthName => "peakBandwidth"u8;
+    private static ReadOnlySpan<byte> _latencyName => "latency"u8;
+    private static ReadOnlySpan<byte> _delayVariationName => "delayVariation"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _serviceType = System.Text.Encoding.UTF8.GetBytes("serviceType");
         var _serviceTypeV = NativeValue.From(ServiceType);
         if (_serviceTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceType, _serviceTypeV);
-        var _tokenRate = System.Text.Encoding.UTF8.GetBytes("tokenRate");
+            NativeNodeApi.napi_set_named_property(env, obj, _serviceTypeName, _serviceTypeV);
         var _tokenRateV = NativeValue.From(TokenRate);
         if (_tokenRateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tokenRate, _tokenRateV);
-        var _tokenBucketSize = System.Text.Encoding.UTF8.GetBytes("tokenBucketSize");
+            NativeNodeApi.napi_set_named_property(env, obj, _tokenRateName, _tokenRateV);
         var _tokenBucketSizeV = NativeValue.From(TokenBucketSize);
         if (_tokenBucketSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tokenBucketSize, _tokenBucketSizeV);
-        var _peakBandwidth = System.Text.Encoding.UTF8.GetBytes("peakBandwidth");
+            NativeNodeApi.napi_set_named_property(env, obj, _tokenBucketSizeName, _tokenBucketSizeV);
         var _peakBandwidthV = NativeValue.From(PeakBandwidth);
         if (_peakBandwidthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _peakBandwidth, _peakBandwidthV);
-        var _latency = System.Text.Encoding.UTF8.GetBytes("latency");
+            NativeNodeApi.napi_set_named_property(env, obj, _peakBandwidthName, _peakBandwidthV);
         var _latencyV = NativeValue.From(Latency);
         if (_latencyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _latency, _latencyV);
-        var _delayVariation = System.Text.Encoding.UTF8.GetBytes("delayVariation");
+            NativeNodeApi.napi_set_named_property(env, obj, _latencyName, _latencyV);
         var _delayVariationV = NativeValue.From(DelayVariation);
         if (_delayVariationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _delayVariation, _delayVariationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _delayVariationName, _delayVariationV);
     }
 }

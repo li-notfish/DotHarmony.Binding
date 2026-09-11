@@ -1023,24 +1023,24 @@ public sealed record AudioCapturerOptions(
     global::HarmonyOS.ArkUI.AudioPlaybackCaptureMode? PlaybackCaptureMode = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _streamInfoName => "streamInfo"u8;
+    private static ReadOnlySpan<byte> _capturerInfoName => "capturerInfo"u8;
+    private static ReadOnlySpan<byte> _playbackCaptureConfigName => "playbackCaptureConfig"u8;
+    private static ReadOnlySpan<byte> _playbackCaptureModeName => "playbackCaptureMode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _streamInfo = System.Text.Encoding.UTF8.GetBytes("streamInfo");
         var _streamInfoV = NativeValue.From(StreamInfo);
         if (_streamInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _streamInfo, _streamInfoV);
-        var _capturerInfo = System.Text.Encoding.UTF8.GetBytes("capturerInfo");
+            NativeNodeApi.napi_set_named_property(env, obj, _streamInfoName, _streamInfoV);
         var _capturerInfoV = NativeValue.From(CapturerInfo);
         if (_capturerInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _capturerInfo, _capturerInfoV);
-        var _playbackCaptureConfig = System.Text.Encoding.UTF8.GetBytes("playbackCaptureConfig");
+            NativeNodeApi.napi_set_named_property(env, obj, _capturerInfoName, _capturerInfoV);
         var _playbackCaptureConfigV = NativeValue.From(PlaybackCaptureConfig);
         if (_playbackCaptureConfigV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _playbackCaptureConfig, _playbackCaptureConfigV);
-        var _playbackCaptureMode = System.Text.Encoding.UTF8.GetBytes("playbackCaptureMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _playbackCaptureConfigName, _playbackCaptureConfigV);
         var _playbackCaptureModeV = NativeValue.From(PlaybackCaptureMode);
         if (_playbackCaptureModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _playbackCaptureMode, _playbackCaptureModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _playbackCaptureModeName, _playbackCaptureModeV);
     }
 }
 
@@ -1736,20 +1736,20 @@ public sealed record AudioRendererOptions(
     global::HarmonyOS.ArkUI.AudioPrivacyType? PrivacyType = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _streamInfoName => "streamInfo"u8;
+    private static ReadOnlySpan<byte> _rendererInfoName => "rendererInfo"u8;
+    private static ReadOnlySpan<byte> _privacyTypeName => "privacyType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _streamInfo = System.Text.Encoding.UTF8.GetBytes("streamInfo");
         var _streamInfoV = NativeValue.From(StreamInfo);
         if (_streamInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _streamInfo, _streamInfoV);
-        var _rendererInfo = System.Text.Encoding.UTF8.GetBytes("rendererInfo");
+            NativeNodeApi.napi_set_named_property(env, obj, _streamInfoName, _streamInfoV);
         var _rendererInfoV = NativeValue.From(RendererInfo);
         if (_rendererInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rendererInfo, _rendererInfoV);
-        var _privacyType = System.Text.Encoding.UTF8.GetBytes("privacyType");
+            NativeNodeApi.napi_set_named_property(env, obj, _rendererInfoName, _rendererInfoV);
         var _privacyTypeV = NativeValue.From(PrivacyType);
         if (_privacyTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _privacyType, _privacyTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _privacyTypeName, _privacyTypeV);
     }
 }
 
@@ -2095,20 +2095,20 @@ public sealed record AudioInterrupt(
     bool PauseWhenDucked
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _streamUsageName => "streamUsage"u8;
+    private static ReadOnlySpan<byte> _contentTypeName => "contentType"u8;
+    private static ReadOnlySpan<byte> _pauseWhenDuckedName => "pauseWhenDucked"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _streamUsage = System.Text.Encoding.UTF8.GetBytes("streamUsage");
         var _streamUsageV = NativeValue.From(StreamUsage);
         if (_streamUsageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _streamUsage, _streamUsageV);
-        var _contentType = System.Text.Encoding.UTF8.GetBytes("contentType");
+            NativeNodeApi.napi_set_named_property(env, obj, _streamUsageName, _streamUsageV);
         var _contentTypeV = NativeValue.From(ContentType);
         if (_contentTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _contentType, _contentTypeV);
-        var _pauseWhenDucked = System.Text.Encoding.UTF8.GetBytes("pauseWhenDucked");
+            NativeNodeApi.napi_set_named_property(env, obj, _contentTypeName, _contentTypeV);
         var _pauseWhenDuckedV = NativeValue.From(PauseWhenDucked);
         if (_pauseWhenDuckedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pauseWhenDucked, _pauseWhenDuckedV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pauseWhenDuckedName, _pauseWhenDuckedV);
     }
 }
 
@@ -3538,12 +3538,12 @@ public sealed record AudioSessionStrategy(
     global::HarmonyOS.ArkUI.AudioConcurrencyMode ConcurrencyMode
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _concurrencyModeName => "concurrencyMode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _concurrencyMode = System.Text.Encoding.UTF8.GetBytes("concurrencyMode");
         var _concurrencyModeV = NativeValue.From(ConcurrencyMode);
         if (_concurrencyModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _concurrencyMode, _concurrencyModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _concurrencyModeName, _concurrencyModeV);
     }
 }
 
@@ -3554,12 +3554,12 @@ public sealed record AudioPlaybackCaptureConfig(
     CaptureFilterOptions FilterOptions
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _filterOptionsName => "filterOptions"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _filterOptions = System.Text.Encoding.UTF8.GetBytes("filterOptions");
         var _filterOptionsV = NativeValue.From(FilterOptions);
         if (_filterOptionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterOptions, _filterOptionsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _filterOptionsName, _filterOptionsV);
     }
 }
 
@@ -3872,12 +3872,12 @@ public sealed record SystemRecordControllerConfig(
     global::HarmonyOS.ArkUI.SourceType SourceType
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _sourceTypeName => "sourceType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _sourceType = System.Text.Encoding.UTF8.GetBytes("sourceType");
         var _sourceTypeV = NativeValue.From(SourceType);
         if (_sourceTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sourceType, _sourceTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sourceTypeName, _sourceTypeV);
     }
 }
 
@@ -3888,11 +3888,11 @@ public sealed record CaptureFilterOptions(
     global::HarmonyOS.ArkUI.StreamUsage[] Usages
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _usagesName => "usages"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _usages = System.Text.Encoding.UTF8.GetBytes("usages");
         var _usagesV = NativeValue.From(Usages);
         if (_usagesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _usages, _usagesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _usagesName, _usagesV);
     }
 }

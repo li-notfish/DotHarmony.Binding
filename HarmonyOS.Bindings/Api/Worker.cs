@@ -663,16 +663,16 @@ public sealed record WorkerEvent(
     double TimeStamp
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _typeName => "type"u8;
+    private static ReadOnlySpan<byte> _timeStampName => "timeStamp"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _type = System.Text.Encoding.UTF8.GetBytes("type");
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _type, _typeV);
-        var _timeStamp = System.Text.Encoding.UTF8.GetBytes("timeStamp");
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
         var _timeStampV = NativeValue.From(TimeStamp);
         if (_timeStampV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeStamp, _timeStampV);
+            NativeNodeApi.napi_set_named_property(env, obj, _timeStampName, _timeStampV);
     }
 }
 
@@ -683,12 +683,12 @@ public sealed record PostMessageOptions(
     IntPtr[]? Transfer = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _transferName => "transfer"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _transfer = System.Text.Encoding.UTF8.GetBytes("transfer");
         var _transferV = NativeValue.From(Transfer);
         if (_transferV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _transfer, _transferV);
+            NativeNodeApi.napi_set_named_property(env, obj, _transferName, _transferV);
     }
 }
 
@@ -712,23 +712,23 @@ public sealed record WorkerOptions(
     global::HarmonyOS.ArkUI.ThreadWorkerPriority? Priority = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _typeName => "type"u8;
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _sharedName => "shared"u8;
+    private static ReadOnlySpan<byte> _priorityName => "priority"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _type = System.Text.Encoding.UTF8.GetBytes("type");
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _type, _typeV);
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _shared = System.Text.Encoding.UTF8.GetBytes("shared");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _sharedV = NativeValue.From(Shared);
         if (_sharedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _shared, _sharedV);
-        var _priority = System.Text.Encoding.UTF8.GetBytes("priority");
+            NativeNodeApi.napi_set_named_property(env, obj, _sharedName, _sharedV);
         var _priorityV = NativeValue.From(Priority);
         if (_priorityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _priority, _priorityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
     }
 }

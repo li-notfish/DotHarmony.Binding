@@ -296,27 +296,27 @@ public sealed record InterfaceConfig(
     string? DnsServers = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _iPSetModeName => "ipSetMode"u8;
+    private static ReadOnlySpan<byte> _iPAddressName => "ipAddress"u8;
+    private static ReadOnlySpan<byte> _gatewayName => "gateway"u8;
+    private static ReadOnlySpan<byte> _netMaskName => "netMask"u8;
+    private static ReadOnlySpan<byte> _dnsServersName => "dnsServers"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _iPSetMode = System.Text.Encoding.UTF8.GetBytes("ipSetMode");
         var _iPSetModeV = NativeValue.From(IPSetMode);
         if (_iPSetModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iPSetMode, _iPSetModeV);
-        var _iPAddress = System.Text.Encoding.UTF8.GetBytes("ipAddress");
+            NativeNodeApi.napi_set_named_property(env, obj, _iPSetModeName, _iPSetModeV);
         var _iPAddressV = NativeValue.From(IPAddress);
         if (_iPAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iPAddress, _iPAddressV);
-        var _gateway = System.Text.Encoding.UTF8.GetBytes("gateway");
+            NativeNodeApi.napi_set_named_property(env, obj, _iPAddressName, _iPAddressV);
         var _gatewayV = NativeValue.From(Gateway);
         if (_gatewayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _gateway, _gatewayV);
-        var _netMask = System.Text.Encoding.UTF8.GetBytes("netMask");
+            NativeNodeApi.napi_set_named_property(env, obj, _gatewayName, _gatewayV);
         var _netMaskV = NativeValue.From(NetMask);
         if (_netMaskV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _netMask, _netMaskV);
-        var _dnsServers = System.Text.Encoding.UTF8.GetBytes("dnsServers");
+            NativeNodeApi.napi_set_named_property(env, obj, _netMaskName, _netMaskV);
         var _dnsServersV = NativeValue.From(DnsServers);
         if (_dnsServersV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dnsServers, _dnsServersV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dnsServersName, _dnsServersV);
     }
 }

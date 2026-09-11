@@ -406,16 +406,16 @@ public sealed record HuksOptions(
     byte[]? InData = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _propertiesName => "properties"u8;
+    private static ReadOnlySpan<byte> _inDataName => "inData"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _properties = System.Text.Encoding.UTF8.GetBytes("properties");
         var _propertiesV = NativeValue.From(Properties);
         if (_propertiesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _properties, _propertiesV);
-        var _inData = System.Text.Encoding.UTF8.GetBytes("inData");
+            NativeNodeApi.napi_set_named_property(env, obj, _propertiesName, _propertiesV);
         var _inDataV = NativeValue.From(InData);
         if (_inDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _inData, _inDataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _inDataName, _inDataV);
     }
 }
 

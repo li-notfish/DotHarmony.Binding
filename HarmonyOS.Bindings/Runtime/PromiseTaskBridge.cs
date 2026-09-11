@@ -90,7 +90,7 @@ internal static class PromiseTaskBridge
     private static State TakeState(IntPtr env, IntPtr info, out IntPtr firstArg, out GCHandle gch)
     {
         var argc = (IntPtr)4;
-        var argv = new IntPtr[4];
+        Span<IntPtr> argv = stackalloc IntPtr[4];
         NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
             .ThrowIfFailed();
         firstArg = argv[0];

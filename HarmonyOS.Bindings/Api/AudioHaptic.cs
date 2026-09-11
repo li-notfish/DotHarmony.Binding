@@ -311,16 +311,16 @@ public sealed record AudioHapticPlayerOptions(
     bool? MuteHaptics = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _muteAudioName => "muteAudio"u8;
+    private static ReadOnlySpan<byte> _muteHapticsName => "muteHaptics"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _muteAudio = System.Text.Encoding.UTF8.GetBytes("muteAudio");
         var _muteAudioV = NativeValue.From(MuteAudio);
         if (_muteAudioV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _muteAudio, _muteAudioV);
-        var _muteHaptics = System.Text.Encoding.UTF8.GetBytes("muteHaptics");
+            NativeNodeApi.napi_set_named_property(env, obj, _muteAudioName, _muteAudioV);
         var _muteHapticsV = NativeValue.From(MuteHaptics);
         if (_muteHapticsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _muteHaptics, _muteHapticsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _muteHapticsName, _muteHapticsV);
     }
 }
 
@@ -333,19 +333,19 @@ public sealed record AudioHapticFileDescriptor(
     double? Offset = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _fdName => "fd"u8;
+    private static ReadOnlySpan<byte> _lengthName => "length"u8;
+    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _fd = System.Text.Encoding.UTF8.GetBytes("fd");
         var _fdV = NativeValue.From(Fd);
         if (_fdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fd, _fdV);
-        var _length = System.Text.Encoding.UTF8.GetBytes("length");
+            NativeNodeApi.napi_set_named_property(env, obj, _fdName, _fdV);
         var _lengthV = NativeValue.From(Length);
         if (_lengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _length, _lengthV);
-        var _offset = System.Text.Encoding.UTF8.GetBytes("offset");
+            NativeNodeApi.napi_set_named_property(env, obj, _lengthName, _lengthV);
         var _offsetV = NativeValue.From(Offset);
         if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
+            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
     }
 }

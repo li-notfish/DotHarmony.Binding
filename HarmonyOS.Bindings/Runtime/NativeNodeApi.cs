@@ -138,6 +138,14 @@ internal static partial class NativeNodeApi
         byte[] name,
         napi_value value);
 
+    /// <summary>Span 重载：生成的 u8 常量字段零拷贝传递（LibraryImport 固定钉扎）</summary>
+    [LibraryImport(NApiLib, EntryPoint = "napi_set_named_property")]
+    internal static unsafe partial napi_status napi_set_named_property(
+        napi_env env,
+        napi_value obj,
+        ReadOnlySpan<byte> name,
+        napi_value value);
+
     #endregion
 
     #region 函数操作
@@ -163,7 +171,7 @@ internal static partial class NativeNodeApi
         napi_value recv,
         napi_value func,
         int argc,
-        IntPtr[] argv,
+        ReadOnlySpan<IntPtr> argv,
         out napi_value result);
 
     [LibraryImport(NApiLib)]
@@ -171,7 +179,7 @@ internal static partial class NativeNodeApi
         napi_env env,
         napi_value constructor,
         int argc,
-        IntPtr[] argv,
+        ReadOnlySpan<IntPtr> argv,
         out napi_value result);
 
     [LibraryImport(NApiLib)]
@@ -179,7 +187,7 @@ internal static partial class NativeNodeApi
         napi_env env,
         napi_callback_info info,
         ref IntPtr argc,
-        IntPtr[]? argv,
+        Span<IntPtr> argv,
         out IntPtr thisArg,
         out IntPtr data);
 

@@ -1464,16 +1464,16 @@ public sealed record ReturningConfig(
     double? MaxReturningCount = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _columnsName => "columns"u8;
+    private static ReadOnlySpan<byte> _maxReturningCountName => "maxReturningCount"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _columns = System.Text.Encoding.UTF8.GetBytes("columns");
         var _columnsV = NativeValue.From(Columns);
         if (_columnsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _columns, _columnsV);
-        var _maxReturningCount = System.Text.Encoding.UTF8.GetBytes("maxReturningCount");
+            NativeNodeApi.napi_set_named_property(env, obj, _columnsName, _columnsV);
         var _maxReturningCountV = NativeValue.From(MaxReturningCount);
         if (_maxReturningCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxReturningCount, _maxReturningCountV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxReturningCountName, _maxReturningCountV);
     }
 }
 
@@ -1959,40 +1959,40 @@ public sealed record DistributedConfig(
     bool? AutoSyncSwitch = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _autoSyncName => "autoSync"u8;
+    private static ReadOnlySpan<byte> _asyncDownloadAssetName => "asyncDownloadAsset"u8;
+    private static ReadOnlySpan<byte> _enableCloudName => "enableCloud"u8;
+    private static ReadOnlySpan<byte> _tableTypeName => "tableType"u8;
+    private static ReadOnlySpan<byte> _assetConflictPolicyName => "assetConflictPolicy"u8;
+    private static ReadOnlySpan<byte> _assetTempPathName => "assetTempPath"u8;
+    private static ReadOnlySpan<byte> _assetDownloadOnDemandName => "assetDownloadOnDemand"u8;
+    private static ReadOnlySpan<byte> _autoSyncSwitchName => "autoSyncSwitch"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _autoSync = System.Text.Encoding.UTF8.GetBytes("autoSync");
         var _autoSyncV = NativeValue.From(AutoSync);
         if (_autoSyncV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoSync, _autoSyncV);
-        var _asyncDownloadAsset = System.Text.Encoding.UTF8.GetBytes("asyncDownloadAsset");
+            NativeNodeApi.napi_set_named_property(env, obj, _autoSyncName, _autoSyncV);
         var _asyncDownloadAssetV = NativeValue.From(AsyncDownloadAsset);
         if (_asyncDownloadAssetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _asyncDownloadAsset, _asyncDownloadAssetV);
-        var _enableCloud = System.Text.Encoding.UTF8.GetBytes("enableCloud");
+            NativeNodeApi.napi_set_named_property(env, obj, _asyncDownloadAssetName, _asyncDownloadAssetV);
         var _enableCloudV = NativeValue.From(EnableCloud);
         if (_enableCloudV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enableCloud, _enableCloudV);
-        var _tableType = System.Text.Encoding.UTF8.GetBytes("tableType");
+            NativeNodeApi.napi_set_named_property(env, obj, _enableCloudName, _enableCloudV);
         var _tableTypeV = NativeValue.From(TableType);
         if (_tableTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tableType, _tableTypeV);
-        var _assetConflictPolicy = System.Text.Encoding.UTF8.GetBytes("assetConflictPolicy");
+            NativeNodeApi.napi_set_named_property(env, obj, _tableTypeName, _tableTypeV);
         var _assetConflictPolicyV = NativeValue.From(AssetConflictPolicy);
         if (_assetConflictPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _assetConflictPolicy, _assetConflictPolicyV);
-        var _assetTempPath = System.Text.Encoding.UTF8.GetBytes("assetTempPath");
+            NativeNodeApi.napi_set_named_property(env, obj, _assetConflictPolicyName, _assetConflictPolicyV);
         var _assetTempPathV = NativeValue.From(AssetTempPath);
         if (_assetTempPathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _assetTempPath, _assetTempPathV);
-        var _assetDownloadOnDemand = System.Text.Encoding.UTF8.GetBytes("assetDownloadOnDemand");
+            NativeNodeApi.napi_set_named_property(env, obj, _assetTempPathName, _assetTempPathV);
         var _assetDownloadOnDemandV = NativeValue.From(AssetDownloadOnDemand);
         if (_assetDownloadOnDemandV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _assetDownloadOnDemand, _assetDownloadOnDemandV);
-        var _autoSyncSwitch = System.Text.Encoding.UTF8.GetBytes("autoSyncSwitch");
+            NativeNodeApi.napi_set_named_property(env, obj, _assetDownloadOnDemandName, _assetDownloadOnDemandV);
         var _autoSyncSwitchV = NativeValue.From(AutoSyncSwitch);
         if (_autoSyncSwitchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoSyncSwitch, _autoSyncSwitchV);
+            NativeNodeApi.napi_set_named_property(env, obj, _autoSyncSwitchName, _autoSyncSwitchV);
     }
 }
 
@@ -2291,12 +2291,12 @@ public sealed record TransactionOptions(
     global::HarmonyOS.ArkUI.TransactionType? TransactionType = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _transactionTypeName => "transactionType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _transactionType = System.Text.Encoding.UTF8.GetBytes("transactionType");
         var _transactionTypeV = NativeValue.From(TransactionType);
         if (_transactionTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _transactionType, _transactionTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _transactionTypeName, _transactionTypeV);
     }
 }
 
@@ -2312,31 +2312,31 @@ public sealed record CryptoParam(
     double? CryptoPageSize = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _encryptionKeyName => "encryptionKey"u8;
+    private static ReadOnlySpan<byte> _iterationCountName => "iterationCount"u8;
+    private static ReadOnlySpan<byte> _encryptionAlgoName => "encryptionAlgo"u8;
+    private static ReadOnlySpan<byte> _hmacAlgoName => "hmacAlgo"u8;
+    private static ReadOnlySpan<byte> _kdfAlgoName => "kdfAlgo"u8;
+    private static ReadOnlySpan<byte> _cryptoPageSizeName => "cryptoPageSize"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _encryptionKey = System.Text.Encoding.UTF8.GetBytes("encryptionKey");
         var _encryptionKeyV = NativeValue.From(EncryptionKey);
         if (_encryptionKeyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptionKey, _encryptionKeyV);
-        var _iterationCount = System.Text.Encoding.UTF8.GetBytes("iterationCount");
+            NativeNodeApi.napi_set_named_property(env, obj, _encryptionKeyName, _encryptionKeyV);
         var _iterationCountV = NativeValue.From(IterationCount);
         if (_iterationCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iterationCount, _iterationCountV);
-        var _encryptionAlgo = System.Text.Encoding.UTF8.GetBytes("encryptionAlgo");
+            NativeNodeApi.napi_set_named_property(env, obj, _iterationCountName, _iterationCountV);
         var _encryptionAlgoV = NativeValue.From(EncryptionAlgo);
         if (_encryptionAlgoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptionAlgo, _encryptionAlgoV);
-        var _hmacAlgo = System.Text.Encoding.UTF8.GetBytes("hmacAlgo");
+            NativeNodeApi.napi_set_named_property(env, obj, _encryptionAlgoName, _encryptionAlgoV);
         var _hmacAlgoV = NativeValue.From(HmacAlgo);
         if (_hmacAlgoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _hmacAlgo, _hmacAlgoV);
-        var _kdfAlgo = System.Text.Encoding.UTF8.GetBytes("kdfAlgo");
+            NativeNodeApi.napi_set_named_property(env, obj, _hmacAlgoName, _hmacAlgoV);
         var _kdfAlgoV = NativeValue.From(KdfAlgo);
         if (_kdfAlgoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _kdfAlgo, _kdfAlgoV);
-        var _cryptoPageSize = System.Text.Encoding.UTF8.GetBytes("cryptoPageSize");
+            NativeNodeApi.napi_set_named_property(env, obj, _kdfAlgoName, _kdfAlgoV);
         var _cryptoPageSizeV = NativeValue.From(CryptoPageSize);
         if (_cryptoPageSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cryptoPageSize, _cryptoPageSizeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _cryptoPageSizeName, _cryptoPageSizeV);
     }
 }

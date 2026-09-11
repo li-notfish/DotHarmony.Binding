@@ -242,15 +242,15 @@ public sealed record DataProxyConfig(
     global::HarmonyOS.ArkUI.DataProxyMaxValueLength? MaxValueLength = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _typeName => "type"u8;
+    private static ReadOnlySpan<byte> _maxValueLengthName => "maxValueLength"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _type = System.Text.Encoding.UTF8.GetBytes("type");
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _type, _typeV);
-        var _maxValueLength = System.Text.Encoding.UTF8.GetBytes("maxValueLength");
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
         var _maxValueLengthV = NativeValue.From(MaxValueLength);
         if (_maxValueLengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxValueLength, _maxValueLengthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxValueLengthName, _maxValueLengthV);
     }
 }

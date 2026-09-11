@@ -425,16 +425,16 @@ public sealed record CustomProperty(
     DlpFileQueryOptions? Options = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _enterpriseName => "enterprise"u8;
+    private static ReadOnlySpan<byte> _optionsName => "options"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _enterprise = System.Text.Encoding.UTF8.GetBytes("enterprise");
         var _enterpriseV = NativeValue.From(Enterprise);
         if (_enterpriseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enterprise, _enterpriseV);
-        var _options = System.Text.Encoding.UTF8.GetBytes("options");
+            NativeNodeApi.napi_set_named_property(env, obj, _enterpriseName, _enterpriseV);
         var _optionsV = NativeValue.From(Options);
         if (_optionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _options, _optionsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _optionsName, _optionsV);
     }
 }
 
@@ -445,12 +445,12 @@ public sealed record EnterprisePolicy(
     string PolicyString
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _policyStringName => "policyString"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _policyString = System.Text.Encoding.UTF8.GetBytes("policyString");
         var _policyStringV = NativeValue.From(PolicyString);
         if (_policyStringV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _policyString, _policyStringV);
+            NativeNodeApi.napi_set_named_property(env, obj, _policyStringName, _policyStringV);
     }
 }
 
@@ -461,12 +461,12 @@ public sealed record DlpFileQueryOptions(
     string? ClassificationLabel = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _classificationLabelName => "classificationLabel"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _classificationLabel = System.Text.Encoding.UTF8.GetBytes("classificationLabel");
         var _classificationLabelV = NativeValue.From(ClassificationLabel);
         if (_classificationLabelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _classificationLabel, _classificationLabelV);
+            NativeNodeApi.napi_set_named_property(env, obj, _classificationLabelName, _classificationLabelV);
     }
 }
 

@@ -216,16 +216,16 @@ public sealed record InnerEvent(
     global::HarmonyOS.ArkUI.EventPriority? Priority = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _eventIdName => "eventId"u8;
+    private static ReadOnlySpan<byte> _priorityName => "priority"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _eventId = System.Text.Encoding.UTF8.GetBytes("eventId");
         var _eventIdV = NativeValue.From(EventId);
         if (_eventIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eventId, _eventIdV);
-        var _priority = System.Text.Encoding.UTF8.GetBytes("priority");
+            NativeNodeApi.napi_set_named_property(env, obj, _eventIdName, _eventIdV);
         var _priorityV = NativeValue.From(Priority);
         if (_priorityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _priority, _priorityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
     }
 }
 
@@ -236,12 +236,12 @@ public sealed record EmitterOptions(
     global::HarmonyOS.ArkUI.EventPriority? Priority = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _priorityName => "priority"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _priority = System.Text.Encoding.UTF8.GetBytes("priority");
         var _priorityV = NativeValue.From(Priority);
         if (_priorityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _priority, _priorityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
     }
 }
 

@@ -98,24 +98,24 @@ public sealed record DownloadableProfile(
     AccessRule[]? AccessRules = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _activationCodeName => "activationCode"u8;
+    private static ReadOnlySpan<byte> _confirmationCodeName => "confirmationCode"u8;
+    private static ReadOnlySpan<byte> _carrierNameName => "carrierName"u8;
+    private static ReadOnlySpan<byte> _accessRulesName => "accessRules"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _activationCode = System.Text.Encoding.UTF8.GetBytes("activationCode");
         var _activationCodeV = NativeValue.From(ActivationCode);
         if (_activationCodeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _activationCode, _activationCodeV);
-        var _confirmationCode = System.Text.Encoding.UTF8.GetBytes("confirmationCode");
+            NativeNodeApi.napi_set_named_property(env, obj, _activationCodeName, _activationCodeV);
         var _confirmationCodeV = NativeValue.From(ConfirmationCode);
         if (_confirmationCodeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _confirmationCode, _confirmationCodeV);
-        var _carrierName = System.Text.Encoding.UTF8.GetBytes("carrierName");
+            NativeNodeApi.napi_set_named_property(env, obj, _confirmationCodeName, _confirmationCodeV);
         var _carrierNameV = NativeValue.From(CarrierName);
         if (_carrierNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _carrierName, _carrierNameV);
-        var _accessRules = System.Text.Encoding.UTF8.GetBytes("accessRules");
+            NativeNodeApi.napi_set_named_property(env, obj, _carrierNameName, _carrierNameV);
         var _accessRulesV = NativeValue.From(AccessRules);
         if (_accessRulesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _accessRules, _accessRulesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _accessRulesName, _accessRulesV);
     }
 }
 
@@ -128,19 +128,19 @@ public sealed record AccessRule(
     double AccessType
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _certificateHashHexStrName => "certificateHashHexStr"u8;
+    private static ReadOnlySpan<byte> _packageNameName => "packageName"u8;
+    private static ReadOnlySpan<byte> _accessTypeName => "accessType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _certificateHashHexStr = System.Text.Encoding.UTF8.GetBytes("certificateHashHexStr");
         var _certificateHashHexStrV = NativeValue.From(CertificateHashHexStr);
         if (_certificateHashHexStrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certificateHashHexStr, _certificateHashHexStrV);
-        var _packageName = System.Text.Encoding.UTF8.GetBytes("packageName");
+            NativeNodeApi.napi_set_named_property(env, obj, _certificateHashHexStrName, _certificateHashHexStrV);
         var _packageNameV = NativeValue.From(PackageName);
         if (_packageNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _packageName, _packageNameV);
-        var _accessType = System.Text.Encoding.UTF8.GetBytes("accessType");
+            NativeNodeApi.napi_set_named_property(env, obj, _packageNameName, _packageNameV);
         var _accessTypeV = NativeValue.From(AccessType);
         if (_accessTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _accessType, _accessTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _accessTypeName, _accessTypeV);
     }
 }

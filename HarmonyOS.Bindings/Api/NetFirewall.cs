@@ -314,24 +314,24 @@ public sealed record RequestParam(
     global::HarmonyOS.ArkUI.NetFirewallOrderType OrderType
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _pageName => "page"u8;
+    private static ReadOnlySpan<byte> _pageSizeName => "pageSize"u8;
+    private static ReadOnlySpan<byte> _orderFieldName => "orderField"u8;
+    private static ReadOnlySpan<byte> _orderTypeName => "orderType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _page = System.Text.Encoding.UTF8.GetBytes("page");
         var _pageV = NativeValue.From(Page);
         if (_pageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _page, _pageV);
-        var _pageSize = System.Text.Encoding.UTF8.GetBytes("pageSize");
+            NativeNodeApi.napi_set_named_property(env, obj, _pageName, _pageV);
         var _pageSizeV = NativeValue.From(PageSize);
         if (_pageSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSize, _pageSizeV);
-        var _orderField = System.Text.Encoding.UTF8.GetBytes("orderField");
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSizeName, _pageSizeV);
         var _orderFieldV = NativeValue.From(OrderField);
         if (_orderFieldV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _orderField, _orderFieldV);
-        var _orderType = System.Text.Encoding.UTF8.GetBytes("orderType");
+            NativeNodeApi.napi_set_named_property(env, obj, _orderFieldName, _orderFieldV);
         var _orderTypeV = NativeValue.From(OrderType);
         if (_orderTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _orderType, _orderTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _orderTypeName, _orderTypeV);
     }
 }
 

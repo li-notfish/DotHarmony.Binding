@@ -5592,16 +5592,16 @@ public sealed record TargetInfo(
     double? ComponentId = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _idName => "id"u8;
+    private static ReadOnlySpan<byte> _componentIdName => "componentId"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _id = System.Text.Encoding.UTF8.GetBytes("id");
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _id, _idV);
-        var _componentId = System.Text.Encoding.UTF8.GetBytes("componentId");
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
         var _componentIdV = NativeValue.From(ComponentId);
         if (_componentIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _componentId, _componentIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _componentIdName, _componentIdV);
     }
 }
 
@@ -5612,11 +5612,11 @@ public sealed record GestureObserverConfigs(
     global::HarmonyOS.ArkUI.GestureActionPhase[] ActionPhases
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _actionPhasesName => "actionPhases"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _actionPhases = System.Text.Encoding.UTF8.GetBytes("actionPhases");
         var _actionPhasesV = NativeValue.From(ActionPhases);
         if (_actionPhasesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _actionPhases, _actionPhasesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _actionPhasesName, _actionPhasesV);
     }
 }

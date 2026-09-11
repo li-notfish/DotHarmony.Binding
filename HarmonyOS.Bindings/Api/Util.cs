@@ -1207,16 +1207,16 @@ public sealed record TextDecoderOptions(
     bool? IgnoreBom = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _fatalName => "fatal"u8;
+    private static ReadOnlySpan<byte> _ignoreBomName => "ignoreBOM"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _fatal = System.Text.Encoding.UTF8.GetBytes("fatal");
         var _fatalV = NativeValue.From(Fatal);
         if (_fatalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fatal, _fatalV);
-        var _ignoreBom = System.Text.Encoding.UTF8.GetBytes("ignoreBOM");
+            NativeNodeApi.napi_set_named_property(env, obj, _fatalName, _fatalV);
         var _ignoreBomV = NativeValue.From(IgnoreBom);
         if (_ignoreBomV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _ignoreBom, _ignoreBomV);
+            NativeNodeApi.napi_set_named_property(env, obj, _ignoreBomName, _ignoreBomV);
     }
 }
 
@@ -1227,12 +1227,12 @@ public sealed record DecodeWithStreamOptions(
     bool? Stream = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _streamName => "stream"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _stream = System.Text.Encoding.UTF8.GetBytes("stream");
         var _streamV = NativeValue.From(Stream);
         if (_streamV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _stream, _streamV);
+            NativeNodeApi.napi_set_named_property(env, obj, _streamName, _streamV);
     }
 }
 
@@ -1243,12 +1243,12 @@ public sealed record DecodeToStringOptions(
     bool? Stream = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _streamName => "stream"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _stream = System.Text.Encoding.UTF8.GetBytes("stream");
         var _streamV = NativeValue.From(Stream);
         if (_streamV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _stream, _streamV);
+            NativeNodeApi.napi_set_named_property(env, obj, _streamName, _streamV);
     }
 }
 

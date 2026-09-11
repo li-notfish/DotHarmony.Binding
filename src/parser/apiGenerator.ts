@@ -869,14 +869,17 @@ export class ApiGenerator {
         lines.push(params);
         lines.push(') : INapiRecord');
         lines.push('{');
+        // 属性名 u8 常量：类型级缓存，WriteTo 调用零分配（2.x 零分配改造）
+        for (const p of mappedProps) {
+            lines.push(`    private static ReadOnlySpan<byte> ${this.encodePropVar(p.pascal)}Name => "${p.name}"u8;`);
+        }
         lines.push('    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)');
         lines.push('    {');
         for (const p of mappedProps) {
             const utf8Var = this.encodePropVar(p.pascal);
-            lines.push(`        var ${utf8Var} = System.Text.Encoding.UTF8.GetBytes("${p.name}");`);
             lines.push(`        var ${utf8Var}V = NativeValue.From(${p.pascal});`);
             lines.push(`        if (${utf8Var}V != IntPtr.Zero)`);
-            lines.push(`            NativeNodeApi.napi_set_named_property(env, obj, ${utf8Var}, ${utf8Var}V);`);
+            lines.push(`            NativeNodeApi.napi_set_named_property(env, obj, ${utf8Var}Name, ${utf8Var}V);`);
         }
         lines.push('    }');
         lines.push('}');

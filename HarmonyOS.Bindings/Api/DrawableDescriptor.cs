@@ -709,27 +709,27 @@ public sealed record DrawableDescriptorAnimationOptions(
     global::HarmonyOS.ArkUI.AnimationStopMode? StopMode = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _durationName => "duration"u8;
+    private static ReadOnlySpan<byte> _iterationsName => "iterations"u8;
+    private static ReadOnlySpan<byte> _frameDurationsName => "frameDurations"u8;
+    private static ReadOnlySpan<byte> _autoPlayName => "autoPlay"u8;
+    private static ReadOnlySpan<byte> _stopModeName => "stopMode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _duration = System.Text.Encoding.UTF8.GetBytes("duration");
         var _durationV = NativeValue.From(Duration);
         if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _duration, _durationV);
-        var _iterations = System.Text.Encoding.UTF8.GetBytes("iterations");
+            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
         var _iterationsV = NativeValue.From(Iterations);
         if (_iterationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iterations, _iterationsV);
-        var _frameDurations = System.Text.Encoding.UTF8.GetBytes("frameDurations");
+            NativeNodeApi.napi_set_named_property(env, obj, _iterationsName, _iterationsV);
         var _frameDurationsV = NativeValue.From(FrameDurations);
         if (_frameDurationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _frameDurations, _frameDurationsV);
-        var _autoPlay = System.Text.Encoding.UTF8.GetBytes("autoPlay");
+            NativeNodeApi.napi_set_named_property(env, obj, _frameDurationsName, _frameDurationsV);
         var _autoPlayV = NativeValue.From(AutoPlay);
         if (_autoPlayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoPlay, _autoPlayV);
-        var _stopMode = System.Text.Encoding.UTF8.GetBytes("stopMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _autoPlayName, _autoPlayV);
         var _stopModeV = NativeValue.From(StopMode);
         if (_stopModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _stopMode, _stopModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _stopModeName, _stopModeV);
     }
 }

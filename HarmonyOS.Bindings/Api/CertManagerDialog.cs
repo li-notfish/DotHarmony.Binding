@@ -148,12 +148,12 @@ public sealed record CertificateDialogProperty(
     bool ShowInstallButton
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _showInstallButtonName => "showInstallButton"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _showInstallButton = System.Text.Encoding.UTF8.GetBytes("showInstallButton");
         var _showInstallButtonV = NativeValue.From(ShowInstallButton);
         if (_showInstallButtonV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _showInstallButton, _showInstallButtonV);
+            NativeNodeApi.napi_set_named_property(env, obj, _showInstallButtonName, _showInstallButtonV);
     }
 }
 
@@ -185,11 +185,11 @@ public sealed record UkeyAuthRequest(
     string KeyUri
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _keyUriName => "keyUri"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _keyUri = System.Text.Encoding.UTF8.GetBytes("keyUri");
         var _keyUriV = NativeValue.From(KeyUri);
         if (_keyUriV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyUri, _keyUriV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keyUriName, _keyUriV);
     }
 }

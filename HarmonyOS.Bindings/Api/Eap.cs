@@ -124,19 +124,19 @@ public sealed record EapData(
     double BufferLen
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _msgIdName => "msgId"u8;
+    private static ReadOnlySpan<byte> _eapBufferName => "eapBuffer"u8;
+    private static ReadOnlySpan<byte> _bufferLenName => "bufferLen"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _msgId = System.Text.Encoding.UTF8.GetBytes("msgId");
         var _msgIdV = NativeValue.From(MsgId);
         if (_msgIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _msgId, _msgIdV);
-        var _eapBuffer = System.Text.Encoding.UTF8.GetBytes("eapBuffer");
+            NativeNodeApi.napi_set_named_property(env, obj, _msgIdName, _msgIdV);
         var _eapBufferV = NativeValue.From(EapBuffer);
         if (_eapBufferV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eapBuffer, _eapBufferV);
-        var _bufferLen = System.Text.Encoding.UTF8.GetBytes("bufferLen");
+            NativeNodeApi.napi_set_named_property(env, obj, _eapBufferName, _eapBufferV);
         var _bufferLenV = NativeValue.From(BufferLen);
         if (_bufferLenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bufferLen, _bufferLenV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bufferLenName, _bufferLenV);
     }
 }

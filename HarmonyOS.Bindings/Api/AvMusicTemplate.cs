@@ -681,32 +681,32 @@ public sealed record AvMusicTemplateUserInfo(
     bool IsVip
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _userInfoIdName => "userInfoId"u8;
+    private static ReadOnlySpan<byte> _nickNameName => "nickName"u8;
+    private static ReadOnlySpan<byte> _profilePicUrlName => "profilePicUrl"u8;
+    private static ReadOnlySpan<byte> _tipsName => "tips"u8;
+    private static ReadOnlySpan<byte> _isLoginName => "isLogin"u8;
+    private static ReadOnlySpan<byte> _isVipName => "isVip"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _userInfoId = System.Text.Encoding.UTF8.GetBytes("userInfoId");
         var _userInfoIdV = NativeValue.From(UserInfoId);
         if (_userInfoIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userInfoId, _userInfoIdV);
-        var _nickName = System.Text.Encoding.UTF8.GetBytes("nickName");
+            NativeNodeApi.napi_set_named_property(env, obj, _userInfoIdName, _userInfoIdV);
         var _nickNameV = NativeValue.From(NickName);
         if (_nickNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nickName, _nickNameV);
-        var _profilePicUrl = System.Text.Encoding.UTF8.GetBytes("profilePicUrl");
+            NativeNodeApi.napi_set_named_property(env, obj, _nickNameName, _nickNameV);
         var _profilePicUrlV = NativeValue.From(ProfilePicUrl);
         if (_profilePicUrlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _profilePicUrl, _profilePicUrlV);
-        var _tips = System.Text.Encoding.UTF8.GetBytes("tips");
+            NativeNodeApi.napi_set_named_property(env, obj, _profilePicUrlName, _profilePicUrlV);
         var _tipsV = NativeValue.From(Tips);
         if (_tipsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tips, _tipsV);
-        var _isLogin = System.Text.Encoding.UTF8.GetBytes("isLogin");
+            NativeNodeApi.napi_set_named_property(env, obj, _tipsName, _tipsV);
         var _isLoginV = NativeValue.From(IsLogin);
         if (_isLoginV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isLogin, _isLoginV);
-        var _isVip = System.Text.Encoding.UTF8.GetBytes("isVip");
+            NativeNodeApi.napi_set_named_property(env, obj, _isLoginName, _isLoginV);
         var _isVipV = NativeValue.From(IsVip);
         if (_isVipV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isVip, _isVipV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isVipName, _isVipV);
     }
 }
 

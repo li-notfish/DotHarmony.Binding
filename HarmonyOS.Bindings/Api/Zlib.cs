@@ -197,32 +197,32 @@ public sealed record ZlibOptions(
     bool? KeepTopLevelFolder = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _levelName => "level"u8;
+    private static ReadOnlySpan<byte> _memLevelName => "memLevel"u8;
+    private static ReadOnlySpan<byte> _strategyName => "strategy"u8;
+    private static ReadOnlySpan<byte> _parallelName => "parallel"u8;
+    private static ReadOnlySpan<byte> _pathSeparatorStrategyName => "pathSeparatorStrategy"u8;
+    private static ReadOnlySpan<byte> _keepTopLevelFolderName => "keepTopLevelFolder"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _level = System.Text.Encoding.UTF8.GetBytes("level");
         var _levelV = NativeValue.From(Level);
         if (_levelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _level, _levelV);
-        var _memLevel = System.Text.Encoding.UTF8.GetBytes("memLevel");
+            NativeNodeApi.napi_set_named_property(env, obj, _levelName, _levelV);
         var _memLevelV = NativeValue.From(MemLevel);
         if (_memLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _memLevel, _memLevelV);
-        var _strategy = System.Text.Encoding.UTF8.GetBytes("strategy");
+            NativeNodeApi.napi_set_named_property(env, obj, _memLevelName, _memLevelV);
         var _strategyV = NativeValue.From(Strategy);
         if (_strategyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _strategy, _strategyV);
-        var _parallel = System.Text.Encoding.UTF8.GetBytes("parallel");
+            NativeNodeApi.napi_set_named_property(env, obj, _strategyName, _strategyV);
         var _parallelV = NativeValue.From(Parallel);
         if (_parallelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _parallel, _parallelV);
-        var _pathSeparatorStrategy = System.Text.Encoding.UTF8.GetBytes("pathSeparatorStrategy");
+            NativeNodeApi.napi_set_named_property(env, obj, _parallelName, _parallelV);
         var _pathSeparatorStrategyV = NativeValue.From(PathSeparatorStrategy);
         if (_pathSeparatorStrategyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pathSeparatorStrategy, _pathSeparatorStrategyV);
-        var _keepTopLevelFolder = System.Text.Encoding.UTF8.GetBytes("keepTopLevelFolder");
+            NativeNodeApi.napi_set_named_property(env, obj, _pathSeparatorStrategyName, _pathSeparatorStrategyV);
         var _keepTopLevelFolderV = NativeValue.From(KeepTopLevelFolder);
         if (_keepTopLevelFolderV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keepTopLevelFolder, _keepTopLevelFolderV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keepTopLevelFolderName, _keepTopLevelFolderV);
     }
 }
 
@@ -1058,48 +1058,48 @@ public sealed record GzHeader(
     bool? Done = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _isTextName => "isText"u8;
+    private static ReadOnlySpan<byte> _osName => "os"u8;
+    private static ReadOnlySpan<byte> _timeName => "time"u8;
+    private static ReadOnlySpan<byte> _xflagsName => "xflags"u8;
+    private static ReadOnlySpan<byte> _extraName => "extra"u8;
+    private static ReadOnlySpan<byte> _extraLenName => "extraLen"u8;
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _commentName => "comment"u8;
+    private static ReadOnlySpan<byte> _hcrcName => "hcrc"u8;
+    private static ReadOnlySpan<byte> _doneName => "done"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _isText = System.Text.Encoding.UTF8.GetBytes("isText");
         var _isTextV = NativeValue.From(IsText);
         if (_isTextV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isText, _isTextV);
-        var _os = System.Text.Encoding.UTF8.GetBytes("os");
+            NativeNodeApi.napi_set_named_property(env, obj, _isTextName, _isTextV);
         var _osV = NativeValue.From(Os);
         if (_osV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _os, _osV);
-        var _time = System.Text.Encoding.UTF8.GetBytes("time");
+            NativeNodeApi.napi_set_named_property(env, obj, _osName, _osV);
         var _timeV = NativeValue.From(Time);
         if (_timeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _time, _timeV);
-        var _xflags = System.Text.Encoding.UTF8.GetBytes("xflags");
+            NativeNodeApi.napi_set_named_property(env, obj, _timeName, _timeV);
         var _xflagsV = NativeValue.From(Xflags);
         if (_xflagsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xflags, _xflagsV);
-        var _extra = System.Text.Encoding.UTF8.GetBytes("extra");
+            NativeNodeApi.napi_set_named_property(env, obj, _xflagsName, _xflagsV);
         var _extraV = NativeValue.From(Extra);
         if (_extraV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extra, _extraV);
-        var _extraLen = System.Text.Encoding.UTF8.GetBytes("extraLen");
+            NativeNodeApi.napi_set_named_property(env, obj, _extraName, _extraV);
         var _extraLenV = NativeValue.From(ExtraLen);
         if (_extraLenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extraLen, _extraLenV);
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
+            NativeNodeApi.napi_set_named_property(env, obj, _extraLenName, _extraLenV);
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _comment = System.Text.Encoding.UTF8.GetBytes("comment");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _commentV = NativeValue.From(Comment);
         if (_commentV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _comment, _commentV);
-        var _hcrc = System.Text.Encoding.UTF8.GetBytes("hcrc");
+            NativeNodeApi.napi_set_named_property(env, obj, _commentName, _commentV);
         var _hcrcV = NativeValue.From(Hcrc);
         if (_hcrcV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _hcrc, _hcrcV);
-        var _done = System.Text.Encoding.UTF8.GetBytes("done");
+            NativeNodeApi.napi_set_named_property(env, obj, _hcrcName, _hcrcV);
         var _doneV = NativeValue.From(Done);
         if (_doneV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _done, _doneV);
+            NativeNodeApi.napi_set_named_property(env, obj, _doneName, _doneV);
     }
 }
 

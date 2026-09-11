@@ -917,16 +917,16 @@ public sealed record RandomAccessFileOptions(
     double? End = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _startName => "start"u8;
+    private static ReadOnlySpan<byte> _endName => "end"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _start = System.Text.Encoding.UTF8.GetBytes("start");
         var _startV = NativeValue.From(Start);
         if (_startV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _start, _startV);
-        var _end = System.Text.Encoding.UTF8.GetBytes("end");
+            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV);
         var _endV = NativeValue.From(End);
         if (_endV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _end, _endV);
+            NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV);
     }
 }
 
@@ -1047,16 +1047,16 @@ public sealed record ReadStreamOptions(
     double? End = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _startName => "start"u8;
+    private static ReadOnlySpan<byte> _endName => "end"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _start = System.Text.Encoding.UTF8.GetBytes("start");
         var _startV = NativeValue.From(Start);
         if (_startV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _start, _startV);
-        var _end = System.Text.Encoding.UTF8.GetBytes("end");
+            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV);
         var _endV = NativeValue.From(End);
         if (_endV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _end, _endV);
+            NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV);
     }
 }
 
@@ -1068,16 +1068,16 @@ public sealed record WriteStreamOptions(
     double? Start = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _modeName => "mode"u8;
+    private static ReadOnlySpan<byte> _startName => "start"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _mode = System.Text.Encoding.UTF8.GetBytes("mode");
         var _modeV = NativeValue.From(Mode);
         if (_modeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mode, _modeV);
-        var _start = System.Text.Encoding.UTF8.GetBytes("start");
+            NativeNodeApi.napi_set_named_property(env, obj, _modeName, _modeV);
         var _startV = NativeValue.From(Start);
         if (_startV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _start, _startV);
+            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV);
     }
 }
 
@@ -1171,20 +1171,20 @@ public sealed record ListFileOptions(
     FsFilter? Filter = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _recursionName => "recursion"u8;
+    private static ReadOnlySpan<byte> _listNumName => "listNum"u8;
+    private static ReadOnlySpan<byte> _filterName => "filter"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _recursion = System.Text.Encoding.UTF8.GetBytes("recursion");
         var _recursionV = NativeValue.From(Recursion);
         if (_recursionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _recursion, _recursionV);
-        var _listNum = System.Text.Encoding.UTF8.GetBytes("listNum");
+            NativeNodeApi.napi_set_named_property(env, obj, _recursionName, _recursionV);
         var _listNumV = NativeValue.From(ListNum);
         if (_listNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _listNum, _listNumV);
-        var _filter = System.Text.Encoding.UTF8.GetBytes("filter");
+            NativeNodeApi.napi_set_named_property(env, obj, _listNumName, _listNumV);
         var _filterV = NativeValue.From(Filter);
         if (_filterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filter, _filterV);
+            NativeNodeApi.napi_set_named_property(env, obj, _filterName, _filterV);
     }
 }
 
@@ -1197,20 +1197,20 @@ public sealed record ListFileExtOptions(
     FileFilter? FileFilter = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _recursionName => "recursion"u8;
+    private static ReadOnlySpan<byte> _listNumName => "listNum"u8;
+    private static ReadOnlySpan<byte> _fileFilterName => "fileFilter"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _recursion = System.Text.Encoding.UTF8.GetBytes("recursion");
         var _recursionV = NativeValue.From(Recursion);
         if (_recursionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _recursion, _recursionV);
-        var _listNum = System.Text.Encoding.UTF8.GetBytes("listNum");
+            NativeNodeApi.napi_set_named_property(env, obj, _recursionName, _recursionV);
         var _listNumV = NativeValue.From(ListNum);
         if (_listNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _listNum, _listNumV);
-        var _fileFilter = System.Text.Encoding.UTF8.GetBytes("fileFilter");
+            NativeNodeApi.napi_set_named_property(env, obj, _listNumName, _listNumV);
         var _fileFilterV = NativeValue.From(FileFilter);
         if (_fileFilterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileFilter, _fileFilterV);
+            NativeNodeApi.napi_set_named_property(env, obj, _fileFilterName, _fileFilterV);
     }
 }
 
@@ -1222,16 +1222,16 @@ public sealed record ReadOptions(
     double? Length = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
+    private static ReadOnlySpan<byte> _lengthName => "length"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _offset = System.Text.Encoding.UTF8.GetBytes("offset");
         var _offsetV = NativeValue.From(Offset);
         if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
-        var _length = System.Text.Encoding.UTF8.GetBytes("length");
+            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
         var _lengthV = NativeValue.From(Length);
         if (_lengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _length, _lengthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _lengthName, _lengthV);
     }
 }
 
@@ -1242,12 +1242,12 @@ public sealed record FsOptions(
     string? Encoding = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _encodingName => "encoding"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _encoding = System.Text.Encoding.UTF8.GetBytes("encoding");
         var _encodingV = NativeValue.From(Encoding);
         if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encoding, _encodingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
     }
 }
 
@@ -1278,20 +1278,20 @@ public sealed record ReadTextOptions(
     string? Encoding = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
+    private static ReadOnlySpan<byte> _lengthName => "length"u8;
+    private static ReadOnlySpan<byte> _encodingName => "encoding"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _offset = System.Text.Encoding.UTF8.GetBytes("offset");
         var _offsetV = NativeValue.From(Offset);
         if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
-        var _length = System.Text.Encoding.UTF8.GetBytes("length");
+            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
         var _lengthV = NativeValue.From(Length);
         if (_lengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _length, _lengthV);
-        var _encoding = System.Text.Encoding.UTF8.GetBytes("encoding");
+            NativeNodeApi.napi_set_named_property(env, obj, _lengthName, _lengthV);
         var _encodingV = NativeValue.From(Encoding);
         if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encoding, _encodingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
     }
 }
 
@@ -1304,20 +1304,20 @@ public sealed record WriteOptions(
     double? Length = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _encodingName => "encoding"u8;
+    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
+    private static ReadOnlySpan<byte> _lengthName => "length"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _encoding = System.Text.Encoding.UTF8.GetBytes("encoding");
         var _encodingV = NativeValue.From(Encoding);
         if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encoding, _encodingV);
-        var _offset = System.Text.Encoding.UTF8.GetBytes("offset");
+            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
         var _offsetV = NativeValue.From(Offset);
         if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
-        var _length = System.Text.Encoding.UTF8.GetBytes("length");
+            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
         var _lengthV = NativeValue.From(Length);
         if (_lengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _length, _lengthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _lengthName, _lengthV);
     }
 }
 
@@ -1513,20 +1513,20 @@ public sealed record WatchEvent(
     double Cookie
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _fileNameName => "fileName"u8;
+    private static ReadOnlySpan<byte> _eventName => "event"u8;
+    private static ReadOnlySpan<byte> _cookieName => "cookie"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _fileName = System.Text.Encoding.UTF8.GetBytes("fileName");
         var _fileNameV = NativeValue.From(FileName);
         if (_fileNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileName, _fileNameV);
-        var _event = System.Text.Encoding.UTF8.GetBytes("event");
+            NativeNodeApi.napi_set_named_property(env, obj, _fileNameName, _fileNameV);
         var _eventV = NativeValue.From(Event);
         if (_eventV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _event, _eventV);
-        var _cookie = System.Text.Encoding.UTF8.GetBytes("cookie");
+            NativeNodeApi.napi_set_named_property(env, obj, _eventName, _eventV);
         var _cookieV = NativeValue.From(Cookie);
         if (_cookieV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cookie, _cookieV);
+            NativeNodeApi.napi_set_named_property(env, obj, _cookieName, _cookieV);
     }
 }
 
@@ -1542,32 +1542,32 @@ public sealed record FsFilter(
     bool? ExcludeMedia = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _suffixName => "suffix"u8;
+    private static ReadOnlySpan<byte> _displayNameName => "displayName"u8;
+    private static ReadOnlySpan<byte> _mimeTypeName => "mimeType"u8;
+    private static ReadOnlySpan<byte> _fileSizeOverName => "fileSizeOver"u8;
+    private static ReadOnlySpan<byte> _lastModifiedAfterName => "lastModifiedAfter"u8;
+    private static ReadOnlySpan<byte> _excludeMediaName => "excludeMedia"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _suffix = System.Text.Encoding.UTF8.GetBytes("suffix");
         var _suffixV = NativeValue.From(Suffix);
         if (_suffixV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _suffix, _suffixV);
-        var _displayName = System.Text.Encoding.UTF8.GetBytes("displayName");
+            NativeNodeApi.napi_set_named_property(env, obj, _suffixName, _suffixV);
         var _displayNameV = NativeValue.From(DisplayName);
         if (_displayNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayName, _displayNameV);
-        var _mimeType = System.Text.Encoding.UTF8.GetBytes("mimeType");
+            NativeNodeApi.napi_set_named_property(env, obj, _displayNameName, _displayNameV);
         var _mimeTypeV = NativeValue.From(MimeType);
         if (_mimeTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mimeType, _mimeTypeV);
-        var _fileSizeOver = System.Text.Encoding.UTF8.GetBytes("fileSizeOver");
+            NativeNodeApi.napi_set_named_property(env, obj, _mimeTypeName, _mimeTypeV);
         var _fileSizeOverV = NativeValue.From(FileSizeOver);
         if (_fileSizeOverV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileSizeOver, _fileSizeOverV);
-        var _lastModifiedAfter = System.Text.Encoding.UTF8.GetBytes("lastModifiedAfter");
+            NativeNodeApi.napi_set_named_property(env, obj, _fileSizeOverName, _fileSizeOverV);
         var _lastModifiedAfterV = NativeValue.From(LastModifiedAfter);
         if (_lastModifiedAfterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _lastModifiedAfter, _lastModifiedAfterV);
-        var _excludeMedia = System.Text.Encoding.UTF8.GetBytes("excludeMedia");
+            NativeNodeApi.napi_set_named_property(env, obj, _lastModifiedAfterName, _lastModifiedAfterV);
         var _excludeMediaV = NativeValue.From(ExcludeMedia);
         if (_excludeMediaV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _excludeMedia, _excludeMediaV);
+            NativeNodeApi.napi_set_named_property(env, obj, _excludeMediaName, _excludeMediaV);
     }
 }
 

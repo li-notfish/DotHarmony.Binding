@@ -136,39 +136,39 @@ public sealed record ColorSpacePrimaries(
     double WhitePointY
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _redXName => "redX"u8;
+    private static ReadOnlySpan<byte> _redYName => "redY"u8;
+    private static ReadOnlySpan<byte> _greenXName => "greenX"u8;
+    private static ReadOnlySpan<byte> _greenYName => "greenY"u8;
+    private static ReadOnlySpan<byte> _blueXName => "blueX"u8;
+    private static ReadOnlySpan<byte> _blueYName => "blueY"u8;
+    private static ReadOnlySpan<byte> _whitePointXName => "whitePointX"u8;
+    private static ReadOnlySpan<byte> _whitePointYName => "whitePointY"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _redX = System.Text.Encoding.UTF8.GetBytes("redX");
         var _redXV = NativeValue.From(RedX);
         if (_redXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _redX, _redXV);
-        var _redY = System.Text.Encoding.UTF8.GetBytes("redY");
+            NativeNodeApi.napi_set_named_property(env, obj, _redXName, _redXV);
         var _redYV = NativeValue.From(RedY);
         if (_redYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _redY, _redYV);
-        var _greenX = System.Text.Encoding.UTF8.GetBytes("greenX");
+            NativeNodeApi.napi_set_named_property(env, obj, _redYName, _redYV);
         var _greenXV = NativeValue.From(GreenX);
         if (_greenXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _greenX, _greenXV);
-        var _greenY = System.Text.Encoding.UTF8.GetBytes("greenY");
+            NativeNodeApi.napi_set_named_property(env, obj, _greenXName, _greenXV);
         var _greenYV = NativeValue.From(GreenY);
         if (_greenYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _greenY, _greenYV);
-        var _blueX = System.Text.Encoding.UTF8.GetBytes("blueX");
+            NativeNodeApi.napi_set_named_property(env, obj, _greenYName, _greenYV);
         var _blueXV = NativeValue.From(BlueX);
         if (_blueXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _blueX, _blueXV);
-        var _blueY = System.Text.Encoding.UTF8.GetBytes("blueY");
+            NativeNodeApi.napi_set_named_property(env, obj, _blueXName, _blueXV);
         var _blueYV = NativeValue.From(BlueY);
         if (_blueYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _blueY, _blueYV);
-        var _whitePointX = System.Text.Encoding.UTF8.GetBytes("whitePointX");
+            NativeNodeApi.napi_set_named_property(env, obj, _blueYName, _blueYV);
         var _whitePointXV = NativeValue.From(WhitePointX);
         if (_whitePointXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _whitePointX, _whitePointXV);
-        var _whitePointY = System.Text.Encoding.UTF8.GetBytes("whitePointY");
+            NativeNodeApi.napi_set_named_property(env, obj, _whitePointXName, _whitePointXV);
         var _whitePointYV = NativeValue.From(WhitePointY);
         if (_whitePointYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _whitePointY, _whitePointYV);
+            NativeNodeApi.napi_set_named_property(env, obj, _whitePointYName, _whitePointYV);
     }
 }

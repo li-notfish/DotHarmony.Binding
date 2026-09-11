@@ -115,19 +115,19 @@ public sealed record PolicyObject(
     string Regex
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _sensitiveLabelName => "sensitiveLabel"u8;
+    private static ReadOnlySpan<byte> _keywordsName => "keywords"u8;
+    private static ReadOnlySpan<byte> _regexName => "regex"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _sensitiveLabel = System.Text.Encoding.UTF8.GetBytes("sensitiveLabel");
         var _sensitiveLabelV = NativeValue.From(SensitiveLabel);
         if (_sensitiveLabelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sensitiveLabel, _sensitiveLabelV);
-        var _keywords = System.Text.Encoding.UTF8.GetBytes("keywords");
+            NativeNodeApi.napi_set_named_property(env, obj, _sensitiveLabelName, _sensitiveLabelV);
         var _keywordsV = NativeValue.From(Keywords);
         if (_keywordsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keywords, _keywordsV);
-        var _regex = System.Text.Encoding.UTF8.GetBytes("regex");
+            NativeNodeApi.napi_set_named_property(env, obj, _keywordsName, _keywordsV);
         var _regexV = NativeValue.From(Regex);
         if (_regexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _regex, _regexV);
+            NativeNodeApi.napi_set_named_property(env, obj, _regexName, _regexV);
     }
 }

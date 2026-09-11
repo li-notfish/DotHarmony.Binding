@@ -1093,28 +1093,28 @@ public sealed record Pkcs12ParsingConfig(
     bool? NeedsOtherCerts = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _passwordName => "password"u8;
+    private static ReadOnlySpan<byte> _needsPrivateKeyName => "needsPrivateKey"u8;
+    private static ReadOnlySpan<byte> _privateKeyFormatName => "privateKeyFormat"u8;
+    private static ReadOnlySpan<byte> _needsCertName => "needsCert"u8;
+    private static ReadOnlySpan<byte> _needsOtherCertsName => "needsOtherCerts"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _password = System.Text.Encoding.UTF8.GetBytes("password");
         var _passwordV = NativeValue.From(Password);
         if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _password, _passwordV);
-        var _needsPrivateKey = System.Text.Encoding.UTF8.GetBytes("needsPrivateKey");
+            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
         var _needsPrivateKeyV = NativeValue.From(NeedsPrivateKey);
         if (_needsPrivateKeyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _needsPrivateKey, _needsPrivateKeyV);
-        var _privateKeyFormat = System.Text.Encoding.UTF8.GetBytes("privateKeyFormat");
+            NativeNodeApi.napi_set_named_property(env, obj, _needsPrivateKeyName, _needsPrivateKeyV);
         var _privateKeyFormatV = NativeValue.From(PrivateKeyFormat);
         if (_privateKeyFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _privateKeyFormat, _privateKeyFormatV);
-        var _needsCert = System.Text.Encoding.UTF8.GetBytes("needsCert");
+            NativeNodeApi.napi_set_named_property(env, obj, _privateKeyFormatName, _privateKeyFormatV);
         var _needsCertV = NativeValue.From(NeedsCert);
         if (_needsCertV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _needsCert, _needsCertV);
-        var _needsOtherCerts = System.Text.Encoding.UTF8.GetBytes("needsOtherCerts");
+            NativeNodeApi.napi_set_named_property(env, obj, _needsCertName, _needsCertV);
         var _needsOtherCertsV = NativeValue.From(NeedsOtherCerts);
         if (_needsOtherCertsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _needsOtherCerts, _needsOtherCertsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _needsOtherCertsName, _needsOtherCertsV);
     }
 }
 
@@ -1345,16 +1345,16 @@ public sealed record PrivateKeyInfo(
     string? Password = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _keyName => "key"u8;
+    private static ReadOnlySpan<byte> _passwordName => "password"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _key = System.Text.Encoding.UTF8.GetBytes("key");
         var _keyV = NativeValue.From(Key);
         if (_keyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _key, _keyV);
-        var _password = System.Text.Encoding.UTF8.GetBytes("password");
+            NativeNodeApi.napi_set_named_property(env, obj, _keyName, _keyV);
         var _passwordV = NativeValue.From(Password);
         if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _password, _passwordV);
+            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
     }
 }
 
@@ -1371,36 +1371,36 @@ public sealed record Pkcs12CreationConfig(
     global::HarmonyOS.ArkUI.Pkcs12MacDigestAlgorithm? MacDigestAlgorithm = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _passwordName => "password"u8;
+    private static ReadOnlySpan<byte> _keyEncParamsName => "keyEncParams"u8;
+    private static ReadOnlySpan<byte> _encryptCertName => "encryptCert"u8;
+    private static ReadOnlySpan<byte> _certEncParamsName => "certEncParams"u8;
+    private static ReadOnlySpan<byte> _macSaltLenName => "macSaltLen"u8;
+    private static ReadOnlySpan<byte> _macIterationsName => "macIterations"u8;
+    private static ReadOnlySpan<byte> _macDigestAlgorithmName => "macDigestAlgorithm"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _password = System.Text.Encoding.UTF8.GetBytes("password");
         var _passwordV = NativeValue.From(Password);
         if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _password, _passwordV);
-        var _keyEncParams = System.Text.Encoding.UTF8.GetBytes("keyEncParams");
+            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
         var _keyEncParamsV = NativeValue.From(KeyEncParams);
         if (_keyEncParamsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyEncParams, _keyEncParamsV);
-        var _encryptCert = System.Text.Encoding.UTF8.GetBytes("encryptCert");
+            NativeNodeApi.napi_set_named_property(env, obj, _keyEncParamsName, _keyEncParamsV);
         var _encryptCertV = NativeValue.From(EncryptCert);
         if (_encryptCertV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptCert, _encryptCertV);
-        var _certEncParams = System.Text.Encoding.UTF8.GetBytes("certEncParams");
+            NativeNodeApi.napi_set_named_property(env, obj, _encryptCertName, _encryptCertV);
         var _certEncParamsV = NativeValue.From(CertEncParams);
         if (_certEncParamsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certEncParams, _certEncParamsV);
-        var _macSaltLen = System.Text.Encoding.UTF8.GetBytes("macSaltLen");
+            NativeNodeApi.napi_set_named_property(env, obj, _certEncParamsName, _certEncParamsV);
         var _macSaltLenV = NativeValue.From(MacSaltLen);
         if (_macSaltLenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _macSaltLen, _macSaltLenV);
-        var _macIterations = System.Text.Encoding.UTF8.GetBytes("macIterations");
+            NativeNodeApi.napi_set_named_property(env, obj, _macSaltLenName, _macSaltLenV);
         var _macIterationsV = NativeValue.From(MacIterations);
         if (_macIterationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _macIterations, _macIterationsV);
-        var _macDigestAlgorithm = System.Text.Encoding.UTF8.GetBytes("macDigestAlgorithm");
+            NativeNodeApi.napi_set_named_property(env, obj, _macIterationsName, _macIterationsV);
         var _macDigestAlgorithmV = NativeValue.From(MacDigestAlgorithm);
         if (_macDigestAlgorithmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _macDigestAlgorithm, _macDigestAlgorithmV);
+            NativeNodeApi.napi_set_named_property(env, obj, _macDigestAlgorithmName, _macDigestAlgorithmV);
     }
 }
 
@@ -1473,20 +1473,20 @@ public sealed record CertChainData(
     global::HarmonyOS.ArkUI.EncodingFormat EncodingFormat
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _dataName => "data"u8;
+    private static ReadOnlySpan<byte> _countName => "count"u8;
+    private static ReadOnlySpan<byte> _encodingFormatName => "encodingFormat"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _data = System.Text.Encoding.UTF8.GetBytes("data");
         var _dataV = NativeValue.From(Data);
         if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _data, _dataV);
-        var _count = System.Text.Encoding.UTF8.GetBytes("count");
+            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
         var _countV = NativeValue.From(Count);
         if (_countV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _count, _countV);
-        var _encodingFormat = System.Text.Encoding.UTF8.GetBytes("encodingFormat");
+            NativeNodeApi.napi_set_named_property(env, obj, _countName, _countV);
         var _encodingFormatV = NativeValue.From(EncodingFormat);
         if (_encodingFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encodingFormat, _encodingFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encodingFormatName, _encodingFormatV);
     }
 }
 
@@ -1629,28 +1629,28 @@ public sealed record CmsSignerConfig(
     bool? AddSmimeCapAttr = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _mdNameName => "mdName"u8;
+    private static ReadOnlySpan<byte> _rsaSignaturePaddingName => "rsaSignaturePadding"u8;
+    private static ReadOnlySpan<byte> _addCertName => "addCert"u8;
+    private static ReadOnlySpan<byte> _addAttrName => "addAttr"u8;
+    private static ReadOnlySpan<byte> _addSmimeCapAttrName => "addSmimeCapAttr"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _mdName = System.Text.Encoding.UTF8.GetBytes("mdName");
         var _mdNameV = NativeValue.From(MdName);
         if (_mdNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mdName, _mdNameV);
-        var _rsaSignaturePadding = System.Text.Encoding.UTF8.GetBytes("rsaSignaturePadding");
+            NativeNodeApi.napi_set_named_property(env, obj, _mdNameName, _mdNameV);
         var _rsaSignaturePaddingV = NativeValue.From(RsaSignaturePadding);
         if (_rsaSignaturePaddingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rsaSignaturePadding, _rsaSignaturePaddingV);
-        var _addCert = System.Text.Encoding.UTF8.GetBytes("addCert");
+            NativeNodeApi.napi_set_named_property(env, obj, _rsaSignaturePaddingName, _rsaSignaturePaddingV);
         var _addCertV = NativeValue.From(AddCert);
         if (_addCertV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addCert, _addCertV);
-        var _addAttr = System.Text.Encoding.UTF8.GetBytes("addAttr");
+            NativeNodeApi.napi_set_named_property(env, obj, _addCertName, _addCertV);
         var _addAttrV = NativeValue.From(AddAttr);
         if (_addAttrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addAttr, _addAttrV);
-        var _addSmimeCapAttr = System.Text.Encoding.UTF8.GetBytes("addSmimeCapAttr");
+            NativeNodeApi.napi_set_named_property(env, obj, _addAttrName, _addAttrV);
         var _addSmimeCapAttrV = NativeValue.From(AddSmimeCapAttr);
         if (_addSmimeCapAttrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addSmimeCapAttr, _addSmimeCapAttrV);
+            NativeNodeApi.napi_set_named_property(env, obj, _addSmimeCapAttrName, _addSmimeCapAttrV);
     }
 }
 
@@ -1662,16 +1662,16 @@ public sealed record CmsRecipientInfo(
     CmsKeyAgreeRecipientInfo? KeyAgreeInfo = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _keyTransInfoName => "keyTransInfo"u8;
+    private static ReadOnlySpan<byte> _keyAgreeInfoName => "keyAgreeInfo"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _keyTransInfo = System.Text.Encoding.UTF8.GetBytes("keyTransInfo");
         var _keyTransInfoV = NativeValue.From(KeyTransInfo);
         if (_keyTransInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyTransInfo, _keyTransInfoV);
-        var _keyAgreeInfo = System.Text.Encoding.UTF8.GetBytes("keyAgreeInfo");
+            NativeNodeApi.napi_set_named_property(env, obj, _keyTransInfoName, _keyTransInfoV);
         var _keyAgreeInfoV = NativeValue.From(KeyAgreeInfo);
         if (_keyAgreeInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyAgreeInfo, _keyAgreeInfoV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keyAgreeInfoName, _keyAgreeInfoV);
     }
 }
 
@@ -1684,20 +1684,20 @@ public sealed record CmsGeneratorOptions(
     bool? IsDetached = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _contentDataFormatName => "contentDataFormat"u8;
+    private static ReadOnlySpan<byte> _outFormatName => "outFormat"u8;
+    private static ReadOnlySpan<byte> _isDetachedName => "isDetached"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _contentDataFormat = System.Text.Encoding.UTF8.GetBytes("contentDataFormat");
         var _contentDataFormatV = NativeValue.From(ContentDataFormat);
         if (_contentDataFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _contentDataFormat, _contentDataFormatV);
-        var _outFormat = System.Text.Encoding.UTF8.GetBytes("outFormat");
+            NativeNodeApi.napi_set_named_property(env, obj, _contentDataFormatName, _contentDataFormatV);
         var _outFormatV = NativeValue.From(OutFormat);
         if (_outFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _outFormat, _outFormatV);
-        var _isDetached = System.Text.Encoding.UTF8.GetBytes("isDetached");
+            NativeNodeApi.napi_set_named_property(env, obj, _outFormatName, _outFormatV);
         var _isDetachedV = NativeValue.From(IsDetached);
         if (_isDetachedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isDetached, _isDetachedV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isDetachedName, _isDetachedV);
     }
 }
 
@@ -1711,24 +1711,24 @@ public sealed record CmsEnvelopedDecryptionConfig(
     global::HarmonyOS.ArkUI.CmsContentDataFormat? ContentDataFormat = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _keyInfoName => "keyInfo"u8;
+    private static ReadOnlySpan<byte> _certName => "cert"u8;
+    private static ReadOnlySpan<byte> _encryptedContentDataName => "encryptedContentData"u8;
+    private static ReadOnlySpan<byte> _contentDataFormatName => "contentDataFormat"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _keyInfo = System.Text.Encoding.UTF8.GetBytes("keyInfo");
         var _keyInfoV = NativeValue.From(KeyInfo);
         if (_keyInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyInfo, _keyInfoV);
-        var _cert = System.Text.Encoding.UTF8.GetBytes("cert");
+            NativeNodeApi.napi_set_named_property(env, obj, _keyInfoName, _keyInfoV);
         var _certV = NativeValue.From(Cert);
         if (_certV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cert, _certV);
-        var _encryptedContentData = System.Text.Encoding.UTF8.GetBytes("encryptedContentData");
+            NativeNodeApi.napi_set_named_property(env, obj, _certName, _certV);
         var _encryptedContentDataV = NativeValue.From(EncryptedContentData);
         if (_encryptedContentDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptedContentData, _encryptedContentDataV);
-        var _contentDataFormat = System.Text.Encoding.UTF8.GetBytes("contentDataFormat");
+            NativeNodeApi.napi_set_named_property(env, obj, _encryptedContentDataName, _encryptedContentDataV);
         var _contentDataFormatV = NativeValue.From(ContentDataFormat);
         if (_contentDataFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _contentDataFormat, _contentDataFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _contentDataFormatName, _contentDataFormatV);
     }
 }
 
@@ -1741,20 +1741,20 @@ public sealed record PbesParams(
     global::HarmonyOS.ArkUI.PbesEncryptionAlgorithm? EncryptionAlgorithm = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _saltLenName => "saltLen"u8;
+    private static ReadOnlySpan<byte> _iterationsName => "iterations"u8;
+    private static ReadOnlySpan<byte> _encryptionAlgorithmName => "encryptionAlgorithm"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _saltLen = System.Text.Encoding.UTF8.GetBytes("saltLen");
         var _saltLenV = NativeValue.From(SaltLen);
         if (_saltLenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _saltLen, _saltLenV);
-        var _iterations = System.Text.Encoding.UTF8.GetBytes("iterations");
+            NativeNodeApi.napi_set_named_property(env, obj, _saltLenName, _saltLenV);
         var _iterationsV = NativeValue.From(Iterations);
         if (_iterationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iterations, _iterationsV);
-        var _encryptionAlgorithm = System.Text.Encoding.UTF8.GetBytes("encryptionAlgorithm");
+            NativeNodeApi.napi_set_named_property(env, obj, _iterationsName, _iterationsV);
         var _encryptionAlgorithmV = NativeValue.From(EncryptionAlgorithm);
         if (_encryptionAlgorithmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptionAlgorithm, _encryptionAlgorithmV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encryptionAlgorithmName, _encryptionAlgorithmV);
     }
 }
 
@@ -1765,12 +1765,12 @@ public sealed record CmsKeyTransRecipientInfo(
     X509Cert Cert
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _certName => "cert"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _cert = System.Text.Encoding.UTF8.GetBytes("cert");
         var _certV = NativeValue.From(Cert);
         if (_certV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cert, _certV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certName, _certV);
     }
 }
 
@@ -1782,15 +1782,15 @@ public sealed record CmsKeyAgreeRecipientInfo(
     global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm? DigestAlgorithm = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _certName => "cert"u8;
+    private static ReadOnlySpan<byte> _digestAlgorithmName => "digestAlgorithm"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _cert = System.Text.Encoding.UTF8.GetBytes("cert");
         var _certV = NativeValue.From(Cert);
         if (_certV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cert, _certV);
-        var _digestAlgorithm = System.Text.Encoding.UTF8.GetBytes("digestAlgorithm");
+            NativeNodeApi.napi_set_named_property(env, obj, _certName, _certV);
         var _digestAlgorithmV = NativeValue.From(DigestAlgorithm);
         if (_digestAlgorithmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _digestAlgorithm, _digestAlgorithmV);
+            NativeNodeApi.napi_set_named_property(env, obj, _digestAlgorithmName, _digestAlgorithmV);
     }
 }

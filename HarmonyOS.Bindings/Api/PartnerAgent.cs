@@ -132,16 +132,16 @@ public sealed record DeviceCapability(
     bool? SupportBleAdvertiser = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _supportBrName => "supportBR"u8;
+    private static ReadOnlySpan<byte> _supportBleAdvertiserName => "supportBleAdvertiser"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _supportBr = System.Text.Encoding.UTF8.GetBytes("supportBR");
         var _supportBrV = NativeValue.From(SupportBr);
         if (_supportBrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _supportBr, _supportBrV);
-        var _supportBleAdvertiser = System.Text.Encoding.UTF8.GetBytes("supportBleAdvertiser");
+            NativeNodeApi.napi_set_named_property(env, obj, _supportBrName, _supportBrV);
         var _supportBleAdvertiserV = NativeValue.From(SupportBleAdvertiser);
         if (_supportBleAdvertiserV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _supportBleAdvertiser, _supportBleAdvertiserV);
+            NativeNodeApi.napi_set_named_property(env, obj, _supportBleAdvertiserName, _supportBleAdvertiserV);
     }
 }
 
@@ -153,15 +153,15 @@ public sealed record BusinessCapability(
     bool? SupportTelephonyControl = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _supportMediaControlName => "supportMediaControl"u8;
+    private static ReadOnlySpan<byte> _supportTelephonyControlName => "supportTelephonyControl"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _supportMediaControl = System.Text.Encoding.UTF8.GetBytes("supportMediaControl");
         var _supportMediaControlV = NativeValue.From(SupportMediaControl);
         if (_supportMediaControlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _supportMediaControl, _supportMediaControlV);
-        var _supportTelephonyControl = System.Text.Encoding.UTF8.GetBytes("supportTelephonyControl");
+            NativeNodeApi.napi_set_named_property(env, obj, _supportMediaControlName, _supportMediaControlV);
         var _supportTelephonyControlV = NativeValue.From(SupportTelephonyControl);
         if (_supportTelephonyControlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _supportTelephonyControl, _supportTelephonyControlV);
+            NativeNodeApi.napi_set_named_property(env, obj, _supportTelephonyControlName, _supportTelephonyControlV);
     }
 }

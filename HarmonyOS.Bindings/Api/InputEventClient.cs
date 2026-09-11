@@ -233,23 +233,23 @@ public sealed record TouchPoint(
     double DisplayY
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _idName => "id"u8;
+    private static ReadOnlySpan<byte> _displayIdName => "displayId"u8;
+    private static ReadOnlySpan<byte> _displayXName => "displayX"u8;
+    private static ReadOnlySpan<byte> _displayYName => "displayY"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _id = System.Text.Encoding.UTF8.GetBytes("id");
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _id, _idV);
-        var _displayId = System.Text.Encoding.UTF8.GetBytes("displayId");
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
         var _displayIdV = NativeValue.From(DisplayId);
         if (_displayIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayId, _displayIdV);
-        var _displayX = System.Text.Encoding.UTF8.GetBytes("displayX");
+            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV);
         var _displayXV = NativeValue.From(DisplayX);
         if (_displayXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayX, _displayXV);
-        var _displayY = System.Text.Encoding.UTF8.GetBytes("displayY");
+            NativeNodeApi.napi_set_named_property(env, obj, _displayXName, _displayXV);
         var _displayYV = NativeValue.From(DisplayY);
         if (_displayYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayY, _displayYV);
+            NativeNodeApi.napi_set_named_property(env, obj, _displayYName, _displayYV);
     }
 }

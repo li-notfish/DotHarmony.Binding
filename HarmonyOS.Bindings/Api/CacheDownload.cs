@@ -230,12 +230,12 @@ public sealed record RetryOptions(
     double? MaxRetryCount = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _maxRetryCountName => "maxRetryCount"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _maxRetryCount = System.Text.Encoding.UTF8.GetBytes("maxRetryCount");
         var _maxRetryCountV = NativeValue.From(MaxRetryCount);
         if (_maxRetryCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxRetryCount, _maxRetryCountV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxRetryCountName, _maxRetryCountV);
     }
 }
 
@@ -247,16 +247,16 @@ public sealed record TimeoutOptions(
     double? HttpTotalTimeout = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _networkCheckTimeoutName => "networkCheckTimeout"u8;
+    private static ReadOnlySpan<byte> _httpTotalTimeoutName => "httpTotalTimeout"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _networkCheckTimeout = System.Text.Encoding.UTF8.GetBytes("networkCheckTimeout");
         var _networkCheckTimeoutV = NativeValue.From(NetworkCheckTimeout);
         if (_networkCheckTimeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _networkCheckTimeout, _networkCheckTimeoutV);
-        var _httpTotalTimeout = System.Text.Encoding.UTF8.GetBytes("httpTotalTimeout");
+            NativeNodeApi.napi_set_named_property(env, obj, _networkCheckTimeoutName, _networkCheckTimeoutV);
         var _httpTotalTimeoutV = NativeValue.From(HttpTotalTimeout);
         if (_httpTotalTimeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _httpTotalTimeout, _httpTotalTimeoutV);
+            NativeNodeApi.napi_set_named_property(env, obj, _httpTotalTimeoutName, _httpTotalTimeoutV);
     }
 }
 

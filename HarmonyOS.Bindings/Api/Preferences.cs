@@ -442,19 +442,19 @@ public sealed record PreferencesOptions(
     global::HarmonyOS.ArkUI.StorageType? StorageType = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _dataGroupIdName => "dataGroupId"u8;
+    private static ReadOnlySpan<byte> _storageTypeName => "storageType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _dataGroupId = System.Text.Encoding.UTF8.GetBytes("dataGroupId");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _dataGroupIdV = NativeValue.From(DataGroupId);
         if (_dataGroupIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataGroupId, _dataGroupIdV);
-        var _storageType = System.Text.Encoding.UTF8.GetBytes("storageType");
+            NativeNodeApi.napi_set_named_property(env, obj, _dataGroupIdName, _dataGroupIdV);
         var _storageTypeV = NativeValue.From(StorageType);
         if (_storageTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _storageType, _storageTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _storageTypeName, _storageTypeV);
     }
 }

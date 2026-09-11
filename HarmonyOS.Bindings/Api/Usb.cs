@@ -205,60 +205,60 @@ public sealed record UsbUSBDevice(
     USBConfig[] Configs
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _busNumName => "busNum"u8;
+    private static ReadOnlySpan<byte> _devAddressName => "devAddress"u8;
+    private static ReadOnlySpan<byte> _serialName => "serial"u8;
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _manufacturerNameName => "manufacturerName"u8;
+    private static ReadOnlySpan<byte> _productNameName => "productName"u8;
+    private static ReadOnlySpan<byte> _versionName => "version"u8;
+    private static ReadOnlySpan<byte> _vendorIdName => "vendorId"u8;
+    private static ReadOnlySpan<byte> _productIdName => "productId"u8;
+    private static ReadOnlySpan<byte> _clazzName => "clazz"u8;
+    private static ReadOnlySpan<byte> _subClassName => "subClass"u8;
+    private static ReadOnlySpan<byte> _protocolName => "protocol"u8;
+    private static ReadOnlySpan<byte> _configsName => "configs"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _busNum = System.Text.Encoding.UTF8.GetBytes("busNum");
         var _busNumV = NativeValue.From(BusNum);
         if (_busNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _busNum, _busNumV);
-        var _devAddress = System.Text.Encoding.UTF8.GetBytes("devAddress");
+            NativeNodeApi.napi_set_named_property(env, obj, _busNumName, _busNumV);
         var _devAddressV = NativeValue.From(DevAddress);
         if (_devAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _devAddress, _devAddressV);
-        var _serial = System.Text.Encoding.UTF8.GetBytes("serial");
+            NativeNodeApi.napi_set_named_property(env, obj, _devAddressName, _devAddressV);
         var _serialV = NativeValue.From(Serial);
         if (_serialV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serial, _serialV);
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
+            NativeNodeApi.napi_set_named_property(env, obj, _serialName, _serialV);
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _manufacturerName = System.Text.Encoding.UTF8.GetBytes("manufacturerName");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _manufacturerNameV = NativeValue.From(ManufacturerName);
         if (_manufacturerNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerName, _manufacturerNameV);
-        var _productName = System.Text.Encoding.UTF8.GetBytes("productName");
+            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerNameName, _manufacturerNameV);
         var _productNameV = NativeValue.From(ProductName);
         if (_productNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _productName, _productNameV);
-        var _version = System.Text.Encoding.UTF8.GetBytes("version");
+            NativeNodeApi.napi_set_named_property(env, obj, _productNameName, _productNameV);
         var _versionV = NativeValue.From(Version);
         if (_versionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _version, _versionV);
-        var _vendorId = System.Text.Encoding.UTF8.GetBytes("vendorId");
+            NativeNodeApi.napi_set_named_property(env, obj, _versionName, _versionV);
         var _vendorIdV = NativeValue.From(VendorId);
         if (_vendorIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _vendorId, _vendorIdV);
-        var _productId = System.Text.Encoding.UTF8.GetBytes("productId");
+            NativeNodeApi.napi_set_named_property(env, obj, _vendorIdName, _vendorIdV);
         var _productIdV = NativeValue.From(ProductId);
         if (_productIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _productId, _productIdV);
-        var _clazz = System.Text.Encoding.UTF8.GetBytes("clazz");
+            NativeNodeApi.napi_set_named_property(env, obj, _productIdName, _productIdV);
         var _clazzV = NativeValue.From(Clazz);
         if (_clazzV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _clazz, _clazzV);
-        var _subClass = System.Text.Encoding.UTF8.GetBytes("subClass");
+            NativeNodeApi.napi_set_named_property(env, obj, _clazzName, _clazzV);
         var _subClassV = NativeValue.From(SubClass);
         if (_subClassV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _subClass, _subClassV);
-        var _protocol = System.Text.Encoding.UTF8.GetBytes("protocol");
+            NativeNodeApi.napi_set_named_property(env, obj, _subClassName, _subClassV);
         var _protocolV = NativeValue.From(Protocol);
         if (_protocolV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _protocol, _protocolV);
-        var _configs = System.Text.Encoding.UTF8.GetBytes("configs");
+            NativeNodeApi.napi_set_named_property(env, obj, _protocolName, _protocolV);
         var _configsV = NativeValue.From(Configs);
         if (_configsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _configs, _configsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _configsName, _configsV);
     }
 }
 
@@ -270,16 +270,16 @@ public sealed record USBDevicePipe(
     double DevAddress
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _busNumName => "busNum"u8;
+    private static ReadOnlySpan<byte> _devAddressName => "devAddress"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _busNum = System.Text.Encoding.UTF8.GetBytes("busNum");
         var _busNumV = NativeValue.From(BusNum);
         if (_busNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _busNum, _busNumV);
-        var _devAddress = System.Text.Encoding.UTF8.GetBytes("devAddress");
+            NativeNodeApi.napi_set_named_property(env, obj, _busNumName, _busNumV);
         var _devAddressV = NativeValue.From(DevAddress);
         if (_devAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _devAddress, _devAddressV);
+            NativeNodeApi.napi_set_named_property(env, obj, _devAddressName, _devAddressV);
     }
 }
 
@@ -296,36 +296,36 @@ public sealed record USBInterface(
     USBEndpoint[] Endpoints
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _idName => "id"u8;
+    private static ReadOnlySpan<byte> _protocolName => "protocol"u8;
+    private static ReadOnlySpan<byte> _clazzName => "clazz"u8;
+    private static ReadOnlySpan<byte> _subClassName => "subClass"u8;
+    private static ReadOnlySpan<byte> _alternateSettingName => "alternateSetting"u8;
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _endpointsName => "endpoints"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _id = System.Text.Encoding.UTF8.GetBytes("id");
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _id, _idV);
-        var _protocol = System.Text.Encoding.UTF8.GetBytes("protocol");
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
         var _protocolV = NativeValue.From(Protocol);
         if (_protocolV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _protocol, _protocolV);
-        var _clazz = System.Text.Encoding.UTF8.GetBytes("clazz");
+            NativeNodeApi.napi_set_named_property(env, obj, _protocolName, _protocolV);
         var _clazzV = NativeValue.From(Clazz);
         if (_clazzV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _clazz, _clazzV);
-        var _subClass = System.Text.Encoding.UTF8.GetBytes("subClass");
+            NativeNodeApi.napi_set_named_property(env, obj, _clazzName, _clazzV);
         var _subClassV = NativeValue.From(SubClass);
         if (_subClassV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _subClass, _subClassV);
-        var _alternateSetting = System.Text.Encoding.UTF8.GetBytes("alternateSetting");
+            NativeNodeApi.napi_set_named_property(env, obj, _subClassName, _subClassV);
         var _alternateSettingV = NativeValue.From(AlternateSetting);
         if (_alternateSettingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _alternateSetting, _alternateSettingV);
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
+            NativeNodeApi.napi_set_named_property(env, obj, _alternateSettingName, _alternateSettingV);
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _endpoints = System.Text.Encoding.UTF8.GetBytes("endpoints");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _endpointsV = NativeValue.From(Endpoints);
         if (_endpointsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _endpoints, _endpointsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _endpointsName, _endpointsV);
     }
 }
 
@@ -342,36 +342,36 @@ public sealed record USBConfig(
     USBInterface[] Interfaces
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _idName => "id"u8;
+    private static ReadOnlySpan<byte> _attributesName => "attributes"u8;
+    private static ReadOnlySpan<byte> _maxPowerName => "maxPower"u8;
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _isRemoteWakeupName => "isRemoteWakeup"u8;
+    private static ReadOnlySpan<byte> _isSelfPoweredName => "isSelfPowered"u8;
+    private static ReadOnlySpan<byte> _interfacesName => "interfaces"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _id = System.Text.Encoding.UTF8.GetBytes("id");
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _id, _idV);
-        var _attributes = System.Text.Encoding.UTF8.GetBytes("attributes");
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
         var _attributesV = NativeValue.From(Attributes);
         if (_attributesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _attributes, _attributesV);
-        var _maxPower = System.Text.Encoding.UTF8.GetBytes("maxPower");
+            NativeNodeApi.napi_set_named_property(env, obj, _attributesName, _attributesV);
         var _maxPowerV = NativeValue.From(MaxPower);
         if (_maxPowerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxPower, _maxPowerV);
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
+            NativeNodeApi.napi_set_named_property(env, obj, _maxPowerName, _maxPowerV);
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _isRemoteWakeup = System.Text.Encoding.UTF8.GetBytes("isRemoteWakeup");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _isRemoteWakeupV = NativeValue.From(IsRemoteWakeup);
         if (_isRemoteWakeupV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isRemoteWakeup, _isRemoteWakeupV);
-        var _isSelfPowered = System.Text.Encoding.UTF8.GetBytes("isSelfPowered");
+            NativeNodeApi.napi_set_named_property(env, obj, _isRemoteWakeupName, _isRemoteWakeupV);
         var _isSelfPoweredV = NativeValue.From(IsSelfPowered);
         if (_isSelfPoweredV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isSelfPowered, _isSelfPoweredV);
-        var _interfaces = System.Text.Encoding.UTF8.GetBytes("interfaces");
+            NativeNodeApi.napi_set_named_property(env, obj, _isSelfPoweredName, _isSelfPoweredV);
         var _interfacesV = NativeValue.From(Interfaces);
         if (_interfacesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _interfaces, _interfacesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _interfacesName, _interfacesV);
     }
 }
 
@@ -387,32 +387,32 @@ public sealed record USBControlParams(
     byte[] Data
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _requestName => "request"u8;
+    private static ReadOnlySpan<byte> _targetName => "target"u8;
+    private static ReadOnlySpan<byte> _reqTypeName => "reqType"u8;
+    private static ReadOnlySpan<byte> _valueName => "value"u8;
+    private static ReadOnlySpan<byte> _indexName => "index"u8;
+    private static ReadOnlySpan<byte> _dataName => "data"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _request = System.Text.Encoding.UTF8.GetBytes("request");
         var _requestV = NativeValue.From(Request);
         if (_requestV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _request, _requestV);
-        var _target = System.Text.Encoding.UTF8.GetBytes("target");
+            NativeNodeApi.napi_set_named_property(env, obj, _requestName, _requestV);
         var _targetV = NativeValue.From(Target);
         if (_targetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _target, _targetV);
-        var _reqType = System.Text.Encoding.UTF8.GetBytes("reqType");
+            NativeNodeApi.napi_set_named_property(env, obj, _targetName, _targetV);
         var _reqTypeV = NativeValue.From(ReqType);
         if (_reqTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reqType, _reqTypeV);
-        var _value = System.Text.Encoding.UTF8.GetBytes("value");
+            NativeNodeApi.napi_set_named_property(env, obj, _reqTypeName, _reqTypeV);
         var _valueV = NativeValue.From(Value);
         if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _value, _valueV);
-        var _index = System.Text.Encoding.UTF8.GetBytes("index");
+            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
         var _indexV = NativeValue.From(Index);
         if (_indexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _index, _indexV);
-        var _data = System.Text.Encoding.UTF8.GetBytes("data");
+            NativeNodeApi.napi_set_named_property(env, obj, _indexName, _indexV);
         var _dataV = NativeValue.From(Data);
         if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _data, _dataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
     }
 }
 
@@ -430,39 +430,39 @@ public sealed record USBEndpoint(
     double InterfaceId
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _addressName => "address"u8;
+    private static ReadOnlySpan<byte> _attributesName => "attributes"u8;
+    private static ReadOnlySpan<byte> _intervalName => "interval"u8;
+    private static ReadOnlySpan<byte> _maxPacketSizeName => "maxPacketSize"u8;
+    private static ReadOnlySpan<byte> _directionName => "direction"u8;
+    private static ReadOnlySpan<byte> _numberName => "number"u8;
+    private static ReadOnlySpan<byte> _typeName => "type"u8;
+    private static ReadOnlySpan<byte> _interfaceIdName => "interfaceId"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _address = System.Text.Encoding.UTF8.GetBytes("address");
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _address, _addressV);
-        var _attributes = System.Text.Encoding.UTF8.GetBytes("attributes");
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
         var _attributesV = NativeValue.From(Attributes);
         if (_attributesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _attributes, _attributesV);
-        var _interval = System.Text.Encoding.UTF8.GetBytes("interval");
+            NativeNodeApi.napi_set_named_property(env, obj, _attributesName, _attributesV);
         var _intervalV = NativeValue.From(Interval);
         if (_intervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _interval, _intervalV);
-        var _maxPacketSize = System.Text.Encoding.UTF8.GetBytes("maxPacketSize");
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
         var _maxPacketSizeV = NativeValue.From(MaxPacketSize);
         if (_maxPacketSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxPacketSize, _maxPacketSizeV);
-        var _direction = System.Text.Encoding.UTF8.GetBytes("direction");
+            NativeNodeApi.napi_set_named_property(env, obj, _maxPacketSizeName, _maxPacketSizeV);
         var _directionV = NativeValue.From(Direction);
         if (_directionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _direction, _directionV);
-        var _number = System.Text.Encoding.UTF8.GetBytes("number");
+            NativeNodeApi.napi_set_named_property(env, obj, _directionName, _directionV);
         var _numberV = NativeValue.From(Number);
         if (_numberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _number, _numberV);
-        var _type = System.Text.Encoding.UTF8.GetBytes("type");
+            NativeNodeApi.napi_set_named_property(env, obj, _numberName, _numberV);
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _type, _typeV);
-        var _interfaceId = System.Text.Encoding.UTF8.GetBytes("interfaceId");
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
         var _interfaceIdV = NativeValue.From(InterfaceId);
         if (_interfaceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _interfaceId, _interfaceIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _interfaceIdName, _interfaceIdV);
     }
 }

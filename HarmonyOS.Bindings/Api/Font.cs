@@ -113,16 +113,16 @@ public sealed record FontOptions(
     string FamilySrc
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _familyNameName => "familyName"u8;
+    private static ReadOnlySpan<byte> _familySrcName => "familySrc"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _familyName = System.Text.Encoding.UTF8.GetBytes("familyName");
         var _familyNameV = NativeValue.From(FamilyName);
         if (_familyNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _familyName, _familyNameV);
-        var _familySrc = System.Text.Encoding.UTF8.GetBytes("familySrc");
+            NativeNodeApi.napi_set_named_property(env, obj, _familyNameName, _familyNameV);
         var _familySrcV = NativeValue.From(FamilySrc);
         if (_familySrcV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _familySrc, _familySrcV);
+            NativeNodeApi.napi_set_named_property(env, obj, _familySrcName, _familySrcV);
     }
 }
 

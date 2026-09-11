@@ -93,7 +93,7 @@ internal static class CallbackTaskBridge
         try
         {
             var argc = (IntPtr)2;
-            var argv = new IntPtr[2];
+            Span<IntPtr> argv = stackalloc IntPtr[2];
             NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
                 .ThrowIfFailed();
             gch = GCHandle.FromIntPtr(data);

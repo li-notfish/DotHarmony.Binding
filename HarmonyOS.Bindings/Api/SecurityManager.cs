@@ -344,16 +344,16 @@ public sealed record CertBlob(
     string Alias
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _inDataName => "inData"u8;
+    private static ReadOnlySpan<byte> _aliasName => "alias"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _inData = System.Text.Encoding.UTF8.GetBytes("inData");
         var _inDataV = NativeValue.From(InData);
         if (_inDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _inData, _inDataV);
-        var _alias = System.Text.Encoding.UTF8.GetBytes("alias");
+            NativeNodeApi.napi_set_named_property(env, obj, _inDataName, _inDataV);
         var _aliasV = NativeValue.From(Alias);
         if (_aliasV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _alias, _aliasV);
+            NativeNodeApi.napi_set_named_property(env, obj, _aliasName, _aliasV);
     }
 }
 
@@ -398,16 +398,16 @@ public sealed record WatermarkProperties(
     double IntervalsCol
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _intervalsRowName => "intervalsRow"u8;
+    private static ReadOnlySpan<byte> _intervalsColName => "intervalsCol"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _intervalsRow = System.Text.Encoding.UTF8.GetBytes("intervalsRow");
         var _intervalsRowV = NativeValue.From(IntervalsRow);
         if (_intervalsRowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _intervalsRow, _intervalsRowV);
-        var _intervalsCol = System.Text.Encoding.UTF8.GetBytes("intervalsCol");
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalsRowName, _intervalsRowV);
         var _intervalsColV = NativeValue.From(IntervalsCol);
         if (_intervalsColV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _intervalsCol, _intervalsColV);
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalsColName, _intervalsColV);
     }
 }
 
@@ -420,19 +420,19 @@ public sealed record SecurityManagerApplicationInstance(
     double AppIndex
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _appIdentifierName => "appIdentifier"u8;
+    private static ReadOnlySpan<byte> _accountIdName => "accountId"u8;
+    private static ReadOnlySpan<byte> _appIndexName => "appIndex"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _appIdentifier = System.Text.Encoding.UTF8.GetBytes("appIdentifier");
         var _appIdentifierV = NativeValue.From(AppIdentifier);
         if (_appIdentifierV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _appIdentifier, _appIdentifierV);
-        var _accountId = System.Text.Encoding.UTF8.GetBytes("accountId");
+            NativeNodeApi.napi_set_named_property(env, obj, _appIdentifierName, _appIdentifierV);
         var _accountIdV = NativeValue.From(AccountId);
         if (_accountIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _accountId, _accountIdV);
-        var _appIndex = System.Text.Encoding.UTF8.GetBytes("appIndex");
+            NativeNodeApi.napi_set_named_property(env, obj, _accountIdName, _accountIdV);
         var _appIndexV = NativeValue.From(AppIndex);
         if (_appIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _appIndex, _appIndexV);
+            NativeNodeApi.napi_set_named_property(env, obj, _appIndexName, _appIndexV);
     }
 }

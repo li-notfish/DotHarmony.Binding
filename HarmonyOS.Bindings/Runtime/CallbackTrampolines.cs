@@ -21,7 +21,7 @@ internal static class CallbackTrampolines
         try
         {
             var argc = (IntPtr)MaxArgs;
-            var argv = new IntPtr[MaxArgs];
+            Span<IntPtr> argv = stackalloc IntPtr[MaxArgs];
             NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data);
             var count = (int)argc;
             if (count > MaxArgs) count = MaxArgs;

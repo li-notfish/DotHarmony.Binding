@@ -552,12 +552,12 @@ public sealed record ObserverOptions(
     string Id
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _idName => "id"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _id = System.Text.Encoding.UTF8.GetBytes("id");
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _id, _idV);
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
     }
 }
 

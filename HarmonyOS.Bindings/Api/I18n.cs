@@ -1195,40 +1195,40 @@ public sealed record ChineseCalendarTime(
     double? Second = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _gregorianYearName => "gregorianYear"u8;
+    private static ReadOnlySpan<byte> _cyclicalYearName => "cyclicalYear"u8;
+    private static ReadOnlySpan<byte> _monthName => "month"u8;
+    private static ReadOnlySpan<byte> _dateName => "date"u8;
+    private static ReadOnlySpan<byte> _isLeapMonthName => "isLeapMonth"u8;
+    private static ReadOnlySpan<byte> _hourName => "hour"u8;
+    private static ReadOnlySpan<byte> _minuteName => "minute"u8;
+    private static ReadOnlySpan<byte> _secondName => "second"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _gregorianYear = System.Text.Encoding.UTF8.GetBytes("gregorianYear");
         var _gregorianYearV = NativeValue.From(GregorianYear);
         if (_gregorianYearV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _gregorianYear, _gregorianYearV);
-        var _cyclicalYear = System.Text.Encoding.UTF8.GetBytes("cyclicalYear");
+            NativeNodeApi.napi_set_named_property(env, obj, _gregorianYearName, _gregorianYearV);
         var _cyclicalYearV = NativeValue.From(CyclicalYear);
         if (_cyclicalYearV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cyclicalYear, _cyclicalYearV);
-        var _month = System.Text.Encoding.UTF8.GetBytes("month");
+            NativeNodeApi.napi_set_named_property(env, obj, _cyclicalYearName, _cyclicalYearV);
         var _monthV = NativeValue.From(Month);
         if (_monthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _month, _monthV);
-        var _date = System.Text.Encoding.UTF8.GetBytes("date");
+            NativeNodeApi.napi_set_named_property(env, obj, _monthName, _monthV);
         var _dateV = NativeValue.From(Date);
         if (_dateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _date, _dateV);
-        var _isLeapMonth = System.Text.Encoding.UTF8.GetBytes("isLeapMonth");
+            NativeNodeApi.napi_set_named_property(env, obj, _dateName, _dateV);
         var _isLeapMonthV = NativeValue.From(IsLeapMonth);
         if (_isLeapMonthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isLeapMonth, _isLeapMonthV);
-        var _hour = System.Text.Encoding.UTF8.GetBytes("hour");
+            NativeNodeApi.napi_set_named_property(env, obj, _isLeapMonthName, _isLeapMonthV);
         var _hourV = NativeValue.From(Hour);
         if (_hourV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _hour, _hourV);
-        var _minute = System.Text.Encoding.UTF8.GetBytes("minute");
+            NativeNodeApi.napi_set_named_property(env, obj, _hourName, _hourV);
         var _minuteV = NativeValue.From(Minute);
         if (_minuteV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minute, _minuteV);
-        var _second = System.Text.Encoding.UTF8.GetBytes("second");
+            NativeNodeApi.napi_set_named_property(env, obj, _minuteName, _minuteV);
         var _secondV = NativeValue.From(Second);
         if (_secondV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _second, _secondV);
+            NativeNodeApi.napi_set_named_property(env, obj, _secondName, _secondV);
     }
 }
 
@@ -1239,12 +1239,12 @@ public sealed record PhoneNumberFormatOptions(
     string? Type = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _typeName => "type"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _type = System.Text.Encoding.UTF8.GetBytes("type");
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _type, _typeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
     }
 }
 
@@ -1282,12 +1282,12 @@ public sealed record AdvancedMeasureFormatOptions(
     global::HarmonyOS.ArkUI.UnitUsage? UnitUsage = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _unitUsageName => "unitUsage"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _unitUsage = System.Text.Encoding.UTF8.GetBytes("unitUsage");
         var _unitUsageV = NativeValue.From(UnitUsage);
         if (_unitUsageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _unitUsage, _unitUsageV);
+            NativeNodeApi.napi_set_named_property(env, obj, _unitUsageName, _unitUsageV);
     }
 }
 
@@ -1313,12 +1313,12 @@ public sealed record SymbolDateTimeFormatOptions(
     string[]? AmPmSymbol = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _amPmSymbolName => "amPMSymbol"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _amPmSymbol = System.Text.Encoding.UTF8.GetBytes("amPMSymbol");
         var _amPmSymbolV = NativeValue.From(AmPmSymbol);
         if (_amPmSymbolV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _amPmSymbol, _amPmSymbolV);
+            NativeNodeApi.napi_set_named_property(env, obj, _amPmSymbolName, _amPmSymbolV);
     }
 }
 
@@ -1379,32 +1379,32 @@ public sealed record SymbolNumberFormatOptions(
     string? GroupingSeparator = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _zeroName => "zero"u8;
+    private static ReadOnlySpan<byte> _nanName => "nan"u8;
+    private static ReadOnlySpan<byte> _minusSignName => "minusSign"u8;
+    private static ReadOnlySpan<byte> _plusSignName => "plusSign"u8;
+    private static ReadOnlySpan<byte> _infinityName => "infinity"u8;
+    private static ReadOnlySpan<byte> _groupingSeparatorName => "groupingSeparator"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _zero = System.Text.Encoding.UTF8.GetBytes("zero");
         var _zeroV = NativeValue.From(Zero);
         if (_zeroV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _zero, _zeroV);
-        var _nan = System.Text.Encoding.UTF8.GetBytes("nan");
+            NativeNodeApi.napi_set_named_property(env, obj, _zeroName, _zeroV);
         var _nanV = NativeValue.From(Nan);
         if (_nanV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nan, _nanV);
-        var _minusSign = System.Text.Encoding.UTF8.GetBytes("minusSign");
+            NativeNodeApi.napi_set_named_property(env, obj, _nanName, _nanV);
         var _minusSignV = NativeValue.From(MinusSign);
         if (_minusSignV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minusSign, _minusSignV);
-        var _plusSign = System.Text.Encoding.UTF8.GetBytes("plusSign");
+            NativeNodeApi.napi_set_named_property(env, obj, _minusSignName, _minusSignV);
         var _plusSignV = NativeValue.From(PlusSign);
         if (_plusSignV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _plusSign, _plusSignV);
-        var _infinity = System.Text.Encoding.UTF8.GetBytes("infinity");
+            NativeNodeApi.napi_set_named_property(env, obj, _plusSignName, _plusSignV);
         var _infinityV = NativeValue.From(Infinity);
         if (_infinityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _infinity, _infinityV);
-        var _groupingSeparator = System.Text.Encoding.UTF8.GetBytes("groupingSeparator");
+            NativeNodeApi.napi_set_named_property(env, obj, _infinityName, _infinityV);
         var _groupingSeparatorV = NativeValue.From(GroupingSeparator);
         if (_groupingSeparatorV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _groupingSeparator, _groupingSeparatorV);
+            NativeNodeApi.napi_set_named_property(env, obj, _groupingSeparatorName, _groupingSeparatorV);
     }
 }
 
@@ -1419,28 +1419,28 @@ public sealed record ISO8601DateTimeFormatOptions(
     bool? DisplayTimeZone = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _dateFormatName => "dateFormat"u8;
+    private static ReadOnlySpan<byte> _timePrecisionName => "timePrecision"u8;
+    private static ReadOnlySpan<byte> _separatorStyleName => "separatorStyle"u8;
+    private static ReadOnlySpan<byte> _timeZoneName => "timeZone"u8;
+    private static ReadOnlySpan<byte> _displayTimeZoneName => "displayTimeZone"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _dateFormat = System.Text.Encoding.UTF8.GetBytes("dateFormat");
         var _dateFormatV = NativeValue.From(DateFormat);
         if (_dateFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dateFormat, _dateFormatV);
-        var _timePrecision = System.Text.Encoding.UTF8.GetBytes("timePrecision");
+            NativeNodeApi.napi_set_named_property(env, obj, _dateFormatName, _dateFormatV);
         var _timePrecisionV = NativeValue.From(TimePrecision);
         if (_timePrecisionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timePrecision, _timePrecisionV);
-        var _separatorStyle = System.Text.Encoding.UTF8.GetBytes("separatorStyle");
+            NativeNodeApi.napi_set_named_property(env, obj, _timePrecisionName, _timePrecisionV);
         var _separatorStyleV = NativeValue.From(SeparatorStyle);
         if (_separatorStyleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _separatorStyle, _separatorStyleV);
-        var _timeZone = System.Text.Encoding.UTF8.GetBytes("timeZone");
+            NativeNodeApi.napi_set_named_property(env, obj, _separatorStyleName, _separatorStyleV);
         var _timeZoneV = NativeValue.From(TimeZone);
         if (_timeZoneV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeZone, _timeZoneV);
-        var _displayTimeZone = System.Text.Encoding.UTF8.GetBytes("displayTimeZone");
+            NativeNodeApi.napi_set_named_property(env, obj, _timeZoneName, _timeZoneV);
         var _displayTimeZoneV = NativeValue.From(DisplayTimeZone);
         if (_displayTimeZoneV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayTimeZone, _displayTimeZoneV);
+            NativeNodeApi.napi_set_named_property(env, obj, _displayTimeZoneName, _displayTimeZoneV);
     }
 }
 

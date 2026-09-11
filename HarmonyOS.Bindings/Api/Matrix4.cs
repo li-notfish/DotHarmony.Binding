@@ -249,20 +249,20 @@ public sealed record TranslateOption(
     double? Z = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _xName => "x"u8;
+    private static ReadOnlySpan<byte> _yName => "y"u8;
+    private static ReadOnlySpan<byte> _zName => "z"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _x = System.Text.Encoding.UTF8.GetBytes("x");
         var _xV = NativeValue.From(X);
         if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _x, _xV);
-        var _y = System.Text.Encoding.UTF8.GetBytes("y");
+            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
         var _yV = NativeValue.From(Y);
         if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _y, _yV);
-        var _z = System.Text.Encoding.UTF8.GetBytes("z");
+            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
         var _zV = NativeValue.From(Z);
         if (_zV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _z, _zV);
+            NativeNodeApi.napi_set_named_property(env, obj, _zName, _zV);
     }
 }
 
@@ -277,28 +277,28 @@ public sealed record ScaleOption(
     double? CenterY = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _xName => "x"u8;
+    private static ReadOnlySpan<byte> _yName => "y"u8;
+    private static ReadOnlySpan<byte> _zName => "z"u8;
+    private static ReadOnlySpan<byte> _centerXName => "centerX"u8;
+    private static ReadOnlySpan<byte> _centerYName => "centerY"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _x = System.Text.Encoding.UTF8.GetBytes("x");
         var _xV = NativeValue.From(X);
         if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _x, _xV);
-        var _y = System.Text.Encoding.UTF8.GetBytes("y");
+            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
         var _yV = NativeValue.From(Y);
         if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _y, _yV);
-        var _z = System.Text.Encoding.UTF8.GetBytes("z");
+            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
         var _zV = NativeValue.From(Z);
         if (_zV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _z, _zV);
-        var _centerX = System.Text.Encoding.UTF8.GetBytes("centerX");
+            NativeNodeApi.napi_set_named_property(env, obj, _zName, _zV);
         var _centerXV = NativeValue.From(CenterX);
         if (_centerXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _centerX, _centerXV);
-        var _centerY = System.Text.Encoding.UTF8.GetBytes("centerY");
+            NativeNodeApi.napi_set_named_property(env, obj, _centerXName, _centerXV);
         var _centerYV = NativeValue.From(CenterY);
         if (_centerYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _centerY, _centerYV);
+            NativeNodeApi.napi_set_named_property(env, obj, _centerYName, _centerYV);
     }
 }
 
@@ -314,32 +314,32 @@ public sealed record RotateOption(
     double? Angle = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _xName => "x"u8;
+    private static ReadOnlySpan<byte> _yName => "y"u8;
+    private static ReadOnlySpan<byte> _zName => "z"u8;
+    private static ReadOnlySpan<byte> _centerXName => "centerX"u8;
+    private static ReadOnlySpan<byte> _centerYName => "centerY"u8;
+    private static ReadOnlySpan<byte> _angleName => "angle"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _x = System.Text.Encoding.UTF8.GetBytes("x");
         var _xV = NativeValue.From(X);
         if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _x, _xV);
-        var _y = System.Text.Encoding.UTF8.GetBytes("y");
+            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
         var _yV = NativeValue.From(Y);
         if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _y, _yV);
-        var _z = System.Text.Encoding.UTF8.GetBytes("z");
+            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
         var _zV = NativeValue.From(Z);
         if (_zV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _z, _zV);
-        var _centerX = System.Text.Encoding.UTF8.GetBytes("centerX");
+            NativeNodeApi.napi_set_named_property(env, obj, _zName, _zV);
         var _centerXV = NativeValue.From(CenterX);
         if (_centerXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _centerX, _centerXV);
-        var _centerY = System.Text.Encoding.UTF8.GetBytes("centerY");
+            NativeNodeApi.napi_set_named_property(env, obj, _centerXName, _centerXV);
         var _centerYV = NativeValue.From(CenterY);
         if (_centerYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _centerY, _centerYV);
-        var _angle = System.Text.Encoding.UTF8.GetBytes("angle");
+            NativeNodeApi.napi_set_named_property(env, obj, _centerYName, _centerYV);
         var _angleV = NativeValue.From(Angle);
         if (_angleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _angle, _angleV);
+            NativeNodeApi.napi_set_named_property(env, obj, _angleName, _angleV);
     }
 }
 
@@ -354,28 +354,28 @@ public sealed record PolyToPolyOptions(
     double? PointCount = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _srcName => "src"u8;
+    private static ReadOnlySpan<byte> _srcIndexName => "srcIndex"u8;
+    private static ReadOnlySpan<byte> _dstName => "dst"u8;
+    private static ReadOnlySpan<byte> _dstIndexName => "dstIndex"u8;
+    private static ReadOnlySpan<byte> _pointCountName => "pointCount"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _src = System.Text.Encoding.UTF8.GetBytes("src");
         var _srcV = NativeValue.From(Src);
         if (_srcV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _src, _srcV);
-        var _srcIndex = System.Text.Encoding.UTF8.GetBytes("srcIndex");
+            NativeNodeApi.napi_set_named_property(env, obj, _srcName, _srcV);
         var _srcIndexV = NativeValue.From(SrcIndex);
         if (_srcIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _srcIndex, _srcIndexV);
-        var _dst = System.Text.Encoding.UTF8.GetBytes("dst");
+            NativeNodeApi.napi_set_named_property(env, obj, _srcIndexName, _srcIndexV);
         var _dstV = NativeValue.From(Dst);
         if (_dstV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dst, _dstV);
-        var _dstIndex = System.Text.Encoding.UTF8.GetBytes("dstIndex");
+            NativeNodeApi.napi_set_named_property(env, obj, _dstName, _dstV);
         var _dstIndexV = NativeValue.From(DstIndex);
         if (_dstIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dstIndex, _dstIndexV);
-        var _pointCount = System.Text.Encoding.UTF8.GetBytes("pointCount");
+            NativeNodeApi.napi_set_named_property(env, obj, _dstIndexName, _dstIndexV);
         var _pointCountV = NativeValue.From(PointCount);
         if (_pointCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pointCount, _pointCountV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pointCountName, _pointCountV);
     }
 }
 
@@ -387,15 +387,15 @@ public sealed record Matrix4Point(
     double Y
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _xName => "x"u8;
+    private static ReadOnlySpan<byte> _yName => "y"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _x = System.Text.Encoding.UTF8.GetBytes("x");
         var _xV = NativeValue.From(X);
         if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _x, _xV);
-        var _y = System.Text.Encoding.UTF8.GetBytes("y");
+            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
         var _yV = NativeValue.From(Y);
         if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _y, _yV);
+            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
     }
 }

@@ -160,28 +160,28 @@ public sealed record ModelConfig(
     global::HarmonyOS.ArkUI.NetworkPolicy? NetworkPolicy = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _versionName => "version"u8;
+    private static ReadOnlySpan<byte> _isNpuAvailableName => "isNpuAvailable"u8;
+    private static ReadOnlySpan<byte> _cachePathName => "cachePath"u8;
+    private static ReadOnlySpan<byte> _modelInfoName => "modelInfo"u8;
+    private static ReadOnlySpan<byte> _networkPolicyName => "networkPolicy"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _version = System.Text.Encoding.UTF8.GetBytes("version");
         var _versionV = NativeValue.From(Version);
         if (_versionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _version, _versionV);
-        var _isNpuAvailable = System.Text.Encoding.UTF8.GetBytes("isNpuAvailable");
+            NativeNodeApi.napi_set_named_property(env, obj, _versionName, _versionV);
         var _isNpuAvailableV = NativeValue.From(IsNpuAvailable);
         if (_isNpuAvailableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isNpuAvailable, _isNpuAvailableV);
-        var _cachePath = System.Text.Encoding.UTF8.GetBytes("cachePath");
+            NativeNodeApi.napi_set_named_property(env, obj, _isNpuAvailableName, _isNpuAvailableV);
         var _cachePathV = NativeValue.From(CachePath);
         if (_cachePathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cachePath, _cachePathV);
-        var _modelInfo = System.Text.Encoding.UTF8.GetBytes("modelInfo");
+            NativeNodeApi.napi_set_named_property(env, obj, _cachePathName, _cachePathV);
         var _modelInfoV = NativeValue.From(ModelInfo);
         if (_modelInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _modelInfo, _modelInfoV);
-        var _networkPolicy = System.Text.Encoding.UTF8.GetBytes("networkPolicy");
+            NativeNodeApi.napi_set_named_property(env, obj, _modelInfoName, _modelInfoV);
         var _networkPolicyV = NativeValue.From(NetworkPolicy);
         if (_networkPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _networkPolicy, _networkPolicyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _networkPolicyName, _networkPolicyV);
     }
 }
 
@@ -229,16 +229,16 @@ public sealed record SplitConfig(
     double OverlapRatio
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _sizeName => "size"u8;
+    private static ReadOnlySpan<byte> _overlapRatioName => "overlapRatio"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _size = System.Text.Encoding.UTF8.GetBytes("size");
         var _sizeV = NativeValue.From(Size);
         if (_sizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _size, _sizeV);
-        var _overlapRatio = System.Text.Encoding.UTF8.GetBytes("overlapRatio");
+            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV);
         var _overlapRatioV = NativeValue.From(OverlapRatio);
         if (_overlapRatioV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _overlapRatio, _overlapRatioV);
+            NativeNodeApi.napi_set_named_property(env, obj, _overlapRatioName, _overlapRatioV);
     }
 }
 

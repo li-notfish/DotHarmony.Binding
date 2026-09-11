@@ -824,32 +824,32 @@ public sealed record VirtualScreenConfig(
     bool? SupportsFocus = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _widthName => "width"u8;
+    private static ReadOnlySpan<byte> _heightName => "height"u8;
+    private static ReadOnlySpan<byte> _densityName => "density"u8;
+    private static ReadOnlySpan<byte> _surfaceIdName => "surfaceId"u8;
+    private static ReadOnlySpan<byte> _supportsFocusName => "supportsFocus"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _width = System.Text.Encoding.UTF8.GetBytes("width");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = System.Text.Encoding.UTF8.GetBytes("height");
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
-        var _density = System.Text.Encoding.UTF8.GetBytes("density");
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
         var _densityV = NativeValue.From(Density);
         if (_densityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _density, _densityV);
-        var _surfaceId = System.Text.Encoding.UTF8.GetBytes("surfaceId");
+            NativeNodeApi.napi_set_named_property(env, obj, _densityName, _densityV);
         var _surfaceIdV = NativeValue.From(SurfaceId);
         if (_surfaceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _surfaceId, _surfaceIdV);
-        var _supportsFocus = System.Text.Encoding.UTF8.GetBytes("supportsFocus");
+            NativeNodeApi.napi_set_named_property(env, obj, _surfaceIdName, _surfaceIdV);
         var _supportsFocusV = NativeValue.From(SupportsFocus);
         if (_supportsFocusV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _supportsFocus, _supportsFocusV);
+            NativeNodeApi.napi_set_named_property(env, obj, _supportsFocusName, _supportsFocusV);
     }
 }
 

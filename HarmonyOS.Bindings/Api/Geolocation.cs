@@ -438,16 +438,16 @@ public sealed record GeolocationCachedGnssLocationsRequest(
     bool WakeUpCacheQueueFull
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _reportingPeriodSecName => "reportingPeriodSec"u8;
+    private static ReadOnlySpan<byte> _wakeUpCacheQueueFullName => "wakeUpCacheQueueFull"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _reportingPeriodSec = System.Text.Encoding.UTF8.GetBytes("reportingPeriodSec");
         var _reportingPeriodSecV = NativeValue.From(ReportingPeriodSec);
         if (_reportingPeriodSecV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reportingPeriodSec, _reportingPeriodSecV);
-        var _wakeUpCacheQueueFull = System.Text.Encoding.UTF8.GetBytes("wakeUpCacheQueueFull");
+            NativeNodeApi.napi_set_named_property(env, obj, _reportingPeriodSecName, _reportingPeriodSecV);
         var _wakeUpCacheQueueFullV = NativeValue.From(WakeUpCacheQueueFull);
         if (_wakeUpCacheQueueFullV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _wakeUpCacheQueueFull, _wakeUpCacheQueueFullV);
+            NativeNodeApi.napi_set_named_property(env, obj, _wakeUpCacheQueueFullName, _wakeUpCacheQueueFullV);
     }
 }
 
@@ -647,24 +647,24 @@ public sealed record GeolocationReverseGeoCodeRequest(
     double? MaxItems = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _localeName => "locale"u8;
+    private static ReadOnlySpan<byte> _latitudeName => "latitude"u8;
+    private static ReadOnlySpan<byte> _longitudeName => "longitude"u8;
+    private static ReadOnlySpan<byte> _maxItemsName => "maxItems"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _locale = System.Text.Encoding.UTF8.GetBytes("locale");
         var _localeV = NativeValue.From(Locale);
         if (_localeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _locale, _localeV);
-        var _latitude = System.Text.Encoding.UTF8.GetBytes("latitude");
+            NativeNodeApi.napi_set_named_property(env, obj, _localeName, _localeV);
         var _latitudeV = NativeValue.From(Latitude);
         if (_latitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
-        var _longitude = System.Text.Encoding.UTF8.GetBytes("longitude");
+            NativeNodeApi.napi_set_named_property(env, obj, _latitudeName, _latitudeV);
         var _longitudeV = NativeValue.From(Longitude);
         if (_longitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
-        var _maxItems = System.Text.Encoding.UTF8.GetBytes("maxItems");
+            NativeNodeApi.napi_set_named_property(env, obj, _longitudeName, _longitudeV);
         var _maxItemsV = NativeValue.From(MaxItems);
         if (_maxItemsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxItems, _maxItemsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxItemsName, _maxItemsV);
     }
 }
 
@@ -681,36 +681,36 @@ public sealed record GeolocationGeoCodeRequest(
     double? MaxLongitude = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _localeName => "locale"u8;
+    private static ReadOnlySpan<byte> _descriptionName => "description"u8;
+    private static ReadOnlySpan<byte> _maxItemsName => "maxItems"u8;
+    private static ReadOnlySpan<byte> _minLatitudeName => "minLatitude"u8;
+    private static ReadOnlySpan<byte> _minLongitudeName => "minLongitude"u8;
+    private static ReadOnlySpan<byte> _maxLatitudeName => "maxLatitude"u8;
+    private static ReadOnlySpan<byte> _maxLongitudeName => "maxLongitude"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _locale = System.Text.Encoding.UTF8.GetBytes("locale");
         var _localeV = NativeValue.From(Locale);
         if (_localeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _locale, _localeV);
-        var _description = System.Text.Encoding.UTF8.GetBytes("description");
+            NativeNodeApi.napi_set_named_property(env, obj, _localeName, _localeV);
         var _descriptionV = NativeValue.From(Description);
         if (_descriptionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _description, _descriptionV);
-        var _maxItems = System.Text.Encoding.UTF8.GetBytes("maxItems");
+            NativeNodeApi.napi_set_named_property(env, obj, _descriptionName, _descriptionV);
         var _maxItemsV = NativeValue.From(MaxItems);
         if (_maxItemsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxItems, _maxItemsV);
-        var _minLatitude = System.Text.Encoding.UTF8.GetBytes("minLatitude");
+            NativeNodeApi.napi_set_named_property(env, obj, _maxItemsName, _maxItemsV);
         var _minLatitudeV = NativeValue.From(MinLatitude);
         if (_minLatitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minLatitude, _minLatitudeV);
-        var _minLongitude = System.Text.Encoding.UTF8.GetBytes("minLongitude");
+            NativeNodeApi.napi_set_named_property(env, obj, _minLatitudeName, _minLatitudeV);
         var _minLongitudeV = NativeValue.From(MinLongitude);
         if (_minLongitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minLongitude, _minLongitudeV);
-        var _maxLatitude = System.Text.Encoding.UTF8.GetBytes("maxLatitude");
+            NativeNodeApi.napi_set_named_property(env, obj, _minLongitudeName, _minLongitudeV);
         var _maxLatitudeV = NativeValue.From(MaxLatitude);
         if (_maxLatitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxLatitude, _maxLatitudeV);
-        var _maxLongitude = System.Text.Encoding.UTF8.GetBytes("maxLongitude");
+            NativeNodeApi.napi_set_named_property(env, obj, _maxLatitudeName, _maxLatitudeV);
         var _maxLongitudeV = NativeValue.From(MaxLongitude);
         if (_maxLongitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxLongitude, _maxLongitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxLongitudeName, _maxLongitudeV);
     }
 }
 

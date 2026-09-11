@@ -298,16 +298,16 @@ public sealed record TrainCfg(
     global::HarmonyOS.ArkUI.OptimizationLevel? OptimizationLevel = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _lossNameName => "lossName"u8;
+    private static ReadOnlySpan<byte> _optimizationLevelName => "optimizationLevel"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _lossName = System.Text.Encoding.UTF8.GetBytes("lossName");
         var _lossNameV = NativeValue.From(LossName);
         if (_lossNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _lossName, _lossNameV);
-        var _optimizationLevel = System.Text.Encoding.UTF8.GetBytes("optimizationLevel");
+            NativeNodeApi.napi_set_named_property(env, obj, _lossNameName, _lossNameV);
         var _optimizationLevelV = NativeValue.From(OptimizationLevel);
         if (_optimizationLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _optimizationLevel, _optimizationLevelV);
+            NativeNodeApi.napi_set_named_property(env, obj, _optimizationLevelName, _optimizationLevelV);
     }
 }
 

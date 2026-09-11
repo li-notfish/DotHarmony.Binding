@@ -457,12 +457,12 @@ public sealed record MacSpec(
     string AlgName
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _algNameName => "algName"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _algName = System.Text.Encoding.UTF8.GetBytes("algName");
         var _algNameV = NativeValue.From(AlgName);
         if (_algNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _algName, _algNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _algNameName, _algNameV);
     }
 }
 
@@ -915,16 +915,16 @@ public sealed record AsyKeySpec(
     global::HarmonyOS.ArkUI.AsyKeySpecType SpecType
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _algNameName => "algName"u8;
+    private static ReadOnlySpan<byte> _specTypeName => "specType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _algName = System.Text.Encoding.UTF8.GetBytes("algName");
         var _algNameV = NativeValue.From(AlgName);
         if (_algNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _algName, _algNameV);
-        var _specType = System.Text.Encoding.UTF8.GetBytes("specType");
+            NativeNodeApi.napi_set_named_property(env, obj, _algNameName, _algNameV);
         var _specTypeV = NativeValue.From(SpecType);
         if (_specTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _specType, _specTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _specTypeName, _specTypeV);
     }
 }
 
@@ -1136,12 +1136,12 @@ public sealed record ParamsSpec(
     string AlgName
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _algNameName => "algName"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _algName = System.Text.Encoding.UTF8.GetBytes("algName");
         var _algNameV = NativeValue.From(AlgName);
         if (_algNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _algName, _algNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _algNameName, _algNameV);
     }
 }
 
@@ -1355,12 +1355,12 @@ public sealed record KdfSpec(
     string AlgName
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _algNameName => "algName"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _algName = System.Text.Encoding.UTF8.GetBytes("algName");
         var _algNameV = NativeValue.From(AlgName);
         if (_algNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _algName, _algNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _algNameName, _algNameV);
     }
 }
 
@@ -1393,15 +1393,15 @@ public sealed record KeyEncodingConfig(
     string CipherName
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _passwordName => "password"u8;
+    private static ReadOnlySpan<byte> _cipherNameName => "cipherName"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _password = System.Text.Encoding.UTF8.GetBytes("password");
         var _passwordV = NativeValue.From(Password);
         if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _password, _passwordV);
-        var _cipherName = System.Text.Encoding.UTF8.GetBytes("cipherName");
+            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
         var _cipherNameV = NativeValue.From(CipherName);
         if (_cipherNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cipherName, _cipherNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _cipherNameName, _cipherNameV);
     }
 }

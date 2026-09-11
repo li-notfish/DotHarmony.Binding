@@ -758,27 +758,27 @@ public sealed record WifiP2PConfig(
     global::HarmonyOS.ArkUI.GroupOwnerBand GoBand
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _deviceAddressName => "deviceAddress"u8;
+    private static ReadOnlySpan<byte> _netIdName => "netId"u8;
+    private static ReadOnlySpan<byte> _passphraseName => "passphrase"u8;
+    private static ReadOnlySpan<byte> _groupNameName => "groupName"u8;
+    private static ReadOnlySpan<byte> _goBandName => "goBand"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _deviceAddress = System.Text.Encoding.UTF8.GetBytes("deviceAddress");
         var _deviceAddressV = NativeValue.From(DeviceAddress);
         if (_deviceAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddress, _deviceAddressV);
-        var _netId = System.Text.Encoding.UTF8.GetBytes("netId");
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddressName, _deviceAddressV);
         var _netIdV = NativeValue.From(NetId);
         if (_netIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _netId, _netIdV);
-        var _passphrase = System.Text.Encoding.UTF8.GetBytes("passphrase");
+            NativeNodeApi.napi_set_named_property(env, obj, _netIdName, _netIdV);
         var _passphraseV = NativeValue.From(Passphrase);
         if (_passphraseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _passphrase, _passphraseV);
-        var _groupName = System.Text.Encoding.UTF8.GetBytes("groupName");
+            NativeNodeApi.napi_set_named_property(env, obj, _passphraseName, _passphraseV);
         var _groupNameV = NativeValue.From(GroupName);
         if (_groupNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _groupName, _groupNameV);
-        var _goBand = System.Text.Encoding.UTF8.GetBytes("goBand");
+            NativeNodeApi.napi_set_named_property(env, obj, _groupNameName, _groupNameV);
         var _goBandV = NativeValue.From(GoBand);
         if (_goBandV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _goBand, _goBandV);
+            NativeNodeApi.napi_set_named_property(env, obj, _goBandName, _goBandV);
     }
 }

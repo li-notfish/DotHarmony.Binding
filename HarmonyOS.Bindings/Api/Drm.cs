@@ -398,16 +398,16 @@ public sealed record DrmEventInfo(
     string ExtraInfo
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _infoName => "info"u8;
+    private static ReadOnlySpan<byte> _extraInfoName => "extraInfo"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _info = System.Text.Encoding.UTF8.GetBytes("info");
         var _infoV = NativeValue.From(Info);
         if (_infoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _info, _infoV);
-        var _extraInfo = System.Text.Encoding.UTF8.GetBytes("extraInfo");
+            NativeNodeApi.napi_set_named_property(env, obj, _infoName, _infoV);
         var _extraInfoV = NativeValue.From(ExtraInfo);
         if (_extraInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extraInfo, _extraInfoV);
+            NativeNodeApi.napi_set_named_property(env, obj, _extraInfoName, _extraInfoV);
     }
 }
 
@@ -676,16 +676,16 @@ public sealed record OptionsData(
     string Value
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _valueName => "value"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _value = System.Text.Encoding.UTF8.GetBytes("value");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _valueV = NativeValue.From(Value);
         if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _value, _valueV);
+            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
     }
 }
 
@@ -718,15 +718,15 @@ public sealed record KeysInfo(
     string Value
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _keyIdName => "keyId"u8;
+    private static ReadOnlySpan<byte> _valueName => "value"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _keyId = System.Text.Encoding.UTF8.GetBytes("keyId");
         var _keyIdV = NativeValue.From(KeyId);
         if (_keyIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyId, _keyIdV);
-        var _value = System.Text.Encoding.UTF8.GetBytes("value");
+            NativeNodeApi.napi_set_named_property(env, obj, _keyIdName, _keyIdV);
         var _valueV = NativeValue.From(Value);
         if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _value, _valueV);
+            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
     }
 }

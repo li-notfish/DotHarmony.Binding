@@ -76,7 +76,7 @@ public abstract class JsObject : IDisposable
     }
 
     /// <summary>调用实例方法（返回值经 <see cref="ValueConverter"/> 转换：基元 + 枚举 + IntPtr）。</summary>
-    protected T CallMethod<T>(ReadOnlySpan<byte> methodName, params object?[]? args)
+    protected T CallMethod<T>(ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         ThrowIfDisposed();
@@ -87,7 +87,7 @@ public abstract class JsObject : IDisposable
     }
 
     /// <summary>调用实例方法，返回值经调用点显式转换委托处理（数组/包装类等复杂类型）。</summary>
-    protected TCall CallMethod<TCall>(ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params object?[]? args)
+    protected TCall CallMethod<TCall>(ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         ThrowIfDisposed();
@@ -98,7 +98,7 @@ public abstract class JsObject : IDisposable
     }
 
     /// <summary>调用无返回值的实例方法。</summary>
-    protected void CallMethodVoid(ReadOnlySpan<byte> methodName, params object?[]? args)
+    protected void CallMethodVoid(ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         ThrowIfDisposed();
@@ -109,7 +109,7 @@ public abstract class JsObject : IDisposable
     }
 
     /// <summary>调用实例方法并把 Promise 接为 Task&lt;T&gt;（基元 + 枚举 + IntPtr）。</summary>
-    protected Task<T> CallMethodAsync<T>(ReadOnlySpan<byte> methodName, params object?[]? args)
+    protected Task<T> CallMethodAsync<T>(ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         ThrowIfDisposed();
@@ -120,7 +120,7 @@ public abstract class JsObject : IDisposable
     }
 
     /// <summary>调用实例方法并把 Promise 接为 Task&lt;T&gt;，结果经调用点显式转换委托处理。</summary>
-    protected Task<TCall> CallMethodAsync<TCall>(ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params object?[]? args)
+    protected Task<TCall> CallMethodAsync<TCall>(ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         ThrowIfDisposed();
@@ -131,7 +131,7 @@ public abstract class JsObject : IDisposable
     }
 
     /// <summary>调用实例方法并把 Promise 接为 Task（Promise&lt;void&gt; 路线）。</summary>
-    protected Task CallMethodAsyncVoid(ReadOnlySpan<byte> methodName, params object?[]? args)
+    protected Task CallMethodAsyncVoid(ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         ThrowIfDisposed();
@@ -145,7 +145,7 @@ public abstract class JsObject : IDisposable
     /// 调用仅 callback 形式的实例方法（末参 AsyncCallback&lt;T&gt;）并接为 Task&lt;T&gt;，
     /// 运行时创建 err-first JS 回调作为最后一个实参传入。
     /// </summary>
-    protected Task<T> CallMethodAsyncCallback<T>(ReadOnlySpan<byte> methodName, Func<IntPtr, T>? convert, params object?[]? args)
+    protected Task<T> CallMethodAsyncCallback<T>(ReadOnlySpan<byte> methodName, Func<IntPtr, T>? convert, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         ThrowIfDisposed();
@@ -156,7 +156,7 @@ public abstract class JsObject : IDisposable
     }
 
     /// <summary>CallMethodAsyncCallback 的 void 结果对应物（AsyncCallback&lt;void&gt;）。</summary>
-    protected Task CallMethodAsyncCallbackVoid(ReadOnlySpan<byte> methodName, params object?[]? args)
+    protected Task CallMethodAsyncCallbackVoid(ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         ThrowIfDisposed();

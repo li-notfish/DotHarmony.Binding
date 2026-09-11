@@ -269,11 +269,11 @@ public sealed record EnableAlertOptions(
     string Message
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _messageName => "message"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _message = System.Text.Encoding.UTF8.GetBytes("message");
         var _messageV = NativeValue.From(Message);
         if (_messageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _message, _messageV);
+            NativeNodeApi.napi_set_named_property(env, obj, _messageName, _messageV);
     }
 }

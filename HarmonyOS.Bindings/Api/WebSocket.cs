@@ -679,16 +679,16 @@ public sealed record WebSocketCloseOptions(
     string? Reason = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _codeName => "code"u8;
+    private static ReadOnlySpan<byte> _reasonName => "reason"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _code = System.Text.Encoding.UTF8.GetBytes("code");
         var _codeV = NativeValue.From(Code);
         if (_codeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _code, _codeV);
-        var _reason = System.Text.Encoding.UTF8.GetBytes("reason");
+            NativeNodeApi.napi_set_named_property(env, obj, _codeName, _codeV);
         var _reasonV = NativeValue.From(Reason);
         if (_reasonV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reason, _reasonV);
+            NativeNodeApi.napi_set_named_property(env, obj, _reasonName, _reasonV);
     }
 }
 
@@ -704,32 +704,32 @@ public sealed record WebSocketServerConfig(
     string? Protocol = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _maxConnectionsForOneClientName => "maxConnectionsForOneClient"u8;
+    private static ReadOnlySpan<byte> _maxConcurrentClientsNumberName => "maxConcurrentClientsNumber"u8;
+    private static ReadOnlySpan<byte> _serverPortName => "serverPort"u8;
+    private static ReadOnlySpan<byte> _serverIPName => "serverIP"u8;
+    private static ReadOnlySpan<byte> _serverCertName => "serverCert"u8;
+    private static ReadOnlySpan<byte> _protocolName => "protocol"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _maxConnectionsForOneClient = System.Text.Encoding.UTF8.GetBytes("maxConnectionsForOneClient");
         var _maxConnectionsForOneClientV = NativeValue.From(MaxConnectionsForOneClient);
         if (_maxConnectionsForOneClientV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxConnectionsForOneClient, _maxConnectionsForOneClientV);
-        var _maxConcurrentClientsNumber = System.Text.Encoding.UTF8.GetBytes("maxConcurrentClientsNumber");
+            NativeNodeApi.napi_set_named_property(env, obj, _maxConnectionsForOneClientName, _maxConnectionsForOneClientV);
         var _maxConcurrentClientsNumberV = NativeValue.From(MaxConcurrentClientsNumber);
         if (_maxConcurrentClientsNumberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxConcurrentClientsNumber, _maxConcurrentClientsNumberV);
-        var _serverPort = System.Text.Encoding.UTF8.GetBytes("serverPort");
+            NativeNodeApi.napi_set_named_property(env, obj, _maxConcurrentClientsNumberName, _maxConcurrentClientsNumberV);
         var _serverPortV = NativeValue.From(ServerPort);
         if (_serverPortV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serverPort, _serverPortV);
-        var _serverIP = System.Text.Encoding.UTF8.GetBytes("serverIP");
+            NativeNodeApi.napi_set_named_property(env, obj, _serverPortName, _serverPortV);
         var _serverIPV = NativeValue.From(ServerIP);
         if (_serverIPV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serverIP, _serverIPV);
-        var _serverCert = System.Text.Encoding.UTF8.GetBytes("serverCert");
+            NativeNodeApi.napi_set_named_property(env, obj, _serverIPName, _serverIPV);
         var _serverCertV = NativeValue.From(ServerCert);
         if (_serverCertV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serverCert, _serverCertV);
-        var _protocol = System.Text.Encoding.UTF8.GetBytes("protocol");
+            NativeNodeApi.napi_set_named_property(env, obj, _serverCertName, _serverCertV);
         var _protocolV = NativeValue.From(Protocol);
         if (_protocolV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _protocol, _protocolV);
+            NativeNodeApi.napi_set_named_property(env, obj, _protocolName, _protocolV);
     }
 }
 
@@ -741,15 +741,15 @@ public sealed record ServerCert(
     string KeyPath
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _certPathName => "certPath"u8;
+    private static ReadOnlySpan<byte> _keyPathName => "keyPath"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _certPath = System.Text.Encoding.UTF8.GetBytes("certPath");
         var _certPathV = NativeValue.From(CertPath);
         if (_certPathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certPath, _certPathV);
-        var _keyPath = System.Text.Encoding.UTF8.GetBytes("keyPath");
+            NativeNodeApi.napi_set_named_property(env, obj, _certPathName, _certPathV);
         var _keyPathV = NativeValue.From(KeyPath);
         if (_keyPathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyPath, _keyPathV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keyPathName, _keyPathV);
     }
 }

@@ -255,16 +255,16 @@ public sealed record VibratorInfoParam(
     double? VibratorId = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _deviceIdName => "deviceId"u8;
+    private static ReadOnlySpan<byte> _vibratorIdName => "vibratorId"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _deviceId = System.Text.Encoding.UTF8.GetBytes("deviceId");
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceId, _deviceIdV);
-        var _vibratorId = System.Text.Encoding.UTF8.GetBytes("vibratorId");
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
         var _vibratorIdV = NativeValue.From(VibratorId);
         if (_vibratorIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _vibratorId, _vibratorIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _vibratorIdName, _vibratorIdV);
     }
 }
 

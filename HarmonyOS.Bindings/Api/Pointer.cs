@@ -174,11 +174,11 @@ public sealed record CursorConfig(
     bool FollowSystem
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _followSystemName => "followSystem"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _followSystem = System.Text.Encoding.UTF8.GetBytes("followSystem");
         var _followSystemV = NativeValue.From(FollowSystem);
         if (_followSystemV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _followSystem, _followSystemV);
+            NativeNodeApi.napi_set_named_property(env, obj, _followSystemName, _followSystemV);
     }
 }

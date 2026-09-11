@@ -1113,32 +1113,32 @@ public sealed record ScanOptions(
     bool? IsExtended = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _intervalName => "interval"u8;
+    private static ReadOnlySpan<byte> _dutyModeName => "dutyMode"u8;
+    private static ReadOnlySpan<byte> _matchModeName => "matchMode"u8;
+    private static ReadOnlySpan<byte> _phyTypeName => "phyType"u8;
+    private static ReadOnlySpan<byte> _reportModeName => "reportMode"u8;
+    private static ReadOnlySpan<byte> _isExtendedName => "isExtended"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _interval = System.Text.Encoding.UTF8.GetBytes("interval");
         var _intervalV = NativeValue.From(Interval);
         if (_intervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _interval, _intervalV);
-        var _dutyMode = System.Text.Encoding.UTF8.GetBytes("dutyMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
         var _dutyModeV = NativeValue.From(DutyMode);
         if (_dutyModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dutyMode, _dutyModeV);
-        var _matchMode = System.Text.Encoding.UTF8.GetBytes("matchMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _dutyModeName, _dutyModeV);
         var _matchModeV = NativeValue.From(MatchMode);
         if (_matchModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _matchMode, _matchModeV);
-        var _phyType = System.Text.Encoding.UTF8.GetBytes("phyType");
+            NativeNodeApi.napi_set_named_property(env, obj, _matchModeName, _matchModeV);
         var _phyTypeV = NativeValue.From(PhyType);
         if (_phyTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _phyType, _phyTypeV);
-        var _reportMode = System.Text.Encoding.UTF8.GetBytes("reportMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _phyTypeName, _phyTypeV);
         var _reportModeV = NativeValue.From(ReportMode);
         if (_reportModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reportMode, _reportModeV);
-        var _isExtended = System.Text.Encoding.UTF8.GetBytes("isExtended");
+            NativeNodeApi.napi_set_named_property(env, obj, _reportModeName, _reportModeV);
         var _isExtendedV = NativeValue.From(IsExtended);
         if (_isExtendedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isExtended, _isExtendedV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isExtendedName, _isExtendedV);
     }
 }
 
@@ -1152,24 +1152,24 @@ public sealed record AdvertiseSetting(
     bool? IsExtended = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _intervalName => "interval"u8;
+    private static ReadOnlySpan<byte> _txPowerName => "txPower"u8;
+    private static ReadOnlySpan<byte> _connectableName => "connectable"u8;
+    private static ReadOnlySpan<byte> _isExtendedName => "isExtended"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _interval = System.Text.Encoding.UTF8.GetBytes("interval");
         var _intervalV = NativeValue.From(Interval);
         if (_intervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _interval, _intervalV);
-        var _txPower = System.Text.Encoding.UTF8.GetBytes("txPower");
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
         var _txPowerV = NativeValue.From(TxPower);
         if (_txPowerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _txPower, _txPowerV);
-        var _connectable = System.Text.Encoding.UTF8.GetBytes("connectable");
+            NativeNodeApi.napi_set_named_property(env, obj, _txPowerName, _txPowerV);
         var _connectableV = NativeValue.From(Connectable);
         if (_connectableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _connectable, _connectableV);
-        var _isExtended = System.Text.Encoding.UTF8.GetBytes("isExtended");
+            NativeNodeApi.napi_set_named_property(env, obj, _connectableName, _connectableV);
         var _isExtendedV = NativeValue.From(IsExtended);
         if (_isExtendedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isExtended, _isExtendedV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isExtendedName, _isExtendedV);
     }
 }
 
@@ -1181,16 +1181,16 @@ public sealed record AdvertisingEnableParams(
     double? Duration = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _advertisingIdName => "advertisingId"u8;
+    private static ReadOnlySpan<byte> _durationName => "duration"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _advertisingId = System.Text.Encoding.UTF8.GetBytes("advertisingId");
         var _advertisingIdV = NativeValue.From(AdvertisingId);
         if (_advertisingIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _advertisingId, _advertisingIdV);
-        var _duration = System.Text.Encoding.UTF8.GetBytes("duration");
+            NativeNodeApi.napi_set_named_property(env, obj, _advertisingIdName, _advertisingIdV);
         var _durationV = NativeValue.From(Duration);
         if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _duration, _durationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
     }
 }
 
@@ -1201,12 +1201,12 @@ public sealed record AdvertisingDisableParams(
     double AdvertisingId
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _advertisingIdName => "advertisingId"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _advertisingId = System.Text.Encoding.UTF8.GetBytes("advertisingId");
         var _advertisingIdV = NativeValue.From(AdvertisingId);
         if (_advertisingIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _advertisingId, _advertisingIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _advertisingIdName, _advertisingIdV);
     }
 }
 
@@ -1466,24 +1466,24 @@ public sealed record NotifyCharacteristic(
     bool Confirm
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _serviceUuidName => "serviceUuid"u8;
+    private static ReadOnlySpan<byte> _characteristicUuidName => "characteristicUuid"u8;
+    private static ReadOnlySpan<byte> _characteristicValueName => "characteristicValue"u8;
+    private static ReadOnlySpan<byte> _confirmName => "confirm"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _serviceUuid = System.Text.Encoding.UTF8.GetBytes("serviceUuid");
         var _serviceUuidV = NativeValue.From(ServiceUuid);
         if (_serviceUuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuid, _serviceUuidV);
-        var _characteristicUuid = System.Text.Encoding.UTF8.GetBytes("characteristicUuid");
+            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuidName, _serviceUuidV);
         var _characteristicUuidV = NativeValue.From(CharacteristicUuid);
         if (_characteristicUuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _characteristicUuid, _characteristicUuidV);
-        var _characteristicValue = System.Text.Encoding.UTF8.GetBytes("characteristicValue");
+            NativeNodeApi.napi_set_named_property(env, obj, _characteristicUuidName, _characteristicUuidV);
         var _characteristicValueV = NativeValue.From(CharacteristicValue);
         if (_characteristicValueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _characteristicValue, _characteristicValueV);
-        var _confirm = System.Text.Encoding.UTF8.GetBytes("confirm");
+            NativeNodeApi.napi_set_named_property(env, obj, _characteristicValueName, _characteristicValueV);
         var _confirmV = NativeValue.From(Confirm);
         if (_confirmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _confirm, _confirmV);
+            NativeNodeApi.napi_set_named_property(env, obj, _confirmName, _confirmV);
     }
 }
 
@@ -1498,28 +1498,28 @@ public sealed record ServerResponse(
     byte[] Value
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _deviceIdName => "deviceId"u8;
+    private static ReadOnlySpan<byte> _transIdName => "transId"u8;
+    private static ReadOnlySpan<byte> _statusName => "status"u8;
+    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
+    private static ReadOnlySpan<byte> _valueName => "value"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _deviceId = System.Text.Encoding.UTF8.GetBytes("deviceId");
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceId, _deviceIdV);
-        var _transId = System.Text.Encoding.UTF8.GetBytes("transId");
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
         var _transIdV = NativeValue.From(TransId);
         if (_transIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _transId, _transIdV);
-        var _status = System.Text.Encoding.UTF8.GetBytes("status");
+            NativeNodeApi.napi_set_named_property(env, obj, _transIdName, _transIdV);
         var _statusV = NativeValue.From(Status);
         if (_statusV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _status, _statusV);
-        var _offset = System.Text.Encoding.UTF8.GetBytes("offset");
+            NativeNodeApi.napi_set_named_property(env, obj, _statusName, _statusV);
         var _offsetV = NativeValue.From(Offset);
         if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offset, _offsetV);
-        var _value = System.Text.Encoding.UTF8.GetBytes("value");
+            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
         var _valueV = NativeValue.From(Value);
         if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _value, _valueV);
+            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
     }
 }
 

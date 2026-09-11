@@ -684,16 +684,16 @@ public sealed record CreateOptions(
     global::HarmonyOS.ArkUI.PhotoSubtype? Subtype = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _titleName => "title"u8;
+    private static ReadOnlySpan<byte> _subtypeName => "subtype"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _title = System.Text.Encoding.UTF8.GetBytes("title");
         var _titleV = NativeValue.From(Title);
         if (_titleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _title, _titleV);
-        var _subtype = System.Text.Encoding.UTF8.GetBytes("subtype");
+            NativeNodeApi.napi_set_named_property(env, obj, _titleName, _titleV);
         var _subtypeV = NativeValue.From(Subtype);
         if (_subtypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _subtype, _subtypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _subtypeName, _subtypeV);
     }
 }
 
@@ -707,24 +707,24 @@ public sealed record PhotoCreationConfig(
     global::HarmonyOS.ArkUI.PhotoSubtype? Subtype = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _titleName => "title"u8;
+    private static ReadOnlySpan<byte> _fileNameExtensionName => "fileNameExtension"u8;
+    private static ReadOnlySpan<byte> _photoTypeName => "photoType"u8;
+    private static ReadOnlySpan<byte> _subtypeName => "subtype"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _title = System.Text.Encoding.UTF8.GetBytes("title");
         var _titleV = NativeValue.From(Title);
         if (_titleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _title, _titleV);
-        var _fileNameExtension = System.Text.Encoding.UTF8.GetBytes("fileNameExtension");
+            NativeNodeApi.napi_set_named_property(env, obj, _titleName, _titleV);
         var _fileNameExtensionV = NativeValue.From(FileNameExtension);
         if (_fileNameExtensionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileNameExtension, _fileNameExtensionV);
-        var _photoType = System.Text.Encoding.UTF8.GetBytes("photoType");
+            NativeNodeApi.napi_set_named_property(env, obj, _fileNameExtensionName, _fileNameExtensionV);
         var _photoTypeV = NativeValue.From(PhotoType);
         if (_photoTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _photoType, _photoTypeV);
-        var _subtype = System.Text.Encoding.UTF8.GetBytes("subtype");
+            NativeNodeApi.napi_set_named_property(env, obj, _photoTypeName, _photoTypeV);
         var _subtypeV = NativeValue.From(Subtype);
         if (_subtypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _subtype, _subtypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _subtypeName, _subtypeV);
     }
 }
 
@@ -737,20 +737,20 @@ public sealed record CreationSetting(
     global::HarmonyOS.ArkUI.PhotoType PhotoType
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _titleName => "title"u8;
+    private static ReadOnlySpan<byte> _fileNameExtensionName => "fileNameExtension"u8;
+    private static ReadOnlySpan<byte> _photoTypeName => "photoType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _title = System.Text.Encoding.UTF8.GetBytes("title");
         var _titleV = NativeValue.From(Title);
         if (_titleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _title, _titleV);
-        var _fileNameExtension = System.Text.Encoding.UTF8.GetBytes("fileNameExtension");
+            NativeNodeApi.napi_set_named_property(env, obj, _titleName, _titleV);
         var _fileNameExtensionV = NativeValue.From(FileNameExtension);
         if (_fileNameExtensionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileNameExtension, _fileNameExtensionV);
-        var _photoType = System.Text.Encoding.UTF8.GetBytes("photoType");
+            NativeNodeApi.napi_set_named_property(env, obj, _fileNameExtensionName, _fileNameExtensionV);
         var _photoTypeV = NativeValue.From(PhotoType);
         if (_photoTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _photoType, _photoTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _photoTypeName, _photoTypeV);
     }
 }
 
@@ -782,12 +782,12 @@ public sealed record MediaChangeRequest(
     string Comment
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _commentName => "comment"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _comment = System.Text.Encoding.UTF8.GetBytes("comment");
         var _commentV = NativeValue.From(Comment);
         if (_commentV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _comment, _commentV);
+            NativeNodeApi.napi_set_named_property(env, obj, _commentName, _commentV);
     }
 }
 

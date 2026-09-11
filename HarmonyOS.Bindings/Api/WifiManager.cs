@@ -179,60 +179,60 @@ public sealed record WifiProfile(
     WifiEapProfile? EapProfile = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _ssidName => "ssid"u8;
+    private static ReadOnlySpan<byte> _bssidName => "bssid"u8;
+    private static ReadOnlySpan<byte> _preSharedKeyName => "preSharedKey"u8;
+    private static ReadOnlySpan<byte> _isHiddenSsidName => "isHiddenSsid"u8;
+    private static ReadOnlySpan<byte> _securityTypeName => "securityType"u8;
+    private static ReadOnlySpan<byte> _creatorUidName => "creatorUid"u8;
+    private static ReadOnlySpan<byte> _disableReasonName => "disableReason"u8;
+    private static ReadOnlySpan<byte> _netIdName => "netId"u8;
+    private static ReadOnlySpan<byte> _randomMacTypeName => "randomMacType"u8;
+    private static ReadOnlySpan<byte> _randomMacAddrName => "randomMacAddr"u8;
+    private static ReadOnlySpan<byte> _iPTypeName => "ipType"u8;
+    private static ReadOnlySpan<byte> _staticIPName => "staticIp"u8;
+    private static ReadOnlySpan<byte> _eapProfileName => "eapProfile"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _ssid = System.Text.Encoding.UTF8.GetBytes("ssid");
         var _ssidV = NativeValue.From(Ssid);
         if (_ssidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _ssid, _ssidV);
-        var _bssid = System.Text.Encoding.UTF8.GetBytes("bssid");
+            NativeNodeApi.napi_set_named_property(env, obj, _ssidName, _ssidV);
         var _bssidV = NativeValue.From(Bssid);
         if (_bssidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bssid, _bssidV);
-        var _preSharedKey = System.Text.Encoding.UTF8.GetBytes("preSharedKey");
+            NativeNodeApi.napi_set_named_property(env, obj, _bssidName, _bssidV);
         var _preSharedKeyV = NativeValue.From(PreSharedKey);
         if (_preSharedKeyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _preSharedKey, _preSharedKeyV);
-        var _isHiddenSsid = System.Text.Encoding.UTF8.GetBytes("isHiddenSsid");
+            NativeNodeApi.napi_set_named_property(env, obj, _preSharedKeyName, _preSharedKeyV);
         var _isHiddenSsidV = NativeValue.From(IsHiddenSsid);
         if (_isHiddenSsidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isHiddenSsid, _isHiddenSsidV);
-        var _securityType = System.Text.Encoding.UTF8.GetBytes("securityType");
+            NativeNodeApi.napi_set_named_property(env, obj, _isHiddenSsidName, _isHiddenSsidV);
         var _securityTypeV = NativeValue.From(SecurityType);
         if (_securityTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _securityType, _securityTypeV);
-        var _creatorUid = System.Text.Encoding.UTF8.GetBytes("creatorUid");
+            NativeNodeApi.napi_set_named_property(env, obj, _securityTypeName, _securityTypeV);
         var _creatorUidV = NativeValue.From(CreatorUid);
         if (_creatorUidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _creatorUid, _creatorUidV);
-        var _disableReason = System.Text.Encoding.UTF8.GetBytes("disableReason");
+            NativeNodeApi.napi_set_named_property(env, obj, _creatorUidName, _creatorUidV);
         var _disableReasonV = NativeValue.From(DisableReason);
         if (_disableReasonV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableReason, _disableReasonV);
-        var _netId = System.Text.Encoding.UTF8.GetBytes("netId");
+            NativeNodeApi.napi_set_named_property(env, obj, _disableReasonName, _disableReasonV);
         var _netIdV = NativeValue.From(NetId);
         if (_netIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _netId, _netIdV);
-        var _randomMacType = System.Text.Encoding.UTF8.GetBytes("randomMacType");
+            NativeNodeApi.napi_set_named_property(env, obj, _netIdName, _netIdV);
         var _randomMacTypeV = NativeValue.From(RandomMacType);
         if (_randomMacTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _randomMacType, _randomMacTypeV);
-        var _randomMacAddr = System.Text.Encoding.UTF8.GetBytes("randomMacAddr");
+            NativeNodeApi.napi_set_named_property(env, obj, _randomMacTypeName, _randomMacTypeV);
         var _randomMacAddrV = NativeValue.From(RandomMacAddr);
         if (_randomMacAddrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _randomMacAddr, _randomMacAddrV);
-        var _iPType = System.Text.Encoding.UTF8.GetBytes("ipType");
+            NativeNodeApi.napi_set_named_property(env, obj, _randomMacAddrName, _randomMacAddrV);
         var _iPTypeV = NativeValue.From(IPType);
         if (_iPTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iPType, _iPTypeV);
-        var _staticIP = System.Text.Encoding.UTF8.GetBytes("staticIp");
+            NativeNodeApi.napi_set_named_property(env, obj, _iPTypeName, _iPTypeV);
         var _staticIPV = NativeValue.From(StaticIP);
         if (_staticIPV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _staticIP, _staticIPV);
-        var _eapProfile = System.Text.Encoding.UTF8.GetBytes("eapProfile");
+            NativeNodeApi.napi_set_named_property(env, obj, _staticIPName, _staticIPV);
         var _eapProfileV = NativeValue.From(EapProfile);
         if (_eapProfileV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eapProfile, _eapProfileV);
+            NativeNodeApi.napi_set_named_property(env, obj, _eapProfileName, _eapProfileV);
     }
 }
 
@@ -268,28 +268,28 @@ public sealed record IpProfile(
     string[] Domains
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _iPAddressName => "ipAddress"u8;
+    private static ReadOnlySpan<byte> _gatewayName => "gateway"u8;
+    private static ReadOnlySpan<byte> _prefixLengthName => "prefixLength"u8;
+    private static ReadOnlySpan<byte> _dnsServersName => "dnsServers"u8;
+    private static ReadOnlySpan<byte> _domainsName => "domains"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _iPAddress = System.Text.Encoding.UTF8.GetBytes("ipAddress");
         var _iPAddressV = NativeValue.From(IPAddress);
         if (_iPAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iPAddress, _iPAddressV);
-        var _gateway = System.Text.Encoding.UTF8.GetBytes("gateway");
+            NativeNodeApi.napi_set_named_property(env, obj, _iPAddressName, _iPAddressV);
         var _gatewayV = NativeValue.From(Gateway);
         if (_gatewayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _gateway, _gatewayV);
-        var _prefixLength = System.Text.Encoding.UTF8.GetBytes("prefixLength");
+            NativeNodeApi.napi_set_named_property(env, obj, _gatewayName, _gatewayV);
         var _prefixLengthV = NativeValue.From(PrefixLength);
         if (_prefixLengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _prefixLength, _prefixLengthV);
-        var _dnsServers = System.Text.Encoding.UTF8.GetBytes("dnsServers");
+            NativeNodeApi.napi_set_named_property(env, obj, _prefixLengthName, _prefixLengthV);
         var _dnsServersV = NativeValue.From(DnsServers);
         if (_dnsServersV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dnsServers, _dnsServersV);
-        var _domains = System.Text.Encoding.UTF8.GetBytes("domains");
+            NativeNodeApi.napi_set_named_property(env, obj, _dnsServersName, _dnsServersV);
         var _domainsV = NativeValue.From(Domains);
         if (_domainsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _domains, _domainsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _domainsName, _domainsV);
     }
 }
 
@@ -314,67 +314,67 @@ public sealed record WifiEapProfile(
     double EapSubId
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _eapMethodName => "eapMethod"u8;
+    private static ReadOnlySpan<byte> _phase2MethodName => "phase2Method"u8;
+    private static ReadOnlySpan<byte> _identityName => "identity"u8;
+    private static ReadOnlySpan<byte> _anonymousIdentityName => "anonymousIdentity"u8;
+    private static ReadOnlySpan<byte> _passwordName => "password"u8;
+    private static ReadOnlySpan<byte> _caCertAliasesName => "caCertAliases"u8;
+    private static ReadOnlySpan<byte> _caPathName => "caPath"u8;
+    private static ReadOnlySpan<byte> _clientCertAliasesName => "clientCertAliases"u8;
+    private static ReadOnlySpan<byte> _certEntryName => "certEntry"u8;
+    private static ReadOnlySpan<byte> _certPasswordName => "certPassword"u8;
+    private static ReadOnlySpan<byte> _altSubjectMatchName => "altSubjectMatch"u8;
+    private static ReadOnlySpan<byte> _domainSuffixMatchName => "domainSuffixMatch"u8;
+    private static ReadOnlySpan<byte> _realmName => "realm"u8;
+    private static ReadOnlySpan<byte> _plmnName => "plmn"u8;
+    private static ReadOnlySpan<byte> _eapSubIdName => "eapSubId"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _eapMethod = System.Text.Encoding.UTF8.GetBytes("eapMethod");
         var _eapMethodV = NativeValue.From(EapMethod);
         if (_eapMethodV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eapMethod, _eapMethodV);
-        var _phase2Method = System.Text.Encoding.UTF8.GetBytes("phase2Method");
+            NativeNodeApi.napi_set_named_property(env, obj, _eapMethodName, _eapMethodV);
         var _phase2MethodV = NativeValue.From(Phase2Method);
         if (_phase2MethodV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _phase2Method, _phase2MethodV);
-        var _identity = System.Text.Encoding.UTF8.GetBytes("identity");
+            NativeNodeApi.napi_set_named_property(env, obj, _phase2MethodName, _phase2MethodV);
         var _identityV = NativeValue.From(Identity);
         if (_identityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _identity, _identityV);
-        var _anonymousIdentity = System.Text.Encoding.UTF8.GetBytes("anonymousIdentity");
+            NativeNodeApi.napi_set_named_property(env, obj, _identityName, _identityV);
         var _anonymousIdentityV = NativeValue.From(AnonymousIdentity);
         if (_anonymousIdentityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _anonymousIdentity, _anonymousIdentityV);
-        var _password = System.Text.Encoding.UTF8.GetBytes("password");
+            NativeNodeApi.napi_set_named_property(env, obj, _anonymousIdentityName, _anonymousIdentityV);
         var _passwordV = NativeValue.From(Password);
         if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _password, _passwordV);
-        var _caCertAliases = System.Text.Encoding.UTF8.GetBytes("caCertAliases");
+            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
         var _caCertAliasesV = NativeValue.From(CaCertAliases);
         if (_caCertAliasesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _caCertAliases, _caCertAliasesV);
-        var _caPath = System.Text.Encoding.UTF8.GetBytes("caPath");
+            NativeNodeApi.napi_set_named_property(env, obj, _caCertAliasesName, _caCertAliasesV);
         var _caPathV = NativeValue.From(CaPath);
         if (_caPathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _caPath, _caPathV);
-        var _clientCertAliases = System.Text.Encoding.UTF8.GetBytes("clientCertAliases");
+            NativeNodeApi.napi_set_named_property(env, obj, _caPathName, _caPathV);
         var _clientCertAliasesV = NativeValue.From(ClientCertAliases);
         if (_clientCertAliasesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _clientCertAliases, _clientCertAliasesV);
-        var _certEntry = System.Text.Encoding.UTF8.GetBytes("certEntry");
+            NativeNodeApi.napi_set_named_property(env, obj, _clientCertAliasesName, _clientCertAliasesV);
         var _certEntryV = NativeValue.From(CertEntry);
         if (_certEntryV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certEntry, _certEntryV);
-        var _certPassword = System.Text.Encoding.UTF8.GetBytes("certPassword");
+            NativeNodeApi.napi_set_named_property(env, obj, _certEntryName, _certEntryV);
         var _certPasswordV = NativeValue.From(CertPassword);
         if (_certPasswordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certPassword, _certPasswordV);
-        var _altSubjectMatch = System.Text.Encoding.UTF8.GetBytes("altSubjectMatch");
+            NativeNodeApi.napi_set_named_property(env, obj, _certPasswordName, _certPasswordV);
         var _altSubjectMatchV = NativeValue.From(AltSubjectMatch);
         if (_altSubjectMatchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _altSubjectMatch, _altSubjectMatchV);
-        var _domainSuffixMatch = System.Text.Encoding.UTF8.GetBytes("domainSuffixMatch");
+            NativeNodeApi.napi_set_named_property(env, obj, _altSubjectMatchName, _altSubjectMatchV);
         var _domainSuffixMatchV = NativeValue.From(DomainSuffixMatch);
         if (_domainSuffixMatchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _domainSuffixMatch, _domainSuffixMatchV);
-        var _realm = System.Text.Encoding.UTF8.GetBytes("realm");
+            NativeNodeApi.napi_set_named_property(env, obj, _domainSuffixMatchName, _domainSuffixMatchV);
         var _realmV = NativeValue.From(Realm);
         if (_realmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _realm, _realmV);
-        var _plmn = System.Text.Encoding.UTF8.GetBytes("plmn");
+            NativeNodeApi.napi_set_named_property(env, obj, _realmName, _realmV);
         var _plmnV = NativeValue.From(Plmn);
         if (_plmnV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _plmn, _plmnV);
-        var _eapSubId = System.Text.Encoding.UTF8.GetBytes("eapSubId");
+            NativeNodeApi.napi_set_named_property(env, obj, _plmnName, _plmnV);
         var _eapSubIdV = NativeValue.From(EapSubId);
         if (_eapSubIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eapSubId, _eapSubIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _eapSubIdName, _eapSubIdV);
     }
 }

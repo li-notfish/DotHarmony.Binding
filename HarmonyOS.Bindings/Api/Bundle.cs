@@ -234,11 +234,11 @@ public sealed record BundleOptions(
     double? UserId = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _userIdName => "userId"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _userId = System.Text.Encoding.UTF8.GetBytes("userId");
         var _userIdV = NativeValue.From(UserId);
         if (_userIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userId, _userIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _userIdName, _userIdV);
     }
 }

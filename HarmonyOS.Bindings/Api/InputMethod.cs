@@ -886,32 +886,32 @@ public sealed record TextConfig(
     global::HarmonyOS.ArkUI.CapitalizeMode? CapitalizeMode = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _inputAttributeName => "inputAttribute"u8;
+    private static ReadOnlySpan<byte> _cursorInfoName => "cursorInfo"u8;
+    private static ReadOnlySpan<byte> _selectionName => "selection"u8;
+    private static ReadOnlySpan<byte> _windowIdName => "windowId"u8;
+    private static ReadOnlySpan<byte> _newEditBoxName => "newEditBox"u8;
+    private static ReadOnlySpan<byte> _capitalizeModeName => "capitalizeMode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _inputAttribute = System.Text.Encoding.UTF8.GetBytes("inputAttribute");
         var _inputAttributeV = NativeValue.From(InputAttribute);
         if (_inputAttributeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _inputAttribute, _inputAttributeV);
-        var _cursorInfo = System.Text.Encoding.UTF8.GetBytes("cursorInfo");
+            NativeNodeApi.napi_set_named_property(env, obj, _inputAttributeName, _inputAttributeV);
         var _cursorInfoV = NativeValue.From(CursorInfo);
         if (_cursorInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cursorInfo, _cursorInfoV);
-        var _selection = System.Text.Encoding.UTF8.GetBytes("selection");
+            NativeNodeApi.napi_set_named_property(env, obj, _cursorInfoName, _cursorInfoV);
         var _selectionV = NativeValue.From(Selection);
         if (_selectionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _selection, _selectionV);
-        var _windowId = System.Text.Encoding.UTF8.GetBytes("windowId");
+            NativeNodeApi.napi_set_named_property(env, obj, _selectionName, _selectionV);
         var _windowIdV = NativeValue.From(WindowId);
         if (_windowIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _windowId, _windowIdV);
-        var _newEditBox = System.Text.Encoding.UTF8.GetBytes("newEditBox");
+            NativeNodeApi.napi_set_named_property(env, obj, _windowIdName, _windowIdV);
         var _newEditBoxV = NativeValue.From(NewEditBox);
         if (_newEditBoxV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _newEditBox, _newEditBoxV);
-        var _capitalizeMode = System.Text.Encoding.UTF8.GetBytes("capitalizeMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _newEditBoxName, _newEditBoxV);
         var _capitalizeModeV = NativeValue.From(CapitalizeMode);
         if (_capitalizeModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _capitalizeMode, _capitalizeModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _capitalizeModeName, _capitalizeModeV);
     }
 }
 
@@ -923,16 +923,16 @@ public sealed record AttachOptions(
     global::HarmonyOS.ArkUI.RequestKeyboardReason? RequestKeyboardReason = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _showKeyboardName => "showKeyboard"u8;
+    private static ReadOnlySpan<byte> _requestKeyboardReasonName => "requestKeyboardReason"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _showKeyboard = System.Text.Encoding.UTF8.GetBytes("showKeyboard");
         var _showKeyboardV = NativeValue.From(ShowKeyboard);
         if (_showKeyboardV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _showKeyboard, _showKeyboardV);
-        var _requestKeyboardReason = System.Text.Encoding.UTF8.GetBytes("requestKeyboardReason");
+            NativeNodeApi.napi_set_named_property(env, obj, _showKeyboardName, _showKeyboardV);
         var _requestKeyboardReasonV = NativeValue.From(RequestKeyboardReason);
         if (_requestKeyboardReasonV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _requestKeyboardReason, _requestKeyboardReasonV);
+            NativeNodeApi.napi_set_named_property(env, obj, _requestKeyboardReasonName, _requestKeyboardReasonV);
     }
 }
 
@@ -947,28 +947,28 @@ public sealed record CursorInfo(
     double? DisplayId = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _leftName => "left"u8;
+    private static ReadOnlySpan<byte> _topName => "top"u8;
+    private static ReadOnlySpan<byte> _widthName => "width"u8;
+    private static ReadOnlySpan<byte> _heightName => "height"u8;
+    private static ReadOnlySpan<byte> _displayIdName => "displayId"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _left = System.Text.Encoding.UTF8.GetBytes("left");
         var _leftV = NativeValue.From(Left);
         if (_leftV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _left, _leftV);
-        var _top = System.Text.Encoding.UTF8.GetBytes("top");
+            NativeNodeApi.napi_set_named_property(env, obj, _leftName, _leftV);
         var _topV = NativeValue.From(Top);
         if (_topV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _top, _topV);
-        var _width = System.Text.Encoding.UTF8.GetBytes("width");
+            NativeNodeApi.napi_set_named_property(env, obj, _topName, _topV);
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = System.Text.Encoding.UTF8.GetBytes("height");
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
-        var _displayId = System.Text.Encoding.UTF8.GetBytes("displayId");
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
         var _displayIdV = NativeValue.From(DisplayId);
         if (_displayIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayId, _displayIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV);
     }
 }
 
@@ -983,28 +983,28 @@ public sealed record InputAttribute(
     bool? ConsumeKeyEvents = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _textInputTypeName => "textInputType"u8;
+    private static ReadOnlySpan<byte> _enterKeyTypeName => "enterKeyType"u8;
+    private static ReadOnlySpan<byte> _placeholderName => "placeholder"u8;
+    private static ReadOnlySpan<byte> _abilityNameName => "abilityName"u8;
+    private static ReadOnlySpan<byte> _consumeKeyEventsName => "consumeKeyEvents"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _textInputType = System.Text.Encoding.UTF8.GetBytes("textInputType");
         var _textInputTypeV = NativeValue.From(TextInputType);
         if (_textInputTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _textInputType, _textInputTypeV);
-        var _enterKeyType = System.Text.Encoding.UTF8.GetBytes("enterKeyType");
+            NativeNodeApi.napi_set_named_property(env, obj, _textInputTypeName, _textInputTypeV);
         var _enterKeyTypeV = NativeValue.From(EnterKeyType);
         if (_enterKeyTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enterKeyType, _enterKeyTypeV);
-        var _placeholder = System.Text.Encoding.UTF8.GetBytes("placeholder");
+            NativeNodeApi.napi_set_named_property(env, obj, _enterKeyTypeName, _enterKeyTypeV);
         var _placeholderV = NativeValue.From(Placeholder);
         if (_placeholderV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _placeholder, _placeholderV);
-        var _abilityName = System.Text.Encoding.UTF8.GetBytes("abilityName");
+            NativeNodeApi.napi_set_named_property(env, obj, _placeholderName, _placeholderV);
         var _abilityNameV = NativeValue.From(AbilityName);
         if (_abilityNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _abilityName, _abilityNameV);
-        var _consumeKeyEvents = System.Text.Encoding.UTF8.GetBytes("consumeKeyEvents");
+            NativeNodeApi.napi_set_named_property(env, obj, _abilityNameName, _abilityNameV);
         var _consumeKeyEventsV = NativeValue.From(ConsumeKeyEvents);
         if (_consumeKeyEventsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _consumeKeyEvents, _consumeKeyEventsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _consumeKeyEventsName, _consumeKeyEventsV);
     }
 }
 
@@ -1042,11 +1042,11 @@ public sealed record FunctionKey(
     global::HarmonyOS.ArkUI.EnterKeyType EnterKeyType
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _enterKeyTypeName => "enterKeyType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _enterKeyType = System.Text.Encoding.UTF8.GetBytes("enterKeyType");
         var _enterKeyTypeV = NativeValue.From(EnterKeyType);
         if (_enterKeyTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enterKeyType, _enterKeyTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _enterKeyTypeName, _enterKeyTypeV);
     }
 }

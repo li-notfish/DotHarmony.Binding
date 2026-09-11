@@ -284,12 +284,12 @@ public sealed record StoreConfig(
     string Name
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
     }
 }
 

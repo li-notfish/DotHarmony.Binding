@@ -1672,16 +1672,16 @@ public sealed record InputMethodEngineKeyEvent(
     double KeyAction
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _keyCodeName => "keyCode"u8;
+    private static ReadOnlySpan<byte> _keyActionName => "keyAction"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _keyCode = System.Text.Encoding.UTF8.GetBytes("keyCode");
         var _keyCodeV = NativeValue.From(KeyCode);
         if (_keyCodeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyCode, _keyCodeV);
-        var _keyAction = System.Text.Encoding.UTF8.GetBytes("keyAction");
+            NativeNodeApi.napi_set_named_property(env, obj, _keyCodeName, _keyCodeV);
         var _keyActionV = NativeValue.From(KeyAction);
         if (_keyActionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyAction, _keyActionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keyActionName, _keyActionV);
     }
 }
 
@@ -1693,16 +1693,16 @@ public sealed record InputMethodEngineRange(
     double End
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _startName => "start"u8;
+    private static ReadOnlySpan<byte> _endName => "end"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _start = System.Text.Encoding.UTF8.GetBytes("start");
         var _startV = NativeValue.From(Start);
         if (_startV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _start, _startV);
-        var _end = System.Text.Encoding.UTF8.GetBytes("end");
+            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV);
         var _endV = NativeValue.From(End);
         if (_endV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _end, _endV);
+            NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV);
     }
 }
 
@@ -1741,16 +1741,16 @@ public sealed record ImmersiveEffect(
     global::HarmonyOS.ArkUI.GradientMode GradientMode
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _gradientHeightName => "gradientHeight"u8;
+    private static ReadOnlySpan<byte> _gradientModeName => "gradientMode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _gradientHeight = System.Text.Encoding.UTF8.GetBytes("gradientHeight");
         var _gradientHeightV = NativeValue.From(GradientHeight);
         if (_gradientHeightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _gradientHeight, _gradientHeightV);
-        var _gradientMode = System.Text.Encoding.UTF8.GetBytes("gradientMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _gradientHeightName, _gradientHeightV);
         var _gradientModeV = NativeValue.From(GradientMode);
         if (_gradientModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _gradientMode, _gradientModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _gradientModeName, _gradientModeV);
     }
 }
 

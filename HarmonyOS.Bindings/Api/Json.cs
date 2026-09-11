@@ -120,11 +120,11 @@ public sealed record ParseOptions(
     global::HarmonyOS.ArkUI.BigIntMode BigIntMode
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _bigIntModeName => "bigIntMode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _bigIntMode = System.Text.Encoding.UTF8.GetBytes("bigIntMode");
         var _bigIntModeV = NativeValue.From(BigIntMode);
         if (_bigIntModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bigIntMode, _bigIntModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bigIntModeName, _bigIntModeV);
     }
 }

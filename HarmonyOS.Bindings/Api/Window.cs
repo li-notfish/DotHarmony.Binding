@@ -2535,20 +2535,20 @@ public sealed record WindowInfoOptions(
     double? ForegroundBelowWindow = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _excludeSystemWindowsName => "excludeSystemWindows"u8;
+    private static ReadOnlySpan<byte> _foregroundAboveWindowName => "foregroundAboveWindow"u8;
+    private static ReadOnlySpan<byte> _foregroundBelowWindowName => "foregroundBelowWindow"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _excludeSystemWindows = System.Text.Encoding.UTF8.GetBytes("excludeSystemWindows");
         var _excludeSystemWindowsV = NativeValue.From(ExcludeSystemWindows);
         if (_excludeSystemWindowsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _excludeSystemWindows, _excludeSystemWindowsV);
-        var _foregroundAboveWindow = System.Text.Encoding.UTF8.GetBytes("foregroundAboveWindow");
+            NativeNodeApi.napi_set_named_property(env, obj, _excludeSystemWindowsName, _excludeSystemWindowsV);
         var _foregroundAboveWindowV = NativeValue.From(ForegroundAboveWindow);
         if (_foregroundAboveWindowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _foregroundAboveWindow, _foregroundAboveWindowV);
-        var _foregroundBelowWindow = System.Text.Encoding.UTF8.GetBytes("foregroundBelowWindow");
+            NativeNodeApi.napi_set_named_property(env, obj, _foregroundAboveWindowName, _foregroundAboveWindowV);
         var _foregroundBelowWindowV = NativeValue.From(ForegroundBelowWindow);
         if (_foregroundBelowWindowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _foregroundBelowWindow, _foregroundBelowWindowV);
+            NativeNodeApi.napi_set_named_property(env, obj, _foregroundBelowWindowName, _foregroundBelowWindowV);
     }
 }
 
@@ -2592,12 +2592,12 @@ public sealed record WindowSnapshotConfiguration(
     bool? UseCache = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _useCacheName => "useCache"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _useCache = System.Text.Encoding.UTF8.GetBytes("useCache");
         var _useCacheV = NativeValue.From(UseCache);
         if (_useCacheV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _useCache, _useCacheV);
+            NativeNodeApi.napi_set_named_property(env, obj, _useCacheName, _useCacheV);
     }
 }
 
@@ -2755,12 +2755,12 @@ public sealed record ShowWindowOptions(
     bool? FocusOnShow = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _focusOnShowName => "focusOnShow"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _focusOnShow = System.Text.Encoding.UTF8.GetBytes("focusOnShow");
         var _focusOnShowV = NativeValue.From(FocusOnShow);
         if (_focusOnShowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _focusOnShow, _focusOnShowV);
+            NativeNodeApi.napi_set_named_property(env, obj, _focusOnShowName, _focusOnShowV);
     }
 }
 
@@ -2771,12 +2771,12 @@ public sealed record MoveConfiguration(
     double? DisplayId = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _displayIdName => "displayId"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _displayId = System.Text.Encoding.UTF8.GetBytes("displayId");
         var _displayIdV = NativeValue.From(DisplayId);
         if (_displayIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayId, _displayIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV);
     }
 }
 
@@ -3053,20 +3053,20 @@ public sealed record MaximizeOptions(
     WindowSnapshotAnimationConfig? SnapshotAnimationConfig = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _maximizePresentationName => "maximizePresentation"u8;
+    private static ReadOnlySpan<byte> _acrossDisplayPresentationName => "acrossDisplayPresentation"u8;
+    private static ReadOnlySpan<byte> _snapshotAnimationConfigName => "snapshotAnimationConfig"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _maximizePresentation = System.Text.Encoding.UTF8.GetBytes("maximizePresentation");
         var _maximizePresentationV = NativeValue.From(MaximizePresentation);
         if (_maximizePresentationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maximizePresentation, _maximizePresentationV);
-        var _acrossDisplayPresentation = System.Text.Encoding.UTF8.GetBytes("acrossDisplayPresentation");
+            NativeNodeApi.napi_set_named_property(env, obj, _maximizePresentationName, _maximizePresentationV);
         var _acrossDisplayPresentationV = NativeValue.From(AcrossDisplayPresentation);
         if (_acrossDisplayPresentationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _acrossDisplayPresentation, _acrossDisplayPresentationV);
-        var _snapshotAnimationConfig = System.Text.Encoding.UTF8.GetBytes("snapshotAnimationConfig");
+            NativeNodeApi.napi_set_named_property(env, obj, _acrossDisplayPresentationName, _acrossDisplayPresentationV);
         var _snapshotAnimationConfigV = NativeValue.From(SnapshotAnimationConfig);
         if (_snapshotAnimationConfigV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _snapshotAnimationConfig, _snapshotAnimationConfigV);
+            NativeNodeApi.napi_set_named_property(env, obj, _snapshotAnimationConfigName, _snapshotAnimationConfigV);
     }
 }
 
@@ -3117,16 +3117,16 @@ public sealed record WindowSnapshotAnimationConfig(
     double? Delay = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _durationName => "duration"u8;
+    private static ReadOnlySpan<byte> _delayName => "delay"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _duration = System.Text.Encoding.UTF8.GetBytes("duration");
         var _durationV = NativeValue.From(Duration);
         if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _duration, _durationV);
-        var _delay = System.Text.Encoding.UTF8.GetBytes("delay");
+            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
         var _delayV = NativeValue.From(Delay);
         if (_delayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _delay, _delayV);
+            NativeNodeApi.napi_set_named_property(env, obj, _delayName, _delayV);
     }
 }
 
@@ -3166,44 +3166,44 @@ public sealed record SubWindowOptions(
     bool? ZLevelAboveParentLoosened = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _titleName => "title"u8;
+    private static ReadOnlySpan<byte> _decorEnabledName => "decorEnabled"u8;
+    private static ReadOnlySpan<byte> _isModalName => "isModal"u8;
+    private static ReadOnlySpan<byte> _modalityTypeName => "modalityType"u8;
+    private static ReadOnlySpan<byte> _windowRectName => "windowRect"u8;
+    private static ReadOnlySpan<byte> _maximizeSupportedName => "maximizeSupported"u8;
+    private static ReadOnlySpan<byte> _zLevelName => "zLevel"u8;
+    private static ReadOnlySpan<byte> _outlineEnabledName => "outlineEnabled"u8;
+    private static ReadOnlySpan<byte> _zLevelAboveParentLoosenedName => "zLevelAboveParentLoosened"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _title = System.Text.Encoding.UTF8.GetBytes("title");
         var _titleV = NativeValue.From(Title);
         if (_titleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _title, _titleV);
-        var _decorEnabled = System.Text.Encoding.UTF8.GetBytes("decorEnabled");
+            NativeNodeApi.napi_set_named_property(env, obj, _titleName, _titleV);
         var _decorEnabledV = NativeValue.From(DecorEnabled);
         if (_decorEnabledV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _decorEnabled, _decorEnabledV);
-        var _isModal = System.Text.Encoding.UTF8.GetBytes("isModal");
+            NativeNodeApi.napi_set_named_property(env, obj, _decorEnabledName, _decorEnabledV);
         var _isModalV = NativeValue.From(IsModal);
         if (_isModalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isModal, _isModalV);
-        var _modalityType = System.Text.Encoding.UTF8.GetBytes("modalityType");
+            NativeNodeApi.napi_set_named_property(env, obj, _isModalName, _isModalV);
         var _modalityTypeV = NativeValue.From(ModalityType);
         if (_modalityTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _modalityType, _modalityTypeV);
-        var _windowRect = System.Text.Encoding.UTF8.GetBytes("windowRect");
+            NativeNodeApi.napi_set_named_property(env, obj, _modalityTypeName, _modalityTypeV);
         var _windowRectV = NativeValue.From(WindowRect);
         if (_windowRectV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _windowRect, _windowRectV);
-        var _maximizeSupported = System.Text.Encoding.UTF8.GetBytes("maximizeSupported");
+            NativeNodeApi.napi_set_named_property(env, obj, _windowRectName, _windowRectV);
         var _maximizeSupportedV = NativeValue.From(MaximizeSupported);
         if (_maximizeSupportedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maximizeSupported, _maximizeSupportedV);
-        var _zLevel = System.Text.Encoding.UTF8.GetBytes("zLevel");
+            NativeNodeApi.napi_set_named_property(env, obj, _maximizeSupportedName, _maximizeSupportedV);
         var _zLevelV = NativeValue.From(ZLevel);
         if (_zLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _zLevel, _zLevelV);
-        var _outlineEnabled = System.Text.Encoding.UTF8.GetBytes("outlineEnabled");
+            NativeNodeApi.napi_set_named_property(env, obj, _zLevelName, _zLevelV);
         var _outlineEnabledV = NativeValue.From(OutlineEnabled);
         if (_outlineEnabledV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _outlineEnabled, _outlineEnabledV);
-        var _zLevelAboveParentLoosened = System.Text.Encoding.UTF8.GetBytes("zLevelAboveParentLoosened");
+            NativeNodeApi.napi_set_named_property(env, obj, _outlineEnabledName, _outlineEnabledV);
         var _zLevelAboveParentLoosenedV = NativeValue.From(ZLevelAboveParentLoosened);
         if (_zLevelAboveParentLoosenedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _zLevelAboveParentLoosened, _zLevelAboveParentLoosenedV);
+            NativeNodeApi.napi_set_named_property(env, obj, _zLevelAboveParentLoosenedName, _zLevelAboveParentLoosenedV);
     }
 }
 

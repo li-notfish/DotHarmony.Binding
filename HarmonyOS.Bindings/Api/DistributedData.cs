@@ -231,16 +231,16 @@ public sealed record KVManagerConfig(
     string BundleName
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _userInfoName => "userInfo"u8;
+    private static ReadOnlySpan<byte> _bundleNameName => "bundleName"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _userInfo = System.Text.Encoding.UTF8.GetBytes("userInfo");
         var _userInfoV = NativeValue.From(UserInfo);
         if (_userInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userInfo, _userInfoV);
-        var _bundleName = System.Text.Encoding.UTF8.GetBytes("bundleName");
+            NativeNodeApi.napi_set_named_property(env, obj, _userInfoName, _userInfoV);
         var _bundleNameV = NativeValue.From(BundleName);
         if (_bundleNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bundleName, _bundleNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bundleNameName, _bundleNameV);
     }
 }
 
@@ -617,36 +617,36 @@ public sealed record Options(
     Schema? Schema = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _createIfMissingName => "createIfMissing"u8;
+    private static ReadOnlySpan<byte> _encryptName => "encrypt"u8;
+    private static ReadOnlySpan<byte> _backupName => "backup"u8;
+    private static ReadOnlySpan<byte> _autoSyncName => "autoSync"u8;
+    private static ReadOnlySpan<byte> _kvStoreTypeName => "kvStoreType"u8;
+    private static ReadOnlySpan<byte> _securityLevelName => "securityLevel"u8;
+    private static ReadOnlySpan<byte> _schemaName => "schema"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _createIfMissing = System.Text.Encoding.UTF8.GetBytes("createIfMissing");
         var _createIfMissingV = NativeValue.From(CreateIfMissing);
         if (_createIfMissingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _createIfMissing, _createIfMissingV);
-        var _encrypt = System.Text.Encoding.UTF8.GetBytes("encrypt");
+            NativeNodeApi.napi_set_named_property(env, obj, _createIfMissingName, _createIfMissingV);
         var _encryptV = NativeValue.From(Encrypt);
         if (_encryptV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encrypt, _encryptV);
-        var _backup = System.Text.Encoding.UTF8.GetBytes("backup");
+            NativeNodeApi.napi_set_named_property(env, obj, _encryptName, _encryptV);
         var _backupV = NativeValue.From(Backup);
         if (_backupV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _backup, _backupV);
-        var _autoSync = System.Text.Encoding.UTF8.GetBytes("autoSync");
+            NativeNodeApi.napi_set_named_property(env, obj, _backupName, _backupV);
         var _autoSyncV = NativeValue.From(AutoSync);
         if (_autoSyncV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoSync, _autoSyncV);
-        var _kvStoreType = System.Text.Encoding.UTF8.GetBytes("kvStoreType");
+            NativeNodeApi.napi_set_named_property(env, obj, _autoSyncName, _autoSyncV);
         var _kvStoreTypeV = NativeValue.From(KvStoreType);
         if (_kvStoreTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _kvStoreType, _kvStoreTypeV);
-        var _securityLevel = System.Text.Encoding.UTF8.GetBytes("securityLevel");
+            NativeNodeApi.napi_set_named_property(env, obj, _kvStoreTypeName, _kvStoreTypeV);
         var _securityLevelV = NativeValue.From(SecurityLevel);
         if (_securityLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _securityLevel, _securityLevelV);
-        var _schema = System.Text.Encoding.UTF8.GetBytes("schema");
+            NativeNodeApi.napi_set_named_property(env, obj, _securityLevelName, _securityLevelV);
         var _schemaV = NativeValue.From(Schema);
         if (_schemaV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _schema, _schemaV);
+            NativeNodeApi.napi_set_named_property(env, obj, _schemaName, _schemaV);
     }
 }
 
@@ -854,16 +854,16 @@ public sealed record UserInfo(
     global::HarmonyOS.ArkUI.UserType? UserType = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _userIdName => "userId"u8;
+    private static ReadOnlySpan<byte> _userTypeName => "userType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _userId = System.Text.Encoding.UTF8.GetBytes("userId");
         var _userIdV = NativeValue.From(UserId);
         if (_userIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userId, _userIdV);
-        var _userType = System.Text.Encoding.UTF8.GetBytes("userType");
+            NativeNodeApi.napi_set_named_property(env, obj, _userIdName, _userIdV);
         var _userTypeV = NativeValue.From(UserType);
         if (_userTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userType, _userTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _userTypeName, _userTypeV);
     }
 }
 

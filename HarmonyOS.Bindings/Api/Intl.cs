@@ -377,32 +377,32 @@ public sealed record LocaleOptions(
     string? CaseFirst = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _calendarName => "calendar"u8;
+    private static ReadOnlySpan<byte> _collationName => "collation"u8;
+    private static ReadOnlySpan<byte> _hourCycleName => "hourCycle"u8;
+    private static ReadOnlySpan<byte> _numberingSystemName => "numberingSystem"u8;
+    private static ReadOnlySpan<byte> _numericName => "numeric"u8;
+    private static ReadOnlySpan<byte> _caseFirstName => "caseFirst"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _calendar = System.Text.Encoding.UTF8.GetBytes("calendar");
         var _calendarV = NativeValue.From(Calendar);
         if (_calendarV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _calendar, _calendarV);
-        var _collation = System.Text.Encoding.UTF8.GetBytes("collation");
+            NativeNodeApi.napi_set_named_property(env, obj, _calendarName, _calendarV);
         var _collationV = NativeValue.From(Collation);
         if (_collationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _collation, _collationV);
-        var _hourCycle = System.Text.Encoding.UTF8.GetBytes("hourCycle");
+            NativeNodeApi.napi_set_named_property(env, obj, _collationName, _collationV);
         var _hourCycleV = NativeValue.From(HourCycle);
         if (_hourCycleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _hourCycle, _hourCycleV);
-        var _numberingSystem = System.Text.Encoding.UTF8.GetBytes("numberingSystem");
+            NativeNodeApi.napi_set_named_property(env, obj, _hourCycleName, _hourCycleV);
         var _numberingSystemV = NativeValue.From(NumberingSystem);
         if (_numberingSystemV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _numberingSystem, _numberingSystemV);
-        var _numeric = System.Text.Encoding.UTF8.GetBytes("numeric");
+            NativeNodeApi.napi_set_named_property(env, obj, _numberingSystemName, _numberingSystemV);
         var _numericV = NativeValue.From(Numeric);
         if (_numericV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _numeric, _numericV);
-        var _caseFirst = System.Text.Encoding.UTF8.GetBytes("caseFirst");
+            NativeNodeApi.napi_set_named_property(env, obj, _numericName, _numericV);
         var _caseFirstV = NativeValue.From(CaseFirst);
         if (_caseFirstV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _caseFirst, _caseFirstV);
+            NativeNodeApi.napi_set_named_property(env, obj, _caseFirstName, _caseFirstV);
     }
 }
 
@@ -734,36 +734,36 @@ public sealed record PluralRulesOptions(
     double? MaximumSignificantDigits = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _localeMatcherName => "localeMatcher"u8;
+    private static ReadOnlySpan<byte> _typeName => "type"u8;
+    private static ReadOnlySpan<byte> _minimumIntegerDigitsName => "minimumIntegerDigits"u8;
+    private static ReadOnlySpan<byte> _minimumFractionDigitsName => "minimumFractionDigits"u8;
+    private static ReadOnlySpan<byte> _maximumFractionDigitsName => "maximumFractionDigits"u8;
+    private static ReadOnlySpan<byte> _minimumSignificantDigitsName => "minimumSignificantDigits"u8;
+    private static ReadOnlySpan<byte> _maximumSignificantDigitsName => "maximumSignificantDigits"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _localeMatcher = System.Text.Encoding.UTF8.GetBytes("localeMatcher");
         var _localeMatcherV = NativeValue.From(LocaleMatcher);
         if (_localeMatcherV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _localeMatcher, _localeMatcherV);
-        var _type = System.Text.Encoding.UTF8.GetBytes("type");
+            NativeNodeApi.napi_set_named_property(env, obj, _localeMatcherName, _localeMatcherV);
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _type, _typeV);
-        var _minimumIntegerDigits = System.Text.Encoding.UTF8.GetBytes("minimumIntegerDigits");
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
         var _minimumIntegerDigitsV = NativeValue.From(MinimumIntegerDigits);
         if (_minimumIntegerDigitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minimumIntegerDigits, _minimumIntegerDigitsV);
-        var _minimumFractionDigits = System.Text.Encoding.UTF8.GetBytes("minimumFractionDigits");
+            NativeNodeApi.napi_set_named_property(env, obj, _minimumIntegerDigitsName, _minimumIntegerDigitsV);
         var _minimumFractionDigitsV = NativeValue.From(MinimumFractionDigits);
         if (_minimumFractionDigitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minimumFractionDigits, _minimumFractionDigitsV);
-        var _maximumFractionDigits = System.Text.Encoding.UTF8.GetBytes("maximumFractionDigits");
+            NativeNodeApi.napi_set_named_property(env, obj, _minimumFractionDigitsName, _minimumFractionDigitsV);
         var _maximumFractionDigitsV = NativeValue.From(MaximumFractionDigits);
         if (_maximumFractionDigitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maximumFractionDigits, _maximumFractionDigitsV);
-        var _minimumSignificantDigits = System.Text.Encoding.UTF8.GetBytes("minimumSignificantDigits");
+            NativeNodeApi.napi_set_named_property(env, obj, _maximumFractionDigitsName, _maximumFractionDigitsV);
         var _minimumSignificantDigitsV = NativeValue.From(MinimumSignificantDigits);
         if (_minimumSignificantDigitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minimumSignificantDigits, _minimumSignificantDigitsV);
-        var _maximumSignificantDigits = System.Text.Encoding.UTF8.GetBytes("maximumSignificantDigits");
+            NativeNodeApi.napi_set_named_property(env, obj, _minimumSignificantDigitsName, _minimumSignificantDigitsV);
         var _maximumSignificantDigitsV = NativeValue.From(MaximumSignificantDigits);
         if (_maximumSignificantDigitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maximumSignificantDigits, _maximumSignificantDigitsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maximumSignificantDigitsName, _maximumSignificantDigitsV);
     }
 }
 
@@ -809,19 +809,19 @@ public sealed record RelativeTimeFormatInputOptions(
     string? Style = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _localeMatcherName => "localeMatcher"u8;
+    private static ReadOnlySpan<byte> _numericName => "numeric"u8;
+    private static ReadOnlySpan<byte> _styleName => "style"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _localeMatcher = System.Text.Encoding.UTF8.GetBytes("localeMatcher");
         var _localeMatcherV = NativeValue.From(LocaleMatcher);
         if (_localeMatcherV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _localeMatcher, _localeMatcherV);
-        var _numeric = System.Text.Encoding.UTF8.GetBytes("numeric");
+            NativeNodeApi.napi_set_named_property(env, obj, _localeMatcherName, _localeMatcherV);
         var _numericV = NativeValue.From(Numeric);
         if (_numericV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _numeric, _numericV);
-        var _style = System.Text.Encoding.UTF8.GetBytes("style");
+            NativeNodeApi.napi_set_named_property(env, obj, _numericName, _numericV);
         var _styleV = NativeValue.From(Style);
         if (_styleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _style, _styleV);
+            NativeNodeApi.napi_set_named_property(env, obj, _styleName, _styleV);
     }
 }

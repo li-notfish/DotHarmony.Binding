@@ -118,31 +118,31 @@ public sealed record ScanFilters(
     double? Rssi = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _addressName => "address"u8;
+    private static ReadOnlySpan<byte> _deviceNameName => "deviceName"u8;
+    private static ReadOnlySpan<byte> _manufacturerIdName => "manufacturerId"u8;
+    private static ReadOnlySpan<byte> _manufacturerDataName => "manufacturerData"u8;
+    private static ReadOnlySpan<byte> _manufacturerDataMaskName => "manufacturerDataMask"u8;
+    private static ReadOnlySpan<byte> _rssiName => "rssi"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _address = System.Text.Encoding.UTF8.GetBytes("address");
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _address, _addressV);
-        var _deviceName = System.Text.Encoding.UTF8.GetBytes("deviceName");
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
         var _deviceNameV = NativeValue.From(DeviceName);
         if (_deviceNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceName, _deviceNameV);
-        var _manufacturerId = System.Text.Encoding.UTF8.GetBytes("manufacturerId");
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceNameName, _deviceNameV);
         var _manufacturerIdV = NativeValue.From(ManufacturerId);
         if (_manufacturerIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerId, _manufacturerIdV);
-        var _manufacturerData = System.Text.Encoding.UTF8.GetBytes("manufacturerData");
+            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerIdName, _manufacturerIdV);
         var _manufacturerDataV = NativeValue.From(ManufacturerData);
         if (_manufacturerDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerData, _manufacturerDataV);
-        var _manufacturerDataMask = System.Text.Encoding.UTF8.GetBytes("manufacturerDataMask");
+            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerDataName, _manufacturerDataV);
         var _manufacturerDataMaskV = NativeValue.From(ManufacturerDataMask);
         if (_manufacturerDataMaskV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerDataMask, _manufacturerDataMaskV);
-        var _rssi = System.Text.Encoding.UTF8.GetBytes("rssi");
+            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerDataMaskName, _manufacturerDataMaskV);
         var _rssiV = NativeValue.From(Rssi);
         if (_rssiV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rssi, _rssiV);
+            NativeNodeApi.napi_set_named_property(env, obj, _rssiName, _rssiV);
     }
 }

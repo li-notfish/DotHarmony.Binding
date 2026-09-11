@@ -781,28 +781,28 @@ public sealed record ContactSelectionOptions(
     bool? IsAutoDismissOnNavigation = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _isMultiSelectName => "isMultiSelect"u8;
+    private static ReadOnlySpan<byte> _filterName => "filter"u8;
+    private static ReadOnlySpan<byte> _maxSelectableName => "maxSelectable"u8;
+    private static ReadOnlySpan<byte> _isDisplayedByNameName => "isDisplayedByName"u8;
+    private static ReadOnlySpan<byte> _isAutoDismissOnNavigationName => "isAutoDismissOnNavigation"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _isMultiSelect = System.Text.Encoding.UTF8.GetBytes("isMultiSelect");
         var _isMultiSelectV = NativeValue.From(IsMultiSelect);
         if (_isMultiSelectV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isMultiSelect, _isMultiSelectV);
-        var _filter = System.Text.Encoding.UTF8.GetBytes("filter");
+            NativeNodeApi.napi_set_named_property(env, obj, _isMultiSelectName, _isMultiSelectV);
         var _filterV = NativeValue.From(Filter);
         if (_filterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filter, _filterV);
-        var _maxSelectable = System.Text.Encoding.UTF8.GetBytes("maxSelectable");
+            NativeNodeApi.napi_set_named_property(env, obj, _filterName, _filterV);
         var _maxSelectableV = NativeValue.From(MaxSelectable);
         if (_maxSelectableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxSelectable, _maxSelectableV);
-        var _isDisplayedByName = System.Text.Encoding.UTF8.GetBytes("isDisplayedByName");
+            NativeNodeApi.napi_set_named_property(env, obj, _maxSelectableName, _maxSelectableV);
         var _isDisplayedByNameV = NativeValue.From(IsDisplayedByName);
         if (_isDisplayedByNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isDisplayedByName, _isDisplayedByNameV);
-        var _isAutoDismissOnNavigation = System.Text.Encoding.UTF8.GetBytes("isAutoDismissOnNavigation");
+            NativeNodeApi.napi_set_named_property(env, obj, _isDisplayedByNameName, _isDisplayedByNameV);
         var _isAutoDismissOnNavigationV = NativeValue.From(IsAutoDismissOnNavigation);
         if (_isAutoDismissOnNavigationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isAutoDismissOnNavigation, _isAutoDismissOnNavigationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isAutoDismissOnNavigationName, _isAutoDismissOnNavigationV);
     }
 }
 
@@ -878,20 +878,20 @@ public sealed record ContactSyncProgress(
     double TotalBatches
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _syncIdName => "syncId"u8;
+    private static ReadOnlySpan<byte> _currentBatchName => "currentBatch"u8;
+    private static ReadOnlySpan<byte> _totalBatchesName => "totalBatches"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _syncId = System.Text.Encoding.UTF8.GetBytes("syncId");
         var _syncIdV = NativeValue.From(SyncId);
         if (_syncIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _syncId, _syncIdV);
-        var _currentBatch = System.Text.Encoding.UTF8.GetBytes("currentBatch");
+            NativeNodeApi.napi_set_named_property(env, obj, _syncIdName, _syncIdV);
         var _currentBatchV = NativeValue.From(CurrentBatch);
         if (_currentBatchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _currentBatch, _currentBatchV);
-        var _totalBatches = System.Text.Encoding.UTF8.GetBytes("totalBatches");
+            NativeNodeApi.napi_set_named_property(env, obj, _currentBatchName, _currentBatchV);
         var _totalBatchesV = NativeValue.From(TotalBatches);
         if (_totalBatchesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _totalBatches, _totalBatchesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _totalBatchesName, _totalBatchesV);
     }
 }
 
@@ -1702,16 +1702,16 @@ public sealed record ContactSelectionFilter(
     global::HarmonyOS.ArkUI.FilterType FilterType
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _filterClauseName => "filterClause"u8;
+    private static ReadOnlySpan<byte> _filterTypeName => "filterType"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _filterClause = System.Text.Encoding.UTF8.GetBytes("filterClause");
         var _filterClauseV = NativeValue.From(FilterClause);
         if (_filterClauseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterClause, _filterClauseV);
-        var _filterType = System.Text.Encoding.UTF8.GetBytes("filterType");
+            NativeNodeApi.napi_set_named_property(env, obj, _filterClauseName, _filterClauseV);
         var _filterTypeV = NativeValue.From(FilterType);
         if (_filterTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterType, _filterTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _filterTypeName, _filterTypeV);
     }
 }
 
@@ -1725,24 +1725,24 @@ public sealed record FilterClause(
     FilterOptions[]? FocusModeList = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _dataItemName => "dataItem"u8;
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _idName => "id"u8;
+    private static ReadOnlySpan<byte> _focusModeListName => "focusModeList"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _dataItem = System.Text.Encoding.UTF8.GetBytes("dataItem");
         var _dataItemV = NativeValue.From(DataItem);
         if (_dataItemV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataItem, _dataItemV);
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
+            NativeNodeApi.napi_set_named_property(env, obj, _dataItemName, _dataItemV);
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _id = System.Text.Encoding.UTF8.GetBytes("id");
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _id, _idV);
-        var _focusModeList = System.Text.Encoding.UTF8.GetBytes("focusModeList");
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
         var _focusModeListV = NativeValue.From(FocusModeList);
         if (_focusModeListV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _focusModeList, _focusModeListV);
+            NativeNodeApi.napi_set_named_property(env, obj, _focusModeListName, _focusModeListV);
     }
 }
 
@@ -1754,16 +1754,16 @@ public sealed record DataFilter(
     global::HarmonyOS.ArkUI.DataField Field
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _optionsName => "options"u8;
+    private static ReadOnlySpan<byte> _fieldName => "field"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _options = System.Text.Encoding.UTF8.GetBytes("options");
         var _optionsV = NativeValue.From(Options);
         if (_optionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _options, _optionsV);
-        var _field = System.Text.Encoding.UTF8.GetBytes("field");
+            NativeNodeApi.napi_set_named_property(env, obj, _optionsName, _optionsV);
         var _fieldV = NativeValue.From(Field);
         if (_fieldV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _field, _fieldV);
+            NativeNodeApi.napi_set_named_property(env, obj, _fieldName, _fieldV);
     }
 }
 
@@ -1775,15 +1775,15 @@ public sealed record FilterOptions(
     string? Value = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _filterConditionName => "filterCondition"u8;
+    private static ReadOnlySpan<byte> _valueName => "value"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _filterCondition = System.Text.Encoding.UTF8.GetBytes("filterCondition");
         var _filterConditionV = NativeValue.From(FilterCondition);
         if (_filterConditionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterCondition, _filterConditionV);
-        var _value = System.Text.Encoding.UTF8.GetBytes("value");
+            NativeNodeApi.napi_set_named_property(env, obj, _filterConditionName, _filterConditionV);
         var _valueV = NativeValue.From(Value);
         if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _value, _valueV);
+            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
     }
 }

@@ -289,20 +289,20 @@ public sealed record CMSignatureSpec(
     global::HarmonyOS.ArkUI.CmKeyDigest? Digest = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _purposeName => "purpose"u8;
+    private static ReadOnlySpan<byte> _paddingName => "padding"u8;
+    private static ReadOnlySpan<byte> _digestName => "digest"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _purpose = System.Text.Encoding.UTF8.GetBytes("purpose");
         var _purposeV = NativeValue.From(Purpose);
         if (_purposeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _purpose, _purposeV);
-        var _padding = System.Text.Encoding.UTF8.GetBytes("padding");
+            NativeNodeApi.napi_set_named_property(env, obj, _purposeName, _purposeV);
         var _paddingV = NativeValue.From(Padding);
         if (_paddingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _padding, _paddingV);
-        var _digest = System.Text.Encoding.UTF8.GetBytes("digest");
+            NativeNodeApi.napi_set_named_property(env, obj, _paddingName, _paddingV);
         var _digestV = NativeValue.From(Digest);
         if (_digestV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _digest, _digestV);
+            NativeNodeApi.napi_set_named_property(env, obj, _digestName, _digestV);
     }
 }
 
@@ -313,12 +313,12 @@ public sealed record UkeyInfo(
     global::HarmonyOS.ArkUI.CertificatePurpose? CertPurpose = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _certPurposeName => "certPurpose"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _certPurpose = System.Text.Encoding.UTF8.GetBytes("certPurpose");
         var _certPurposeV = NativeValue.From(CertPurpose);
         if (_certPurposeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certPurpose, _certPurposeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certPurposeName, _certPurposeV);
     }
 }
 
@@ -331,19 +331,19 @@ public sealed record CertManagerCertBlob(
     global::HarmonyOS.ArkUI.CertScope? CertScope = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _certDataName => "certData"u8;
+    private static ReadOnlySpan<byte> _certFormatName => "certFormat"u8;
+    private static ReadOnlySpan<byte> _certScopeName => "certScope"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _certData = System.Text.Encoding.UTF8.GetBytes("certData");
         var _certDataV = NativeValue.From(CertData);
         if (_certDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certData, _certDataV);
-        var _certFormat = System.Text.Encoding.UTF8.GetBytes("certFormat");
+            NativeNodeApi.napi_set_named_property(env, obj, _certDataName, _certDataV);
         var _certFormatV = NativeValue.From(CertFormat);
         if (_certFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certFormat, _certFormatV);
-        var _certScope = System.Text.Encoding.UTF8.GetBytes("certScope");
+            NativeNodeApi.napi_set_named_property(env, obj, _certFormatName, _certFormatV);
         var _certScopeV = NativeValue.From(CertScope);
         if (_certScopeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certScope, _certScopeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certScopeName, _certScopeV);
     }
 }

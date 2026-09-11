@@ -320,28 +320,28 @@ public sealed record AuthParam(
     bool? SkipLockedBiometricAuth = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _challengeName => "challenge"u8;
+    private static ReadOnlySpan<byte> _authTypeName => "authType"u8;
+    private static ReadOnlySpan<byte> _authTrustLevelName => "authTrustLevel"u8;
+    private static ReadOnlySpan<byte> _reuseUnlockResultName => "reuseUnlockResult"u8;
+    private static ReadOnlySpan<byte> _skipLockedBiometricAuthName => "skipLockedBiometricAuth"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _challenge = System.Text.Encoding.UTF8.GetBytes("challenge");
         var _challengeV = NativeValue.From(Challenge);
         if (_challengeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _challenge, _challengeV);
-        var _authType = System.Text.Encoding.UTF8.GetBytes("authType");
+            NativeNodeApi.napi_set_named_property(env, obj, _challengeName, _challengeV);
         var _authTypeV = NativeValue.From(AuthType);
         if (_authTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _authType, _authTypeV);
-        var _authTrustLevel = System.Text.Encoding.UTF8.GetBytes("authTrustLevel");
+            NativeNodeApi.napi_set_named_property(env, obj, _authTypeName, _authTypeV);
         var _authTrustLevelV = NativeValue.From(AuthTrustLevel);
         if (_authTrustLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _authTrustLevel, _authTrustLevelV);
-        var _reuseUnlockResult = System.Text.Encoding.UTF8.GetBytes("reuseUnlockResult");
+            NativeNodeApi.napi_set_named_property(env, obj, _authTrustLevelName, _authTrustLevelV);
         var _reuseUnlockResultV = NativeValue.From(ReuseUnlockResult);
         if (_reuseUnlockResultV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reuseUnlockResult, _reuseUnlockResultV);
-        var _skipLockedBiometricAuth = System.Text.Encoding.UTF8.GetBytes("skipLockedBiometricAuth");
+            NativeNodeApi.napi_set_named_property(env, obj, _reuseUnlockResultName, _reuseUnlockResultV);
         var _skipLockedBiometricAuthV = NativeValue.From(SkipLockedBiometricAuth);
         if (_skipLockedBiometricAuthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _skipLockedBiometricAuth, _skipLockedBiometricAuthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _skipLockedBiometricAuthName, _skipLockedBiometricAuthV);
     }
 }
 
@@ -421,16 +421,16 @@ public sealed record ReuseUnlockResult(
     double ReuseDuration
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _reuseModeName => "reuseMode"u8;
+    private static ReadOnlySpan<byte> _reuseDurationName => "reuseDuration"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _reuseMode = System.Text.Encoding.UTF8.GetBytes("reuseMode");
         var _reuseModeV = NativeValue.From(ReuseMode);
         if (_reuseModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reuseMode, _reuseModeV);
-        var _reuseDuration = System.Text.Encoding.UTF8.GetBytes("reuseDuration");
+            NativeNodeApi.napi_set_named_property(env, obj, _reuseModeName, _reuseModeV);
         var _reuseDurationV = NativeValue.From(ReuseDuration);
         if (_reuseDurationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reuseDuration, _reuseDurationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _reuseDurationName, _reuseDurationV);
     }
 }
 
@@ -444,23 +444,23 @@ public sealed record UserAuthResult(
     EnrolledState? EnrolledState = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _resultName => "result"u8;
+    private static ReadOnlySpan<byte> _tokenName => "token"u8;
+    private static ReadOnlySpan<byte> _authTypeName => "authType"u8;
+    private static ReadOnlySpan<byte> _enrolledStateName => "enrolledState"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _result = System.Text.Encoding.UTF8.GetBytes("result");
         var _resultV = NativeValue.From(Result);
         if (_resultV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _result, _resultV);
-        var _token = System.Text.Encoding.UTF8.GetBytes("token");
+            NativeNodeApi.napi_set_named_property(env, obj, _resultName, _resultV);
         var _tokenV = NativeValue.From(Token);
         if (_tokenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _token, _tokenV);
-        var _authType = System.Text.Encoding.UTF8.GetBytes("authType");
+            NativeNodeApi.napi_set_named_property(env, obj, _tokenName, _tokenV);
         var _authTypeV = NativeValue.From(AuthType);
         if (_authTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _authType, _authTypeV);
-        var _enrolledState = System.Text.Encoding.UTF8.GetBytes("enrolledState");
+            NativeNodeApi.napi_set_named_property(env, obj, _authTypeName, _authTypeV);
         var _enrolledStateV = NativeValue.From(EnrolledState);
         if (_enrolledStateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enrolledState, _enrolledStateV);
+            NativeNodeApi.napi_set_named_property(env, obj, _enrolledStateName, _enrolledStateV);
     }
 }

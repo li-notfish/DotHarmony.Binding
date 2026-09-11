@@ -169,20 +169,20 @@ public sealed record ConnectionParams(
     global::HarmonyOS.ArkUI.TransferMode? TransferMode = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _addressName => "address"u8;
+    private static ReadOnlySpan<byte> _uuidName => "uuid"u8;
+    private static ReadOnlySpan<byte> _transferModeName => "transferMode"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _address = System.Text.Encoding.UTF8.GetBytes("address");
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _address, _addressV);
-        var _uuid = System.Text.Encoding.UTF8.GetBytes("uuid");
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
         var _uuidV = NativeValue.From(Uuid);
         if (_uuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uuid, _uuidV);
-        var _transferMode = System.Text.Encoding.UTF8.GetBytes("transferMode");
+            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV);
         var _transferModeV = NativeValue.From(TransferMode);
         if (_transferModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _transferMode, _transferModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _transferModeName, _transferModeV);
     }
 }
 
@@ -195,20 +195,20 @@ public sealed record DataParams(
     byte[] Data
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _addressName => "address"u8;
+    private static ReadOnlySpan<byte> _uuidName => "uuid"u8;
+    private static ReadOnlySpan<byte> _dataName => "data"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _address = System.Text.Encoding.UTF8.GetBytes("address");
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _address, _addressV);
-        var _uuid = System.Text.Encoding.UTF8.GetBytes("uuid");
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
         var _uuidV = NativeValue.From(Uuid);
         if (_uuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uuid, _uuidV);
-        var _data = System.Text.Encoding.UTF8.GetBytes("data");
+            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV);
         var _dataV = NativeValue.From(Data);
         if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _data, _dataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
     }
 }
 
@@ -220,15 +220,15 @@ public sealed record ConnectionStateParams(
     string Uuid
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _addressName => "address"u8;
+    private static ReadOnlySpan<byte> _uuidName => "uuid"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _address = System.Text.Encoding.UTF8.GetBytes("address");
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _address, _addressV);
-        var _uuid = System.Text.Encoding.UTF8.GetBytes("uuid");
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
         var _uuidV = NativeValue.From(Uuid);
         if (_uuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uuid, _uuidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV);
     }
 }

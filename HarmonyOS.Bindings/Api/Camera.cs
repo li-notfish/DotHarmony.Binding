@@ -2513,28 +2513,28 @@ public sealed record PhotoCaptureSetting(
     double? CompressionQuality = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _qualityName => "quality"u8;
+    private static ReadOnlySpan<byte> _rotationName => "rotation"u8;
+    private static ReadOnlySpan<byte> _locationName => "location"u8;
+    private static ReadOnlySpan<byte> _mirrorName => "mirror"u8;
+    private static ReadOnlySpan<byte> _compressionQualityName => "compressionQuality"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _quality = System.Text.Encoding.UTF8.GetBytes("quality");
         var _qualityV = NativeValue.From(Quality);
         if (_qualityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _quality, _qualityV);
-        var _rotation = System.Text.Encoding.UTF8.GetBytes("rotation");
+            NativeNodeApi.napi_set_named_property(env, obj, _qualityName, _qualityV);
         var _rotationV = NativeValue.From(Rotation);
         if (_rotationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rotation, _rotationV);
-        var _location = System.Text.Encoding.UTF8.GetBytes("location");
+            NativeNodeApi.napi_set_named_property(env, obj, _rotationName, _rotationV);
         var _locationV = NativeValue.From(Location);
         if (_locationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _location, _locationV);
-        var _mirror = System.Text.Encoding.UTF8.GetBytes("mirror");
+            NativeNodeApi.napi_set_named_property(env, obj, _locationName, _locationV);
         var _mirrorV = NativeValue.From(Mirror);
         if (_mirrorV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mirror, _mirrorV);
-        var _compressionQuality = System.Text.Encoding.UTF8.GetBytes("compressionQuality");
+            NativeNodeApi.napi_set_named_property(env, obj, _mirrorName, _mirrorV);
         var _compressionQualityV = NativeValue.From(CompressionQuality);
         if (_compressionQualityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _compressionQuality, _compressionQualityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _compressionQualityName, _compressionQualityV);
     }
 }
 
@@ -2586,19 +2586,19 @@ public sealed record CameraLocation(
     double Altitude
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _latitudeName => "latitude"u8;
+    private static ReadOnlySpan<byte> _longitudeName => "longitude"u8;
+    private static ReadOnlySpan<byte> _altitudeName => "altitude"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _latitude = System.Text.Encoding.UTF8.GetBytes("latitude");
         var _latitudeV = NativeValue.From(Latitude);
         if (_latitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _latitude, _latitudeV);
-        var _longitude = System.Text.Encoding.UTF8.GetBytes("longitude");
+            NativeNodeApi.napi_set_named_property(env, obj, _latitudeName, _latitudeV);
         var _longitudeV = NativeValue.From(Longitude);
         if (_longitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _longitude, _longitudeV);
-        var _altitude = System.Text.Encoding.UTF8.GetBytes("altitude");
+            NativeNodeApi.napi_set_named_property(env, obj, _longitudeName, _longitudeV);
         var _altitudeV = NativeValue.From(Altitude);
         if (_altitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _altitude, _altitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _altitudeName, _altitudeV);
     }
 }

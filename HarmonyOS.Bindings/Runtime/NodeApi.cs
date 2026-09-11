@@ -12,11 +12,18 @@ namespace HarmonyOS.Bindings.Runtime;
 /// </summary>
 public static class NodeApi
 {
+    /// <summary>argv 栈分配阈值：超过此参数量才退回堆数组</summary>
+    private const int StackArgvCapacity = 8;
+
     /// <summary>
     /// 宿主 ArkTS 侧注入到 globalThis 的胶水模块名，其上须提供
     /// createComponent(componentName, ...args) 分发函数（由宿主工程提供）。
     /// </summary>
     internal const string GlueGlobalName = "ArkUI";
+
+    /// <summary>一次性缓存的 UTF-8 名字字节（进程内复用，调用点零分配）</summary>
+    private static readonly byte[] GlueGlobalNameBytes = System.Text.Encoding.UTF8.GetBytes(GlueGlobalName);
+    private static readonly byte[] CreateComponentNameBytes = System.Text.Encoding.UTF8.GetBytes("createComponent");
 
     /// <summary>
     /// 获取宿主注入的 ArkUI 胶水模块
@@ -24,8 +31,7 @@ public static class NodeApi
     private static NativeNodeApi.napi_value GetGlueModule(NativeNodeApi.napi_env env)
     {
         NativeNodeApi.napi_get_global(env, out var global).ThrowIfFailed();
-        var globalName = Encoding.UTF8.GetBytes(GlueGlobalName);
-        NativeNodeApi.napi_get_named_property(env, global, globalName, out var arkuiModule).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, global, GlueGlobalNameBytes, out var arkuiModule).ThrowIfFailed();
         NativeNodeApi.napi_typeof(env, arkuiModule, out var valueType).ThrowIfFailed();
         if (valueType != NativeNodeApi.napi_valuetype.napi_object &&
             valueType != NativeNodeApi.napi_valuetype.napi_function)
@@ -48,12 +54,10 @@ public static class NodeApi
         var arkuiModule = GetGlueModule(env);
 
         // 调用创建组件的函数
-        var createFuncName = Encoding.UTF8.GetBytes("createComponent");
-        NativeNodeApi.napi_get_named_property(env, arkuiModule, createFuncName, out var createFunc).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, arkuiModule, CreateComponentNameBytes, out var createFunc).ThrowIfFailed();
 
         var componentNameValue = NativeValue.From(componentName);
-        var argv = new IntPtr[] { componentNameValue };
-        NativeNodeApi.napi_call_function(env, arkuiModule, createFunc, 1, argv, out var result).ThrowIfFailed();
+        NativeNodeApi.napi_call_function(env, arkuiModule, createFunc, 1, new[] { componentNameValue }, out var result).ThrowIfFailed();
 
         return result;
 #else
@@ -67,20 +71,19 @@ public static class NodeApi
     /// <param name="componentName">组件名称</param>
     /// <param name="args">构造参数</param>
     /// <returns>组件的 napi_value 句柄</returns>
-    public static IntPtr CreateComponent(string componentName, params object?[]? args)
+    public static IntPtr CreateComponent(string componentName, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         var env = NapiEnv.Current;
         var arkuiModule = GetGlueModule(env);
 
         // 调用创建组件的函数
-        var createFuncName = Encoding.UTF8.GetBytes("createComponent");
-        NativeNodeApi.napi_get_named_property(env, arkuiModule, createFuncName, out var createFunc).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, arkuiModule, CreateComponentNameBytes, out var createFunc).ThrowIfFailed();
 
         // 构建参数数组：[componentName, arg1, arg2, ...]
-        var argv = new IntPtr[(args?.Length ?? 0) + 1];
+        var argv = new IntPtr[args.Length + 1];
         argv[0] = NativeValue.From(componentName);
-        for (int i = 0; i < args?.Length; i++)
+        for (int i = 0; i < args.Length; i++)
         {
             argv[i + 1] = NativeValue.From(args[i]);
         }
@@ -99,7 +102,7 @@ public static class NodeApi
     /// <param name="jsObject">组件句柄</param>
     /// <param name="attributeName">属性名称</param>
     /// <param name="values">属性值（支持单值和多值）</param>
-    public static void SetAttribute(IntPtr jsObject, string attributeName, params object[] values)
+    public static void SetAttribute(IntPtr jsObject, string attributeName, params ReadOnlySpan<object?> values)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
@@ -131,7 +134,7 @@ public static class NodeApi
     /// <summary>
     /// 设置组件属性（预编码属性名版本，避免重复 UTF8 编码）
     /// </summary>
-    public static void SetAttribute(IntPtr jsObject, byte[] attributeName, params object[] values)
+    public static void SetAttribute(IntPtr jsObject, byte[] attributeName, params ReadOnlySpan<object?> values)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
@@ -286,21 +289,22 @@ public static class NodeApi
     /// 以 <paramref name="jsObject"/> 上名为 <paramref name="className"/> 的属性为构造函数创建实例
     /// （JS `new obj.ClassName(args)`，供生成器为带构造函数的嵌套类产出包装）。
     /// </summary>
-    public static IntPtr CreateInstance(IntPtr jsObject, ReadOnlySpan<byte> className, params object?[]? args)
+    public static IntPtr CreateInstance(IntPtr jsObject, ReadOnlySpan<byte> className, params ReadOnlySpan<object?> args)
         => CreateInstance(jsObject, className.ToArray(), args);
 
     /// <summary>CreateInstance 的 byte[] 类名重载</summary>
-    public static IntPtr CreateInstance(IntPtr jsObject, byte[] className, params object?[]? args)
+    public static IntPtr CreateInstance(IntPtr jsObject, byte[] className, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
             throw new ArgumentNullException(nameof(jsObject));
         var env = NapiEnv.Current;
         NativeNodeApi.napi_get_named_property(env, jsObject, className, out var ctor).ThrowIfFailed();
-        var argv = new IntPtr[args?.Length ?? 0];
-        for (int i = 0; i < args?.Length; i++)
+        IntPtr[]? pooled = args.Length > StackArgvCapacity ? new IntPtr[args.Length] : null;
+        Span<IntPtr> argv = pooled ?? stackalloc IntPtr[StackArgvCapacity];
+        for (int i = 0; i < args.Length; i++)
             argv[i] = NativeValue.From(args[i]);
-        NativeNodeApi.napi_new_instance(env, ctor, argv.Length, argv, out var result).ThrowIfFailed();
+        NativeNodeApi.napi_new_instance(env, ctor, args.Length, argv, out var result).ThrowIfFailed();
         return result;
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
@@ -370,7 +374,7 @@ public static class NodeApi
     /// <param name="methodName">方法名称</param>
     /// <param name="args">方法参数</param>
     /// <returns>方法返回值</returns>
-    public static T CallMethod<T>(IntPtr jsObject, string methodName, params object?[]? args)
+    public static T CallMethod<T>(IntPtr jsObject, string methodName, params ReadOnlySpan<object?> args)
 #if HARMONYOS
         => CallMethod<T>(jsObject, Encoding.UTF8.GetBytes(methodName), args);
 #else
@@ -382,7 +386,7 @@ public static class NodeApi
     /// <summary>
     /// 调用组件方法（byte[] 方法名重载：生成器以 "name"u8 常量携带，免每次 UTF8 编码）
     /// </summary>
-    public static T CallMethod<T>(IntPtr jsObject, byte[] methodName, params object?[]? args)
+    public static T CallMethod<T>(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
@@ -393,24 +397,24 @@ public static class NodeApi
     }
 
     /// <summary>调用组件方法（ReadOnlySpan&lt;byte&gt; 方法名重载：生成器 "name"u8 → ReadOnlySpan&lt;byte&gt;）</summary>
-    public static T CallMethod<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object?[]? args)
+    public static T CallMethod<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
         => CallMethod<T>(jsObject, methodName.ToArray(), args);
 
     /// <summary>
     /// 调用组件方法，返回值经调用点显式转换委托处理（数组/JsObject 包装类等复杂类型；
     /// 委托在生成调用点传入——AOT 安全，无反射、无注册表）。
     /// </summary>
-    public static TCall CallMethod<TCall>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params object?[]? args)
+    public static TCall CallMethod<TCall>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<object?> args)
         => convert(InvokeMethod(jsObject, methodName.ToArray(), args));
 
     /// <summary>CallMethod 显式转换委托的 byte[] 方法名重载</summary>
-    public static TCall CallMethod<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params object?[]? args)
+    public static TCall CallMethod<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<object?> args)
         => convert(InvokeMethod(jsObject, methodName, args));
 
     /// <summary>
     /// 调用组件方法（无返回值/void 返回：C# 泛型不支持 CallMethod&lt;void&gt;，void 调用走此重载）
     /// </summary>
-    public static void CallMethodVoid(IntPtr jsObject, string methodName, params object?[]? args)
+    public static void CallMethodVoid(IntPtr jsObject, string methodName, params ReadOnlySpan<object?> args)
 #if HARMONYOS
         => CallMethodVoid(jsObject, Encoding.UTF8.GetBytes(methodName), args);
 #else
@@ -423,7 +427,7 @@ public static class NodeApi
     /// 调用组件方法并接为 Task&lt;T&gt;（Promise&lt;T&gt; 路线；ROADMAP 2.1 最小切片）。
     /// 返回值非 Promise 时同步转换；Promise 经 PromiseTaskBridge（JS 线程回调 + TCS）。
     /// </summary>
-    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, string methodName, params object?[]? args)
+    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, string methodName, params ReadOnlySpan<object?> args)
 #if HARMONYOS
         => CallMethodAsync<T>(jsObject, Encoding.UTF8.GetBytes(methodName), args);
 #else
@@ -433,7 +437,7 @@ public static class NodeApi
 #endif
 
     /// <summary>调用组件方法并接为 Task（Promise&lt;void&gt; 路线）</summary>
-    public static Task CallMethodAsyncVoid(IntPtr jsObject, string methodName, params object?[]? args)
+    public static Task CallMethodAsyncVoid(IntPtr jsObject, string methodName, params ReadOnlySpan<object?> args)
 #if HARMONYOS
         => CallMethodAsyncVoid(jsObject, Encoding.UTF8.GetBytes(methodName), args);
 #else
@@ -443,7 +447,7 @@ public static class NodeApi
 #endif
 
     /// <summary>调用组件方法并接为 Task&lt;T&gt;（byte[] 方法名重载，供生成器 u8 常量使用）</summary>
-    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, byte[] methodName, params object?[]? args)
+    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
@@ -457,7 +461,7 @@ public static class NodeApi
     }
 
     /// <summary>调用组件方法并接为 Task（Promise&lt;void&gt; 路线；byte[] 方法名重载）</summary>
-    public static Task CallMethodAsyncVoid(IntPtr jsObject, byte[] methodName, params object?[]? args)
+    public static Task CallMethodAsyncVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
@@ -471,7 +475,7 @@ public static class NodeApi
     }
 
     /// <summary>调用组件方法（byte[] 方法名，void 返回）</summary>
-    public static void CallMethodVoid(IntPtr jsObject, byte[] methodName, params object?[]? args)
+    public static void CallMethodVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         _ = InvokeMethod(jsObject, methodName, args);
@@ -481,18 +485,18 @@ public static class NodeApi
     }
 
     /// <summary>调用组件方法（ReadOnlySpan&lt;byte&gt; 方法名，void 返回）</summary>
-    public static void CallMethodVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object?[]? args)
+    public static void CallMethodVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
         => CallMethodVoid(jsObject, methodName.ToArray(), args);
 
     /// <summary>调用组件方法并接为 Task&lt;T&gt;（ReadOnlySpan&lt;byte&gt; 方法名重载）</summary>
-    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object?[]? args)
+    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
         => CallMethodAsync<T>(jsObject, methodName.ToArray(), args);
 
     /// <summary>
     /// 调用组件方法并接为 Task&lt;T&gt;，Promise 结果经调用点显式转换委托处理
     /// （数组/JsObject 包装类等复杂类型；非 Promise 结果同样经该委托）。
     /// </summary>
-    public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params object?[]? args)
+    public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName.ToArray(), args);
@@ -506,7 +510,7 @@ public static class NodeApi
     }
 
     /// <summary>CallMethodAsync 显式转换委托的 byte[] 方法名重载</summary>
-    public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params object?[]? args)
+    public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<object?> args)
         => CallMethodAsync(jsObject, methodName.AsSpan(), convert, args);
 
     /// <summary>
@@ -515,11 +519,14 @@ public static class NodeApi
     /// （err 非 undefined/null 时抛 ArkTSException，读 BusinessError 的 code/message）。
     /// convert 为复杂结果类型（数组/JsObject 包装类）的显式转换委托；基元传 null。
     /// </summary>
-    public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, byte[] methodName, Func<IntPtr, T>? convert, params object?[]? args)
+    public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, byte[] methodName, Func<IntPtr, T>? convert, params ReadOnlySpan<object?> args)
     {
 #if HARMONYOS
         var (jsFunc, task) = CallbackTaskBridge.CreateCallback(convert);
-        var argv = args == null ? new object?[] { jsFunc } : [.. args, jsFunc];
+        // [args..., jsFunc]：object 为托管类型不可 stackalloc，此处单次分配可接受
+        var argv = new object?[args.Length + 1];
+        args.CopyTo(argv);
+        argv[args.Length] = jsFunc;
         _ = InvokeMethod(jsObject, methodName, argv);
         return task;
 #else
@@ -528,23 +535,23 @@ public static class NodeApi
     }
 
     /// <summary>CallMethodAsyncCallback 的 Promise&lt;void&gt; 对应物（AsyncCallback&lt;void&gt;）</summary>
-    public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, byte[] methodName, params object?[]? args)
+    public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<object?> args)
         => CallMethodAsyncCallback<object>(jsObject, methodName, null, args);
 
     /// <summary>CallMethodAsyncCallback 的 ReadOnlySpan&lt;byte&gt; 方法名重载</summary>
-    public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, T>? convert, params object?[]? args)
+    public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, T>? convert, params ReadOnlySpan<object?> args)
         => CallMethodAsyncCallback<T>(jsObject, methodName.ToArray(), convert, args);
 
     /// <summary>CallMethodAsyncCallbackVoid 的 ReadOnlySpan&lt;byte&gt; 方法名重载</summary>
-    public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object?[]? args)
+    public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
         => CallMethodAsyncCallbackVoid(jsObject, methodName.ToArray(), args);
 
     /// <summary>调用组件方法并接为 Task（ReadOnlySpan&lt;byte&gt; 方法名，void Promise 路线）</summary>
-    public static Task CallMethodAsyncVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object?[]? args)
+    public static Task CallMethodAsyncVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
         => CallMethodAsyncVoid(jsObject, methodName.ToArray(), args);
 
 #if HARMONYOS
-    private static IntPtr InvokeMethod(IntPtr jsObject, byte[] methodName, object?[]? args)
+    private static IntPtr InvokeMethod(IntPtr jsObject, byte[] methodName, ReadOnlySpan<object?> args)
     {
         if (jsObject == IntPtr.Zero)
             throw new ArgumentNullException(nameof(jsObject));
@@ -554,15 +561,16 @@ public static class NodeApi
         // 获取方法函数
         NativeNodeApi.napi_get_named_property(env, jsObject, methodName, out var jsFunc).ThrowIfFailed();
 
-        // 构建参数数组
-        var argv = new IntPtr[args?.Length ?? 0];
-        for (int i = 0; i < args?.Length; i++)
+        // 构建参数数组：小参数量走栈分配，避免每次调用的堆分配
+        IntPtr[]? pooled = args.Length > StackArgvCapacity ? new IntPtr[args.Length] : null;
+        Span<IntPtr> argv = pooled ?? stackalloc IntPtr[StackArgvCapacity];
+        for (int i = 0; i < args.Length; i++)
         {
             argv[i] = NativeValue.From(args[i]);
         }
 
         // 调用方法
-        NativeNodeApi.napi_call_function(env, jsObject, jsFunc, argv.Length, argv, out var result).ThrowIfFailed();
+        NativeNodeApi.napi_call_function(env, jsObject, jsFunc, args.Length, argv, out var result).ThrowIfFailed();
         return result;
     }
 #endif
@@ -575,7 +583,7 @@ public static class NodeApi
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero) return;
-        // napi_value 会被 GC 回收，不需要显式销毁
+        // JS 对象生命周期由 ArkTS GC 管理，句柄无需显式释放
 #endif
     }
 

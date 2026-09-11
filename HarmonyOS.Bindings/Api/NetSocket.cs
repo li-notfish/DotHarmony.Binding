@@ -2471,28 +2471,28 @@ public sealed record UDPExtraOptions(
     bool? Broadcast = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _receiveBufferSizeName => "receiveBufferSize"u8;
+    private static ReadOnlySpan<byte> _sendBufferSizeName => "sendBufferSize"u8;
+    private static ReadOnlySpan<byte> _reuseAddressName => "reuseAddress"u8;
+    private static ReadOnlySpan<byte> _socketTimeoutName => "socketTimeout"u8;
+    private static ReadOnlySpan<byte> _broadcastName => "broadcast"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _receiveBufferSize = System.Text.Encoding.UTF8.GetBytes("receiveBufferSize");
         var _receiveBufferSizeV = NativeValue.From(ReceiveBufferSize);
         if (_receiveBufferSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _receiveBufferSize, _receiveBufferSizeV);
-        var _sendBufferSize = System.Text.Encoding.UTF8.GetBytes("sendBufferSize");
+            NativeNodeApi.napi_set_named_property(env, obj, _receiveBufferSizeName, _receiveBufferSizeV);
         var _sendBufferSizeV = NativeValue.From(SendBufferSize);
         if (_sendBufferSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sendBufferSize, _sendBufferSizeV);
-        var _reuseAddress = System.Text.Encoding.UTF8.GetBytes("reuseAddress");
+            NativeNodeApi.napi_set_named_property(env, obj, _sendBufferSizeName, _sendBufferSizeV);
         var _reuseAddressV = NativeValue.From(ReuseAddress);
         if (_reuseAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reuseAddress, _reuseAddressV);
-        var _socketTimeout = System.Text.Encoding.UTF8.GetBytes("socketTimeout");
+            NativeNodeApi.napi_set_named_property(env, obj, _reuseAddressName, _reuseAddressV);
         var _socketTimeoutV = NativeValue.From(SocketTimeout);
         if (_socketTimeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _socketTimeout, _socketTimeoutV);
-        var _broadcast = System.Text.Encoding.UTF8.GetBytes("broadcast");
+            NativeNodeApi.napi_set_named_property(env, obj, _socketTimeoutName, _socketTimeoutV);
         var _broadcastV = NativeValue.From(Broadcast);
         if (_broadcastV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _broadcast, _broadcastV);
+            NativeNodeApi.napi_set_named_property(env, obj, _broadcastName, _broadcastV);
     }
 }
 
@@ -2504,16 +2504,16 @@ public sealed record TCPSendOptions(
     string? Encoding = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _dataName => "data"u8;
+    private static ReadOnlySpan<byte> _encodingName => "encoding"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _data = System.Text.Encoding.UTF8.GetBytes("data");
         var _dataV = NativeValue.From(Data);
         if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _data, _dataV);
-        var _encoding = System.Text.Encoding.UTF8.GetBytes("encoding");
+            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
         var _encodingV = NativeValue.From(Encoding);
         if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encoding, _encodingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
     }
 }
 
@@ -2524,12 +2524,12 @@ public sealed record LocalAddress(
     string Address
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _addressName => "address"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _address = System.Text.Encoding.UTF8.GetBytes("address");
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _address, _addressV);
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
     }
 }
 
@@ -2541,16 +2541,16 @@ public sealed record LocalConnectOptions(
     double? Timeout = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _addressName => "address"u8;
+    private static ReadOnlySpan<byte> _timeoutName => "timeout"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _address = System.Text.Encoding.UTF8.GetBytes("address");
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _address, _addressV);
-        var _timeout = System.Text.Encoding.UTF8.GetBytes("timeout");
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
         var _timeoutV = NativeValue.From(Timeout);
         if (_timeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeout, _timeoutV);
+            NativeNodeApi.napi_set_named_property(env, obj, _timeoutName, _timeoutV);
     }
 }
 
@@ -2562,16 +2562,16 @@ public sealed record LocalSendOptions(
     string? Encoding = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _dataName => "data"u8;
+    private static ReadOnlySpan<byte> _encodingName => "encoding"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _data = System.Text.Encoding.UTF8.GetBytes("data");
         var _dataV = NativeValue.From(Data);
         if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _data, _dataV);
-        var _encoding = System.Text.Encoding.UTF8.GetBytes("encoding");
+            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
         var _encodingV = NativeValue.From(Encoding);
         if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encoding, _encodingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
     }
 }
 

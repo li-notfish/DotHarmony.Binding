@@ -233,40 +233,40 @@ public sealed record SerialConfigs(
     bool? Xany = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _baudRateName => "baudRate"u8;
+    private static ReadOnlySpan<byte> _dataBitsName => "dataBits"u8;
+    private static ReadOnlySpan<byte> _stopBitsName => "stopBits"u8;
+    private static ReadOnlySpan<byte> _parityName => "parity"u8;
+    private static ReadOnlySpan<byte> _rtsctsName => "rtscts"u8;
+    private static ReadOnlySpan<byte> _xonName => "xon"u8;
+    private static ReadOnlySpan<byte> _xoffName => "xoff"u8;
+    private static ReadOnlySpan<byte> _xanyName => "xany"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _baudRate = System.Text.Encoding.UTF8.GetBytes("baudRate");
         var _baudRateV = NativeValue.From(BaudRate);
         if (_baudRateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _baudRate, _baudRateV);
-        var _dataBits = System.Text.Encoding.UTF8.GetBytes("dataBits");
+            NativeNodeApi.napi_set_named_property(env, obj, _baudRateName, _baudRateV);
         var _dataBitsV = NativeValue.From(DataBits);
         if (_dataBitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataBits, _dataBitsV);
-        var _stopBits = System.Text.Encoding.UTF8.GetBytes("stopBits");
+            NativeNodeApi.napi_set_named_property(env, obj, _dataBitsName, _dataBitsV);
         var _stopBitsV = NativeValue.From(StopBits);
         if (_stopBitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _stopBits, _stopBitsV);
-        var _parity = System.Text.Encoding.UTF8.GetBytes("parity");
+            NativeNodeApi.napi_set_named_property(env, obj, _stopBitsName, _stopBitsV);
         var _parityV = NativeValue.From(Parity);
         if (_parityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _parity, _parityV);
-        var _rtscts = System.Text.Encoding.UTF8.GetBytes("rtscts");
+            NativeNodeApi.napi_set_named_property(env, obj, _parityName, _parityV);
         var _rtsctsV = NativeValue.From(Rtscts);
         if (_rtsctsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rtscts, _rtsctsV);
-        var _xon = System.Text.Encoding.UTF8.GetBytes("xon");
+            NativeNodeApi.napi_set_named_property(env, obj, _rtsctsName, _rtsctsV);
         var _xonV = NativeValue.From(Xon);
         if (_xonV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xon, _xonV);
-        var _xoff = System.Text.Encoding.UTF8.GetBytes("xoff");
+            NativeNodeApi.napi_set_named_property(env, obj, _xonName, _xonV);
         var _xoffV = NativeValue.From(Xoff);
         if (_xoffV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xoff, _xoffV);
-        var _xany = System.Text.Encoding.UTF8.GetBytes("xany");
+            NativeNodeApi.napi_set_named_property(env, obj, _xoffName, _xoffV);
         var _xanyV = NativeValue.From(Xany);
         if (_xanyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xany, _xanyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _xanyName, _xanyV);
     }
 }
 

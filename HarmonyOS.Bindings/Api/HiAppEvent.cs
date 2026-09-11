@@ -131,15 +131,15 @@ public sealed record ConfigOption(
     string? MaxStorage = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _disableName => "disable"u8;
+    private static ReadOnlySpan<byte> _maxStorageName => "maxStorage"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _disable = System.Text.Encoding.UTF8.GetBytes("disable");
         var _disableV = NativeValue.From(Disable);
         if (_disableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disable, _disableV);
-        var _maxStorage = System.Text.Encoding.UTF8.GetBytes("maxStorage");
+            NativeNodeApi.napi_set_named_property(env, obj, _disableName, _disableV);
         var _maxStorageV = NativeValue.From(MaxStorage);
         if (_maxStorageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxStorage, _maxStorageV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxStorageName, _maxStorageV);
     }
 }

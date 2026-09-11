@@ -112,15 +112,15 @@ public sealed record VCardBuilderOptions(
     string? Charset = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _cardTypeName => "cardType"u8;
+    private static ReadOnlySpan<byte> _charsetName => "charset"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _cardType = System.Text.Encoding.UTF8.GetBytes("cardType");
         var _cardTypeV = NativeValue.From(CardType);
         if (_cardTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cardType, _cardTypeV);
-        var _charset = System.Text.Encoding.UTF8.GetBytes("charset");
+            NativeNodeApi.napi_set_named_property(env, obj, _cardTypeName, _cardTypeV);
         var _charsetV = NativeValue.From(Charset);
         if (_charsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _charset, _charsetV);
+            NativeNodeApi.napi_set_named_property(env, obj, _charsetName, _charsetV);
     }
 }

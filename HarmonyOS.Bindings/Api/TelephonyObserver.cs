@@ -533,11 +533,11 @@ public sealed record TelephonyObserverObserverOptions(
     double SlotId
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _slotIdName => "slotId"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _slotId = System.Text.Encoding.UTF8.GetBytes("slotId");
         var _slotIdV = NativeValue.From(SlotId);
         if (_slotIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _slotId, _slotIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _slotIdName, _slotIdV);
     }
 }

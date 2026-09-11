@@ -247,28 +247,28 @@ public sealed record PlaceholderSpan(
     double BaselineOffset
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _widthName => "width"u8;
+    private static ReadOnlySpan<byte> _heightName => "height"u8;
+    private static ReadOnlySpan<byte> _alignName => "align"u8;
+    private static ReadOnlySpan<byte> _baselineName => "baseline"u8;
+    private static ReadOnlySpan<byte> _baselineOffsetName => "baselineOffset"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _width = System.Text.Encoding.UTF8.GetBytes("width");
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = System.Text.Encoding.UTF8.GetBytes("height");
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
-        var _align = System.Text.Encoding.UTF8.GetBytes("align");
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
         var _alignV = NativeValue.From(Align);
         if (_alignV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _align, _alignV);
-        var _baseline = System.Text.Encoding.UTF8.GetBytes("baseline");
+            NativeNodeApi.napi_set_named_property(env, obj, _alignName, _alignV);
         var _baselineV = NativeValue.From(Baseline);
         if (_baselineV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _baseline, _baselineV);
-        var _baselineOffset = System.Text.Encoding.UTF8.GetBytes("baselineOffset");
+            NativeNodeApi.napi_set_named_property(env, obj, _baselineName, _baselineV);
         var _baselineOffsetV = NativeValue.From(BaselineOffset);
         if (_baselineOffsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _baselineOffset, _baselineOffsetV);
+            NativeNodeApi.napi_set_named_property(env, obj, _baselineOffsetName, _baselineOffsetV);
     }
 }
 
@@ -729,16 +729,16 @@ public sealed record TextRectSize(
     double Height
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _widthName => "width"u8;
+    private static ReadOnlySpan<byte> _heightName => "height"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _width = System.Text.Encoding.UTF8.GetBytes("width");
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = System.Text.Encoding.UTF8.GetBytes("height");
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
     }
 }
 

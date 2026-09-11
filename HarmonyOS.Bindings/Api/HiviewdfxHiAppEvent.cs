@@ -338,16 +338,16 @@ public sealed record HiviewdfxHiAppEventConfigOption(
     string? MaxStorage = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _disableName => "disable"u8;
+    private static ReadOnlySpan<byte> _maxStorageName => "maxStorage"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _disable = System.Text.Encoding.UTF8.GetBytes("disable");
         var _disableV = NativeValue.From(Disable);
         if (_disableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disable, _disableV);
-        var _maxStorage = System.Text.Encoding.UTF8.GetBytes("maxStorage");
+            NativeNodeApi.napi_set_named_property(env, obj, _disableName, _disableV);
         var _maxStorageV = NativeValue.From(MaxStorage);
         if (_maxStorageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxStorage, _maxStorageV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxStorageName, _maxStorageV);
     }
 }
 
@@ -404,32 +404,32 @@ public sealed record EventPolicy(
     AddressSanitizerPolicy? AddressSanitizerPolicy = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _mainThreadJankPolicyName => "mainThreadJankPolicy"u8;
+    private static ReadOnlySpan<byte> _cpuUsageHighPolicyName => "cpuUsageHighPolicy"u8;
+    private static ReadOnlySpan<byte> _appCrashPolicyName => "appCrashPolicy"u8;
+    private static ReadOnlySpan<byte> _appFreezePolicyName => "appFreezePolicy"u8;
+    private static ReadOnlySpan<byte> _resourceOverlimitPolicyName => "resourceOverlimitPolicy"u8;
+    private static ReadOnlySpan<byte> _addressSanitizerPolicyName => "addressSanitizerPolicy"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _mainThreadJankPolicy = System.Text.Encoding.UTF8.GetBytes("mainThreadJankPolicy");
         var _mainThreadJankPolicyV = NativeValue.From(MainThreadJankPolicy);
         if (_mainThreadJankPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mainThreadJankPolicy, _mainThreadJankPolicyV);
-        var _cpuUsageHighPolicy = System.Text.Encoding.UTF8.GetBytes("cpuUsageHighPolicy");
+            NativeNodeApi.napi_set_named_property(env, obj, _mainThreadJankPolicyName, _mainThreadJankPolicyV);
         var _cpuUsageHighPolicyV = NativeValue.From(CpuUsageHighPolicy);
         if (_cpuUsageHighPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cpuUsageHighPolicy, _cpuUsageHighPolicyV);
-        var _appCrashPolicy = System.Text.Encoding.UTF8.GetBytes("appCrashPolicy");
+            NativeNodeApi.napi_set_named_property(env, obj, _cpuUsageHighPolicyName, _cpuUsageHighPolicyV);
         var _appCrashPolicyV = NativeValue.From(AppCrashPolicy);
         if (_appCrashPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _appCrashPolicy, _appCrashPolicyV);
-        var _appFreezePolicy = System.Text.Encoding.UTF8.GetBytes("appFreezePolicy");
+            NativeNodeApi.napi_set_named_property(env, obj, _appCrashPolicyName, _appCrashPolicyV);
         var _appFreezePolicyV = NativeValue.From(AppFreezePolicy);
         if (_appFreezePolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _appFreezePolicy, _appFreezePolicyV);
-        var _resourceOverlimitPolicy = System.Text.Encoding.UTF8.GetBytes("resourceOverlimitPolicy");
+            NativeNodeApi.napi_set_named_property(env, obj, _appFreezePolicyName, _appFreezePolicyV);
         var _resourceOverlimitPolicyV = NativeValue.From(ResourceOverlimitPolicy);
         if (_resourceOverlimitPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _resourceOverlimitPolicy, _resourceOverlimitPolicyV);
-        var _addressSanitizerPolicy = System.Text.Encoding.UTF8.GetBytes("addressSanitizerPolicy");
+            NativeNodeApi.napi_set_named_property(env, obj, _resourceOverlimitPolicyName, _resourceOverlimitPolicyV);
         var _addressSanitizerPolicyV = NativeValue.From(AddressSanitizerPolicy);
         if (_addressSanitizerPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addressSanitizerPolicy, _addressSanitizerPolicyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _addressSanitizerPolicyName, _addressSanitizerPolicyV);
     }
 }
 
@@ -484,32 +484,32 @@ public sealed record MainThreadJankPolicy(
     bool? AutoStopSampling = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _logTypeName => "logType"u8;
+    private static ReadOnlySpan<byte> _ignoreStartupTimeName => "ignoreStartupTime"u8;
+    private static ReadOnlySpan<byte> _sampleIntervalName => "sampleInterval"u8;
+    private static ReadOnlySpan<byte> _sampleCountName => "sampleCount"u8;
+    private static ReadOnlySpan<byte> _reportTimesPerAppName => "reportTimesPerApp"u8;
+    private static ReadOnlySpan<byte> _autoStopSamplingName => "autoStopSampling"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _logType = System.Text.Encoding.UTF8.GetBytes("logType");
         var _logTypeV = NativeValue.From(LogType);
         if (_logTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _logType, _logTypeV);
-        var _ignoreStartupTime = System.Text.Encoding.UTF8.GetBytes("ignoreStartupTime");
+            NativeNodeApi.napi_set_named_property(env, obj, _logTypeName, _logTypeV);
         var _ignoreStartupTimeV = NativeValue.From(IgnoreStartupTime);
         if (_ignoreStartupTimeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _ignoreStartupTime, _ignoreStartupTimeV);
-        var _sampleInterval = System.Text.Encoding.UTF8.GetBytes("sampleInterval");
+            NativeNodeApi.napi_set_named_property(env, obj, _ignoreStartupTimeName, _ignoreStartupTimeV);
         var _sampleIntervalV = NativeValue.From(SampleInterval);
         if (_sampleIntervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sampleInterval, _sampleIntervalV);
-        var _sampleCount = System.Text.Encoding.UTF8.GetBytes("sampleCount");
+            NativeNodeApi.napi_set_named_property(env, obj, _sampleIntervalName, _sampleIntervalV);
         var _sampleCountV = NativeValue.From(SampleCount);
         if (_sampleCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sampleCount, _sampleCountV);
-        var _reportTimesPerApp = System.Text.Encoding.UTF8.GetBytes("reportTimesPerApp");
+            NativeNodeApi.napi_set_named_property(env, obj, _sampleCountName, _sampleCountV);
         var _reportTimesPerAppV = NativeValue.From(ReportTimesPerApp);
         if (_reportTimesPerAppV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reportTimesPerApp, _reportTimesPerAppV);
-        var _autoStopSampling = System.Text.Encoding.UTF8.GetBytes("autoStopSampling");
+            NativeNodeApi.napi_set_named_property(env, obj, _reportTimesPerAppName, _reportTimesPerAppV);
         var _autoStopSamplingV = NativeValue.From(AutoStopSampling);
         if (_autoStopSamplingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoStopSampling, _autoStopSamplingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _autoStopSamplingName, _autoStopSamplingV);
     }
 }
 
@@ -524,28 +524,28 @@ public sealed record CpuUsageHighPolicy(
     double? ThreadLoadInterval = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _foregroundLoadThresholdName => "foregroundLoadThreshold"u8;
+    private static ReadOnlySpan<byte> _backgroundLoadThresholdName => "backgroundLoadThreshold"u8;
+    private static ReadOnlySpan<byte> _threadLoadThresholdName => "threadLoadThreshold"u8;
+    private static ReadOnlySpan<byte> _perfLogCaptureCountName => "perfLogCaptureCount"u8;
+    private static ReadOnlySpan<byte> _threadLoadIntervalName => "threadLoadInterval"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _foregroundLoadThreshold = System.Text.Encoding.UTF8.GetBytes("foregroundLoadThreshold");
         var _foregroundLoadThresholdV = NativeValue.From(ForegroundLoadThreshold);
         if (_foregroundLoadThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _foregroundLoadThreshold, _foregroundLoadThresholdV);
-        var _backgroundLoadThreshold = System.Text.Encoding.UTF8.GetBytes("backgroundLoadThreshold");
+            NativeNodeApi.napi_set_named_property(env, obj, _foregroundLoadThresholdName, _foregroundLoadThresholdV);
         var _backgroundLoadThresholdV = NativeValue.From(BackgroundLoadThreshold);
         if (_backgroundLoadThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _backgroundLoadThreshold, _backgroundLoadThresholdV);
-        var _threadLoadThreshold = System.Text.Encoding.UTF8.GetBytes("threadLoadThreshold");
+            NativeNodeApi.napi_set_named_property(env, obj, _backgroundLoadThresholdName, _backgroundLoadThresholdV);
         var _threadLoadThresholdV = NativeValue.From(ThreadLoadThreshold);
         if (_threadLoadThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _threadLoadThreshold, _threadLoadThresholdV);
-        var _perfLogCaptureCount = System.Text.Encoding.UTF8.GetBytes("perfLogCaptureCount");
+            NativeNodeApi.napi_set_named_property(env, obj, _threadLoadThresholdName, _threadLoadThresholdV);
         var _perfLogCaptureCountV = NativeValue.From(PerfLogCaptureCount);
         if (_perfLogCaptureCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _perfLogCaptureCount, _perfLogCaptureCountV);
-        var _threadLoadInterval = System.Text.Encoding.UTF8.GetBytes("threadLoadInterval");
+            NativeNodeApi.napi_set_named_property(env, obj, _perfLogCaptureCountName, _perfLogCaptureCountV);
         var _threadLoadIntervalV = NativeValue.From(ThreadLoadInterval);
         if (_threadLoadIntervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _threadLoadInterval, _threadLoadIntervalV);
+            NativeNodeApi.napi_set_named_property(env, obj, _threadLoadIntervalName, _threadLoadIntervalV);
     }
 }
 
@@ -560,28 +560,28 @@ public sealed record AppCrashPolicy(
     bool? CollectMinidump = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _pageSwitchLogEnableName => "pageSwitchLogEnable"u8;
+    private static ReadOnlySpan<byte> _extendPcLrPrintingName => "extendPcLrPrinting"u8;
+    private static ReadOnlySpan<byte> _logFileCutoffSzBytesName => "logFileCutoffSzBytes"u8;
+    private static ReadOnlySpan<byte> _simplifyVmaPrintingName => "simplifyVmaPrinting"u8;
+    private static ReadOnlySpan<byte> _collectMinidumpName => "collectMinidump"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _pageSwitchLogEnable = System.Text.Encoding.UTF8.GetBytes("pageSwitchLogEnable");
         var _pageSwitchLogEnableV = NativeValue.From(PageSwitchLogEnable);
         if (_pageSwitchLogEnableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnable, _pageSwitchLogEnableV);
-        var _extendPcLrPrinting = System.Text.Encoding.UTF8.GetBytes("extendPcLrPrinting");
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV);
         var _extendPcLrPrintingV = NativeValue.From(ExtendPcLrPrinting);
         if (_extendPcLrPrintingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extendPcLrPrinting, _extendPcLrPrintingV);
-        var _logFileCutoffSzBytes = System.Text.Encoding.UTF8.GetBytes("logFileCutoffSzBytes");
+            NativeNodeApi.napi_set_named_property(env, obj, _extendPcLrPrintingName, _extendPcLrPrintingV);
         var _logFileCutoffSzBytesV = NativeValue.From(LogFileCutoffSzBytes);
         if (_logFileCutoffSzBytesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _logFileCutoffSzBytes, _logFileCutoffSzBytesV);
-        var _simplifyVmaPrinting = System.Text.Encoding.UTF8.GetBytes("simplifyVmaPrinting");
+            NativeNodeApi.napi_set_named_property(env, obj, _logFileCutoffSzBytesName, _logFileCutoffSzBytesV);
         var _simplifyVmaPrintingV = NativeValue.From(SimplifyVmaPrinting);
         if (_simplifyVmaPrintingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _simplifyVmaPrinting, _simplifyVmaPrintingV);
-        var _collectMinidump = System.Text.Encoding.UTF8.GetBytes("collectMinidump");
+            NativeNodeApi.napi_set_named_property(env, obj, _simplifyVmaPrintingName, _simplifyVmaPrintingV);
         var _collectMinidumpV = NativeValue.From(CollectMinidump);
         if (_collectMinidumpV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _collectMinidump, _collectMinidumpV);
+            NativeNodeApi.napi_set_named_property(env, obj, _collectMinidumpName, _collectMinidumpV);
     }
 }
 
@@ -592,12 +592,12 @@ public sealed record AppFreezePolicy(
     bool? PageSwitchLogEnable = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _pageSwitchLogEnableName => "pageSwitchLogEnable"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _pageSwitchLogEnable = System.Text.Encoding.UTF8.GetBytes("pageSwitchLogEnable");
         var _pageSwitchLogEnableV = NativeValue.From(PageSwitchLogEnable);
         if (_pageSwitchLogEnableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnable, _pageSwitchLogEnableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV);
     }
 }
 
@@ -610,20 +610,20 @@ public sealed record ResourceOverlimitPolicy(
     bool? UseRefinedLogFileName = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _pageSwitchLogEnableName => "pageSwitchLogEnable"u8;
+    private static ReadOnlySpan<byte> _jsHeapLogtypeName => "jsHeapLogtype"u8;
+    private static ReadOnlySpan<byte> _useRefinedLogFileNameName => "useRefinedLogFileName"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _pageSwitchLogEnable = System.Text.Encoding.UTF8.GetBytes("pageSwitchLogEnable");
         var _pageSwitchLogEnableV = NativeValue.From(PageSwitchLogEnable);
         if (_pageSwitchLogEnableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnable, _pageSwitchLogEnableV);
-        var _jsHeapLogtype = System.Text.Encoding.UTF8.GetBytes("jsHeapLogtype");
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV);
         var _jsHeapLogtypeV = NativeValue.From(JsHeapLogtype);
         if (_jsHeapLogtypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _jsHeapLogtype, _jsHeapLogtypeV);
-        var _useRefinedLogFileName = System.Text.Encoding.UTF8.GetBytes("useRefinedLogFileName");
+            NativeNodeApi.napi_set_named_property(env, obj, _jsHeapLogtypeName, _jsHeapLogtypeV);
         var _useRefinedLogFileNameV = NativeValue.From(UseRefinedLogFileName);
         if (_useRefinedLogFileNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _useRefinedLogFileName, _useRefinedLogFileNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _useRefinedLogFileNameName, _useRefinedLogFileNameV);
     }
 }
 
@@ -634,11 +634,11 @@ public sealed record AddressSanitizerPolicy(
     bool? PageSwitchLogEnable = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _pageSwitchLogEnableName => "pageSwitchLogEnable"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _pageSwitchLogEnable = System.Text.Encoding.UTF8.GetBytes("pageSwitchLogEnable");
         var _pageSwitchLogEnableV = NativeValue.From(PageSwitchLogEnable);
         if (_pageSwitchLogEnableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnable, _pageSwitchLogEnableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV);
     }
 }

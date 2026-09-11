@@ -260,20 +260,20 @@ public sealed record RectShapeOptions(
     double? Radius = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _widthName => "width"u8;
+    private static ReadOnlySpan<byte> _heightName => "height"u8;
+    private static ReadOnlySpan<byte> _radiusName => "radius"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _width = System.Text.Encoding.UTF8.GetBytes("width");
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = System.Text.Encoding.UTF8.GetBytes("height");
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
-        var _radius = System.Text.Encoding.UTF8.GetBytes("radius");
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
         var _radiusV = NativeValue.From(Radius);
         if (_radiusV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _radius, _radiusV);
+            NativeNodeApi.napi_set_named_property(env, obj, _radiusName, _radiusV);
     }
 }
 
@@ -285,16 +285,16 @@ public sealed record ShapeSize(
     double? Height = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _widthName => "width"u8;
+    private static ReadOnlySpan<byte> _heightName => "height"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _width = System.Text.Encoding.UTF8.GetBytes("width");
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = System.Text.Encoding.UTF8.GetBytes("height");
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
     }
 }
 
@@ -305,11 +305,11 @@ public sealed record PathShapeOptions(
     string? Commands = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _commandsName => "commands"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _commands = System.Text.Encoding.UTF8.GetBytes("commands");
         var _commandsV = NativeValue.From(Commands);
         if (_commandsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _commands, _commandsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _commandsName, _commandsV);
     }
 }

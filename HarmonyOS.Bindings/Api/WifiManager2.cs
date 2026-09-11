@@ -753,24 +753,24 @@ public sealed record ConnectSettings(
     bool? AddNetworkToSystem = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _networkIdName => "networkId"u8;
+    private static ReadOnlySpan<byte> _withUserActionName => "withUserAction"u8;
+    private static ReadOnlySpan<byte> _userActionTimeoutName => "userActionTimeout"u8;
+    private static ReadOnlySpan<byte> _addNetworkToSystemName => "addNetworkToSystem"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _networkId = System.Text.Encoding.UTF8.GetBytes("networkId");
         var _networkIdV = NativeValue.From(NetworkId);
         if (_networkIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _networkId, _networkIdV);
-        var _withUserAction = System.Text.Encoding.UTF8.GetBytes("withUserAction");
+            NativeNodeApi.napi_set_named_property(env, obj, _networkIdName, _networkIdV);
         var _withUserActionV = NativeValue.From(WithUserAction);
         if (_withUserActionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _withUserAction, _withUserActionV);
-        var _userActionTimeout = System.Text.Encoding.UTF8.GetBytes("userActionTimeout");
+            NativeNodeApi.napi_set_named_property(env, obj, _withUserActionName, _withUserActionV);
         var _userActionTimeoutV = NativeValue.From(UserActionTimeout);
         if (_userActionTimeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userActionTimeout, _userActionTimeoutV);
-        var _addNetworkToSystem = System.Text.Encoding.UTF8.GetBytes("addNetworkToSystem");
+            NativeNodeApi.napi_set_named_property(env, obj, _userActionTimeoutName, _userActionTimeoutV);
         var _addNetworkToSystemV = NativeValue.From(AddNetworkToSystem);
         if (_addNetworkToSystemV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addNetworkToSystem, _addNetworkToSystemV);
+            NativeNodeApi.napi_set_named_property(env, obj, _addNetworkToSystemName, _addNetworkToSystemV);
     }
 }
 

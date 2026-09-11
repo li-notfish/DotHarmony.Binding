@@ -105,20 +105,20 @@ public sealed record ShowToastOptions(
     string? Bottom = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _messageName => "message"u8;
+    private static ReadOnlySpan<byte> _durationName => "duration"u8;
+    private static ReadOnlySpan<byte> _bottomName => "bottom"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _message = System.Text.Encoding.UTF8.GetBytes("message");
         var _messageV = NativeValue.From(Message);
         if (_messageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _message, _messageV);
-        var _duration = System.Text.Encoding.UTF8.GetBytes("duration");
+            NativeNodeApi.napi_set_named_property(env, obj, _messageName, _messageV);
         var _durationV = NativeValue.From(Duration);
         if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _duration, _durationV);
-        var _bottom = System.Text.Encoding.UTF8.GetBytes("bottom");
+            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
         var _bottomV = NativeValue.From(Bottom);
         if (_bottomV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bottom, _bottomV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bottomName, _bottomV);
     }
 }
 

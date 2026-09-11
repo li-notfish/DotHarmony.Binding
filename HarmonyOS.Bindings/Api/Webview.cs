@@ -2034,40 +2034,40 @@ public sealed record PdfConfiguration(
     bool? ShouldPrintBackground = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _widthName => "width"u8;
+    private static ReadOnlySpan<byte> _heightName => "height"u8;
+    private static ReadOnlySpan<byte> _marginTopName => "marginTop"u8;
+    private static ReadOnlySpan<byte> _marginBottomName => "marginBottom"u8;
+    private static ReadOnlySpan<byte> _marginRightName => "marginRight"u8;
+    private static ReadOnlySpan<byte> _marginLeftName => "marginLeft"u8;
+    private static ReadOnlySpan<byte> _scaleName => "scale"u8;
+    private static ReadOnlySpan<byte> _shouldPrintBackgroundName => "shouldPrintBackground"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _width = System.Text.Encoding.UTF8.GetBytes("width");
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _width, _widthV);
-        var _height = System.Text.Encoding.UTF8.GetBytes("height");
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _height, _heightV);
-        var _marginTop = System.Text.Encoding.UTF8.GetBytes("marginTop");
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
         var _marginTopV = NativeValue.From(MarginTop);
         if (_marginTopV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _marginTop, _marginTopV);
-        var _marginBottom = System.Text.Encoding.UTF8.GetBytes("marginBottom");
+            NativeNodeApi.napi_set_named_property(env, obj, _marginTopName, _marginTopV);
         var _marginBottomV = NativeValue.From(MarginBottom);
         if (_marginBottomV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _marginBottom, _marginBottomV);
-        var _marginRight = System.Text.Encoding.UTF8.GetBytes("marginRight");
+            NativeNodeApi.napi_set_named_property(env, obj, _marginBottomName, _marginBottomV);
         var _marginRightV = NativeValue.From(MarginRight);
         if (_marginRightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _marginRight, _marginRightV);
-        var _marginLeft = System.Text.Encoding.UTF8.GetBytes("marginLeft");
+            NativeNodeApi.napi_set_named_property(env, obj, _marginRightName, _marginRightV);
         var _marginLeftV = NativeValue.From(MarginLeft);
         if (_marginLeftV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _marginLeft, _marginLeftV);
-        var _scale = System.Text.Encoding.UTF8.GetBytes("scale");
+            NativeNodeApi.napi_set_named_property(env, obj, _marginLeftName, _marginLeftV);
         var _scaleV = NativeValue.From(Scale);
         if (_scaleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _scale, _scaleV);
-        var _shouldPrintBackground = System.Text.Encoding.UTF8.GetBytes("shouldPrintBackground");
+            NativeNodeApi.napi_set_named_property(env, obj, _scaleName, _scaleV);
         var _shouldPrintBackgroundV = NativeValue.From(ShouldPrintBackground);
         if (_shouldPrintBackgroundV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _shouldPrintBackground, _shouldPrintBackgroundV);
+            NativeNodeApi.napi_set_named_property(env, obj, _shouldPrintBackgroundName, _shouldPrintBackgroundV);
     }
 }
 
@@ -2134,44 +2134,44 @@ public sealed record WebCustomScheme(
     bool? IsCodeCacheSupported = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _schemeNameName => "schemeName"u8;
+    private static ReadOnlySpan<byte> _isSupportCorsName => "isSupportCORS"u8;
+    private static ReadOnlySpan<byte> _isSupportFetchName => "isSupportFetch"u8;
+    private static ReadOnlySpan<byte> _isStandardName => "isStandard"u8;
+    private static ReadOnlySpan<byte> _isLocalName => "isLocal"u8;
+    private static ReadOnlySpan<byte> _isDisplayIsolatedName => "isDisplayIsolated"u8;
+    private static ReadOnlySpan<byte> _isSecureName => "isSecure"u8;
+    private static ReadOnlySpan<byte> _isCspBypassingName => "isCspBypassing"u8;
+    private static ReadOnlySpan<byte> _isCodeCacheSupportedName => "isCodeCacheSupported"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _schemeName = System.Text.Encoding.UTF8.GetBytes("schemeName");
         var _schemeNameV = NativeValue.From(SchemeName);
         if (_schemeNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _schemeName, _schemeNameV);
-        var _isSupportCors = System.Text.Encoding.UTF8.GetBytes("isSupportCORS");
+            NativeNodeApi.napi_set_named_property(env, obj, _schemeNameName, _schemeNameV);
         var _isSupportCorsV = NativeValue.From(IsSupportCors);
         if (_isSupportCorsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isSupportCors, _isSupportCorsV);
-        var _isSupportFetch = System.Text.Encoding.UTF8.GetBytes("isSupportFetch");
+            NativeNodeApi.napi_set_named_property(env, obj, _isSupportCorsName, _isSupportCorsV);
         var _isSupportFetchV = NativeValue.From(IsSupportFetch);
         if (_isSupportFetchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isSupportFetch, _isSupportFetchV);
-        var _isStandard = System.Text.Encoding.UTF8.GetBytes("isStandard");
+            NativeNodeApi.napi_set_named_property(env, obj, _isSupportFetchName, _isSupportFetchV);
         var _isStandardV = NativeValue.From(IsStandard);
         if (_isStandardV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isStandard, _isStandardV);
-        var _isLocal = System.Text.Encoding.UTF8.GetBytes("isLocal");
+            NativeNodeApi.napi_set_named_property(env, obj, _isStandardName, _isStandardV);
         var _isLocalV = NativeValue.From(IsLocal);
         if (_isLocalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isLocal, _isLocalV);
-        var _isDisplayIsolated = System.Text.Encoding.UTF8.GetBytes("isDisplayIsolated");
+            NativeNodeApi.napi_set_named_property(env, obj, _isLocalName, _isLocalV);
         var _isDisplayIsolatedV = NativeValue.From(IsDisplayIsolated);
         if (_isDisplayIsolatedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isDisplayIsolated, _isDisplayIsolatedV);
-        var _isSecure = System.Text.Encoding.UTF8.GetBytes("isSecure");
+            NativeNodeApi.napi_set_named_property(env, obj, _isDisplayIsolatedName, _isDisplayIsolatedV);
         var _isSecureV = NativeValue.From(IsSecure);
         if (_isSecureV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isSecure, _isSecureV);
-        var _isCspBypassing = System.Text.Encoding.UTF8.GetBytes("isCspBypassing");
+            NativeNodeApi.napi_set_named_property(env, obj, _isSecureName, _isSecureV);
         var _isCspBypassingV = NativeValue.From(IsCspBypassing);
         if (_isCspBypassingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isCspBypassing, _isCspBypassingV);
-        var _isCodeCacheSupported = System.Text.Encoding.UTF8.GetBytes("isCodeCacheSupported");
+            NativeNodeApi.napi_set_named_property(env, obj, _isCspBypassingName, _isCspBypassingV);
         var _isCodeCacheSupportedV = NativeValue.From(IsCodeCacheSupported);
         if (_isCodeCacheSupportedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isCodeCacheSupported, _isCodeCacheSupportedV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isCodeCacheSupportedName, _isCodeCacheSupportedV);
     }
 }
 
@@ -2256,20 +2256,20 @@ public sealed record WebviewRequestInfo(
     string FormData
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _urlName => "url"u8;
+    private static ReadOnlySpan<byte> _methodName => "method"u8;
+    private static ReadOnlySpan<byte> _formDataName => "formData"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _url = System.Text.Encoding.UTF8.GetBytes("url");
         var _urlV = NativeValue.From(Url);
         if (_urlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _url, _urlV);
-        var _method = System.Text.Encoding.UTF8.GetBytes("method");
+            NativeNodeApi.napi_set_named_property(env, obj, _urlName, _urlV);
         var _methodV = NativeValue.From(Method);
         if (_methodV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _method, _methodV);
-        var _formData = System.Text.Encoding.UTF8.GetBytes("formData");
+            NativeNodeApi.napi_set_named_property(env, obj, _methodName, _methodV);
         var _formDataV = NativeValue.From(FormData);
         if (_formDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _formData, _formDataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _formDataName, _formDataV);
     }
 }
 
@@ -2523,36 +2523,36 @@ public sealed record SecurityParams(
     bool? DisableNonProxyUdp = null
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _disableJitCompilationName => "disableJITCompilation"u8;
+    private static ReadOnlySpan<byte> _disableWebAssemblyName => "disableWebAssembly"u8;
+    private static ReadOnlySpan<byte> _disableWebGlName => "disableWebGL"u8;
+    private static ReadOnlySpan<byte> _disablePdfViewerName => "disablePDFViewer"u8;
+    private static ReadOnlySpan<byte> _disableMathMlName => "disableMathML"u8;
+    private static ReadOnlySpan<byte> _disableServiceWorkerName => "disableServiceWorker"u8;
+    private static ReadOnlySpan<byte> _disableNonProxyUdpName => "disableNonProxyUDP"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _disableJitCompilation = System.Text.Encoding.UTF8.GetBytes("disableJITCompilation");
         var _disableJitCompilationV = NativeValue.From(DisableJitCompilation);
         if (_disableJitCompilationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableJitCompilation, _disableJitCompilationV);
-        var _disableWebAssembly = System.Text.Encoding.UTF8.GetBytes("disableWebAssembly");
+            NativeNodeApi.napi_set_named_property(env, obj, _disableJitCompilationName, _disableJitCompilationV);
         var _disableWebAssemblyV = NativeValue.From(DisableWebAssembly);
         if (_disableWebAssemblyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableWebAssembly, _disableWebAssemblyV);
-        var _disableWebGl = System.Text.Encoding.UTF8.GetBytes("disableWebGL");
+            NativeNodeApi.napi_set_named_property(env, obj, _disableWebAssemblyName, _disableWebAssemblyV);
         var _disableWebGlV = NativeValue.From(DisableWebGl);
         if (_disableWebGlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableWebGl, _disableWebGlV);
-        var _disablePdfViewer = System.Text.Encoding.UTF8.GetBytes("disablePDFViewer");
+            NativeNodeApi.napi_set_named_property(env, obj, _disableWebGlName, _disableWebGlV);
         var _disablePdfViewerV = NativeValue.From(DisablePdfViewer);
         if (_disablePdfViewerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disablePdfViewer, _disablePdfViewerV);
-        var _disableMathMl = System.Text.Encoding.UTF8.GetBytes("disableMathML");
+            NativeNodeApi.napi_set_named_property(env, obj, _disablePdfViewerName, _disablePdfViewerV);
         var _disableMathMlV = NativeValue.From(DisableMathMl);
         if (_disableMathMlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableMathMl, _disableMathMlV);
-        var _disableServiceWorker = System.Text.Encoding.UTF8.GetBytes("disableServiceWorker");
+            NativeNodeApi.napi_set_named_property(env, obj, _disableMathMlName, _disableMathMlV);
         var _disableServiceWorkerV = NativeValue.From(DisableServiceWorker);
         if (_disableServiceWorkerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableServiceWorker, _disableServiceWorkerV);
-        var _disableNonProxyUdp = System.Text.Encoding.UTF8.GetBytes("disableNonProxyUDP");
+            NativeNodeApi.napi_set_named_property(env, obj, _disableServiceWorkerName, _disableServiceWorkerV);
         var _disableNonProxyUdpV = NativeValue.From(DisableNonProxyUdp);
         if (_disableNonProxyUdpV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableNonProxyUdp, _disableNonProxyUdpV);
+            NativeNodeApi.napi_set_named_property(env, obj, _disableNonProxyUdpName, _disableNonProxyUdpV);
     }
 }
 

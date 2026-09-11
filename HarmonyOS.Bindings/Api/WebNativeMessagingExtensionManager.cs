@@ -134,23 +134,23 @@ public sealed record ConnectionNativeInfo(
     double ExtensionPid
 ) : INapiRecord
 {
+    private static ReadOnlySpan<byte> _connectionIdName => "connectionId"u8;
+    private static ReadOnlySpan<byte> _bundleNameName => "bundleName"u8;
+    private static ReadOnlySpan<byte> _extensionOriginName => "extensionOrigin"u8;
+    private static ReadOnlySpan<byte> _extensionPidName => "extensionPid"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _connectionId = System.Text.Encoding.UTF8.GetBytes("connectionId");
         var _connectionIdV = NativeValue.From(ConnectionId);
         if (_connectionIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _connectionId, _connectionIdV);
-        var _bundleName = System.Text.Encoding.UTF8.GetBytes("bundleName");
+            NativeNodeApi.napi_set_named_property(env, obj, _connectionIdName, _connectionIdV);
         var _bundleNameV = NativeValue.From(BundleName);
         if (_bundleNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bundleName, _bundleNameV);
-        var _extensionOrigin = System.Text.Encoding.UTF8.GetBytes("extensionOrigin");
+            NativeNodeApi.napi_set_named_property(env, obj, _bundleNameName, _bundleNameV);
         var _extensionOriginV = NativeValue.From(ExtensionOrigin);
         if (_extensionOriginV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extensionOrigin, _extensionOriginV);
-        var _extensionPid = System.Text.Encoding.UTF8.GetBytes("extensionPid");
+            NativeNodeApi.napi_set_named_property(env, obj, _extensionOriginName, _extensionOriginV);
         var _extensionPidV = NativeValue.From(ExtensionPid);
         if (_extensionPidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extensionPid, _extensionPidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _extensionPidName, _extensionPidV);
     }
 }
