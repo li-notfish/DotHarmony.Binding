@@ -54,15 +54,7 @@ internal sealed class ThreadSafeFunction : IDisposable
     /// 从 Promise 创建 TSFN，返回 Task&lt;T&gt;
     /// </summary>
     public static Task<T> FromPromise<T>(IntPtr promise)
-    {
-        var tcs = new TaskCompletionSource<object?>(
-            TaskCreationOptions.RunContinuationsAsynchronously);
-
-        // 注册 Promise 回调（在 JS 线程）
-        RegisterPromiseCallbacks(promise, tcs, typeof(T));
-
-        return tcs.Task.ContinueWith(t => (T)t.Result!, TaskScheduler.Default);
-    }
+        => PromiseTaskBridge.ToTask<T>(promise);
 
     // JS 线程回调（CallJsTrampoline 在 JS 线程上触发）
     internal Action<IntPtr>? OnCallJs;
@@ -125,140 +117,7 @@ internal sealed class ThreadSafeFunction : IDisposable
             throw new ObjectDisposedException(nameof(ThreadSafeFunction));
     }
 
-    #region Promise Callbacks
-
-    private static unsafe void RegisterPromiseCallbacks(
-        IntPtr promise,
-        TaskCompletionSource<object?> tcs,
-        Type innerType)
-    {
-        var env = NapiEnv.Current;
-
-        // 用 GCHandle 保存状态
-        var state = new PromiseState { Tcs = tcs, InnerType = innerType };
-        var gch = GCHandle.Alloc(state);
-
-        var nameBytes = "then"u8.ToArray();
-        NativeNodeApi.napi_get_named_property(env, promise, nameBytes, out var thenFn).ThrowIfFailed();
-
-        var fulfilledName = "fulfilled"u8.ToArray();
-        var rejectedName = "rejected"u8.ToArray();
-
-        NativeNodeApi.napi_create_function(env, fulfilledName, (IntPtr)fulfilledName.Length,
-            GetFulfilledTrampoline(), GCHandle.ToIntPtr(gch), out var fulfilledFn).ThrowIfFailed();
-        NativeNodeApi.napi_create_function(env, rejectedName, (IntPtr)rejectedName.Length,
-            GetRejectedTrampoline(), GCHandle.ToIntPtr(gch), out var rejectedFn).ThrowIfFailed();
-
-        var status = NativeNodeApi.napi_call_function(env, promise, thenFn,
-            2, [fulfilledFn, rejectedFn], out _);
-        // M0 铁律：先清除挂起异常，再检查状态
-        NativeNodeApi.napi_get_and_clear_last_exception(env, out _).ThrowIfFailed();
-        status.ThrowIfFailed();
-    }
-
-    private sealed class PromiseState
-    {
-        public TaskCompletionSource<object?> Tcs { get; init; } = null!;
-        public Type InnerType { get; init; } = null!;
-        public bool Done;
-    }
-
-    private static PromiseState TakePromiseState(IntPtr env, IntPtr info, out IntPtr firstArg, out GCHandle gch)
-    {
-        var argc = (IntPtr)4;
-        var argv = new IntPtr[4];
-        NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
-            .ThrowIfFailed();
-        firstArg = argv[0];
-        gch = GCHandle.FromIntPtr(data);
-        return (PromiseState)gch.Target!;
-    }
-
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-    private static IntPtr FulfilledTrampoline(IntPtr env, IntPtr info)
-    {
-        GCHandle gch = default;
-        try
-        {
-            var state = TakePromiseState(env, info, out var firstArg, out gch);
-            if (state.Done)
-            {
-                NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-                return undefined;
-            }
-            state.Done = true;
-            var inner = state.InnerType;
-            object? value = inner == typeof(string) ? (object?)NativeValue.ToString(firstArg)
-                : inner == typeof(double) ? NativeValue.ToDouble(firstArg)
-                : inner == typeof(bool) ? NativeValue.ToBool(firstArg)
-                : inner == typeof(int) ? (int)NativeValue.ToDouble(firstArg)
-                : inner == typeof(uint) ? (uint)NativeValue.ToDouble(firstArg)
-                : inner == typeof(long) ? NativeValue.ToLong(firstArg)
-                : inner == typeof(byte) ? NativeValue.ToByte(firstArg)
-                : firstArg;
-            state.Tcs.TrySetResult(value);
-        }
-        catch (Exception ex)
-        {
-            if (gch.IsAllocated && gch.Target is PromiseState s && !s.Done)
-            {
-                s.Done = true;
-                s.Tcs.TrySetException(ex);
-            }
-        }
-        finally
-        {
-            if (gch.IsAllocated) gch.Free();
-        }
-        NativeNodeApi.napi_get_undefined(env, out var undefinedRet).ThrowIfFailed();
-        return undefinedRet;
-    }
-
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-    private static IntPtr RejectedTrampoline(IntPtr env, IntPtr info)
-    {
-        GCHandle gch = default;
-        try
-        {
-            var state = TakePromiseState(env, info, out var reasonArg, out gch);
-            if (state.Done)
-            {
-                NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-                return undefined;
-            }
-            state.Done = true;
-            string? reason = null;
-            try { reason = NativeValue.ToString(reasonArg); }
-            catch { /* reason 可能不是字符串，忽略转换失败 */ }
-            state.Tcs.TrySetException(new ArkTSException($"ArkTS promise rejected: {reason ?? "unknown"}", reason, reasonArg));
-        }
-        catch (Exception ex)
-        {
-            if (gch.IsAllocated && gch.Target is PromiseState s && !s.Done)
-            {
-                s.Done = true;
-                s.Tcs.TrySetException(ex);
-            }
-        }
-        finally
-        {
-            if (gch.IsAllocated) gch.Free();
-        }
-        NativeNodeApi.napi_get_undefined(env, out var undefinedRet).ThrowIfFailed();
-        return undefinedRet;
-    }
-
-    private static unsafe IntPtr GetFulfilledTrampoline()
-    {
-        delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr> ptr = &FulfilledTrampoline;
-        return (IntPtr)ptr;
-    }
-
-    private static unsafe IntPtr GetRejectedTrampoline()
-    {
-        delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr> ptr = &RejectedTrampoline;
-        return (IntPtr)ptr;
-    }
+    // Promise → Task 的完整实现见 PromiseTaskBridge（唯一实现，勿在此复制）。
 
     private static unsafe IntPtr GetCallJsTrampoline()
     {
@@ -277,6 +136,4 @@ internal sealed class ThreadSafeFunction : IDisposable
             return;
         tsfn.OnCallJs?.Invoke(data);
     }
-
-    #endregion
 }

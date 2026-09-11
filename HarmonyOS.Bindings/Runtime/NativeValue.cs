@@ -98,6 +98,15 @@ internal static class NativeValue
     public static IntPtr From(Enum value) => From(Convert.ToInt32(value));
 
     /// <summary>
+    /// 将 JsObject 包装实例转换为 napi_value（取强引用当前值）
+    /// </summary>
+    public static IntPtr From(JsObject value)
+    {
+        if (value == null) return IntPtr.Zero;
+        return value.PinnedValue;
+    }
+
+    /// <summary>
     /// 自动将任意 C# 对象转换为 napi_value
     /// </summary>
     public static IntPtr From(object? value) => value switch
@@ -113,6 +122,7 @@ internal static class NativeValue
         bool b => From(b),
         IntPtr p => From(p),
         Enum e => From(e),
+        JsObject j => From(j),
         Delegate d => From(d),
         _ => FromRecord(value)
     };
@@ -216,6 +226,16 @@ internal static class NativeValue
     {
         var env = NapiEnv.Current;
         NativeNodeApi.napi_get_value_int64(env, value, out var result).ThrowIfFailed();
+        return result;
+    }
+
+    /// <summary>
+    /// 将 napi_value 转换为 C# 无符号 64 位整数
+    /// </summary>
+    public static ulong ToUInt64(IntPtr value)
+    {
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_value_uint64(env, value, out var result).ThrowIfFailed();
         return result;
     }
 

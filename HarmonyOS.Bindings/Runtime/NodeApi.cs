@@ -245,6 +245,91 @@ public static class NodeApi
         => GetProperty(jsObject, Encoding.UTF8.GetBytes(name));
 
     /// <summary>
+    /// 写入对象属性（单值）。与 SetAttribute 的区别：SetAttribute 的多值参数会展开为 JS 数组，
+    /// 本方法恒为单属性赋值——@ohos.* 服务对象的属性语义。
+    /// </summary>
+    public static void SetProperty(IntPtr jsObject, ReadOnlySpan<byte> name, object? value)
+        => SetProperty(jsObject, name.ToArray(), value);
+
+    /// <summary>写入对象属性（byte[] 属性名重载，供生成器 u8 常量使用）</summary>
+    public static void SetProperty(IntPtr jsObject, byte[] name, object? value)
+    {
+#if HARMONYOS
+        if (jsObject == IntPtr.Zero)
+            throw new ArgumentNullException(nameof(jsObject));
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_set_named_property(env, jsObject, name, NativeValue.From(value)).ThrowIfFailed();
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>写入对象属性（string 属性名重载）</summary>
+    public static void SetProperty(IntPtr jsObject, string name, object? value)
+        => SetProperty(jsObject, Encoding.UTF8.GetBytes(name), value);
+
+    /// <summary>
+    /// 获取 globalThis 对象句柄
+    /// </summary>
+    public static IntPtr GetGlobal()
+    {
+#if HARMONYOS
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_global(env, out var global).ThrowIfFailed();
+        return global;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>
+    /// 以 <paramref name="jsObject"/> 上名为 <paramref name="className"/> 的属性为构造函数创建实例
+    /// （JS `new obj.ClassName(args)`，供生成器为带构造函数的嵌套类产出包装）。
+    /// </summary>
+    public static IntPtr CreateInstance(IntPtr jsObject, ReadOnlySpan<byte> className, params object[] args)
+        => CreateInstance(jsObject, className.ToArray(), args);
+
+    /// <summary>CreateInstance 的 byte[] 类名重载</summary>
+    public static IntPtr CreateInstance(IntPtr jsObject, byte[] className, params object[] args)
+    {
+#if HARMONYOS
+        if (jsObject == IntPtr.Zero)
+            throw new ArgumentNullException(nameof(jsObject));
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_named_property(env, jsObject, className, out var ctor).ThrowIfFailed();
+        var argv = new IntPtr[args.Length];
+        for (int i = 0; i < args.Length; i++)
+            argv[i] = NativeValue.From(args[i]);
+        NativeNodeApi.napi_new_instance(env, ctor, argv.Length, argv, out var result).ThrowIfFailed();
+        return result;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>
+    /// 把 napi 数组值拆为元素句柄数组（生成代码的数组转换器基础件）。
+    /// </summary>
+    public static IntPtr[] GetArrayElements(IntPtr array)
+    {
+#if HARMONYOS
+        if (array == IntPtr.Zero)
+            throw new ArgumentNullException(nameof(array));
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_array_length(env, array, out var length).ThrowIfFailed();
+        var result = new IntPtr[length];
+        for (uint i = 0; i < length; i++)
+        {
+            NativeNodeApi.napi_get_element(env, array, i, out var element).ThrowIfFailed();
+            result[i] = element;
+        }
+        return result;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>
     /// 调用组件方法（非链式）
     /// </summary>
     /// <typeparam name="T">返回类型</typeparam>
@@ -274,11 +359,20 @@ public static class NodeApi
 #endif
     }
 
-    /// <summary>
-    /// 调用组件方法（ReadOnlySpan&lt;byte&gt; 方法名重载：生成器 "name"u8 → ReadOnlySpan&lt;byte&gt;）
-    /// </summary>
+    /// <summary>调用组件方法（ReadOnlySpan&lt;byte&gt; 方法名重载：生成器 "name"u8 → ReadOnlySpan&lt;byte&gt;）</summary>
     public static T CallMethod<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object[] args)
         => CallMethod<T>(jsObject, methodName.ToArray(), args);
+
+    /// <summary>
+    /// 调用组件方法，返回值经调用点显式转换委托处理（数组/JsObject 包装类等复杂类型；
+    /// 委托在生成调用点传入——AOT 安全，无反射、无注册表）。
+    /// </summary>
+    public static TCall CallMethod<TCall>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params object[] args)
+        => convert(InvokeMethod(jsObject, methodName.ToArray(), args));
+
+    /// <summary>CallMethod 显式转换委托的 byte[] 方法名重载</summary>
+    public static TCall CallMethod<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params object[] args)
+        => convert(InvokeMethod(jsObject, methodName, args));
 
     /// <summary>
     /// 调用组件方法（无返回值/void 返回：C# 泛型不支持 CallMethod&lt;void&gt;，void 调用走此重载）
@@ -362,6 +456,27 @@ public static class NodeApi
     public static Task<T> CallMethodAsync<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object[] args)
         => CallMethodAsync<T>(jsObject, methodName.ToArray(), args);
 
+    /// <summary>
+    /// 调用组件方法并接为 Task&lt;T&gt;，Promise 结果经调用点显式转换委托处理
+    /// （数组/JsObject 包装类等复杂类型；非 Promise 结果同样经该委托）。
+    /// </summary>
+    public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params object[] args)
+    {
+#if HARMONYOS
+        var result = InvokeMethod(jsObject, methodName.ToArray(), args);
+        NativeNodeApi.napi_is_promise(NapiEnv.Current, result, out var isPromise).ThrowIfFailed();
+        if (!isPromise)
+            return Task.FromResult(convert(result));
+        return PromiseTaskBridge.ToTask(result, convert);
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>CallMethodAsync 显式转换委托的 byte[] 方法名重载</summary>
+    public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params object[] args)
+        => CallMethodAsync(jsObject, methodName.AsSpan(), convert, args);
+
     /// <summary>调用组件方法并接为 Task（ReadOnlySpan&lt;byte&gt; 方法名，void Promise 路线）</summary>
     public static Task CallMethodAsyncVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params object[] args)
         => CallMethodAsyncVoid(jsObject, methodName.ToArray(), args);
@@ -404,25 +519,6 @@ public static class NodeApi
 
 #if HARMONYOS
     private static T ConvertResult<T>(IntPtr result)
-    {
-        var type = typeof(T);
-        if (type == typeof(bool))
-            return (T)(object)NativeValue.ToBool(result);
-        if (type == typeof(double))
-            return (T)(object)NativeValue.ToDouble(result);
-        if (type == typeof(int))
-            return (T)(object)NativeValue.ToInt(result);
-        if (type == typeof(uint))
-            return (T)(object)NativeValue.ToUInt(result);
-        if (type == typeof(long))
-            return (T)(object)NativeValue.ToLong(result);
-        if (type == typeof(byte))
-            return (T)(object)NativeValue.ToByte(result);
-        if (type == typeof(string))
-            return (T)(object)NativeValue.ToString(result)!;
-        if (type == typeof(IntPtr))
-            return (T)(object)result;
-        throw new NotSupportedException($"Unsupported return type: {type.Name}");
-    }
+        => ValueConverter.Convert<T>(result);
 #endif
 }

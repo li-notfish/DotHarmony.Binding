@@ -167,6 +167,14 @@ internal static partial class NativeNodeApi
         out napi_value result);
 
     [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_new_instance(
+        napi_env env,
+        napi_value constructor,
+        int argc,
+        IntPtr[] argv,
+        out napi_value result);
+
+    [LibraryImport(NApiLib)]
     internal static partial napi_status napi_get_cb_info(
         napi_env env,
         napi_callback_info info,

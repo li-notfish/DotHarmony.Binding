@@ -20,6 +20,8 @@ internal static class PromiseTaskBridge
         public readonly TaskCompletionSource<object?> Tcs =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
         public Type InnerType = typeof(object);
+        /// <summary>调用点显式转换委托（数组/JsObject 包装类）；null 时走 ValueConverter 基元路径。</summary>
+        public Func<IntPtr, object?>? Convert;
         public bool Done;
     }
 
@@ -28,11 +30,20 @@ internal static class PromiseTaskBridge
     private static readonly IntPtr RejectedPtr =
         (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr>)&RejectedTrampoline;
 
-    /// <summary>将 napi promise 值接为 Task&lt;T&gt;。非 promise 值由调用方先行处理。</summary>
-    public static Task<T> ToTask<T>(IntPtr promise)
+    /// <summary>
+    /// 将 napi promise 值接为 Task&lt;T&gt;。非 promise 值由调用方先行处理。
+    /// <paramref name="convert"/> 为复杂结果类型（数组/JsObject 包装类）的显式转换委托；
+    /// 基元与枚举结果不需要（走 <see cref="ValueConverter"/>）。
+    /// </summary>
+    public static Task<T> ToTask<T>(IntPtr promise, Func<IntPtr, T>? convert = null)
     {
 #if HARMONYOS
         var state = new State { InnerType = typeof(T) };
+        if (convert != null)
+        {
+            var conv = convert;
+            state.Convert = v => conv(v)!;
+        }
         var gch = GCHandle.Alloc(state);
         var data = GCHandle.ToIntPtr(gch);
 
@@ -86,15 +97,9 @@ internal static class PromiseTaskBridge
                 return undefined;
             }
             state.Done = true;
-            var inner = state.InnerType;
-            object? value = inner == typeof(string) ? (object?)NativeValue.ToString(firstArg)
-                : inner == typeof(double) ? NativeValue.ToDouble(firstArg)
-                : inner == typeof(bool) ? NativeValue.ToBool(firstArg)
-                : inner == typeof(int) ? (int)NativeValue.ToDouble(firstArg)
-                : inner == typeof(uint) ? (uint)NativeValue.ToDouble(firstArg)
-                : inner == typeof(long) ? NativeValue.ToLong(firstArg)
-                : inner == typeof(byte) ? NativeValue.ToByte(firstArg)
-                : firstArg; // IntPtr 句柄
+            object? value = state.Convert != null
+                ? state.Convert(firstArg)
+                : ValueConverter.ConvertTo(state.InnerType, firstArg);
             state.Tcs.TrySetResult(value);
         }
         catch (Exception ex)
