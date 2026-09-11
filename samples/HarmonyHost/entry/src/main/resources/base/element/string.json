@@ -21,6 +21,10 @@
       "value": "Allow the app to use ohos.permission.ACCESS_DISK_PHY_INFO"
     },
     {
+      "name": "permission_ACCESS_NOTIFICATION_POLICY_reason",
+      "value": "Allow the app to use ohos.permission.ACCESS_NOTIFICATION_POLICY"
+    },
+    {
       "name": "permission_ACCESS_VIRTUAL_SCREEN_reason",
       "value": "Allow the app to use ohos.permission.ACCESS_VIRTUAL_SCREEN"
     },
@@ -35,6 +39,10 @@
     {
       "name": "permission_CAMERA_reason",
       "value": "Allow the app to use ohos.permission.CAMERA"
+    },
+    {
+      "name": "permission_CAPTURE_VOICE_DOWNLINK_AUDIO_reason",
+      "value": "Allow the app to use ohos.permission.CAPTURE_VOICE_DOWNLINK_AUDIO"
     },
     {
       "name": "permission_CONNECT_IME_ABILITY_reason",
@@ -105,6 +113,10 @@
       "value": "Allow the app to use ohos.permission.LOCATION"
     },
     {
+      "name": "permission_MANAGE_AUDIO_CONFIG_reason",
+      "value": "Allow the app to use ohos.permission.MANAGE_AUDIO_CONFIG"
+    },
+    {
       "name": "permission_MANAGE_PASTEBOARD_APP_SHARE_OPTION_reason",
       "value": "Allow the app to use ohos.permission.MANAGE_PASTEBOARD_APP_SHARE_OPTION"
     },
@@ -127,6 +139,10 @@
     {
       "name": "permission_MICROPHONE_reason",
       "value": "Allow the app to use ohos.permission.MICROPHONE"
+    },
+    {
+      "name": "permission_MODIFY_AUDIO_SETTINGS_reason",
+      "value": "Allow the app to use ohos.permission.MODIFY_AUDIO_SETTINGS"
     },
     {
       "name": "permission_PRIVACY_WINDOW_reason",

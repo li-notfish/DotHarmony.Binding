@@ -1120,6 +1120,594 @@ public static unsafe partial class Sensor
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<AccelerometerResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AccelerometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<AccelerometerUncalibratedResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AccelerometerUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<LightResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new LightResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<AmbientTemperatureResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AmbientTemperatureResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<BarometerResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new BarometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<GravityResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GravityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<GyroscopeResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GyroscopeResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<GyroscopeUncalibratedResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GyroscopeUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<HallResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HallResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<HeartRateResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HeartRateResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<HumidityResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HumidityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<LinearAccelerometerResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new LinearAccelerometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<MagneticFieldResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new MagneticFieldResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<MagneticFieldUncalibratedResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new MagneticFieldUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<OrientationResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new OrientationResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<PedometerResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new PedometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<PedometerDetectionResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new PedometerDetectionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<ProximityResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new ProximityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<RotationVectorResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new RotationVectorResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<SignificantMotionResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new SignificantMotionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(global::HarmonyOS.ArkUI.SensorType type, System.Action<WearDetectionResponse> callback, SensorOptions? options = null)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new WearDetectionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<AccelerometerResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AccelerometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<AccelerometerUncalibratedResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AccelerometerUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<LightResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new LightResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<AmbientTemperatureResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new AmbientTemperatureResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<BarometerResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new BarometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<GravityResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GravityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<GyroscopeResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GyroscopeResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<GyroscopeUncalibratedResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new GyroscopeUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<HallResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HallResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<HeartRateResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HeartRateResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<HumidityResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new HumidityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<LinearAccelerometerResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new LinearAccelerometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<MagneticFieldResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new MagneticFieldResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<MagneticFieldUncalibratedResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new MagneticFieldUncalibratedResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<OrientationResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new OrientationResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<PedometerResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new PedometerResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<PedometerDetectionResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new PedometerDetectionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<ProximityResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new ProximityResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<RotationVectorResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new RotationVectorResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<SignificantMotionResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new SignificantMotionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// once(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void Once(global::HarmonyOS.ArkUI.SensorType type, System.Action<WearDetectionResponse> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new WearDetectionResponse(args[0])),
+            js => NodeApi.CallMethodVoid(Module, _once, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<AccelerometerResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<AccelerometerUncalibratedResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<LightResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<AmbientTemperatureResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<BarometerResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<GravityResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<GyroscopeResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<GyroscopeUncalibratedResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<HallResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<HeartRateResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<HumidityResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<LinearAccelerometerResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<MagneticFieldResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<MagneticFieldUncalibratedResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<OrientationResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<PedometerResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<PedometerDetectionResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<ProximityResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<RotationVectorResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<SignificantMotionResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(global::HarmonyOS.ArkUI.SensorType type, System.Action<WearDetectionResponse> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
     public static void On(string type, System.Action<SensorStatusEvent> callback)
     {
         _eventListeners.Add((type, callback),

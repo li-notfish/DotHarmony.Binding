@@ -20,11 +20,15 @@ export class EnumGenerator {
         if (enumInfo.isFlags) {
             lines.push('[Flags]');
         }
-        
+
+        // 任一数值超出 int32 范围（如 audio 的声道布局位掩码）→ long 基底
+        const needsLong = enumInfo.members.some(
+            m => typeof m.value === 'number' && (m.value > 2147483647 || m.value < -2147483648));
+
         lines.push(`/// <summary>`);
         lines.push(`/// ${enumInfo.name} 枚举`);
         lines.push(`/// </summary>`);
-        lines.push(`public enum ${enumInfo.name}`);
+        lines.push(`public enum ${enumInfo.name}${needsLong ? ' : long' : ''}`);
         lines.push('{');
         
         enumInfo.members.forEach((member, index) => {

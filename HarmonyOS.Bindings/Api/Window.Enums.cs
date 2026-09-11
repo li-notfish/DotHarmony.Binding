@@ -102,15 +102,6 @@ public enum WindowAnchor
 }
 
 /// <summary>
-/// ColorSpace 枚举
-/// </summary>
-public enum ColorSpace
-{
-    Default = 0,
-    WideGamut = 1
-}
-
-/// <summary>
 /// RectChangeReason 枚举
 /// </summary>
 public enum RectChangeReason

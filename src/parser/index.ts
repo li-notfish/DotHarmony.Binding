@@ -593,10 +593,60 @@ const PILOT_MODULES = [
     '@ohos.app.ability.appManager',
     '@ohos.app.ability.context',
     '@ohos.notification',
+    // M2.3 第四批：util 容器 / 事件 / 资源 / 数据（2026-09-12）
+    '@ohos.util',
+    '@ohos.util.ArrayList',
+    '@ohos.util.Deque',
+    '@ohos.util.HashMap',
+    '@ohos.util.Stack',
+    '@ohos.util.TreeMap',
+    '@ohos.util.Queue',
+    '@ohos.util.List',
+    '@ohos.util.HashSet',
+    '@ohos.util.LightWeightMap',
+    '@ohos.events.emitter',
+    '@ohos.commonEventManager',
+    '@ohos.resourceManager',
+    '@ohos.taskpool',
+    '@ohos.worker',
+    '@ohos.data.relationalStore',
+    '@ohos.data.dataSharePredicates',
+    '@ohos.file.hash',
+    '@ohos.file.statvfs',
+    '@ohos.file.securityLabel',
+    '@ohos.multimedia.audio',
+    '@ohos.graphics.displaySync',
+    '@ohos.graphics.colorSpaceManager',
+    '@ohos.screenLock',
+    '@ohos.accounts.osAccount',
+    '@ohos.application.formBindingData',
+    '@ohos.application.formProvider',
+    '@ohos.convertxml',
+    '@ohos.zlib',
 ]
 
 /** 全局枚举名去重（processFullSDK 作用域内） */
 const writtenEnumNames = new Set<string>();
+
+/**
+ * 手写 Nodes/*.cs 在 HarmonyOS.ArkUI 命名空间已占用的类型名。
+ * 生成枚举撞名时加模块前缀（如 relationalStore.Progress → RelationalStoreProgress），
+ * 否则 CS0101（生成产物与手写代码同命名空间）。
+ */
+const ARKUI_RESERVED_NAMES: ReadonlySet<string> = (() => {
+    const names = new Set<string>();
+    try {
+        const nodesDir = path.join(__dirname, '../../HarmonyOS.Bindings/Nodes');
+        for (const f of fs.readdirSync(nodesDir)) {
+            if (!f.endsWith('.cs')) continue;
+            const src = fs.readFileSync(path.join(nodesDir, f), 'utf-8');
+            for (const m of src.matchAll(/\b(?:enum|class|struct|interface)\s+(\w+)/g)) {
+                names.add(m[1]);
+            }
+        }
+    } catch { /* Nodes 目录不存在时跳过（测试环境） */ }
+    return names;
+})();
 
 /** 从生成的 C# 枚举代码中提取枚举名 */
 function extractEnumNamesFromCode(code: string): string[] {
@@ -663,12 +713,15 @@ export async function processFullSDK(sdkArg?: string): Promise<void> {
             const newEnums = result.enums.filter(e => !writtenEnumNames.has(e.name));
             newEnums.forEach(e => writtenEnumNames.add(e.name));
 
+            // 枚举撞手写 Nodes 类型名 → 加模块前缀，映射与写盘保持一致
+            const fixEnumName = (e: EnumInfo) =>
+                ARKUI_RESERVED_NAMES.has(e.name) ? { ...e, name: `${moduleInfo.className}${e.name}` } : e;
             const gen = apiGen.generate(
                 result.component,
                 moduleInfo,
                 permissions,
-                newEnums,
-                result.enums
+                newEnums.map(fixEnumName),
+                result.enums.map(fixEnumName)
             );
 
             const csPath = path.join(apiOutputDir, `${gen.className}.cs`);
@@ -886,6 +939,12 @@ const APPROVED_MODULES = new Set([
     'InputMethod','Hilog','HiAppEvent','I18n','Intl','Mediaquery','Screen',
     'Font','Measure','Uri','Url','Matrix4','Curves','WebSocket','Socket',
     'DataShare','BundleManager','AppManager','Notification',
+    // M2.3 第四批转正候选
+    'Util','ArrayList','Deque','HashMap','Stack','TreeMap','Queue','List',
+    'HashSet','LightWeightMap','Emitter','CommonEventManager','ResourceManager',
+    'Taskpool','Worker','RelationalStore','DataSharePredicates','Hash','Statvfs',
+    'SecurityLabel','Audio','DisplaySync','ColorSpaceManager','ScreenLock',
+    'OsAccount','FormBindingData','FormProvider','Convertxml','Zlib',
 ]);
 
 

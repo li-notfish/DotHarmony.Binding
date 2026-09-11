@@ -603,7 +603,8 @@ export class ApiGenerator {
         }
         this.emitEventMembers(lines, events, false,
             new Set(members.map(m => m.pascalName)),
-            new Set(members.map(m => `_${m.rawName}`)));
+            new Set(members.map(m => `_${m.rawName}`)),
+            new Set(members.filter(m => !m.isProperty).map(m => `${m.pascalName}(${m.params.map(p => p.type).join(',')})`)));
         lines.push('}');
         lines.push('');
         void component;
@@ -794,7 +795,7 @@ export class ApiGenerator {
             ...methods.filter(m => m.name !== '__call__').map(m => toPascalCase(m.name)),
         ]);
         this.emitEventMembers(lines, wrapperEvents, true, takenNames,
-            new Set([...u8Names].map(n => `_${n}`)));
+            new Set([...u8Names].map(n => `_${n}`)), generatedSigs);
 
         lines.push('}');
         lines.push('');
@@ -1077,7 +1078,7 @@ export class ApiGenerator {
      * 生成类型化 On/Off/Once 方法与 .NET event 访问器（模块类 static / 包装类 instance）。
      * on/off 的 JS 函数实例经 EventListenerRegistry 配对，保证 off 传入同一 JS 函数。
      */
-    private emitEventMembers(lines: string[], infos: EventEmitInfo[], instance: boolean, takenNames: Set<string> = new Set(), existingU8Names: Set<string> = new Set()): void {
+    private emitEventMembers(lines: string[], infos: EventEmitInfo[], instance: boolean, takenNames: Set<string> = new Set(), existingU8Names: Set<string> = new Set(), existingSigs: Set<string> = new Set()): void {
         if (infos.length === 0) return;
 
         // 类里可能只有 on 没有 off（如 NetConnection）——补齐缺失的方法名 u8 常量。
@@ -1102,33 +1103,45 @@ export class ApiGenerator {
         const call = (fnU8: string, args: string) =>
             `NodeApi.CallMethodVoid(${target}, ${fnU8}${args ? `, ${args}` : ''})`;
 
-        // 类型化 On/Off/Once（按签名去重）
+        // 类型化 On/Off/Once（按签名去重；与普通成员发射的签名也要去重——CS0111 不看参数名）
         const seen = new Set<string>();
         let offAllEmitted = false;
         for (const info of infos) {
             const fn = info.fnName;
+            const fnPascal = toPascalCase(fn);
             const action = this.actionType(info.callbackArgs);
-            const extra = info.extraParams.length > 0
-                ? ', ' + info.extraParams.map(p => this.formatParameter(p)).join(', ') : '';
-            const extraArgs = info.extraParams.length > 0
-                ? ', ' + info.extraParams.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ') : '';
+            // extra 参数与事件键/callback 撞名时改名（如 relationalStore off 的第二个 type 参数）
+            const extraParams = info.extraParams.map(p => {
+                const name = TypeMapper.escapeCSharpKeyword(p.name);
+                return (name === 'type' || name === 'callback') ? { ...p, name: `${name}2` } : p;
+            });
+            const extra = extraParams.length > 0
+                ? ', ' + extraParams.map(p => this.formatParameter(p)).join(', ') : '';
+            const extraArgs = extraParams.length > 0
+                ? ', ' + extraParams.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ') : '';
             const mod = instance ? '' : 'static ';
-            const sigKey = `${fn}|${action}|${extra}`;
+            const extraTypes = extraParams.map(p => p.type).join(',');
+            const sigKey = `${fn}|${info.typeParamCs}|${action}|${extraTypes}`;
             if (seen.has(sigKey)) continue;
             seen.add(sigKey);
+            const csSig = `${fnPascal}(${[info.typeParamCs, action, ...extraParams.map(p => p.type)].filter(t => t !== '').join(',')})`;
+            if (existingSigs.has(csSig)) continue;
 
             if (fn === 'off') {
-                // Off(type) 移除该事件全部 JS 监听（与回调形状无关，只发射一次）
+                // Off(type) 移除该事件全部 JS 监听（与回调形状无关，只发射一次；
+                // 若普通成员已发射同签名方法（如 off(type: string) 无回调重载）则跳过）
                 if (!offAllEmitted) {
                     offAllEmitted = true;
-                    lines.push('    /// <summary>');
-                    lines.push(`    /// off(type)：移除该事件类型的全部回调`);
-                    lines.push('    /// </summary>');
-                    lines.push(`    public ${mod}void Off(${info.typeParamCs} type)`);
-                    lines.push('    {');
-                    lines.push(`        ${call('_off', 'type')};`);
-                    lines.push('    }');
-                    lines.push('');
+                    if (!existingSigs.has(`${fnPascal}(${info.typeParamCs})`)) {
+                        lines.push('    /// <summary>');
+                        lines.push(`    /// off(type)：移除该事件类型的全部回调`);
+                        lines.push('    /// </summary>');
+                        lines.push(`    public ${mod}void Off(${info.typeParamCs} type)`);
+                        lines.push('    {');
+                        lines.push(`        ${call('_off', 'type')};`);
+                        lines.push('    }');
+                        lines.push('');
+                    }
                 }
                 lines.push('    /// <summary>');
                 lines.push(`    /// off(type, callback)：解除订阅（按 handler 匹配）`);

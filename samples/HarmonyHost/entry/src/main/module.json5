@@ -18,6 +18,14 @@
         }
       },
       {
+        "name": "ohos.permission.ACCESS_NOTIFICATION_POLICY",
+        "reason": "$string:permission_ACCESS_NOTIFICATION_POLICY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
         "name": "ohos.permission.ACCESS_VIRTUAL_SCREEN",
         "reason": "$string:permission_ACCESS_VIRTUAL_SCREEN_reason",
         "usedScene": {
@@ -44,6 +52,14 @@
       {
         "name": "ohos.permission.CAMERA",
         "reason": "$string:permission_CAMERA_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.CAPTURE_VOICE_DOWNLINK_AUDIO",
+        "reason": "$string:permission_CAPTURE_VOICE_DOWNLINK_AUDIO_reason",
         "usedScene": {
           "abilities": ["EntryAbility"],
           "when": "always"
@@ -186,6 +202,14 @@
         }
       },
       {
+        "name": "ohos.permission.MANAGE_AUDIO_CONFIG",
+        "reason": "$string:permission_MANAGE_AUDIO_CONFIG_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
         "name": "ohos.permission.MANAGE_PASTEBOARD_APP_SHARE_OPTION",
         "reason": "$string:permission_MANAGE_PASTEBOARD_APP_SHARE_OPTION_reason",
         "usedScene": {
@@ -228,6 +252,14 @@
       {
         "name": "ohos.permission.MICROPHONE",
         "reason": "$string:permission_MICROPHONE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MODIFY_AUDIO_SETTINGS",
+        "reason": "$string:permission_MODIFY_AUDIO_SETTINGS_reason",
         "usedScene": {
           "abilities": ["EntryAbility"],
           "when": "always"
