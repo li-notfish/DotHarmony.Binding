@@ -398,9 +398,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// dup
     /// </summary>
-    public static IntPtr Dup(double fd)
+    public static FsFile Dup(double fd)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _dup, fd);
+        return NodeApi.CallMethod(Module, _dup, static h => new FsFile(h), fd);
     }
 
     /// <summary>
@@ -630,25 +630,25 @@ public static unsafe partial class Fs
     /// <summary>
     /// open
     /// </summary>
-    public static Task<IntPtr> OpenAsync(string path, double? mode = null)
+    public static Task<FsFile> OpenAsync(string path, double? mode = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _open, path, mode);
+        return NodeApi.CallMethodAsync(Module, _open, static h => new FsFile(h), path, mode);
     }
 
     /// <summary>
     /// open
     /// </summary>
-    public static Task<File> OpenAsync(string path)
+    public static Task<FsFile> OpenAsync(string path)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _open, static h => new File(h), path);
+        return NodeApi.CallMethodAsyncCallback(Module, _open, static h => new FsFile(h), path);
     }
 
     /// <summary>
     /// openSync
     /// </summary>
-    public static IntPtr OpenSync(string path, double? mode = null)
+    public static FsFile OpenSync(string path, double? mode = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _openSync, path, mode);
+        return NodeApi.CallMethod(Module, _openSync, static h => new FsFile(h), path, mode);
     }
 
     /// <summary>
@@ -1092,64 +1092,12 @@ public sealed partial class WatchEventListener : JsObject
 }
 
 /// <summary>
-/// ListFileOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record ListFileOptions(
-    bool? Recursion = null,
-    double? ListNum = null,
-    Filter? Filter = null
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _recursion = System.Text.Encoding.UTF8.GetBytes("recursion");
-        var _recursionV = NativeValue.From(Recursion);
-        if (_recursionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _recursion, _recursionV);
-        var _listNum = System.Text.Encoding.UTF8.GetBytes("listNum");
-        var _listNumV = NativeValue.From(ListNum);
-        if (_listNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _listNum, _listNumV);
-        var _filter = System.Text.Encoding.UTF8.GetBytes("filter");
-        var _filterV = NativeValue.From(Filter);
-        if (_filterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filter, _filterV);
-    }
-}
-
-/// <summary>
-/// ListFileExtOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record ListFileExtOptions(
-    bool? Recursion = null,
-    double? ListNum = null,
-    FileFilter? FileFilter = null
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _recursion = System.Text.Encoding.UTF8.GetBytes("recursion");
-        var _recursionV = NativeValue.From(Recursion);
-        if (_recursionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _recursion, _recursionV);
-        var _listNum = System.Text.Encoding.UTF8.GetBytes("listNum");
-        var _listNumV = NativeValue.From(ListNum);
-        if (_listNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _listNum, _listNumV);
-        var _fileFilter = System.Text.Encoding.UTF8.GetBytes("fileFilter");
-        var _fileFilterV = NativeValue.From(FileFilter);
-        if (_fileFilterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileFilter, _fileFilterV);
-    }
-}
-
-/// <summary>
 /// File 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class File : JsObject
+public sealed partial class FsFile : JsObject
 {
-    public File(IntPtr handle) : base(handle) { }
+    public FsFile(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _fd => "fd"u8;
     private static ReadOnlySpan<byte> _path => "path"u8;
     private static ReadOnlySpan<byte> _name => "name"u8;
@@ -1212,6 +1160,58 @@ public sealed partial class File : JsObject
         CallMethodVoid(_unlock);
     }
 
+}
+
+/// <summary>
+/// ListFileOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ListFileOptions(
+    bool? Recursion = null,
+    double? ListNum = null,
+    FsFilter? Filter = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _recursion = System.Text.Encoding.UTF8.GetBytes("recursion");
+        var _recursionV = NativeValue.From(Recursion);
+        if (_recursionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _recursion, _recursionV);
+        var _listNum = System.Text.Encoding.UTF8.GetBytes("listNum");
+        var _listNumV = NativeValue.From(ListNum);
+        if (_listNumV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _listNum, _listNumV);
+        var _filter = System.Text.Encoding.UTF8.GetBytes("filter");
+        var _filterV = NativeValue.From(Filter);
+        if (_filterV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _filter, _filterV);
+    }
+}
+
+/// <summary>
+/// ListFileExtOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ListFileExtOptions(
+    bool? Recursion = null,
+    double? ListNum = null,
+    FileFilter? FileFilter = null
+) : INapiRecord
+{
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _recursion = System.Text.Encoding.UTF8.GetBytes("recursion");
+        var _recursionV = NativeValue.From(Recursion);
+        if (_recursionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _recursion, _recursionV);
+        var _listNum = System.Text.Encoding.UTF8.GetBytes("listNum");
+        var _listNumV = NativeValue.From(ListNum);
+        if (_listNumV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _listNum, _listNumV);
+        var _fileFilter = System.Text.Encoding.UTF8.GetBytes("fileFilter");
+        var _fileFilterV = NativeValue.From(FileFilter);
+        if (_fileFilterV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fileFilter, _fileFilterV);
+    }
 }
 
 /// <summary>
@@ -1449,9 +1449,9 @@ public sealed partial class AtomicFile : JsObject
     /// <summary>
     /// getBaseFile
     /// </summary>
-    public File GetBaseFile()
+    public FsFile GetBaseFile()
     {
-        return CallMethod(_getBaseFile, static h => new File(h));
+        return CallMethod(_getBaseFile, static h => new FsFile(h));
     }
 
     /// <summary>
@@ -1533,7 +1533,7 @@ public sealed record WatchEvent(
 /// <summary>
 /// Filter（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record Filter(
+public sealed record FsFilter(
     string[]? Suffix = null,
     string[]? DisplayName = null,
     string[]? MimeType = null,

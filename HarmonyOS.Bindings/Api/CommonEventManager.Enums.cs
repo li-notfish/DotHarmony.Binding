@@ -5,9 +5,9 @@ using System.ComponentModel;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// Support 枚举
+/// CommonEventManagerSupport 枚举
 /// </summary>
-public enum Support
+public enum CommonEventManagerSupport
 {
     [Description("usual.event.BOOT_COMPLETED")]
     CommonEventBootCompleted,

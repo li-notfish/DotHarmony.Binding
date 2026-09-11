@@ -16,6 +16,16 @@ public enum CameraStatus
 }
 
 /// <summary>
+/// CameraFoldStatus 枚举
+/// </summary>
+public enum CameraFoldStatus
+{
+    NonFoldable = 0,
+    Expanded = 1,
+    Folded = 2
+}
+
+/// <summary>
 /// SensorColorFilterArrangement 枚举
 /// </summary>
 public enum SensorColorFilterArrangement

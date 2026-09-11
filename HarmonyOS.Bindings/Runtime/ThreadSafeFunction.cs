@@ -18,6 +18,7 @@ internal sealed class ThreadSafeFunction : IDisposable
     private IntPtr _tsfnHandle;
     private GCHandle _gch;
     private bool _disposed;
+    private readonly object _sync = new();
 
     private ThreadSafeFunction() { }
 
@@ -33,6 +34,9 @@ internal sealed class ThreadSafeFunction : IDisposable
         ReadOnlySpan<byte> resourceNameBytes = "ThreadSafeFunction"u8;
         NativeNodeApi.napi_create_string_utf8(env, resourceNameBytes, (IntPtr)resourceNameBytes.Length, out var resourceName).ThrowIfFailed();
 
+        // GCHandle 在 finalize 回调（TSFN 真正销毁、队列清空之后）释放，
+        // 而不是 Release/Abort 时——abort 后已入队的消息仍会派发到 CallJsTrampoline，
+        // 过早释放 GCHandle 会 UAF。
         NativeNodeApi.napi_create_threadsafe_function(
             env,
             func: default,
@@ -40,8 +44,8 @@ internal sealed class ThreadSafeFunction : IDisposable
             async_resource_name: resourceName,
             max_queue_size: (IntPtr)0,
             initial_thread_count: (IntPtr)1,
-            thread_finalize_data: IntPtr.Zero,
-            thread_finalize_callback: IntPtr.Zero,
+            thread_finalize_data: GCHandle.ToIntPtr(tsfn._gch),
+            thread_finalize_callback: FinalizeTrampolinePtr,
             context: GCHandle.ToIntPtr(tsfn._gch),
             call_js: GetCallJsTrampoline(),
             out var tsfnHandle).ThrowIfFailed();
@@ -64,9 +68,13 @@ internal sealed class ThreadSafeFunction : IDisposable
     /// </summary>
     public void Call(IntPtr data)
     {
-        ThrowIfDisposed();
-        NativeNodeApi.napi_call_threadsafe_function(_tsfnHandle, data,
-            NativeNodeApi.napi_threadsafe_function_call_mode.napi_tsfn_nonblocking).ThrowIfFailed();
+        // 与 Release/Abort 互斥：句柄在本机调用期间保持有效
+        lock (_sync)
+        {
+            ThrowIfDisposed();
+            NativeNodeApi.napi_call_threadsafe_function(_tsfnHandle, data,
+                NativeNodeApi.napi_threadsafe_function_call_mode.napi_tsfn_nonblocking).ThrowIfFailed();
+        }
     }
 
     /// <summary>
@@ -74,19 +82,13 @@ internal sealed class ThreadSafeFunction : IDisposable
     /// </summary>
     public void Release()
     {
-        if (_disposed) return;
-        _disposed = true;
-
-        if (_tsfnHandle != IntPtr.Zero)
+        lock (_sync)
         {
-            NativeNodeApi.napi_release_threadsafe_function(
-                _tsfnHandle,
-                NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_release);
-            _tsfnHandle = IntPtr.Zero;
+            if (_disposed) return;
+            _disposed = true;
+            ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_release);
         }
-
-        if (_gch.IsAllocated)
-            _gch.Free();
+        // GCHandle 由 FinalizeTrampoline 释放（勿在此 Free——见 Create 注释）
     }
 
     /// <summary>
@@ -94,19 +96,21 @@ internal sealed class ThreadSafeFunction : IDisposable
     /// </summary>
     public void Abort()
     {
-        if (_disposed) return;
-        _disposed = true;
+        lock (_sync)
+        {
+            if (_disposed) return;
+            _disposed = true;
+            ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_abort);
+        }
+    }
 
+    private void ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode mode)
+    {
         if (_tsfnHandle != IntPtr.Zero)
         {
-            NativeNodeApi.napi_release_threadsafe_function(
-                _tsfnHandle,
-                NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_abort);
+            NativeNodeApi.napi_release_threadsafe_function(_tsfnHandle, mode);
             _tsfnHandle = IntPtr.Zero;
         }
-
-        if (_gch.IsAllocated)
-            _gch.Free();
     }
 
     public void Dispose() => Release();
@@ -129,11 +133,30 @@ internal sealed class ThreadSafeFunction : IDisposable
     private static void CallJsTrampoline(IntPtr env, IntPtr js_callback, IntPtr context, IntPtr data)
     {
         // TSFN 回调：libuv 在 JS 线程上触发。context = Create() 里存的 GCHandle<ThreadSafeFunction>。
-        if (context == IntPtr.Zero)
-            return;
-        var handle = GCHandle.FromIntPtr(context);
-        if (handle.Target is not ThreadSafeFunction tsfn)
-            return;
-        tsfn.OnCallJs?.Invoke(data);
+        // finalize（释放 GCHandle）必然晚于最后一次本回调，FromIntPtr 恒有效。
+        try
+        {
+            if (context == IntPtr.Zero)
+                return;
+            var handle = GCHandle.FromIntPtr(context);
+            if (handle.Target is not ThreadSafeFunction tsfn)
+                return;
+            tsfn.OnCallJs?.Invoke(data);
+        }
+        catch (Exception ex)
+        {
+            // 异常不得穿透回原生帧（会终止进程）
+            HiLog.Error("TSFN", $"CallJs callback failed: {ex}");
+        }
+    }
+
+    private static readonly IntPtr FinalizeTrampolinePtr =
+        (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr, void>)&FinalizeTrampoline;
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static void FinalizeTrampoline(IntPtr env, IntPtr finalizeData, IntPtr finalizeHint)
+    {
+        if (finalizeData != IntPtr.Zero)
+            GCHandle.FromIntPtr(finalizeData).Free();
     }
 }

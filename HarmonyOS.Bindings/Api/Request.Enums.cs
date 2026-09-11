@@ -5,9 +5,9 @@ using System.ComponentModel;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// Action 枚举
+/// RequestAction 枚举
 /// </summary>
-public enum Action
+public enum RequestAction
 {
     Download,
     Upload
@@ -42,9 +42,9 @@ public enum BroadcastEvent
 }
 
 /// <summary>
-/// State 枚举
+/// RequestState 枚举
 /// </summary>
-public enum State
+public enum RequestState
 {
     Initialized = 0,
     Waiting = 16,

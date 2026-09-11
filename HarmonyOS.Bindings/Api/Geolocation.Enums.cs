@@ -3,9 +3,9 @@ using System;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// LocationRequestPriority 枚举
+/// GeolocationLocationRequestPriority 枚举
 /// </summary>
-public enum LocationRequestPriority
+public enum GeolocationLocationRequestPriority
 {
     Unset = 512,
     Accuracy,
@@ -14,9 +14,9 @@ public enum LocationRequestPriority
 }
 
 /// <summary>
-/// LocationRequestScenario 枚举
+/// GeolocationLocationRequestScenario 枚举
 /// </summary>
-public enum LocationRequestScenario
+public enum GeolocationLocationRequestScenario
 {
     Unset = 768,
     Navigation,

@@ -148,17 +148,17 @@ public static unsafe partial class Radio
     /// <summary>
     /// getSignalInformation
     /// </summary>
-    public static Task<SignalInformation[]> GetSignalInformationAsync(double slotId)
+    public static Task<IntPtr[]> GetSignalInformationAsync(double slotId)
     {
-        return NodeApi.CallMethodAsync(Module, _getSignalInformation, h => ValueConverter.ConvertArray(h, static e => new SignalInformation(e)), slotId);
+        return NodeApi.CallMethodAsync(Module, _getSignalInformation, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), slotId);
     }
 
     /// <summary>
     /// getSignalInformationSync
     /// </summary>
-    public static SignalInformation[] GetSignalInformationSync(double slotId)
+    public static IntPtr[] GetSignalInformationSync(double slotId)
     {
-        return NodeApi.CallMethod(Module, _getSignalInformationSync, h => ValueConverter.ConvertArray(h, static e => new SignalInformation(e)), slotId);
+        return NodeApi.CallMethod(Module, _getSignalInformationSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), slotId);
     }
 
     /// <summary>
@@ -292,32 +292,5 @@ public sealed partial class NetworkState : JsObject
     /// isEmergency
     /// </summary>
     public bool IsEmergency => NativeValue.ToBool(GetPropertyRaw(_isEmergency));
-
-}
-
-/// <summary>
-/// SignalInformation 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class SignalInformation : JsObject
-{
-    public SignalInformation(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _signalType => "signalType"u8;
-    private static ReadOnlySpan<byte> _signalLevel => "signalLevel"u8;
-    private static ReadOnlySpan<byte> _dBm => "dBm"u8;
-    /// <summary>
-    /// signalType
-    /// </summary>
-    public global::HarmonyOS.ArkUI.NetworkType SignalType => (global::HarmonyOS.ArkUI.NetworkType)NativeValue.ToInt(GetPropertyRaw(_signalType));
-
-    /// <summary>
-    /// signalLevel
-    /// </summary>
-    public double SignalLevel => NativeValue.ToDouble(GetPropertyRaw(_signalLevel));
-
-    /// <summary>
-    /// dBm
-    /// </summary>
-    public double DBm => NativeValue.ToDouble(GetPropertyRaw(_dBm));
 
 }

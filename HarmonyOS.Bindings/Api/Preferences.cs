@@ -96,7 +96,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// getPreferences
     /// </summary>
-    public static Task<PreferencesObject> GetPreferencesAsync(IntPtr context, Options options)
+    public static Task<PreferencesObject> GetPreferencesAsync(IntPtr context, PreferencesOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _getPreferences, static h => new PreferencesObject(h), context, options);
     }
@@ -104,7 +104,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// getPreferencesSync
     /// </summary>
-    public static PreferencesObject GetPreferencesSync(IntPtr context, Options options)
+    public static PreferencesObject GetPreferencesSync(IntPtr context, PreferencesOptions options)
     {
         return NodeApi.CallMethod(Module, _getPreferencesSync, static h => new PreferencesObject(h), context, options);
     }
@@ -128,7 +128,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// deletePreferences
     /// </summary>
-    public static Task DeletePreferencesAsync(IntPtr context, Options options)
+    public static Task DeletePreferencesAsync(IntPtr context, PreferencesOptions options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, context, options);
     }
@@ -144,7 +144,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// removePreferencesFromCache
     /// </summary>
-    public static Task RemovePreferencesFromCacheAsync(IntPtr context, Options options)
+    public static Task RemovePreferencesFromCacheAsync(IntPtr context, PreferencesOptions options)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, context, options);
     }
@@ -160,7 +160,7 @@ public static unsafe partial class Preferences
     /// <summary>
     /// removePreferencesFromCacheSync
     /// </summary>
-    public static void RemovePreferencesFromCacheSync(IntPtr context, Options options)
+    public static void RemovePreferencesFromCacheSync(IntPtr context, PreferencesOptions options)
     {
         NodeApi.CallMethodVoid(Module, _removePreferencesFromCacheSync, context, options);
     }
@@ -193,17 +193,17 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// get
     /// </summary>
-    public Task<IntPtr> GetAsync(string key, IntPtr defValue)
+    public Task<global::HarmonyOS.ArkUI.ValueType> GetAsync(string key, global::HarmonyOS.ArkUI.ValueType defValue)
     {
-        return CallMethodAsync<IntPtr>(_get, key, defValue);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_get, key, defValue);
     }
 
     /// <summary>
     /// getSync
     /// </summary>
-    public IntPtr GetSync(string key, IntPtr defValue)
+    public global::HarmonyOS.ArkUI.ValueType GetSync(string key, global::HarmonyOS.ArkUI.ValueType defValue)
     {
-        return CallMethod<IntPtr>(_getSync, key, defValue);
+        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_getSync, key, defValue);
     }
 
     /// <summary>
@@ -241,7 +241,7 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// put
     /// </summary>
-    public Task PutAsync(string key, IntPtr value)
+    public Task PutAsync(string key, global::HarmonyOS.ArkUI.ValueType value)
     {
         return CallMethodAsyncVoid(_put, key, value);
     }
@@ -249,7 +249,7 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// putSync
     /// </summary>
-    public void PutSync(string key, IntPtr value)
+    public void PutSync(string key, global::HarmonyOS.ArkUI.ValueType value)
     {
         CallMethodVoid(_putSync, key, value);
     }
@@ -436,7 +436,7 @@ public sealed partial class PreferencesObject : JsObject
 /// <summary>
 /// Options（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record Options(
+public sealed record PreferencesOptions(
     string Name,
     string? DataGroupId = null,
     global::HarmonyOS.ArkUI.StorageType? StorageType = null

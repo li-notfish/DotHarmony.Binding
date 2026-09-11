@@ -135,7 +135,7 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// <summary>
     /// dispatchEvent
     /// </summary>
-    public bool DispatchEvent(Event @event)
+    public bool DispatchEvent(WorkerEvent @event)
     {
         return CallMethod<bool>(_dispatchEvent, @event);
     }
@@ -247,7 +247,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// <summary>
     /// dispatchEvent
     /// </summary>
-    public bool DispatchEvent(Event @event)
+    public bool DispatchEvent(WorkerEvent @event)
     {
         return CallMethod<bool>(_dispatchEvent, @event);
     }
@@ -439,7 +439,7 @@ public sealed partial class ThreadWorker : JsObject
     /// <summary>
     /// dispatchEvent
     /// </summary>
-    public bool DispatchEvent(Event @event)
+    public bool DispatchEvent(WorkerEvent @event)
     {
         return CallMethod<bool>(_dispatchEvent, @event);
     }
@@ -658,7 +658,7 @@ public sealed partial class EventListener : JsObject
 /// <summary>
 /// Event（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record Event(
+public sealed record WorkerEvent(
     string Type,
     double TimeStamp
 ) : INapiRecord

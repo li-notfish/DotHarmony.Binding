@@ -131,9 +131,9 @@ public static unsafe partial class I18n
     /// <summary>
     /// getCalendar
     /// </summary>
-    public static Calendar GetCalendar(string locale, string? type = null)
+    public static I18nCalendar GetCalendar(string locale, string? type = null)
     {
-        return NodeApi.CallMethod(Module, _getCalendar, static h => new Calendar(h), locale, type);
+        return NodeApi.CallMethod(Module, _getCalendar, static h => new I18nCalendar(h), locale, type);
     }
 
     /// <summary>
@@ -254,9 +254,9 @@ public static unsafe partial class I18n
 /// Calendar 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class Calendar : JsObject
+public sealed partial class I18nCalendar : JsObject
 {
-    public Calendar(IntPtr handle) : base(handle) { }
+    public I18nCalendar(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _setTime => "setTime"u8;
     private static ReadOnlySpan<byte> _set => "set"u8;
     private static ReadOnlySpan<byte> _setTimeZone => "setTimeZone"u8;

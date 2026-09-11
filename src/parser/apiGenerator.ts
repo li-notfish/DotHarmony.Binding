@@ -75,6 +75,9 @@ function isValidCSharpName(tsName: string): boolean {
 
 const PRIMITIVE_TYPES = new Set(['bool', 'double', 'float', 'int', 'uint', 'long', 'byte', 'string', 'IntPtr']);
 
+/** 全量生成时预登记的所有模块类名：实例类型与任何模块类同名时追加 Object 后缀（避免撞静态类） */
+export const reservedModuleClassNames: Set<string> = new Set();
+
 export class ApiGenerator {
     private enumGenerator: EnumGenerator;
     private enumNames = new Set<string>();
@@ -123,7 +126,8 @@ export class ApiGenerator {
         moduleInfo: { module: string; className: string; local: string },
         permissions: string[],
         enums: EnumInfo[],
-        allEnums: EnumInfo[] = enums
+        allEnums: EnumInfo[] = enums,
+        importedTypeNames: ReadonlySet<string> = new Set()
     ): ApiGenResult {
         this.moduleClassName = moduleInfo.className;
         // 枚举类型引用一律全限定，避免与 System.* 同名类型（如 Action）冲突（CS0104）
@@ -134,6 +138,17 @@ export class ApiGenerator {
         // 1. 登记映射：枚举（全部参与映射，去重只影响 Enums.cs 写盘）+ 实例类型
         for (const e of allEnums) {
             TypeMapper.addMapping(e.name, `global::HarmonyOS.ArkUI.${e.name}`);
+        }
+        // 本模块未定义的跨模块导入类型 → IntPtr 句柄（映射注册顺序保证自有类型优先）
+        const ownTypeNames = new Set<string>([
+            ...allEnums.map(e => e.name),
+            ...component.interfaces.map(i => i.name),
+            ...component.classes.map(c => c.name),
+        ]);
+        for (const n of importedTypeNames) {
+            if (!ownTypeNames.has(n)) {
+                TypeMapper.addMapping(n, 'IntPtr');
+            }
         }
         for (const iface of component.interfaces) {
             if (iface.typeParameters && iface.typeParameters.length > 0) continue; // 泛型接口不包装
@@ -203,7 +218,8 @@ export class ApiGenerator {
     // ---------- 映射登记 ----------
 
     private registerSpec(tsName: string, kind: 'wrapper' | 'record', iface?: InterfaceInfo, cls?: ClassInfo): void {
-        let csharp = (tsName === this.moduleClassName || FORBIDDEN_CSHARP_NAMES.has(tsName))
+        let csharp = (tsName === this.moduleClassName || FORBIDDEN_CSHARP_NAMES.has(tsName)
+            || reservedModuleClassNames.has(tsName))
             ? `${tsName}Object` : tsName;
         const owner = takenTypeNames.get(csharp);
         if (owner !== undefined && owner !== this.moduleClassName) {

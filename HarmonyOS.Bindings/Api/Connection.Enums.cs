@@ -3,92 +3,75 @@ using System;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// TcpState 枚举
+/// BluetoothTransport 枚举
 /// </summary>
-public enum TcpState
+public enum BluetoothTransport
 {
-    TcpEstablished = 1,
-    TcpSynSent = 2,
-    TcpSynRecv = 3,
-    TcpFinWait1 = 4,
-    TcpFinWait2 = 5,
-    TcpTimeWait = 6,
-    TcpClose = 7,
-    TcpCloseWait = 8,
-    TcpLastAck = 9,
-    TcpListen = 10,
-    TcpClosing = 11
+    TransportBrEdr = 0,
+    TransportLe = 1,
+    TransportDual = 2,
+    TransportUnknown = 3
 }
 
 /// <summary>
-/// ConversionProcess 枚举
+/// ScanMode 枚举
 /// </summary>
-public enum ConversionProcess
+public enum ScanMode
 {
-    NoConfiguration = 0,
-    AllowUnassigned = 1,
-    UseStd3AsciiRules = 2
+    ScanModeNone = 0,
+    ScanModeConnectable = 1,
+    ScanModeGeneralDiscoverable = 2,
+    ScanModeLimitedDiscoverable = 3,
+    ScanModeConnectableGeneralDiscoverable = 4,
+    ScanModeConnectableLimitedDiscoverable = 5
 }
 
 /// <summary>
-/// FamilyType 枚举
+/// BondState 枚举
 /// </summary>
-public enum FamilyType
+public enum BondState
 {
-    FamilyTypeAll = 0,
-    FamilyTypeIpv4 = 1,
-    FamilyTypeIpv6 = 2
+    BondStateInvalid = 0,
+    BondStateBonding = 1,
+    BondStateBonded = 2
 }
 
 /// <summary>
-/// NetCap 枚举
+/// DeviceChargeState 枚举
 /// </summary>
-public enum NetCap
+public enum DeviceChargeState
 {
-    NetCapabilityMms = 0,
-    NetCapabilityNotMetered = 11,
-    NetCapabilityInternet = 12,
-    NetCapabilityNotVpn = 15,
-    NetCapabilityValidated = 16,
-    NetCapabilityPortal = 17,
-    NetCapabilityCheckingConnectivity = 31
+    DeviceNormalChargeNotCharged = 0,
+    DeviceNormalChargeInCharging = 1,
+    DeviceSuperChargeNotCharged = 2,
+    DeviceSuperChargeInCharging = 3
 }
 
 /// <summary>
-/// NetBearType 枚举
+/// UnbondCause 枚举
 /// </summary>
-public enum NetBearType
+public enum UnbondCause
 {
-    BearerCellular = 0,
-    BearerWifi = 1,
-    BearerBluetooth = 2,
-    BearerEthernet = 3,
-    BearerVpn = 4
+    UserRemoved = 0,
+    RemoteDeviceDown = 1,
+    AuthFailure = 2,
+    AuthRejected = 3,
+    InternalError = 4
 }
 
 /// <summary>
-/// Socks5DnsStrategy 枚举
+/// HashAlgorithmType 枚举
 /// </summary>
-public enum Socks5DnsStrategy
+public enum HashAlgorithmType
 {
-    SystemMode = 0,
-    ProxyMode = 1
+    HashAlgorithmSha256 = 0
 }
 
 /// <summary>
-/// ProtocolType 枚举
+/// AclState 枚举
 /// </summary>
-public enum ProtocolType
+public enum AclState
 {
-    ProtoTypeTcp = 6,
-    ProtoTypeUdp = 17
-}
-
-/// <summary>
-/// PacketsType 枚举
-/// </summary>
-public enum PacketsType
-{
-    NetconnPacketsIcmp = 0,
-    NetconnPacketsUdp = 1
+    StateConnected = 0,
+    StateDisconnected = 1
 }

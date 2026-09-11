@@ -15,6 +15,18 @@ public enum SlotType
 }
 
 /// <summary>
+/// NotificationContentType 枚举
+/// </summary>
+public enum NotificationContentType
+{
+    NotificationContentBasicText,
+    NotificationContentLongText,
+    NotificationContentPicture,
+    NotificationContentConversation,
+    NotificationContentMultiline
+}
+
+/// <summary>
 /// SlotLevel 枚举
 /// </summary>
 public enum SlotLevel

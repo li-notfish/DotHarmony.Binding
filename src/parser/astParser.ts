@@ -334,15 +334,18 @@ export class AstParser {
 
     private parseImport(node: ts.ImportDeclaration): ImportInfo | null {
         const modulePath = node.moduleSpecifier.getText().replace(/['"]/g, '');
-        
-        // 跳过系统导入
-        if (modulePath.startsWith('@ohos.') || modulePath.startsWith('.')) {
-            return null;
-        }
+
+        // './@ohos.xxx' / '@ohos.xxx' 跨模块类型导入也要收集（ApiGenerator 把导入类型降级为
+        // IntPtr）；只有非 SDK 的第三方导入会被记录为依赖
+        const isSdkInternal = modulePath.startsWith('@ohos.') || modulePath.startsWith('.');
 
         const imports: string[] = [];
         let isTypeOnly = !!node.importClause?.isTypeOnly;
 
+        // default 导入（import type Want from './@ohos.app.ability.Want'）同样参与类型解析
+        if (node.importClause?.name) {
+            imports.push(node.importClause.name.getText());
+        }
         if (node.importClause?.namedBindings) {
             if (ts.isNamedImports(node.importClause.namedBindings)) {
                 node.importClause.namedBindings.elements.forEach(element => {
@@ -355,6 +358,7 @@ export class AstParser {
             return null;
         }
 
+        void isSdkInternal; // SDK 内部导入的类型名同样进入 imports（供 ApiGenerator 做 IntPtr 降级）
         return {
             module: modulePath,
             imports,

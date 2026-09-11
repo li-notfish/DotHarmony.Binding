@@ -14,11 +14,12 @@ using HarmonyOS.ArkUI;
 namespace HarmonyOS.Bindings.Api;
 
 /// <summary>
-/// UsbManager 绑定（@ohos.usbManager）。
+/// UsbManager 绑定（@ohos.enterprise.usbManager）。
+/// 所需权限：ohos.permission.ENTERPRISE_MANAGE_USB
 /// </summary>
 public static unsafe partial class UsbManager
 {
-    private const string ModuleName = "@ohos.usbManager";
+    private const string ModuleName = "@ohos.enterprise.usbManager";
 
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
@@ -61,477 +62,196 @@ public static unsafe partial class UsbManager
                 throw new InvalidOperationException(
                     $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
 
-            HiLog.Info("HarmonyHost", $"[usbManager] module loaded via napi_load_module");
+            HiLog.Info("HarmonyHost", $"[enterprise.usbManager] module loaded via napi_load_module");
             return _moduleRef.Value;
         }
     }
 
-    private static ReadOnlySpan<byte> _getDevices => "getDevices"u8;
-    private static ReadOnlySpan<byte> _connectDevice => "connectDevice"u8;
-    private static ReadOnlySpan<byte> _hasRight => "hasRight"u8;
-    private static ReadOnlySpan<byte> _requestRight => "requestRight"u8;
-    private static ReadOnlySpan<byte> _removeRight => "removeRight"u8;
-    private static ReadOnlySpan<byte> _claimInterface => "claimInterface"u8;
-    private static ReadOnlySpan<byte> _releaseInterface => "releaseInterface"u8;
-    private static ReadOnlySpan<byte> _setConfiguration => "setConfiguration"u8;
-    private static ReadOnlySpan<byte> _setInterface => "setInterface"u8;
-    private static ReadOnlySpan<byte> _getRawDescriptor => "getRawDescriptor"u8;
-    private static ReadOnlySpan<byte> _getFileDescriptor => "getFileDescriptor"u8;
-    private static ReadOnlySpan<byte> _controlTransfer => "controlTransfer"u8;
-    private static ReadOnlySpan<byte> _usbControlTransfer => "usbControlTransfer"u8;
-    private static ReadOnlySpan<byte> _bulkTransfer => "bulkTransfer"u8;
-    private static ReadOnlySpan<byte> _resetUsbDevice => "resetUsbDevice"u8;
-    private static ReadOnlySpan<byte> _closePipe => "closePipe"u8;
-    private static ReadOnlySpan<byte> _hasAccessoryRight => "hasAccessoryRight"u8;
-    private static ReadOnlySpan<byte> _requestAccessoryRight => "requestAccessoryRight"u8;
-    private static ReadOnlySpan<byte> _cancelAccessoryRight => "cancelAccessoryRight"u8;
-    private static ReadOnlySpan<byte> _getAccessoryList => "getAccessoryList"u8;
-    private static ReadOnlySpan<byte> _openAccessory => "openAccessory"u8;
-    private static ReadOnlySpan<byte> _closeAccessory => "closeAccessory"u8;
-    private static ReadOnlySpan<byte> _usbSubmitTransfer => "usbSubmitTransfer"u8;
-    private static ReadOnlySpan<byte> _usbCancelTransfer => "usbCancelTransfer"u8;
+    private static ReadOnlySpan<byte> _addAllowedUsbDevices => "addAllowedUsbDevices"u8;
+    private static ReadOnlySpan<byte> _removeAllowedUsbDevices => "removeAllowedUsbDevices"u8;
+    private static ReadOnlySpan<byte> _getAllowedUsbDevices => "getAllowedUsbDevices"u8;
+    private static ReadOnlySpan<byte> _setUsbStorageDeviceAccessPolicy => "setUsbStorageDeviceAccessPolicy"u8;
+    private static ReadOnlySpan<byte> _getUsbStorageDeviceAccessPolicy => "getUsbStorageDeviceAccessPolicy"u8;
+    private static ReadOnlySpan<byte> _addDisallowedUsbDevices => "addDisallowedUsbDevices"u8;
+    private static ReadOnlySpan<byte> _removeDisallowedUsbDevices => "removeDisallowedUsbDevices"u8;
+    private static ReadOnlySpan<byte> _getDisallowedUsbDevices => "getDisallowedUsbDevices"u8;
+    private static ReadOnlySpan<byte> _addDisallowedPermissiveUsbDevices => "addDisallowedPermissiveUsbDevices"u8;
+    private static ReadOnlySpan<byte> _removeDisallowedPermissiveUsbDevices => "removeDisallowedPermissiveUsbDevices"u8;
+    private static ReadOnlySpan<byte> _getDisallowedPermissiveUsbDevices => "getDisallowedPermissiveUsbDevices"u8;
 
     /// <summary>
-    /// getDevices
+    /// addAllowedUsbDevices
     /// </summary>
-    public static IntPtr[] GetDevices()
+    public static void AddAllowedUsbDevices(IntPtr admin, UsbDeviceId[] usbDeviceIds)
     {
-        return NodeApi.CallMethod(Module, _getDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        NodeApi.CallMethodVoid(Module, _addAllowedUsbDevices, admin, usbDeviceIds);
     }
 
     /// <summary>
-    /// connectDevice
+    /// removeAllowedUsbDevices
     /// </summary>
-    public static IntPtr ConnectDevice(IntPtr device)
+    public static void RemoveAllowedUsbDevices(IntPtr admin, UsbDeviceId[] usbDeviceIds)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _connectDevice, device);
+        NodeApi.CallMethodVoid(Module, _removeAllowedUsbDevices, admin, usbDeviceIds);
     }
 
     /// <summary>
-    /// hasRight
+    /// getAllowedUsbDevices
     /// </summary>
-    public static bool HasRight(string deviceName)
+    public static UsbDeviceId[] GetAllowedUsbDevices(IntPtr admin)
     {
-        return NodeApi.CallMethod<bool>(Module, _hasRight, deviceName);
+        return NodeApi.CallMethod(Module, _getAllowedUsbDevices, h => ValueConverter.ConvertArray(h, static e => new UsbDeviceId(e)), admin);
     }
 
     /// <summary>
-    /// requestRight
+    /// setUsbStorageDeviceAccessPolicy
     /// </summary>
-    public static Task<bool> RequestRightAsync(string deviceName)
+    public static void SetUsbStorageDeviceAccessPolicy(IntPtr admin, global::HarmonyOS.ArkUI.UsbPolicy usbPolicy)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _requestRight, deviceName);
+        NodeApi.CallMethodVoid(Module, _setUsbStorageDeviceAccessPolicy, admin, usbPolicy);
     }
 
     /// <summary>
-    /// removeRight
+    /// getUsbStorageDeviceAccessPolicy
     /// </summary>
-    public static bool RemoveRight(string deviceName)
+    public static global::HarmonyOS.ArkUI.UsbPolicy GetUsbStorageDeviceAccessPolicy(IntPtr admin)
     {
-        return NodeApi.CallMethod<bool>(Module, _removeRight, deviceName);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.UsbPolicy>(Module, _getUsbStorageDeviceAccessPolicy, admin);
     }
 
     /// <summary>
-    /// claimInterface
+    /// addDisallowedUsbDevices
     /// </summary>
-    public static double ClaimInterface(USBDevicePipe pipe, IntPtr iface, bool? force = null)
+    public static void AddDisallowedUsbDevices(IntPtr admin, UsbDeviceType[] usbDevices)
     {
-        return NodeApi.CallMethod<double>(Module, _claimInterface, pipe, iface, force);
+        NodeApi.CallMethodVoid(Module, _addDisallowedUsbDevices, admin, usbDevices);
     }
 
     /// <summary>
-    /// releaseInterface
+    /// removeDisallowedUsbDevices
     /// </summary>
-    public static double ReleaseInterface(USBDevicePipe pipe, IntPtr iface)
+    public static void RemoveDisallowedUsbDevices(IntPtr admin, UsbDeviceType[] usbDevices)
     {
-        return NodeApi.CallMethod<double>(Module, _releaseInterface, pipe, iface);
+        NodeApi.CallMethodVoid(Module, _removeDisallowedUsbDevices, admin, usbDevices);
     }
 
     /// <summary>
-    /// setConfiguration
+    /// getDisallowedUsbDevices
     /// </summary>
-    public static double SetConfiguration(USBDevicePipe pipe, USBConfiguration config)
+    public static UsbDeviceType[] GetDisallowedUsbDevices(IntPtr admin)
     {
-        return NodeApi.CallMethod<double>(Module, _setConfiguration, pipe, config);
+        return NodeApi.CallMethod(Module, _getDisallowedUsbDevices, h => ValueConverter.ConvertArray(h, static e => new UsbDeviceType(e)), admin);
     }
 
     /// <summary>
-    /// setInterface
+    /// addDisallowedPermissiveUsbDevices
     /// </summary>
-    public static double SetInterface(USBDevicePipe pipe, IntPtr iface)
+    public static void AddDisallowedPermissiveUsbDevices(IntPtr admin, PermissiveUsbDeviceType[] usbDevices)
     {
-        return NodeApi.CallMethod<double>(Module, _setInterface, pipe, iface);
+        NodeApi.CallMethodVoid(Module, _addDisallowedPermissiveUsbDevices, admin, usbDevices);
     }
 
     /// <summary>
-    /// getRawDescriptor
+    /// removeDisallowedPermissiveUsbDevices
     /// </summary>
-    public static byte[] GetRawDescriptor(USBDevicePipe pipe)
+    public static void RemoveDisallowedPermissiveUsbDevices(IntPtr admin, PermissiveUsbDeviceType[] usbDevices)
     {
-        return NodeApi.CallMethod(Module, _getRawDescriptor, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), pipe);
+        NodeApi.CallMethodVoid(Module, _removeDisallowedPermissiveUsbDevices, admin, usbDevices);
     }
 
     /// <summary>
-    /// getFileDescriptor
+    /// getDisallowedPermissiveUsbDevices
     /// </summary>
-    public static double GetFileDescriptor(USBDevicePipe pipe)
+    public static PermissiveUsbDeviceType[] GetDisallowedPermissiveUsbDevices(IntPtr admin)
     {
-        return NodeApi.CallMethod<double>(Module, _getFileDescriptor, pipe);
-    }
-
-    /// <summary>
-    /// controlTransfer
-    /// </summary>
-    public static Task<double> ControlTransferAsync(USBDevicePipe pipe, USBControlParams controlparam, double? timeout = null)
-    {
-        return NodeApi.CallMethodAsync<double>(Module, _controlTransfer, pipe, controlparam, timeout);
-    }
-
-    /// <summary>
-    /// usbControlTransfer
-    /// </summary>
-    public static Task<double> UsbControlTransferAsync(USBDevicePipe pipe, USBDeviceRequestParams requestparam, double? timeout = null)
-    {
-        return NodeApi.CallMethodAsync<double>(Module, _usbControlTransfer, pipe, requestparam, timeout);
-    }
-
-    /// <summary>
-    /// bulkTransfer
-    /// </summary>
-    public static Task<double> BulkTransferAsync(USBDevicePipe pipe, USBEndpoint endpoint, byte[] buffer, double? timeout = null)
-    {
-        return NodeApi.CallMethodAsync<double>(Module, _bulkTransfer, pipe, endpoint, buffer, timeout);
-    }
-
-    /// <summary>
-    /// resetUsbDevice
-    /// </summary>
-    public static bool ResetUsbDevice(USBDevicePipe pipe)
-    {
-        return NodeApi.CallMethod<bool>(Module, _resetUsbDevice, pipe);
-    }
-
-    /// <summary>
-    /// closePipe
-    /// </summary>
-    public static double ClosePipe(USBDevicePipe pipe)
-    {
-        return NodeApi.CallMethod<double>(Module, _closePipe, pipe);
-    }
-
-    /// <summary>
-    /// hasAccessoryRight
-    /// </summary>
-    public static bool HasAccessoryRight(USBAccessory accessory)
-    {
-        return NodeApi.CallMethod<bool>(Module, _hasAccessoryRight, accessory);
-    }
-
-    /// <summary>
-    /// requestAccessoryRight
-    /// </summary>
-    public static Task<bool> RequestAccessoryRightAsync(USBAccessory accessory)
-    {
-        return NodeApi.CallMethodAsync<bool>(Module, _requestAccessoryRight, accessory);
-    }
-
-    /// <summary>
-    /// cancelAccessoryRight
-    /// </summary>
-    public static void CancelAccessoryRight(USBAccessory accessory)
-    {
-        NodeApi.CallMethodVoid(Module, _cancelAccessoryRight, accessory);
-    }
-
-    /// <summary>
-    /// getAccessoryList
-    /// </summary>
-    public static IntPtr[] GetAccessoryList()
-    {
-        return NodeApi.CallMethod(Module, _getAccessoryList, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
-    }
-
-    /// <summary>
-    /// openAccessory
-    /// </summary>
-    public static USBAccessoryHandle OpenAccessory(USBAccessory accessory)
-    {
-        return NodeApi.CallMethod(Module, _openAccessory, static h => new USBAccessoryHandle(h), accessory);
-    }
-
-    /// <summary>
-    /// closeAccessory
-    /// </summary>
-    public static void CloseAccessory(USBAccessoryHandle accessoryHandle)
-    {
-        NodeApi.CallMethodVoid(Module, _closeAccessory, accessoryHandle);
-    }
-
-    /// <summary>
-    /// usbSubmitTransfer
-    /// </summary>
-    public static void UsbSubmitTransfer(IntPtr transfer)
-    {
-        NodeApi.CallMethodVoid(Module, _usbSubmitTransfer, transfer);
-    }
-
-    /// <summary>
-    /// usbCancelTransfer
-    /// </summary>
-    public static void UsbCancelTransfer(IntPtr transfer)
-    {
-        NodeApi.CallMethodVoid(Module, _usbCancelTransfer, transfer);
+        return NodeApi.CallMethod(Module, _getDisallowedPermissiveUsbDevices, h => ValueConverter.ConvertArray(h, static e => new PermissiveUsbDeviceType(e)), admin);
     }
 
 }
 
 /// <summary>
-/// USBDevicePipe（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record USBDevicePipe(
-    double BusNum,
-    double DevAddress
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _busNum = System.Text.Encoding.UTF8.GetBytes("busNum");
-        var _busNumV = NativeValue.From(BusNum);
-        if (_busNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _busNum, _busNumV);
-        var _devAddress = System.Text.Encoding.UTF8.GetBytes("devAddress");
-        var _devAddressV = NativeValue.From(DevAddress);
-        if (_devAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _devAddress, _devAddressV);
-    }
-}
-
-/// <summary>
-/// USBConfiguration（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record USBConfiguration(
-    double Id,
-    double Attributes,
-    double MaxPower,
-    string Name,
-    bool IsRemoteWakeup,
-    bool IsSelfPowered,
-    IntPtr[] Interfaces
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _id = System.Text.Encoding.UTF8.GetBytes("id");
-        var _idV = NativeValue.From(Id);
-        if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _id, _idV);
-        var _attributes = System.Text.Encoding.UTF8.GetBytes("attributes");
-        var _attributesV = NativeValue.From(Attributes);
-        if (_attributesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _attributes, _attributesV);
-        var _maxPower = System.Text.Encoding.UTF8.GetBytes("maxPower");
-        var _maxPowerV = NativeValue.From(MaxPower);
-        if (_maxPowerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxPower, _maxPowerV);
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
-        var _nameV = NativeValue.From(Name);
-        if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _isRemoteWakeup = System.Text.Encoding.UTF8.GetBytes("isRemoteWakeup");
-        var _isRemoteWakeupV = NativeValue.From(IsRemoteWakeup);
-        if (_isRemoteWakeupV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isRemoteWakeup, _isRemoteWakeupV);
-        var _isSelfPowered = System.Text.Encoding.UTF8.GetBytes("isSelfPowered");
-        var _isSelfPoweredV = NativeValue.From(IsSelfPowered);
-        if (_isSelfPoweredV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isSelfPowered, _isSelfPoweredV);
-        var _interfaces = System.Text.Encoding.UTF8.GetBytes("interfaces");
-        var _interfacesV = NativeValue.From(Interfaces);
-        if (_interfacesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _interfaces, _interfacesV);
-    }
-}
-
-/// <summary>
-/// USBControlParams（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record USBControlParams(
-    double Index,
-    global::HarmonyOS.ArkUI.USBControlRequestType ReqType,
-    global::HarmonyOS.ArkUI.USBRequestTargetType Target,
-    double Value,
-    double Request,
-    byte[] Data
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _index = System.Text.Encoding.UTF8.GetBytes("index");
-        var _indexV = NativeValue.From(Index);
-        if (_indexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _index, _indexV);
-        var _reqType = System.Text.Encoding.UTF8.GetBytes("reqType");
-        var _reqTypeV = NativeValue.From(ReqType);
-        if (_reqTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reqType, _reqTypeV);
-        var _target = System.Text.Encoding.UTF8.GetBytes("target");
-        var _targetV = NativeValue.From(Target);
-        if (_targetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _target, _targetV);
-        var _value = System.Text.Encoding.UTF8.GetBytes("value");
-        var _valueV = NativeValue.From(Value);
-        if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _value, _valueV);
-        var _request = System.Text.Encoding.UTF8.GetBytes("request");
-        var _requestV = NativeValue.From(Request);
-        if (_requestV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _request, _requestV);
-        var _data = System.Text.Encoding.UTF8.GetBytes("data");
-        var _dataV = NativeValue.From(Data);
-        if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _data, _dataV);
-    }
-}
-
-/// <summary>
-/// USBDeviceRequestParams（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record USBDeviceRequestParams(
-    double BmRequestType,
-    double BRequest,
-    double WValue,
-    double WIndex,
-    double WLength,
-    byte[] Data
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _bmRequestType = System.Text.Encoding.UTF8.GetBytes("bmRequestType");
-        var _bmRequestTypeV = NativeValue.From(BmRequestType);
-        if (_bmRequestTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bmRequestType, _bmRequestTypeV);
-        var _bRequest = System.Text.Encoding.UTF8.GetBytes("bRequest");
-        var _bRequestV = NativeValue.From(BRequest);
-        if (_bRequestV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bRequest, _bRequestV);
-        var _wValue = System.Text.Encoding.UTF8.GetBytes("wValue");
-        var _wValueV = NativeValue.From(WValue);
-        if (_wValueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _wValue, _wValueV);
-        var _wIndex = System.Text.Encoding.UTF8.GetBytes("wIndex");
-        var _wIndexV = NativeValue.From(WIndex);
-        if (_wIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _wIndex, _wIndexV);
-        var _wLength = System.Text.Encoding.UTF8.GetBytes("wLength");
-        var _wLengthV = NativeValue.From(WLength);
-        if (_wLengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _wLength, _wLengthV);
-        var _data = System.Text.Encoding.UTF8.GetBytes("data");
-        var _dataV = NativeValue.From(Data);
-        if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _data, _dataV);
-    }
-}
-
-/// <summary>
-/// USBEndpoint（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record USBEndpoint(
-    double Address,
-    double Attributes,
-    double Interval,
-    double MaxPacketSize,
-    global::HarmonyOS.ArkUI.USBRequestDirection Direction,
-    double Number,
-    double Type,
-    double InterfaceId
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _address = System.Text.Encoding.UTF8.GetBytes("address");
-        var _addressV = NativeValue.From(Address);
-        if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _address, _addressV);
-        var _attributes = System.Text.Encoding.UTF8.GetBytes("attributes");
-        var _attributesV = NativeValue.From(Attributes);
-        if (_attributesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _attributes, _attributesV);
-        var _interval = System.Text.Encoding.UTF8.GetBytes("interval");
-        var _intervalV = NativeValue.From(Interval);
-        if (_intervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _interval, _intervalV);
-        var _maxPacketSize = System.Text.Encoding.UTF8.GetBytes("maxPacketSize");
-        var _maxPacketSizeV = NativeValue.From(MaxPacketSize);
-        if (_maxPacketSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxPacketSize, _maxPacketSizeV);
-        var _direction = System.Text.Encoding.UTF8.GetBytes("direction");
-        var _directionV = NativeValue.From(Direction);
-        if (_directionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _direction, _directionV);
-        var _number = System.Text.Encoding.UTF8.GetBytes("number");
-        var _numberV = NativeValue.From(Number);
-        if (_numberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _number, _numberV);
-        var _type = System.Text.Encoding.UTF8.GetBytes("type");
-        var _typeV = NativeValue.From(Type);
-        if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _type, _typeV);
-        var _interfaceId = System.Text.Encoding.UTF8.GetBytes("interfaceId");
-        var _interfaceIdV = NativeValue.From(InterfaceId);
-        if (_interfaceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _interfaceId, _interfaceIdV);
-    }
-}
-
-/// <summary>
-/// USBAccessory（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record USBAccessory(
-    string Manufacturer,
-    string Product,
-    string Description,
-    string Version,
-    string SerialNumber
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _manufacturer = System.Text.Encoding.UTF8.GetBytes("manufacturer");
-        var _manufacturerV = NativeValue.From(Manufacturer);
-        if (_manufacturerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufacturer, _manufacturerV);
-        var _product = System.Text.Encoding.UTF8.GetBytes("product");
-        var _productV = NativeValue.From(Product);
-        if (_productV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _product, _productV);
-        var _description = System.Text.Encoding.UTF8.GetBytes("description");
-        var _descriptionV = NativeValue.From(Description);
-        if (_descriptionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _description, _descriptionV);
-        var _version = System.Text.Encoding.UTF8.GetBytes("version");
-        var _versionV = NativeValue.From(Version);
-        if (_versionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _version, _versionV);
-        var _serialNumber = System.Text.Encoding.UTF8.GetBytes("serialNumber");
-        var _serialNumberV = NativeValue.From(SerialNumber);
-        if (_serialNumberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serialNumber, _serialNumberV);
-    }
-}
-
-/// <summary>
-/// USBAccessoryHandle 实例包装（@ohos 命名空间内嵌套接口）。
+/// UsbDeviceId 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class USBAccessoryHandle : JsObject
+public sealed partial class UsbDeviceId : JsObject
 {
-    public USBAccessoryHandle(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _accessoryFd => "accessoryFd"u8;
+    public UsbDeviceId(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _vendorId => "vendorId"u8;
+    private static ReadOnlySpan<byte> _productId => "productId"u8;
     /// <summary>
-    /// accessoryFd
+    /// vendorId
     /// </summary>
-    public double AccessoryFd => NativeValue.ToDouble(GetPropertyRaw(_accessoryFd));
+    public double VendorId => NativeValue.ToDouble(GetPropertyRaw(_vendorId));
+
+    /// <summary>
+    /// productId
+    /// </summary>
+    public double ProductId => NativeValue.ToDouble(GetPropertyRaw(_productId));
+
+}
+
+/// <summary>
+/// UsbDeviceType 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class UsbDeviceType : JsObject
+{
+    public UsbDeviceType(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _baseClass => "baseClass"u8;
+    private static ReadOnlySpan<byte> _subClass => "subClass"u8;
+    private static ReadOnlySpan<byte> _protocol => "protocol"u8;
+    private static ReadOnlySpan<byte> _descriptor => "descriptor"u8;
+    /// <summary>
+    /// baseClass
+    /// </summary>
+    public double BaseClass => NativeValue.ToDouble(GetPropertyRaw(_baseClass));
+
+    /// <summary>
+    /// subClass
+    /// </summary>
+    public double SubClass => NativeValue.ToDouble(GetPropertyRaw(_subClass));
+
+    /// <summary>
+    /// protocol
+    /// </summary>
+    public double Protocol => NativeValue.ToDouble(GetPropertyRaw(_protocol));
+
+    /// <summary>
+    /// descriptor
+    /// </summary>
+    public global::HarmonyOS.ArkUI.Descriptor Descriptor => (global::HarmonyOS.ArkUI.Descriptor)NativeValue.ToInt(GetPropertyRaw(_descriptor));
+
+}
+
+/// <summary>
+/// PermissiveUsbDeviceType 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PermissiveUsbDeviceType : JsObject
+{
+    public PermissiveUsbDeviceType(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _baseClass => "baseClass"u8;
+    private static ReadOnlySpan<byte> _subClass => "subClass"u8;
+    private static ReadOnlySpan<byte> _protocol => "protocol"u8;
+    private static ReadOnlySpan<byte> _descriptor => "descriptor"u8;
+    /// <summary>
+    /// baseClass
+    /// </summary>
+    public double BaseClass => NativeValue.ToDouble(GetPropertyRaw(_baseClass));
+
+    /// <summary>
+    /// subClass
+    /// </summary>
+    public double? SubClass => (double?)NativeValue.ToDouble(GetPropertyRaw(_subClass));
+
+    /// <summary>
+    /// protocol
+    /// </summary>
+    public double? Protocol => (double?)NativeValue.ToDouble(GetPropertyRaw(_protocol));
+
+    /// <summary>
+    /// descriptor
+    /// </summary>
+    public global::HarmonyOS.ArkUI.Descriptor? Descriptor => (global::HarmonyOS.ArkUI.Descriptor?)(global::HarmonyOS.ArkUI.Descriptor)NativeValue.ToInt(GetPropertyRaw(_descriptor));
 
 }

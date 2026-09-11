@@ -206,7 +206,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// execute
     /// </summary>
-    public static Task<IntPtr> ExecuteAsync(Task task, Configs configs)
+    public static Task<IntPtr> ExecuteAsync(Task task, IntPtr configs)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, configs);
     }
@@ -214,7 +214,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// execute
     /// </summary>
-    public static Task<IntPtr> ExecuteAsync(IntPtr task, Configs configs)
+    public static Task<IntPtr> ExecuteAsync(IntPtr task, IntPtr configs)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, configs);
     }
@@ -222,7 +222,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// execute
     /// </summary>
-    public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, Configs configs)
+    public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, IntPtr configs)
     {
         return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), group, configs);
     }
@@ -447,27 +447,6 @@ public sealed partial class LongTask : JsObject
         return CallMethod<bool>(_isDone);
     }
 
-}
-
-/// <summary>
-/// Configs（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record Configs(
-    global::HarmonyOS.ArkUI.Priority? Priority = null,
-    double? Timeout = null
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _priority = System.Text.Encoding.UTF8.GetBytes("priority");
-        var _priorityV = NativeValue.From(Priority);
-        if (_priorityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _priority, _priorityV);
-        var _timeout = System.Text.Encoding.UTF8.GetBytes("timeout");
-        var _timeoutV = NativeValue.From(Timeout);
-        if (_timeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeout, _timeoutV);
-    }
 }
 
 /// <summary>
@@ -712,7 +691,7 @@ public sealed partial class ThreadInfo : JsObject
     /// <summary>
     /// priority
     /// </summary>
-    public global::HarmonyOS.ArkUI.Priority? Priority => (global::HarmonyOS.ArkUI.Priority?)(global::HarmonyOS.ArkUI.Priority)NativeValue.ToInt(GetPropertyRaw(_priority));
+    public IntPtr Priority => GetPropertyRaw(_priority);
 
 }
 
@@ -735,7 +714,7 @@ public sealed partial class TaskpoolTaskInfo : JsObject
     /// <summary>
     /// state
     /// </summary>
-    public global::HarmonyOS.ArkUI.State State => (global::HarmonyOS.ArkUI.State)NativeValue.ToInt(GetPropertyRaw(_state));
+    public IntPtr State => GetPropertyRaw(_state);
 
     /// <summary>
     /// duration

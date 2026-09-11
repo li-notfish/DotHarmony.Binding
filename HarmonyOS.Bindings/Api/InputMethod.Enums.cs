@@ -5,9 +5,9 @@ using System.ComponentModel;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// Direction 枚举
+/// InputMethodDirection 枚举
 /// </summary>
-public enum Direction
+public enum InputMethodDirection
 {
     CursorUp = 1,
     CursorDown,

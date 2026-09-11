@@ -3,9 +3,9 @@ using System;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// EventType 枚举
+/// HiAppEventEventType 枚举
 /// </summary>
-public enum EventType
+public enum HiAppEventEventType
 {
     Fault = 1,
     Statistic = 2,

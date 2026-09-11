@@ -356,7 +356,7 @@ public static unsafe partial class Request
     /// <summary>
     /// search
     /// </summary>
-    public static Task<string[]> SearchAsync(RequestFilter filter)
+    public static Task<string[]> SearchAsync(IntPtr filter)
     {
         return NodeApi.CallMethodAsync(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), filter);
     }
@@ -449,9 +449,9 @@ public sealed partial class DownloadTask : JsObject
     /// <summary>
     /// query
     /// </summary>
-    public Task<DownloadInfo> QueryAsync()
+    public Task<RequestDownloadInfo> QueryAsync()
     {
-        return CallMethodAsync(_query, static h => new DownloadInfo(h));
+        return CallMethodAsync(_query, static h => new RequestDownloadInfo(h));
     }
 
     /// <summary>
@@ -489,9 +489,9 @@ public sealed partial class DownloadTask : JsObject
     /// <summary>
     /// getTaskInfo
     /// </summary>
-    public Task<DownloadInfo> GetTaskInfoAsync()
+    public Task<RequestDownloadInfo> GetTaskInfoAsync()
     {
-        return CallMethodAsync(_getTaskInfo, static h => new DownloadInfo(h));
+        return CallMethodAsync(_getTaskInfo, static h => new RequestDownloadInfo(h));
     }
 
     /// <summary>
@@ -777,48 +777,12 @@ public sealed partial class UploadTask : JsObject
 }
 
 /// <summary>
-/// Filter（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record RequestFilter(
-    double? Before = null,
-    double? After = null,
-    global::HarmonyOS.ArkUI.State? State = null,
-    global::HarmonyOS.ArkUI.Action? Action = null,
-    global::HarmonyOS.ArkUI.Mode? Mode = null
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _before = System.Text.Encoding.UTF8.GetBytes("before");
-        var _beforeV = NativeValue.From(Before);
-        if (_beforeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _before, _beforeV);
-        var _after = System.Text.Encoding.UTF8.GetBytes("after");
-        var _afterV = NativeValue.From(After);
-        if (_afterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _after, _afterV);
-        var _state = System.Text.Encoding.UTF8.GetBytes("state");
-        var _stateV = NativeValue.From(State);
-        if (_stateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _state, _stateV);
-        var _action = System.Text.Encoding.UTF8.GetBytes("action");
-        var _actionV = NativeValue.From(Action);
-        if (_actionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _action, _actionV);
-        var _mode = System.Text.Encoding.UTF8.GetBytes("mode");
-        var _modeV = NativeValue.From(Mode);
-        if (_modeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mode, _modeV);
-    }
-}
-
-/// <summary>
 /// DownloadInfo 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class DownloadInfo : JsObject
+public sealed partial class RequestDownloadInfo : JsObject
 {
-    public DownloadInfo(IntPtr handle) : base(handle) { }
+    public RequestDownloadInfo(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _description => "description"u8;
     private static ReadOnlySpan<byte> _downloadedBytes => "downloadedBytes"u8;
     private static ReadOnlySpan<byte> _downloadId => "downloadId"u8;

@@ -693,9 +693,9 @@ public sealed partial class DisplayObject : JsObject
     /// <summary>
     /// getAvailableArea
     /// </summary>
-    public Task<Rect> GetAvailableAreaAsync()
+    public Task<DisplayRect> GetAvailableAreaAsync()
     {
-        return CallMethodAsync(_getAvailableArea, static h => new Rect(h));
+        return CallMethodAsync(_getAvailableArea, static h => new DisplayRect(h));
     }
 
     /// <summary>
@@ -743,10 +743,10 @@ public sealed partial class DisplayObject : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<Rect> callback)
+    public void On(string type, System.Action<DisplayRect> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(new Rect(args[0])),
+            args => callback(new DisplayRect(args[0])),
             js => NodeApi.CallMethodVoid(Handle, _on, type, js));
     }
 
@@ -761,7 +761,7 @@ public sealed partial class DisplayObject : JsObject
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<Rect> callback)
+    public void Off(string type, System.Action<DisplayRect> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
     }
@@ -769,12 +769,12 @@ public sealed partial class DisplayObject : JsObject
     /// <summary>
     /// 监听 availableAreaChange 事件（对应 on/off）
     /// </summary>
-    public event System.Action<Rect> AvailableAreaChange
+    public event System.Action<DisplayRect> AvailableAreaChange
     {
         add
         {
             _eventListeners.Add(("availableAreaChange", value),
-                args => value(new Rect(args[0])),
+                args => value(new DisplayRect(args[0])),
                 js => NodeApi.CallMethodVoid(Handle, _on, "availableAreaChange", js));
         }
         remove
@@ -932,9 +932,9 @@ public sealed partial class BrightnessInfo : JsObject
 /// Rect 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class Rect : JsObject
+public sealed partial class DisplayRect : JsObject
 {
-    public Rect(IntPtr handle) : base(handle) { }
+    public DisplayRect(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _left => "left"u8;
     private static ReadOnlySpan<byte> _top => "top"u8;
     private static ReadOnlySpan<byte> _width => "width"u8;

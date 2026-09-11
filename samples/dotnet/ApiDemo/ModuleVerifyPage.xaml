@@ -47,6 +47,11 @@
             <Button Text="Request" Clicked="OnVerifyRequest" />
             <Button Text="Vibrator" Clicked="OnVerifyVibrator" />
             <Button Text="Geolocation" Clicked="OnVerifyGeolocation" />
+
+            <!-- 封送专项：ArrayBuffer/Map（2.6 遗留用例） -->
+            <Label Text="--- Marshaling ---" FontSize="14" FontAttributes="Bold" />
+            <Button Text="ArrayBuffer round-trip (byte[])" Clicked="OnVerifyArrayBuffer" />
+            <Button Text="JsMap iteration (Map&lt;number,string&gt;)" Clicked="OnVerifyJsMap" />
             
             <Label x:Name="ResultLabel"
                    Text="Click a button to verify module"

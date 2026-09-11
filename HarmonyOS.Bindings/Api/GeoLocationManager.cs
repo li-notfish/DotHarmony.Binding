@@ -105,7 +105,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// on
     /// </summary>
-    public static void On(string type, GeoLocationManagerLocationRequest request, IntPtr callback)
+    public static void On(string type, LocationRequest request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, request, callback);
     }
@@ -113,7 +113,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// onLocationChange
     /// </summary>
-    public static void OnLocationChange(GeoLocationManagerLocationRequest request, IntPtr callback)
+    public static void OnLocationChange(LocationRequest request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onLocationChange, request, callback);
     }
@@ -145,7 +145,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// on
     /// </summary>
-    public static void On(string type, GeoLocationManagerCachedGnssLocationsRequest request, IntPtr callback)
+    public static void On(string type, CachedGnssLocationsRequest request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, request, callback);
     }
@@ -153,7 +153,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// on
     /// </summary>
-    public static void On(string type, GeoLocationManagerGeofenceRequest request, IntPtr want)
+    public static void On(string type, GeofenceRequest request, IntPtr want)
     {
         NodeApi.CallMethodVoid(Module, _on, type, request, want);
     }
@@ -161,7 +161,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// off
     /// </summary>
-    public static void Off(string type, GeoLocationManagerGeofenceRequest request, IntPtr want)
+    public static void Off(string type, GeofenceRequest request, IntPtr want)
     {
         NodeApi.CallMethodVoid(Module, _off, type, request, want);
     }
@@ -169,7 +169,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// getCurrentLocation
     /// </summary>
-    public static Task<IntPtr> GetCurrentLocationAsync(GeoLocationManagerCurrentLocationRequest request)
+    public static Task<IntPtr> GetCurrentLocationAsync(CurrentLocationRequest request)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentLocation, request);
     }
@@ -201,17 +201,17 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// getAddressesFromLocation
     /// </summary>
-    public static Task<GeoLocationManagerGeoAddress[]> GetAddressesFromLocationAsync(GeoLocationManagerReverseGeoCodeRequest request)
+    public static Task<GeoAddress[]> GetAddressesFromLocationAsync(ReverseGeoCodeRequest request)
     {
-        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocation, h => ValueConverter.ConvertArray(h, static e => new GeoLocationManagerGeoAddress(e)), request);
+        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocation, h => ValueConverter.ConvertArray(h, static e => new GeoAddress(e)), request);
     }
 
     /// <summary>
     /// getAddressesFromLocationName
     /// </summary>
-    public static Task<GeoLocationManagerGeoAddress[]> GetAddressesFromLocationNameAsync(GeoLocationManagerGeoCodeRequest request)
+    public static Task<GeoAddress[]> GetAddressesFromLocationNameAsync(GeoCodeRequest request)
     {
-        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocationName, h => ValueConverter.ConvertArray(h, static e => new GeoLocationManagerGeoAddress(e)), request);
+        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocationName, h => ValueConverter.ConvertArray(h, static e => new GeoAddress(e)), request);
     }
 
     /// <summary>
@@ -241,7 +241,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// sendCommand
     /// </summary>
-    public static Task SendCommandAsync(GeoLocationManagerLocationCommand command)
+    public static Task SendCommandAsync(LocationCommand command)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _sendCommand, command);
     }
@@ -273,9 +273,9 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// getActiveGeoFences
     /// </summary>
-    public static Task<JsMap<double, GeoLocationManagerGeofence>> GetActiveGeoFencesAsync()
+    public static Task<JsMap<double, Geofence>> GetActiveGeoFencesAsync()
     {
-        return NodeApi.CallMethodAsync(Module, _getActiveGeoFences, h => new JsMap<double, GeoLocationManagerGeofence>(h, static v => new GeoLocationManagerGeofence(v)));
+        return NodeApi.CallMethodAsync(Module, _getActiveGeoFences, h => new JsMap<double, Geofence>(h, static v => new Geofence(v)));
     }
 
     /// <summary>
@@ -419,7 +419,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<IntPtr> callback, GeoLocationManagerLocationRequest request)
+    public static void On(string type, System.Action<IntPtr> callback, LocationRequest request)
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
@@ -481,7 +481,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<IntPtr[]> callback, GeoLocationManagerCachedGnssLocationsRequest request)
+    public static void On(string type, System.Action<IntPtr[]> callback, CachedGnssLocationsRequest request)
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<IntPtr>(e))),
@@ -499,17 +499,17 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<GeoLocationManagerSatelliteStatusInfo> callback)
+    public static void On(string type, System.Action<SatelliteStatusInfo> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(new GeoLocationManagerSatelliteStatusInfo(args[0])),
+            args => callback(new SatelliteStatusInfo(args[0])),
             js => NodeApi.CallMethodVoid(Module, _on, type, js));
     }
 
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action<GeoLocationManagerSatelliteStatusInfo> callback)
+    public static void Off(string type, System.Action<SatelliteStatusInfo> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
     }
@@ -535,7 +535,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action callback, GeoLocationManagerGeofenceRequest request, IntPtr want)
+    public static void On(string type, System.Action callback, GeofenceRequest request, IntPtr want)
     {
         _eventListeners.Add((type, callback),
             args => callback(),
@@ -545,7 +545,7 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action callback, GeoLocationManagerGeofenceRequest request, IntPtr want)
+    public static void Off(string type, System.Action callback, GeofenceRequest request, IntPtr want)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, request, want));
     }
@@ -571,17 +571,17 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<BluetoothScanResult> callback)
+    public static void On(string type, System.Action<GeoLocationManagerBluetoothScanResult> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(new BluetoothScanResult(args[0])),
+            args => callback(new GeoLocationManagerBluetoothScanResult(args[0])),
             js => NodeApi.CallMethodVoid(Module, _on, type, js));
     }
 
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action<BluetoothScanResult> callback)
+    public static void Off(string type, System.Action<GeoLocationManagerBluetoothScanResult> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
     }
@@ -657,12 +657,12 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// 监听 satelliteStatusChange 事件（对应 on/off）
     /// </summary>
-    public static event System.Action<GeoLocationManagerSatelliteStatusInfo> SatelliteStatusChange
+    public static event System.Action<SatelliteStatusInfo> SatelliteStatusChange
     {
         add
         {
             _eventListeners.Add(("satelliteStatusChange", value),
-                args => value(new GeoLocationManagerSatelliteStatusInfo(args[0])),
+                args => value(new SatelliteStatusInfo(args[0])),
                 js => NodeApi.CallMethodVoid(Module, _on, "satelliteStatusChange", js));
         }
         remove
@@ -725,12 +725,12 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// 监听 bluetoothScanResultChange 事件（对应 on/off）
     /// </summary>
-    public static event System.Action<BluetoothScanResult> BluetoothScanResultChange
+    public static event System.Action<GeoLocationManagerBluetoothScanResult> BluetoothScanResultChange
     {
         add
         {
             _eventListeners.Add(("bluetoothScanResultChange", value),
-                args => value(new BluetoothScanResult(args[0])),
+                args => value(new GeoLocationManagerBluetoothScanResult(args[0])),
                 js => NodeApi.CallMethodVoid(Module, _on, "bluetoothScanResultChange", js));
         }
         remove
@@ -744,7 +744,7 @@ public static unsafe partial class GeoLocationManager
 /// <summary>
 /// LocationRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record GeoLocationManagerLocationRequest(
+public sealed record LocationRequest(
     global::HarmonyOS.ArkUI.LocationRequestPriority? Priority = null,
     global::HarmonyOS.ArkUI.LocationRequestScenario? Scenario = null,
     double? TimeInterval = null,
@@ -780,7 +780,7 @@ public sealed record GeoLocationManagerLocationRequest(
 /// <summary>
 /// CachedGnssLocationsRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record GeoLocationManagerCachedGnssLocationsRequest(
+public sealed record CachedGnssLocationsRequest(
     double ReportingPeriodSec,
     bool WakeUpCacheQueueFull
 ) : INapiRecord
@@ -801,9 +801,9 @@ public sealed record GeoLocationManagerCachedGnssLocationsRequest(
 /// <summary>
 /// GeofenceRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record GeoLocationManagerGeofenceRequest(
+public sealed record GeofenceRequest(
     global::HarmonyOS.ArkUI.LocationRequestScenario Scenario,
-    GeoLocationManagerGeofence Geofence
+    Geofence Geofence
 ) : INapiRecord
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
@@ -822,7 +822,7 @@ public sealed record GeoLocationManagerGeofenceRequest(
 /// <summary>
 /// CurrentLocationRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record GeoLocationManagerCurrentLocationRequest(
+public sealed record CurrentLocationRequest(
     global::HarmonyOS.ArkUI.LocationRequestPriority? Priority = null,
     global::HarmonyOS.ArkUI.LocationRequestScenario? Scenario = null,
     double? MaxAccuracy = null,
@@ -854,9 +854,9 @@ public sealed record GeoLocationManagerCurrentLocationRequest(
 /// GeoAddress 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class GeoLocationManagerGeoAddress : JsObject
+public sealed partial class GeoAddress : JsObject
 {
-    public GeoLocationManagerGeoAddress(IntPtr handle) : base(handle) { }
+    public GeoAddress(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _latitude => "latitude"u8;
     private static ReadOnlySpan<byte> _longitude => "longitude"u8;
     private static ReadOnlySpan<byte> _locale => "locale"u8;
@@ -970,7 +970,7 @@ public sealed partial class GeoLocationManagerGeoAddress : JsObject
 /// <summary>
 /// ReverseGeoCodeRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record GeoLocationManagerReverseGeoCodeRequest(
+public sealed record ReverseGeoCodeRequest(
     string? Locale,
     string? Country,
     double Latitude,
@@ -1006,7 +1006,7 @@ public sealed record GeoLocationManagerReverseGeoCodeRequest(
 /// <summary>
 /// GeoCodeRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record GeoLocationManagerGeoCodeRequest(
+public sealed record GeoCodeRequest(
     string? Locale,
     string? Country,
     string Description,
@@ -1057,7 +1057,7 @@ public sealed record GeoLocationManagerGeoCodeRequest(
 /// <summary>
 /// LocationCommand（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record GeoLocationManagerLocationCommand(
+public sealed record LocationCommand(
     global::HarmonyOS.ArkUI.LocationRequestScenario Scenario,
     string Command
 ) : INapiRecord
@@ -1100,9 +1100,9 @@ public sealed partial class CountryCode : JsObject
 /// Geofence 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class GeoLocationManagerGeofence : JsObject
+public sealed partial class Geofence : JsObject
 {
-    public GeoLocationManagerGeofence(IntPtr handle) : base(handle) { }
+    public Geofence(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _latitude => "latitude"u8;
     private static ReadOnlySpan<byte> _longitude => "longitude"u8;
     private static ReadOnlySpan<byte> _coordinateSystemType => "coordinateSystemType"u8;
@@ -1279,9 +1279,9 @@ public sealed record BluetoothSearchRequestParams(
 /// SatelliteStatusInfo 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class GeoLocationManagerSatelliteStatusInfo : JsObject
+public sealed partial class SatelliteStatusInfo : JsObject
 {
-    public GeoLocationManagerSatelliteStatusInfo(IntPtr handle) : base(handle) { }
+    public SatelliteStatusInfo(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _satellitesNumber => "satellitesNumber"u8;
     private static ReadOnlySpan<byte> _satelliteIds => "satelliteIds"u8;
     private static ReadOnlySpan<byte> _carrierToNoiseDensitys => "carrierToNoiseDensitys"u8;
@@ -1336,9 +1336,9 @@ public sealed partial class GeoLocationManagerSatelliteStatusInfo : JsObject
 /// BluetoothScanResult 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class BluetoothScanResult : JsObject
+public sealed partial class GeoLocationManagerBluetoothScanResult : JsObject
 {
-    public BluetoothScanResult(IntPtr handle) : base(handle) { }
+    public GeoLocationManagerBluetoothScanResult(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
     private static ReadOnlySpan<byte> _rssi => "rssi"u8;
     private static ReadOnlySpan<byte> _data => "data"u8;

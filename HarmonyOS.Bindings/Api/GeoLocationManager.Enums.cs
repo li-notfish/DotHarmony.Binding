@@ -99,6 +99,30 @@ public enum LocatingPriority
 }
 
 /// <summary>
+/// LocationRequestPriority 枚举
+/// </summary>
+public enum LocationRequestPriority
+{
+    Unset = 512,
+    Accuracy,
+    LowPower,
+    FirstFix
+}
+
+/// <summary>
+/// LocationRequestScenario 枚举
+/// </summary>
+public enum LocationRequestScenario
+{
+    Unset = 768,
+    Navigation,
+    TrajectoryTracking,
+    CarHailing,
+    DailyLifeService,
+    NoPower
+}
+
+/// <summary>
 /// PowerConsumptionScenario 枚举
 /// </summary>
 public enum PowerConsumptionScenario

@@ -554,10 +554,10 @@ public sealed partial class InputMethodController : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<Range> callback)
+    public void On(string type, System.Action<InputMethodRange> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(new Range(args[0])),
+            args => callback(new InputMethodRange(args[0])),
             js => NodeApi.CallMethodVoid(Handle, _on, type, js));
     }
 
@@ -572,7 +572,7 @@ public sealed partial class InputMethodController : JsObject
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<Range> callback)
+    public void Off(string type, System.Action<InputMethodRange> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
     }
@@ -580,17 +580,17 @@ public sealed partial class InputMethodController : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<Movement> callback)
+    public void On(string type, System.Action<IntPtr> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(new Movement(args[0])),
+            args => callback(args[0]),
             js => NodeApi.CallMethodVoid(Handle, _on, type, js));
     }
 
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<Movement> callback)
+    public void Off(string type, System.Action<IntPtr> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
     }
@@ -616,12 +616,12 @@ public sealed partial class InputMethodController : JsObject
     /// <summary>
     /// 监听 selectByRange 事件（对应 on/off）
     /// </summary>
-    public event System.Action<Range> SelectByRange
+    public event System.Action<InputMethodRange> SelectByRange
     {
         add
         {
             _eventListeners.Add(("selectByRange", value),
-                args => value(new Range(args[0])),
+                args => value(new InputMethodRange(args[0])),
                 js => NodeApi.CallMethodVoid(Handle, _on, "selectByRange", js));
         }
         remove
@@ -633,12 +633,12 @@ public sealed partial class InputMethodController : JsObject
     /// <summary>
     /// 监听 selectByMovement 事件（对应 on/off）
     /// </summary>
-    public event System.Action<Movement> SelectByMovement
+    public event System.Action<IntPtr> SelectByMovement
     {
         add
         {
             _eventListeners.Add(("selectByMovement", value),
-                args => value(new Movement(args[0])),
+                args => value(args[0]),
                 js => NodeApi.CallMethodVoid(Handle, _on, "selectByMovement", js));
         }
         remove
@@ -857,9 +857,9 @@ public sealed partial class InputMethodController : JsObject
 /// Range 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class Range : JsObject
+public sealed partial class InputMethodRange : JsObject
 {
-    public Range(IntPtr handle) : base(handle) { }
+    public InputMethodRange(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _start => "start"u8;
     private static ReadOnlySpan<byte> _end => "end"u8;
     /// <summary>
@@ -875,27 +875,12 @@ public sealed partial class Range : JsObject
 }
 
 /// <summary>
-/// Movement 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class Movement : JsObject
-{
-    public Movement(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _direction => "direction"u8;
-    /// <summary>
-    /// direction
-    /// </summary>
-    public global::HarmonyOS.ArkUI.Direction Direction => (global::HarmonyOS.ArkUI.Direction)NativeValue.ToInt(GetPropertyRaw(_direction));
-
-}
-
-/// <summary>
 /// TextConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
 public sealed record TextConfig(
     InputAttribute InputAttribute,
     CursorInfo? CursorInfo = null,
-    Range? Selection = null,
+    InputMethodRange? Selection = null,
     double? WindowId = null,
     bool? NewEditBox = null,
     global::HarmonyOS.ArkUI.CapitalizeMode? CapitalizeMode = null

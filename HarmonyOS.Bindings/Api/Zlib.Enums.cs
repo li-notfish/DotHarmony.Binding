@@ -5,9 +5,9 @@ using System.ComponentModel;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// ErrorCode 枚举
+/// ZlibErrorCode 枚举
 /// </summary>
-public enum ErrorCode
+public enum ZlibErrorCode
 {
     ErrorCodeOk = 0,
     [Description("-1")]

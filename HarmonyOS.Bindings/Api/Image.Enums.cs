@@ -877,6 +877,32 @@ public enum PngPropertyKey
 }
 
 /// <summary>
+/// ImageOrientation 枚举
+/// </summary>
+public enum ImageOrientation
+{
+    TopLeft = 1,
+    TopRight = 2,
+    BottomRight = 3,
+    BottomLeft = 4,
+    LeftTop = 5,
+    RightTop = 6,
+    RightBottom = 7,
+    LeftBottom = 8
+}
+
+/// <summary>
+/// ImageFocusMode 枚举
+/// </summary>
+public enum ImageFocusMode
+{
+    AfA = 0,
+    AfS = 1,
+    AfC = 2,
+    Mf = 3
+}
+
+/// <summary>
 /// XmageColorMode 枚举
 /// </summary>
 public enum XmageColorMode

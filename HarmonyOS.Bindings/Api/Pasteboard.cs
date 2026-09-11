@@ -150,7 +150,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createData
     /// </summary>
-    public static PasteData CreateData(string mimeType, IntPtr value)
+    public static PasteData CreateData(string mimeType, global::HarmonyOS.ArkUI.ValueType value)
     {
         return NodeApi.CallMethod(Module, _createData, static h => new PasteData(h), mimeType, value);
     }
@@ -198,7 +198,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createRecord
     /// </summary>
-    public static PasteDataRecord CreateRecord(string mimeType, IntPtr value)
+    public static PasteDataRecord CreateRecord(string mimeType, global::HarmonyOS.ArkUI.ValueType value)
     {
         return NodeApi.CallMethod(Module, _createRecord, static h => new PasteDataRecord(h), mimeType, value);
     }
@@ -289,7 +289,7 @@ public sealed partial class PasteData : JsObject
     /// <summary>
     /// addRecord
     /// </summary>
-    public void AddRecord(string mimeType, IntPtr value)
+    public void AddRecord(string mimeType, global::HarmonyOS.ArkUI.ValueType value)
     {
         CallMethodVoid(_addRecord, mimeType, value);
     }
@@ -537,7 +537,7 @@ public sealed partial class PasteDataRecord : JsObject
     /// <summary>
     /// addEntry
     /// </summary>
-    public void AddEntry(string type, IntPtr value)
+    public void AddEntry(string type, global::HarmonyOS.ArkUI.ValueType value)
     {
         CallMethodVoid(_addEntry, type, value);
     }
@@ -553,9 +553,9 @@ public sealed partial class PasteDataRecord : JsObject
     /// <summary>
     /// getData
     /// </summary>
-    public Task<IntPtr> GetDataAsync(string type)
+    public Task<global::HarmonyOS.ArkUI.ValueType> GetDataAsync(string type)
     {
-        return CallMethodAsync<IntPtr>(_getData, type);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_getData, type);
     }
 
 }

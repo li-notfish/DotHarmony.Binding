@@ -1,25 +1,13 @@
 using System;
 
-using System.ComponentModel;
-
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// ProxyTypes 枚举
+/// SocketSppType 枚举
 /// </summary>
-public enum ProxyTypes
+public enum SocketSppType
 {
-    None = 0,
-    Socks5 = 1
-}
-
-/// <summary>
-/// Protocol 枚举
-/// </summary>
-public enum Protocol
-{
-    [Description("TLSv1.2")]
-    TlSv12,
-    [Description("TLSv1.3")]
-    TlSv13
+    SppRfcomm = 0,
+    SppL2Cap = 1,
+    SppL2CapBle = 2
 }

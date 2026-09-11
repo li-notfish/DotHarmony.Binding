@@ -101,9 +101,9 @@ public static unsafe partial class PromptAction
     /// <summary>
     /// showDialog
     /// </summary>
-    public static Task<ShowDialogSuccessResponse> ShowDialogAsync(IntPtr options)
+    public static Task<PromptActionShowDialogSuccessResponse> ShowDialogAsync(IntPtr options)
     {
-        return NodeApi.CallMethodAsync(Module, _showDialog, static h => new ShowDialogSuccessResponse(h), options);
+        return NodeApi.CallMethodAsync(Module, _showDialog, static h => new PromptActionShowDialogSuccessResponse(h), options);
     }
 
     /// <summary>
@@ -125,9 +125,9 @@ public static unsafe partial class PromptAction
     /// <summary>
     /// showActionMenu
     /// </summary>
-    public static Task<ActionMenuSuccessResponse> ShowActionMenuAsync(IntPtr options)
+    public static Task<PromptActionActionMenuSuccessResponse> ShowActionMenuAsync(IntPtr options)
     {
-        return NodeApi.CallMethodAsync(Module, _showActionMenu, static h => new ActionMenuSuccessResponse(h), options);
+        return NodeApi.CallMethodAsync(Module, _showActionMenu, static h => new PromptActionActionMenuSuccessResponse(h), options);
     }
 
 }
@@ -136,9 +136,9 @@ public static unsafe partial class PromptAction
 /// ShowDialogSuccessResponse 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class ShowDialogSuccessResponse : JsObject
+public sealed partial class PromptActionShowDialogSuccessResponse : JsObject
 {
-    public ShowDialogSuccessResponse(IntPtr handle) : base(handle) { }
+    public PromptActionShowDialogSuccessResponse(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _index => "index"u8;
     /// <summary>
     /// index
@@ -151,9 +151,9 @@ public sealed partial class ShowDialogSuccessResponse : JsObject
 /// ActionMenuSuccessResponse 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class ActionMenuSuccessResponse : JsObject
+public sealed partial class PromptActionActionMenuSuccessResponse : JsObject
 {
-    public ActionMenuSuccessResponse(IntPtr handle) : base(handle) { }
+    public PromptActionActionMenuSuccessResponse(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _index => "index"u8;
     /// <summary>
     /// index

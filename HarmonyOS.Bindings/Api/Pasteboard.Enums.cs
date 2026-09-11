@@ -25,18 +25,18 @@ public enum Pattern
 }
 
 /// <summary>
-/// FileConflictOptions 枚举
+/// PasteboardFileConflictOptions 枚举
 /// </summary>
-public enum FileConflictOptions
+public enum PasteboardFileConflictOptions
 {
     Overwrite = 0,
     Skip = 1
 }
 
 /// <summary>
-/// ProgressIndicator 枚举
+/// PasteboardProgressIndicator 枚举
 /// </summary>
-public enum ProgressIndicator
+public enum PasteboardProgressIndicator
 {
     None = 0,
     Default = 1

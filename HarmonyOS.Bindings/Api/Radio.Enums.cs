@@ -23,9 +23,9 @@ public enum RadioTechnology
 }
 
 /// <summary>
-/// NetworkType 枚举
+/// RadioNetworkType 枚举
 /// </summary>
-public enum NetworkType
+public enum RadioNetworkType
 {
     NetworkTypeUnknown = 0,
     NetworkTypeGsm = 1,

@@ -12,9 +12,9 @@ public enum LevelMode
 }
 
 /// <summary>
-/// ImmersiveMode 枚举
+/// PromptActionImmersiveMode 枚举
 /// </summary>
-public enum ImmersiveMode
+public enum PromptActionImmersiveMode
 {
     Default = 0,
     Extend = 1

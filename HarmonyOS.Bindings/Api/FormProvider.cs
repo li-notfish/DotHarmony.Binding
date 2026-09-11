@@ -14,11 +14,11 @@ using HarmonyOS.ArkUI;
 namespace HarmonyOS.Bindings.Api;
 
 /// <summary>
-/// FormProvider 绑定（@ohos.application.formProvider）。
+/// FormProvider 绑定（@ohos.app.form.formProvider）。
 /// </summary>
 public static unsafe partial class FormProvider
 {
-    private const string ModuleName = "@ohos.application.formProvider";
+    private const string ModuleName = "@ohos.app.form.formProvider";
 
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
@@ -61,13 +61,26 @@ public static unsafe partial class FormProvider
                 throw new InvalidOperationException(
                     $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
 
-            HiLog.Info("HarmonyHost", $"[application.formProvider] module loaded via napi_load_module");
+            HiLog.Info("HarmonyHost", $"[app.form.formProvider] module loaded via napi_load_module");
             return _moduleRef.Value;
         }
     }
 
     private static ReadOnlySpan<byte> _setFormNextRefreshTime => "setFormNextRefreshTime"u8;
     private static ReadOnlySpan<byte> _updateForm => "updateForm"u8;
+    private static ReadOnlySpan<byte> _getFormsInfo => "getFormsInfo"u8;
+    private static ReadOnlySpan<byte> _getPublishedFormInfoById => "getPublishedFormInfoById"u8;
+    private static ReadOnlySpan<byte> _getPublishedFormInfos => "getPublishedFormInfos"u8;
+    private static ReadOnlySpan<byte> _getPublishedRunningFormInfoById => "getPublishedRunningFormInfoById"u8;
+    private static ReadOnlySpan<byte> _getPublishedRunningFormInfos => "getPublishedRunningFormInfos"u8;
+    private static ReadOnlySpan<byte> _openFormManager => "openFormManager"u8;
+    private static ReadOnlySpan<byte> _openFormEditAbility => "openFormEditAbility"u8;
+    private static ReadOnlySpan<byte> _requestOverflow => "requestOverflow"u8;
+    private static ReadOnlySpan<byte> _cancelOverflow => "cancelOverflow"u8;
+    private static ReadOnlySpan<byte> _getFormRect => "getFormRect"u8;
+    private static ReadOnlySpan<byte> _reloadForms => "reloadForms"u8;
+    private static ReadOnlySpan<byte> _reloadAllForms => "reloadAllForms"u8;
+    private static ReadOnlySpan<byte> _closeFormEditAbility => "closeFormEditAbility"u8;
 
     /// <summary>
     /// setFormNextRefreshTime
@@ -83,6 +96,118 @@ public static unsafe partial class FormProvider
     public static Task UpdateFormAsync(string formId, IntPtr formBindingData)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updateForm, formId, formBindingData);
+    }
+
+    /// <summary>
+    /// getFormsInfo
+    /// </summary>
+    public static Task<IntPtr[]> GetFormsInfoAsync(IntPtr filter)
+    {
+        return NodeApi.CallMethodAsync(Module, _getFormsInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), filter);
+    }
+
+    /// <summary>
+    /// getFormsInfo
+    /// </summary>
+    public static Task<IntPtr[]> GetFormsInfoAsync()
+    {
+        return NodeApi.CallMethodAsyncCallback(Module, _getFormsInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+    }
+
+    /// <summary>
+    /// getPublishedFormInfoById
+    /// </summary>
+    public static Task<IntPtr> GetPublishedFormInfoByIdAsync(string formId)
+    {
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getPublishedFormInfoById, formId);
+    }
+
+    /// <summary>
+    /// getPublishedFormInfos
+    /// </summary>
+    public static Task<IntPtr[]> GetPublishedFormInfosAsync()
+    {
+        return NodeApi.CallMethodAsync(Module, _getPublishedFormInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+    }
+
+    /// <summary>
+    /// getPublishedRunningFormInfoById
+    /// </summary>
+    public static Task<IntPtr> GetPublishedRunningFormInfoByIdAsync(string formId)
+    {
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getPublishedRunningFormInfoById, formId);
+    }
+
+    /// <summary>
+    /// getPublishedRunningFormInfos
+    /// </summary>
+    public static Task<IntPtr[]> GetPublishedRunningFormInfosAsync()
+    {
+        return NodeApi.CallMethodAsync(Module, _getPublishedRunningFormInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+    }
+
+    /// <summary>
+    /// openFormManager
+    /// </summary>
+    public static void OpenFormManager(IntPtr want)
+    {
+        NodeApi.CallMethodVoid(Module, _openFormManager, want);
+    }
+
+    /// <summary>
+    /// openFormEditAbility
+    /// </summary>
+    public static void OpenFormEditAbility(string abilityName, string formId, bool? isMainPage = null)
+    {
+        NodeApi.CallMethodVoid(Module, _openFormEditAbility, abilityName, formId, isMainPage);
+    }
+
+    /// <summary>
+    /// requestOverflow
+    /// </summary>
+    public static Task RequestOverflowAsync(string formId, IntPtr overflowInfo)
+    {
+        return NodeApi.CallMethodAsyncVoid(Module, _requestOverflow, formId, overflowInfo);
+    }
+
+    /// <summary>
+    /// cancelOverflow
+    /// </summary>
+    public static Task CancelOverflowAsync(string formId)
+    {
+        return NodeApi.CallMethodAsyncVoid(Module, _cancelOverflow, formId);
+    }
+
+    /// <summary>
+    /// getFormRect
+    /// </summary>
+    public static Task<IntPtr> GetFormRectAsync(string formId)
+    {
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getFormRect, formId);
+    }
+
+    /// <summary>
+    /// reloadForms
+    /// </summary>
+    public static Task<double> ReloadFormsAsync(IntPtr context, string moduleName, string abilityName, string formName)
+    {
+        return NodeApi.CallMethodAsync<double>(Module, _reloadForms, context, moduleName, abilityName, formName);
+    }
+
+    /// <summary>
+    /// reloadAllForms
+    /// </summary>
+    public static Task<double> ReloadAllFormsAsync(IntPtr context)
+    {
+        return NodeApi.CallMethodAsync<double>(Module, _reloadAllForms, context);
+    }
+
+    /// <summary>
+    /// closeFormEditAbility
+    /// </summary>
+    public static void CloseFormEditAbility(bool? isMainPage = null)
+    {
+        NodeApi.CallMethodVoid(Module, _closeFormEditAbility, isMainPage);
     }
 
 }

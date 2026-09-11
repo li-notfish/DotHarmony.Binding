@@ -5,9 +5,9 @@ using System.ComponentModel;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// AssetStatus 枚举
+/// RelationalStoreAssetStatus 枚举
 /// </summary>
-public enum AssetStatus
+public enum RelationalStoreAssetStatus
 {
     AssetNormal,
     AssetInsert,
@@ -85,9 +85,9 @@ public enum ProgressCode
 }
 
 /// <summary>
-/// SecurityLevel 枚举
+/// RelationalStoreSecurityLevel 枚举
 /// </summary>
-public enum SecurityLevel
+public enum RelationalStoreSecurityLevel
 {
     S1 = 1,
     S2 = 2,
@@ -96,9 +96,9 @@ public enum SecurityLevel
 }
 
 /// <summary>
-/// SyncMode 枚举
+/// RelationalStoreSyncMode 枚举
 /// </summary>
-public enum SyncMode
+public enum RelationalStoreSyncMode
 {
     SyncModePush = 0,
     SyncModePull = 1,
@@ -108,14 +108,23 @@ public enum SyncMode
 }
 
 /// <summary>
-/// SubscribeType 枚举
+/// RelationalStoreSubscribeType 枚举
 /// </summary>
-public enum SubscribeType
+public enum RelationalStoreSubscribeType
 {
     SubscribeTypeRemote = 0,
     SubscribeTypeCloud = 1,
     SubscribeTypeCloudDetails = 2,
     SubscribeTypeLocalDetails
+}
+
+/// <summary>
+/// RelationalStoreChangeType 枚举
+/// </summary>
+public enum RelationalStoreChangeType
+{
+    DataChange = 0,
+    AssetChange = 1
 }
 
 /// <summary>

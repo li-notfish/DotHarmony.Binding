@@ -14,11 +14,11 @@ using HarmonyOS.ArkUI;
 namespace HarmonyOS.Bindings.Api;
 
 /// <summary>
-/// FormBindingData 绑定（@ohos.application.formBindingData）。
+/// FormBindingData 绑定（@ohos.app.form.formBindingData）。
 /// </summary>
 public static unsafe partial class FormBindingData
 {
-    private const string ModuleName = "@ohos.application.formBindingData";
+    private const string ModuleName = "@ohos.app.form.formBindingData";
 
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
@@ -61,7 +61,7 @@ public static unsafe partial class FormBindingData
                 throw new InvalidOperationException(
                     $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
 
-            HiLog.Info("HarmonyHost", $"[application.formBindingData] module loaded via napi_load_module");
+            HiLog.Info("HarmonyHost", $"[app.form.formBindingData] module loaded via napi_load_module");
             return _moduleRef.Value;
         }
     }

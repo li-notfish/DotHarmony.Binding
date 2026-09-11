@@ -315,9 +315,9 @@ public sealed partial class ResourceManagerObject : JsObject
     /// <summary>
     /// getDeviceCapability
     /// </summary>
-    public Task<DeviceCapability> GetDeviceCapabilityAsync()
+    public Task<ResourceManagerDeviceCapability> GetDeviceCapabilityAsync()
     {
-        return CallMethodAsync(_getDeviceCapability, static h => new DeviceCapability(h));
+        return CallMethodAsync(_getDeviceCapability, static h => new ResourceManagerDeviceCapability(h));
     }
 
     /// <summary>
@@ -331,9 +331,9 @@ public sealed partial class ResourceManagerObject : JsObject
     /// <summary>
     /// getConfiguration
     /// </summary>
-    public Task<Configuration> GetConfigurationAsync()
+    public Task<ResourceManagerConfiguration> GetConfigurationAsync()
     {
-        return CallMethodAsync(_getConfiguration, static h => new Configuration(h));
+        return CallMethodAsync(_getConfiguration, static h => new ResourceManagerConfiguration(h));
     }
 
     /// <summary>
@@ -1067,17 +1067,17 @@ public sealed partial class ResourceManagerObject : JsObject
     /// <summary>
     /// getConfigurationSync
     /// </summary>
-    public Configuration GetConfigurationSync()
+    public ResourceManagerConfiguration GetConfigurationSync()
     {
-        return CallMethod(_getConfigurationSync, static h => new Configuration(h));
+        return CallMethod(_getConfigurationSync, static h => new ResourceManagerConfiguration(h));
     }
 
     /// <summary>
     /// getDeviceCapabilitySync
     /// </summary>
-    public DeviceCapability GetDeviceCapabilitySync()
+    public ResourceManagerDeviceCapability GetDeviceCapabilitySync()
     {
-        return CallMethod(_getDeviceCapabilitySync, static h => new DeviceCapability(h));
+        return CallMethod(_getDeviceCapabilitySync, static h => new ResourceManagerDeviceCapability(h));
     }
 
     /// <summary>
@@ -1123,7 +1123,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// <summary>
     /// getOverrideResourceManager
     /// </summary>
-    public ResourceManagerObject GetOverrideResourceManager(Configuration? configuration = null)
+    public ResourceManagerObject GetOverrideResourceManager(ResourceManagerConfiguration? configuration = null)
     {
         return CallMethod(_getOverrideResourceManager, static h => new ResourceManagerObject(h), configuration);
     }
@@ -1131,15 +1131,15 @@ public sealed partial class ResourceManagerObject : JsObject
     /// <summary>
     /// getOverrideConfiguration
     /// </summary>
-    public Configuration GetOverrideConfiguration()
+    public ResourceManagerConfiguration GetOverrideConfiguration()
     {
-        return CallMethod(_getOverrideConfiguration, static h => new Configuration(h));
+        return CallMethod(_getOverrideConfiguration, static h => new ResourceManagerConfiguration(h));
     }
 
     /// <summary>
     /// updateOverrideConfiguration
     /// </summary>
-    public void UpdateOverrideConfiguration(Configuration configuration)
+    public void UpdateOverrideConfiguration(ResourceManagerConfiguration configuration)
     {
         CallMethodVoid(_updateOverrideConfiguration, configuration);
     }
@@ -1158,20 +1158,20 @@ public sealed partial class ResourceManagerObject : JsObject
 /// DeviceCapability 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class DeviceCapability : JsObject
+public sealed partial class ResourceManagerDeviceCapability : JsObject
 {
-    public DeviceCapability(IntPtr handle) : base(handle) { }
+    public ResourceManagerDeviceCapability(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _screenDensity => "screenDensity"u8;
     private static ReadOnlySpan<byte> _deviceType => "deviceType"u8;
     /// <summary>
     /// screenDensity
     /// </summary>
-    public global::HarmonyOS.ArkUI.ScreenDensity ScreenDensity => (global::HarmonyOS.ArkUI.ScreenDensity)NativeValue.ToInt(GetPropertyRaw(_screenDensity));
+    public IntPtr ScreenDensity => GetPropertyRaw(_screenDensity);
 
     /// <summary>
     /// deviceType
     /// </summary>
-    public global::HarmonyOS.ArkUI.DeviceType DeviceType => (global::HarmonyOS.ArkUI.DeviceType)NativeValue.ToInt(GetPropertyRaw(_deviceType));
+    public IntPtr DeviceType => GetPropertyRaw(_deviceType);
 
 }
 
@@ -1179,9 +1179,9 @@ public sealed partial class DeviceCapability : JsObject
 /// Configuration 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class Configuration : JsObject
+public sealed partial class ResourceManagerConfiguration : JsObject
 {
-    public Configuration(IntPtr handle) : base(handle) { }
+    public ResourceManagerConfiguration(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _direction => "direction"u8;
     private static ReadOnlySpan<byte> _locale => "locale"u8;
     private static ReadOnlySpan<byte> _deviceType => "deviceType"u8;
@@ -1192,7 +1192,7 @@ public sealed partial class Configuration : JsObject
     /// <summary>
     /// direction
     /// </summary>
-    public global::HarmonyOS.ArkUI.Direction Direction => (global::HarmonyOS.ArkUI.Direction)NativeValue.ToInt(GetPropertyRaw(_direction));
+    public IntPtr Direction => GetPropertyRaw(_direction);
 
     /// <summary>
     /// locale
@@ -1202,17 +1202,17 @@ public sealed partial class Configuration : JsObject
     /// <summary>
     /// deviceType
     /// </summary>
-    public global::HarmonyOS.ArkUI.DeviceType DeviceType => (global::HarmonyOS.ArkUI.DeviceType)NativeValue.ToInt(GetPropertyRaw(_deviceType));
+    public IntPtr DeviceType => GetPropertyRaw(_deviceType);
 
     /// <summary>
     /// screenDensity
     /// </summary>
-    public global::HarmonyOS.ArkUI.ScreenDensity ScreenDensity => (global::HarmonyOS.ArkUI.ScreenDensity)NativeValue.ToInt(GetPropertyRaw(_screenDensity));
+    public IntPtr ScreenDensity => GetPropertyRaw(_screenDensity);
 
     /// <summary>
     /// colorMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.ColorMode ColorMode => (global::HarmonyOS.ArkUI.ColorMode)NativeValue.ToInt(GetPropertyRaw(_colorMode));
+    public IntPtr ColorMode => GetPropertyRaw(_colorMode);
 
     /// <summary>
     /// mcc

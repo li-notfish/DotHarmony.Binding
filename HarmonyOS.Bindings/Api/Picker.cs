@@ -72,30 +72,30 @@ public static unsafe partial class Picker
 /// PhotoViewPicker 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class PhotoViewPicker : JsObject
+public sealed partial class PickerPhotoViewPicker : JsObject
 {
-    public PhotoViewPicker(IntPtr handle) : base(handle) { }
+    public PickerPhotoViewPicker(IntPtr handle) : base(handle) { }
 
     private static ReadOnlySpan<byte> _PhotoViewPicker => "PhotoViewPicker"u8;
 
-    public PhotoViewPicker()
+    public PickerPhotoViewPicker()
         : this(NodeApi.CreateInstance(Picker.Module, _PhotoViewPicker)) { }
     private static ReadOnlySpan<byte> _select => "select"u8;
     private static ReadOnlySpan<byte> _save => "save"u8;
     /// <summary>
     /// select
     /// </summary>
-    public Task<PhotoSelectResult> SelectAsync(PhotoSelectOptions? option = null)
+    public Task<PickerPhotoSelectResult> SelectAsync(PickerPhotoSelectOptions? option = null)
     {
-        return CallMethodAsync(_select, static h => new PhotoSelectResult(h), option);
+        return CallMethodAsync(_select, static h => new PickerPhotoSelectResult(h), option);
     }
 
     /// <summary>
     /// select
     /// </summary>
-    public Task<PhotoSelectResult> SelectAsync()
+    public Task<PickerPhotoSelectResult> SelectAsync()
     {
-        return CallMethodAsyncCallback(_select, static h => new PhotoSelectResult(h));
+        return CallMethodAsyncCallback(_select, static h => new PickerPhotoSelectResult(h));
     }
 
     /// <summary>
@@ -228,9 +228,9 @@ public sealed partial class AudioViewPicker : JsObject
 /// PhotoSelectResult 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class PhotoSelectResult : JsObject
+public sealed partial class PickerPhotoSelectResult : JsObject
 {
-    public PhotoSelectResult(IntPtr handle) : base(handle) { }
+    public PickerPhotoSelectResult(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _photoUris => "photoUris"u8;
     private static ReadOnlySpan<byte> _isOriginalPhoto => "isOriginalPhoto"u8;
     /// <summary>
@@ -249,15 +249,15 @@ public sealed partial class PhotoSelectResult : JsObject
 /// PhotoSelectOptions 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class PhotoSelectOptions : JsObject
+public sealed partial class PickerPhotoSelectOptions : JsObject
 {
-    public PhotoSelectOptions(IntPtr handle) : base(handle) { }
+    public PickerPhotoSelectOptions(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _MIMEType => "MIMEType"u8;
     private static ReadOnlySpan<byte> _maxSelectNumber => "maxSelectNumber"u8;
     /// <summary>
     /// MIMEType
     /// </summary>
-    public global::HarmonyOS.ArkUI.PhotoViewMIMETypes? MimeType => (global::HarmonyOS.ArkUI.PhotoViewMIMETypes?)(global::HarmonyOS.ArkUI.PhotoViewMIMETypes)NativeValue.ToInt(GetPropertyRaw(_MIMEType));
+    public IntPtr MimeType => GetPropertyRaw(_MIMEType);
 
     /// <summary>
     /// maxSelectNumber

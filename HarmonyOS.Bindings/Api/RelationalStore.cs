@@ -80,17 +80,17 @@ public static unsafe partial class RelationalStore
     /// <summary>
     /// getRdbStore
     /// </summary>
-    public static Task<RdbStore> GetRdbStoreAsync(IntPtr context, StoreConfig config)
+    public static Task<RelationalStoreRdbStore> GetRdbStoreAsync(IntPtr context, IntPtr config)
     {
-        return NodeApi.CallMethodAsync(Module, _getRdbStore, static h => new RdbStore(h), context, config);
+        return NodeApi.CallMethodAsync(Module, _getRdbStore, static h => new RelationalStoreRdbStore(h), context, config);
     }
 
     /// <summary>
     /// getRdbStoreSync
     /// </summary>
-    public static RdbStore GetRdbStoreSync(IntPtr context, StoreConfig config)
+    public static RelationalStoreRdbStore GetRdbStoreSync(IntPtr context, IntPtr config)
     {
-        return NodeApi.CallMethod(Module, _getRdbStoreSync, static h => new RdbStore(h), context, config);
+        return NodeApi.CallMethod(Module, _getRdbStoreSync, static h => new RelationalStoreRdbStore(h), context, config);
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public static unsafe partial class RelationalStore
     /// <summary>
     /// deleteRdbStore
     /// </summary>
-    public static Task DeleteRdbStoreAsync(IntPtr context, StoreConfig config)
+    public static Task DeleteRdbStoreAsync(IntPtr context, IntPtr config)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, context, config);
     }
@@ -128,33 +128,33 @@ public static unsafe partial class RelationalStore
     /// <summary>
     /// getInsertSqlInfo
     /// </summary>
-    public static SqlInfo GetInsertSqlInfo(string table, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
+    public static IntPtr GetInsertSqlInfo(string table, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return NodeApi.CallMethod(Module, _getInsertSqlInfo, static h => new SqlInfo(h), table, values, conflict);
+        return NodeApi.CallMethod<IntPtr>(Module, _getInsertSqlInfo, table, values, conflict);
     }
 
     /// <summary>
     /// getUpdateSqlInfo
     /// </summary>
-    public static SqlInfo GetUpdateSqlInfo(RdbPredicates predicates, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
+    public static IntPtr GetUpdateSqlInfo(RelationalStoreRdbPredicates predicates, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return NodeApi.CallMethod(Module, _getUpdateSqlInfo, static h => new SqlInfo(h), predicates, values, conflict);
+        return NodeApi.CallMethod<IntPtr>(Module, _getUpdateSqlInfo, predicates, values, conflict);
     }
 
     /// <summary>
     /// getDeleteSqlInfo
     /// </summary>
-    public static SqlInfo GetDeleteSqlInfo(RdbPredicates predicates)
+    public static IntPtr GetDeleteSqlInfo(RelationalStoreRdbPredicates predicates)
     {
-        return NodeApi.CallMethod(Module, _getDeleteSqlInfo, static h => new SqlInfo(h), predicates);
+        return NodeApi.CallMethod<IntPtr>(Module, _getDeleteSqlInfo, predicates);
     }
 
     /// <summary>
     /// getQuerySqlInfo
     /// </summary>
-    public static SqlInfo GetQuerySqlInfo(RdbPredicates predicates, string[]? columns = null)
+    public static IntPtr GetQuerySqlInfo(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return NodeApi.CallMethod(Module, _getQuerySqlInfo, static h => new SqlInfo(h), predicates, columns);
+        return NodeApi.CallMethod<IntPtr>(Module, _getQuerySqlInfo, predicates, columns);
     }
 
 }
@@ -163,9 +163,9 @@ public static unsafe partial class RelationalStore
 /// RdbStore 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class RdbStore : JsObject
+public sealed partial class RelationalStoreRdbStore : JsObject
 {
-    public RdbStore(IntPtr handle) : base(handle) { }
+    public RelationalStoreRdbStore(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _version => "version"u8;
     private static ReadOnlySpan<byte> _rebuilt => "rebuilt"u8;
     private static ReadOnlySpan<byte> _insert => "insert"u8;
@@ -311,7 +311,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// update
     /// </summary>
-    public Task<double> UpdateAsync(IntPtr values, RdbPredicates predicates)
+    public Task<double> UpdateAsync(IntPtr values, RelationalStoreRdbPredicates predicates)
     {
         return CallMethodAsync<double>(_update, values, predicates);
     }
@@ -319,7 +319,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// update
     /// </summary>
-    public Task<double> UpdateAsync(IntPtr values, RdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution conflict)
+    public Task<double> UpdateAsync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
         return CallMethodAsync<double>(_update, values, predicates, conflict);
     }
@@ -327,7 +327,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// updateSync
     /// </summary>
-    public double UpdateSync(IntPtr values, RdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
+    public double UpdateSync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
         return CallMethod<double>(_updateSync, values, predicates, conflict);
     }
@@ -335,7 +335,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// updateWithReturning
     /// </summary>
-    public Task<Result> UpdateWithReturningAsync(IntPtr values, RdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
+    public Task<Result> UpdateWithReturningAsync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
         return CallMethodAsync(_updateWithReturning, static h => new Result(h), values, predicates, config, conflict);
     }
@@ -343,7 +343,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// updateWithReturningSync
     /// </summary>
-    public Result UpdateWithReturningSync(IntPtr values, RdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
+    public Result UpdateWithReturningSync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
         return CallMethod(_updateWithReturningSync, static h => new Result(h), values, predicates, config, conflict);
     }
@@ -351,7 +351,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// delete
     /// </summary>
-    public Task<double> DeleteAsync(RdbPredicates predicates)
+    public Task<double> DeleteAsync(RelationalStoreRdbPredicates predicates)
     {
         return CallMethodAsync<double>(_delete, predicates);
     }
@@ -359,7 +359,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// deleteSync
     /// </summary>
-    public double DeleteSync(RdbPredicates predicates)
+    public double DeleteSync(RelationalStoreRdbPredicates predicates)
     {
         return CallMethod<double>(_deleteSync, predicates);
     }
@@ -367,7 +367,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// deleteWithReturning
     /// </summary>
-    public Task<Result> DeleteWithReturningAsync(RdbPredicates predicates, ReturningConfig config)
+    public Task<Result> DeleteWithReturningAsync(RelationalStoreRdbPredicates predicates, ReturningConfig config)
     {
         return CallMethodAsync(_deleteWithReturning, static h => new Result(h), predicates, config);
     }
@@ -375,7 +375,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// deleteWithReturningSync
     /// </summary>
-    public Result DeleteWithReturningSync(RdbPredicates predicates, ReturningConfig config)
+    public Result DeleteWithReturningSync(RelationalStoreRdbPredicates predicates, ReturningConfig config)
     {
         return CallMethod(_deleteWithReturningSync, static h => new Result(h), predicates, config);
     }
@@ -383,7 +383,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// query
     /// </summary>
-    public Task<ResultSet> QueryAsync(RdbPredicates predicates)
+    public Task<ResultSet> QueryAsync(RelationalStoreRdbPredicates predicates)
     {
         return CallMethodAsyncCallback(_query, static h => new ResultSet(h), predicates);
     }
@@ -391,7 +391,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// query
     /// </summary>
-    public Task<ResultSet> QueryAsync(RdbPredicates predicates, string[] columns)
+    public Task<ResultSet> QueryAsync(RelationalStoreRdbPredicates predicates, string[] columns)
     {
         return CallMethodAsync(_query, static h => new ResultSet(h), predicates, columns);
     }
@@ -399,7 +399,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// querySync
     /// </summary>
-    public ResultSet QuerySync(RdbPredicates predicates, string[]? columns = null)
+    public ResultSet QuerySync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
         return CallMethod(_querySync, static h => new ResultSet(h), predicates, columns);
     }
@@ -415,7 +415,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// querySql
     /// </summary>
-    public Task<ResultSet> QuerySqlAsync(string sql, IntPtr[] bindArgs)
+    public Task<ResultSet> QuerySqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[] bindArgs)
     {
         return CallMethodAsync(_querySql, static h => new ResultSet(h), sql, bindArgs);
     }
@@ -423,7 +423,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// querySqlSync
     /// </summary>
-    public ResultSet QuerySqlSync(string sql, IntPtr[]? bindArgs = null)
+    public ResultSet QuerySqlSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
         return CallMethod(_querySqlSync, static h => new ResultSet(h), sql, bindArgs);
     }
@@ -431,7 +431,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// queryWithoutRowCount
     /// </summary>
-    public Task<LiteResultSet> QueryWithoutRowCountAsync(RdbPredicates predicates, string[]? columns = null)
+    public Task<LiteResultSet> QueryWithoutRowCountAsync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
         return CallMethodAsync(_queryWithoutRowCount, static h => new LiteResultSet(h), predicates, columns);
     }
@@ -439,7 +439,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// queryWithoutRowCountSync
     /// </summary>
-    public LiteResultSet QueryWithoutRowCountSync(RdbPredicates predicates, string[]? columns = null)
+    public LiteResultSet QueryWithoutRowCountSync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
         return CallMethod(_queryWithoutRowCountSync, static h => new LiteResultSet(h), predicates, columns);
     }
@@ -447,7 +447,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// querySqlWithoutRowCount
     /// </summary>
-    public Task<LiteResultSet> QuerySqlWithoutRowCountAsync(string sql, IntPtr[]? bindArgs = null)
+    public Task<LiteResultSet> QuerySqlWithoutRowCountAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
         return CallMethodAsync(_querySqlWithoutRowCount, static h => new LiteResultSet(h), sql, bindArgs);
     }
@@ -455,7 +455,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// querySqlWithoutRowCountSync
     /// </summary>
-    public LiteResultSet QuerySqlWithoutRowCountSync(string sql, IntPtr[]? bindArgs = null)
+    public LiteResultSet QuerySqlWithoutRowCountSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
         return CallMethod(_querySqlWithoutRowCountSync, static h => new LiteResultSet(h), sql, bindArgs);
     }
@@ -463,7 +463,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// queryByStep
     /// </summary>
-    public Task<ResultSet> QueryByStepAsync(string sql, IntPtr[]? bindArgs = null)
+    public Task<ResultSet> QueryByStepAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
         return CallMethodAsync(_queryByStep, static h => new ResultSet(h), sql, bindArgs);
     }
@@ -471,7 +471,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// queryByStep
     /// </summary>
-    public Task<ResultSet> QueryByStepAsync(RdbPredicates predicates, string[]? columns = null)
+    public Task<ResultSet> QueryByStepAsync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
         return CallMethodAsync(_queryByStep, static h => new ResultSet(h), predicates, columns);
     }
@@ -511,7 +511,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// executeSql
     /// </summary>
-    public Task ExecuteSqlAsync(string sql, IntPtr[] bindArgs)
+    public Task ExecuteSqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[] bindArgs)
     {
         return CallMethodAsyncVoid(_executeSql, sql, bindArgs);
     }
@@ -519,25 +519,25 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// execute
     /// </summary>
-    public Task<IntPtr> ExecuteAsync(string sql, IntPtr[]? args = null)
+    public Task<global::HarmonyOS.ArkUI.ValueType> ExecuteAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethodAsync<IntPtr>(_execute, sql, args);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_execute, sql, args);
     }
 
     /// <summary>
     /// execute
     /// </summary>
-    public Task<IntPtr> ExecuteAsync(string sql, double txId, IntPtr[]? args = null)
+    public Task<global::HarmonyOS.ArkUI.ValueType> ExecuteAsync(string sql, double txId, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethodAsync<IntPtr>(_execute, sql, txId, args);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_execute, sql, txId, args);
     }
 
     /// <summary>
     /// executeSync
     /// </summary>
-    public IntPtr ExecuteSync(string sql, IntPtr[]? args = null)
+    public global::HarmonyOS.ArkUI.ValueType ExecuteSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethod<IntPtr>(_executeSync, sql, args);
+        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_executeSync, sql, args);
     }
 
     /// <summary>
@@ -639,7 +639,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// sync
     /// </summary>
-    public Task<object[]> SyncAsync(global::HarmonyOS.ArkUI.SyncMode mode, RdbPredicates predicates)
+    public Task<object[]> SyncAsync(global::HarmonyOS.ArkUI.SyncMode mode, RelationalStoreRdbPredicates predicates)
     {
         return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), mode, predicates);
     }
@@ -647,7 +647,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// syncEx
     /// </summary>
-    public Task<SyncResult[]> SyncExAsync(global::HarmonyOS.ArkUI.SyncMode mode, RdbPredicates predicates)
+    public Task<SyncResult[]> SyncExAsync(global::HarmonyOS.ArkUI.SyncMode mode, RelationalStoreRdbPredicates predicates)
     {
         return CallMethodAsync(_syncEx, h => ValueConverter.ConvertArray(h, static e => new SyncResult(e)), mode, predicates);
     }
@@ -671,7 +671,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// cloudSyncEx
     /// </summary>
-    public Task CloudSyncExAsync(CloudSyncConfig config, IntPtr progress)
+    public Task CloudSyncExAsync(IntPtr config, IntPtr progress)
     {
         return CallMethodAsyncVoid(_cloudSyncEx, config, progress);
     }
@@ -687,7 +687,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// remoteQuery
     /// </summary>
-    public Task<ResultSet> RemoteQueryAsync(string device, string table, RdbPredicates predicates, string[] columns)
+    public Task<ResultSet> RemoteQueryAsync(string device, string table, RelationalStoreRdbPredicates predicates, string[] columns)
     {
         return CallMethodAsync(_remoteQuery, static h => new ResultSet(h), device, table, predicates, columns);
     }
@@ -767,7 +767,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// attach
     /// </summary>
-    public Task<double> AttachAsync(IntPtr context, StoreConfig config, string attachName, double? waitTime = null)
+    public Task<double> AttachAsync(IntPtr context, IntPtr config, string attachName, double? waitTime = null)
     {
         return CallMethodAsync<double>(_attach, context, config, attachName, waitTime);
     }
@@ -783,7 +783,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// lockRow
     /// </summary>
-    public Task LockRowAsync(RdbPredicates predicates)
+    public Task LockRowAsync(RelationalStoreRdbPredicates predicates)
     {
         return CallMethodAsyncVoid(_lockRow, predicates);
     }
@@ -791,7 +791,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// unlockRow
     /// </summary>
-    public Task UnlockRowAsync(RdbPredicates predicates)
+    public Task UnlockRowAsync(RelationalStoreRdbPredicates predicates)
     {
         return CallMethodAsyncVoid(_unlockRow, predicates);
     }
@@ -799,7 +799,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// queryLockedRow
     /// </summary>
-    public Task<ResultSet> QueryLockedRowAsync(RdbPredicates predicates, string[]? columns = null)
+    public Task<ResultSet> QueryLockedRowAsync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
         return CallMethodAsync(_queryLockedRow, static h => new ResultSet(h), predicates, columns);
     }
@@ -1059,123 +1059,16 @@ public sealed partial class RdbStore : JsObject
 }
 
 /// <summary>
-/// StoreConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record StoreConfig(
-    string Name,
-    global::HarmonyOS.ArkUI.SecurityLevel SecurityLevel,
-    bool? Encrypt = null,
-    string? DataGroupId = null,
-    string? CustomDir = null,
-    string? RootDir = null,
-    bool? AutoCleanDirtyData = null,
-    bool? AllowRebuild = null,
-    bool? Vector = null,
-    bool? IsReadOnly = null,
-    string[]? PluginLibs = null,
-    CryptoParam? CryptoParam = null,
-    global::HarmonyOS.ArkUI.Tokenizer? Tokenizer = null,
-    bool? Persist = null,
-    bool? EnableSemanticIndex = null
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _name = System.Text.Encoding.UTF8.GetBytes("name");
-        var _nameV = NativeValue.From(Name);
-        if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _name, _nameV);
-        var _securityLevel = System.Text.Encoding.UTF8.GetBytes("securityLevel");
-        var _securityLevelV = NativeValue.From(SecurityLevel);
-        if (_securityLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _securityLevel, _securityLevelV);
-        var _encrypt = System.Text.Encoding.UTF8.GetBytes("encrypt");
-        var _encryptV = NativeValue.From(Encrypt);
-        if (_encryptV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encrypt, _encryptV);
-        var _dataGroupId = System.Text.Encoding.UTF8.GetBytes("dataGroupId");
-        var _dataGroupIdV = NativeValue.From(DataGroupId);
-        if (_dataGroupIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataGroupId, _dataGroupIdV);
-        var _customDir = System.Text.Encoding.UTF8.GetBytes("customDir");
-        var _customDirV = NativeValue.From(CustomDir);
-        if (_customDirV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _customDir, _customDirV);
-        var _rootDir = System.Text.Encoding.UTF8.GetBytes("rootDir");
-        var _rootDirV = NativeValue.From(RootDir);
-        if (_rootDirV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rootDir, _rootDirV);
-        var _autoCleanDirtyData = System.Text.Encoding.UTF8.GetBytes("autoCleanDirtyData");
-        var _autoCleanDirtyDataV = NativeValue.From(AutoCleanDirtyData);
-        if (_autoCleanDirtyDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoCleanDirtyData, _autoCleanDirtyDataV);
-        var _allowRebuild = System.Text.Encoding.UTF8.GetBytes("allowRebuild");
-        var _allowRebuildV = NativeValue.From(AllowRebuild);
-        if (_allowRebuildV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _allowRebuild, _allowRebuildV);
-        var _vector = System.Text.Encoding.UTF8.GetBytes("vector");
-        var _vectorV = NativeValue.From(Vector);
-        if (_vectorV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _vector, _vectorV);
-        var _isReadOnly = System.Text.Encoding.UTF8.GetBytes("isReadOnly");
-        var _isReadOnlyV = NativeValue.From(IsReadOnly);
-        if (_isReadOnlyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isReadOnly, _isReadOnlyV);
-        var _pluginLibs = System.Text.Encoding.UTF8.GetBytes("pluginLibs");
-        var _pluginLibsV = NativeValue.From(PluginLibs);
-        if (_pluginLibsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pluginLibs, _pluginLibsV);
-        var _cryptoParam = System.Text.Encoding.UTF8.GetBytes("cryptoParam");
-        var _cryptoParamV = NativeValue.From(CryptoParam);
-        if (_cryptoParamV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cryptoParam, _cryptoParamV);
-        var _tokenizer = System.Text.Encoding.UTF8.GetBytes("tokenizer");
-        var _tokenizerV = NativeValue.From(Tokenizer);
-        if (_tokenizerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tokenizer, _tokenizerV);
-        var _persist = System.Text.Encoding.UTF8.GetBytes("persist");
-        var _persistV = NativeValue.From(Persist);
-        if (_persistV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _persist, _persistV);
-        var _enableSemanticIndex = System.Text.Encoding.UTF8.GetBytes("enableSemanticIndex");
-        var _enableSemanticIndexV = NativeValue.From(EnableSemanticIndex);
-        if (_enableSemanticIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enableSemanticIndex, _enableSemanticIndexV);
-    }
-}
-
-/// <summary>
-/// SqlInfo 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class SqlInfo : JsObject
-{
-    public SqlInfo(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _sql => "sql"u8;
-    private static ReadOnlySpan<byte> _args => "args"u8;
-    /// <summary>
-    /// sql
-    /// </summary>
-    public string Sql => NativeValue.ToString(GetPropertyRaw(_sql)) ?? string.Empty;
-
-    /// <summary>
-    /// args
-    /// </summary>
-    public IntPtr[] Args => ValueConverter.ConvertArray(GetPropertyRaw(_args), static e => ValueConverter.Convert<IntPtr>(e));
-
-}
-
-/// <summary>
 /// RdbPredicates 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class RdbPredicates : JsObject
+public sealed partial class RelationalStoreRdbPredicates : JsObject
 {
-    public RdbPredicates(IntPtr handle) : base(handle) { }
+    public RelationalStoreRdbPredicates(IntPtr handle) : base(handle) { }
 
     private static ReadOnlySpan<byte> _RdbPredicates => "RdbPredicates"u8;
 
-    public RdbPredicates(string name)
+    public RelationalStoreRdbPredicates(string name)
         : this(NodeApi.CreateInstance(RelationalStore.Module, _RdbPredicates, name)) { }
     private static ReadOnlySpan<byte> _inDevices => "inDevices"u8;
     private static ReadOnlySpan<byte> _inAllDevices => "inAllDevices"u8;
@@ -1213,265 +1106,265 @@ public sealed partial class RdbPredicates : JsObject
     /// <summary>
     /// inDevices
     /// </summary>
-    public RdbPredicates InDevices(string[] devices)
+    public RelationalStoreRdbPredicates InDevices(string[] devices)
     {
-        return CallMethod(_inDevices, static h => new RdbPredicates(h), devices);
+        return CallMethod(_inDevices, static h => new RelationalStoreRdbPredicates(h), devices);
     }
 
     /// <summary>
     /// inAllDevices
     /// </summary>
-    public RdbPredicates InAllDevices()
+    public RelationalStoreRdbPredicates InAllDevices()
     {
-        return CallMethod(_inAllDevices, static h => new RdbPredicates(h));
+        return CallMethod(_inAllDevices, static h => new RelationalStoreRdbPredicates(h));
     }
 
     /// <summary>
     /// equalTo
     /// </summary>
-    public RdbPredicates EqualTo(string field, IntPtr value)
+    public RelationalStoreRdbPredicates EqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_equalTo, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_equalTo, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// notEqualTo
     /// </summary>
-    public RdbPredicates NotEqualTo(string field, IntPtr value)
+    public RelationalStoreRdbPredicates NotEqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_notEqualTo, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_notEqualTo, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// beginWrap
     /// </summary>
-    public RdbPredicates BeginWrap()
+    public RelationalStoreRdbPredicates BeginWrap()
     {
-        return CallMethod(_beginWrap, static h => new RdbPredicates(h));
+        return CallMethod(_beginWrap, static h => new RelationalStoreRdbPredicates(h));
     }
 
     /// <summary>
     /// endWrap
     /// </summary>
-    public RdbPredicates EndWrap()
+    public RelationalStoreRdbPredicates EndWrap()
     {
-        return CallMethod(_endWrap, static h => new RdbPredicates(h));
+        return CallMethod(_endWrap, static h => new RelationalStoreRdbPredicates(h));
     }
 
     /// <summary>
     /// or
     /// </summary>
-    public RdbPredicates Or()
+    public RelationalStoreRdbPredicates Or()
     {
-        return CallMethod(_or, static h => new RdbPredicates(h));
+        return CallMethod(_or, static h => new RelationalStoreRdbPredicates(h));
     }
 
     /// <summary>
     /// and
     /// </summary>
-    public RdbPredicates And()
+    public RelationalStoreRdbPredicates And()
     {
-        return CallMethod(_and, static h => new RdbPredicates(h));
+        return CallMethod(_and, static h => new RelationalStoreRdbPredicates(h));
     }
 
     /// <summary>
     /// contains
     /// </summary>
-    public RdbPredicates Contains(string field, string value)
+    public RelationalStoreRdbPredicates Contains(string field, string value)
     {
-        return CallMethod(_contains, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_contains, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// beginsWith
     /// </summary>
-    public RdbPredicates BeginsWith(string field, string value)
+    public RelationalStoreRdbPredicates BeginsWith(string field, string value)
     {
-        return CallMethod(_beginsWith, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_beginsWith, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// endsWith
     /// </summary>
-    public RdbPredicates EndsWith(string field, string value)
+    public RelationalStoreRdbPredicates EndsWith(string field, string value)
     {
-        return CallMethod(_endsWith, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_endsWith, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// isNull
     /// </summary>
-    public RdbPredicates IsNull(string field)
+    public RelationalStoreRdbPredicates IsNull(string field)
     {
-        return CallMethod(_isNull, static h => new RdbPredicates(h), field);
+        return CallMethod(_isNull, static h => new RelationalStoreRdbPredicates(h), field);
     }
 
     /// <summary>
     /// isNotNull
     /// </summary>
-    public RdbPredicates IsNotNull(string field)
+    public RelationalStoreRdbPredicates IsNotNull(string field)
     {
-        return CallMethod(_isNotNull, static h => new RdbPredicates(h), field);
+        return CallMethod(_isNotNull, static h => new RelationalStoreRdbPredicates(h), field);
     }
 
     /// <summary>
     /// like
     /// </summary>
-    public RdbPredicates Like(string field, string value)
+    public RelationalStoreRdbPredicates Like(string field, string value)
     {
-        return CallMethod(_like, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_like, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// glob
     /// </summary>
-    public RdbPredicates Glob(string field, string value)
+    public RelationalStoreRdbPredicates Glob(string field, string value)
     {
-        return CallMethod(_glob, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_glob, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// between
     /// </summary>
-    public RdbPredicates Between(string field, IntPtr low, IntPtr high)
+    public RelationalStoreRdbPredicates Between(string field, global::HarmonyOS.ArkUI.ValueType low, global::HarmonyOS.ArkUI.ValueType high)
     {
-        return CallMethod(_between, static h => new RdbPredicates(h), field, low, high);
+        return CallMethod(_between, static h => new RelationalStoreRdbPredicates(h), field, low, high);
     }
 
     /// <summary>
     /// notBetween
     /// </summary>
-    public RdbPredicates NotBetween(string field, IntPtr low, IntPtr high)
+    public RelationalStoreRdbPredicates NotBetween(string field, global::HarmonyOS.ArkUI.ValueType low, global::HarmonyOS.ArkUI.ValueType high)
     {
-        return CallMethod(_notBetween, static h => new RdbPredicates(h), field, low, high);
+        return CallMethod(_notBetween, static h => new RelationalStoreRdbPredicates(h), field, low, high);
     }
 
     /// <summary>
     /// greaterThan
     /// </summary>
-    public RdbPredicates GreaterThan(string field, IntPtr value)
+    public RelationalStoreRdbPredicates GreaterThan(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_greaterThan, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_greaterThan, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// lessThan
     /// </summary>
-    public RdbPredicates LessThan(string field, IntPtr value)
+    public RelationalStoreRdbPredicates LessThan(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_lessThan, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_lessThan, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// greaterThanOrEqualTo
     /// </summary>
-    public RdbPredicates GreaterThanOrEqualTo(string field, IntPtr value)
+    public RelationalStoreRdbPredicates GreaterThanOrEqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_greaterThanOrEqualTo, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_greaterThanOrEqualTo, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// lessThanOrEqualTo
     /// </summary>
-    public RdbPredicates LessThanOrEqualTo(string field, IntPtr value)
+    public RelationalStoreRdbPredicates LessThanOrEqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_lessThanOrEqualTo, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_lessThanOrEqualTo, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// orderByAsc
     /// </summary>
-    public RdbPredicates OrderByAsc(string field)
+    public RelationalStoreRdbPredicates OrderByAsc(string field)
     {
-        return CallMethod(_orderByAsc, static h => new RdbPredicates(h), field);
+        return CallMethod(_orderByAsc, static h => new RelationalStoreRdbPredicates(h), field);
     }
 
     /// <summary>
     /// orderByDesc
     /// </summary>
-    public RdbPredicates OrderByDesc(string field)
+    public RelationalStoreRdbPredicates OrderByDesc(string field)
     {
-        return CallMethod(_orderByDesc, static h => new RdbPredicates(h), field);
+        return CallMethod(_orderByDesc, static h => new RelationalStoreRdbPredicates(h), field);
     }
 
     /// <summary>
     /// distinct
     /// </summary>
-    public RdbPredicates Distinct()
+    public RelationalStoreRdbPredicates Distinct()
     {
-        return CallMethod(_distinct, static h => new RdbPredicates(h));
+        return CallMethod(_distinct, static h => new RelationalStoreRdbPredicates(h));
     }
 
     /// <summary>
     /// limitAs
     /// </summary>
-    public RdbPredicates LimitAs(double value)
+    public RelationalStoreRdbPredicates LimitAs(double value)
     {
-        return CallMethod(_limitAs, static h => new RdbPredicates(h), value);
+        return CallMethod(_limitAs, static h => new RelationalStoreRdbPredicates(h), value);
     }
 
     /// <summary>
     /// offsetAs
     /// </summary>
-    public RdbPredicates OffsetAs(double rowOffset)
+    public RelationalStoreRdbPredicates OffsetAs(double rowOffset)
     {
-        return CallMethod(_offsetAs, static h => new RdbPredicates(h), rowOffset);
+        return CallMethod(_offsetAs, static h => new RelationalStoreRdbPredicates(h), rowOffset);
     }
 
     /// <summary>
     /// groupBy
     /// </summary>
-    public RdbPredicates GroupBy(string[] fields)
+    public RelationalStoreRdbPredicates GroupBy(string[] fields)
     {
-        return CallMethod(_groupBy, static h => new RdbPredicates(h), fields);
+        return CallMethod(_groupBy, static h => new RelationalStoreRdbPredicates(h), fields);
     }
 
     /// <summary>
     /// indexedBy
     /// </summary>
-    public RdbPredicates IndexedBy(string field)
+    public RelationalStoreRdbPredicates IndexedBy(string field)
     {
-        return CallMethod(_indexedBy, static h => new RdbPredicates(h), field);
+        return CallMethod(_indexedBy, static h => new RelationalStoreRdbPredicates(h), field);
     }
 
     /// <summary>
     /// in
     /// </summary>
-    public RdbPredicates In(string field, IntPtr[] value)
+    public RelationalStoreRdbPredicates In(string field, global::HarmonyOS.ArkUI.ValueType[] value)
     {
-        return CallMethod(_in, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_in, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// notIn
     /// </summary>
-    public RdbPredicates NotIn(string field, IntPtr[] value)
+    public RelationalStoreRdbPredicates NotIn(string field, global::HarmonyOS.ArkUI.ValueType[] value)
     {
-        return CallMethod(_notIn, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_notIn, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// notContains
     /// </summary>
-    public RdbPredicates NotContains(string field, string value)
+    public RelationalStoreRdbPredicates NotContains(string field, string value)
     {
-        return CallMethod(_notContains, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_notContains, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// notLike
     /// </summary>
-    public RdbPredicates NotLike(string field, string value)
+    public RelationalStoreRdbPredicates NotLike(string field, string value)
     {
-        return CallMethod(_notLike, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_notLike, static h => new RelationalStoreRdbPredicates(h), field, value);
     }
 
     /// <summary>
     /// having
     /// </summary>
-    public RdbPredicates Having(string conditions, IntPtr[]? args = null)
+    public RelationalStoreRdbPredicates Having(string conditions, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethod(_having, static h => new RdbPredicates(h), conditions, args);
+        return CallMethod(_having, static h => new RelationalStoreRdbPredicates(h), conditions, args);
     }
 
 }
@@ -1793,9 +1686,9 @@ public sealed partial class ResultSet : JsObject
     /// <summary>
     /// getAsset
     /// </summary>
-    public Asset GetAsset(double columnIndex)
+    public IntPtr GetAsset(double columnIndex)
     {
-        return CallMethod(_getAsset, static h => new Asset(h), columnIndex);
+        return CallMethod<IntPtr>(_getAsset, columnIndex);
     }
 
     /// <summary>
@@ -1809,9 +1702,9 @@ public sealed partial class ResultSet : JsObject
     /// <summary>
     /// getValue
     /// </summary>
-    public IntPtr GetValue(double columnIndex)
+    public global::HarmonyOS.ArkUI.ValueType GetValue(double columnIndex)
     {
-        return CallMethod<IntPtr>(_getValue, columnIndex);
+        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_getValue, columnIndex);
     }
 
     /// <summary>
@@ -1981,9 +1874,9 @@ public sealed partial class LiteResultSet : JsObject
     /// <summary>
     /// getAsset
     /// </summary>
-    public Asset GetAsset(double columnIndex)
+    public IntPtr GetAsset(double columnIndex)
     {
-        return CallMethod(_getAsset, static h => new Asset(h), columnIndex);
+        return CallMethod<IntPtr>(_getAsset, columnIndex);
     }
 
     /// <summary>
@@ -1997,9 +1890,9 @@ public sealed partial class LiteResultSet : JsObject
     /// <summary>
     /// getValue
     /// </summary>
-    public IntPtr GetValue(double columnIndex)
+    public global::HarmonyOS.ArkUI.ValueType GetValue(double columnIndex)
     {
-        return CallMethod<IntPtr>(_getValue, columnIndex);
+        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_getValue, columnIndex);
     }
 
     /// <summary>
@@ -2131,32 +2024,6 @@ public sealed partial class SyncResult : JsObject
 }
 
 /// <summary>
-/// CloudSyncConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record CloudSyncConfig(
-    global::HarmonyOS.ArkUI.SyncMode Mode,
-    bool? EnablePredicate = null,
-    RdbPredicates? Predicate = null
-) : INapiRecord
-{
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _mode = System.Text.Encoding.UTF8.GetBytes("mode");
-        var _modeV = NativeValue.From(Mode);
-        if (_modeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mode, _modeV);
-        var _enablePredicate = System.Text.Encoding.UTF8.GetBytes("enablePredicate");
-        var _enablePredicateV = NativeValue.From(EnablePredicate);
-        if (_enablePredicateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enablePredicate, _enablePredicateV);
-        var _predicate = System.Text.Encoding.UTF8.GetBytes("predicate");
-        var _predicateV = NativeValue.From(Predicate);
-        if (_predicateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _predicate, _predicateV);
-    }
-}
-
-/// <summary>
 /// Transaction 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -2274,7 +2141,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// update
     /// </summary>
-    public Task<double> UpdateAsync(IntPtr values, RdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
+    public Task<double> UpdateAsync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
         return CallMethodAsync<double>(_update, values, predicates, conflict);
     }
@@ -2282,7 +2149,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// updateSync
     /// </summary>
-    public double UpdateSync(IntPtr values, RdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
+    public double UpdateSync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
         return CallMethod<double>(_updateSync, values, predicates, conflict);
     }
@@ -2290,7 +2157,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// updateWithReturning
     /// </summary>
-    public Task<Result> UpdateWithReturningAsync(IntPtr values, RdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
+    public Task<Result> UpdateWithReturningAsync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
         return CallMethodAsync(_updateWithReturning, static h => new Result(h), values, predicates, config, conflict);
     }
@@ -2298,7 +2165,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// updateWithReturningSync
     /// </summary>
-    public Result UpdateWithReturningSync(IntPtr values, RdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
+    public Result UpdateWithReturningSync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
         return CallMethod(_updateWithReturningSync, static h => new Result(h), values, predicates, config, conflict);
     }
@@ -2306,7 +2173,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// delete
     /// </summary>
-    public Task<double> DeleteAsync(RdbPredicates predicates)
+    public Task<double> DeleteAsync(RelationalStoreRdbPredicates predicates)
     {
         return CallMethodAsync<double>(_delete, predicates);
     }
@@ -2314,7 +2181,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// deleteSync
     /// </summary>
-    public double DeleteSync(RdbPredicates predicates)
+    public double DeleteSync(RelationalStoreRdbPredicates predicates)
     {
         return CallMethod<double>(_deleteSync, predicates);
     }
@@ -2322,7 +2189,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// deleteWithReturning
     /// </summary>
-    public Task<Result> DeleteWithReturningAsync(RdbPredicates predicates, ReturningConfig config)
+    public Task<Result> DeleteWithReturningAsync(RelationalStoreRdbPredicates predicates, ReturningConfig config)
     {
         return CallMethodAsync(_deleteWithReturning, static h => new Result(h), predicates, config);
     }
@@ -2330,7 +2197,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// deleteWithReturningSync
     /// </summary>
-    public Result DeleteWithReturningSync(RdbPredicates predicates, ReturningConfig config)
+    public Result DeleteWithReturningSync(RelationalStoreRdbPredicates predicates, ReturningConfig config)
     {
         return CallMethod(_deleteWithReturningSync, static h => new Result(h), predicates, config);
     }
@@ -2338,7 +2205,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// query
     /// </summary>
-    public Task<ResultSet> QueryAsync(RdbPredicates predicates, string[]? columns = null)
+    public Task<ResultSet> QueryAsync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
         return CallMethodAsync(_query, static h => new ResultSet(h), predicates, columns);
     }
@@ -2346,7 +2213,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// querySync
     /// </summary>
-    public ResultSet QuerySync(RdbPredicates predicates, string[]? columns = null)
+    public ResultSet QuerySync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
         return CallMethod(_querySync, static h => new ResultSet(h), predicates, columns);
     }
@@ -2354,7 +2221,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// querySql
     /// </summary>
-    public Task<ResultSet> QuerySqlAsync(string sql, IntPtr[]? args = null)
+    public Task<ResultSet> QuerySqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
         return CallMethodAsync(_querySql, static h => new ResultSet(h), sql, args);
     }
@@ -2362,7 +2229,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// querySqlSync
     /// </summary>
-    public ResultSet QuerySqlSync(string sql, IntPtr[]? args = null)
+    public ResultSet QuerySqlSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
         return CallMethod(_querySqlSync, static h => new ResultSet(h), sql, args);
     }
@@ -2370,7 +2237,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// queryWithoutRowCount
     /// </summary>
-    public Task<LiteResultSet> QueryWithoutRowCountAsync(RdbPredicates predicates, string[]? columns = null)
+    public Task<LiteResultSet> QueryWithoutRowCountAsync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
         return CallMethodAsync(_queryWithoutRowCount, static h => new LiteResultSet(h), predicates, columns);
     }
@@ -2378,7 +2245,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// queryWithoutRowCountSync
     /// </summary>
-    public LiteResultSet QueryWithoutRowCountSync(RdbPredicates predicates, string[]? columns = null)
+    public LiteResultSet QueryWithoutRowCountSync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
         return CallMethod(_queryWithoutRowCountSync, static h => new LiteResultSet(h), predicates, columns);
     }
@@ -2386,7 +2253,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// querySqlWithoutRowCount
     /// </summary>
-    public Task<LiteResultSet> QuerySqlWithoutRowCountAsync(string sql, IntPtr[]? bindArgs = null)
+    public Task<LiteResultSet> QuerySqlWithoutRowCountAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
         return CallMethodAsync(_querySqlWithoutRowCount, static h => new LiteResultSet(h), sql, bindArgs);
     }
@@ -2394,7 +2261,7 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// querySqlWithoutRowCountSync
     /// </summary>
-    public LiteResultSet QuerySqlWithoutRowCountSync(string sql, IntPtr[]? bindArgs = null)
+    public LiteResultSet QuerySqlWithoutRowCountSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
         return CallMethod(_querySqlWithoutRowCountSync, static h => new LiteResultSet(h), sql, bindArgs);
     }
@@ -2402,17 +2269,17 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// execute
     /// </summary>
-    public Task<IntPtr> ExecuteAsync(string sql, IntPtr[]? args = null)
+    public Task<global::HarmonyOS.ArkUI.ValueType> ExecuteAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethodAsync<IntPtr>(_execute, sql, args);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_execute, sql, args);
     }
 
     /// <summary>
     /// executeSync
     /// </summary>
-    public IntPtr ExecuteSync(string sql, IntPtr[]? args = null)
+    public global::HarmonyOS.ArkUI.ValueType ExecuteSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethod<IntPtr>(_executeSync, sql, args);
+        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_executeSync, sql, args);
     }
 
 }
@@ -2472,55 +2339,4 @@ public sealed record CryptoParam(
         if (_cryptoPageSizeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _cryptoPageSize, _cryptoPageSizeV);
     }
-}
-
-/// <summary>
-/// Asset 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class Asset : JsObject
-{
-    public Asset(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _name => "name"u8;
-    private static ReadOnlySpan<byte> _uri => "uri"u8;
-    private static ReadOnlySpan<byte> _path => "path"u8;
-    private static ReadOnlySpan<byte> _createTime => "createTime"u8;
-    private static ReadOnlySpan<byte> _modifyTime => "modifyTime"u8;
-    private static ReadOnlySpan<byte> _size => "size"u8;
-    private static ReadOnlySpan<byte> _status => "status"u8;
-    /// <summary>
-    /// name
-    /// </summary>
-    public string Name => NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
-
-    /// <summary>
-    /// uri
-    /// </summary>
-    public string Uri => NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
-
-    /// <summary>
-    /// path
-    /// </summary>
-    public string Path => NativeValue.ToString(GetPropertyRaw(_path)) ?? string.Empty;
-
-    /// <summary>
-    /// createTime
-    /// </summary>
-    public string CreateTime => NativeValue.ToString(GetPropertyRaw(_createTime)) ?? string.Empty;
-
-    /// <summary>
-    /// modifyTime
-    /// </summary>
-    public string ModifyTime => NativeValue.ToString(GetPropertyRaw(_modifyTime)) ?? string.Empty;
-
-    /// <summary>
-    /// size
-    /// </summary>
-    public string Size => NativeValue.ToString(GetPropertyRaw(_size)) ?? string.Empty;
-
-    /// <summary>
-    /// status
-    /// </summary>
-    public global::HarmonyOS.ArkUI.AssetStatus? Status => (global::HarmonyOS.ArkUI.AssetStatus?)(global::HarmonyOS.ArkUI.AssetStatus)NativeValue.ToInt(GetPropertyRaw(_status));
-
 }

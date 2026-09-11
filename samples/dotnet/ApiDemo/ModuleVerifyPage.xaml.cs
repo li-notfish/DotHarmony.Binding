@@ -238,4 +238,44 @@ public partial class ModuleVerifyPage : ContentPage
         }
         catch (Exception ex) { ShowError("Geolocation", ex); }
     }
+
+    // 封送专项（2.6 用例）：byte[] → JS ArrayBuffer → byte[] 往返，内容必须一致
+    private async void OnVerifyArrayBuffer(object? sender, EventArgs e)
+    {
+        try
+        {
+            byte[] payload = [0x01, 0x02, 0x03, 0xF0, 0x0F, 0x7F, 0x80, 0xFF];
+            var echoed = await NodeApi.CallMethodAsync<byte[]>(NodeApi.GetGlobal(), "echoArrayBuffer", payload);
+            bool ok = echoed.AsSpan().SequenceEqual(payload);
+            ShowResult("ArrayBuffer", ok
+                ? $"byte[{payload.Length}] round-trip OK: {Convert.ToHexString(echoed)}"
+                : $"MISMATCH ({echoed.Length} bytes): {Convert.ToHexString(echoed)}");
+        }
+        catch (Exception ex) { ShowError("ArrayBuffer", ex); }
+    }
+
+    // 封送专项（2.6 用例）：JS Map → JsMap 活视图读取（Count/TryGet/Entries）；
+    // JsMap.Create 写入 → JS 侧 forEach 求和回读
+    private async void OnVerifyJsMap(object? sender, EventArgs e)
+    {
+        try
+        {
+            var map = await NodeApi.CallMethodAsync(
+                NodeApi.GetGlobal(), "makeMap"u8,
+                static h => new JsMap<double, string>(h));
+            string? two = map.TryGet(2, out var twoValue) ? twoValue : null;
+            bool readOk = map.Count == 3
+                && two == "two"
+                && map.Entries().Any(kv => kv.Key == 3 && kv.Value == "three");
+            var readMsg = $"read: Count={map.Count} TryGet(2)={two ?? "null"}";
+
+            var written = JsMap<double, double>.Create();
+            written.Set(1, 10).Set(2, 20);
+            var sum = await NodeApi.CallMethodAsync<double>(NodeApi.GetGlobal(), "sumMap", written);
+            var writeOk = sum == 30;
+
+            ShowResult("JsMap", $"{readMsg} · readOk={readOk} · write sum={sum} writeOk={writeOk}");
+        }
+        catch (Exception ex) { ShowError("JsMap", ex); }
+    }
 }

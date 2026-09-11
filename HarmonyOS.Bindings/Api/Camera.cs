@@ -1114,7 +1114,7 @@ public sealed partial class Profile : JsObject
     /// <summary>
     /// size
     /// </summary>
-    public Size Size => new Size(GetPropertyRaw(_size));
+    public CameraSize Size => new CameraSize(GetPropertyRaw(_size));
 
 }
 
@@ -1835,7 +1835,7 @@ public sealed partial class VideoProfile : JsObject
     /// <summary>
     /// size
     /// </summary>
-    public Size Size => new Size(GetPropertyRaw(_size));
+    public CameraSize Size => new CameraSize(GetPropertyRaw(_size));
 
     /// <summary>
     /// frameRateRange
@@ -2485,9 +2485,9 @@ public sealed partial class FrameRateRange : JsObject
 /// Size 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class Size : JsObject
+public sealed partial class CameraSize : JsObject
 {
-    public Size(IntPtr handle) : base(handle) { }
+    public CameraSize(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _height => "height"u8;
     private static ReadOnlySpan<byte> _width => "width"u8;
     /// <summary>

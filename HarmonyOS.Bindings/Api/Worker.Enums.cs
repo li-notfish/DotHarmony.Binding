@@ -14,3 +14,14 @@ public enum ThreadWorkerPriority
     Deadline = 4,
     Vip = 5
 }
+
+/// <summary>
+/// WorkerPriority 枚举
+/// </summary>
+public enum WorkerPriority
+{
+    Immediate = 1,
+    High = 2,
+    Low = 3,
+    Idle = 4
+}

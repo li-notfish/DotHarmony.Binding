@@ -3,12 +3,22 @@ using System;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// Priority 枚举
+/// TaskpoolPriority 枚举
 /// </summary>
-public enum Priority
+public enum TaskpoolPriority
 {
     High = 0,
     Medium = 1,
     Low = 2,
     Idle = 3
+}
+
+/// <summary>
+/// TaskpoolState 枚举
+/// </summary>
+public enum TaskpoolState
+{
+    Waiting = 1,
+    Running = 2,
+    Canceled = 3
 }

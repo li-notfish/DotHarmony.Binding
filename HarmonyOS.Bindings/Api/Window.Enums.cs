@@ -102,9 +102,18 @@ public enum WindowAnchor
 }
 
 /// <summary>
-/// RectChangeReason 枚举
+/// WindowColorSpace 枚举
 /// </summary>
-public enum RectChangeReason
+public enum WindowColorSpace
+{
+    Default = 0,
+    WideGamut = 1
+}
+
+/// <summary>
+/// WindowRectChangeReason 枚举
+/// </summary>
+public enum WindowRectChangeReason
 {
     Undefined = 0,
     Maximize = 1,
@@ -138,6 +147,31 @@ public enum OcclusionState
 }
 
 /// <summary>
+/// WindowOrientation 枚举
+/// </summary>
+public enum WindowOrientation
+{
+    Unspecified = 0,
+    Portrait = 1,
+    Landscape = 2,
+    PortraitInverted = 3,
+    LandscapeInverted = 4,
+    AutoRotation = 5,
+    AutoRotationPortrait = 6,
+    AutoRotationLandscape = 7,
+    AutoRotationRestricted = 8,
+    AutoRotationPortraitRestricted = 9,
+    AutoRotationLandscapeRestricted = 10,
+    Locked = 11,
+    AutoRotationUnspecified = 12,
+    UserRotationPortrait = 13,
+    UserRotationLandscape = 14,
+    UserRotationPortraitInverted = 15,
+    UserRotationLandscapeInverted = 16,
+    FollowDesktop = 17
+}
+
+/// <summary>
 /// OrientationExecutionResult 枚举
 /// </summary>
 public enum OrientationExecutionResult
@@ -157,9 +191,9 @@ public enum RotationChangeType
 }
 
 /// <summary>
-/// RectType 枚举
+/// WindowRectType 枚举
 /// </summary>
-public enum RectType
+public enum WindowRectType
 {
     RelativeToScreen = 0,
     RelativeToParentWindow = 1

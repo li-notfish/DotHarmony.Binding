@@ -178,9 +178,9 @@ public static unsafe partial class Window
     /// <summary>
     /// getVisibleWindowInfo
     /// </summary>
-    public static Task<WindowInfo[]> GetVisibleWindowInfoAsync()
+    public static Task<WindowWindowInfo[]> GetVisibleWindowInfoAsync()
     {
-        return NodeApi.CallMethodAsync(Module, _getVisibleWindowInfo, h => ValueConverter.ConvertArray(h, static e => new WindowInfo(e)));
+        return NodeApi.CallMethodAsync(Module, _getVisibleWindowInfo, h => ValueConverter.ConvertArray(h, static e => new WindowWindowInfo(e)));
     }
 
     /// <summary>
@@ -1931,24 +1931,6 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
-    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
-    /// </summary>
-    public void On(string type, System.Action<RectChangeOptions> callback)
-    {
-        _eventListeners.Add((type, callback),
-            args => callback(new RectChangeOptions(args[0])),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
-    }
-
-    /// <summary>
-    /// off(type, callback)：解除订阅（按 handler 匹配）
-    /// </summary>
-    public void Off(string type, System.Action<RectChangeOptions> callback)
-    {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
-    }
-
-    /// <summary>
     /// 监听 rotationChange 事件（对应 on/off）
     /// </summary>
     public event System.Action RotationChange
@@ -2410,12 +2392,12 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// 监听 windowRectChange 事件（对应 on/off）
     /// </summary>
-    public event System.Action<RectChangeOptions> WindowRectChange
+    public event System.Action<IntPtr> WindowRectChange
     {
         add
         {
             _eventListeners.Add(("windowRectChange", value),
-                args => value(new RectChangeOptions(args[0])),
+                args => value(args[0]),
                 js => NodeApi.CallMethodVoid(Handle, _on, "windowRectChange", js));
         }
         remove
@@ -2427,12 +2409,12 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// 监听 rectChangeInGlobalDisplay 事件（对应 on/off）
     /// </summary>
-    public event System.Action<RectChangeOptions> RectChangeInGlobalDisplay
+    public event System.Action<IntPtr> RectChangeInGlobalDisplay
     {
         add
         {
             _eventListeners.Add(("rectChangeInGlobalDisplay", value),
-                args => value(new RectChangeOptions(args[0])),
+                args => value(args[0]),
                 js => NodeApi.CallMethodVoid(Handle, _on, "rectChangeInGlobalDisplay", js));
         }
         remove
@@ -2464,9 +2446,9 @@ public sealed partial class WindowObject : JsObject
 /// WindowInfo 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class WindowInfo : JsObject
+public sealed partial class WindowWindowInfo : JsObject
 {
-    public WindowInfo(IntPtr handle) : base(handle) { }
+    public WindowWindowInfo(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _rect => "rect"u8;
     private static ReadOnlySpan<byte> _bundleName => "bundleName"u8;
     private static ReadOnlySpan<byte> _abilityName => "abilityName"u8;
@@ -2763,27 +2745,6 @@ public sealed partial class TitleButtonRect : JsObject
     /// height
     /// </summary>
     public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
-
-}
-
-/// <summary>
-/// RectChangeOptions 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class RectChangeOptions : JsObject
-{
-    public RectChangeOptions(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _rect => "rect"u8;
-    private static ReadOnlySpan<byte> _reason => "reason"u8;
-    /// <summary>
-    /// rect
-    /// </summary>
-    public WindowRect Rect => new WindowRect(GetPropertyRaw(_rect));
-
-    /// <summary>
-    /// reason
-    /// </summary>
-    public global::HarmonyOS.ArkUI.RectChangeReason Reason => (global::HarmonyOS.ArkUI.RectChangeReason)NativeValue.ToInt(GetPropertyRaw(_reason));
 
 }
 

@@ -5,9 +5,9 @@ using System.ComponentModel;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// PhotoViewMIMETypes 枚举
+/// PickerPhotoViewMIMETypes 枚举
 /// </summary>
-public enum PhotoViewMIMETypes
+public enum PickerPhotoViewMIMETypes
 {
     [Description("image/*")]
     ImageType,

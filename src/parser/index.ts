@@ -5,7 +5,7 @@ import { AstParser } from './astParser';
 import { CodeGenerator } from './codeGenerator';
 import { EnumGenerator } from './enumGenerator';
 import { NativeCodeGenerator, EnumMetadata, NativeGap } from './nativeCodeGenerator';
-import { ApiGenerator } from './apiGenerator';
+import { ApiGenerator, reservedModuleClassNames } from './apiGenerator';
 import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo } from './models';
 
 interface CacheEntry {
@@ -626,7 +626,7 @@ const PILOT_MODULES = [
 ]
 
 /** 全局枚举名去重（processFullSDK 作用域内） */
-const writtenEnumNames = new Set<string>();
+const writtenEnumNames = new Map<string, string>(); // enum 名 → 首个发射它的模块 id（@ohos.xxx）
 
 /**
  * 手写 Nodes/*.cs 在 HarmonyOS.ArkUI 命名空间已占用的类型名。
@@ -658,7 +658,83 @@ function extractEnumNamesFromCode(code: string): string[] {
     return names;
 }
 
-export async function processFullSDK(sdkArg?: string): Promise<void> {
+let ALL_MODE = false;
+
+// --all 全量模式下的灰度黑名单（2026-09-12 首轮全量筛选）：
+// 类型映射缺口（UIContext/SecurityManager 等复杂 ArkUI/系统能力类型），逐个修复后移入转正
+const GRAYSCALE_MODULES = new Set<string>([
+    'Accessibility',
+    'AccountManager',
+    'AdminManager',
+    'ApplicationManager',
+    'ArcAlphabetIndexer',
+    'BackgroundTaskManager',
+    'Bluetooth',
+    'BluetoothManager',
+    'Browser',
+    'Bundle',
+    'BundleManager',
+    'ComponentSnapshot',
+    'ComponentUtils',
+    'Configuration',
+    'CryptoExtensionAbility',
+    'DeviceControl',
+    'DeviceManager',
+    'DeviceSettings',
+    'DistributedDeviceManager',
+    'DlpPermission',
+    'DragController',
+    'Eap',
+    'FloatingBall',
+    'Hid',
+    'InputMethodEngine',
+    'LinkEnhance',
+    'LocationManager',
+    'NetworkManager',
+    'OsAccount',
+    'Policy',
+    'Restrictions',
+    'Rpc',
+    'Scan',
+    'SecurityManager',
+    'Serial',
+    'SystemManager',
+    'Tag',
+    'TelephonyManager',
+    'UIContext',
+    'VpnExtension',
+    'WebNativeMessagingExtensionManager',
+    'Wifi',
+    'WifiManager',
+    // 第二轮：跨模块类型引用缺口（net.socket→NetAddress 等），待跨模块依赖解析立项
+    'Socket',
+    'InputConsumer',
+    'InputMethod',
+    'InputEventClient',
+    'InputDevice',
+    'Drawing',
+    'SelectionManager',
+    'Avsession',
+    'AvMusicTemplate',
+    // 依赖灰度模块的跨模块枚举（Call/DataTransfer/RemoteDevice → Avsession.CallState 等）
+    'Call',
+    'DataTransfer',
+    'RemoteDevice',
+    'Observer',
+    // 第三轮：TS 声明合并（window.WindowRect 双定义）/ 跨模块枚举映射漂移残留
+    'Window',
+    'TelephonyObserver',
+    'NetConnection',
+    'Connection',
+    'ResourcescheduleBackgroundTaskManager',
+    // className 唯一化后的新名称（net.socket → NetSocket 等）
+    'NetSocket',
+    'UserAuth',
+]);
+
+
+export async function processFullSDK(sdkArg?: string, allModules: boolean = false): Promise<void> {
+    ALL_MODE = allModules;
     const sdkBase = detectSdkBase(sdkArg);
     const componentDir = path.join(sdkBase, 'ets', 'component');
     const apiDir = path.join(sdkBase, 'ets', 'api');
@@ -679,24 +755,74 @@ export async function processFullSDK(sdkArg?: string): Promise<void> {
         fs.mkdirSync(apiOutputDir, { recursive: true });
     }
 
-    // pilot 模式：只处理指定模块；否则全量
-    const pilotSet = new Set(PILOT_MODULES.map(m => m + '.d.ts'));
+    // --all：全量生成（M2.3 终态）；默认仅 PILOT_MODULES
     const allApiFiles = fs.existsSync(apiDir)
-        ? fs.readdirSync(apiDir).filter(f => f.endsWith('.d.ts'))
+        ? fs.readdirSync(apiDir).filter(f => f.endsWith('.d.ts') && f.startsWith('@ohos.'))
         : [];
-    const apiFiles = allApiFiles.filter(f => pilotSet.has(f));
+    const apiFiles = [...(allModules
+        ? allApiFiles
+        : allApiFiles.filter(f => PILOT_MODULES.includes(f.replace(/\.d\.ts$/, ''))))].sort();
 
-    console.log(`\n--- APIs (${apiFiles.length} pilot modules) ---`);
+    console.log(`\n--- APIs (${apiFiles.length}${allModules ? ' (all)' : ' pilot'} modules) ---`);
 
     const apiGen = new ApiGenerator();
     let apiSuccess = 0;
     let apiSkipped = 0;
-    const boundModules: { module: string; local: string }[] = [];
+    const boundModules: { module: string; local: string; className: string }[] = [];
     const allPermissions = new Set<string>();
+
+    // className 唯一化：不同模块（@ohos.resourceManager vs @ohos.global.resourceManager）
+    // 末段同名时会互相覆盖产物文件。首个模块保留短名，后续撞名者加父段前缀
+    //（bluetooth.connection → BluetoothConnection）；无父段可用时追加序号。
+    const claimedClassNames = new Map<string, string>(); // className → module id
+    // 预计算全部模块（唯一化后）类名，供实例类型撞名判定（如 Want/WantObject）
+    const preInfos = apiFiles.map(f => ApiGenerator.dtsToModuleInfo(f));
+    {
+        const seen = new Map<string, string>();
+        for (let i = 0; i < preInfos.length; i++) {
+            const info = preInfos[i];
+            if (!seen.has(info.className)) {
+                seen.set(info.className, info.module);
+                continue;
+            }
+            const segs = info.local.split('.');
+            let candidate: string;
+            if (segs.length >= 2) {
+                candidate = segs.slice(0, -1).map(seg => seg.charAt(0).toUpperCase() + seg.slice(1)).join('')
+                    + info.className;
+            } else {
+                let n = 2;
+                candidate = `${info.className}${n}`;
+                while (seen.has(candidate)) candidate = `${info.className}${++n}`;
+            }
+            seen.set(candidate, info.module);
+            preInfos[i] = { ...info, className: candidate };
+        }
+        reservedModuleClassNames.clear();
+        for (const cn of seen.keys()) reservedModuleClassNames.add(cn);
+    }
+    const uniqueModuleInfo = (info: { module: string; className: string; local: string }) => {
+        if (!claimedClassNames.has(info.className)) {
+            claimedClassNames.set(info.className, info.module);
+            return info;
+        }
+        const segs = info.local.split('.');
+        let candidate: string;
+        if (segs.length >= 2) {
+            candidate = segs.slice(0, -1).map(seg => seg.charAt(0).toUpperCase() + seg.slice(1)).join('')
+                + info.className;
+        } else {
+            let i = 2;
+            candidate = `${info.className}${i}`;
+            while (claimedClassNames.has(candidate)) candidate = `${info.className}${++i}`;
+        }
+        claimedClassNames.set(candidate, info.module);
+        return { ...info, className: candidate };
+    };
 
     for (const file of apiFiles) {
         const apiPath = path.join(apiDir, file);
-        const moduleInfo = ApiGenerator.dtsToModuleInfo(file);
+        const moduleInfo = uniqueModuleInfo(ApiGenerator.dtsToModuleInfo(file));
         const source = fs.readFileSync(apiPath, 'utf-8');
         const permissions = ApiGenerator.extractPermissions(source);
         permissions.forEach(p => allPermissions.add(p));
@@ -709,19 +835,40 @@ export async function processFullSDK(sdkArg?: string): Promise<void> {
                 continue;
             }
 
-            // 过滤已生成的枚举，避免不同模块的同名枚举重复定义
-            const newEnums = result.enums.filter(e => !writtenEnumNames.has(e.name));
-            newEnums.forEach(e => writtenEnumNames.add(e.name));
+            // 同模块内嵌套 namespace 同名枚举去重（否则同一 Enums.cs 内 CS0101）
+            const seenInModule = new Set<string>();
+            const newEnums = result.enums.filter(e => {
+                if (seenInModule.has(e.name)) return false;
+                seenInModule.add(e.name);
+                return true;
+            });
+            newEnums.forEach(e => {
+                if (!writtenEnumNames.has(e.name)) writtenEnumNames.set(e.name, moduleInfo.module);
+            });
 
-            // 枚举撞手写 Nodes 类型名 → 加模块前缀，映射与写盘保持一致
-            const fixEnumName = (e: EnumInfo) =>
-                ARKUI_RESERVED_NAMES.has(e.name) ? { ...e, name: `${moduleInfo.className}${e.name}` } : e;
+            // 跨模块 import 类型（如 socket 导入 net.netAddress.NetAddress）无法在本模块内解析，
+            // 降级为 IntPtr 句柄，避免生成引用不存在类型的产物（CS0246/CS0234）
+            const importedNames = new Set(result.imports.flatMap(i => i.imports));
+
+            // 枚举名冲突 → 加模块前缀，映射与写盘保持一致：
+            // a) 撞手写 Nodes 类型名（如 relationalStore.Progress vs Nodes/progress.cs）
+            // b) 撞其它模块已发射的枚举名（如 avsession.CallState vs telephony.call.CallState）——
+            //    各模块独立发射，避免"首发射者被灰度拖垮依赖者"的级联
+            const fixEnumName = (e: EnumInfo) => {
+                let name = e.name;
+                if (ARKUI_RESERVED_NAMES.has(name)
+                    || (writtenEnumNames.has(name) && writtenEnumNames.get(name) !== moduleInfo.module)) {
+                    name = `${moduleInfo.className}${name}`;
+                }
+                return { ...e, name };
+            };
             const gen = apiGen.generate(
                 result.component,
                 moduleInfo,
                 permissions,
                 newEnums.map(fixEnumName),
-                result.enums.map(fixEnumName)
+                result.enums.map(fixEnumName),
+                importedNames
             );
 
             const csPath = path.join(apiOutputDir, `${gen.className}.cs`);
@@ -732,9 +879,13 @@ export async function processFullSDK(sdkArg?: string): Promise<void> {
             if (gen.enums) {
                 const enumCsPath = path.join(apiOutputDir, `${gen.className}.Enums.cs`);
                 fs.writeFileSync(enumCsPath, gen.enums);
+            } else {
+                // 枚举本轮全部去重/过滤时，删除上一轮残留的 Enums.cs（否则 CS0101）
+                const enumCsPath = path.join(apiOutputDir, `${gen.className}.Enums.cs`);
+                if (fs.existsSync(enumCsPath)) fs.unlinkSync(enumCsPath);
             }
 
-            boundModules.push({ module: moduleInfo.module, local: moduleInfo.local });
+            boundModules.push({ module: moduleInfo.module, local: moduleInfo.local, className: moduleInfo.className });
         } catch (e: any) {
             console.error(`  Error: ${file} - ${e.message}`);
             apiSkipped++;
@@ -920,21 +1071,15 @@ const APPROVED_MODULES = new Set([
     'GeoLocationManager',  // 2026-09-12 转正：JsMap 试点模块
     // M2.3 转正（17 个可编译模块）
     'Camera',
-    'Connection',
     'Fs',            // 2026-09-12 转正：ArrayBuffer/WriteOptions 经封送补全后可编译
     'Geolocation',
     'Http',
     'Image',
     'Media',
-    'Pasteboard',
     'Picker',
     'Preferences',
-    'PromptAction',
-    'Request',
-    'Router',
     'Sensor',        // 2026-09-12 转正：事件回调强制必需后的可选参数降级修复（CS1737）
     // 'Settings',  // 含 Context/DataAbilityHelper 等未映射类型，待修复
-    'Window',
     'Thermal','Power','Wallpaper','WifiManager','Radio','Sms','UsbManager',
     'InputMethod','Hilog','HiAppEvent','I18n','Intl','Mediaquery','Screen',
     'Font','Measure','Uri','Url','Matrix4','Curves','WebSocket','Socket',
@@ -952,19 +1097,17 @@ const APPROVED_MODULES = new Set([
  * 灰度策略：生成的 Api/*.cs 默认不参与编译（Compile Remove），
  * 逐个转正时从 APPROVED_MODULES 中添加模块名。
  */
-function writeGrayscaleCompileRemove(modules: { module: string; local: string }[]): void {
+function writeGrayscaleCompileRemove(modules: { module: string; className: string }[]): void {
     const csprojPath = path.join(__dirname, '../../HarmonyOS.Bindings/HarmonyOS.Bindings.csproj');
     let content = fs.readFileSync(csprojPath, 'utf-8');
 
-    const classNames = modules
-        .map(m => {
-            const parts = m.local.split('.');
-            return parts[parts.length - 1].charAt(0).toUpperCase()
-                + parts[parts.length - 1].slice(1);
-        })
-        .sort();
+    // 直接使用唯一化后的最终 className（从 local 重推导会丢失改名，导致灰度移除项错位）
+    const classNames = modules.map(m => m.className).sort();
 
-    const pending = classNames.filter(n => !APPROVED_MODULES.has(n));
+    // --all 全量模式：白名单/黑名单反转——默认全部转正，GRAYSCALE_MODULES 里的回灰
+    const pending = GRAYSCALE_MODULES.size > 0 || ALL_MODE
+        ? classNames.filter(n => GRAYSCALE_MODULES.has(n))
+        : classNames.filter(n => !APPROVED_MODULES.has(n));
 
     const removeItems = pending
         .map(n => `    <Compile Remove="Api\\${n}.cs" />`)
@@ -1052,7 +1195,7 @@ if (require.main === module) {
         const sdkIdx = args.indexOf('--sdk');
         const sdkArg = args[sdkIdx + 1] && !args[sdkIdx + 1].startsWith('--')
             ? args[sdkIdx + 1] : undefined;
-        processFullSDK(sdkArg).catch(console.error);
+        processFullSDK(sdkArg, args.includes('--all')).catch(console.error);
     } else {
         main().catch(console.error);
     }

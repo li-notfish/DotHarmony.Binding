@@ -14,12 +14,12 @@ using HarmonyOS.ArkUI;
 namespace HarmonyOS.Bindings.Api;
 
 /// <summary>
-/// WifiManager 绑定（@ohos.wifiManager）。
-/// 所需权限：ohos.permission.GET_WIFI_INFO, ohos.permission.GET_WIFI_LOCAL_MAC, ohos.permission.LOCATION, ohos.permission.MANAGE_WIFI_CONNECTION, ohos.permission.SET_WIFI_INFO
+/// WifiManager 绑定（@ohos.enterprise.wifiManager）。
+/// 所需权限：ohos.permission.ENTERPRISE_MANAGE_WIFI
 /// </summary>
 public static unsafe partial class WifiManager
 {
-    private const string ModuleName = "@ohos.wifiManager";
+    private const string ModuleName = "@ohos.enterprise.wifiManager";
 
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
@@ -62,821 +62,189 @@ public static unsafe partial class WifiManager
                 throw new InvalidOperationException(
                     $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
 
-            HiLog.Info("HarmonyHost", $"[wifiManager] module loaded via napi_load_module");
+            HiLog.Info("HarmonyHost", $"[enterprise.wifiManager] module loaded via napi_load_module");
             return _moduleRef.Value;
         }
     }
 
-    private static ReadOnlySpan<byte> _enableWifi => "enableWifi"u8;
-    private static ReadOnlySpan<byte> _disableWifi => "disableWifi"u8;
-    private static ReadOnlySpan<byte> _isWifiActive => "isWifiActive"u8;
-    private static ReadOnlySpan<byte> _scan => "scan"u8;
-    private static ReadOnlySpan<byte> _startScan => "startScan"u8;
-    private static ReadOnlySpan<byte> _getScanResults => "getScanResults"u8;
-    private static ReadOnlySpan<byte> _getScanResultsSync => "getScanResultsSync"u8;
-    private static ReadOnlySpan<byte> _getScanInfoList => "getScanInfoList"u8;
-    private static ReadOnlySpan<byte> _addDeviceConfig => "addDeviceConfig"u8;
-    private static ReadOnlySpan<byte> _addCandidateConfig => "addCandidateConfig"u8;
-    private static ReadOnlySpan<byte> _removeCandidateConfig => "removeCandidateConfig"u8;
-    private static ReadOnlySpan<byte> _getCandidateConfigs => "getCandidateConfigs"u8;
-    private static ReadOnlySpan<byte> _connectToCandidateConfig => "connectToCandidateConfig"u8;
-    private static ReadOnlySpan<byte> _connectToCandidateConfigWithUserAction => "connectToCandidateConfigWithUserAction"u8;
-    private static ReadOnlySpan<byte> _connectToNetwork => "connectToNetwork"u8;
-    private static ReadOnlySpan<byte> _disconnect => "disconnect"u8;
-    private static ReadOnlySpan<byte> _getSignalLevel => "getSignalLevel"u8;
-    private static ReadOnlySpan<byte> _getLinkedInfo => "getLinkedInfo"u8;
-    private static ReadOnlySpan<byte> _getMultiLinkedInfo => "getMultiLinkedInfo"u8;
-    private static ReadOnlySpan<byte> _getLinkedInfoSync => "getLinkedInfoSync"u8;
-    private static ReadOnlySpan<byte> _isConnected => "isConnected"u8;
-    private static ReadOnlySpan<byte> _isFeatureSupported => "isFeatureSupported"u8;
-    private static ReadOnlySpan<byte> _getDeviceMacAddress => "getDeviceMacAddress"u8;
-    private static ReadOnlySpan<byte> _getIpInfo => "getIpInfo"u8;
-    private static ReadOnlySpan<byte> _getIpv6Info => "getIpv6Info"u8;
-    private static ReadOnlySpan<byte> _getCountryCode => "getCountryCode"u8;
-    private static ReadOnlySpan<byte> _getDeviceConfigs => "getDeviceConfigs"u8;
-    private static ReadOnlySpan<byte> _removeDevice => "removeDevice"u8;
-    private static ReadOnlySpan<byte> _isBandTypeSupported => "isBandTypeSupported"u8;
-    private static ReadOnlySpan<byte> _isMeteredHotspot => "isMeteredHotspot"u8;
-    private static ReadOnlySpan<byte> _isHotspotActive => "isHotspotActive"u8;
-    private static ReadOnlySpan<byte> _getP2pLinkedInfo => "getP2pLinkedInfo"u8;
-    private static ReadOnlySpan<byte> _getCurrentGroup => "getCurrentGroup"u8;
-    private static ReadOnlySpan<byte> _getP2pPeerDevices => "getP2pPeerDevices"u8;
-    private static ReadOnlySpan<byte> _getP2pLocalDevice => "getP2pLocalDevice"u8;
-    private static ReadOnlySpan<byte> _createGroup => "createGroup"u8;
-    private static ReadOnlySpan<byte> _removeGroup => "removeGroup"u8;
-    private static ReadOnlySpan<byte> _p2pConnect => "p2pConnect"u8;
-    private static ReadOnlySpan<byte> _p2pCancelConnect => "p2pCancelConnect"u8;
-    private static ReadOnlySpan<byte> _startDiscoverDevices => "startDiscoverDevices"u8;
-    private static ReadOnlySpan<byte> _stopDiscoverDevices => "stopDiscoverDevices"u8;
-    private static ReadOnlySpan<byte> _on => "on"u8;
-    private static ReadOnlySpan<byte> _off => "off"u8;
-    private static ReadOnlySpan<byte> _isWlanSupported => "isWlanSupported"u8;
+    private static ReadOnlySpan<byte> _isWifiActiveSync => "isWifiActiveSync"u8;
+    private static ReadOnlySpan<byte> _setWifiProfileSync => "setWifiProfileSync"u8;
+    private static ReadOnlySpan<byte> _addDisallowedWifiList => "addDisallowedWifiList"u8;
+    private static ReadOnlySpan<byte> _removeDisallowedWifiList => "removeDisallowedWifiList"u8;
+    private static ReadOnlySpan<byte> _getDisallowedWifiList => "getDisallowedWifiList"u8;
+    private static ReadOnlySpan<byte> _addAllowedWifiList => "addAllowedWifiList"u8;
+    private static ReadOnlySpan<byte> _removeAllowedWifiList => "removeAllowedWifiList"u8;
+    private static ReadOnlySpan<byte> _getAllowedWifiList => "getAllowedWifiList"u8;
+    private static ReadOnlySpan<byte> _turnOnWifi => "turnOnWifi"u8;
+    private static ReadOnlySpan<byte> _turnOffWifi => "turnOffWifi"u8;
 
     /// <summary>
-    /// enableWifi
+    /// isWifiActiveSync
     /// </summary>
-    public static void EnableWifi()
+    public static bool IsWifiActiveSync(IntPtr admin)
     {
-        NodeApi.CallMethodVoid(Module, _enableWifi);
+        return NodeApi.CallMethod<bool>(Module, _isWifiActiveSync, admin);
     }
 
     /// <summary>
-    /// disableWifi
+    /// setWifiProfileSync
     /// </summary>
-    public static void DisableWifi()
+    public static void SetWifiProfileSync(IntPtr admin, WifiProfile profile)
     {
-        NodeApi.CallMethodVoid(Module, _disableWifi);
+        NodeApi.CallMethodVoid(Module, _setWifiProfileSync, admin, profile);
     }
 
     /// <summary>
-    /// isWifiActive
+    /// addDisallowedWifiList
     /// </summary>
-    public static bool IsWifiActive()
+    public static void AddDisallowedWifiList(IntPtr admin, WifiAccessInfo[] list)
     {
-        return NodeApi.CallMethod<bool>(Module, _isWifiActive);
+        NodeApi.CallMethodVoid(Module, _addDisallowedWifiList, admin, list);
     }
 
     /// <summary>
-    /// scan
+    /// removeDisallowedWifiList
     /// </summary>
-    public static void Scan()
+    public static void RemoveDisallowedWifiList(IntPtr admin, WifiAccessInfo[] list)
     {
-        NodeApi.CallMethodVoid(Module, _scan);
+        NodeApi.CallMethodVoid(Module, _removeDisallowedWifiList, admin, list);
     }
 
     /// <summary>
-    /// startScan
+    /// getDisallowedWifiList
     /// </summary>
-    public static void StartScan()
+    public static WifiAccessInfo[] GetDisallowedWifiList(IntPtr admin)
     {
-        NodeApi.CallMethodVoid(Module, _startScan);
+        return NodeApi.CallMethod(Module, _getDisallowedWifiList, h => ValueConverter.ConvertArray(h, static e => new WifiAccessInfo(e)), admin);
     }
 
     /// <summary>
-    /// getScanResults
+    /// addAllowedWifiList
     /// </summary>
-    public static Task<WifiScanInfo[]> GetScanResultsAsync()
+    public static void AddAllowedWifiList(IntPtr admin, WifiAccessInfo[] list)
     {
-        return NodeApi.CallMethodAsync(Module, _getScanResults, h => ValueConverter.ConvertArray(h, static e => new WifiScanInfo(e)));
+        NodeApi.CallMethodVoid(Module, _addAllowedWifiList, admin, list);
     }
 
     /// <summary>
-    /// getScanResultsSync
+    /// removeAllowedWifiList
     /// </summary>
-    public static WifiScanInfo[] GetScanResultsSync()
+    public static void RemoveAllowedWifiList(IntPtr admin, WifiAccessInfo[] list)
     {
-        return NodeApi.CallMethod(Module, _getScanResultsSync, h => ValueConverter.ConvertArray(h, static e => new WifiScanInfo(e)));
+        NodeApi.CallMethodVoid(Module, _removeAllowedWifiList, admin, list);
     }
 
     /// <summary>
-    /// getScanInfoList
+    /// getAllowedWifiList
     /// </summary>
-    public static WifiScanInfo[] GetScanInfoList()
+    public static WifiAccessInfo[] GetAllowedWifiList(IntPtr admin)
     {
-        return NodeApi.CallMethod(Module, _getScanInfoList, h => ValueConverter.ConvertArray(h, static e => new WifiScanInfo(e)));
+        return NodeApi.CallMethod(Module, _getAllowedWifiList, h => ValueConverter.ConvertArray(h, static e => new WifiAccessInfo(e)), admin);
     }
 
     /// <summary>
-    /// addDeviceConfig
+    /// turnOnWifi
     /// </summary>
-    public static Task<double> AddDeviceConfigAsync(WifiDeviceConfig config)
+    public static void TurnOnWifi(IntPtr admin, bool isForce)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _addDeviceConfig, config);
+        NodeApi.CallMethodVoid(Module, _turnOnWifi, admin, isForce);
     }
 
     /// <summary>
-    /// addCandidateConfig
+    /// turnOffWifi
     /// </summary>
-    public static Task<double> AddCandidateConfigAsync(WifiDeviceConfig config)
+    public static void TurnOffWifi(IntPtr admin)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _addCandidateConfig, config);
-    }
-
-    /// <summary>
-    /// removeCandidateConfig
-    /// </summary>
-    public static Task RemoveCandidateConfigAsync(double networkId)
-    {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeCandidateConfig, networkId);
-    }
-
-    /// <summary>
-    /// getCandidateConfigs
-    /// </summary>
-    public static WifiDeviceConfig[] GetCandidateConfigs()
-    {
-        return NodeApi.CallMethod(Module, _getCandidateConfigs, h => ValueConverter.ConvertArray(h, static e => new WifiDeviceConfig(e)));
-    }
-
-    /// <summary>
-    /// connectToCandidateConfig
-    /// </summary>
-    public static void ConnectToCandidateConfig(double networkId)
-    {
-        NodeApi.CallMethodVoid(Module, _connectToCandidateConfig, networkId);
-    }
-
-    /// <summary>
-    /// connectToCandidateConfig
-    /// </summary>
-    public static Task ConnectToCandidateConfigAsync(ConnectSettings settings)
-    {
-        return NodeApi.CallMethodAsyncVoid(Module, _connectToCandidateConfig, settings);
-    }
-
-    /// <summary>
-    /// connectToCandidateConfigWithUserAction
-    /// </summary>
-    public static Task ConnectToCandidateConfigWithUserActionAsync(double networkId)
-    {
-        return NodeApi.CallMethodAsyncVoid(Module, _connectToCandidateConfigWithUserAction, networkId);
-    }
-
-    /// <summary>
-    /// connectToNetwork
-    /// </summary>
-    public static void ConnectToNetwork(double networkId)
-    {
-        NodeApi.CallMethodVoid(Module, _connectToNetwork, networkId);
-    }
-
-    /// <summary>
-    /// disconnect
-    /// </summary>
-    public static void Disconnect()
-    {
-        NodeApi.CallMethodVoid(Module, _disconnect);
-    }
-
-    /// <summary>
-    /// getSignalLevel
-    /// </summary>
-    public static double GetSignalLevel(double rssi, double band)
-    {
-        return NodeApi.CallMethod<double>(Module, _getSignalLevel, rssi, band);
-    }
-
-    /// <summary>
-    /// getLinkedInfo
-    /// </summary>
-    public static Task<WifiLinkedInfo> GetLinkedInfoAsync()
-    {
-        return NodeApi.CallMethodAsync(Module, _getLinkedInfo, static h => new WifiLinkedInfo(h));
-    }
-
-    /// <summary>
-    /// getMultiLinkedInfo
-    /// </summary>
-    public static WifiLinkedInfo[] GetMultiLinkedInfo()
-    {
-        return NodeApi.CallMethod(Module, _getMultiLinkedInfo, h => ValueConverter.ConvertArray(h, static e => new WifiLinkedInfo(e)));
-    }
-
-    /// <summary>
-    /// getLinkedInfoSync
-    /// </summary>
-    public static WifiLinkedInfo GetLinkedInfoSync()
-    {
-        return NodeApi.CallMethod(Module, _getLinkedInfoSync, static h => new WifiLinkedInfo(h));
-    }
-
-    /// <summary>
-    /// isConnected
-    /// </summary>
-    public static bool IsConnected()
-    {
-        return NodeApi.CallMethod<bool>(Module, _isConnected);
-    }
-
-    /// <summary>
-    /// isFeatureSupported
-    /// </summary>
-    public static bool IsFeatureSupported(double featureId)
-    {
-        return NodeApi.CallMethod<bool>(Module, _isFeatureSupported, featureId);
-    }
-
-    /// <summary>
-    /// getDeviceMacAddress
-    /// </summary>
-    public static string[] GetDeviceMacAddress()
-    {
-        return NodeApi.CallMethod(Module, _getDeviceMacAddress, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
-    }
-
-    /// <summary>
-    /// getIpInfo
-    /// </summary>
-    public static IpInfo GetIPInfo()
-    {
-        return NodeApi.CallMethod(Module, _getIpInfo, static h => new IpInfo(h));
-    }
-
-    /// <summary>
-    /// getIpv6Info
-    /// </summary>
-    public static Ipv6Info GetIpv6Info()
-    {
-        return NodeApi.CallMethod(Module, _getIpv6Info, static h => new Ipv6Info(h));
-    }
-
-    /// <summary>
-    /// getCountryCode
-    /// </summary>
-    public static string GetCountryCode()
-    {
-        return NodeApi.CallMethod<string>(Module, _getCountryCode);
-    }
-
-    /// <summary>
-    /// getDeviceConfigs
-    /// </summary>
-    public static WifiDeviceConfig[] GetDeviceConfigs()
-    {
-        return NodeApi.CallMethod(Module, _getDeviceConfigs, h => ValueConverter.ConvertArray(h, static e => new WifiDeviceConfig(e)));
-    }
-
-    /// <summary>
-    /// removeDevice
-    /// </summary>
-    public static void RemoveDevice(double id)
-    {
-        NodeApi.CallMethodVoid(Module, _removeDevice, id);
-    }
-
-    /// <summary>
-    /// isBandTypeSupported
-    /// </summary>
-    public static bool IsBandTypeSupported(global::HarmonyOS.ArkUI.WifiBandType bandType)
-    {
-        return NodeApi.CallMethod<bool>(Module, _isBandTypeSupported, bandType);
-    }
-
-    /// <summary>
-    /// isMeteredHotspot
-    /// </summary>
-    public static bool IsMeteredHotspot()
-    {
-        return NodeApi.CallMethod<bool>(Module, _isMeteredHotspot);
-    }
-
-    /// <summary>
-    /// isHotspotActive
-    /// </summary>
-    public static bool IsHotspotActive()
-    {
-        return NodeApi.CallMethod<bool>(Module, _isHotspotActive);
-    }
-
-    /// <summary>
-    /// getP2pLinkedInfo
-    /// </summary>
-    public static Task<WifiP2pLinkedInfo> GetP2pLinkedInfoAsync()
-    {
-        return NodeApi.CallMethodAsync(Module, _getP2pLinkedInfo, static h => new WifiP2pLinkedInfo(h));
-    }
-
-    /// <summary>
-    /// getCurrentGroup
-    /// </summary>
-    public static Task<WifiP2pGroupInfo> GetCurrentGroupAsync()
-    {
-        return NodeApi.CallMethodAsync(Module, _getCurrentGroup, static h => new WifiP2pGroupInfo(h));
-    }
-
-    /// <summary>
-    /// getP2pPeerDevices
-    /// </summary>
-    public static Task<WifiP2pDevice[]> GetP2pPeerDevicesAsync()
-    {
-        return NodeApi.CallMethodAsync(Module, _getP2pPeerDevices, h => ValueConverter.ConvertArray(h, static e => new WifiP2pDevice(e)));
-    }
-
-    /// <summary>
-    /// getP2pLocalDevice
-    /// </summary>
-    public static Task<WifiP2pDevice> GetP2pLocalDeviceAsync()
-    {
-        return NodeApi.CallMethodAsync(Module, _getP2pLocalDevice, static h => new WifiP2pDevice(h));
-    }
-
-    /// <summary>
-    /// createGroup
-    /// </summary>
-    public static void CreateGroup(WifiP2PConfig config)
-    {
-        NodeApi.CallMethodVoid(Module, _createGroup, config);
-    }
-
-    /// <summary>
-    /// removeGroup
-    /// </summary>
-    public static void RemoveGroup()
-    {
-        NodeApi.CallMethodVoid(Module, _removeGroup);
-    }
-
-    /// <summary>
-    /// p2pConnect
-    /// </summary>
-    public static void P2pConnect(WifiP2PConfig config)
-    {
-        NodeApi.CallMethodVoid(Module, _p2pConnect, config);
-    }
-
-    /// <summary>
-    /// p2pCancelConnect
-    /// </summary>
-    public static void P2pCancelConnect()
-    {
-        NodeApi.CallMethodVoid(Module, _p2pCancelConnect);
-    }
-
-    /// <summary>
-    /// startDiscoverDevices
-    /// </summary>
-    public static void StartDiscoverDevices()
-    {
-        NodeApi.CallMethodVoid(Module, _startDiscoverDevices);
-    }
-
-    /// <summary>
-    /// stopDiscoverDevices
-    /// </summary>
-    public static void StopDiscoverDevices()
-    {
-        NodeApi.CallMethodVoid(Module, _stopDiscoverDevices);
-    }
-
-    /// <summary>
-    /// on
-    /// </summary>
-    public static void On(string type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, callback);
-    }
-
-    /// <summary>
-    /// off
-    /// </summary>
-    public static void Off(string type, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
-    }
-
-    /// <summary>
-    /// isWlanSupported
-    /// </summary>
-    public static bool IsWlanSupported()
-    {
-        return NodeApi.CallMethod<bool>(Module, _isWlanSupported);
-    }
-
-    private static readonly EventListenerRegistry _eventListeners = new();
-
-    /// <summary>
-    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
-    /// </summary>
-    public static void On(string type, System.Action<double> callback)
-    {
-        _eventListeners.Add((type, callback),
-            args => callback(NativeValue.ToDouble(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js));
-    }
-
-    /// <summary>
-    /// off(type)：移除该事件类型的全部回调
-    /// </summary>
-    public static void Off(string type)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type);
-    }
-
-    /// <summary>
-    /// off(type, callback)：解除订阅（按 handler 匹配）
-    /// </summary>
-    public static void Off(string type, System.Action<double> callback)
-    {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
-    }
-
-    /// <summary>
-    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
-    /// </summary>
-    public static void On(string type, System.Action<WifiP2pLinkedInfo> callback)
-    {
-        _eventListeners.Add((type, callback),
-            args => callback(new WifiP2pLinkedInfo(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js));
-    }
-
-    /// <summary>
-    /// off(type, callback)：解除订阅（按 handler 匹配）
-    /// </summary>
-    public static void Off(string type, System.Action<WifiP2pLinkedInfo> callback)
-    {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
-    }
-
-    /// <summary>
-    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
-    /// </summary>
-    public static void On(string type, System.Action<WifiP2pDevice> callback)
-    {
-        _eventListeners.Add((type, callback),
-            args => callback(new WifiP2pDevice(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js));
-    }
-
-    /// <summary>
-    /// off(type, callback)：解除订阅（按 handler 匹配）
-    /// </summary>
-    public static void Off(string type, System.Action<WifiP2pDevice> callback)
-    {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
-    }
-
-    /// <summary>
-    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
-    /// </summary>
-    public static void On(string type, System.Action<WifiP2pDevice[]> callback)
-    {
-        _eventListeners.Add((type, callback),
-            args => callback(ValueConverter.ConvertArray(args[0], static e => new WifiP2pDevice(e))),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js));
-    }
-
-    /// <summary>
-    /// off(type, callback)：解除订阅（按 handler 匹配）
-    /// </summary>
-    public static void Off(string type, System.Action<WifiP2pDevice[]> callback)
-    {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
-    }
-
-    /// <summary>
-    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
-    /// </summary>
-    public static void On(string type, System.Action callback)
-    {
-        _eventListeners.Add((type, callback),
-            args => callback(),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js));
-    }
-
-    /// <summary>
-    /// off(type, callback)：解除订阅（按 handler 匹配）
-    /// </summary>
-    public static void Off(string type, System.Action callback)
-    {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
-    }
-
-    /// <summary>
-    /// 监听 wifiStateChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action<double> WifiStateChange
-    {
-        add
-        {
-            _eventListeners.Add(("wifiStateChange", value),
-                args => value(NativeValue.ToDouble(args[0])),
-                js => NodeApi.CallMethodVoid(Module, _on, "wifiStateChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("wifiStateChange", value), js => NodeApi.CallMethodVoid(Module, _off, "wifiStateChange", js));
-        }
-    }
-
-    /// <summary>
-    /// 监听 wifiConnectionChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action<double> WifiConnectionChange
-    {
-        add
-        {
-            _eventListeners.Add(("wifiConnectionChange", value),
-                args => value(NativeValue.ToDouble(args[0])),
-                js => NodeApi.CallMethodVoid(Module, _on, "wifiConnectionChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("wifiConnectionChange", value), js => NodeApi.CallMethodVoid(Module, _off, "wifiConnectionChange", js));
-        }
-    }
-
-    /// <summary>
-    /// 监听 wifiScanStateChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action<double> WifiScanStateChange
-    {
-        add
-        {
-            _eventListeners.Add(("wifiScanStateChange", value),
-                args => value(NativeValue.ToDouble(args[0])),
-                js => NodeApi.CallMethodVoid(Module, _on, "wifiScanStateChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("wifiScanStateChange", value), js => NodeApi.CallMethodVoid(Module, _off, "wifiScanStateChange", js));
-        }
-    }
-
-    /// <summary>
-    /// 监听 wifiRssiChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action<double> WifiRssiChange
-    {
-        add
-        {
-            _eventListeners.Add(("wifiRssiChange", value),
-                args => value(NativeValue.ToDouble(args[0])),
-                js => NodeApi.CallMethodVoid(Module, _on, "wifiRssiChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("wifiRssiChange", value), js => NodeApi.CallMethodVoid(Module, _off, "wifiRssiChange", js));
-        }
-    }
-
-    /// <summary>
-    /// 监听 hotspotStateChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action<double> HotspotStateChange
-    {
-        add
-        {
-            _eventListeners.Add(("hotspotStateChange", value),
-                args => value(NativeValue.ToDouble(args[0])),
-                js => NodeApi.CallMethodVoid(Module, _on, "hotspotStateChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("hotspotStateChange", value), js => NodeApi.CallMethodVoid(Module, _off, "hotspotStateChange", js));
-        }
-    }
-
-    /// <summary>
-    /// 监听 p2pStateChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action<double> P2pStateChange
-    {
-        add
-        {
-            _eventListeners.Add(("p2pStateChange", value),
-                args => value(NativeValue.ToDouble(args[0])),
-                js => NodeApi.CallMethodVoid(Module, _on, "p2pStateChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("p2pStateChange", value), js => NodeApi.CallMethodVoid(Module, _off, "p2pStateChange", js));
-        }
-    }
-
-    /// <summary>
-    /// 监听 p2pConnectionChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action<WifiP2pLinkedInfo> P2pConnectionChange
-    {
-        add
-        {
-            _eventListeners.Add(("p2pConnectionChange", value),
-                args => value(new WifiP2pLinkedInfo(args[0])),
-                js => NodeApi.CallMethodVoid(Module, _on, "p2pConnectionChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("p2pConnectionChange", value), js => NodeApi.CallMethodVoid(Module, _off, "p2pConnectionChange", js));
-        }
-    }
-
-    /// <summary>
-    /// 监听 p2pDeviceChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action<WifiP2pDevice> P2pDeviceChange
-    {
-        add
-        {
-            _eventListeners.Add(("p2pDeviceChange", value),
-                args => value(new WifiP2pDevice(args[0])),
-                js => NodeApi.CallMethodVoid(Module, _on, "p2pDeviceChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("p2pDeviceChange", value), js => NodeApi.CallMethodVoid(Module, _off, "p2pDeviceChange", js));
-        }
-    }
-
-    /// <summary>
-    /// 监听 p2pPeerDeviceChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action<WifiP2pDevice[]> P2pPeerDeviceChange
-    {
-        add
-        {
-            _eventListeners.Add(("p2pPeerDeviceChange", value),
-                args => value(ValueConverter.ConvertArray(args[0], static e => new WifiP2pDevice(e))),
-                js => NodeApi.CallMethodVoid(Module, _on, "p2pPeerDeviceChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("p2pPeerDeviceChange", value), js => NodeApi.CallMethodVoid(Module, _off, "p2pPeerDeviceChange", js));
-        }
-    }
-
-    /// <summary>
-    /// 监听 p2pPersistentGroupChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action P2pPersistentGroupChange
-    {
-        add
-        {
-            _eventListeners.Add(("p2pPersistentGroupChange", value),
-                args => value(),
-                js => NodeApi.CallMethodVoid(Module, _on, "p2pPersistentGroupChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("p2pPersistentGroupChange", value), js => NodeApi.CallMethodVoid(Module, _off, "p2pPersistentGroupChange", js));
-        }
-    }
-
-    /// <summary>
-    /// 监听 p2pDiscoveryChange 事件（对应 on/off）
-    /// </summary>
-    public static event System.Action<double> P2pDiscoveryChange
-    {
-        add
-        {
-            _eventListeners.Add(("p2pDiscoveryChange", value),
-                args => value(NativeValue.ToDouble(args[0])),
-                js => NodeApi.CallMethodVoid(Module, _on, "p2pDiscoveryChange", js));
-        }
-        remove
-        {
-            _eventListeners.Remove(("p2pDiscoveryChange", value), js => NodeApi.CallMethodVoid(Module, _off, "p2pDiscoveryChange", js));
-        }
+        NodeApi.CallMethodVoid(Module, _turnOffWifi, admin);
     }
 
 }
 
 /// <summary>
-/// WifiScanInfo 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// WifiProfile（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed partial class WifiScanInfo : JsObject
+public sealed record WifiProfile(
+    string Ssid,
+    string? Bssid,
+    string PreSharedKey,
+    bool? IsHiddenSsid,
+    global::HarmonyOS.ArkUI.WifiSecurityType SecurityType,
+    double? CreatorUid = null,
+    double? DisableReason = null,
+    double? NetId = null,
+    double? RandomMacType = null,
+    string? RandomMacAddr = null,
+    global::HarmonyOS.ArkUI.IpType? IPType = null,
+    IpProfile? StaticIP = null,
+    WifiEapProfile? EapProfile = null
+) : INapiRecord
 {
-    public WifiScanInfo(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _ssid => "ssid"u8;
-    private static ReadOnlySpan<byte> _bssid => "bssid"u8;
-    private static ReadOnlySpan<byte> _bssidType => "bssidType"u8;
-    private static ReadOnlySpan<byte> _capabilities => "capabilities"u8;
-    private static ReadOnlySpan<byte> _securityType => "securityType"u8;
-    private static ReadOnlySpan<byte> _rssi => "rssi"u8;
-    private static ReadOnlySpan<byte> _band => "band"u8;
-    private static ReadOnlySpan<byte> _frequency => "frequency"u8;
-    private static ReadOnlySpan<byte> _channelWidth => "channelWidth"u8;
-    private static ReadOnlySpan<byte> _centerFrequency0 => "centerFrequency0"u8;
-    private static ReadOnlySpan<byte> _centerFrequency1 => "centerFrequency1"u8;
-    private static ReadOnlySpan<byte> _infoElems => "infoElems"u8;
-    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
-    private static ReadOnlySpan<byte> _supportedWifiCategory => "supportedWifiCategory"u8;
-    private static ReadOnlySpan<byte> _isHiLinkNetwork => "isHiLinkNetwork"u8;
-    /// <summary>
-    /// ssid
-    /// </summary>
-    public string Ssid => NativeValue.ToString(GetPropertyRaw(_ssid)) ?? string.Empty;
-
-    /// <summary>
-    /// bssid
-    /// </summary>
-    public string Bssid => NativeValue.ToString(GetPropertyRaw(_bssid)) ?? string.Empty;
-
-    /// <summary>
-    /// bssidType
-    /// </summary>
-    public global::HarmonyOS.ArkUI.DeviceAddressType BssidType => (global::HarmonyOS.ArkUI.DeviceAddressType)NativeValue.ToInt(GetPropertyRaw(_bssidType));
-
-    /// <summary>
-    /// capabilities
-    /// </summary>
-    public string Capabilities => NativeValue.ToString(GetPropertyRaw(_capabilities)) ?? string.Empty;
-
-    /// <summary>
-    /// securityType
-    /// </summary>
-    public global::HarmonyOS.ArkUI.WifiSecurityType SecurityType => (global::HarmonyOS.ArkUI.WifiSecurityType)NativeValue.ToInt(GetPropertyRaw(_securityType));
-
-    /// <summary>
-    /// rssi
-    /// </summary>
-    public double Rssi => NativeValue.ToDouble(GetPropertyRaw(_rssi));
-
-    /// <summary>
-    /// band
-    /// </summary>
-    public double Band => NativeValue.ToDouble(GetPropertyRaw(_band));
-
-    /// <summary>
-    /// frequency
-    /// </summary>
-    public double Frequency => NativeValue.ToDouble(GetPropertyRaw(_frequency));
-
-    /// <summary>
-    /// channelWidth
-    /// </summary>
-    public double ChannelWidth => NativeValue.ToDouble(GetPropertyRaw(_channelWidth));
-
-    /// <summary>
-    /// centerFrequency0
-    /// </summary>
-    public double CenterFrequency0 => NativeValue.ToDouble(GetPropertyRaw(_centerFrequency0));
-
-    /// <summary>
-    /// centerFrequency1
-    /// </summary>
-    public double CenterFrequency1 => NativeValue.ToDouble(GetPropertyRaw(_centerFrequency1));
-
-    /// <summary>
-    /// infoElems
-    /// </summary>
-    public WifiInfoElem[] InfoElems => ValueConverter.ConvertArray(GetPropertyRaw(_infoElems), static e => new WifiInfoElem(e));
-
-    /// <summary>
-    /// timestamp
-    /// </summary>
-    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
-
-    /// <summary>
-    /// supportedWifiCategory
-    /// </summary>
-    public global::HarmonyOS.ArkUI.WifiCategory SupportedWifiCategory => (global::HarmonyOS.ArkUI.WifiCategory)NativeValue.ToInt(GetPropertyRaw(_supportedWifiCategory));
-
-    /// <summary>
-    /// isHiLinkNetwork
-    /// </summary>
-    public bool IsHiLinkNetwork => NativeValue.ToBool(GetPropertyRaw(_isHiLinkNetwork));
-
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _ssid = System.Text.Encoding.UTF8.GetBytes("ssid");
+        var _ssidV = NativeValue.From(Ssid);
+        if (_ssidV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _ssid, _ssidV);
+        var _bssid = System.Text.Encoding.UTF8.GetBytes("bssid");
+        var _bssidV = NativeValue.From(Bssid);
+        if (_bssidV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _bssid, _bssidV);
+        var _preSharedKey = System.Text.Encoding.UTF8.GetBytes("preSharedKey");
+        var _preSharedKeyV = NativeValue.From(PreSharedKey);
+        if (_preSharedKeyV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _preSharedKey, _preSharedKeyV);
+        var _isHiddenSsid = System.Text.Encoding.UTF8.GetBytes("isHiddenSsid");
+        var _isHiddenSsidV = NativeValue.From(IsHiddenSsid);
+        if (_isHiddenSsidV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _isHiddenSsid, _isHiddenSsidV);
+        var _securityType = System.Text.Encoding.UTF8.GetBytes("securityType");
+        var _securityTypeV = NativeValue.From(SecurityType);
+        if (_securityTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _securityType, _securityTypeV);
+        var _creatorUid = System.Text.Encoding.UTF8.GetBytes("creatorUid");
+        var _creatorUidV = NativeValue.From(CreatorUid);
+        if (_creatorUidV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _creatorUid, _creatorUidV);
+        var _disableReason = System.Text.Encoding.UTF8.GetBytes("disableReason");
+        var _disableReasonV = NativeValue.From(DisableReason);
+        if (_disableReasonV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _disableReason, _disableReasonV);
+        var _netId = System.Text.Encoding.UTF8.GetBytes("netId");
+        var _netIdV = NativeValue.From(NetId);
+        if (_netIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _netId, _netIdV);
+        var _randomMacType = System.Text.Encoding.UTF8.GetBytes("randomMacType");
+        var _randomMacTypeV = NativeValue.From(RandomMacType);
+        if (_randomMacTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _randomMacType, _randomMacTypeV);
+        var _randomMacAddr = System.Text.Encoding.UTF8.GetBytes("randomMacAddr");
+        var _randomMacAddrV = NativeValue.From(RandomMacAddr);
+        if (_randomMacAddrV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _randomMacAddr, _randomMacAddrV);
+        var _iPType = System.Text.Encoding.UTF8.GetBytes("ipType");
+        var _iPTypeV = NativeValue.From(IPType);
+        if (_iPTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _iPType, _iPTypeV);
+        var _staticIP = System.Text.Encoding.UTF8.GetBytes("staticIp");
+        var _staticIPV = NativeValue.From(StaticIP);
+        if (_staticIPV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _staticIP, _staticIPV);
+        var _eapProfile = System.Text.Encoding.UTF8.GetBytes("eapProfile");
+        var _eapProfileV = NativeValue.From(EapProfile);
+        if (_eapProfileV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _eapProfile, _eapProfileV);
+    }
 }
 
 /// <summary>
-/// WifiDeviceConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// WifiAccessInfo 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class WifiDeviceConfig : JsObject
+public sealed partial class WifiAccessInfo : JsObject
 {
-    public WifiDeviceConfig(IntPtr handle) : base(handle) { }
+    public WifiAccessInfo(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _ssid => "ssid"u8;
     private static ReadOnlySpan<byte> _bssid => "bssid"u8;
-    private static ReadOnlySpan<byte> _bssidType => "bssidType"u8;
-    private static ReadOnlySpan<byte> _preSharedKey => "preSharedKey"u8;
-    private static ReadOnlySpan<byte> _isHiddenSsid => "isHiddenSsid"u8;
-    private static ReadOnlySpan<byte> _securityType => "securityType"u8;
-    private static ReadOnlySpan<byte> _netId => "netId"u8;
-    private static ReadOnlySpan<byte> _eapConfig => "eapConfig"u8;
-    private static ReadOnlySpan<byte> _wapiConfig => "wapiConfig"u8;
-    private static ReadOnlySpan<byte> _showNoInternetDialog => "showNoInternetDialog"u8;
     /// <summary>
     /// ssid
     /// </summary>
@@ -887,646 +255,126 @@ public sealed partial class WifiDeviceConfig : JsObject
     /// </summary>
     public string? Bssid => (string?)NativeValue.ToString(GetPropertyRaw(_bssid)) ?? string.Empty;
 
-    /// <summary>
-    /// bssidType
-    /// </summary>
-    public global::HarmonyOS.ArkUI.DeviceAddressType? BssidType => (global::HarmonyOS.ArkUI.DeviceAddressType?)(global::HarmonyOS.ArkUI.DeviceAddressType)NativeValue.ToInt(GetPropertyRaw(_bssidType));
-
-    /// <summary>
-    /// preSharedKey
-    /// </summary>
-    public string PreSharedKey => NativeValue.ToString(GetPropertyRaw(_preSharedKey)) ?? string.Empty;
-
-    /// <summary>
-    /// isHiddenSsid
-    /// </summary>
-    public bool? IsHiddenSsid => (bool?)NativeValue.ToBool(GetPropertyRaw(_isHiddenSsid));
-
-    /// <summary>
-    /// securityType
-    /// </summary>
-    public global::HarmonyOS.ArkUI.WifiSecurityType SecurityType => (global::HarmonyOS.ArkUI.WifiSecurityType)NativeValue.ToInt(GetPropertyRaw(_securityType));
-
-    /// <summary>
-    /// netId
-    /// </summary>
-    public double? NetId => (double?)NativeValue.ToDouble(GetPropertyRaw(_netId));
-
-    /// <summary>
-    /// eapConfig
-    /// </summary>
-    public WifiEapConfig? EapConfig => GetPropertyRaw(_eapConfig) == IntPtr.Zero ? null : new WifiEapConfig(GetPropertyRaw(_eapConfig));
-
-    /// <summary>
-    /// wapiConfig
-    /// </summary>
-    public WifiWapiConfig? WapiConfig => GetPropertyRaw(_wapiConfig) == IntPtr.Zero ? null : new WifiWapiConfig(GetPropertyRaw(_wapiConfig));
-
-    /// <summary>
-    /// showNoInternetDialog
-    /// </summary>
-    public bool? ShowNoInternetDialog => (bool?)NativeValue.ToBool(GetPropertyRaw(_showNoInternetDialog));
-
 }
 
 /// <summary>
-/// ConnectSettings（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// IpProfile（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record ConnectSettings(
-    double NetworkId,
-    bool? WithUserAction = null,
-    double? UserActionTimeout = null,
-    bool? AddNetworkToSystem = null
+public sealed record IpProfile(
+    double IPAddress,
+    double Gateway,
+    double PrefixLength,
+    double[] DnsServers,
+    string[] Domains
 ) : INapiRecord
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _networkId = System.Text.Encoding.UTF8.GetBytes("networkId");
-        var _networkIdV = NativeValue.From(NetworkId);
-        if (_networkIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _networkId, _networkIdV);
-        var _withUserAction = System.Text.Encoding.UTF8.GetBytes("withUserAction");
-        var _withUserActionV = NativeValue.From(WithUserAction);
-        if (_withUserActionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _withUserAction, _withUserActionV);
-        var _userActionTimeout = System.Text.Encoding.UTF8.GetBytes("userActionTimeout");
-        var _userActionTimeoutV = NativeValue.From(UserActionTimeout);
-        if (_userActionTimeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userActionTimeout, _userActionTimeoutV);
-        var _addNetworkToSystem = System.Text.Encoding.UTF8.GetBytes("addNetworkToSystem");
-        var _addNetworkToSystemV = NativeValue.From(AddNetworkToSystem);
-        if (_addNetworkToSystemV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addNetworkToSystem, _addNetworkToSystemV);
+        var _iPAddress = System.Text.Encoding.UTF8.GetBytes("ipAddress");
+        var _iPAddressV = NativeValue.From(IPAddress);
+        if (_iPAddressV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _iPAddress, _iPAddressV);
+        var _gateway = System.Text.Encoding.UTF8.GetBytes("gateway");
+        var _gatewayV = NativeValue.From(Gateway);
+        if (_gatewayV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _gateway, _gatewayV);
+        var _prefixLength = System.Text.Encoding.UTF8.GetBytes("prefixLength");
+        var _prefixLengthV = NativeValue.From(PrefixLength);
+        if (_prefixLengthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _prefixLength, _prefixLengthV);
+        var _dnsServers = System.Text.Encoding.UTF8.GetBytes("dnsServers");
+        var _dnsServersV = NativeValue.From(DnsServers);
+        if (_dnsServersV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _dnsServers, _dnsServersV);
+        var _domains = System.Text.Encoding.UTF8.GetBytes("domains");
+        var _domainsV = NativeValue.From(Domains);
+        if (_domainsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _domains, _domainsV);
     }
 }
 
 /// <summary>
-/// WifiLinkedInfo 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// WifiEapProfile（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed partial class WifiLinkedInfo : JsObject
-{
-    public WifiLinkedInfo(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _ssid => "ssid"u8;
-    private static ReadOnlySpan<byte> _bssid => "bssid"u8;
-    private static ReadOnlySpan<byte> _rssi => "rssi"u8;
-    private static ReadOnlySpan<byte> _band => "band"u8;
-    private static ReadOnlySpan<byte> _linkSpeed => "linkSpeed"u8;
-    private static ReadOnlySpan<byte> _rxLinkSpeed => "rxLinkSpeed"u8;
-    private static ReadOnlySpan<byte> _maxSupportedTxLinkSpeed => "maxSupportedTxLinkSpeed"u8;
-    private static ReadOnlySpan<byte> _maxSupportedRxLinkSpeed => "maxSupportedRxLinkSpeed"u8;
-    private static ReadOnlySpan<byte> _frequency => "frequency"u8;
-    private static ReadOnlySpan<byte> _isHidden => "isHidden"u8;
-    private static ReadOnlySpan<byte> _isRestricted => "isRestricted"u8;
-    private static ReadOnlySpan<byte> _macType => "macType"u8;
-    private static ReadOnlySpan<byte> _macAddress => "macAddress"u8;
-    private static ReadOnlySpan<byte> _ipAddress => "ipAddress"u8;
-    private static ReadOnlySpan<byte> _connState => "connState"u8;
-    private static ReadOnlySpan<byte> _channelWidth => "channelWidth"u8;
-    private static ReadOnlySpan<byte> _wifiStandard => "wifiStandard"u8;
-    private static ReadOnlySpan<byte> _supportedWifiCategory => "supportedWifiCategory"u8;
-    private static ReadOnlySpan<byte> _isHiLinkNetwork => "isHiLinkNetwork"u8;
-    private static ReadOnlySpan<byte> _wifiLinkType => "wifiLinkType"u8;
-    /// <summary>
-    /// ssid
-    /// </summary>
-    public string Ssid => NativeValue.ToString(GetPropertyRaw(_ssid)) ?? string.Empty;
-
-    /// <summary>
-    /// bssid
-    /// </summary>
-    public string Bssid => NativeValue.ToString(GetPropertyRaw(_bssid)) ?? string.Empty;
-
-    /// <summary>
-    /// rssi
-    /// </summary>
-    public double Rssi => NativeValue.ToDouble(GetPropertyRaw(_rssi));
-
-    /// <summary>
-    /// band
-    /// </summary>
-    public double Band => NativeValue.ToDouble(GetPropertyRaw(_band));
-
-    /// <summary>
-    /// linkSpeed
-    /// </summary>
-    public double LinkSpeed => NativeValue.ToDouble(GetPropertyRaw(_linkSpeed));
-
-    /// <summary>
-    /// rxLinkSpeed
-    /// </summary>
-    public double RxLinkSpeed => NativeValue.ToDouble(GetPropertyRaw(_rxLinkSpeed));
-
-    /// <summary>
-    /// maxSupportedTxLinkSpeed
-    /// </summary>
-    public double MaxSupportedTxLinkSpeed => NativeValue.ToDouble(GetPropertyRaw(_maxSupportedTxLinkSpeed));
-
-    /// <summary>
-    /// maxSupportedRxLinkSpeed
-    /// </summary>
-    public double MaxSupportedRxLinkSpeed => NativeValue.ToDouble(GetPropertyRaw(_maxSupportedRxLinkSpeed));
-
-    /// <summary>
-    /// frequency
-    /// </summary>
-    public double Frequency => NativeValue.ToDouble(GetPropertyRaw(_frequency));
-
-    /// <summary>
-    /// isHidden
-    /// </summary>
-    public bool IsHidden => NativeValue.ToBool(GetPropertyRaw(_isHidden));
-
-    /// <summary>
-    /// isRestricted
-    /// </summary>
-    public bool IsRestricted => NativeValue.ToBool(GetPropertyRaw(_isRestricted));
-
-    /// <summary>
-    /// macType
-    /// </summary>
-    public double MacType => NativeValue.ToDouble(GetPropertyRaw(_macType));
-
-    /// <summary>
-    /// macAddress
-    /// </summary>
-    public string MacAddress => NativeValue.ToString(GetPropertyRaw(_macAddress)) ?? string.Empty;
-
-    /// <summary>
-    /// ipAddress
-    /// </summary>
-    public double IPAddress => NativeValue.ToDouble(GetPropertyRaw(_ipAddress));
-
-    /// <summary>
-    /// connState
-    /// </summary>
-    public global::HarmonyOS.ArkUI.ConnState ConnState => (global::HarmonyOS.ArkUI.ConnState)NativeValue.ToInt(GetPropertyRaw(_connState));
-
-    /// <summary>
-    /// channelWidth
-    /// </summary>
-    public global::HarmonyOS.ArkUI.WifiChannelWidth ChannelWidth => (global::HarmonyOS.ArkUI.WifiChannelWidth)NativeValue.ToInt(GetPropertyRaw(_channelWidth));
-
-    /// <summary>
-    /// wifiStandard
-    /// </summary>
-    public global::HarmonyOS.ArkUI.WifiStandard WifiStandard => (global::HarmonyOS.ArkUI.WifiStandard)NativeValue.ToInt(GetPropertyRaw(_wifiStandard));
-
-    /// <summary>
-    /// supportedWifiCategory
-    /// </summary>
-    public global::HarmonyOS.ArkUI.WifiCategory SupportedWifiCategory => (global::HarmonyOS.ArkUI.WifiCategory)NativeValue.ToInt(GetPropertyRaw(_supportedWifiCategory));
-
-    /// <summary>
-    /// isHiLinkNetwork
-    /// </summary>
-    public bool IsHiLinkNetwork => NativeValue.ToBool(GetPropertyRaw(_isHiLinkNetwork));
-
-    /// <summary>
-    /// wifiLinkType
-    /// </summary>
-    public global::HarmonyOS.ArkUI.WifiLinkType? WifiLinkType => (global::HarmonyOS.ArkUI.WifiLinkType?)(global::HarmonyOS.ArkUI.WifiLinkType)NativeValue.ToInt(GetPropertyRaw(_wifiLinkType));
-
-}
-
-/// <summary>
-/// IpInfo 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class IpInfo : JsObject
-{
-    public IpInfo(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _ipAddress => "ipAddress"u8;
-    private static ReadOnlySpan<byte> _gateway => "gateway"u8;
-    private static ReadOnlySpan<byte> _netmask => "netmask"u8;
-    private static ReadOnlySpan<byte> _primaryDns => "primaryDns"u8;
-    private static ReadOnlySpan<byte> _secondDns => "secondDns"u8;
-    private static ReadOnlySpan<byte> _serverIp => "serverIp"u8;
-    private static ReadOnlySpan<byte> _leaseDuration => "leaseDuration"u8;
-    /// <summary>
-    /// ipAddress
-    /// </summary>
-    public double IPAddress => NativeValue.ToDouble(GetPropertyRaw(_ipAddress));
-
-    /// <summary>
-    /// gateway
-    /// </summary>
-    public double Gateway => NativeValue.ToDouble(GetPropertyRaw(_gateway));
-
-    /// <summary>
-    /// netmask
-    /// </summary>
-    public double Netmask => NativeValue.ToDouble(GetPropertyRaw(_netmask));
-
-    /// <summary>
-    /// primaryDns
-    /// </summary>
-    public double PrimaryDns => NativeValue.ToDouble(GetPropertyRaw(_primaryDns));
-
-    /// <summary>
-    /// secondDns
-    /// </summary>
-    public double SecondDns => NativeValue.ToDouble(GetPropertyRaw(_secondDns));
-
-    /// <summary>
-    /// serverIp
-    /// </summary>
-    public double ServerIP => NativeValue.ToDouble(GetPropertyRaw(_serverIp));
-
-    /// <summary>
-    /// leaseDuration
-    /// </summary>
-    public double LeaseDuration => NativeValue.ToDouble(GetPropertyRaw(_leaseDuration));
-
-}
-
-/// <summary>
-/// Ipv6Info 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class Ipv6Info : JsObject
-{
-    public Ipv6Info(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _linkIpv6Address => "linkIpv6Address"u8;
-    private static ReadOnlySpan<byte> _globalIpv6Address => "globalIpv6Address"u8;
-    private static ReadOnlySpan<byte> _randomGlobalIpv6Address => "randomGlobalIpv6Address"u8;
-    private static ReadOnlySpan<byte> _uniqueIpv6Address => "uniqueIpv6Address"u8;
-    private static ReadOnlySpan<byte> _randomUniqueIpv6Address => "randomUniqueIpv6Address"u8;
-    private static ReadOnlySpan<byte> _gateway => "gateway"u8;
-    private static ReadOnlySpan<byte> _netmask => "netmask"u8;
-    private static ReadOnlySpan<byte> _primaryDNS => "primaryDNS"u8;
-    private static ReadOnlySpan<byte> _secondDNS => "secondDNS"u8;
-    /// <summary>
-    /// linkIpv6Address
-    /// </summary>
-    public string LinkIpv6Address => NativeValue.ToString(GetPropertyRaw(_linkIpv6Address)) ?? string.Empty;
-
-    /// <summary>
-    /// globalIpv6Address
-    /// </summary>
-    public string GlobalIpv6Address => NativeValue.ToString(GetPropertyRaw(_globalIpv6Address)) ?? string.Empty;
-
-    /// <summary>
-    /// randomGlobalIpv6Address
-    /// </summary>
-    public string RandomGlobalIpv6Address => NativeValue.ToString(GetPropertyRaw(_randomGlobalIpv6Address)) ?? string.Empty;
-
-    /// <summary>
-    /// uniqueIpv6Address
-    /// </summary>
-    public string? UniqueIpv6Address => (string?)NativeValue.ToString(GetPropertyRaw(_uniqueIpv6Address)) ?? string.Empty;
-
-    /// <summary>
-    /// randomUniqueIpv6Address
-    /// </summary>
-    public string? RandomUniqueIpv6Address => (string?)NativeValue.ToString(GetPropertyRaw(_randomUniqueIpv6Address)) ?? string.Empty;
-
-    /// <summary>
-    /// gateway
-    /// </summary>
-    public string Gateway => NativeValue.ToString(GetPropertyRaw(_gateway)) ?? string.Empty;
-
-    /// <summary>
-    /// netmask
-    /// </summary>
-    public string Netmask => NativeValue.ToString(GetPropertyRaw(_netmask)) ?? string.Empty;
-
-    /// <summary>
-    /// primaryDNS
-    /// </summary>
-    public string PrimaryDns => NativeValue.ToString(GetPropertyRaw(_primaryDNS)) ?? string.Empty;
-
-    /// <summary>
-    /// secondDNS
-    /// </summary>
-    public string SecondDns => NativeValue.ToString(GetPropertyRaw(_secondDNS)) ?? string.Empty;
-
-}
-
-/// <summary>
-/// WifiP2pLinkedInfo 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class WifiP2pLinkedInfo : JsObject
-{
-    public WifiP2pLinkedInfo(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _connectState => "connectState"u8;
-    private static ReadOnlySpan<byte> _isGroupOwner => "isGroupOwner"u8;
-    private static ReadOnlySpan<byte> _groupOwnerAddr => "groupOwnerAddr"u8;
-    /// <summary>
-    /// connectState
-    /// </summary>
-    public global::HarmonyOS.ArkUI.P2pConnectState ConnectState => (global::HarmonyOS.ArkUI.P2pConnectState)NativeValue.ToInt(GetPropertyRaw(_connectState));
-
-    /// <summary>
-    /// isGroupOwner
-    /// </summary>
-    public bool IsGroupOwner => NativeValue.ToBool(GetPropertyRaw(_isGroupOwner));
-
-    /// <summary>
-    /// groupOwnerAddr
-    /// </summary>
-    public string GroupOwnerAddr => NativeValue.ToString(GetPropertyRaw(_groupOwnerAddr)) ?? string.Empty;
-
-}
-
-/// <summary>
-/// WifiP2pGroupInfo 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class WifiP2pGroupInfo : JsObject
-{
-    public WifiP2pGroupInfo(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _isP2pGo => "isP2pGo"u8;
-    private static ReadOnlySpan<byte> _ownerInfo => "ownerInfo"u8;
-    private static ReadOnlySpan<byte> _passphrase => "passphrase"u8;
-    private static ReadOnlySpan<byte> _interface => "interface"u8;
-    private static ReadOnlySpan<byte> _groupName => "groupName"u8;
-    private static ReadOnlySpan<byte> _networkId => "networkId"u8;
-    private static ReadOnlySpan<byte> _frequency => "frequency"u8;
-    private static ReadOnlySpan<byte> _clientDevices => "clientDevices"u8;
-    private static ReadOnlySpan<byte> _goIpAddress => "goIpAddress"u8;
-    /// <summary>
-    /// isP2pGo
-    /// </summary>
-    public bool IsP2pGo => NativeValue.ToBool(GetPropertyRaw(_isP2pGo));
-
-    /// <summary>
-    /// ownerInfo
-    /// </summary>
-    public WifiP2pDevice OwnerInfo => new WifiP2pDevice(GetPropertyRaw(_ownerInfo));
-
-    /// <summary>
-    /// passphrase
-    /// </summary>
-    public string Passphrase => NativeValue.ToString(GetPropertyRaw(_passphrase)) ?? string.Empty;
-
-    /// <summary>
-    /// interface
-    /// </summary>
-    public string Interface => NativeValue.ToString(GetPropertyRaw(_interface)) ?? string.Empty;
-
-    /// <summary>
-    /// groupName
-    /// </summary>
-    public string GroupName => NativeValue.ToString(GetPropertyRaw(_groupName)) ?? string.Empty;
-
-    /// <summary>
-    /// networkId
-    /// </summary>
-    public double NetworkId => NativeValue.ToDouble(GetPropertyRaw(_networkId));
-
-    /// <summary>
-    /// frequency
-    /// </summary>
-    public double Frequency => NativeValue.ToDouble(GetPropertyRaw(_frequency));
-
-    /// <summary>
-    /// clientDevices
-    /// </summary>
-    public WifiP2pDevice[] ClientDevices => ValueConverter.ConvertArray(GetPropertyRaw(_clientDevices), static e => new WifiP2pDevice(e));
-
-    /// <summary>
-    /// goIpAddress
-    /// </summary>
-    public string GoIPAddress => NativeValue.ToString(GetPropertyRaw(_goIpAddress)) ?? string.Empty;
-
-}
-
-/// <summary>
-/// WifiP2pDevice 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class WifiP2pDevice : JsObject
-{
-    public WifiP2pDevice(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _deviceName => "deviceName"u8;
-    private static ReadOnlySpan<byte> _deviceAddress => "deviceAddress"u8;
-    private static ReadOnlySpan<byte> _deviceAddressType => "deviceAddressType"u8;
-    private static ReadOnlySpan<byte> _primaryDeviceType => "primaryDeviceType"u8;
-    private static ReadOnlySpan<byte> _deviceStatus => "deviceStatus"u8;
-    private static ReadOnlySpan<byte> _groupCapabilities => "groupCapabilities"u8;
-    /// <summary>
-    /// deviceName
-    /// </summary>
-    public string DeviceName => NativeValue.ToString(GetPropertyRaw(_deviceName)) ?? string.Empty;
-
-    /// <summary>
-    /// deviceAddress
-    /// </summary>
-    public string DeviceAddress => NativeValue.ToString(GetPropertyRaw(_deviceAddress)) ?? string.Empty;
-
-    /// <summary>
-    /// deviceAddressType
-    /// </summary>
-    public global::HarmonyOS.ArkUI.DeviceAddressType? DeviceAddressType => (global::HarmonyOS.ArkUI.DeviceAddressType?)(global::HarmonyOS.ArkUI.DeviceAddressType)NativeValue.ToInt(GetPropertyRaw(_deviceAddressType));
-
-    /// <summary>
-    /// primaryDeviceType
-    /// </summary>
-    public string PrimaryDeviceType => NativeValue.ToString(GetPropertyRaw(_primaryDeviceType)) ?? string.Empty;
-
-    /// <summary>
-    /// deviceStatus
-    /// </summary>
-    public global::HarmonyOS.ArkUI.P2pDeviceStatus DeviceStatus => (global::HarmonyOS.ArkUI.P2pDeviceStatus)NativeValue.ToInt(GetPropertyRaw(_deviceStatus));
-
-    /// <summary>
-    /// groupCapabilities
-    /// </summary>
-    public double GroupCapabilities => NativeValue.ToDouble(GetPropertyRaw(_groupCapabilities));
-
-}
-
-/// <summary>
-/// WifiP2PConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record WifiP2PConfig(
-    string DeviceAddress,
-    global::HarmonyOS.ArkUI.DeviceAddressType? DeviceAddressType,
-    double NetId,
-    string Passphrase,
-    string GroupName,
-    global::HarmonyOS.ArkUI.GroupOwnerBand GoBand,
-    double? GoFreq = null
+public sealed record WifiEapProfile(
+    global::HarmonyOS.ArkUI.EapMethod EapMethod,
+    global::HarmonyOS.ArkUI.Phase2Method Phase2Method,
+    string Identity,
+    string AnonymousIdentity,
+    string Password,
+    string CaCertAliases,
+    string CaPath,
+    string ClientCertAliases,
+    byte[] CertEntry,
+    string CertPassword,
+    string AltSubjectMatch,
+    string DomainSuffixMatch,
+    string Realm,
+    string Plmn,
+    double EapSubId
 ) : INapiRecord
 {
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
-        var _deviceAddress = System.Text.Encoding.UTF8.GetBytes("deviceAddress");
-        var _deviceAddressV = NativeValue.From(DeviceAddress);
-        if (_deviceAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddress, _deviceAddressV);
-        var _deviceAddressType = System.Text.Encoding.UTF8.GetBytes("deviceAddressType");
-        var _deviceAddressTypeV = NativeValue.From(DeviceAddressType);
-        if (_deviceAddressTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddressType, _deviceAddressTypeV);
-        var _netId = System.Text.Encoding.UTF8.GetBytes("netId");
-        var _netIdV = NativeValue.From(NetId);
-        if (_netIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _netId, _netIdV);
-        var _passphrase = System.Text.Encoding.UTF8.GetBytes("passphrase");
-        var _passphraseV = NativeValue.From(Passphrase);
-        if (_passphraseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _passphrase, _passphraseV);
-        var _groupName = System.Text.Encoding.UTF8.GetBytes("groupName");
-        var _groupNameV = NativeValue.From(GroupName);
-        if (_groupNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _groupName, _groupNameV);
-        var _goBand = System.Text.Encoding.UTF8.GetBytes("goBand");
-        var _goBandV = NativeValue.From(GoBand);
-        if (_goBandV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _goBand, _goBandV);
-        var _goFreq = System.Text.Encoding.UTF8.GetBytes("goFreq");
-        var _goFreqV = NativeValue.From(GoFreq);
-        if (_goFreqV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _goFreq, _goFreqV);
+        var _eapMethod = System.Text.Encoding.UTF8.GetBytes("eapMethod");
+        var _eapMethodV = NativeValue.From(EapMethod);
+        if (_eapMethodV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _eapMethod, _eapMethodV);
+        var _phase2Method = System.Text.Encoding.UTF8.GetBytes("phase2Method");
+        var _phase2MethodV = NativeValue.From(Phase2Method);
+        if (_phase2MethodV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _phase2Method, _phase2MethodV);
+        var _identity = System.Text.Encoding.UTF8.GetBytes("identity");
+        var _identityV = NativeValue.From(Identity);
+        if (_identityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _identity, _identityV);
+        var _anonymousIdentity = System.Text.Encoding.UTF8.GetBytes("anonymousIdentity");
+        var _anonymousIdentityV = NativeValue.From(AnonymousIdentity);
+        if (_anonymousIdentityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _anonymousIdentity, _anonymousIdentityV);
+        var _password = System.Text.Encoding.UTF8.GetBytes("password");
+        var _passwordV = NativeValue.From(Password);
+        if (_passwordV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _password, _passwordV);
+        var _caCertAliases = System.Text.Encoding.UTF8.GetBytes("caCertAliases");
+        var _caCertAliasesV = NativeValue.From(CaCertAliases);
+        if (_caCertAliasesV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _caCertAliases, _caCertAliasesV);
+        var _caPath = System.Text.Encoding.UTF8.GetBytes("caPath");
+        var _caPathV = NativeValue.From(CaPath);
+        if (_caPathV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _caPath, _caPathV);
+        var _clientCertAliases = System.Text.Encoding.UTF8.GetBytes("clientCertAliases");
+        var _clientCertAliasesV = NativeValue.From(ClientCertAliases);
+        if (_clientCertAliasesV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _clientCertAliases, _clientCertAliasesV);
+        var _certEntry = System.Text.Encoding.UTF8.GetBytes("certEntry");
+        var _certEntryV = NativeValue.From(CertEntry);
+        if (_certEntryV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _certEntry, _certEntryV);
+        var _certPassword = System.Text.Encoding.UTF8.GetBytes("certPassword");
+        var _certPasswordV = NativeValue.From(CertPassword);
+        if (_certPasswordV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _certPassword, _certPasswordV);
+        var _altSubjectMatch = System.Text.Encoding.UTF8.GetBytes("altSubjectMatch");
+        var _altSubjectMatchV = NativeValue.From(AltSubjectMatch);
+        if (_altSubjectMatchV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _altSubjectMatch, _altSubjectMatchV);
+        var _domainSuffixMatch = System.Text.Encoding.UTF8.GetBytes("domainSuffixMatch");
+        var _domainSuffixMatchV = NativeValue.From(DomainSuffixMatch);
+        if (_domainSuffixMatchV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _domainSuffixMatch, _domainSuffixMatchV);
+        var _realm = System.Text.Encoding.UTF8.GetBytes("realm");
+        var _realmV = NativeValue.From(Realm);
+        if (_realmV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _realm, _realmV);
+        var _plmn = System.Text.Encoding.UTF8.GetBytes("plmn");
+        var _plmnV = NativeValue.From(Plmn);
+        if (_plmnV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _plmn, _plmnV);
+        var _eapSubId = System.Text.Encoding.UTF8.GetBytes("eapSubId");
+        var _eapSubIdV = NativeValue.From(EapSubId);
+        if (_eapSubIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _eapSubId, _eapSubIdV);
     }
-}
-
-/// <summary>
-/// WifiInfoElem 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class WifiInfoElem : JsObject
-{
-    public WifiInfoElem(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _eid => "eid"u8;
-    private static ReadOnlySpan<byte> _content => "content"u8;
-    /// <summary>
-    /// eid
-    /// </summary>
-    public double Eid => NativeValue.ToDouble(GetPropertyRaw(_eid));
-
-    /// <summary>
-    /// content
-    /// </summary>
-    public byte[] Content => ValueConverter.ConvertArray(GetPropertyRaw(_content), static e => ValueConverter.Convert<byte>(e));
-
-}
-
-/// <summary>
-/// WifiEapConfig 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class WifiEapConfig : JsObject
-{
-    public WifiEapConfig(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _eapMethod => "eapMethod"u8;
-    private static ReadOnlySpan<byte> _phase2Method => "phase2Method"u8;
-    private static ReadOnlySpan<byte> _identity => "identity"u8;
-    private static ReadOnlySpan<byte> _anonymousIdentity => "anonymousIdentity"u8;
-    private static ReadOnlySpan<byte> _password => "password"u8;
-    private static ReadOnlySpan<byte> _caCertAlias => "caCertAlias"u8;
-    private static ReadOnlySpan<byte> _caPath => "caPath"u8;
-    private static ReadOnlySpan<byte> _clientCertAlias => "clientCertAlias"u8;
-    private static ReadOnlySpan<byte> _certEntry => "certEntry"u8;
-    private static ReadOnlySpan<byte> _certPassword => "certPassword"u8;
-    private static ReadOnlySpan<byte> _altSubjectMatch => "altSubjectMatch"u8;
-    private static ReadOnlySpan<byte> _domainSuffixMatch => "domainSuffixMatch"u8;
-    private static ReadOnlySpan<byte> _realm => "realm"u8;
-    private static ReadOnlySpan<byte> _plmn => "plmn"u8;
-    private static ReadOnlySpan<byte> _eapSubId => "eapSubId"u8;
-    /// <summary>
-    /// eapMethod
-    /// </summary>
-    public global::HarmonyOS.ArkUI.EapMethod EapMethod => (global::HarmonyOS.ArkUI.EapMethod)NativeValue.ToInt(GetPropertyRaw(_eapMethod));
-
-    /// <summary>
-    /// phase2Method
-    /// </summary>
-    public global::HarmonyOS.ArkUI.Phase2Method Phase2Method => (global::HarmonyOS.ArkUI.Phase2Method)NativeValue.ToInt(GetPropertyRaw(_phase2Method));
-
-    /// <summary>
-    /// identity
-    /// </summary>
-    public string Identity => NativeValue.ToString(GetPropertyRaw(_identity)) ?? string.Empty;
-
-    /// <summary>
-    /// anonymousIdentity
-    /// </summary>
-    public string AnonymousIdentity => NativeValue.ToString(GetPropertyRaw(_anonymousIdentity)) ?? string.Empty;
-
-    /// <summary>
-    /// password
-    /// </summary>
-    public string Password => NativeValue.ToString(GetPropertyRaw(_password)) ?? string.Empty;
-
-    /// <summary>
-    /// caCertAlias
-    /// </summary>
-    public string CaCertAlias => NativeValue.ToString(GetPropertyRaw(_caCertAlias)) ?? string.Empty;
-
-    /// <summary>
-    /// caPath
-    /// </summary>
-    public string CaPath => NativeValue.ToString(GetPropertyRaw(_caPath)) ?? string.Empty;
-
-    /// <summary>
-    /// clientCertAlias
-    /// </summary>
-    public string ClientCertAlias => NativeValue.ToString(GetPropertyRaw(_clientCertAlias)) ?? string.Empty;
-
-    /// <summary>
-    /// certEntry
-    /// </summary>
-    public byte[] CertEntry => ValueConverter.ConvertArray(GetPropertyRaw(_certEntry), static e => ValueConverter.Convert<byte>(e));
-
-    /// <summary>
-    /// certPassword
-    /// </summary>
-    public string CertPassword => NativeValue.ToString(GetPropertyRaw(_certPassword)) ?? string.Empty;
-
-    /// <summary>
-    /// altSubjectMatch
-    /// </summary>
-    public string AltSubjectMatch => NativeValue.ToString(GetPropertyRaw(_altSubjectMatch)) ?? string.Empty;
-
-    /// <summary>
-    /// domainSuffixMatch
-    /// </summary>
-    public string DomainSuffixMatch => NativeValue.ToString(GetPropertyRaw(_domainSuffixMatch)) ?? string.Empty;
-
-    /// <summary>
-    /// realm
-    /// </summary>
-    public string Realm => NativeValue.ToString(GetPropertyRaw(_realm)) ?? string.Empty;
-
-    /// <summary>
-    /// plmn
-    /// </summary>
-    public string Plmn => NativeValue.ToString(GetPropertyRaw(_plmn)) ?? string.Empty;
-
-    /// <summary>
-    /// eapSubId
-    /// </summary>
-    public double EapSubId => NativeValue.ToDouble(GetPropertyRaw(_eapSubId));
-
-}
-
-/// <summary>
-/// WifiWapiConfig 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class WifiWapiConfig : JsObject
-{
-    public WifiWapiConfig(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _wapiPskType => "wapiPskType"u8;
-    private static ReadOnlySpan<byte> _wapiAsCert => "wapiAsCert"u8;
-    private static ReadOnlySpan<byte> _wapiUserCert => "wapiUserCert"u8;
-    /// <summary>
-    /// wapiPskType
-    /// </summary>
-    public global::HarmonyOS.ArkUI.WapiPskType WapiPskType => (global::HarmonyOS.ArkUI.WapiPskType)NativeValue.ToInt(GetPropertyRaw(_wapiPskType));
-
-    /// <summary>
-    /// wapiAsCert
-    /// </summary>
-    public string WapiAsCert => NativeValue.ToString(GetPropertyRaw(_wapiAsCert)) ?? string.Empty;
-
-    /// <summary>
-    /// wapiUserCert
-    /// </summary>
-    public string WapiUserCert => NativeValue.ToString(GetPropertyRaw(_wapiUserCert)) ?? string.Empty;
-
 }
