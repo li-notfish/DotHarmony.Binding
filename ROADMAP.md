@@ -92,9 +92,16 @@
 > 端到端模拟器验证待手动执行。
 
 
-### 2.1 TSFN 异步层（大，M2 的核心难点）——✅ 最小实验已通过
+### 2.1 TSFN 异步层（大，M2 的核心难点）——✅ 最小实验已通过；✅ .NET 风格标准化已落地
 
-**做什么**：让 `@ohos.*` 的 `Promise<T>` / callback 风格 API 在 C# 里以 `Task<T>` 可用。当前全部映射为 `IntPtr` 占位。
+**做什么**：让 `@ohos.*` 的 `Promise<T>` / callback 风格 API 在 C# 里以 `Task<T>` 可用。~~当前全部映射为 `IntPtr` 占位~~ → **2026-09-11 标准化完成**：`Promise<Array<Display>>` → `Task<DisplayObject[]>` 全链路打通，接口类型生成 JsObject 派生包装类（114 个）/ 纯数据入参生成 INapiRecord record（47 个），裸 IntPtr 返回从 103 降至 19。
+
+**2.5 .NET 风格标准化（2026-09-11 完成）**：
+- 命名规范化：`naming.ts` 缩写词归一（`getURI→GetUri`、`TYPE_DEFAULT→TypeDefault`），Task 方法自动 `Async` 后缀
+- 类型映射收口 TypeMapper 单一事实源；修复 `mapGenericType` 贪婪正则对嵌套泛型的误切（`Promise<Array<T>>` 曾整体退化为 IntPtr 的潜在 bug）
+- Runtime：`JsObject` 强引用包装基类、`ValueConverter` 统一转换（含枚举/数组/显式工厂委托）、`NodeApi.SetProperty/GetGlobal/CreateInstance/GetArrayElements`、PromiseTaskBridge 吸并 ThreadSafeFunction.FromPromise 重复实现
+- 服务模块 `on*` 函数不再误判为组件事件；嵌套类构造函数支持（Picker 空壳修复）；无注解字面量常量类型推断（Pasteboard MIMETYPE_* 恢复）
+- 明确不做（后续立项）：ArrayBuffer/BigInt 封送、Map/Set 容器映射、EventHandler/EventArgs 事件模型、模拟器端到端手动验证（TSFN abort 路径）
 
 **最小实验结论**（2026-09-11，模拟器，HelloApp "TSFN test" 按钮 / `Runtime/TsfnExperiment.cs`）：
 - `CallJsTrampoline` 已实装（原为空壳）：context 解析回 ThreadSafeFunction 实例，转发 `OnCallJs`
