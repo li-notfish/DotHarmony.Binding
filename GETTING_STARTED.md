@@ -12,7 +12,7 @@
 | 应用工程 | Program.cs + XAML 页面 + Platforms/HarmonyOS 启动代码 | ✅ 本文的主角 |
 | HarmonyOS.Maui | 22 个控件 Handler、手势、导航、托管布局 | ❌ 引用即可 |
 | HarmonyOS.Bindings | ArkUI NDK 原生节点 + 438 个 @ohos.* 模块绑定 | ❌ 引用即可（仅声明用到的 @ohos 模块） |
-| HarmonyHost（ArkTS 宿主） | dlopen libapp.so 的壳工程（EntryAbility + C shim） | ❌ 工作负载级模板，一般不动 |
+| HarmonyHost（ArkTS 宿主） | dlopen libapp.so 的壳工程模板 | ❌ 由 targets 自动生成按应用实例（见 §3） |
 
 ---
 
@@ -252,14 +252,18 @@ public static void Register()
 | 2. 打 HAP | `scripts/build-hap.cmd` | hvigor assembleHap（DevEco 路径自动探测） | — |
 | 3. 部署 | `scripts/deploy-hap.sh` | hdc 安装 → 启动 → 跟踪 HarmonyHost 日志 | `HDC_TARGET` 设备选择 |
 
-其它 targets：`HarmonyBuildLibApp` / `HarmonyBuildHap` / `HarmonyDeploy` 可单独执行。
-可用属性：`HarmonyHostRoot`（默认 `samples/HarmonyHost`）、`HarmonyPowerShell`（默认 `pwsh`，需 PowerShell 7+）。
+其它 targets：`HarmonyStageHost` / `HarmonyBuildLibApp` / `HarmonyBuildHap` / `HarmonyDeploy` 可单独执行。
+可用属性：`HarmonyHostRoot`（宿主模板目录）、`HarmonyGenerateHost`（默认 true）、`HarmonyBundleId`、
+`HarmonyAppTitle`、`HarmonyHostDir`、`HarmonyPowerShell`（默认 `pwsh`，需 PowerShell 7+）。
 
-**多应用并存**：`dotnet build samples/dotnet/MyApp -t:HarmonyRun` 时 `DEMO_APP` 自动取工程名；
-产物统一打进同一个宿主 HAP（一次只挂一个应用的 libapp.so，切换应用重跑即可）。
+**宿主工程自动生成**：`HarmonyStageHost` 把共享模板（`samples/HarmonyHost`）实例化到应用工程的
+`obj/harmony/host/`，并按应用重写 `bundleName`（默认 `com.arktsbinding.<工程名去符号小写>`）与应用
+显示名——每个应用有独立的包名与 HAP，用户全程不需要在 DevEco 里建工程（hvigor 仅以 CLI 方式借用
+DevEco 安装目录的 node/hvigor/SDK）。想用自备宿主：`-p:HarmonyGenerateHost=false -p:HarmonyHostRoot=<目录>`。
 
 **用到了新的 @ohos.* 模块**？在 `samples/HarmonyHost/entry/src/main/ets/ohosImports.ets` 登记一行
-re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）。
+re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——宿主模板层面的修改改模板即可，
+暂存实例会在下次构建自动带上。
 
 **真机**：工具链就绪（arm64 libapp.so 始终同步产出），当前未验证项是签名物料与真机性能调参（ROADMAP 1.5）。
 

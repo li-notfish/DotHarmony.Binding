@@ -8,6 +8,7 @@
 距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 **上手**：从零创建鸿蒙 MAUI 应用 / 给已有 MAUI 应用加鸿蒙平台，见 **[GETTING_STARTED.md](GETTING_STARTED.md)**。
+**风险预案**：C 原生节点 API 退出假设下的 ArkTS 引擎迁移计划见 **[MIGRATION_ARKTS_ENGINE.md](MIGRATION_ARKTS_ENGINE.md)**。
 
 ## 这是什么
 
@@ -18,7 +19,7 @@
 |---|---|
 | Mono.Android（Java API 绑定） | `HarmonyOS.Bindings`（ArkUI C API / napi 绑定，生成器产出） |
 | 各平台 Handler（Android/iOS/...） | `HarmonyOS.Maui`（MAUI 控件 → ArkUI 原生节点，不 fork dotnet/maui） |
-| Android/iOS head 工程 | `HarmonyHost`（ArkTS 宿主 + C shim，固定模板） |
+| Android/iOS head 工程 | `HarmonyHost`（ArkTS 宿主 + C shim 模板；targets 按应用生成实例） |
 | workload / msbuild 集成 | `scripts/`（远程 NativeAOT + hvigor + hdc 一键脚本）
 
 ```
@@ -69,6 +70,7 @@ dotnet build ArkTsBinding.slnx
 
 # 5. 交叉编译 libapp.so（双架构）。LOCAL=true 走本地 WSL（上传式构建），默认经 SSH 远程
 bash scripts/remote-build.sh
+# （或用 MAUI 风格一键：dotnet build samples/dotnet/HelloApp -t:HarmonyRun —— 自动 stage 宿主 → AOT → HAP → 部署）
 
 # 6. 打 HAP（hvigor；DevEco 路径自动探测，或用 DEVECO_HOME 指定）
 cmd //c scripts\build-hap.cmd
@@ -82,7 +84,8 @@ bash scripts/deploy-hap.sh
 | 脚本 | 用途 | 说明 |
 |---|---|---|
 | `remote-build.ps1` / `remote-build.sh` | 交叉编译 libapp.so（arm64 + x64 双架构） | `LOCAL=true`：本地 WSL 构建——**上传式**（打包 → 解压到 WSL 原生文件系统 → 构建 → 取回），勿在 `/mnt/*` 上直接构建（9p I/O 慢一个数量级）；默认经 SSH 远程构建（别名 `wsl_auzrelinux`，构建机 IP 漂移先跑 `resolve-remote.ps1`） |
-| `build-hap.cmd` | hvigor 打 HAP | DevEco Studio 路径自动探测，`DEVECO_HOME` 可覆盖；签名需在 DevEco 中配置一次自动签名 |
+| `stage-host.ps1` | 宿主工程生成：模板 → 按应用实例（重写 bundleName/应用名） | 由 targets 的 HarmonyStageHost 调用（内容戳增量）；`HarmonyGenerateHost=false` 可跳过 |
+| `build-hap.cmd` | hvigor 打 HAP | DevEco Studio 路径自动探测，`DEVECO_HOME` 可覆盖；`HOST_DIR` 指向按应用暂存宿主（targets 自动设置） |
 | `deploy-hap.sh` / `deploy-hap.ps1` | 重装 HAP → 启动 → 抓取 HarmonyHost 日志 | hdc 自动探测；无设备 / 缺 HAP / 安装失败即报错停止；启动前 `aa force-stop` 防 install 竞争 |
 | `build-files.txt` | remote-build 打包清单（含 excludes） | ps1/sh 共用的唯一来源，改一处即可 |
 | `build-libapp.sh` | 构建机内部的 NativeAOT 发布 | 由 remote-build 调用，不必手动跑；musl.cc gcc（arm64）+ zig cc（x64）wrapper 幂等生成 |
@@ -99,6 +102,7 @@ bash scripts/deploy-hap.sh
 | `LOCAL` | `true` 时 remote-build 在本地 WSL 构建 | 否则走 SSH 远程 |
 | `DEMO_APP` | libapp.so 打包哪个 demo 工程（`HelloApp`=控件 demo / `ApiDemo`=API 绑定 demo） | `HelloApp` |
 | `REMOTE` / `BUILD` | SSH 别名 / 构建目录 | `wsl_auzrelinux` / `/tmp/arktsbinding` |
+| `HOST_DIR` | 宿主目录覆盖（三脚本通用；targets 生成模式自动指向 `obj/harmony/host`） | `samples/HarmonyHost` |
 
 > 约定：`.gitattributes` 强制 `*.sh` 为 LF（WSL bash 无法执行 CRLF 脚本）、`*.cmd/*.ps1` 为 CRLF；新增脚本请沿用"路径自动探测 + 前置检查失败即停"的风格。
 
@@ -146,13 +150,13 @@ HarmonyOS.Bindings/          绑定库（net10.0, AOT/trim 友好；Api/ 438 个
   ├─ Runtime/                napi 互操作（env 注入、INapiRecord、HiLog）
   └─ Hosting/Host.cs         libapp.so 导出入口
 src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/ContentPage → ArkUI 节点）
-samples/HarmonyHost/         鸿蒙宿主工程（ArkTS + C shim + CMake + ohosImports.ets 模块登记）
+samples/HarmonyHost/         鸿蒙宿主模板（ArkTS + C shim + CMake + ohosImports.ets 模块登记；targets 按应用 stage 到 obj/harmony/host）
 samples/dotnet/HelloApp/     M1 控件 demo（XAML + NativeAOT → libapp.so）
 samples/dotnet/ApiDemo/      M2 API 绑定 demo（模块验证/Promise→Task/TSFN；DEMO_APP=ApiDemo 切换）
                              两者的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
                              对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
                              由 src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets 提供
-scripts/                     remote-build / build-hap / deploy-hap 一键工具链
+scripts/                     remote-build / stage-host / build-hap / deploy-hap 一键工具链（+ verify-m1-uitest 行为回归）
 tests/                       jest（解析器/生成器 76 用例）
 ```
 
@@ -162,7 +166,7 @@ tests/                       jest（解析器/生成器 76 用例）
 - **画刷**：SolidColorBrush/LinearGradientBrush/RadialGradientBrush 全支持；ImageBrush 为 MAUI internal 类型无法声明（节点层 SetBackgroundImage 原语已就位）
 - **导航**：根页用 `new NavigationPage(...)` 即可走 MAUI 标准 `Navigation.PushAsync/PopAsync`（HarmonyNavigationPageHandler 转接 IStackNavigation 协议，已实测）；另有轻量 Page 栈与系统返回键（优先级：模态 → NavigationPage 内栈 → 轻量栈）。**模态** `PushModalAsync/PopModalAsync` 标准可用（ArkStack 覆盖 + RootNavigationAdapter 转接）；**生命周期** Appearing/Disappearing 已透传（宿主建最小 Window/Application 逻辑链放行 MAUI 的 SendAppearing 守卫）；页面推入有 250ms 淡入、返回/模态关闭有 250ms 淡出（animateTo，完成后才摘除释放旧页）；NavigationPage 自带标题栏（返回键 + 页 Title，`HasNavigationBar=false` 隐藏）。未支持：Shell（多平台 Shell 应用请把入口改写为 NavigationPage 结构）
 - **异步 API（M2 完成）**：`Promise<T>`→`Task<T>`；仅 callback 形式 API→`Task<T>`（CallbackTaskBridge，err-first）；`.NET event` 事件模型（真实触发已实测）；TSFN 生命周期三路径封装 + finalize 延迟释放防 UAF。**续体在 JS 线程内联恢复**（`NapiEnv` 线程亲和性），长耗时工作需自行 `Task.Run`
-- **零分配调用路径**：`params ReadOnlySpan<object?>`（C# 13）、trampoline/argv 栈分配、生成 record 的 u8 名字常量缓存；剩余分配源：基元装箱（object 转换点）、字符串结果物化、事件适配器闭包
+- **零分配调用路径**：`params ReadOnlySpan<object?>`（C# 13）、trampoline/argv 栈分配、生成 record 的 u8 名字常量缓存、`SetNumericAttribute(params ReadOnlySpan<...>)`（C# 14 first-class span conversions，属性写热路径）、HiLog 格式串 u8 缓存 + 运行时开关；剩余分配源：基元装箱（object 转换点）、字符串结果物化、事件适配器闭包
 - **控件覆盖**：22 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/BoxView/RefreshView/Picker/DatePicker/TimePicker + CollectionView/CarouselView M1 物化版），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
 - **手势识别**：TapGestureRecognizer/PanGestureRecognizer/PinchGestureRecognizer/SwipeGestureRecognizer/PointerGestureRecognizer 全支持（`HarmonyViewHandler` 基类统一挂载；Tap/Pinch 走 NDK 原生手势，Pan/Swipe/Pointer 走触摸流——pan 原生手势事件数据不可靠，实测沉淀；Tap/Pointer 经 AOT 安全的反射桥触发 internal SendTapped/SendPointer*）；PanUpdated 单位 vp（等价 iOS points）；未支持：Drag/Drop 识别器、鼠标 ButtonsMask 区分、hover 通道、Pinch 真机多点触控专项
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）

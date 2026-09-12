@@ -7,8 +7,8 @@
 
 - ✅ UI 通道：ArkUI NDK C API（`ArkUI_NativeNodeAPI_1`）→ `ArkUINodeBase` 稳定句柄
 - ✅ 服务通道：napi（`napi_load_module("=@ohos.xxx")`）→ `@ohos.deviceInfo` 端到端
-- ✅ MAUI Handler 包：22 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker/CollectionView/CarouselView）+ XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）；代码风格已统一为官方 handler 模式
-- ✅ 工具链：`remote-build.sh`（远程 NativeAOT）→ `build-hap.cmd`（hvigor）→ `deploy-hap.sh`（hdc）
+- ✅ MAUI Handler 包：22 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker/BoxView/CollectionView/CarouselView）+ 手势识别五件套 + XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）；代码风格已统一为官方 handler 模式；漏斗纪律（Handler 层禁直连原生 API）已由测试闸强制
+- ✅ 工具链：`HarmonyStageHost`（宿主工程按应用自动生成）→ `remote-build`（NativeAOT 双架构）→ `build-hap.cmd`（hvigor）→ `deploy-hap`（hdc）；`dotnet build -t:HarmonyRun` 一键直达
 
 ---
 
@@ -104,7 +104,7 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 
 **原生 recognizer 生命周期铁律**：**不得在事件分发回调内 `dispose()` recognizer**——实测 dispose 后原生手势管线仍对已释放结构派发事件（SIGSEGV UAF，fault 栈 libace_ndk 调堆上野指针）。`HarmonyGestureManager.Rebuild` 改为 Detach + 入池按配置键复用，dispose 仅在 Handler 断连时统一执行。
 
-**反射桥（唯一非公开通道）**：`TapGestureRecognizer.SendTapped` 与 `PointerGestureRecognizer.SendPointer*` 在 MAUI 10 为 internal（Tapped 是 event 无法外部 raise）。`MauiGestureBridge` 用 `[DynamicDependency(NonPublicMethods)]` 收根 + MethodInfo 查一次 `CreateDelegate` 缓存成强类型委托（NativeAOT 安全；与 XAML 零反射铁律不冲突——反射范围仅这两个类的指定方法）。单测覆盖桥全链路与 Swipe 方向映射（tests/dotnet/HarmonyGestureTests，9 用例）。
+**反射桥（唯一非公开通道）**：`TapGestureRecognizer.SendTapped` 与 `PointerGestureRecognizer.SendPointer*` 在 MAUI 10 为 internal（Tapped 是 event 无法外部 raise）。`MauiGestureBridge` 用 `[DynamicDependency(NonPublicMethods)]` 收根 + MethodInfo 查一次 `CreateDelegate` 缓存成强类型委托（NativeAOT 安全；与 XAML 零反射铁律不冲突——反射范围仅这两个类的指定方法）。单测覆盖桥全链路与 Swipe 方向映射（tests/dotnet/HarmonyGestureTests，现 16 用例：+布局对齐、漏斗纪律扫描）。
 
 **单位约定**：PanUpdated 单位 vp（见上）；tap 位置为节点相对坐标。Tap 的 ButtonsMask 鼠标按键区分 NDK 不暴露，按 Primary 处理。Pointer 仅触摸通道（hover/mouse 待补）。DragGestureRecognizer/DropGestureRecognizer 未实现（longpress+跨视图状态机，后续立项）。
 
@@ -149,7 +149,7 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
   `IntPtr[]` → `ReadOnlySpan<IntPtr>` 调用
 - 构建：`Directory.Build.props`（LangVersion=preview + HARMONYOS 常量收敛，**已加入打包清单**）、
   `IlcGenerateStackTraceData` 限 Debug（Release NativeAOT 体积优化；栈回溯退化为数字地址）
-- 单测：tests/dotnet/HarmonyGestureTests 增至 **15 用例**（9 手势桥/方向映射 + 6 Grid 对齐偏移），全绿
+- 单测：tests/dotnet/HarmonyGestureTests 增至 **16 用例**（9 手势桥/方向映射 + 6 Grid 对齐偏移 + 1 漏斗纪律源码扫描闸），全绿
 
 ---
 
@@ -188,7 +188,7 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 - **TSFN 生命周期加固**：Release/Abort 与 Call 互斥（锁）防句柄竞态；GCHandle 延迟到 finalize 回调释放——abort 后已入队消息仍会派发，过早释放即 UAF；CallJsTrampoline 异常捕获（不得穿透原生帧）
 - **全量生成（M2.3 终态）**：`--all` 生成 449 个 d.ts 中的 438 个模块，**375 转正编译、63 灰度**（黑名单 GRAYSCALE_MODULES）。规模暴露的生成器工程化缺陷全部修复：模块 className 唯一化（resourceManager/global.resourceManager、net/bluetooth 的 connection/socket 同名互覆盖）；跨模块 import 类型降级 IntPtr（含 default import）；枚举冲突按属主模块加前缀（废弃"全局去重丢弃"——首发射者被灰度会拖垮依赖者）；陈旧 Enums.cs 清理；灰度清单携带唯一化后 className；含 UTF-16（CRLF/代理对）转义与命名保留字处理
 - **已知残留（立项待做）**：TS 声明合并类型（window.WindowRect 双定义）；跨模块强类型解析（现在降级 IntPtr）；63 灰度模块的类型映射缺口清单
-- **零分配调用路径（.NET 10 / C# 13）**：`params ReadOnlySpan<object?>`（params collections，调用点零数组）；argv 栈分配（InvokeMethod/CreateInstance/trampolines，>8 参数回退堆）；P/Invoke 改 `ReadOnlySpan<IntPtr>`（LibraryImport 钉扎零拷贝）；生成 record 的 WriteTo 属性名 u8 常量缓存（替代每次 `Encoding.UTF8.GetBytes`）；NodeApi 胶水名字节静态缓存。**剩余分配源**：object 转换点基元装箱、字符串结果物化、事件适配器闭包——完全零装箱需 union struct 参数设计，后续立项
+- **零分配调用路径（.NET 10 / C# 13 → C# 14）**：`params ReadOnlySpan<object?>`（params collections，调用点零数组）；argv 栈分配（InvokeMethod/CreateInstance/trampolines，>8 参数回退堆）；P/Invoke 改 `ReadOnlySpan<IntPtr>`（LibraryImport 钉扎零拷贝）；生成 record 的 WriteTo 属性名 u8 常量缓存（替代每次 `Encoding.UTF8.GetBytes`）；NodeApi 胶水名字节静态缓存。**2026-09-12 C# 14 批次（控件/运行时层落点，实现记录见 1.7）**：`SetNumericAttribute(params ReadOnlySpan<ArkUI_NumberValue>)`（全仓最热属性写路径零数组）；`PromiseTaskBridge` 桥名字节缓存 + `napi_call_function` 改 `ReadOnlySpan<IntPtr>`；`HiLog` 格式串 u8 静态缓存 + `VerboseEnabled` 运行时开关；`HarmonyGestureManager` 触摸热路径去分配（识别器快照缓存/普通循环/分类型入池）。**剩余分配源**：object 转换点基元装箱、字符串结果物化、事件适配器闭包——完全零装箱需 union struct 参数设计，后续立项
 
 **2.9 事件触发路径实测 + 第四批扩展（2026-09-12 完成）**：
 - **事件触发路径首次全链路实测通过**（模拟器）：`Sensor.Accelerometer += handler` 订阅 → JS 持续触发 → ArgsTrampoline → 类型化 `AccelerometerResponse` 载荷（X/Y/Z 属性读取，实测 y=9.80 标准重力值）→ handler 内第 5 次自动退订（off 按函数实例匹配）。示例：ModuleVerifyPage Sensor 按钮
@@ -263,7 +263,13 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
   - 与 TS 侧生成器（`src/parser`）同仓共存：产物目录、命名归一、`--sdk` 输入路径复用
   - 验收：重出产物与手写版逐签名 diff 为零（除勘误表标注项），全量单测 + 模拟器手势/动画链路回归通过
 - **NuGet 打包**：Bindings / HarmonyOS.Maui / 宿主工程模板三件套分发
-- **单项目体验**：MSBuild targets 让用户工程 `dotnet build` 直出 HAP（自动跑远程 AOT 或本机 WSL）
+- **单项目体验**：MSBuild targets 让用户工程 `dotnet build` 直出 HAP（自动跑远程 AOT 或本机 WSL）。
+  **前半已实现（2026-09-12）**：`HarmonyStageHost` 由模板自动生成按应用宿主实例（独立 bundleName，
+  `obj/harmony/host` 暂存 + 内容戳增量），用户工程不感知宿主、无需 DevEco GUI；剩余：NuGet 化后
+  脱离仓库工作副本、签名物料编排
+- **风险预案**：C 原生节点 API 若被鸿蒙移除，迁移到 ArkTS 命令总线引擎的分阶段计划见
+  **[MIGRATION_ARKTS_ENGINE.md](MIGRATION_ARKTS_ENGINE.md)**（方案 A 引擎为主体、方案 B 编译期
+  .ets 生成为静态层优化；P0 漏斗纪律已执行（FunnelDisciplineTests 机械闸）
 - **CI**：Linux runner 出 libapp.so + 签名 + 模拟器回归
 - **性能**：XamlC 产物 AOT 体积、启动时间、TSFN 吞吐基线
 
@@ -282,3 +288,5 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 | 7 | Background 属性是 Brush 体系，与 Graphics.SolidPaint 平行不可混用 | M1 |
 | 8 | `IViewHandler` 导出/生成只认入口程序集；`--gc-sections` 会收割 ILC 的 `__modules` section | M1 |
 | 9 | Controls 与 Graphics 的颜色类型树平行（SolidColorBrush vs SolidPaint），转换需显式助手 | M1 |
+| 10 | 字符串属性空串封送：`GetBytes("")` + `fixed` 得空指针 → `SetAttribute` 401；空串必须传 NUL 结尾空 C 串（`SetStringAttribute` 基类已处理） | M1.7 |
+| 11 | Handler 层禁止直连原生 API（函数表/napi/原始结构体）——漏斗纪律，`FunnelDisciplineTests` 机械强制 | 迁移预案 P0 |

@@ -28,6 +28,14 @@ HarmonyOS.Bindings/Api/*  ──napi──►  libace_napi.z.so（napi_load_modu
 | API 层 | `HarmonyOS.Bindings/Api/` | `@ohos.*` 模块绑定（napi 通道） | 绑定系统服务 API 时 |
 | 宿主 | `samples/HarmonyHost/` | ArkTS 壳（ContentSlot 挂载 + ohosImports.ets 模块登记） | 新增 `@ohos.*` 模块绑定时同步登记 |
 
+**漏斗纪律（P0，机械闸强制）**：Handler/Hosting 层只允许经包装类型触碰 ArkUI——节点包装类、
+`ArkUINodeEvent`/`ArkUIPointerEvent` 载荷包装、手势包装类、事件枚举。禁止直连原生函数表类
+（`ArkUINativeApi`/`ArkUIGestureApi`/`ArkUIAnimateApi`）、napi P/Invoke（`NativeNodeApi`/`OH_ArkUI_*`/
+`napi_*`）、原始事件/属性结构体（`GetNodeComponentEvent`/`ArkUI_AttributeItem`）与自行
+`DllImport/LibraryImport`。需要新原生能力时**先在节点层加包装方法**。
+这道闸由 `tests/dotnet/HarmonyGestureTests/FunnelDisciplineTests`（源码扫描）强制执行——它是
+渲染后端可替换（ArkTS 引擎迁移预案）的前提，违规测试即红。详见 [MIGRATION_ARKTS_ENGINE.md](MIGRATION_ARKTS_ENGINE.md) §1。
+
 ---
 
 ## 2. 适配一个新 Handler 的流程（五步）
@@ -190,9 +198,13 @@ Microsoft.Maui.Controls.Slider => new HarmonySliderHandler(),
 ### Step 5：验证链路
 
 ```bash
+# 0. 一键（宿主自动 stage → libapp.so → HAP → 部署，见 GETTING_STARTED §3）
+dotnet build samples/dotnet/HelloApp/HelloApp.csproj -t:HarmonyRun
+
+# 或分步：
 # 1. 编译（Windows 本地即可验证 C#/XAML）
 dotnet build samples/dotnet/HelloApp/HelloApp.csproj
-# 2. 远程 NativeAOT → 双架构 libapp.so
+# 2. NativeAOT → 双架构 libapp.so（LOCAL=true 走本地 WSL）
 bash scripts/remote-build.sh
 # 3. 打包 HAP
 cmd //c "scripts\build-hap.cmd"
@@ -358,7 +370,7 @@ MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实�
 
 **原生 recognizer 生命周期铁律**：不得在事件分发回调内 `dispose()` recognizer——dispose 后原生管线仍派发事件（SIGSEGV UAF，实测）。重建场景 Detach + 入池复用（`HarmonyGestureManager.Rebuild`），dispose 仅在 Handler 断连时统一执行。
 
-单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑，共 15 用例。
+单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑，共 16 用例（含漏斗纪律源码扫描闸）。
 
 ---
 
