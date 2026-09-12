@@ -5,7 +5,7 @@ using ArkSwitch = HarmonyOS.ArkUI.Toggle;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonySwitchHandler : ViewHandler<ISwitch, ArkSwitch>, ISwitchHandler
+public class HarmonySwitchHandler : HarmonyViewHandler<ISwitch, ArkSwitch>, ISwitchHandler
 {
     public static PropertyMapper<ISwitch, ISwitchHandler> Mapper = new(ViewMapper)
     {

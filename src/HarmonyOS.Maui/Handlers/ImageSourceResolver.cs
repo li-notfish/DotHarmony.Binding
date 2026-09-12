@@ -11,7 +11,6 @@ namespace HarmonyOS.Maui.Handlers;
 /// </summary>
 internal static class ImageSourceResolver
 {
-    private static string? _tempDir;
 
     public static string? Resolve(IImageSource? source) => source switch
     {
@@ -37,7 +36,7 @@ internal static class ImageSourceResolver
             if (stream is null)
                 return null;
 
-            var dir = EnsureTempDir();
+            var dir = TempDir;
             if (dir is null)
             {
                 HiLog.Warn("Image", "No writable temp dir for stream image source");
@@ -56,35 +55,41 @@ internal static class ImageSourceResolver
         }
     }
 
-    /// <summary>探测可写临时目录（首个成功者缓存）。OHOS 沙盒下 /tmp 常不可写，逐个尝试。</summary>
-    private static string? EnsureTempDir()
+    /// <summary>
+    /// 可写临时目录（C# 14 field 关键字：后备字段由编译器生成，探测结果缓存其中）。
+    /// OHOS 沙盒下 /tmp 常不可写，逐个尝试；全部失败时返回 null（不缓存，下次重试）。
+    /// </summary>
+    private static string? TempDir
     {
-        if (_tempDir is not null)
-            return _tempDir;
-
-        string[] candidates =
-        [
-            Path.GetTempPath(),
-            "/data/storage/el2/base/haps/entry/cache",
-            "/data/storage/el2/base/cache",
-        ];
-        foreach (var dir in candidates)
+        get
         {
-            try
+            if (field is not null)
+                return field;
+
+            string[] candidates =
+            [
+                Path.GetTempPath(),
+                "/data/storage/el2/base/haps/entry/cache",
+                "/data/storage/el2/base/cache",
+            ];
+            foreach (var dir in candidates)
             {
-                Directory.CreateDirectory(dir);
-                var probe = Path.Combine(dir, ".probe");
-                File.WriteAllText(probe, "1");
-                File.Delete(probe);
-                _tempDir = dir;
-                HiLog.Debug("Image", $"Temp dir for stream sources: {dir}");
-                return dir;
+                try
+                {
+                    Directory.CreateDirectory(dir);
+                    var probe = Path.Combine(dir, ".probe");
+                    File.WriteAllText(probe, "1");
+                    File.Delete(probe);
+                    field = dir;
+                    HiLog.Debug("Image", $"Temp dir for stream sources: {dir}");
+                    return dir;
+                }
+                catch
+                {
+                    // 尝试下一个候选
+                }
             }
-            catch
-            {
-                // 尝试下一个候选
-            }
+            return null;
         }
-        return null;
     }
 }

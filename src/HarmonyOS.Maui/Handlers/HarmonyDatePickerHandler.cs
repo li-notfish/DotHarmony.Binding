@@ -11,7 +11,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// DatePicker → ArkUI DatePicker（内嵌滚轮节点）。
 /// M1 限制：MAUI DatePicker 是弹窗交互、ArkUI 是内嵌滚轮，视觉有差异（ROADMAP 1.4）。
 /// </summary>
-public class HarmonyDatePickerHandler : ViewHandler<MDatePicker, ArkDatePicker>
+public class HarmonyDatePickerHandler : HarmonyViewHandler<MDatePicker, ArkDatePicker>
 {
     public static PropertyMapper<MDatePicker, HarmonyDatePickerHandler> Mapper = new(ViewMapper)
     {

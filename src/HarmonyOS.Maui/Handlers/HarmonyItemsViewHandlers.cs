@@ -15,7 +15,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// CollectionView → ArkUI Scroll + Column（全量物化子视图，非虚拟化）。
 /// M1 限制：无虚拟化/复用（虚拟化需 ArkUI NodeAdapter，ROADMAP 1.4）；仅纵向；ItemsSource 变更全量重建。
 /// </summary>
-public class HarmonyCollectionViewHandler : ViewHandler<MCollectionView, ArkScroll>
+public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, ArkScroll>
 {
     public static PropertyMapper<MCollectionView, HarmonyCollectionViewHandler> Mapper = new(ViewMapper)
     {
@@ -58,7 +58,7 @@ public class HarmonyCollectionViewHandler : ViewHandler<MCollectionView, ArkScro
 /// CarouselView → ArkUI Swiper（全量物化子视图，非虚拟化）。
 /// M1 限制：无虚拟化（Loop/位置回传等暂略）；Swiper 需显式高度（由使用方 HeightRequest 提供）。
 /// </summary>
-public class HarmonyCarouselViewHandler : ViewHandler<MCarouselView, ArkSwiper>
+public class HarmonyCarouselViewHandler : HarmonyViewHandler<MCarouselView, ArkSwiper>
 {
     public static PropertyMapper<MCarouselView, HarmonyCarouselViewHandler> Mapper = new(ViewMapper)
     {

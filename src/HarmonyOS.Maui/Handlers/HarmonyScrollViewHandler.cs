@@ -6,7 +6,7 @@ using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonyScrollViewHandler : ViewHandler<IScrollView, ArkScroll>, IScrollViewHandler
+public class HarmonyScrollViewHandler : HarmonyViewHandler<IScrollView, ArkScroll>, IScrollViewHandler
 {
     public static PropertyMapper<IScrollView, IScrollViewHandler> Mapper = new(ViewMapper)
     {

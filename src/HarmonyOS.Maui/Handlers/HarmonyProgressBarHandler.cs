@@ -5,7 +5,7 @@ using ArkProgress = HarmonyOS.ArkUI.Progress;
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI ProgressBar 的 HarmonyOS Handler（ArkUI Progress 节点）。</summary>
-public class HarmonyProgressBarHandler : ViewHandler<Microsoft.Maui.Controls.ProgressBar, ArkProgress>
+public class HarmonyProgressBarHandler : HarmonyViewHandler<Microsoft.Maui.Controls.ProgressBar, ArkProgress>
 {
     public static PropertyMapper<Microsoft.Maui.Controls.ProgressBar, HarmonyProgressBarHandler> Mapper = new(ViewMapper)
     {
@@ -25,8 +25,6 @@ public class HarmonyProgressBarHandler : ViewHandler<Microsoft.Maui.Controls.Pro
     public static void MapProgressColor(HarmonyProgressBarHandler h, Microsoft.Maui.Controls.ProgressBar v)
     {
         if (v.ProgressColor is { } c)
-            h.PlatformView.SetColor(
-                (byte)(c.Red * 255), (byte)(c.Green * 255),
-                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+            h.PlatformView.SetColor(c);
     }
 }

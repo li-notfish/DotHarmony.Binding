@@ -6,7 +6,7 @@ using ArkSlider = HarmonyOS.ArkUI.Slider;
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Slider 的 HarmonyOS Handler（ArkUI Slider 节点）。</summary>
-public class HarmonySliderHandler : ViewHandler<ISlider, ArkSlider>
+public class HarmonySliderHandler : HarmonyViewHandler<ISlider, ArkSlider>
 {
     public static PropertyMapper<ISlider, HarmonySliderHandler> Mapper = new(ViewMapper)
     {
@@ -53,25 +53,19 @@ public class HarmonySliderHandler : ViewHandler<ISlider, ArkSlider>
     public static void MapMinimumTrackColor(HarmonySliderHandler h, ISlider v)
     {
         if (v.MinimumTrackColor is { } c)
-            h.PlatformView.SetSelectedColor(
-                (byte)(c.Red * 255), (byte)(c.Green * 255),
-                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+            h.PlatformView.SetSelectedColor(c);
     }
 
     public static void MapMaximumTrackColor(HarmonySliderHandler h, ISlider v)
     {
         if (v.MaximumTrackColor is { } c)
-            h.PlatformView.SetTrackColor(
-                (byte)(c.Red * 255), (byte)(c.Green * 255),
-                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+            h.PlatformView.SetTrackColor(c);
     }
 
     public static void MapThumbColor(HarmonySliderHandler h, ISlider v)
     {
         if (v.ThumbColor is { } c)
-            h.PlatformView.SetBlockColor(
-                (byte)(c.Red * 255), (byte)(c.Green * 255),
-                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+            h.PlatformView.SetBlockColor(c);
     }
 
     private void OnValueChange(ArkUINodeEvent e)

@@ -5,7 +5,7 @@ using ArkTextInput = HarmonyOS.ArkUI.TextInput;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonyEntryHandler : ViewHandler<IEntry, ArkTextInput>, IEntryHandler
+public class HarmonyEntryHandler : HarmonyViewHandler<IEntry, ArkTextInput>, IEntryHandler
 {
     public static PropertyMapper<IEntry, IEntryHandler> Mapper = new(ViewMapper)
     {
@@ -60,17 +60,13 @@ public class HarmonyEntryHandler : ViewHandler<IEntry, ArkTextInput>, IEntryHand
     public static void MapTextColor(IEntryHandler handler, IEntry view)
     {
         if (handler is HarmonyEntryHandler h && view.TextColor is { } c)
-            h.PlatformView.SetFontColor(
-                (byte)(c.Red * 255), (byte)(c.Green * 255),
-                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+            h.PlatformView.SetFontColor(c);
     }
 
     public static void MapPlaceholderColor(IEntryHandler handler, IEntry view)
     {
         if (handler is HarmonyEntryHandler h && view.PlaceholderColor is { } c)
-            h.PlatformView.SetPlaceholderColor(
-                (byte)(c.Red * 255), (byte)(c.Green * 255),
-                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+            h.PlatformView.SetPlaceholderColor(c);
     }
 
     public static void MapIsPassword(IEntryHandler handler, IEntry view)

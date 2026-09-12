@@ -11,7 +11,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// M1 限制：MAUI Picker 是弹窗交互、TextPicker 是内嵌滚轮，视觉有差异（ROADMAP 1.4）；
 /// ItemsSource 仅在映射时读取（列表变更不自动同步）。
 /// </summary>
-public class HarmonyPickerHandler : ViewHandler<Picker, ArkTextPicker>
+public class HarmonyPickerHandler : HarmonyViewHandler<Picker, ArkTextPicker>
 {
     public static PropertyMapper<Picker, HarmonyPickerHandler> Mapper = new(ViewMapper)
     {

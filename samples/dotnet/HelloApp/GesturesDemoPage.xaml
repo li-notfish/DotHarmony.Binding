@@ -1,0 +1,49 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HelloApp.GesturesDemoPage"
+             BackgroundColor="White">
+    <ScrollView>
+        <StackLayout Spacing="10" Padding="12">
+
+            <Label x:Name="Status" Text="手势演示" TextColor="Black" FontSize="18" />
+
+            <!-- Tap：单击 + 连击（两个不同区域避免竞争） -->
+            <Border x:Name="TapArea" BackgroundColor="#DBEAFE" HeightRequest="60" Padding="8">
+                <Label Text="Tap Area（单击）" TextColor="Black" />
+            </Border>
+            <Border x:Name="DoubleTapArea" BackgroundColor="#EDE9FE" HeightRequest="60" Padding="8">
+                <Label Text="Double-Tap Area（连击 2 次）" TextColor="Black" />
+            </Border>
+
+            <!-- Pan：显示累计位移（px，Android 语义） -->
+            <Border x:Name="PanArea" BackgroundColor="#DCFCE7" HeightRequest="80" Padding="8">
+                <Label x:Name="PanLabel" Text="Pan Area（拖动我）" TextColor="Black" />
+            </Border>
+
+            <!-- Pinch：显示缩放系数 -->
+            <Border x:Name="PinchArea" BackgroundColor="#FEF3C7" HeightRequest="80" Padding="8">
+                <Label x:Name="PinchLabel" Text="Pinch Area（双指捏合）" TextColor="Black" />
+            </Border>
+
+            <!-- Swipe：四方向 -->
+            <Border x:Name="SwipeArea" BackgroundColor="#FFE4E6" HeightRequest="80" Padding="8">
+                <Label x:Name="SwipeLabel" Text="Swipe Area（快速轻扫）" TextColor="Black" />
+            </Border>
+
+            <!-- Pointer：按下/抬起/移动 -->
+            <Border x:Name="PointerArea" BackgroundColor="#E0F2FE" HeightRequest="80" Padding="8">
+                <Label x:Name="PointerLabel" Text="Pointer Area（按下并移动）" TextColor="Black" />
+            </Border>
+
+            <!-- 动态增删手势 + IsEnabled 静默 -->
+            <Button x:Name="ToggleTapButton" Text="Add tap recognizer" Clicked="OnToggleTapClicked" />
+            <Label x:Name="DynamicTapLabel" Text="动态 tap：0" TextColor="Black" />
+            <Button x:Name="ToggleEnableButton" Text="Set demo view IsEnabled=false" Clicked="OnToggleEnableClicked" />
+            <Border x:Name="DisabledArea" BackgroundColor="#F1F5F9" HeightRequest="60" Padding="8">
+                <Label Text="tap 演示区（IsEnabled=false 时静默）" TextColor="Black" />
+            </Border>
+
+            <Button Text="Pop back" Clicked="OnPopClicked" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

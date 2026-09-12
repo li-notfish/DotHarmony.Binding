@@ -5,7 +5,7 @@ using ArkCheckBox = HarmonyOS.ArkUI.CheckBox;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonyCheckBoxHandler : ViewHandler<ICheckBox, ArkCheckBox>, ICheckBoxHandler
+public class HarmonyCheckBoxHandler : HarmonyViewHandler<ICheckBox, ArkCheckBox>, ICheckBoxHandler
 {
     public static PropertyMapper<ICheckBox, ICheckBoxHandler> Mapper = new(ViewMapper)
     {
