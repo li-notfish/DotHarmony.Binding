@@ -1,6 +1,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HelloApp.SecondPage"
+             Title="Second"
              BackgroundColor="#EAF2FB">
     <StackLayout Spacing="12" Padding="12">
         <Label Text="This is the SECOND page"

@@ -1,6 +1,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HelloApp.MainPage"
+             Title="Home"
              BackgroundColor="LightGray">
     <StackLayout Spacing="12" Padding="12">
         <Label x:Name="TitleLabel"
@@ -19,6 +20,8 @@
                 Clicked="OnOpenLayoutDemoClicked" />
         <Button Text="Controls demo (10 widgets)"
                 Clicked="OnOpenControlsDemoClicked" />
+        <Button Text="Gestures demo (tap/pan/pinch/swipe)"
+                Clicked="OnOpenGesturesDemoClicked" />
         <Button Text="Open modal page"
                 Clicked="OnOpenModalClicked" />
         <Label x:Name="LifecycleLabel"

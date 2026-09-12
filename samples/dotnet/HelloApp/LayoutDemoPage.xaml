@@ -1,25 +1,68 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HelloApp.LayoutDemoPage"
+             Title="Layout Demo"
              BackgroundColor="White">
-    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*,*">
-        <Label Grid.ColumnSpan="2"
-               Text="Managed layout demo: Grid + AbsoluteLayout"
-               HorizontalTextAlignment="Center"
-               BackgroundColor="White" Padding="8" />
-        <AbsoluteLayout Grid.Row="1" Grid.ColumnSpan="2" BackgroundColor="LightBlue">
-            <Button AbsoluteLayout.LayoutBounds="0.05,0.08,0.4,0.18"
-                    AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional"
-                    Text="Top-Left" />
-            <Button AbsoluteLayout.LayoutBounds="0.95,0.5,0.4,0.18"
-                    AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional"
-                    Text="Mid-Right" />
-            <Button AbsoluteLayout.LayoutBounds="0.5,0.92,0.4,0.18"
-                    AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional"
-                    Text="Bottom-Center" />
-        </AbsoluteLayout>
-        <Button Grid.Row="2" Grid.ColumnSpan="2"
-                Text="Pop back"
-                Clicked="OnPopClicked" />
-    </Grid>
+    <ScrollView>
+        <StackLayout Padding="12" Spacing="10">
+
+            <Label Text="Managed layout demo: Grid + AbsoluteLayout"
+                   FontSize="16" FontAttributes="Bold"
+                   HorizontalTextAlignment="Center" />
+
+            <!-- 场景 1：AbsoluteLayout 比例定位（原有用例） -->
+            <AbsoluteLayout HeightRequest="180" BackgroundColor="LightBlue">
+                <Button AbsoluteLayout.LayoutBounds="0.05,0.08,0.4,0.18"
+                        AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional"
+                        Text="Top-Left" />
+                <Button AbsoluteLayout.LayoutBounds="0.95,0.5,0.4,0.18"
+                        AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional"
+                        Text="Mid-Right" />
+                <Button AbsoluteLayout.LayoutBounds="0.5,0.92,0.4,0.18"
+                        AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional"
+                        Text="Bottom-Center" />
+            </AbsoluteLayout>
+
+            <!-- 场景 2：Grid 单元格内对齐（非 Fill 按实测尺寸在 cell 内摆放） -->
+            <Label Text="Grid cell alignment (Start / Center / End)"
+                   FontSize="13" FontAttributes="Bold" />
+            <Grid HeightRequest="60" ColumnDefinitions="*,*,*" ColumnSpacing="6"
+                  BackgroundColor="LightGray">
+                <Label BackgroundColor="Orange" Text="Start"
+                       HorizontalOptions="Start"
+                       VerticalOptions="Center" Padding="6" />
+                <Label Grid.Column="1" BackgroundColor="Green" TextColor="White" Text="Center"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" Padding="6" />
+                <Label Grid.Column="2" BackgroundColor="Purple" TextColor="White" Text="End"
+                       HorizontalOptions="End"
+                       VerticalOptions="Center" Padding="6" />
+            </Grid>
+
+            <!-- 场景 3：ZIndex 叠放（按钮切换蓝色块层级） -->
+            <Label Text="ZIndex stacking (toggle blue)"
+                   FontSize="13" FontAttributes="Bold" />
+            <Grid HeightRequest="130" BackgroundColor="LightGray">
+                <BoxView x:Name="ZRed" Color="Red" WidthRequest="110" HeightRequest="110"
+                         HorizontalOptions="Center" VerticalOptions="Center" />
+                <BoxView x:Name="ZBlue" Color="Blue" WidthRequest="90" HeightRequest="90"
+                         HorizontalOptions="Start" VerticalOptions="Center" />
+                <BoxView x:Name="ZGreen" Color="Green" WidthRequest="90" HeightRequest="90"
+                         HorizontalOptions="End" VerticalOptions="Center" />
+            </Grid>
+            <Button Text="Toggle blue ZIndex" Clicked="OnToggleZIndex" />
+            <Label x:Name="ZStatusLabel" Text="blue ZIndex = 0 (under red edge)" FontSize="12" />
+
+            <!-- 场景 4：Auto 轨道随内容变化自适应（AREA_CHANGE → 重排） -->
+            <Label Text="Auto track follows content change"
+                   FontSize="13" FontAttributes="Bold" />
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="6" BackgroundColor="LightGray" Padding="6">
+                <Label x:Name="AutoLabel" BackgroundColor="Yellow" LineBreakMode="NoWrap"
+                       Text="short text" FontSize="15" />
+                <Button Grid.Row="1" Text="Grow text" Clicked="OnGrowText" />
+            </Grid>
+
+            <Button Text="Pop back" Clicked="OnPopClicked" />
+        </StackLayout>
+    </ScrollView>
 </ContentPage>
