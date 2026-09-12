@@ -230,3 +230,9 @@ C NDK API 是 ArkUI-X 跨平台与游戏引擎接入的官方通道，整体移�
 批次策略为显式 Flush（布局 pass 钩子属 P2 完整版），x/y 定位属性存储未应用，
 DynamicNode 全量重建渲染快照（增量 diff 属 P2）。C# 侧协议逻辑以
 `tests/dotnet/HarmonyEngineTests`（10 用例，RecordingSink 假总线）离线锁定。
+
+**模拟器实测通过（2026-09-12，127.0.0.1:5555）**：`dotnet build samples/dotnet/EngineLab -t:HarmonyRun`
+全链路绿（WSL AOT + hvigor 编译引擎 .ets 一次通过 + 部署）。hilog 证据：桥挂接后 21 条积压指令
+单次 napi 冲刷；4 节点 onAreaChange 量测回流（根 1320x2409px @3.50 密度，影子缓存生效）；
+uitest 点击按钮 → click 回流 → `flushed 1 commands`（单次 napi）→ dumpLayout 显示
+"clicked 0 times"→"clicked 1 times"。§2.4 硬点①的影子量测与指令批合并的核心语义即此验证。
