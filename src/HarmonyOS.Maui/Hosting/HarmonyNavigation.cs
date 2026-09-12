@@ -114,20 +114,38 @@ public static class HarmonyNavigation
         return true;
     }
 
-    /// <summary>返回上一页（当前页被移除并释放，上一页恢复挂载）</summary>
-    public static void Pop()
+    /// <summary>返回上一页（当前页淡出后被移除并释放，上一页恢复挂载）；动画期间忽略重入</summary>
+    public static void Pop() => PopCore(animated: true);
+
+    private static bool _transitioning;
+
+    private static void PopCore(bool animated)
     {
-        if (_container is null || _currentPage is null || BackStack.Count == 0)
+        if (_container is null || _currentPage is null || BackStack.Count == 0 || _transitioning)
             return;
 
         var current = _currentPage.Value;
         current.Page.SendDisappearing();
-        _container.RemoveChild(current.Node);
-        current.Node.Dispose();
 
-        _currentPage = BackStack.Pop();
-        _currentPage.Value.Page.SendAppearing();
-        _container.AddChild(_currentPage.Value.Node);
+        void Finish()
+        {
+            _container!.RemoveChild(current.Node);
+            current.Node.Dispose();
+            _currentPage = BackStack.Pop();
+            _currentPage.Value.Page.SendAppearing();
+            _container.AddChild(_currentPage.Value.Node);
+            _transitioning = false;
+        }
+
+        if (animated)
+        {
+            _transitioning = true;
+            current.Node.Animate(() => current.Node.SetOpacity(0f), Finish);
+        }
+        else
+        {
+            Finish();
+        }
     }
 
     // ───────────────────────── 模态层 ─────────────────────────
@@ -150,18 +168,23 @@ public static class HarmonyNavigation
         modal.SendAppearing();
     }
 
-    /// <summary>关闭栈顶模态并返回其实例（无模态时返回 null）</summary>
+    /// <summary>关闭栈顶模态并返回其实例（无模态时返回 null）；淡出动画期间忽略重入</summary>
     public static MPage? PopModal()
     {
-        if (_container is null || Modals.Count == 0)
+        if (_container is null || Modals.Count == 0 || _transitioning)
             return null;
 
         var (page, node) = Modals[^1];
         Modals.RemoveAt(Modals.Count - 1);
 
         page.SendDisappearing();
-        _container.RemoveChild(node);
-        node.Dispose();
+        _transitioning = true;
+        node.Animate(() => node.SetOpacity(0f), () =>
+        {
+            _container!.RemoveChild(node);
+            node.Dispose();
+            _transitioning = false;
+        });
 
         TopPage()?.SendAppearing();
         return page;
@@ -210,8 +233,9 @@ public static class HarmonyNavigation
 
         protected override Task OnPopToRootAsync(bool animated)
         {
+            // PopToRoot 一次性清栈：同步无动画路径（动画版 Pop 有过渡互斥，不能循环）
             while (CanPop)
-                Pop();
+                PopCore(animated: false);
             return Task.CompletedTask;
         }
     }
