@@ -6,7 +6,14 @@ $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent $scriptDir
 
+# 宿主目录：HOST_DIR 覆盖（targets 生成的按应用暂存宿主），默认共享模板
+$hostDir = if ($env:HOST_DIR) { $env:HOST_DIR } else { Join-Path $projectRoot "samples\HarmonyHost" }
+# bundle 名：HOST_DIR 为暂存宿主时读其 app.json5；默认共享模板
 $BUNDLE = "com.arktsbinding.harmonyhost"
+if ($hostDir -and (Test-Path (Join-Path $hostDir "AppScope/app.json5"))) {
+    $m = Select-String -Path (Join-Path $hostDir "AppScope/app.json5") -Pattern '"bundleName"\s*:\s*"([^"]*)"'
+    if ($m) { $BUNDLE = $m.Matches[0].Groups[1].Value }
+}
 $ABILITY = "EntryAbility"
 $MODULE  = "entry"
 
@@ -41,7 +48,7 @@ if ($HDC_TARGET) {
 }
 
 # ---- 定位 HAP ----
-$HAP = Join-Path $projectRoot "samples\HarmonyHost\entry\build\default\outputs\default\$MODULE-default-unsigned.hap"
+$HAP = Join-Path $hostDir "entry\build\default\outputs\default\$MODULE-default-unsigned.hap"
 if (-not (Test-Path $HAP)) {
     Write-Error "找不到 HAP：$HAP（请先运行 scripts\build-hap.cmd）"
     exit 1
