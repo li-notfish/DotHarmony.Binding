@@ -1,0 +1,10 @@
+{
+  "app": {
+    "bundleName": "com.arktsbinding.harmonyhost",
+    "vendor": "arktsbinding",
+    "versionCode": 1000000,
+    "versionName": "1.0.0",
+    "icon": "$media:icon",
+    "label": "$string:app_name"
+  }
+}
