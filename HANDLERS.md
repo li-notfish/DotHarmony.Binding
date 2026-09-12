@@ -231,6 +231,19 @@ public static CommandMapper<MLAYOUT, HarmonyLayoutHandler> LayoutCommandMapper =
 - `ConnectHandler` 里**全量同步已存在的 Children** —— Handler 连接之前加进 Controls 树的子节点不会补发 Add 命令；
 - MAUI 托管布局需要容器尺寸：订阅 `NODE_ON_SIZE_CHANGE`（vp 值在 `e.SizeChangeWidth/Height`），不要用 px 的 `MeasuredSize` 直接当 vp。
 
+MAUI 托管布局的对齐/ZIndex 约定（2026-09-12 落地）：
+
+- **单元格内对齐**：读 `view.HorizontalLayoutAlignment/VerticalLayoutAlignment`（`IView` 接口属性，
+  Controls 侧自动从 `HorizontalOptions/VerticalOptions` 的 Alignment 映射），非 Fill 调
+  `HarmonyManagedLayoutHandler.ApplyAlignment` 收缩偏移（internal static，纯逻辑已单测）；
+  Fill/内容未量测/内容≥frame 保持充满。XAML 写 `HorizontalOptions` 而非 `HorizontalLayoutAlignment`
+  （后者在 Controls 上无 BindableProperty，MAUIX2002）
+- **ZIndex**：`ArkUINodeBase.SetZIndex(float)`（NODE_Z_INDEX=21）；flex 托管与 MAUI 托管两套布局
+  均接 `MapUpdateZIndex` 命令 + AttachChild 初始同步；managed 侧每次 Arrange 全量下发
+- **Auto 轨道自适应**：AttachChild 时订阅子节点 `NODE_EVENT_ON_AREA_CHANGE` → Arrange
+  （`_arrangeQueued` 同帧合并）；Remove/Clear 注销；Arrange 用 `_lastApplied` 快照做幂等跳过
+  （AREA_CHANGE 风暴下不空转）
+
 ---
 
 ## 4. `@ohos.*` API 绑定（生成器产出，M2 完成）
@@ -316,11 +329,36 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★☆☆ | `CarouselView` | `ARKUI_NODE_SWIPER` | 全量物化子视图；需显式高度（HeightRequest）；Loop/位置回传暂略 | ✅ M1 已完成 |
 | ★☆☆ | `Picker`/`DatePicker`/`TimePicker` | `ARKUI_NODE_TEXT_PICKER`/`DATE_PICKER`/`TIME_PICKER` | ArkUI 是内嵌滚轮非弹窗，视觉有差异；节点类已入解析器生成管线（NODE_TYPE_NAME_FIXES + CONSTRUCTOR_OPTION_PROPS，PickerManual/TextPickerManual.cs 已删除）；MAUI 10 的 Date/Time 为可空类型 | ✅ 已完成 |
 | ★☆☆ | `RefreshView` | `ARKUI_NODE_REFRESH` | 下拉经 NODE_REFRESH_ON_REFRESH 置 IsRefreshing；刷新态 setter 已入生成管线（CONSTRUCTOR_OPTION_PROPS，RefreshManual.cs 已删除） | ✅ 已完成 |
+| ★☆☆ | `BoxView` | `ARKUI_NODE_STACK` | 纯色矩形（Color/BackgroundColor → 背景色） | ✅ 已完成 |
 | ☆ | `Shape`/自绘 | `ARKUI_NODE_CUSTOM` + `NODE_ON_DRAW` | 等价于 iOS `Draw`；需 MAUI Graphics 前端 | ⏳ 待做 |
+| ☆ | GestureRecognizers（Tap/Pan/Pinch/Swipe/Pointer） | NDK `ArkUI_NativeGestureAPI_1` + `NODE_TOUCH_EVENT` | 手势→MAUI Send* 协议回送；Tap/Pointer 走反射桥 | ✅ 已完成（见 §6.1） |
 
 **查询属性枚举值**：SDK 头文件
 `%LOCALAPPDATA%/OpenHarmony/Sdk/<ver>/native/sysroot/usr/include/arkui/native_node.h`
 的 `ArkUI_NodeAttributeType` 注释——每个枚举项写明了参数个数与类型（`ArkUI_NumberValue[]` 布局），这是写节点类 setter 的唯一权威来源。
+
+### 6.1 手势识别（GestureRecognizers）适配要点
+
+MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实现，平台侧由本仓库自建。给**新 Handler 启用手势**只需一件事：基类从 `ViewHandler<TVirtualView, TPlatformView>` 换成 `HarmonyViewHandler<TVirtualView, TPlatformView>`（`ConnectHandler` 内自动挂 `HarmonyGestureManager`）。注意：
+
+- 仅 `Microsoft.Maui.Controls.View` 的子类有 `GestureRecognizers`；Page Handler（ContentPage/NavigationPage）保持直接继承 ViewHandler；
+- `ConnectHandler` 里如果自己还要订阅节点事件，放在 `base.ConnectHandler(platformView)` 之后即可，与手势管理器互不干扰；
+- `HarmonyGestureManager` 监听 `CompositeGestureRecognizers` 集合变化与 `IsEnabled/InputTransparent`，全量重建原生手势——不要在 Handler 里手工管理手势生命周期。
+
+分层文件：NDK 函数表 `HarmonyOS.Bindings/NativeNode/ArkUIGestureApi.cs`（镜像自 native_gesture.h，C bool 按字节用 `byte` 表达）、公共指针包装 `ArkUIPointerEvent.cs`（经 `ArkUINodeEvent.InputEvent` → `ArkUIPointerEvent.From(IntPtr)`，坐标 px）、托管包装 `HarmonyOS.Bindings/Nodes/Gestures/`、翻译层 `src/HarmonyOS.Maui/Handlers/HarmonyGestureManager.cs`、反射桥 `MauiGestureBridge.cs`（`TapGestureRecognizer.SendTapped` / `PointerGestureRecognizer.SendPointer*` 为 MAUI internal，`[DynamicDependency]` 收根 + `CreateDelegate` 缓存，**不得**改为逐次 `MethodInfo.Invoke`）。
+
+| MAUI 识别器 | 原生通道 | 说明 |
+|---|---|---|
+| TapGestureRecognizer | `ArkTapGesture(NumberOfTapsRequired)` | Accept 动作触发；`GetChildElements` 命中的子元素识别器（Label Span）优先；**同视图按连击数分组共享一个原生手势**（RaiseTap 广播，勿按识别器逐个挂——会 N² 重复触发） |
+| PanGestureRecognizer | `NODE_TOUCH_EVENT` 触摸流 | 实测 pan 原生手势 offset 在 END 为 0、UPDATE/END 输入位置不可靠；按下记起点、移动累计、抬起收尾；`TotalX/Y` 单位 **vp**（等价 iOS points），Completed 事件本身不带坐标（MAUI 官方语义） |
+| SwipeGestureRecognizer | 同上触摸流 | 累计位移喂 `SendSwipe`，抬起时 `MapSwipeDirection` → `DetectSwipe`（阈值判定在识别器内部） |
+| PinchGestureRecognizer | `ArkPinchGesture(2)` | `GetScale` 为累计系数，直接透传 |
+| PointerGestureRecognizer | 同一触摸流 | Down→Entered+Pressed、Move→Moved、Up→Released；hover/mouse 通道待补 |
+| Drag/Drop 识别器 | 未实现 | longpress + 跨视图状态机，后续立项 |
+
+**原生 recognizer 生命周期铁律**：不得在事件分发回调内 `dispose()` recognizer——dispose 后原生管线仍派发事件（SIGSEGV UAF，实测）。重建场景 Detach + 入池复用（`HarmonyGestureManager.Rebuild`），dispose 仅在 Handler 断连时统一执行。
+
+单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑，共 15 用例。
 
 ---
 
@@ -330,6 +368,7 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 |---|---|---|
 | 事件注册了没反应 | `On()` 漏 `NodeEventBus.Register`；或 receiver 未注册 | 基类 `On()` 已内置；新事件类型走基类，勿绕过 |
 | `SetAttribute` 返回 401 | 枚举用错（如对齐用了 `ArkUI_Alignment`） | 对照 native_node.h 注释选枚举 |
+| `SetStringAttribute` 401（设空串时） | 空串 `GetBytes` 返回 0 长数组，`fixed` 得空指针传给 `item.@string` | 基类已修（空串转 NUL 结尾空 C 串）；绕过基类的手写封送注意同样问题 |
 | 字符串少最后几个字符 | napi 字符串读取缓冲区没 +1 | 用 `NativeValue.ToString`（已处理） |
 | 模块加载闪退（jscrash Cannot find module） | 宿主没 import 该 `@ohos.*` 模块 | `ohosImports.ets` 登记 re-export |
 | NativeAOT 后导出符号缺失 | ILC 只导出入口程序集的 `[UnmanagedCallersOnly]` | 导出放 `HelloApp.NativeExports` 薄转发 |
@@ -341,3 +380,6 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | 核心接口缺成员（GroupName/Refreshing 等） | MAUI 核心接口（IRadioButton/IRefreshView）比 Controls 类型瘦 | 按官方风格回退 Controls 具体类型，虚拟视图泛型直接用 Controls 类（Picker 先例） |
 | 生成器重跑覆盖手写节点类 | 手写节点类（如 RefreshManual.cs）被生成器输出覆盖 | 手写文件不带 `<auto-generated>` 标记，生成器只覆盖带标记的文件；`CLASS_NAME_FIXES` / `ATTR_ALIASES` / `DEFAULT_SHAPES` 保证生成类名与 handler 别名一致 |
 | 连续 uitest 手势后 hdc 挂死 | 模拟器 UI/uitest 过载 | `hdc kill` → `tconn 127.0.0.1:5555` → 重试；快照用 `timeout` 包裹 |
+| Windows 本地编译过、WSL AOT 编译不过（CS0246 等） | 根目录级共享文件（如 `Directory.Build.props`）不在 `scripts/build-files.txt` 打包清单里 | 新增根目录共享文件时同步加入打包清单 |
+| PushAsync/PopAsync 静默失败（无日志无崩溃，后续导航全挂起） | 工厂抛 `NotSupportedException` 等异常被 `FireAndForget` 吞掉；MAUI 的 SendHandlerUpdateAsync 信号量不释放，后续导航永久排队 | `FireAndForget` 兜底必须打 hilog（HelloApp 的 FireAndForgetNavigation 已改）；推入新控件页面前先确认工厂注册 |
+| 嵌套 Grid/AbsoluteLayout 撑爆父容器（后续兄弟节点被推出屏幕） | 托管布局容器无条件 `SetHeightPercent(1.0)`——只对页面根布局正确；MAUI 语义里 StackLayout 主轴 Fill = 自然高度 | `ConnectHandler` 按 `HeightRequest > 0 → 显式高；Parent 是 Layout → 自然高；否则 100%` |

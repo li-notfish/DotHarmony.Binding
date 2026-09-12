@@ -7,7 +7,7 @@
 
 - ✅ UI 通道：ArkUI NDK C API（`ArkUI_NativeNodeAPI_1`）→ `ArkUINodeBase` 稳定句柄
 - ✅ 服务通道：napi（`napi_load_module("=@ohos.xxx")`）→ `@ohos.deviceInfo` 端到端
-- ✅ MAUI Handler 包：21 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker/CollectionView/CarouselView）+ XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）；代码风格已统一为官方 handler 模式
+- ✅ MAUI Handler 包：22 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker/CollectionView/CarouselView）+ XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）；代码风格已统一为官方 handler 模式
 - ✅ 工具链：`remote-build.sh`（远程 NativeAOT）→ `build-hap.cmd`（hvigor）→ `deploy-hap.sh`（hdc）
 
 ---
@@ -40,11 +40,13 @@
 
 **实测**：ControlsDemoPage 含 Align Start/Center/End、Margin、V-Center/V-End 用例，模拟器截图逐项确认。
 
-**遗留限制（M1）**：
-- Stack 主轴方向的 Options（如竖直 Stack 里的 VerticalOptions）不生效（MAUI 语义复杂，折衷忽略）
-- Grid 单元格内非 Fill 对齐不生效（所有子节点按 Fill 充满单元格）；Span>1 的 Auto 轨道不参与实测
-- Auto 轨道依赖子节点上一帧自量测（首帧有按控件类型的兜底估算，收敛需 1~2 帧）；内容自身变化不触发重排
-- 两套布局的 ZIndex 均按 addChild 顺序，UpdateZIndex 忽略
+**遗留限制（M1）**——~~2026-09-12 起 1.7 已逐项修复，见下~~：
+- ~~Grid 单元格内非 Fill 对齐不生效~~ → 已修（1.7）
+- ~~Auto 轨道……内容自身变化不触发重排~~ → 已修（1.7，AREA_CHANGE 驱动重排）
+- ~~两套布局的 ZIndex 均按 addChild 顺序~~ → 已修（1.7）
+- Stack 主轴方向的 Options：经 MAUI 10.0.11 源码取证（`StackLayoutManager`），官方布局管理器
+  发出的 frame 即 `DesiredSize`（主轴对齐本就被忽略）——现行为与官方一致，**关单为对齐语义说明**
+- Span>1 的 Auto 轨道不参与实测（维持原状，按需立项）
 
 ### 1.3 Window / Navigation（✅ 已完成：轻量栈 + NavigationPage 转接层 / 中）
 
@@ -60,7 +62,12 @@
 - handler 把 ArkUI 节点栈同步成请求的栈（仅栈顶挂入 ArkStack，低层摘除保留句柄），完成后**必须**回调 `IStackNavigation.NavigationFinished`，否则 `SendHandlerUpdateAsync` 内 await 永久挂起（PushAsync 不返回）
 - 无 NavigationPage 时 MAUI 官方语义即抛 "PushAsync is not supported, please use a NavigationPage."（`Window.NavigationImpl`）——宿主返回键先消费 NavigationPage 内栈，再退到根级轻量栈
 
-**剩余**：返回/弹出方向的过渡动画（当前仅新页淡入 250ms）、`Window.Toolbar`（NavigationPage 标题栏由宿主承担，暂无返回按钮 UI，依赖系统返回键/页面内返回按钮）。
+**剩余**：~~返回/弹出方向的过渡动画~~、~~`Window.Toolbar`~~ → **2026-09-12 均已完成**（见下 1.7 前序批次与本次收尾）：
+- 返回方向过渡：`HarmonyNavigation.Pop/PopModal` 与 NavigationPage 缩栈分支在 RemoveChild 前
+  对旧栈顶做 1→0 淡出（250ms，inline 完成回调——无 UI 线程 SynchronizationContext，续体不得走 Task 调度），
+  `_transitioning` 守卫防重入；PushAsync 返回延迟 ~250ms 属预期（NavigationFinished 在动画后回调）
+- NavigationPage 标题栏：容器顶部 ArkRow（56vp）——"←"返回按钮（栈深>1 可见，点击走 `PopAsync`）+
+  `CurrentPage.Title` 标题（PropertyChanged 跟踪刷新）；`HasNavigationBar=false` 隐藏；内容区 SetFlexGrow 占满
 
 **生命周期**：`Appearing/Disappearing` 已透传（含 NavigationPage 内部切换）。MAUI 的 `Page.SendAppearing` 有守卫（父链上须存在 `Parent` 非空的 `IWindow`），宿主以最小逻辑链放行：`Window.Parent = Application`（均为 public API；不设 `Window.Page`，其 setter 会用 `Window.NavigationImpl` 覆写页面的 NavigationProxy.Inner）。实测：主页 2A/1D 随模态开闭精确变化，NavigationPage 内推入页同样触发。
 
@@ -70,13 +77,79 @@
 
 **Shell 转接结论**：Shell 不在支持计划内（flyout/tab/URI 路由协议太重）。多平台 Shell 应用做鸿蒙适配时，入口改为 NavigationPage/TabbedPage 结构（`MauiHarmonyHost.Run(() => new NavigationPage(...))`）——这正是 NavigationPage 转接层存在的意义；TabbedPage（底部页签）为后续候选。
 
-### 1.4 更多控件 Handler（✅ 已完成 21 个）
+### 1.4 更多控件 Handler（✅ 已完成 22 个）
 
-已完成 21 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker + CollectionView/CarouselView M1 版；RadioButton 的 Content 经 Row+Text 包装呈现，GroupName 已接通）。代码风格已统一为官方 handler 模式（`ViewHandler<TVirtualView, TPlatformView>` + 命名 Map 方法）。注意 MAUI 10 核心/Controls 接口差异：DatePicker.Date 等为可空类型，GroupName 仅在 Controls 类型上——虚拟视图类型按 Picker 先例直接用 Controls 具体类型。剩余：Shape/自绘（需 MAUI Graphics 前端）与 CollectionView 虚拟化（NodeAdapter）按需插入。
+已完成 22 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker + BoxView（纯色矩形→Stack 背景色，2026-09-12 补）+ CollectionView/CarouselView M1 版；RadioButton 的 Content 经 Row+Text 包装呈现，GroupName 已接通）。代码风格已统一为官方 handler 模式（`ViewHandler<TVirtualView, TPlatformView>` + 命名 Map 方法）。注意 MAUI 10 核心/Controls 接口差异：DatePicker.Date 等为可空类型，GroupName 仅在 Controls 类型上——虚拟视图类型按 Picker 先例直接用 Controls 具体类型。剩余：Shape/自绘（需 MAUI Graphics 前端）与 CollectionView 虚拟化（NodeAdapter）按需插入。
 
 ### 1.5 真机 arm64 验证（小）
 
 工具链已就绪（arm64 libapp.so 一直同步产出）。难点只有签名物料与真机性能观测（AOT 启动时间、GC 表现——`DOTNET_GCHeapHardLimit` 可能需要按真机内存调参）。
+
+### 1.6 手势识别 GestureRecognizers（✅ 已完成，2026-09-12）
+
+MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`GesturePlatformManager.Standard.cs`，internal），须完全自建平台侧。原生侧接 ArkUI NDK `ArkUI_NativeGestureAPI_1`（native_gesture.h @since 12，经既有 `OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_GESTURE=2)` 通道，镜像 `ArkUIAnimateApi.cs` 模式——`ArkUIGestureApi.cs`）。
+
+**分层**：
+- **NDK 绑定**：`ArkUIGestureApi.cs`（函数表 version 字段为首成员；C bool 在 unmanaged fn ptr 中按 1 字节→显式 byte）+ `ArkUIPointerEvent.cs`（ArkUI_UIInputEvent 公共只读包装，坐标 px）
+- **包装层**：`Nodes/Gestures/`（`ArkUIGestureRecognizer` 基类 + Tap/Pan/Pinch/Swipe/LongPress；`setGestureEventTarget` 回调走 GCHandle extraParams + 单一 `[UnmanagedCallersOnly]` 跳板，同 NodeEventBus 模式；Parallel + Normal mask 与内建 onClick 并行不互斥）
+- **MAUI 层**：`HarmonyViewHandler<,>` 新基类（19 个 View Handler 全部迁移，Page Handler 除外）+ `HarmonyGestureManager`（监听 `CompositeGestureRecognizers` CollectionChanged 与 IsEnabled/InputTransparent，全量重建原生手势）
+
+**各识别器通道**：
+- Tap → `createTapGesture(NumberOfTapsRequired)`，Accept 动作触发；子元素（Label Span）优先消费；**同视图按连击数分组共享一个原生手势**（RaiseTap 广播给组内识别器，否则 N 个识别器 × N 个原生回调 = N² 次触发，实测已踩）
+- Pan/Swipe → **NODE_TOUCH_EVENT 触摸流驱动**（Android touch listener 同款模型）：实测 pan 原生手势的 `GetOffsetX/Y` 在 END 返回 0、原始输入位置在 UPDATE/END 不可靠，不可依赖；按下记起点、移动累计、抬起收尾 → `SendPanStarted/SendPan/SendPanCompleted/SendPanCanceled`（公开接口）；Swipe 累计位移喂 `SendSwipe`，抬起时 `MapSwipeDirection(主轴判定)` → `DetectSwipe`（阈值判定在识别器内部）
+- Pinch → `createPinchGesture(2)`；scale 累计系数直接透传 `SendPinch`
+- Pointer → 同一触摸通道：Down→Entered+Pressed、Move→Moved、Up→Released
+
+**坐标系（模拟器 API 26 实测沉淀）**：触摸通道 `GetX/Y` 为 **vp**（ui_input_event.h 标注 px 系笔误：(displayX−节点窗口偏移px)/密度 == GetX 逐位吻合），故 `PanUpdatedEventArgs.TotalX/Y` 为 vp（等价 iOS points 语义，跨平台代码注意与 Android px 差异）；手势事件（tap）位置为节点相对（原生窗口坐标系，与 dumpLayout/屏幕坐标差一个窗口原点偏移）。MAUI 10 的 `SendPanCompleted` 不携带坐标（`PanUpdatedEventArgs(Completed, gestureId)`），Completed 时 TotalX/Y 恒 0 是官方语义——累计值应从最后一次 Running 读取。
+
+**原生 recognizer 生命周期铁律**：**不得在事件分发回调内 `dispose()` recognizer**——实测 dispose 后原生手势管线仍对已释放结构派发事件（SIGSEGV UAF，fault 栈 libace_ndk 调堆上野指针）。`HarmonyGestureManager.Rebuild` 改为 Detach + 入池按配置键复用，dispose 仅在 Handler 断连时统一执行。
+
+**反射桥（唯一非公开通道）**：`TapGestureRecognizer.SendTapped` 与 `PointerGestureRecognizer.SendPointer*` 在 MAUI 10 为 internal（Tapped 是 event 无法外部 raise）。`MauiGestureBridge` 用 `[DynamicDependency(NonPublicMethods)]` 收根 + MethodInfo 查一次 `CreateDelegate` 缓存成强类型委托（NativeAOT 安全；与 XAML 零反射铁律不冲突——反射范围仅这两个类的指定方法）。单测覆盖桥全链路与 Swipe 方向映射（tests/dotnet/HarmonyGestureTests，9 用例）。
+
+**单位约定**：PanUpdated 单位 vp（见上）；tap 位置为节点相对坐标。Tap 的 ButtonsMask 鼠标按键区分 NDK 不暴露，按 Primary 处理。Pointer 仅触摸通道（hover/mouse 待补）。DragGestureRecognizer/DropGestureRecognizer 未实现（longpress+跨视图状态机，后续立项）。
+
+**模拟器实测通过**（uitest 全链路）：单击恰好 +1（含 pos 回传）、双击、pan 累计位移 198vp（700px 拖动 ÷ 密度 3.5 吻合）、swipe Right/Up 方向判定、pointer pressed/moved/released 流、动态增删识别器后恰好 +1（池化回归通过）、IsEnabled=false 静默、进程存活。Pinch 多点触控 uitest 无注入能力，代码路径 + 单测覆盖，留待真机专项。
+
+### 1.7 布局遗留修复 + .NET 10 / C# 14 优化（✅ 已完成，2026-09-12）
+
+1.2 遗留清单逐项处理结果（取证与实现记录）：
+
+- **Grid 单元格内对齐**：`HarmonyManagedLayoutHandler.ApplyAlignment`（internal static，纯逻辑可单测）——
+  Fill/内容未量测(≤0)/内容≥frame 保持原样；Start/Center/End 按实测尺寸收缩并在 frame 内偏移。
+  首帧未量测退化 Fill，AREA_CHANGE 到来后重排自然生效
+- **ZIndex**：`ArkUINodeBase.SetZIndex`（NODE_Z_INDEX=21，float）；`HarmonyLayoutHandler` 与
+  managed 两套布局均接通 MapUpdateZIndex + AttachChild 初始同步；managed 侧 Arrange 全量下发
+- **Auto 轨道内容变化重排**：AttachChild 订阅子节点 `NODE_EVENT_ON_AREA_CHANGE`（位置+尺寸变化均发）
+  → Arrange（`_arrangeQueued` 同帧合并节流）；Remove/Clear 注销；首帧类型兜底估算保留
+- **Stack 主轴对齐关单**：MAUI 10.0.11 `StackLayoutManager` 发出的 frame 即 DesiredSize，
+  主轴 LayoutOptions 官方即忽略——现行为一致，不改代码（1.2 已标注）
+- **重排幂等**：managed Arrange 增加 `_lastApplied` 快照，位置/尺寸未变化时跳过原生属性写入，
+  AREA_CHANGE 风暴下不再空转；调试日志（FormatTracks/string.Join）`const bool` 门控
+
+**模拟器全链路验证暴露并修复的三个问题**（2026-09-12）：
+1. **空串 SetStringAttribute 401 闪退**：`Encoding.UTF8.GetBytes("")` 得 0 长数组，`fixed` 出空指针
+   传给 `item.@string` → 原生 401 → 启动即崩（NavigationPage 标题栏初始空 Title 触发）。基类改为
+   空串传 NUL 结尾空 C 串
+2. **BoxView 无 Handler**：`PushAsync` 静默失败——工厂 `NotSupportedException` 被 FireAndForget 吞掉，
+   且 MAUI SendHandlerUpdateAsync 信号量不释放，后续导航全部永久排队。新增 `HarmonyBoxViewHandler`
+   （22 号 Handler）；`FireAndForgetNavigation` 改打 hilog
+3. **嵌套 Grid 撑爆父容器**：托管布局容器无条件 `SetHeightPercent(1.0)` 只对页面根布局正确——
+   嵌套在 StackLayout 内时把后续兄弟推出屏幕。改为 `HeightRequest 显式 / Parent 是 Layout 自然高 /
+   根布局 100%`
+
+**.NET 10 / C# 14 优化批次**（与 2.10 零分配改造同思路，控件层落点）：
+- `ArkUINodeBase.SetNumericAttribute(params ReadOnlySpan<ArkUI_NumberValue>)`——C# 14 first-class
+  span conversions，全仓最热属性映射路径调用点零数组分配
+- `HarmonyGestureManager` 热路径去分配：Pointer 识别器 Rebuild 快照缓存（替代每触摸事件 OfType）、
+  GesturesFor/ChildGesturesFor 普通循环、触摸状态 `double` 字段、识别器分类型入池
+- `HarmonyUIExtensions`：C# 14 extension members（具名接收者 extension 块）收口 Color→ARGBCast
+  12 处复制（SetBackgroundColor(Color)/SetFontColor/PlaceholderColor/Slider 色系等）
+- C# 14 null-conditional assignment（`x?.Event -= h`）、`field` 关键字（ImageSourceResolver.TempDir）
+- `HiLog`：格式串 `u8` 静态缓存 + `VerboseEnabled` 运行时开关；`PromiseTaskBridge` 桥名字节缓存、
+  `IntPtr[]` → `ReadOnlySpan<IntPtr>` 调用
+- 构建：`Directory.Build.props`（LangVersion=preview + HARMONYOS 常量收敛，**已加入打包清单**）、
+  `IlcGenerateStackTraceData` 限 Debug（Release NativeAOT 体积优化；栈回溯退化为数字地址）
+- 单测：tests/dotnet/HarmonyGestureTests 增至 **15 用例**（9 手势桥/方向映射 + 6 Grid 对齐偏移），全绿
 
 ---
 
@@ -184,6 +257,11 @@
 
 ## M3 —— 工程化（远期）
 
+- **NDK 头文件生成器（native API 绑定自动化）**：解析 ArkUI NDK C 头文件（native_node.h / native_gesture.h / native_animate.h / native_type.h 等），自动生成函数表镜像、枚举、结构体与 P/Invoke 声明，替换 `ArkUIGestureApi.cs` / `ArkUIAnimateApi.cs` / 事件/属性枚举等全部手工维护的原生层代码。要点与难点：
+  - C 解析需 libclang（或等价 C 前端），不能用正则——现有 `extract_arkui_types.py` 只抽枚举，函数表/结构体均为手写镜像
+  - 语义修正规则须沉淀为声明式配置（生成器不猜）：C bool 在 unmanaged 函数指针中按 1 字节显式 `byte`；头文件注释单位不可信（`GetX` 标注 px 实测为 vp 的笔误）需人工勘误表覆盖；`version` 字段为首成员的函数表布局约定
+  - 与 TS 侧生成器（`src/parser`）同仓共存：产物目录、命名归一、`--sdk` 输入路径复用
+  - 验收：重出产物与手写版逐签名 diff 为零（除勘误表标注项），全量单测 + 模拟器手势/动画链路回归通过
 - **NuGet 打包**：Bindings / HarmonyOS.Maui / 宿主工程模板三件套分发
 - **单项目体验**：MSBuild targets 让用户工程 `dotnet build` 直出 HAP（自动跑远程 AOT 或本机 WSL）
 - **CI**：Linux runner 出 libapp.so + 签名 + 模拟器回归
