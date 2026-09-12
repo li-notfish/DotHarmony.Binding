@@ -1,5 +1,6 @@
 # 一键部署：重装 HAP → 启动 → 抓取 HarmonyHost 日志。
 # SDK/hdc 定位顺序：OHOS_SDK_BASE > OHSDK_HOME > D:\Harmony\OpenHarmony\Sdk > DevEco sdk。
+param([string]$Target = "")
 $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -26,6 +27,19 @@ if (-not $HDC) {
 }
 Write-Host "hdc: $HDC"
 
+# ---- 目标设备：-Target <t> 或 $env:HDC_TARGET（多设备在线时指定）----
+$HDC_TARGET = if ($Target) { $Target } else { $env:HDC_TARGET }
+if ($HDC_TARGET) {
+    $known = & $HDC list targets | Where-Object { $_.Trim() -eq $HDC_TARGET }
+    if (-not $known) {
+        Write-Error "指定目标 $HDC_TARGET 不在 hdc list targets 中（先 hdc tconn）"
+        exit 1
+    }
+    function Invoke-Hdc { & $HDC -t $HDC_TARGET @args }
+} else {
+    function Invoke-Hdc { & $HDC @args }
+}
+
 # ---- 定位 HAP ----
 $HAP = Join-Path $projectRoot "samples\HarmonyHost\entry\build\default\outputs\default\$MODULE-default-unsigned.hap"
 if (-not (Test-Path $HAP)) {
@@ -42,22 +56,22 @@ if (-not $targets) {
 Write-Host "targets: $($targets -join ', ')"
 
 Write-Host "=== 2. 清空 hilog ==="
-& $HDC shell hilog -r > $null
+Invoke-Hdc shell hilog -r 2>$null | Out-Null
 
 Write-Host "=== 3. 安装 HAP ==="
 # 先停掉旧实例：install -r 与运行中实例存在时序竞争（新实例可能启动即被销毁）
-& $HDC shell "aa force-stop $BUNDLE" 2>$null | Out-Null
-$installOut = & $HDC install -r $HAP
+Invoke-Hdc shell "aa force-stop $BUNDLE" 2>$null | Out-Null
+$installOut = Invoke-Hdc install -r $HAP
 if (-not ("$installOut" -match "install bundle successfully")) {
     Write-Error "安装失败：$installOut"
     exit 1
 }
 
 Write-Host "=== 4. 启动应用 ==="
-& $HDC shell aa start -a $ABILITY -b $BUNDLE -m $MODULE
+Invoke-Hdc shell aa start -a $ABILITY -b $BUNDLE -m $MODULE
 
 Write-Host "=== 5. 等待后抓取日志 ==="
 Start-Sleep -Seconds 6
-& $HDC shell "hilog -x" |
+Invoke-Hdc shell "hilog -x" |
     Select-String -Pattern 'A00000/HarmonyHost|dlopen|libapp|dotnet|DOTNET' |
     Select-Object -Last 40
