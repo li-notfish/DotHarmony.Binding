@@ -1,5 +1,6 @@
 #!/bin/bash
-# 在远程 Linux 上执行：NativeAOT 发布 HelloApp → libapp.so（arm64 + x86_64 双架构）
+# 在远程 Linux 上执行：NativeAOT 发布 demo 应用 → libapp.so（arm64 + x86_64 双架构）
+# DEMO_APP 环境变量选择 demo 工程（默认 HelloApp=控件 demo；可选 ApiDemo=@ohos.* API 绑定 demo）
 # 前置：$HOME/.dotnet（SDK 10）
 #   arm64: $HOME/aarch64-linux-musl-cross（musl.cc gcc）
 #   x64:   $HOME/zig（zig cc，musl.cc x64 工具链下载完成后可切换）
@@ -67,7 +68,9 @@ W
   chmod +x "$OBJCOPY_GNU"
 fi
 
-cd "$(dirname "$0")/../samples/dotnet/HelloApp"
+DEMO_APP="${DEMO_APP:-HelloApp}"
+echo "=== demo app: $DEMO_APP ==="
+cd "$(dirname "$0")/../samples/dotnet/$DEMO_APP"
 
 echo "=== publishing linux-musl-arm64 (musl.cc gcc) ==="
 dotnet publish -c Release -r linux-musl-arm64 \

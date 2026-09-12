@@ -37,4 +37,7 @@
     <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
   </ItemGroup>
 
+  <!-- MAUI 风格平台编排：dotnet build -t:HarmonyRun（libapp.so → HAP → 部署） -->
+  <Import Project="$(MSBuildThisFileDirectory)../../../src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets" />
+
 </Project>

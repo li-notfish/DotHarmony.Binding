@@ -1,9 +1,12 @@
 // Promise → Task 桥（ROADMAP 2.1 的最小切片）。
 // 前提：被调 Promise 在 JS 线程 resolve/reject，fulfilled/rejected 回调经
 // napi_create_function 的原生 trampoline 进入 C#（复用 NativeCallbacks 的
-// GCHandle-data 模式）。Task 续体经 TaskCompletionSource
-// (RunContinuationsAsynchronously) + ContinueWith 调度到线程池，
-// 避免用户续体阻塞 JS 线程。
+// GCHandle-data 模式）。
+// TCS 不使用 RunContinuationsAsynchronously：Task 续体在 TrySetResult 内联到
+// JS 线程执行（与 JS await 微任务语义一致），保证 await 之后的 NAPI 调用
+// （wrapper 属性访问等）仍有 env 可用；若调度到线程池，NapiEnv.Current 会
+// 因线程亲和性直接抛异常。代价：用户续体在 JS 线程上同步执行，长耗时工作
+// 应自行切走（Task.Run）。
 // 任意线程 → JS 线程的回调式 API（AsyncCallback 风格）仍需完整 TSFN 通道，后续扩展。
 #nullable enable
 using System;
@@ -17,9 +20,13 @@ internal static class PromiseTaskBridge
 {
     private sealed class State
     {
-        public readonly TaskCompletionSource<object?> Tcs =
-            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        /// <summary>非泛型承载：ToTask&lt;T&gt; 注入强类型 TCS 的完成委托与最终 Task。</summary>
+        public required Task Task;
+        public required Action<object?> SetResult;
+        public required Action<Exception> SetException;
         public Type InnerType = typeof(object);
+        /// <summary>调用点显式转换委托（数组/JsObject 包装类）；null 时走 ValueConverter 基元路径。</summary>
+        public Func<IntPtr, object?>? Convert;
         public bool Done;
     }
 
@@ -28,11 +35,29 @@ internal static class PromiseTaskBridge
     private static readonly IntPtr RejectedPtr =
         (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr>)&RejectedTrampoline;
 
-    /// <summary>将 napi promise 值接为 Task&lt;T&gt;。非 promise 值由调用方先行处理。</summary>
-    public static Task<T> ToTask<T>(IntPtr promise)
+    /// <summary>
+    /// 将 napi promise 值接为 Task&lt;T&gt;。非 promise 值由调用方先行处理。
+    /// <paramref name="convert"/> 为复杂结果类型（数组/JsObject 包装类）的显式转换委托；
+    /// 基元与枚举结果不需要（走 <see cref="ValueConverter"/>）。
+    /// </summary>
+    public static Task<T> ToTask<T>(IntPtr promise, Func<IntPtr, T>? convert = null)
     {
 #if HARMONYOS
-        var state = new State { InnerType = typeof(T) };
+        // 同步续体：Promise resolve 发生在 JS 线程，await 续体在该线程内联恢复，
+        // 使后续 NAPI 调用（wrapper 属性等）拥有 env。
+        var tcs = new TaskCompletionSource<T>();
+        var state = new State
+        {
+            Task = tcs.Task,
+            SetResult = v => tcs.TrySetResult((T)v!),
+            SetException = ex => tcs.TrySetException(ex),
+            InnerType = typeof(T),
+        };
+        if (convert != null)
+        {
+            var conv = convert;
+            state.Convert = v => conv(v)!;
+        }
         var gch = GCHandle.Alloc(state);
         var data = GCHandle.ToIntPtr(gch);
 
@@ -49,102 +74,96 @@ internal static class PromiseTaskBridge
         NativeNodeApi.napi_create_function(env, rejectedName, (IntPtr)rejectedName.Length,
             RejectedPtr, data, out var rejectedFn).ThrowIfFailed();
 
-        NativeNodeApi.napi_call_function(env, promise, thenFn,
-            2, new IntPtr[] { fulfilledFn, rejectedFn }, out _).ThrowIfFailed();
-
-        // then 调用本身可能抛 ArkTS 异常（M0 铁律：必须清除挂起异常）
+        var status = NativeNodeApi.napi_call_function(env, promise, thenFn,
+            2, new IntPtr[] { fulfilledFn, rejectedFn }, out _);
+        // M0 铁律：先清除挂起异常，再检查状态
         NativeNodeApi.napi_get_and_clear_last_exception(env, out _).ThrowIfFailed();
+        status.ThrowIfFailed();
 
-        return state.Tcs.Task.ContinueWith(t => (T)t.Result!, TaskScheduler.Default);
+        return tcs.Task;
 #else
         throw new PlatformNotSupportedException("PromiseTaskBridge requires HarmonyOS runtime");
 #endif
     }
 
 #if HARMONYOS
+    private static State TakeState(IntPtr env, IntPtr info, out IntPtr firstArg, out GCHandle gch)
+    {
+        var argc = (IntPtr)4;
+        Span<IntPtr> argv = stackalloc IntPtr[4];
+        NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
+            .ThrowIfFailed();
+        firstArg = argv[0];
+        gch = GCHandle.FromIntPtr(data);
+        return (State)gch.Target!;
+    }
+
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static IntPtr FulfilledTrampoline(IntPtr env, IntPtr info)
     {
-        // napi 回调内抛出的未捕获异常会击穿 VM，必须整体兜底
+        GCHandle gch = default;
         try
         {
-            var state = TakeState(env, info, out var firstArg);
-            var inner = state.InnerType;
-            object? value = inner == typeof(string) ? (object?)NativeValue.ToString(firstArg)
-                : inner == typeof(double) ? NativeValue.ToDouble(firstArg)
-                : inner == typeof(bool) ? NativeValue.ToBool(firstArg)
-                : inner == typeof(int) ? (int)NativeValue.ToDouble(firstArg)
-                : firstArg; // IntPtr 句柄
-            state.Tcs.TrySetResult(value);
+            var state = TakeState(env, info, out var firstArg, out gch);
+            if (state.Done)
+            {
+                NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
+                return undefined;
+            }
+            state.Done = true;
+            object? value = state.Convert != null
+                ? state.Convert(firstArg)
+                : ValueConverter.ConvertTo(state.InnerType, firstArg);
+            state.SetResult(value);
         }
         catch (Exception ex)
         {
-            FailPendingState(env, info, ex);
+            if (gch.IsAllocated && gch.Target is State s && !s.Done)
+            {
+                s.Done = true;
+                s.SetException(ex);
+            }
         }
-        NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-        return undefined;
+        finally
+        {
+            if (gch.IsAllocated) gch.Free();
+        }
+        NativeNodeApi.napi_get_undefined(env, out var undefinedRet).ThrowIfFailed();
+        return undefinedRet;
     }
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static IntPtr RejectedTrampoline(IntPtr env, IntPtr info)
     {
+        GCHandle gch = default;
         try
         {
-            _ = TakeState(env, info, out var reasonArg);
-            var reason = NativeValue.ToString(reasonArg);
-            FailAllPending(env, info, new InvalidOperationException($"ArkTS promise rejected: {reason}"));
+            var state = TakeState(env, info, out var reasonArg, out gch);
+            if (state.Done)
+            {
+                NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
+                return undefined;
+            }
+            state.Done = true;
+            string? reason = null;
+            try { reason = NativeValue.ToString(reasonArg); }
+            catch { /* reason 可能不是字符串，忽略转换失败 */ }
+            state.SetException(new ArkTSException($"ArkTS promise rejected: {reason ?? "unknown"}", reason, reasonArg));
         }
         catch (Exception ex)
         {
-            FailAllPending(env, info, ex);
-        }
-        NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-        return undefined;
-    }
-
-    /// <summary>从回调取出共享状态（一次性，Done 防双触发双释放）</summary>
-    private static State TakeState(IntPtr env, IntPtr info, out IntPtr firstArg)
-    {
-        var argc = (IntPtr)4;
-        var argv = new IntPtr[4];
-        NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
-            .ThrowIfFailed();
-        firstArg = argv[0];
-        var gch = GCHandle.FromIntPtr(data);
-        var state = (State)gch.Target!;
-        if (!state.Done)
-        {
-            state.Done = true;
-            gch.Free();
-        }
-        return state;
-    }
-
-    private static void FailPendingState(IntPtr env, IntPtr info, Exception ex)
-    {
-        try { FailAllPending(env, info, ex); } catch { /* 兜底，不再外抛 */ }
-    }
-
-    private static void FailAllPending(IntPtr env, IntPtr info, Exception ex)
-    {
-        try
-        {
-            var argc = (IntPtr)4;
-            var argv = new IntPtr[4];
-            NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
-                .ThrowIfFailed();
-            var gch = GCHandle.FromIntPtr(data);
-            if (gch.Target is State state)
+            if (gch.IsAllocated && gch.Target is State s && !s.Done)
             {
-                if (!state.Done)
-                {
-                    state.Done = true;
-                    gch.Free();
-                }
-                state.Tcs.TrySetException(ex);
+                s.Done = true;
+                s.SetException(ex);
             }
         }
-        catch { /* 状态已释放则忽略 */ }
+        finally
+        {
+            if (gch.IsAllocated) gch.Free();
+        }
+        NativeNodeApi.napi_get_undefined(env, out var undefinedRet).ThrowIfFailed();
+        return undefinedRet;
     }
 #endif
 }

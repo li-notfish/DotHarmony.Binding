@@ -42,8 +42,8 @@ describe('Code Generation Tests', () => {
         expect(content).toContain('public partial class Column');
         expect(content).toContain('ArkUIComponentBase');
         expect(content).toContain('public Column()');
-        expect(content).toContain('public HorizontalAlign AlignItems');
-        expect(content).toContain('public FlexAlign JustifyContent');
+        expect(content).toContain('public IntPtr AlignItems');
+        expect(content).toContain('public IntPtr JustifyContent');
     });
 
     test('should have correct namespace', () => {
@@ -76,8 +76,8 @@ describe('Code Generation Tests', () => {
         
         // 验证有两个构造函数（无参和有参）
         expect(content).toContain('public Column()');
-        // ColumnOptions 现在被生成为真正的 C# record
-        expect(content).toContain('public Column(ColumnOptions options)');
+        // Options 类型现在映射为 IntPtr
+        expect(content).toContain('public Column(IntPtr options)');
     });
 
     test('should handle optional types correctly', () => {
@@ -123,10 +123,10 @@ describe('Code Generation Tests', () => {
         const enumsCsPath = path.join(outputDir, 'enums.Enums.cs');
         const content = fs.readFileSync(enumsCsPath, 'utf-8');
         
-        // 验证数值枚举
+        // 验证数值枚举（成员名经 .NET 命名规范化：SCREAMING_SNAKE → PascalCase）
         expect(content).toContain('public enum CheckBoxShape');
-        expect(content).toContain('CIRCLE = 0');
-        expect(content).toContain('ROUNDED_SQUARE = 1');
+        expect(content).toContain('Circle = 0');
+        expect(content).toContain('RoundedSquare = 1');
     });
 
     test('should generate string enums with Description attribute', () => {
@@ -137,9 +137,9 @@ describe('Code Generation Tests', () => {
         expect(content).toContain('public enum ColoringStrategy');
         expect(content).toContain('[Description("invert")]');
         // 字符串枚举不再使用 = "value" 语法（C# 枚举不支持）
-        expect(content).toContain('INVERT,');
+        expect(content).toContain('Invert,');
         expect(content).toContain('[Description("average")]');
-        expect(content).toContain('AVERAGE,');
+        expect(content).toContain('Average,');
     });
 
     test('should generate enums without explicit values', () => {
@@ -197,8 +197,8 @@ describe('Code Generation Tests', () => {
         const content = fs.readFileSync(rowCsPath, 'utf-8');
         expect(content).toContain('public partial class Row');
         expect(content).toContain('public Row()');
-        expect(content).toContain('public Row(RowOptions options)');
-        expect(content).toContain('public VerticalAlign AlignItems');
+        expect(content).toContain('public Row(IntPtr options)');
+        expect(content).toContain('public IntPtr AlignItems');
     });
 
     test('should generate Button.cs', () => {
@@ -208,7 +208,7 @@ describe('Code Generation Tests', () => {
         const content = fs.readFileSync(buttonCsPath, 'utf-8');
         expect(content).toContain('public partial class Button');
         expect(content).toContain('public Button()');
-        expect(content).toContain('public ButtonType Type');
+        expect(content).toContain('public IntPtr Type');
     });
 
     test('should generate Image.cs', () => {
@@ -218,7 +218,7 @@ describe('Code Generation Tests', () => {
         const content = fs.readFileSync(imageCsPath, 'utf-8');
         expect(content).toContain('public partial class Image');
         // src 类型是 PixelMap | ResourceStr | DrawableDescriptor，取第一个具体类型
-        expect(content).toContain('public Image(PixelMap src)');
+        expect(content).toContain('public Image(IntPtr src)');
     });
 
     test('should generate List.cs with events', () => {
@@ -315,24 +315,24 @@ describe('Code Generation Tests', () => {
     test('should map intersection types correctly', () => {
         const { TypeMapper } = require('../src/parser/typeMapper');
         
-        // 测试交叉类型映射
-        expect(TypeMapper.mapType('A & B')).toBe('A');
-        expect(TypeMapper.mapType('ClassA & InterfaceB')).toBe('ClassA');
+        // 测试交叉类型映射：所有未映射类型退回 IntPtr
+        expect(TypeMapper.mapType('A & B')).toBe('IntPtr');
+        expect(TypeMapper.mapType('ClassA & InterfaceB')).toBe('IntPtr');
     });
 
-    test('should map conditional types to dynamic', () => {
+    test('should map conditional types to object (AOT-safe)', () => {
         const { TypeMapper } = require('../src/parser/typeMapper');
-        
+
         // 测试条件类型映射
-        expect(TypeMapper.mapType('T extends string ? string : number')).toBe('dynamic');
+        expect(TypeMapper.mapType('T extends string ? string : number')).toBe('object');
     });
 
-    test('should map mapped types to dynamic', () => {
+    test('should map mapped types to object (AOT-safe)', () => {
         const { TypeMapper } = require('../src/parser/typeMapper');
-        
+
         // 测试映射类型映射
-        expect(TypeMapper.mapType('keyof T')).toBe('dynamic');
-        expect(TypeMapper.mapType('[K in keyof T]')).toBe('dynamic');
+        expect(TypeMapper.mapType('keyof T')).toBe('object');
+        expect(TypeMapper.mapType('[K in keyof T]')).toBe('object');
     });
 
     test('should map readonly types', () => {
@@ -469,6 +469,14 @@ describe('Code Generation Tests', () => {
         expect(content).toContain('return NodeApi.CallMethodAsync<double>(_jsObject, _getCount);');
         expect(content).toContain('return NodeApi.CallMethodAsync<bool>(_jsObject, _isEnabled);');
         expect(content).toContain('return NodeApi.CallMethodAsync<IntPtr>(_jsObject, _getHandle);');
+        
+        // 验证新增类型映射：long/uint/byte
+        expect(content).toContain('public Task<long> GetLongValue()');
+        expect(content).toContain('public Task<uint> GetUIntValue()');
+        expect(content).toContain('public Task<byte> GetByteValue()');
+        expect(content).toContain('return NodeApi.CallMethodAsync<long>(_jsObject, _getLongValue);');
+        expect(content).toContain('return NodeApi.CallMethodAsync<uint>(_jsObject, _getUIntValue);');
+        expect(content).toContain('return NodeApi.CallMethodAsync<byte>(_jsObject, _getByteValue);');
     });
 
     // AsyncCallback 测试（M2 2.1）

@@ -89,12 +89,62 @@
 > - 最小切片：`Promise<T>`→`Task<T>` 映射接通（TypeMapper + CodeGenerator + 47/47 测试）
 > - AsyncCallback 支持：`(result: T, err?: Error) => void` → `Task<T>` parser + 生成器
 > 2.2 已完成——using 生成、CallMethodVoid 重载、方法折叠、Promise→Task 映射。
-> 端到端模拟器验证待手动执行。
+> ~~端到端模拟器验证待手动执行。~~ → **2026-09-12 已实测通过**（见 2.7）。
 
 
-### 2.1 TSFN 异步层（大，M2 的核心难点）
+### 2.1 TSFN 异步层（大，M2 的核心难点）——✅ 最小实验已通过；✅ .NET 风格标准化已落地
 
-**做什么**：让 `@ohos.*` 的 `Promise<T>` / callback 风格 API 在 C# 里以 `Task<T>` 可用。当前全部映射为 `IntPtr` 占位。
+**做什么**：让 `@ohos.*` 的 `Promise<T>` / callback 风格 API 在 C# 里以 `Task<T>` 可用。~~当前全部映射为 `IntPtr` 占位~~ → **2026-09-11 标准化完成**：`Promise<Array<Display>>` → `Task<DisplayObject[]>` 全链路打通，接口类型生成 JsObject 派生包装类（114 个）/ 纯数据入参生成 INapiRecord record（47 个），裸 IntPtr 返回从 103 降至 19。
+
+**2.5 .NET 风格标准化（2026-09-11 完成）**：
+- 命名规范化：`naming.ts` 缩写词归一（`getURI→GetUri`、`TYPE_DEFAULT→TypeDefault`），Task 方法自动 `Async` 后缀
+- 类型映射收口 TypeMapper 单一事实源；修复 `mapGenericType` 贪婪正则对嵌套泛型的误切（`Promise<Array<T>>` 曾整体退化为 IntPtr 的潜在 bug）
+- Runtime：`JsObject` 强引用包装基类、`ValueConverter` 统一转换（含枚举/数组/显式工厂委托）、`NodeApi.SetProperty/GetGlobal/CreateInstance/GetArrayElements`、PromiseTaskBridge 吸并 ThreadSafeFunction.FromPromise 重复实现
+- 服务模块 `on*` 函数不再误判为组件事件；嵌套类构造函数支持（Picker 空壳修复）；无注解字面量常量类型推断（Pasteboard MIMETYPE_* 恢复）
+- 明确不做（后续立项）：ArrayBuffer/BigInt 封送、Map/Set 容器映射、EventHandler/EventArgs 事件模型、模拟器端到端手动验证（TSFN abort 路径）
+
+**2.6 封送补全与事件模型（2026-09-12 完成）**：
+- ArrayBuffer/TypedArray ↔ `byte[]` 拷贝语义（typedarray_info 取字节切片）；bigint → `JsBigInt`（long 语义，经 `napi_create_bigint_int64` 通道与 JS number 区分；超出 int64/uint64 抛异常）
+- `JsMap<TKey,TValue>` 活视图：map.get/set/has/delete + entries() 迭代器协议；`Map<number, Geofence>` → `Task<JsMap<double, Geofence>>`（PILOT_MODULES 增加 @ohos.geoLocationManager）
+- 完整 .NET 事件模型：199 个事件访问器（`Display.Change += handler`），add/remove 经 `EventListenerRegistry` 配对 on/off（JS off 按函数实例匹配，GCHandle/napi_ref 生命周期托管）；类型化 `On(type, Action<T>)` 重载；单一共享 `ArgsTrampoline`（Action<IntPtr[]>）+ 生成器调用点适配器，任意回调形状 AOT 安全
+- 明确不做：Set 容器（试点 0 使用）、DataView、Int32Array 等精确 TypedArray 类型（一律按字节拷贝，有损）、BigInt words 全精度、NativeCallbacks 反射兜底的替换
+- ~~待手动验证：模拟器端到端（事件触发、ArrayBuffer 读写、Map 迭代）~~ → 见 2.7（事件订阅/退订回路已实测；ArrayBuffer 读写、Map 迭代仍待专项用例）
+
+**2.10 M2 收尾与零分配改造（2026-09-12 完成）——M2 除 2.4 Essentials 外全部完成**：
+- **封送专项实测通过**（模拟器）：ArrayBuffer byte[8] 往返逐字节一致；JsMap 读侧（Count/TryGet/Entries）与写侧（Create+Set → JS forEach 求和）全通；TSFN 加固后 worker(tid 9)→JS(tid 1) 回调、env 往返正常
+- **TSFN 生命周期加固**：Release/Abort 与 Call 互斥（锁）防句柄竞态；GCHandle 延迟到 finalize 回调释放——abort 后已入队消息仍会派发，过早释放即 UAF；CallJsTrampoline 异常捕获（不得穿透原生帧）
+- **全量生成（M2.3 终态）**：`--all` 生成 449 个 d.ts 中的 438 个模块，**375 转正编译、63 灰度**（黑名单 GRAYSCALE_MODULES）。规模暴露的生成器工程化缺陷全部修复：模块 className 唯一化（resourceManager/global.resourceManager、net/bluetooth 的 connection/socket 同名互覆盖）；跨模块 import 类型降级 IntPtr（含 default import）；枚举冲突按属主模块加前缀（废弃"全局去重丢弃"——首发射者被灰度会拖垮依赖者）；陈旧 Enums.cs 清理；灰度清单携带唯一化后 className；含 UTF-16（CRLF/代理对）转义与命名保留字处理
+- **已知残留（立项待做）**：TS 声明合并类型（window.WindowRect 双定义）；跨模块强类型解析（现在降级 IntPtr）；63 灰度模块的类型映射缺口清单
+- **零分配调用路径（.NET 10 / C# 13）**：`params ReadOnlySpan<object?>`（params collections，调用点零数组）；argv 栈分配（InvokeMethod/CreateInstance/trampolines，>8 参数回退堆）；P/Invoke 改 `ReadOnlySpan<IntPtr>`（LibraryImport 钉扎零拷贝）；生成 record 的 WriteTo 属性名 u8 常量缓存（替代每次 `Encoding.UTF8.GetBytes`）；NodeApi 胶水名字节静态缓存。**剩余分配源**：object 转换点基元装箱、字符串结果物化、事件适配器闭包——完全零装箱需 union struct 参数设计，后续立项
+
+**2.9 事件触发路径实测 + 第四批扩展（2026-09-12 完成）**：
+- **事件触发路径首次全链路实测通过**（模拟器）：`Sensor.Accelerometer += handler` 订阅 → JS 持续触发 → ArgsTrampoline → 类型化 `AccelerometerResponse` 载荷（X/Y/Z 属性读取，实测 y=9.80 标准重力值）→ handler 内第 5 次自动退订（off 按函数实例匹配）。示例：ModuleVerifyPage Sensor 按钮
+- 批量扩展 46 → **74 全部转正编译**（+util 容器 9 个、events.emitter、commonEventManager、resourceManager、taskpool、worker、data.relationalStore/dataSharePredicates、file.hash/statvfs/securityLabel、multimedia.audio、graphics.displaySync/colorSpaceManager、screenLock、accounts.osAccount、formBindingData/formProvider、convertxml、zlib）
+- 新暴露并修复的生成器缺陷：① 枚举撞手写 Nodes 类型名（relationalStore.Progress 撞 Nodes/progress.cs，CS0101）→ 从 Nodes/*.cs 扫描保留名集，撞名枚举加模块前缀；② 枚举值超 int32 → long 基底（audio 声道布局位掩码，CS0266）；③ 事件成员 extra 参数撞名 type/callback → 改名（CS0100）；④ 事件成员签名去重补齐 event 键类型维度并跳过普通成员已发射的签名（emitter Off(string) 重复，CS0111）
+- 待续：后续批次同法御用（生成→全批转正→编译筛选→修复/回灰），向 143 模块目标推进
+
+**2.8 AsyncCallback 正式通道 + 批量扩展（2026-09-12 完成）**：
+- `CallbackTaskBridge`：仅 callback 形式 API（无 Promise 重载，如 `settings.registerKeyObserver`、`thermal.subscribeThermalLevel`、fs 实例方法）→ `Task<T>`。运行时 `napi_create_function` 创建 err-first JS 回调作末参传入，JS 触发时解析 (err, data)：成功 → SetResult(convert(data))，BusinessError → `ArkTSException`（读 err.code/err.message）。TCS 同步续体保持 NapiEnv 可用（同 PromiseTaskBridge 语义）
+- 关键认知：**双形态 API 之前是"碰巧能工作"**——原生实现按末参是否为函数自适应返回 Promise，剥掉 callback 调用即进 Promise 模式；真正坏掉的只有 callback-only API（无回调调用会同步抛 401）。生成器双形态判定：同名且剥回调后参数一致的 Promise 重载存在 → Promise 通道；否则 bridge 通道
+- 包装类 junk 重载清理：`void Show(IntPtr callback)` 之类手搓回调指针的产物折叠为单一 `ShowAsync()`（Window -380 行）
+- 生成器修复（批量扩展暴露）：非标识符成员名过滤（url 的 `[Symbol.iterator]`）；服务模块顶层 `export interface/class` 解析为实例类型（intl.LocaleOptions 等被引用但从未生成）；可达性 BFS 补 wrapper 构造函数参数种子（输入位 record）；record WriteTo 中 `System.Text.Encoding` 完全限定（属性名撞名）
+- 批量扩展：PILOT_MODULES 21 → **46 全部转正编译**（+thermal/power/wallpaper/wifiManager/telephony.radio/sms/usbManager/inputMethod/hilog/hiAppEvent/i18n/intl/mediaquery/font/measure/uri/url/matrix4/curves/net.webSocket/net.socket/data.dataShare/bundle.bundleManager/app.ability.appManager/app.ability.context/notification）
+- 遗留：CS1737 修复（demoteOptionals 必须在事件回调强制必需之后，Sensor off 重载）；后续批次向 143 模块推进时同法筛选
+
+**2.7 端到端模拟器验证（2026-09-12 完成，x86_64 模拟器 / API 26）**：
+- 全链路：generator 重出 → WSL NativeAOT 双架构 libapp.so → hvigor HAP → hdc 部署 → 实机点击验证
+- 实测通过：`napi_load_module` 各模块加载；同步属性（DeviceInfo Brand/Model/OsFullName=OpenHarmony-7.0.0.105）；Promise→Task 全类型桥（string/double/bool/int/uint/void/reject——reject 正确抛 `ArkTSException` 携带 reason）；wrapper 属性 await 后可读（`GetDefaultDisplayAsync()` → 1320x2856 @560dpi）；`.NET event` 订阅/退订回路（Display.Change +=/-=）
+- **实测修复 1**：生成器注入 `$string:permission_XXX_reason` 但从不写 string.json 资源 → hvigor CompileResource 直接失败；`writeModuleJson5Permissions` 现同步写 32 条 reason 字符串（merge 保留既有条目）
+- **实测修复 2（架构级）**：PromiseTaskBridge 原用 `RunContinuationsAsynchronously` + `ContinueWith` 把续体调度到线程池——wrapper 结果 await 后访问属性时 `NapiEnv.Current`（[ThreadStatic]）无 env 直接抛异常。改为 TCS 同步续体：Promise resolve 的 trampoline 在 JS 线程内联执行用户续体（与 JS await 微任务语义一致）；副作用：用户续体长耗时工作须自行 `Task.Run` 切走
+- **实测修复 3**：`async void` 事件处理器仅 catch `ArkTSException`，其它异常（如调用不存在的 JS 函数）未处理直接杀进程；samples 兜底 `catch (Exception)`，宿主 EntryAbility 补 `globalThis.somePromiseApi/willFail` 测试函数
+
+**最小实验结论**（2026-09-11，模拟器，HelloApp "TSFN test" 按钮 / `Runtime/TsfnExperiment.cs`）：
+- `CallJsTrampoline` 已实装（原为空壳）：context 解析回 ThreadSafeFunction 实例，转发 `OnCallJs`
+- 后台 .NET 线程 `Call()` → libuv 在 **JS（宿主主）线程**触发回调（managed thread id 与 UI 线程一致，实测吻合）
+- 回调内 `NapiEnv.Current` 可用，NAPI 字符串创建+读取往返成功
+- 封送开销 ~13ms（worker 睡 300ms，端到端 313ms）；回调内直接更新 ArkUI 控件无崩溃
+- 生命周期完成路径（回调末尾 `Release()`）实测无泄漏/UAF；连点两次（两个实例并发）无竞态
+- ⚠️ 未验证：abort 路径、release 后 call 的防御、跨 TSFN 实例 GC 压力——收编正式通道时补
 
 **怎么做**：
 1. `napi_create_threadsafe_function` 封装（`Runtime/ThreadSafeFunction.cs`）：

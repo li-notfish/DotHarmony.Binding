@@ -1,0 +1,25 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ApiDemo.MainPage"
+             Title="API Bindings Demo"
+             BackgroundColor="LightGray">
+    <StackLayout Spacing="12" Padding="12">
+        <Label x:Name="TitleLabel"
+               Text="@ohos.* API Bindings Demo"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Label x:Name="DeviceLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Module Verify (@ohos.* APIs)"
+                Clicked="OnModuleVerifyClicked" />
+        <Button Text="Async Demo (Promise → Task)"
+                Clicked="OnAsyncDemoClicked" />
+        <Button Text="TSFN test (worker → JS thread)"
+                Clicked="OnTsfnTestClicked" />
+        <Label x:Name="TsfnLabel"
+               Text="TSFN: not run"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+    </StackLayout>
+</ContentPage>

@@ -18,7 +18,7 @@ internal static partial class NativeNodeApi
     [LibraryImport(NApiLib)]
     internal static partial napi_status napi_create_string_utf8(
         napi_env env,
-        byte[] str,
+        ReadOnlySpan<byte> str,
         IntPtr length,
         out napi_value result);
 
@@ -138,6 +138,14 @@ internal static partial class NativeNodeApi
         byte[] name,
         napi_value value);
 
+    /// <summary>Span 重载：生成的 u8 常量字段零拷贝传递（LibraryImport 固定钉扎）</summary>
+    [LibraryImport(NApiLib, EntryPoint = "napi_set_named_property")]
+    internal static unsafe partial napi_status napi_set_named_property(
+        napi_env env,
+        napi_value obj,
+        ReadOnlySpan<byte> name,
+        napi_value value);
+
     #endregion
 
     #region 函数操作
@@ -163,7 +171,15 @@ internal static partial class NativeNodeApi
         napi_value recv,
         napi_value func,
         int argc,
-        IntPtr[] argv,
+        ReadOnlySpan<IntPtr> argv,
+        out napi_value result);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_new_instance(
+        napi_env env,
+        napi_value constructor,
+        int argc,
+        ReadOnlySpan<IntPtr> argv,
         out napi_value result);
 
     [LibraryImport(NApiLib)]
@@ -171,7 +187,7 @@ internal static partial class NativeNodeApi
         napi_env env,
         napi_callback_info info,
         ref IntPtr argc,
-        IntPtr[]? argv,
+        Span<IntPtr> argv,
         out IntPtr thisArg,
         out IntPtr data);
 
@@ -226,6 +242,76 @@ internal static partial class NativeNodeApi
         napi_value @object,
         uint index,
         napi_value value);
+
+    #endregion
+
+    #region ArrayBuffer / TypedArray
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_is_arraybuffer(
+        napi_env env,
+        napi_value value,
+        [MarshalAs(UnmanagedType.U1)] out bool result);
+
+    [LibraryImport(NApiLib)]
+    internal static unsafe partial napi_status napi_get_arraybuffer_info(
+        napi_env env,
+        napi_value arraybuffer,
+        byte** data,
+        out IntPtr byte_length);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_create_arraybuffer(
+        napi_env env,
+        IntPtr byte_length,
+        out IntPtr data,
+        out napi_value result);
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_is_typedarray(
+        napi_env env,
+        napi_value value,
+        [MarshalAs(UnmanagedType.U1)] out bool result);
+
+    /// <summary>napi_typedarray_type：Int8=0, Uint8=1, Uint8Clamped=2, Int16=3, Uint16=4, Int32=5, Uint32=6, Float32=7, Float64=8, BigInt64=9, Uint64=10</summary>
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_get_typedarray_info(
+        napi_env env,
+        napi_value typedarray,
+        out int type,
+        out IntPtr length,
+        out IntPtr data,
+        out napi_value arraybuffer,
+        out IntPtr byte_offset);
+
+    #endregion
+
+    #region BigInt
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_get_value_bigint_int64(
+        napi_env env,
+        napi_value value,
+        out long result,
+        [MarshalAs(UnmanagedType.U1)] out bool lossless);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_get_value_bigint_uint64(
+        napi_env env,
+        napi_value value,
+        out ulong result,
+        [MarshalAs(UnmanagedType.U1)] out bool lossless);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_create_bigint_int64(
+        napi_env env,
+        long value,
+        out napi_value result);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_create_bigint_uint64(
+        napi_env env,
+        ulong value,
+        out napi_value result);
 
     #endregion
 
@@ -285,7 +371,7 @@ internal static partial class NativeNodeApi
         napi_env env,
         napi_value func,
         napi_value async_resource,
-        byte[] async_resource_name,
+        napi_value async_resource_name,
         IntPtr max_queue_size,
         IntPtr initial_thread_count,
         IntPtr thread_finalize_data,

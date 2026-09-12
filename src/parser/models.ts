@@ -8,6 +8,8 @@ export interface ComponentInfo {
     events: EventInfo[];
     delegates: DelegateInfo[];
     namespace: string;               // "HarmonyOS.ArkUI"
+    interfaces: InterfaceInfo[];     // namespace 内嵌套接口（@ohos 服务模块的实例类型）
+    classes: ClassInfo[];            // namespace 内嵌套类（如 photoViewPicker）
 }
 
 export interface ConstructorOverload {
@@ -26,6 +28,21 @@ export interface MethodInfo {
     returnType: string;
     parameters: ParameterInfo[];
     isChained: boolean;              // 是否返回this用于链式调用
+    /** 服务模块：inline AsyncCallback 检测到的原始结果类型（ApiGenerator 负责映射为 Task<T>） */
+    asyncResultType?: string;
+    /** 服务模块：on/off/once 函数的事件元数据（ApiGenerator 生成类型化 On/Off/Once 与 .NET event） */
+    eventMeta?: EventMetaInfo;
+}
+
+export interface EventMetaInfo {
+    /** literal: 首参是字符串字面量/字面量 union；enum: 枚举成员引用（SensorId.ACCELEROMETER）；plain: 普通 string */
+    kind: 'literal' | 'enum' | 'plain';
+    /** literal: 事件字面量值；enum: 枚举成员引用原文 */
+    literals: string[];
+    /** enum kind 时的枚举类型名（如 SensorId） */
+    enumTypeName?: string;
+    /** Callback<T1,T2,...> 切出的原始 TS 参数类型（无 Callback 参数时为空） */
+    callbackArgs: string[];
 }
 
 export interface TypeMapping {

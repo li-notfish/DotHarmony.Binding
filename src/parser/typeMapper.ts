@@ -6,6 +6,11 @@ export class TypeMapper {
         'number': { typescript: 'number', csharp: 'double', isNative: false },
         'boolean': { typescript: 'boolean', csharp: 'bool', isNative: false },
         'void': { typescript: 'void', csharp: 'void', isNative: false },
+        // 数值类型扩展
+        'long': { typescript: 'long', csharp: 'long', isNative: false },
+        'ulong': { typescript: 'ulong', csharp: 'ulong', isNative: false },
+        'uint': { typescript: 'uint', csharp: 'uint', isNative: false },
+        'byte': { typescript: 'byte', csharp: 'byte', isNative: false },
         'Resource': { typescript: 'Resource', csharp: 'IntPtr', isNative: true },
         'ResourceColor': { typescript: 'ResourceColor', csharp: 'IntPtr', isNative: true },
         'ResourceStr': { typescript: 'ResourceStr', csharp: 'IntPtr', isNative: true },
@@ -21,8 +26,15 @@ export class TypeMapper {
         'Array': { typescript: 'Array', csharp: 'IntPtr[]', isNative: true },
         'Callback': { typescript: 'Callback', csharp: 'IntPtr', isNative: true },
         'Function': { typescript: 'Function', csharp: 'IntPtr', isNative: true },
-        'Action': { typescript: 'Action', csharp: 'Action', isNative: false },
-        'Func': { typescript: 'Func', csharp: 'Func', isNative: false },
+        // 封送类型（Runtime 侧支持见 Runtime/JsBigInt.cs、NativeValue.From(byte[])）
+        'ArrayBuffer': { typescript: 'ArrayBuffer', csharp: 'byte[]', isNative: false },
+        'Uint8Array': { typescript: 'Uint8Array', csharp: 'byte[]', isNative: false },
+        'Int8Array': { typescript: 'Int8Array', csharp: 'byte[]', isNative: false },
+        'Uint8ClampedArray': { typescript: 'Uint8ClampedArray', csharp: 'byte[]', isNative: false },
+        'bigint': { typescript: 'bigint', csharp: 'JsBigInt', isNative: false },
+        // System. 全限定：产物 using HarmonyOS.ArkUI 中可能有同名类型（如枚举 Action）造成 CS0104
+        'Action': { typescript: 'Action', csharp: 'System.Action', isNative: false },
+        'Func': { typescript: 'Func', csharp: 'System.Func', isNative: false },
         // 特殊类型映射
         'object': { typescript: 'object', csharp: 'object', isNative: false },
         'any': { typescript: 'any', csharp: 'object', isNative: false },
@@ -32,7 +44,14 @@ export class TypeMapper {
         'undefined': { typescript: 'undefined', csharp: 'null', isNative: false },
     };
 
+    private static readonly CS_PRIMITIVES = new Set(['string', 'bool', 'double', 'int', 'uint', 'long', 'byte', 'nint', 'IntPtr', 'object', 'void', 'Task', 'ValueTask']);
+
     static mapType(typescriptType: string): string {
+        // 0. 已是合法 C# 基本类型，直接返回（避免二次映射把 double 变 IntPtr）
+        if (this.CS_PRIMITIVES.has(typescriptType)) {
+            return typescriptType;
+        }
+
         // 1. 处理 Optional<T> 类型
         if (typescriptType.startsWith('Optional<')) {
             return this.mapOptionalType(typescriptType);
@@ -54,7 +73,8 @@ export class TypeMapper {
         }
         
         // 5. 处理数组类型 (Array<T>) 和 (T[])
-        if (typescriptType.includes('Array<')) {
+        //    注意：只匹配以 Array< 开头的类型，避免 Promise<Array<...>> 被误匹配
+        if (/^Array<.+>$/.test(typescriptType.trim())) {
             return this.mapArrayType(typescriptType);
         }
         if (/\w+\[\]$/.test(typescriptType)) {
@@ -65,7 +85,7 @@ export class TypeMapper {
         
         // 6. 处理映射类型 ([K in keyof T]) - 必须在泛型检测之前
         if (typescriptType.includes('[K in keyof') || typescriptType.includes('keyof')) {
-            return 'dynamic';
+            return 'object';
         }
 
         // 7. 处理泛型类型 (Callback<T1, T2>, Action<T>, Func<T, R>)
@@ -96,14 +116,16 @@ export class TypeMapper {
             return 'object';
         }
         
-        // 11. 处理 Options 类型（直接返回类名，会生成真实的 C# record）
-        if (this.isOptionsType(typescriptType)) {
-            return typescriptType;
+        // 11. Options 类型由 codeGenerator 生成 record，此处不再特殊处理
+
+        // 11.5. 处理字符串字面量类型（'literal'）→ string
+        if (/^['"].+['"]$/.test(typescriptType.trim())) {
+            return 'string';
         }
-        
-        // 12. 直接映射
+
+        // 12. 直接映射：已知类型返回 C# 类型名，未知类型退回 IntPtr 句柄
         const mapping = this.TYPE_MAP[typescriptType];
-        return mapping ? mapping.csharp : typescriptType;
+        return mapping ? mapping.csharp : 'IntPtr';
     }
 
     private static mapOptionalType(optionalType: string): string {
@@ -144,9 +166,9 @@ export class TypeMapper {
             }
             
             if (mappedReturnType === 'void') {
-                return params.length > 0 ? `Action<${params.join(', ')}>` : 'Action';
+                return params.length > 0 ? `System.Action<${params.join(', ')}>` : 'System.Action';
             } else {
-                return params.length > 0 ? `Func<${params.join(', ')}, ${mappedReturnType}>` : `Func<${mappedReturnType}>`;
+                return params.length > 0 ? `System.Func<${params.join(', ')}, ${mappedReturnType}>` : `System.Func<${mappedReturnType}>`;
             }
         }
         return 'IntPtr';
@@ -203,9 +225,8 @@ export class TypeMapper {
     }
 
     private static mapConditionalType(conditionalType: string): string {
-        // 条件类型映射为 dynamic
-        // 在 C# 中可以使用泛型约束或运行时类型判断
-        return 'dynamic';
+        // 条件类型无法静态确定，映射为 object（AOT 下不用 dynamic）
+        return 'object';
     }
 
     private static mapArrayType(arrayType: string): string {
@@ -219,7 +240,8 @@ export class TypeMapper {
 
     private static mapGenericType(genericType: string): string {
         // 匹配泛型类型，如 Callback<string, boolean>, Action<number>, Func<number, boolean>
-        const match = genericType.match(/^([^(]+)<(.+)>$/);
+        // baseType 只取首个 '<' 前的限定标识符——贪婪 ([^(]+)< 会把 Promise<Array<T>> 误切为 baseType='Promise<Array>'
+        const match = genericType.match(/^([A-Za-z_]\w*)<(.+)>$/);
         if (match) {
             const baseType = match[1].trim();
             const typeArgsStr = match[2];
@@ -237,12 +259,12 @@ export class TypeMapper {
                 // Action 和 Func 需要递归映射内部参数
                 if (baseType === 'Action' || baseType === 'Func') {
                     if (typeArgs.length === 0) {
-                        return baseType;
+                        return `System.${baseType}`;
                     } else if (baseType === 'Action') {
-                        return `Action<${typeArgs.join(', ')}>`;
+                        return `System.Action<${typeArgs.join(', ')}>`;
                     } else {
                         // Func<T, R> 或 Func<T1, T2, ..., R>
-                        return `Func<${typeArgs.join(', ')}>`;
+                        return `System.Func<${typeArgs.join(', ')}>`;
                     }
                 }
                 
@@ -256,7 +278,7 @@ export class TypeMapper {
             }
             
             // Promise<T>：基础类型映射为 Task<T>（运行时经 TSFN 异步层完成，见 ROADMAP 2.1）；
-            // 不可封送的内层类型退回 IntPtr 句柄
+            // 内层类型映射成功（含包装类/数组）直接用，仍为 IntPtr 的不可封送类型退回 Task<IntPtr> 句柄
             if (baseType === 'Promise' || baseType === 'promise') {
                 const innerMatch = /Promise<(.+)>\s*$/.exec(genericType.trim());
                 if (innerMatch) {
@@ -264,8 +286,8 @@ export class TypeMapper {
                     if (inner === 'void') {
                         return 'Task';
                     }
-                    if (['string', 'double', 'bool', 'int', 'IntPtr'].includes(inner)) {
-                        return inner === 'double' ? 'Task<double>' : `Task<${inner}>`;
+                    if (inner !== 'IntPtr' && inner !== 'object') {
+                        return `Task<${inner}>`;
                     }
                     // 不可封送的复杂类型：返回 Task<IntPtr>（句柄）
                     return 'Task<IntPtr>';
@@ -273,14 +295,25 @@ export class TypeMapper {
                 return 'IntPtr';
             }
 
-            // Record/Map/Set 等 JS 运行时容器没有对应 C# 泛型映射，统一封送为对象句柄
-            if (baseType === 'Record' || baseType === 'Map' || baseType === 'Set') {
+            // Record/Map/Set：Map → JsMap 活视图（Runtime/JsMap.cs）；Set 暂不支持退回句柄
+            if (baseType === 'Map' || baseType === 'map') {
+                if (typeArgs.length === 2) {
+                    return `JsMap<${typeArgs[0]}, ${typeArgs[1]}>`;
+                }
+                return 'IntPtr';
+            }
+            if (baseType === 'Record' || baseType === 'Set' || baseType === 'set') {
                 return 'IntPtr';
             }
 
-            // 对于未映射的泛型类型，尝试保持结构
-            // 例如 MyType<number, boolean> → MyType<double, bool>
-            return `${baseType}<${typeArgs.join(', ')}>`;
+            // 对于未映射的泛型类型，检查是否已经是有效的 C# 泛型类型
+            // （如 Task<T>, Action<T>, Func<T,R> 等由先前映射产生的类型）
+            if (baseType === 'Task' || baseType === 'Action' || baseType === 'Func') {
+                const csBase = baseType === 'Task' ? 'Task' : `System.${baseType}`;
+                return `${csBase}<${typeArgs.join(', ')}>`;
+            }
+            // 其他未映射的泛型类型退回 IntPtr
+            return 'IntPtr';
         }
         return 'IntPtr';
     }
@@ -290,7 +323,7 @@ export class TypeMapper {
         const result: string[] = [];
         let depth = 0;
         let current = '';
-        
+
         for (const char of typeArgsStr) {
             if (char === '<') {
                 depth++;
@@ -305,12 +338,17 @@ export class TypeMapper {
                 current += char;
             }
         }
-        
+
         if (current.trim()) {
             result.push(current);
         }
-        
+
         return result;
+    }
+
+    /** 公开入口：切分泛型类型参数（事件元数据的 Callback<T1,T2> 解析等使用） */
+    static splitGenericArgs(typeArgsStr: string): string[] {
+        return this.splitTypeArguments(typeArgsStr);
     }
 
     static isNativeType(typescriptType: string): boolean {
@@ -320,6 +358,11 @@ export class TypeMapper {
 
     static addMapping(typescript: string, csharp: string, isNative: boolean = false): void {
         this.TYPE_MAP[typescript] = { typescript, csharp, isNative };
+    }
+
+    /** 移除映射（record 可封送性收敛时调用，移除后类型退回 IntPtr 句柄） */
+    static removeMapping(typescript: string): void {
+        delete this.TYPE_MAP[typescript];
     }
 
     static extractBaseType(typeWithUnion: string): string {
@@ -409,5 +452,24 @@ export class TypeMapper {
             }
         }
         return { isAsync: false, resultType: null, callbackIndex: -1 };
+    }
+
+    /** C# 保留字列表（用作参数名时需加 @ 前缀） */
+    private static readonly CSHARP_KEYWORDS = new Set([
+        'abstract', 'as', 'base', 'bool', 'break', 'byte', 'case', 'catch', 'char',
+        'checked', 'class', 'const', 'continue', 'decimal', 'default', 'delegate', 'do',
+        'double', 'else', 'enum', 'event', 'explicit', 'extern', 'false', 'finally',
+        'fixed', 'float', 'for', 'foreach', 'goto', 'if', 'implicit', 'in', 'int',
+        'interface', 'internal', 'is', 'lock', 'long', 'namespace', 'new', 'null',
+        'object', 'operator', 'out', 'override', 'params', 'private', 'protected',
+        'public', 'readonly', 'ref', 'return', 'sbyte', 'sealed', 'short', 'sizeof',
+        'stackalloc', 'static', 'string', 'struct', 'switch', 'this', 'throw', 'true',
+        'try', 'typeof', 'uint', 'ulong', 'unchecked', 'unsafe', 'ushort', 'using',
+        'virtual', 'void', 'volatile', 'while',
+    ]);
+
+    /** 转义 C# 保留字：params → @params */
+    static escapeCSharpKeyword(name: string): string {
+        return this.CSHARP_KEYWORDS.has(name) ? `@${name}` : name;
     }
 }

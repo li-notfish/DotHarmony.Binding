@@ -5,6 +5,7 @@ import { AstParser } from './astParser';
 import { CodeGenerator } from './codeGenerator';
 import { EnumGenerator } from './enumGenerator';
 import { NativeCodeGenerator, EnumMetadata, NativeGap } from './nativeCodeGenerator';
+import { ApiGenerator, reservedModuleClassNames } from './apiGenerator';
 import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo } from './models';
 
 interface CacheEntry {
@@ -25,6 +26,8 @@ export class ArkTsParser {
     private enumGenerator: EnumGenerator;
     private nativeGenerator: NativeCodeGenerator | null = null;
     private nativeGaps: NativeGap[] = [];
+    /** 全局枚举名去重：同一枚举（如 Orientation）可能出现在多个模块的 .d.ts 中 */
+    private generatedEnumNames = new Set<string>();
 
     constructor(enumMetadata?: EnumMetadata) {
         this.parser = new AstParser();
@@ -49,6 +52,31 @@ export class ArkTsParser {
         }
 
         return this.parser.parseEnums(inputPath);
+    }
+
+    /** 过滤掉已生成的枚举，返回仅新增的枚举 */
+    private filterNewEnums(enums: EnumInfo[]): EnumInfo[] {
+        const newEnums: EnumInfo[] = [];
+        for (const e of enums) {
+            if (!this.generatedEnumNames.has(e.name)) {
+                this.generatedEnumNames.add(e.name);
+                newEnums.push(e);
+            }
+        }
+        return newEnums;
+    }
+
+    /** 从生成的 C# 枚举代码中提取枚举名 */
+    private extractEnumNamesFromCode(code: string): string[] {
+        const names: string[] = [];
+        const lines = code.split('\n');
+        for (const line of lines) {
+            const match = line.match(/^\s*public\s+enum\s+(\w+)/);
+            if (match) {
+                names.push(match[1]);
+            }
+        }
+        return names;
     }
 
     /** 解析 CommonMethod<T> 共享接口到上下文（--native 模式用） */
@@ -111,8 +139,8 @@ export class ArkTsParser {
             console.log(`Generated: ${outputPath}`);
         }
         
-        // 解析并生成枚举
-        const enums = this.parseEnums(inputPath);
+        // 解析并生成枚举（去重：同一枚举只写一次）
+        const enums = this.filterNewEnums(this.parseEnums(inputPath));
         if (enums.length > 0) {
             const enumOutputPath = outputPath.replace('.cs', '.Enums.cs');
             const enumCode = this.generateEnumsCode(enums);
@@ -167,8 +195,8 @@ export class ArkTsParser {
             console.log(`Generated: ${outputPath}`);
         }
         
-        // 解析并生成枚举
-        const enums = this.parseEnums(inputPath);
+        // 解析并生成枚举（去重：同一枚举只写一次）
+        const enums = this.filterNewEnums(this.parseEnums(inputPath));
         if (enums.length > 0) {
             const enumOutputPath = outputPath.replace('.cs', '.Enums.cs');
             const enumCode = this.generateEnumsCode(enums);
@@ -473,89 +501,642 @@ export async function processNativeSDK(): Promise<void> {
     console.log('=== Native Generation Complete ===');
 }
 
-export async function processFullSDK(): Promise<void> {
-    const parser = new ArkTsParser();
-    const context = createParseContext();
-    
-    // HarmonyOS SDK 目录
-    const sdkBase = 'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony';
-    const componentDir = path.join(sdkBase, 'ets', 'component');
-    const apiDir = path.join(sdkBase, 'ets', 'api');
-    
-    // 输出到 HarmonyOS.Bindings 项目
-    const bindingsDir = path.join(__dirname, '../../HarmonyOS.Bindings');
-    const componentOutputDir = path.join(bindingsDir, 'Components');
-    const apiOutputDir = path.join(bindingsDir, 'Api');
-    
-    console.log('=== Processing HarmonyOS SDK ===');
-    
-    // 1. 处理组件
-    console.log('\n--- Components ---');
-    console.log(`Input: ${componentDir}`);
-    console.log(`Output: ${componentOutputDir}`);
-    
-    if (!fs.existsSync(componentOutputDir)) {
-        fs.mkdirSync(componentOutputDir, { recursive: true });
-    }
-    
-    await parser.processDirectoryWithContext(componentDir, componentOutputDir, context);
-    
-    // 2. 处理全部 API
-    console.log('\n--- APIs ---');
-    console.log(`Input: ${apiDir}`);
-    console.log(`Output: ${apiOutputDir}`);
-    
-    if (!fs.existsSync(apiOutputDir)) {
-        fs.mkdirSync(apiOutputDir, { recursive: true });
-    }
-    
-    const apiFiles = fs.readdirSync(apiDir).filter(f => f.endsWith('.d.ts'));
-    let apiSuccess = 0;
-    let apiSkipped = 0;
-    const boundModules: { module: string; local: string }[] = [];
+/**
+ * 探测 HarmonyOS SDK 基础路径。
+ * 优先级：--sdk <path> > OHOS_SDK_HOME > OHOS_SDK_BASE > 默认路径
+ */
+function detectSdkBase(cliSdkArg?: string): string {
+    if (cliSdkArg) return cliSdkArg;
 
-    for (const file of apiFiles) {
-        const apiPath = path.join(apiDir, file);
-        // 文件名转换: @ohos.ability.ability.d.ts → Ability.Ability.cs
-        const csFileName = convertApiFileName(file);
-        const csPath = path.join(apiOutputDir, csFileName);
+    const envPaths = [
+        process.env.OHOS_SDK_HOME,
+        process.env.OHOS_SDK_BASE,
+        process.env.OHSDK_HOME,
+    ].filter(Boolean) as string[];
 
-        try {
-            const result = parser.parseFile(apiPath);
-            if (result.component.name) {
-                result.component.namespace = 'HarmonyOS.Bindings.Api';
-                const code = parser.generateCode(result);
-                fs.mkdirSync(path.dirname(csPath), { recursive: true });
-                fs.writeFileSync(csPath, code);
-                boundModules.push(dtsToModuleName(file));
-                apiSuccess++;
-            } else {
-                apiSkipped++;
-            }
-            const enums = parser.parseEnums(apiPath);
-            if (enums.length > 0) {
-                const enumCsPath = csFileName.replace('.cs', '.Enums.cs');
-                const enumCode = parser.generateEnumsCode(enums);
-                fs.writeFileSync(path.join(apiOutputDir, enumCsPath), enumCode);
-            }
-        } catch (e: any) {
-            console.error(`  Error: ${file} - ${e.message}`);
+    for (const p of envPaths) {
+        // env 可能指向 .../openharmony 或 .../Sdk/<version>
+        if (fs.existsSync(path.join(p, 'ets', 'api'))) return p;
+        // 尝试下一层
+        const dirs = fs.readdirSync(p, { withFileTypes: true })
+            .filter(d => d.isDirectory()).map(d => d.name);
+        for (const d of dirs) {
+            if (fs.existsSync(path.join(p, d, 'ets', 'api'))) return path.join(p, d);
         }
     }
 
+    // 默认路径
+    const defaults = [
+        'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony',
+        'D:\\Harmony\\OpenHarmony\\Sdk\\26.0.0',
+    ];
+    for (const d of defaults) {
+        if (fs.existsSync(path.join(d, 'ets', 'api'))) return d;
+    }
+
+    throw new Error(
+        'HarmonyOS SDK not found. Use --sdk <path>, set OHOS_SDK_HOME, or install DevEco Studio.'
+    );
+}
+
+/** pilot 模式：第一批绑定目标模块 */
+const PILOT_MODULES = [
+    // M2.3 第一批：基础系统信息
+    '@ohos.deviceInfo',
+    '@ohos.batteryInfo',
+    '@ohos.display',
+    '@ohos.settings',
+    '@ohos.pasteboard',
+    '@ohos.vibrator',
+    '@ohos.sensor',
+    '@ohos.geolocation',
+    '@ohos.geoLocationManager',
+    // M2.3 第二批：常用系统 API
+    '@ohos.net.http',
+    '@ohos.net.connection',
+    '@ohos.file.fs',
+    '@ohos.file.picker',
+    '@ohos.multimedia.media',
+    '@ohos.multimedia.image',
+    '@ohos.multimedia.camera',
+    '@ohos.window',
+    '@ohos.router',
+    '@ohos.data.preferences',
+    '@ohos.request',
+    '@ohos.promptAction',
+    // M2.3 第三批：扩展常用模块（2026-09-12）
+    '@ohos.thermal',
+    '@ohos.power',
+    '@ohos.brightness',
+    '@ohos.wallpaper',
+    '@ohos.wifiManager',
+    '@ohos.telephony.radio',
+    '@ohos.telephony.sms',
+    '@ohos.usbManager',
+    '@ohos.inputMethod',
+    '@ohos.hilog',
+    '@ohos.hiAppEvent',
+    '@ohos.i18n',
+    '@ohos.intl',
+    '@ohos.mediaquery',
+    '@ohos.screen',
+    '@ohos.font',
+    '@ohos.measure',
+    '@ohos.uri',
+    '@ohos.url',
+    '@ohos.matrix4',
+    '@ohos.curves',
+    '@ohos.net.webSocket',
+    '@ohos.net.socket',
+    '@ohos.data.dataShare',
+    '@ohos.bundle.bundleManager',
+    '@ohos.app.ability.appManager',
+    '@ohos.app.ability.context',
+    '@ohos.notification',
+    // M2.3 第四批：util 容器 / 事件 / 资源 / 数据（2026-09-12）
+    '@ohos.util',
+    '@ohos.util.ArrayList',
+    '@ohos.util.Deque',
+    '@ohos.util.HashMap',
+    '@ohos.util.Stack',
+    '@ohos.util.TreeMap',
+    '@ohos.util.Queue',
+    '@ohos.util.List',
+    '@ohos.util.HashSet',
+    '@ohos.util.LightWeightMap',
+    '@ohos.events.emitter',
+    '@ohos.commonEventManager',
+    '@ohos.resourceManager',
+    '@ohos.taskpool',
+    '@ohos.worker',
+    '@ohos.data.relationalStore',
+    '@ohos.data.dataSharePredicates',
+    '@ohos.file.hash',
+    '@ohos.file.statvfs',
+    '@ohos.file.securityLabel',
+    '@ohos.multimedia.audio',
+    '@ohos.graphics.displaySync',
+    '@ohos.graphics.colorSpaceManager',
+    '@ohos.screenLock',
+    '@ohos.accounts.osAccount',
+    '@ohos.application.formBindingData',
+    '@ohos.application.formProvider',
+    '@ohos.convertxml',
+    '@ohos.zlib',
+]
+
+/** 全局枚举名去重（processFullSDK 作用域内） */
+const writtenEnumNames = new Map<string, string>(); // enum 名 → 首个发射它的模块 id（@ohos.xxx）
+
+/**
+ * 手写 Nodes/*.cs 在 HarmonyOS.ArkUI 命名空间已占用的类型名。
+ * 生成枚举撞名时加模块前缀（如 relationalStore.Progress → RelationalStoreProgress），
+ * 否则 CS0101（生成产物与手写代码同命名空间）。
+ */
+const ARKUI_RESERVED_NAMES: ReadonlySet<string> = (() => {
+    const names = new Set<string>();
+    try {
+        const nodesDir = path.join(__dirname, '../../HarmonyOS.Bindings/Nodes');
+        for (const f of fs.readdirSync(nodesDir)) {
+            if (!f.endsWith('.cs')) continue;
+            const src = fs.readFileSync(path.join(nodesDir, f), 'utf-8');
+            for (const m of src.matchAll(/\b(?:enum|class|struct|interface)\s+(\w+)/g)) {
+                names.add(m[1]);
+            }
+        }
+    } catch { /* Nodes 目录不存在时跳过（测试环境） */ }
+    return names;
+})();
+
+/** 从生成的 C# 枚举代码中提取枚举名 */
+function extractEnumNamesFromCode(code: string): string[] {
+    const names: string[] = [];
+    for (const line of code.split('\n')) {
+        const match = line.match(/^\s*public\s+enum\s+(\w+)/);
+        if (match) names.push(match[1]);
+    }
+    return names;
+}
+
+let ALL_MODE = false;
+
+// --all 全量模式下的灰度黑名单（2026-09-12 首轮全量筛选）：
+// 类型映射缺口（UIContext/SecurityManager 等复杂 ArkUI/系统能力类型），逐个修复后移入转正
+const GRAYSCALE_MODULES = new Set<string>([
+    'Accessibility',
+    'AccountManager',
+    'AdminManager',
+    'ApplicationManager',
+    'ArcAlphabetIndexer',
+    'BackgroundTaskManager',
+    'Bluetooth',
+    'BluetoothManager',
+    'Browser',
+    'Bundle',
+    'BundleManager',
+    'ComponentSnapshot',
+    'ComponentUtils',
+    'Configuration',
+    'CryptoExtensionAbility',
+    'DeviceControl',
+    'DeviceManager',
+    'DeviceSettings',
+    'DistributedDeviceManager',
+    'DlpPermission',
+    'DragController',
+    'Eap',
+    'FloatingBall',
+    'Hid',
+    'InputMethodEngine',
+    'LinkEnhance',
+    'LocationManager',
+    'NetworkManager',
+    'OsAccount',
+    'Policy',
+    'Restrictions',
+    'Rpc',
+    'Scan',
+    'SecurityManager',
+    'Serial',
+    'SystemManager',
+    'Tag',
+    'TelephonyManager',
+    'UIContext',
+    'VpnExtension',
+    'WebNativeMessagingExtensionManager',
+    'Wifi',
+    'WifiManager',
+    // 第二轮：跨模块类型引用缺口（net.socket→NetAddress 等），待跨模块依赖解析立项
+    'Socket',
+    'InputConsumer',
+    'InputMethod',
+    'InputEventClient',
+    'InputDevice',
+    'Drawing',
+    'SelectionManager',
+    'Avsession',
+    'AvMusicTemplate',
+    // 依赖灰度模块的跨模块枚举（Call/DataTransfer/RemoteDevice → Avsession.CallState 等）
+    'Call',
+    'DataTransfer',
+    'RemoteDevice',
+    'Observer',
+    // 第三轮：TS 声明合并（window.WindowRect 双定义）/ 跨模块枚举映射漂移残留
+    'Window',
+    'TelephonyObserver',
+    'NetConnection',
+    'Connection',
+    'ResourcescheduleBackgroundTaskManager',
+    // className 唯一化后的新名称（net.socket → NetSocket 等）
+    'NetSocket',
+    'UserAuth',
+]);
+
+
+export async function processFullSDK(sdkArg?: string, allModules: boolean = false): Promise<void> {
+    ALL_MODE = allModules;
+    const sdkBase = detectSdkBase(sdkArg);
+    const componentDir = path.join(sdkBase, 'ets', 'component');
+    const apiDir = path.join(sdkBase, 'ets', 'api');
+
+    const parser = new ArkTsParser();
+    const context = createParseContext();
+
+    // 输出到 HarmonyOS.Bindings 项目
+    const bindingsDir = path.join(__dirname, '../../HarmonyOS.Bindings');
+    const apiOutputDir = path.join(bindingsDir, 'Api');
+
+    console.log('=== Processing HarmonyOS SDK ===');
+    console.log(`SDK:     ${sdkBase}`);
+    console.log(`API dir: ${apiDir}`);
+    console.log(`Output:  ${apiOutputDir}`);
+
+    if (!fs.existsSync(apiOutputDir)) {
+        fs.mkdirSync(apiOutputDir, { recursive: true });
+    }
+
+    // --all：全量生成（M2.3 终态）；默认仅 PILOT_MODULES
+    const allApiFiles = fs.existsSync(apiDir)
+        ? fs.readdirSync(apiDir).filter(f => f.endsWith('.d.ts') && f.startsWith('@ohos.'))
+        : [];
+    const apiFiles = [...(allModules
+        ? allApiFiles
+        : allApiFiles.filter(f => PILOT_MODULES.includes(f.replace(/\.d\.ts$/, ''))))].sort();
+
+    console.log(`\n--- APIs (${apiFiles.length}${allModules ? ' (all)' : ' pilot'} modules) ---`);
+
+    const apiGen = new ApiGenerator();
+    let apiSuccess = 0;
+    let apiSkipped = 0;
+    const boundModules: { module: string; local: string; className: string }[] = [];
+    const allPermissions = new Set<string>();
+
+    // className 唯一化：不同模块（@ohos.resourceManager vs @ohos.global.resourceManager）
+    // 末段同名时会互相覆盖产物文件。首个模块保留短名，后续撞名者加父段前缀
+    //（bluetooth.connection → BluetoothConnection）；无父段可用时追加序号。
+    const claimedClassNames = new Map<string, string>(); // className → module id
+    // 预计算全部模块（唯一化后）类名，供实例类型撞名判定（如 Want/WantObject）
+    const preInfos = apiFiles.map(f => ApiGenerator.dtsToModuleInfo(f));
+    {
+        const seen = new Map<string, string>();
+        for (let i = 0; i < preInfos.length; i++) {
+            const info = preInfos[i];
+            if (!seen.has(info.className)) {
+                seen.set(info.className, info.module);
+                continue;
+            }
+            const segs = info.local.split('.');
+            let candidate: string;
+            if (segs.length >= 2) {
+                candidate = segs.slice(0, -1).map(seg => seg.charAt(0).toUpperCase() + seg.slice(1)).join('')
+                    + info.className;
+            } else {
+                let n = 2;
+                candidate = `${info.className}${n}`;
+                while (seen.has(candidate)) candidate = `${info.className}${++n}`;
+            }
+            seen.set(candidate, info.module);
+            preInfos[i] = { ...info, className: candidate };
+        }
+        reservedModuleClassNames.clear();
+        for (const cn of seen.keys()) reservedModuleClassNames.add(cn);
+    }
+    const uniqueModuleInfo = (info: { module: string; className: string; local: string }) => {
+        if (!claimedClassNames.has(info.className)) {
+            claimedClassNames.set(info.className, info.module);
+            return info;
+        }
+        const segs = info.local.split('.');
+        let candidate: string;
+        if (segs.length >= 2) {
+            candidate = segs.slice(0, -1).map(seg => seg.charAt(0).toUpperCase() + seg.slice(1)).join('')
+                + info.className;
+        } else {
+            let i = 2;
+            candidate = `${info.className}${i}`;
+            while (claimedClassNames.has(candidate)) candidate = `${info.className}${++i}`;
+        }
+        claimedClassNames.set(candidate, info.module);
+        return { ...info, className: candidate };
+    };
+
+    for (const file of apiFiles) {
+        const apiPath = path.join(apiDir, file);
+        const moduleInfo = uniqueModuleInfo(ApiGenerator.dtsToModuleInfo(file));
+        const source = fs.readFileSync(apiPath, 'utf-8');
+        const permissions = ApiGenerator.extractPermissions(source);
+        permissions.forEach(p => allPermissions.add(p));
+
+        try {
+            const result = parser.parseFile(apiPath);
+            if (!result.component.name) {
+                console.log(`  Skipped (no namespace): ${file}`);
+                apiSkipped++;
+                continue;
+            }
+
+            // 同模块内嵌套 namespace 同名枚举去重（否则同一 Enums.cs 内 CS0101）
+            const seenInModule = new Set<string>();
+            const newEnums = result.enums.filter(e => {
+                if (seenInModule.has(e.name)) return false;
+                seenInModule.add(e.name);
+                return true;
+            });
+            newEnums.forEach(e => {
+                if (!writtenEnumNames.has(e.name)) writtenEnumNames.set(e.name, moduleInfo.module);
+            });
+
+            // 跨模块 import 类型（如 socket 导入 net.netAddress.NetAddress）无法在本模块内解析，
+            // 降级为 IntPtr 句柄，避免生成引用不存在类型的产物（CS0246/CS0234）
+            const importedNames = new Set(result.imports.flatMap(i => i.imports));
+
+            // 枚举名冲突 → 加模块前缀，映射与写盘保持一致：
+            // a) 撞手写 Nodes 类型名（如 relationalStore.Progress vs Nodes/progress.cs）
+            // b) 撞其它模块已发射的枚举名（如 avsession.CallState vs telephony.call.CallState）——
+            //    各模块独立发射，避免"首发射者被灰度拖垮依赖者"的级联
+            const fixEnumName = (e: EnumInfo) => {
+                let name = e.name;
+                if (ARKUI_RESERVED_NAMES.has(name)
+                    || (writtenEnumNames.has(name) && writtenEnumNames.get(name) !== moduleInfo.module)) {
+                    name = `${moduleInfo.className}${name}`;
+                }
+                return { ...e, name };
+            };
+            const gen = apiGen.generate(
+                result.component,
+                moduleInfo,
+                permissions,
+                newEnums.map(fixEnumName),
+                result.enums.map(fixEnumName),
+                importedNames
+            );
+
+            const csPath = path.join(apiOutputDir, `${gen.className}.cs`);
+            fs.writeFileSync(csPath, gen.csharp);
+            console.log(`  Generated: ${gen.className}.cs (${gen.permissions.length} perms)`);
+            apiSuccess++;
+
+            if (gen.enums) {
+                const enumCsPath = path.join(apiOutputDir, `${gen.className}.Enums.cs`);
+                fs.writeFileSync(enumCsPath, gen.enums);
+            } else {
+                // 枚举本轮全部去重/过滤时，删除上一轮残留的 Enums.cs（否则 CS0101）
+                const enumCsPath = path.join(apiOutputDir, `${gen.className}.Enums.cs`);
+                if (fs.existsSync(enumCsPath)) fs.unlinkSync(enumCsPath);
+            }
+
+            boundModules.push({ module: moduleInfo.module, local: moduleInfo.local, className: moduleInfo.className });
+        } catch (e: any) {
+            console.error(`  Error: ${file} - ${e.message}`);
+            apiSkipped++;
+        }
+    }
+
+    // 写 ohosImports.ets
     writeOhosImports(boundModules);
 
-    console.log(`  Generated: ${apiSuccess}, Skipped: ${apiSkipped}`);
+    // 写 module.json5 的 requestPermissions（过滤掉 SDK 中不存在的权限）
+    const validPerms = filterSdkPermissions([...allPermissions].sort(), sdkBase);
+    writeModuleJson5Permissions(validPerms);
+
+    // 写灰度策略到 csproj
+    writeGrayscaleCompileRemove(boundModules);
+
+    console.log(`\n  Generated: ${apiSuccess}, Skipped: ${apiSkipped}`);
+    console.log(`  Permissions: ${allPermissions.size} unique → module.json5`);
     console.log('');
     console.log('=== SDK Processing Complete ===');
 }
 
 /**
- * @ohos.deviceInfo.d.ts → { module: "@ohos.deviceInfo", local: "deviceInfo" }
+ * 从 SDK permissions.d.ts 加载合法权限列表，过滤掉不存在的权限。
  */
-function dtsToModuleName(dtsFileName: string): { module: string; local: string } {
-    const stem = dtsFileName.replace(/\.d\.ts$/, '');
-    return { module: stem, local: stem.replace(/^@ohos\./, '').replace(/^@system\./, 'system.') };
+function filterSdkPermissions(perms: string[], sdkBase: string): string[] {
+    const sdkPermissionsPath = path.join(sdkBase, 'ets', 'api', 'permissions.d.ts');
+    if (!fs.existsSync(sdkPermissionsPath)) {
+        console.log(`  permissions.d.ts not found at ${sdkPermissionsPath}, skipping filter`);
+        return perms;
+    }
+    const content = fs.readFileSync(sdkPermissionsPath, 'utf-8');
+    const validPerms = new Set<string>();
+    const regex = /'(ohos\.permission\.[^']+)'/g;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(content)) !== null) {
+        validPerms.add(match[1]);
+    }
+    const filtered = perms.filter(p => validPerms.has(p));
+    const removed = perms.length - filtered.length;
+    if (removed > 0) {
+        console.log(`  Filtered out ${removed} permissions not in SDK`);
+    }
+    return filtered;
+}
+
+/**
+ * 更新 module.json5：注入 requestPermissions 清单。
+ * 策略：在 "module": { 之后插入 requestPermissions 数组（或替换已有块）。
+ */
+function writeModuleJson5Permissions(perms: string[]): void {
+    const moduleJson5Path = path.join(
+        __dirname, '../../samples/HarmonyHost/entry/src/main/module.json5'
+    );
+
+    if (!fs.existsSync(moduleJson5Path)) {
+        console.log(`  module.json5 not found at ${moduleJson5Path}, skipping permissions`);
+        return;
+    }
+
+    if (perms.length === 0) {
+        console.log('  No permissions needed, module.json5 unchanged');
+        return;
+    }
+
+    let content = fs.readFileSync(moduleJson5Path, 'utf-8');
+
+    // 构造 requestPermissions 块
+    const permEntries = perms
+        .map(p => [
+            '      {',
+            `        "name": "${p}",`,
+            `        "reason": "$string:permission_${p.replace(/.*\./, '')}_reason",`,
+            '        "usedScene": {',
+            '          "abilities": ["EntryAbility"],',
+            '          "when": "always"',
+            '        }',
+            '      }',
+        ].join('\n'))
+        .join(',\n');
+
+    const permBlock = [
+        '    "requestPermissions": [',
+        permEntries,
+        '    ]',
+    ].join('\n');
+
+    if (content.includes('"requestPermissions"')) {
+        // 替换已有的 requestPermissions 块（用括号计数匹配到正确的闭合 ]）
+        const startIdx = content.indexOf('"requestPermissions"');
+        if (startIdx !== -1) {
+            // 找到 [ 的位置
+            let bracketStart = content.indexOf('[', startIdx);
+            if (bracketStart !== -1) {
+                let depth = 0;
+                let bracketEnd = -1;
+                for (let i = bracketStart; i < content.length; i++) {
+                    if (content[i] === '[') depth++;
+                    else if (content[i] === ']') {
+                        depth--;
+                        if (depth === 0) { bracketEnd = i; break; }
+                    }
+                }
+                if (bracketEnd !== -1) {
+                    // 找到 ] 前面的冒号和空白
+                    let deleteStart = startIdx;
+                    while (deleteStart > 0 && content[deleteStart - 1] !== '\n' && content[deleteStart - 1] !== '\r') {
+                        deleteStart--;
+                    }
+                    // 从 "requestPermissions" 行首到 ] 之后全部替换
+                    let deleteEnd = bracketEnd + 1;
+                    // 跳过 ] 后可能的逗号
+                    while (deleteEnd < content.length && (content[deleteEnd] === ',' || content[deleteEnd] === ' ' || content[deleteEnd] === '\t')) {
+                        deleteEnd++;
+                    }
+                    content = content.substring(0, deleteStart) + permBlock + ',' + content.substring(deleteEnd);
+                }
+            }
+        }
+    } else {
+        // 在 "module": { 之后插入
+        content = content.replace(
+            /("module"\s*:\s*\{)(\r?\n)/,
+            `$1$2${permBlock},\n`
+        );
+    }
+
+    fs.writeFileSync(moduleJson5Path, content);
+    console.log(`  module.json5 updated: ${perms.length} permissions`);
+
+    writePermissionReasonStrings(perms);
+}
+
+/**
+ * 同步写入权限 reason 字符串资源。
+ * module.json5 引用 $string:permission_XXX_reason，若 string.json 缺少对应条目，
+ * hvigor CompileResource 会直接报错（"resource reference is not defined"）。
+ * 策略：解析 string.json，移除旧的 permission_* 条目后写入当前集合，其余条目保留。
+ */
+function writePermissionReasonStrings(perms: string[]): void {
+    const stringJsonPath = path.join(
+        __dirname, '../../samples/HarmonyHost/entry/src/main/resources/base/element/string.json'
+    );
+
+    if (!fs.existsSync(stringJsonPath)) {
+        console.log(`  string.json not found at ${stringJsonPath}, skipping permission reasons`);
+        return;
+    }
+
+    let doc: { string: Array<{ name: string; value: string }> };
+    try {
+        doc = JSON.parse(fs.readFileSync(stringJsonPath, 'utf-8'));
+    } catch (e: any) {
+        console.error(`  string.json parse failed: ${e.message}, skipping permission reasons`);
+        return;
+    }
+    if (!Array.isArray(doc.string)) {
+        doc.string = [];
+    }
+
+    // 移除旧 permission_* 条目，保留其它资源
+    doc.string = doc.string.filter(s => !s.name.startsWith('permission_'));
+
+    for (const p of perms) {
+        const short = p.replace(/.*\./, '');
+        doc.string.push({
+            name: `permission_${short}_reason`,
+            value: `Allow the app to use ${p}`,
+        });
+    }
+
+    fs.writeFileSync(stringJsonPath, JSON.stringify(doc, null, 2) + '\n');
+    console.log(`  string.json updated: ${perms.length} permission reasons`);
+}
+
+/** 已转正的模块（参与编译，不生成 Compile Remove） */
+const APPROVED_MODULES = new Set([
+    'DeviceInfo',    // 手写
+    'BatteryInfo',
+    'Display',
+    'Settings',
+    'Vibrator',
+    'GeoLocationManager',  // 2026-09-12 转正：JsMap 试点模块
+    // M2.3 转正（17 个可编译模块）
+    'Camera',
+    'Fs',            // 2026-09-12 转正：ArrayBuffer/WriteOptions 经封送补全后可编译
+    'Geolocation',
+    'Http',
+    'Image',
+    'Media',
+    'Picker',
+    'Preferences',
+    'Sensor',        // 2026-09-12 转正：事件回调强制必需后的可选参数降级修复（CS1737）
+    // 'Settings',  // 含 Context/DataAbilityHelper 等未映射类型，待修复
+    'Thermal','Power','Wallpaper','WifiManager','Radio','Sms','UsbManager',
+    'InputMethod','Hilog','HiAppEvent','I18n','Intl','Mediaquery','Screen',
+    'Font','Measure','Uri','Url','Matrix4','Curves','WebSocket','Socket',
+    'DataShare','BundleManager','AppManager','Notification',
+    // M2.3 第四批转正候选
+    'Util','ArrayList','Deque','HashMap','Stack','TreeMap','Queue','List',
+    'HashSet','LightWeightMap','Emitter','CommonEventManager','ResourceManager',
+    'Taskpool','Worker','RelationalStore','DataSharePredicates','Hash','Statvfs',
+    'SecurityLabel','Audio','DisplaySync','ColorSpaceManager','ScreenLock',
+    'OsAccount','FormBindingData','FormProvider','Convertxml','Zlib',
+]);
+
+
+/**
+ * 灰度策略：生成的 Api/*.cs 默认不参与编译（Compile Remove），
+ * 逐个转正时从 APPROVED_MODULES 中添加模块名。
+ */
+function writeGrayscaleCompileRemove(modules: { module: string; className: string }[]): void {
+    const csprojPath = path.join(__dirname, '../../HarmonyOS.Bindings/HarmonyOS.Bindings.csproj');
+    let content = fs.readFileSync(csprojPath, 'utf-8');
+
+    // 直接使用唯一化后的最终 className（从 local 重推导会丢失改名，导致灰度移除项错位）
+    const classNames = modules.map(m => m.className).sort();
+
+    // --all 全量模式：白名单/黑名单反转——默认全部转正，GRAYSCALE_MODULES 里的回灰
+    const pending = GRAYSCALE_MODULES.size > 0 || ALL_MODE
+        ? classNames.filter(n => GRAYSCALE_MODULES.has(n))
+        : classNames.filter(n => !APPROVED_MODULES.has(n));
+
+    const removeItems = pending
+        .map(n => `    <Compile Remove="Api\\${n}.cs" />`)
+        .join('\n');
+    const enumRemoveItems = pending
+        .map(n => `    <Compile Remove="Api\\${n}.Enums.cs" />`)
+        .join('\n');
+
+    const approvedList = [...APPROVED_MODULES].sort().join(', ');
+    const block = `  <!-- 灰度策略：已转正 ${approvedList}（共 ${APPROVED_MODULES.size} 个）。
+       未转正模块默认不参与编译，逐个验证后加入 APPROVED_MODULES。 -->
+  <ItemGroup Condition="'$(SkipGeneratedApi)' != 'false'">
+${removeItems}
+${enumRemoveItems}
+  </ItemGroup>`;
+
+    // 替换已有的灰度块或追加
+    if (content.includes('灰度策略')) {
+        content = content.replace(
+            /  <!-- 灰度策略[\s\S]*?<\/ItemGroup>/,
+            block
+        );
+    } else {
+        content = content.replace('</Project>', `${block}\n</Project>`);
+    }
+
+    fs.writeFileSync(csprojPath, content);
+    const approved = classNames.length - pending.length;
+    console.log(`  HarmonyOS.Bindings.csproj: ${approved}/${classNames.length} approved, ${pending.length} in grayscale`);
 }
 
 /**
@@ -611,7 +1192,10 @@ if (require.main === module) {
     if (args.includes('--native')) {
         processNativeSDK().catch(console.error);
     } else if (args.includes('--sdk')) {
-        processFullSDK().catch(console.error);
+        const sdkIdx = args.indexOf('--sdk');
+        const sdkArg = args[sdkIdx + 1] && !args[sdkIdx + 1].startsWith('--')
+            ? args[sdkIdx + 1] : undefined;
+        processFullSDK(sdkArg, args.includes('--all')).catch(console.error);
     } else {
         main().catch(console.error);
     }

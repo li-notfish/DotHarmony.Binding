@@ -3,8 +3,9 @@
 一个**模仿 .NET MAUI 平台绑定层逻辑**（Mono.Android / Microsoft.iOS 的思路）的鸿蒙试验项目：
 用 .NET (NativeAOT) 绑定 HarmonyOS (ArkUI/ArkTS)，并让 .NET MAUI 控件经 Handler 机制渲染为 ArkUI 原生节点。
 
-**当前状态：核心链路已在模拟器端到端验证** —— 运行时初始化 → 原生节点树上屏 → 属性/事件闭环 →
-`@ohos.*` 服务调用 → **XAML 声明式 UI → 鸿蒙原生渲染**。**21 个 MAUI 控件 Handler** 已适配并统一为官方 handler 风格。距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
+**当前状态：M1（MAUI 基本面）与 M2（服务层）均已完成并在模拟器端到端验证** —— XAML 声明式 UI → 鸿蒙原生渲染、
+21 个 MAUI 控件 Handler、**438 个 @ohos.\* 模块绑定（375 转正编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）**。
+距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 ## 这是什么
 
@@ -52,7 +53,7 @@
 DevEco Studio（内置 HarmonyOS SDK/NDK/hvigor）、可 SSH 的 Linux（NativeAOT 交叉编译）。
 
 ```bash
-# 1. 解析器构建 + 测试（45 用例）
+# 1. 解析器构建 + 测试（76 用例）
 npm install && npm test
 
 # 2. 从 NDK 头文件生成 C# 枚举（ArkUINodeTypes.g.cs + .json 元数据；SDK 探测顺序 --sdk → OHOS_SDK_BASE → OHSDK_HOME → 默认路径，找不到报错退出）
@@ -94,6 +95,7 @@ bash scripts/deploy-hap.sh
 | `OHOS_SDK_BASE` | OpenHarmony SDK 根目录（含 `26.0.0/toolchains`） | → `OHSDK_HOME` → `D:\Harmony\OpenHarmony\Sdk` → DevEco 内置 sdk |
 | `DEVECO_HOME` | DevEco Studio 安装目录 | → `D:\Program Files\Huawei\DevEco Studio` → C 盘同名 |
 | `LOCAL` | `true` 时 remote-build 在本地 WSL 构建 | 否则走 SSH 远程 |
+| `DEMO_APP` | libapp.so 打包哪个 demo 工程（`HelloApp`=控件 demo / `ApiDemo`=API 绑定 demo） | `HelloApp` |
 | `REMOTE` / `BUILD` | SSH 别名 / 构建目录 | `wsl_auzrelinux` / `/tmp/arktsbinding` |
 
 > 约定：`.gitattributes` 强制 `*.sh` 为 LF（WSL bash 无法执行 CRLF 脚本）、`*.cmd/*.ps1` 为 CRLF；新增脚本请沿用"路径自动探测 + 前置检查失败即停"的风格。
@@ -108,7 +110,10 @@ bash scripts/deploy-hap.sh
 | `fontColor(...)` | `void SetFontColor(r,g,b,a=255)` | u32 `0xAARRGGBB` |
 | `onClick(...)` | `event Action<ArkUINodeEvent>? Click` | `NODE_ON_CLICK` + 事件总线 |
 | 点击参数 | `ev.ClickX/.ClickY/.ClickDevice/...` | `NodeComponentEvent.data[]` 直读 |
-| `Promise<T>` | `IntPtr`（napi promise 句柄） | async 待 TSFN 层 |
+| `Promise<T>` / `AsyncCallback<T>` | `Task<T>` / `Task`（含 reject → `ArkTSException`） | PromiseTaskBridge / CallbackTaskBridge（续体在 JS 线程内联恢复） |
+| 事件 `on/off/once(type, cb)` | .NET `event Action<T>` + 类型化 `On/Off/Once` | EventListenerRegistry 按函数实例配对 |
+| `ArrayBuffer`/TypedArray | `byte[]`（拷贝语义） | `napi_get_typedarray_info`/`arraybuffer_info` |
+| `bigint` / `Map<K,V>` | `JsBigInt`（long 语义）/ `JsMap<K,V>` 活视图 | int64 无损通道 / entries() 迭代协议 |
 | 未映射属性 | —— | 记入 `Nodes/native-gaps.json` |
 
 生成器不猜属性形态：只有登记在 `nativeCodeGenerator.ts` shape 表中的属性才生成代码，
@@ -133,16 +138,20 @@ src/parser/                  解析器（TS Compiler API）
   └─ typeMapper.ts           类型映射
 src/nativeBinding/
   └─ extract_arkui_types.py  NDK 头文件 → C# 枚举 + JSON 元数据
-HarmonyOS.Bindings/          绑定库（net10.0, AOT/trim 友好）
+HarmonyOS.Bindings/          绑定库（net10.0, AOT/trim 友好；Api/ 438 个 @ohos.* 模块绑定）
   ├─ NativeNode/             ArkUI C API 互操作 + ArkUINodeBase + 事件总线
   ├─ Nodes/                  生成的组件包装类 + native-gaps.json
   ├─ Runtime/                napi 互操作（env 注入、INapiRecord、HiLog）
   └─ Hosting/Host.cs         libapp.so 导出入口
 src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/ContentPage → ArkUI 节点）
 samples/HarmonyHost/         鸿蒙宿主工程（ArkTS + C shim + CMake + ohosImports.ets 模块登记）
-samples/dotnet/HelloApp/     .NET 样例应用（XAML + NativeAOT → libapp.so）
+samples/dotnet/HelloApp/     M1 控件 demo（XAML + NativeAOT → libapp.so）
+samples/dotnet/ApiDemo/      M2 API 绑定 demo（模块验证/Promise→Task/TSFN；DEMO_APP=ApiDemo 切换）
+                             两者的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
+                             对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
+                             由 src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets 提供
 scripts/                     remote-build / build-hap / deploy-hap 一键工具链
-tests/                       jest（解析器/生成器 45 用例）
+tests/                       jest（解析器/生成器 76 用例）
 ```
 
 ## 已知限制（当前真实状态）
@@ -150,17 +159,19 @@ tests/                       jest（解析器/生成器 45 用例）
 - **布局语义**：ArkUI flex 托管（StackLayout→Column/Row）+ Grid/AbsoluteLayout MAUI 托管（HarmonyManagedLayoutHandler 绝对定位）。已对齐：WidthRequest/HeightRequest、Margin、StackLayout.Spacing、HorizontalOptions/VerticalOptions 交叉轴对齐（Fill/Start/Center/End 经 NODE_ALIGN_SELF）；未支持：Stack 主轴方向 Options、Grid 单元内非 Fill 对齐、ZIndex
 - **画刷**：SolidColorBrush/LinearGradientBrush/RadialGradientBrush 全支持；ImageBrush 为 MAUI internal 类型无法声明（节点层 SetBackgroundImage 原语已就位）
 - **导航**：根页用 `new NavigationPage(...)` 即可走 MAUI 标准 `Navigation.PushAsync/PopAsync`（HarmonyNavigationPageHandler 转接 IStackNavigation 协议，已实测）；另有轻量 Page 栈与系统返回键（优先级：模态 → NavigationPage 内栈 → 轻量栈）。**模态** `PushModalAsync/PopModalAsync` 标准可用（ArkStack 覆盖 + RootNavigationAdapter 转接）；**生命周期** Appearing/Disappearing 已透传（宿主建最小 Window/Application 逻辑链放行 MAUI 的 SendAppearing 守卫）；页面推入有 250ms 淡入（animateTo）。未支持：Shell（多平台 Shell 应用请把入口改写为 NavigationPage 结构）、返回方向的过渡动画
-- **异步 API**：`Promise<T>`→`Task<T>` 已接通（TypeMapper + 生成器 + `CallMethodAsync`/`CallMethodAsyncVoid`）；AsyncCallback 风格 `(result: T, err?: Error) => void` → `Task<T>` 已支持（parser AST 检测）；TSFN 完整生命周期三路径已封装（`ThreadSafeFunction.cs` + `HarmonySynchronizationContext.cs`）
+- **异步 API（M2 完成）**：`Promise<T>`→`Task<T>`；仅 callback 形式 API→`Task<T>`（CallbackTaskBridge，err-first）；`.NET event` 事件模型（真实触发已实测）；TSFN 生命周期三路径封装 + finalize 延迟释放防 UAF。**续体在 JS 线程内联恢复**（`NapiEnv` 线程亲和性），长耗时工作需自行 `Task.Run`
+- **零分配调用路径**：`params ReadOnlySpan<object?>`（C# 13）、trampoline/argv 栈分配、生成 record 的 u8 名字常量缓存；剩余分配源：基元装箱（object 转换点）、字符串结果物化、事件适配器闭包
 - **控件覆盖**：21 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/RefreshView/Picker/DatePicker/TimePicker + CollectionView/CarouselView M1 物化版），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
-- **权限模型未接**：需要权限的 @ohos.* 模块（位置/相机等）未生成 `module.json5` 联动
+- **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；63 个含复杂缺口（TS 声明合并/深导入链）的模块保持灰度（`GRAYSCALE_MODULES`），清单见 `src/parser/index.ts`
+- **基元装箱**：`object?` 参数转换点存在装箱；完全零装箱需要 union struct 参数设计（后续立项）
 
 ## 路线图
 
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
 - M1 尾巴（完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~、~~Grid/AbsoluteLayout（MAUI 托管布局）~~；剩真机验证
-- M2：~~TSFN 异步层（2.1 完成）~~、~~codeGenerator 缺陷修复（2.2 完成）~~、@ohos.* 批量绑定
+- M2（除 Essentials 外全部完成）：~~TSFN 异步层~~、~~codeGenerator 修复~~、~~@ohos.* 全量生成（438 模块/375 转正）~~、~~Promise→Task/AsyncCallback/.NET 事件/ArrayBuffer/Map~~、~~端到端模拟器验证~~、~~零分配调用路径~~；2.4 Essentials 平台实现未启动
 - M3：NuGet 打包、单项目体验、CI
 
 ## 致谢 / Acknowledgements

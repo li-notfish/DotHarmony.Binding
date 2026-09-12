@@ -66,6 +66,7 @@ public partial class MainPage : ContentPage
         // 模态：标准 INavigation API（经 RootNavigationAdapter 转接到宿主模态层）
         Navigation.PushModalAsync(new ModalPage()).FireAndForgetNavigation();
     }
+
 }
 
 internal static class NavigationFireAndForget

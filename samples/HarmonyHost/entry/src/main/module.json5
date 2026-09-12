@@ -1,5 +1,1303 @@
 {
   "module": {
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.ACCELEROMETER",
+        "reason": "$string:permission_ACCELEROMETER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_BIOMETRIC",
+        "reason": "$string:permission_ACCESS_BIOMETRIC_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_BLUETOOTH",
+        "reason": "$string:permission_ACCESS_BLUETOOTH_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_CERT_MANAGER",
+        "reason": "$string:permission_ACCESS_CERT_MANAGER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_DDK_DRIVERS",
+        "reason": "$string:permission_ACCESS_DDK_DRIVERS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_DISK_PHY_INFO",
+        "reason": "$string:permission_ACCESS_DISK_PHY_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_ENTERPRISE_USER_TRUSTED_CERT",
+        "reason": "$string:permission_ACCESS_ENTERPRISE_USER_TRUSTED_CERT_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_EXTENSIONAL_DEVICE_DRIVER",
+        "reason": "$string:permission_ACCESS_EXTENSIONAL_DEVICE_DRIVER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_NEARLINK",
+        "reason": "$string:permission_ACCESS_NEARLINK_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_NOTIFICATION_POLICY",
+        "reason": "$string:permission_ACCESS_NOTIFICATION_POLICY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_SE_KEY",
+        "reason": "$string:permission_ACCESS_SE_KEY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_VIRTUAL_SCREEN",
+        "reason": "$string:permission_ACCESS_VIRTUAL_SCREEN_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ACTIVITY_MOTION",
+        "reason": "$string:permission_ACTIVITY_MOTION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ANSWER_CALL",
+        "reason": "$string:permission_ANSWER_CALL_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.APPROXIMATELY_LOCATION",
+        "reason": "$string:permission_APPROXIMATELY_LOCATION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.APP_TRACKING_CONSENT",
+        "reason": "$string:permission_APP_TRACKING_CONSENT_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ATTEST_KEY",
+        "reason": "$string:permission_ATTEST_KEY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.BACKGROUND_MANAGER_POWER_SAVE_MODE",
+        "reason": "$string:permission_BACKGROUND_MANAGER_POWER_SAVE_MODE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.CAMERA",
+        "reason": "$string:permission_CAMERA_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.CAPTURE_VOICE_DOWNLINK_AUDIO",
+        "reason": "$string:permission_CAPTURE_VOICE_DOWNLINK_AUDIO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.CHECK_CALL_LOG",
+        "reason": "$string:permission_CHECK_CALL_LOG_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.CONNECT_IME_ABILITY",
+        "reason": "$string:permission_CONNECT_IME_ABILITY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.CONTROL_DEVICE",
+        "reason": "$string:permission_CONTROL_DEVICE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.CRYPTO_EXTENSION_REGISTER",
+        "reason": "$string:permission_CRYPTO_EXTENSION_REGISTER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.CUSTOM_SCREEN_CAPTURE",
+        "reason": "$string:permission_CUSTOM_SCREEN_CAPTURE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.DETECT_GESTURE",
+        "reason": "$string:permission_DETECT_GESTURE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.DISCOVER_BLUETOOTH",
+        "reason": "$string:permission_DISCOVER_BLUETOOTH_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.DISTRIBUTED_DATASYNC",
+        "reason": "$string:permission_DISTRIBUTED_DATASYNC_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.DLP_POLICY_MANAGER",
+        "reason": "$string:permission_DLP_POLICY_MANAGER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.DUMP",
+        "reason": "$string:permission_DUMP_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_ACCESS_DLP_FILE",
+        "reason": "$string:permission_ENTERPRISE_ACCESS_DLP_FILE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_ACTIVATE_DEVICE_ADMIN",
+        "reason": "$string:permission_ENTERPRISE_ACTIVATE_DEVICE_ADMIN_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_DATA_IDENTIFY_FILE",
+        "reason": "$string:permission_ENTERPRISE_DATA_IDENTIFY_FILE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_GET_ALL_BUNDLE_INFO",
+        "reason": "$string:permission_ENTERPRISE_GET_ALL_BUNDLE_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_GET_DEVICE_INFO",
+        "reason": "$string:permission_ENTERPRISE_GET_DEVICE_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_GET_INSTALLED_BUNDLE_LIST",
+        "reason": "$string:permission_ENTERPRISE_GET_INSTALLED_BUNDLE_LIST_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_INSTALL_BUNDLE",
+        "reason": "$string:permission_ENTERPRISE_INSTALL_BUNDLE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_INTERACT_ACROSS_LOCAL_ACCOUNTS",
+        "reason": "$string:permission_ENTERPRISE_INTERACT_ACROSS_LOCAL_ACCOUNTS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_APN",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_APN_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_APPLICATION",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_APPLICATION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_BLUETOOTH",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_BLUETOOTH_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_CERTIFICATE",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_CERTIFICATE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_DELEGATED_POLICY",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_DELEGATED_POLICY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_DEVICE_ADMIN",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_DEVICE_ADMIN_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_LOCAL_ACCOUNTS",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_LOCAL_ACCOUNTS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_LOCATION",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_LOCATION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_NETWORK",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_NETWORK_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_PRINT",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_PRINT_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_RESTRICTIONS",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_RESTRICTIONS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_SECURITY",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_SECURITY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_SETTINGS",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_SETTINGS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_SYSTEM",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_SYSTEM_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_TELEPHONY",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_TELEPHONY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_USB",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_USB_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_USER_GRANT_PERMISSION",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_USER_GRANT_PERMISSION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_MANAGE_WIFI",
+        "reason": "$string:permission_ENTERPRISE_MANAGE_WIFI_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_OPERATE_DEVICE",
+        "reason": "$string:permission_ENTERPRISE_OPERATE_DEVICE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_READ_LOG",
+        "reason": "$string:permission_ENTERPRISE_READ_LOG_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_SET_ACCOUNT_POLICY",
+        "reason": "$string:permission_ENTERPRISE_SET_ACCOUNT_POLICY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_SET_BROWSER_POLICY",
+        "reason": "$string:permission_ENTERPRISE_SET_BROWSER_POLICY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_SET_BUNDLE_INSTALL_POLICY",
+        "reason": "$string:permission_ENTERPRISE_SET_BUNDLE_INSTALL_POLICY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_SET_KIOSK",
+        "reason": "$string:permission_ENTERPRISE_SET_KIOSK_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_SET_USER_RESTRICTION",
+        "reason": "$string:permission_ENTERPRISE_SET_USER_RESTRICTION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_SET_WALLPAPER",
+        "reason": "$string:permission_ENTERPRISE_SET_WALLPAPER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.ENTERPRISE_SUBSCRIBE_MANAGED_EVENT",
+        "reason": "$string:permission_ENTERPRISE_SUBSCRIBE_MANAGED_EVENT_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.FILE_ACCESS_PERSIST",
+        "reason": "$string:permission_FILE_ACCESS_PERSIST_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.FLOAT_VIEW",
+        "reason": "$string:permission_FLOAT_VIEW_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_ABILITY_INFO",
+        "reason": "$string:permission_GET_ABILITY_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_ALL_APP_ACCOUNTS",
+        "reason": "$string:permission_GET_ALL_APP_ACCOUNTS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED",
+        "reason": "$string:permission_GET_BUNDLE_INFO_PRIVILEGED_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_CALL_TRANSFER_INFO",
+        "reason": "$string:permission_GET_CALL_TRANSFER_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_DOMAIN_ACCOUNTS",
+        "reason": "$string:permission_GET_DOMAIN_ACCOUNTS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_DONOTDISTURB_STATE",
+        "reason": "$string:permission_GET_DONOTDISTURB_STATE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_ETHERNET_LOCAL_MAC",
+        "reason": "$string:permission_GET_ETHERNET_LOCAL_MAC_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_IP_MAC_INFO",
+        "reason": "$string:permission_GET_IP_MAC_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_LOCAL_ACCOUNT_IDENTIFIERS",
+        "reason": "$string:permission_GET_LOCAL_ACCOUNT_IDENTIFIERS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_NETWORK_INFO",
+        "reason": "$string:permission_GET_NETWORK_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_NETWORK_STATS",
+        "reason": "$string:permission_GET_NETWORK_STATS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_NET_FIREWALL",
+        "reason": "$string:permission_GET_NET_FIREWALL_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_RUNNING_INFO",
+        "reason": "$string:permission_GET_RUNNING_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_SIGNATURE_INFO",
+        "reason": "$string:permission_GET_SIGNATURE_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_TELEPHONY_STATE",
+        "reason": "$string:permission_GET_TELEPHONY_STATE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_WALLPAPER",
+        "reason": "$string:permission_GET_WALLPAPER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_WIFI_INFO",
+        "reason": "$string:permission_GET_WIFI_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GET_WIFI_LOCAL_MAC",
+        "reason": "$string:permission_GET_WIFI_LOCAL_MAC_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.GYROSCOPE",
+        "reason": "$string:permission_GYROSCOPE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.HDR_BRIGHTNESS",
+        "reason": "$string:permission_HDR_BRIGHTNESS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.INPUT_KEYBOARD_CONTROLLER",
+        "reason": "$string:permission_INPUT_KEYBOARD_CONTROLLER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.INTERNET",
+        "reason": "$string:permission_INTERNET_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+        "reason": "$string:permission_KEEP_BACKGROUND_RUNNING_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.KILL_APP_PROCESSES",
+        "reason": "$string:permission_KILL_APP_PROCESSES_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.LOCATION",
+        "reason": "$string:permission_LOCATION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_APN_SETTING",
+        "reason": "$string:permission_MANAGE_APN_SETTING_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_AUDIO_CONFIG",
+        "reason": "$string:permission_MANAGE_AUDIO_CONFIG_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_BLUETOOTH",
+        "reason": "$string:permission_MANAGE_BLUETOOTH_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_BLUETOOTH_ADVERTISER_NAME",
+        "reason": "$string:permission_MANAGE_BLUETOOTH_ADVERTISER_NAME_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_CALL_FOR_DEVICES",
+        "reason": "$string:permission_MANAGE_CALL_FOR_DEVICES_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_DISTRIBUTED_ACCOUNTS",
+        "reason": "$string:permission_MANAGE_DISTRIBUTED_ACCOUNTS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_DOMAIN_ACCOUNT_SERVER_CONFIGS",
+        "reason": "$string:permission_MANAGE_DOMAIN_ACCOUNT_SERVER_CONFIGS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_ENTERPRISE_DEVICE_ADMIN",
+        "reason": "$string:permission_MANAGE_ENTERPRISE_DEVICE_ADMIN_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_ENTERPRISE_WIFI_CONNECTION",
+        "reason": "$string:permission_MANAGE_ENTERPRISE_WIFI_CONNECTION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_INPUT_INFRARED_EMITTER",
+        "reason": "$string:permission_MANAGE_INPUT_INFRARED_EMITTER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_LOCAL_ACCOUNTS",
+        "reason": "$string:permission_MANAGE_LOCAL_ACCOUNTS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_MEDIA_RESOURCES",
+        "reason": "$string:permission_MANAGE_MEDIA_RESOURCES_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_MEDIA_RESOURCES_FOR_PUBLIC",
+        "reason": "$string:permission_MANAGE_MEDIA_RESOURCES_FOR_PUBLIC_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_NET_FIREWALL",
+        "reason": "$string:permission_MANAGE_NET_FIREWALL_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_PASTEBOARD_APP_SHARE_OPTION",
+        "reason": "$string:permission_MANAGE_PASTEBOARD_APP_SHARE_OPTION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_PRINT_JOB",
+        "reason": "$string:permission_MANAGE_PRINT_JOB_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_RECENT_SNAPSHOT",
+        "reason": "$string:permission_MANAGE_RECENT_SNAPSHOT_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_SECURE_SETTINGS",
+        "reason": "$string:permission_MANAGE_SECURE_SETTINGS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_SETTINGS",
+        "reason": "$string:permission_MANAGE_SETTINGS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_SKILL_PRIVILEGE",
+        "reason": "$string:permission_MANAGE_SKILL_PRIVILEGE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_UDMF_APP_SHARE_OPTION",
+        "reason": "$string:permission_MANAGE_UDMF_APP_SHARE_OPTION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MANAGE_WIFI_CONNECTION",
+        "reason": "$string:permission_MANAGE_WIFI_CONNECTION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MICROPHONE",
+        "reason": "$string:permission_MICROPHONE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.MODIFY_AUDIO_SETTINGS",
+        "reason": "$string:permission_MODIFY_AUDIO_SETTINGS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.NFC_CARD_EMULATION",
+        "reason": "$string:permission_NFC_CARD_EMULATION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.NFC_TAG",
+        "reason": "$string:permission_NFC_TAG_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.PLACE_CALL",
+        "reason": "$string:permission_PLACE_CALL_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.PREPARE_APP_TERMINATE",
+        "reason": "$string:permission_PREPARE_APP_TERMINATE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.PRINT",
+        "reason": "$string:permission_PRINT_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.PRIVACY_WINDOW",
+        "reason": "$string:permission_PRIVACY_WINDOW_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.PUBLISH_AGENT_REMINDER",
+        "reason": "$string:permission_PUBLISH_AGENT_REMINDER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.READ_CALENDAR",
+        "reason": "$string:permission_READ_CALENDAR_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.READ_CONTACTS",
+        "reason": "$string:permission_READ_CONTACTS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.READ_HEALTH_DATA",
+        "reason": "$string:permission_READ_HEALTH_DATA_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.READ_IMAGEVIDEO",
+        "reason": "$string:permission_READ_IMAGEVIDEO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.READ_MEDIA",
+        "reason": "$string:permission_READ_MEDIA_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.READ_PASTEBOARD",
+        "reason": "$string:permission_READ_PASTEBOARD_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.READ_WRITE_DESKTOP_DIRECTORY",
+        "reason": "$string:permission_READ_WRITE_DESKTOP_DIRECTORY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY",
+        "reason": "$string:permission_READ_WRITE_DOCUMENTS_DIRECTORY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.READ_WRITE_DOWNLOAD_DIRECTORY",
+        "reason": "$string:permission_READ_WRITE_DOWNLOAD_DIRECTORY_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.REBOOT",
+        "reason": "$string:permission_REBOOT_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.RUNNING_LOCK",
+        "reason": "$string:permission_RUNNING_LOCK_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.RUNNING_STATE_OBSERVER",
+        "reason": "$string:permission_RUNNING_STATE_OBSERVER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SEND_MESSAGES",
+        "reason": "$string:permission_SEND_MESSAGES_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SET_NET_EXT_ATTRIBUTE",
+        "reason": "$string:permission_SET_NET_EXT_ATTRIBUTE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SET_PAC_URL",
+        "reason": "$string:permission_SET_PAC_URL_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SET_TELEPHONY_ESIM_STATE_OPEN",
+        "reason": "$string:permission_SET_TELEPHONY_ESIM_STATE_OPEN_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SET_TIME",
+        "reason": "$string:permission_SET_TIME_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SET_TIME_ZONE",
+        "reason": "$string:permission_SET_TIME_ZONE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SET_WALLPAPER",
+        "reason": "$string:permission_SET_WALLPAPER_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SET_WIFI_INFO",
+        "reason": "$string:permission_SET_WIFI_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SET_WINDOW_ALPHA",
+        "reason": "$string:permission_SET_WINDOW_ALPHA_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SET_WINDOW_TOUCH_AREAS",
+        "reason": "$string:permission_SET_WINDOW_TOUCH_AREAS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SET_WINDOW_TRANSPARENT",
+        "reason": "$string:permission_SET_WINDOW_TRANSPARENT_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SHORT_TERM_WRITE_IMAGEVIDEO",
+        "reason": "$string:permission_SHORT_TERM_WRITE_IMAGEVIDEO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.START_PROVISIONING_MESSAGE",
+        "reason": "$string:permission_START_PROVISIONING_MESSAGE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SUBSCRIBE_NOTIFICATION",
+        "reason": "$string:permission_SUBSCRIBE_NOTIFICATION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.SYSTEM_FLOAT_WINDOW",
+        "reason": "$string:permission_SYSTEM_FLOAT_WINDOW_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.UPDATE_CONFIGURATION",
+        "reason": "$string:permission_UPDATE_CONFIGURATION_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.USE_BLUETOOTH",
+        "reason": "$string:permission_USE_BLUETOOTH_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.USE_FLOAT_BALL",
+        "reason": "$string:permission_USE_FLOAT_BALL_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.VIBRATE",
+        "reason": "$string:permission_VIBRATE_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.VISIBLE_WINDOW_INFO",
+        "reason": "$string:permission_VISIBLE_WINDOW_INFO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.WEB_NATIVE_MESSAGING",
+        "reason": "$string:permission_WEB_NATIVE_MESSAGING_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.WINDOW_TOPMOST",
+        "reason": "$string:permission_WINDOW_TOPMOST_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.WRITE_CALENDAR",
+        "reason": "$string:permission_WRITE_CALENDAR_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.WRITE_CONTACTS",
+        "reason": "$string:permission_WRITE_CONTACTS_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.WRITE_IMAGEVIDEO",
+        "reason": "$string:permission_WRITE_IMAGEVIDEO_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.kernel.SUPPORT_LOCAL_PLUGIN",
+        "reason": "$string:permission_SUPPORT_LOCAL_PLUGIN_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.sec.ACCESS_UDID",
+        "reason": "$string:permission_ACCESS_UDID_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "always"
+        }
+      }
+    ],
     "name": "entry",
     "type": "entry",
     "description": "$string:module_desc",

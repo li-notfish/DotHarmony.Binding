@@ -125,7 +125,7 @@ export class CodeGenerator {
         const processedParams = params.map(p => this.formatParameter(p));
         const paramStr = processedParams.join(', ');
         
-        const paramNames = params.map(p => p.name).join(', ');
+        const paramNames = params.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
         
         lines.push(`    /// <summary>`);
         lines.push(`    /// 创建 ${className} 组件`);
@@ -140,7 +140,7 @@ export class CodeGenerator {
         const optionalMark = TypeMapper.isOptional(param.type) ? '?' : '';
         const defaultVal = param.defaultValue ? ` = ${param.defaultValue}` : 
                           (TypeMapper.isOptional(param.type) ? ' = null' : '');
-        return `${type}${optionalMark} ${param.name}${defaultVal}`;
+        return `${type}${optionalMark} ${TypeMapper.escapeCSharpKeyword(param.name)}${defaultVal}`;
     }
 
     private generateMethods(component: ComponentInfo, lines: string[]): void {
@@ -219,7 +219,7 @@ export class CodeGenerator {
             lines.push(`    /// </summary>`);
             lines.push(`    public ${attributeName} Set${pascalName}(${paramStr})`);
             lines.push('    {');
-            const paramNames = method.parameters.map(p => p.name).join(', ');
+            const paramNames = method.parameters.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
             lines.push(`        NodeApi.SetAttribute(_jsObject, ${propNameVar}, ${paramNames});`);
             lines.push(`        return new ${attributeName}(_jsObject);`);
             lines.push('    }');
@@ -235,7 +235,7 @@ export class CodeGenerator {
             lines.push(`    /// </summary>`);
             lines.push(`    public ${returnTypeName} ${pascalName}(${paramStr})`);
             lines.push('    {');
-            const paramNames = method.parameters.map(p => p.name).join(', ');
+            const paramNames = method.parameters.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
             const callArgs = paramNames
                 ? `_jsObject, ${propNameVar}, ${paramNames}`
                 : `_jsObject, ${propNameVar}`;
