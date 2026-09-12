@@ -18,6 +18,10 @@ namespace HarmonyOS.Bindings.Runtime;
 
 internal static class PromiseTaskBridge
 {
+    // 每次 Promise→Task 桥接复用的 UTF8 常量（入参只读，被调方复制）
+    private static readonly byte[] ThenUtf8 = "then"u8.ToArray();
+    private static readonly byte[] FulfilledUtf8 = "fulfilled"u8.ToArray();
+    private static readonly byte[] RejectedUtf8 = "rejected"u8.ToArray();
     private sealed class State
     {
         /// <summary>非泛型承载：ToTask&lt;T&gt; 注入强类型 TCS 的完成委托与最终 Task。</summary>
@@ -62,20 +66,22 @@ internal static class PromiseTaskBridge
         var data = GCHandle.ToIntPtr(gch);
 
         var env = NapiEnv.Current;
-        var nameBytes = "then"u8.ToArray();
+        // u8 字面量直接入参（C# 14 span 转换），静态缓存省每次 Promise 的编码分配
+        var nameBytes = ThenUtf8;
 
         // promise.then(fulfilled, rejected)
         NativeNodeApi.napi_get_named_property(env, promise, nameBytes, out var thenFn).ThrowIfFailed();
 
-        var fulfilledName = "fulfilled"u8.ToArray();
-        var rejectedName = "rejected"u8.ToArray();
-        NativeNodeApi.napi_create_function(env, fulfilledName, (IntPtr)fulfilledName.Length,
+        NativeNodeApi.napi_create_function(env, FulfilledUtf8, (IntPtr)FulfilledUtf8.Length,
             FulfilledPtr, data, out var fulfilledFn).ThrowIfFailed();
-        NativeNodeApi.napi_create_function(env, rejectedName, (IntPtr)rejectedName.Length,
+        NativeNodeApi.napi_create_function(env, RejectedUtf8, (IntPtr)RejectedUtf8.Length,
             RejectedPtr, data, out var rejectedFn).ThrowIfFailed();
 
+        Span<IntPtr> argv = stackalloc IntPtr[2];
+        argv[0] = fulfilledFn;
+        argv[1] = rejectedFn;
         var status = NativeNodeApi.napi_call_function(env, promise, thenFn,
-            2, new IntPtr[] { fulfilledFn, rejectedFn }, out _);
+            2, argv, out _);
         // M0 铁律：先清除挂起异常，再检查状态
         NativeNodeApi.napi_get_and_clear_last_exception(env, out _).ThrowIfFailed();
         status.ThrowIfFailed();

@@ -19,7 +19,7 @@ namespace HarmonyOS.Bindings.NativeNode;
 public abstract unsafe class ArkUINodeBase : IDisposable
 {
     private ArkUI_NodeHandle _handle;
-    private readonly Dictionary<ArkUI_NodeEventType, Action<ArkUINodeEvent>> _handlers = new();
+    private readonly HashSet<ArkUI_NodeEventType> _handlers = new();
     private readonly int _targetId;
     private bool _disposed;
 
@@ -76,6 +76,12 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BACKGROUND_COLOR, ArkUIValue.U(argb));
     }
 
+    /// <summary>背景色（u32 重载）——MAUI Color.ToUint() 即 0xAARRGGBB，Handler 层直传</summary>
+    public void SetBackgroundColor(uint argb)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BACKGROUND_COLOR, ArkUIValue.U(argb));
+    }
+
     /// <summary>
     /// 线性渐变背景（NODE_LINEAR_GRADIENT）。
     /// 角度为 CSS 语义（0 = 向上，顺时针增大，默认 180 = 向下）；
@@ -112,7 +118,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         if (_gradientSizeChangeTargetId == 0)
         {
             _gradientSizeChangeTargetId = NodeEventBus.NextTargetId();
-            NodeEventBus.Register(_gradientSizeChangeTargetId,
+            NodeEventBus.Register(_gradientSizeChangeTargetId, ArkUI_NodeEventType.NODE_ON_SIZE_CHANGE,
                 ev => ApplyRadialGradient(ev.SizeChangeWidth, ev.SizeChangeHeight));
             ArkUINativeApi.RegisterNodeEvent(
                 _handle, ArkUI_NodeEventType.NODE_ON_SIZE_CHANGE, _gradientSizeChangeTargetId, null);
@@ -215,6 +221,12 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_ALIGN_SELF, ArkUIValue.I((int)alignment));
     }
 
+    /// <summary>主轴剩余空间分配权重（NODE_FLEX_GROW，默认 0）—— flex 容器内"占满剩余空间"</summary>
+    public void SetFlexGrow(float grow)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_FLEX_GROW, ArkUIValue.F(grow));
+    }
+
     /// <summary>是否可见（NODE_VISIBILITY：0 = Visible）</summary>
     public bool Visible
     {
@@ -228,6 +240,65 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_OPACITY, ArkUIValue.F(opacity));
     }
 
+    /// <summary>层级（NODE_Z_INDEX，值大者在上，默认 0）——MAUI IView.ZIndex 的翻译；
+    /// 生成器未注册该属性 shape（native-gaps.json），按手写节点层约定补充</summary>
+    public void SetZIndex(float zIndex)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_Z_INDEX, ArkUIValue.F(zIndex));
+    }
+
+    private int _areaChangeObserverTargetId;
+    private Action? _areaChangeObserver;
+
+    /// <summary>
+    /// 区域变化观察（NODE_EVENT_ON_AREA_CHANGE，独立 targetId，不占用 On()/SubscribeEvent
+    /// 的覆盖式订阅槽；与渐变的 NODE_ON_SIZE_CHANGE 专用槽分属不同事件类型互不冲突）。
+    /// 位置或尺寸变化即回调（无载荷），供托管布局监听子节点自量测/内容变化触发重排。
+    /// </summary>
+    public void SetAreaChangeObserver(Action? observer)
+    {
+        ThrowIfDisposed();
+        _areaChangeObserver = observer;
+        if (observer is null)
+        {
+            if (_areaChangeObserverTargetId != 0)
+            {
+                NodeEventBus.Unregister(_areaChangeObserverTargetId, ArkUI_NodeEventType.NODE_EVENT_ON_AREA_CHANGE);
+                ArkUINativeApi.UnregisterNodeEvent(_handle, ArkUI_NodeEventType.NODE_EVENT_ON_AREA_CHANGE);
+                _areaChangeObserverTargetId = 0;
+            }
+            return;
+        }
+        if (_areaChangeObserverTargetId == 0)
+        {
+            _areaChangeObserverTargetId = NodeEventBus.NextTargetId();
+            NodeEventBus.Register(_areaChangeObserverTargetId, ArkUI_NodeEventType.NODE_EVENT_ON_AREA_CHANGE,
+                _ => _areaChangeObserver?.Invoke());
+            ArkUINativeApi.RegisterNodeEvent(
+                _handle, ArkUI_NodeEventType.NODE_EVENT_ON_AREA_CHANGE, _areaChangeObserverTargetId, null);
+        }
+    }
+
+    /// <summary>
+    /// 显式动画（animateTo）：updates 闭包内的属性变更按 durationMs 插值过渡。
+    /// completed 在动画完成回调（UI 线程）内联执行——用于必须在 UI 线程收尾的导航过渡，
+    /// 避免 Task 续体漂移到线程池（宿主未安装 UI 线程 SynchronizationContext）。
+    /// </summary>
+    public void Animate(Action updates, Action completed, int durationMs = 250)
+    {
+        ThrowIfDisposed();
+        var context = ArkUINativeApi.OH_ArkUI_GetContextByNode(_handle);
+        if (context == IntPtr.Zero)
+        {
+            updates();
+            completed();
+            return;
+        }
+
+        var state = new AnimState { Updates = updates, Completed = completed };
+        RunAnimate(state, context, durationMs);
+    }
+
     /// <summary>
     /// 显式动画（animateTo）：updates 闭包内的属性变更按 durationMs 插值过渡。
     /// 返回的 Task 在动画完成回调时结束；闭包由 ArkUI 在回调时机执行，节点须已挂树。
@@ -235,14 +306,13 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     public Task AnimateAsync(Action updates, int durationMs = 250)
     {
         ThrowIfDisposed();
-        var context = ArkUINativeApi.OH_ArkUI_GetContextByNode(_handle);
-        if (context == IntPtr.Zero)
-        {
-            updates();
-            return Task.CompletedTask;
-        }
+        var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Animate(updates, () => tcs.TrySetResult(), durationMs);
+        return tcs.Task;
+    }
 
-        var state = new AnimState { Updates = updates };
+    private void RunAnimate(AnimState state, IntPtr context, int durationMs)
+    {
         var handle = GCHandle.Alloc(state);
         var update = new ArkUI_ContextCallback
         {
@@ -267,13 +337,13 @@ public abstract unsafe class ArkUINodeBase : IDisposable
             handle.Free();
             throw new InvalidOperationException($"animateTo failed: {status}");
         }
-        return state.Completion.Task;
     }
 
     private sealed class AnimState
     {
         public Action Updates = default!;
-        public TaskCompletionSource Completion { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public Action? Completed;
+        public TaskCompletionSource? Completion;
         public bool Done;
     }
 
@@ -291,7 +361,16 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         if (handle.Target is AnimState state && !state.Done)
         {
             state.Done = true;
-            state.Completion.SetResult();
+            try
+            {
+                state.Completed?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                // 不得穿透原生帧；异步路径经 Completion 让 await 方感知异常
+                Runtime.HiLog.Error("HarmonyAnim", $"animate completed-callback error: {ex.GetType().Name}: {ex.Message}");
+                state.Completion?.TrySetException(ex);
+            }
         }
         handle.Free();
     }
@@ -301,8 +380,9 @@ public abstract unsafe class ArkUINodeBase : IDisposable
 
     // ───────────────────────── 属性 ─────────────────────────
 
-    /// <summary>设置数值型属性（单值或多值数组）</summary>
-    protected void SetNumericAttribute(ArkUI_NodeAttributeType attribute, params ArkUI_NumberValue[] values)
+    /// <summary>设置数值型属性（单值或多值数组）。C# 14 params span：调用点零数组分配，
+    /// 编译器对 ≤N 元素的实参栈分配（全仓最热的原生 API 路径）。</summary>
+    protected void SetNumericAttribute(ArkUI_NodeAttributeType attribute, params ReadOnlySpan<ArkUI_NumberValue> values)
     {
         ThrowIfDisposed();
         fixed (ArkUI_NumberValue* p = values)
@@ -318,7 +398,9 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     protected void SetStringAttribute(ArkUI_NodeAttributeType attribute, string value)
     {
         ThrowIfDisposed();
-        var utf8 = Encoding.UTF8.GetBytes(value);
+        // 空串时 GetBytes 返回 0 长数组，fixed 得到空指针 → 原生 401；
+        // 必须传 NUL 结尾的空 C 串
+        ReadOnlySpan<byte> utf8 = value.Length == 0 ? [(byte)0] : Encoding.UTF8.GetBytes(value);
         fixed (byte* p = utf8)
         {
             var item = new ArkUI_AttributeItem { @string = p };
@@ -353,9 +435,9 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     protected void On(ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
     {
         ThrowIfDisposed();
-        _handlers[eventType] = handler;
+        _handlers.Add(eventType);
         // 注册进全局分发总线（含首次时的原生 receiver 注册），再向节点注册事件
-        NodeEventBus.Register(_targetId, handler);
+        NodeEventBus.Register(_targetId, eventType, handler);
         ArkUINativeApi.RegisterNodeEvent(_handle, eventType, _targetId, null);
         Runtime.HiLog.Debug("HarmonyHost",
             $"[Event] register node=0x{_handle.Handle:X} type={eventType} targetId={_targetId}");
@@ -367,6 +449,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         ThrowIfDisposed();
         if (_handlers.Remove(eventType))
         {
+            NodeEventBus.Unregister(_targetId, eventType);
             ArkUINativeApi.UnregisterNodeEvent(_handle, eventType);
         }
     }
@@ -482,8 +565,11 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         if (!_handle.IsNull)
         {
             if (_gradientSizeChangeTargetId != 0)
-                NodeEventBus.Unregister(_gradientSizeChangeTargetId);
-            NodeEventBus.Unregister(_targetId);
+                NodeEventBus.Unregister(_gradientSizeChangeTargetId, ArkUI_NodeEventType.NODE_ON_SIZE_CHANGE);
+            if (_areaChangeObserverTargetId != 0)
+                NodeEventBus.Unregister(_areaChangeObserverTargetId, ArkUI_NodeEventType.NODE_EVENT_ON_AREA_CHANGE);
+            foreach (var eventType in _handlers)
+                NodeEventBus.Unregister(_targetId, eventType);
             ArkUINativeApi.DisposeNode(_handle);
             _handle = default;
         }
