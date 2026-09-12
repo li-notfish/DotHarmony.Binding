@@ -209,3 +209,24 @@ B 在没有 A 的情况下只能做演示级静态页面。B 的价值在 A 跑�
 C NDK API 是 ArkUI-X 跨平台与游戏引擎接入的官方通道，整体移除概率低；**现实威胁是 API 演进**
 （结构体加字段、函数表版本升级、属性枚举重组——gesture API 的 version 首成员已是这种痕迹）。
 漏斗层使这类演进同样只改一处。P0 对冲已执行（机械闸测试）；P1~P4 在触发条件出现时再启动。
+
+## 7. 实验层状态（P2 种子，2026-09-12）
+
+方案 A 的最小实验已落地（**未激活为产品路径**，与 C 后端并存，零改动现有 C 节点代码）：
+
+| 组件 | 位置 | 说明 |
+|---|---|---|
+| `VirtualNode` | `HarmonyOS.Bindings/Experimental/VirtualNode.cs` | ArkUINodeBase 公开面子集；写操作全部翻译为指令入队，`MeasuredSize` 读影子快照 |
+| `ArkTsEngine` | `HarmonyOS.Bindings/Experimental/ArkTsEngine.cs` | 指令队列 + `Flush()` 单次 napi 批量下发；桥挂接（`InitializeCore`，对应导出符号 `HarmonyEngineInit`）；事件/量测回流分发 |
+| `ArkTsCommand` | `HarmonyOS.Bindings/Experimental/ArkTsCommand.cs` | 指令模型（create/setAttrs/setChildren/setEvents/delete/setRoot），纯托管可单测 |
+| 引擎宿主模板 | `samples/HarmonyHostEngine/`（由 `samples/HarmonyHost` 复制） | C shim 仅增 `initEngine` 通道；`ets/engine/`：EngineScene（SceneGraph）、DynamicNode（递归渲染，Stack/Text/Button 三类）、EngineBridge、EngineHost |
+| 实验应用 | `samples/dotnet/EngineLab/` | 指令环演示：建树 → 点击回流 → 改属性 → Flush；量测回流打日志。**不引用 src/HarmonyOS.Maui** |
+
+关键通道设计：`initDotnet()`（HarmonyInit，env 注入）→ `initEngine(bridge)`（dlsym HarmonyEngineInit）
+→ C# 存桥引用、注入 onEvent 回调、冲刷积压指令——dlopen 时 ModuleInitializer 即可构建场景
+（纯托管入队无需 env），握手在 ArkTS `aboutToAppear` 同步完成首帧渲染。
+
+实验范围边界（刻意最小）：节点仅 Stack/Text/Button，事件仅 click + onAreaChange，
+批次策略为显式 Flush（布局 pass 钩子属 P2 完整版），x/y 定位属性存储未应用，
+DynamicNode 全量重建渲染快照（增量 diff 属 P2）。C# 侧协议逻辑以
+`tests/dotnet/HarmonyEngineTests`（10 用例，RecordingSink 假总线）离线锁定。
