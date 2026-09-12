@@ -24,6 +24,12 @@ if [ -z "$HDC" ]; then
 fi
 echo "hdc: $HDC"
 
+# ---- 目标设备：$1 或 $HDC_TARGET（多设备在线时指定，如 127.0.0.1:5555 / 192.168.1.6:8710）----
+HDC_TARGET="${1:-${HDC_TARGET:-}}"
+hdc_t() {
+    if [ -n "$HDC_TARGET" ]; then "$HDC" -t "$HDC_TARGET" "$@"; else "$HDC" "$@"; fi
+}
+
 # ---- 定位 HAP ----
 HAP="${PROJECT_ROOT}/samples/HarmonyHost/entry/build/default/outputs/default/${MODULE}-default-unsigned.hap"
 if [ ! -f "$HAP" ]; then
@@ -40,21 +46,25 @@ if [ -z "$TARGETS" ] || [ "$TARGETS" = "[Empty]" ]; then
     exit 1
 fi
 echo "targets: $TARGETS"
+if [ -n "$HDC_TARGET" ] && ! grep -q "^${HDC_TARGET}$" <("$HDC" list targets | tr -d '\r'); then
+    echo "错误: 指定目标 $HDC_TARGET 不在 hdc list targets 中（先 hdc tconn）" >&2
+    exit 1
+fi
 
 echo "=== 2. 清空 hilog ==="
-"$HDC" shell hilog -r >/dev/null
+hdc_t shell hilog -r >/dev/null 2>&1 || true
 
 echo "=== 3. 安装 HAP ==="
 # 先停掉旧实例：install -r 与运行中实例存在时序竞争（新实例可能启动即被销毁）
-"$HDC" shell "aa force-stop $BUNDLE" >/dev/null 2>&1 || true
-if ! "$HDC" install -r "$HAP_WIN" | grep -q "install bundle successfully"; then
+hdc_t shell "aa force-stop $BUNDLE" >/dev/null 2>&1 || true
+if ! hdc_t install -r "$HAP_WIN" | grep -q "install bundle successfully"; then
     echo "错误: 安装失败" >&2
     exit 1
 fi
 
 echo "=== 4. 启动应用 ==="
-"$HDC" shell aa start -a "$ABILITY" -b "$BUNDLE" -m "$MODULE"
+hdc_t shell aa start -a "$ABILITY" -b "$BUNDLE" -m "$MODULE"
 
 echo "=== 5. 等待后抓取日志 ==="
 sleep 6
-"$HDC" shell "hilog -x | grep -aE 'A00000/HarmonyHost|dlopen|libapp|dotnet|DOTNET'" | tail -40
+hdc_t shell "hilog -x | grep -aE 'A00000/HarmonyHost|dlopen|libapp|dotnet|DOTNET'" | tail -40
