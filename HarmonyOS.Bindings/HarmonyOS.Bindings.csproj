@@ -156,5 +156,7 @@
   <ItemGroup>
     <!-- Handler 层手势池化复用需要读取 internal 配置（ArkTapGesture.TapCount 等） -->
     <InternalsVisibleTo Include="HarmonyOS.Maui" />
+    <!-- 引擎实验层测试需要 internal ctor（RecordingSink 注入）与 DispatchEvent -->
+    <InternalsVisibleTo Include="HarmonyEngineTests" />
   </ItemGroup>
 </Project>
