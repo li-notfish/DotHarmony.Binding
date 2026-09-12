@@ -9,7 +9,7 @@ using MALIGNMENT = Microsoft.Maui.Primitives.LayoutAlignment;
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Layout 的 HarmonyOS Handler（ArkUI Column/Row 托管布局）。</summary>
-public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
+public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
 {
     public static PropertyMapper<MLAYOUT, HarmonyLayoutHandler> Mapper = new(ViewMapper)
     {
@@ -83,7 +83,7 @@ public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
     public static void MapInsert(HarmonyLayoutHandler h, MLAYOUT v, object? args)
     {
         if (args is LayoutHandlerUpdate u)
-            h.AttachChild(u.View); // M1：中段插入退化为顺序追加
+            h.AttachChild(u.View); // M1：中段插入退化为顺序追加（ArkUI_NodeBase.InsertChildAt 可支持真实插入，按需接通）
     }
 
     public static void MapUpdate(HarmonyLayoutHandler h, MLAYOUT v, object? args)
@@ -98,7 +98,13 @@ public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
 
     public static void MapUpdateZIndex(HarmonyLayoutHandler h, MLAYOUT v, object? args)
     {
-        // ArkUI flex 按 addChild 顺序，z-index M1 忽略
+        // NODE_Z_INDEX（值大者在上，flex 与 Stack 通用）
+        if (args is LayoutHandlerUpdate u
+            && h._children.TryGetValue(u.View, out var ch)
+            && ch.PlatformView is ArkUINode node)
+        {
+            node.SetZIndex(u.View.ZIndex);
+        }
     }
 
     private void AttachChild(IView view)
@@ -177,6 +183,7 @@ public class HarmonyLayoutHandler : ViewHandler<MLAYOUT, ArkUINode>
                 node.SetMarginEdges(mTop, mRight, mBottom, mLeft);
 
             PlatformView.AddChild(node);
+            node.SetZIndex(view.ZIndex);
             _children[view] = handler;
         }
     }

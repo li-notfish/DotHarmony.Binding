@@ -34,6 +34,7 @@ public static class HarmonyHandlerFactory
         Microsoft.Maui.Controls.CollectionView => new HarmonyCollectionViewHandler(),
         Microsoft.Maui.Controls.CarouselView => new HarmonyCarouselViewHandler(),
         Microsoft.Maui.Controls.Border => new HarmonyFrameHandler(),
+        Microsoft.Maui.Controls.BoxView => new HarmonyBoxViewHandler(),
         Microsoft.Maui.Controls.Layout => new HarmonyLayoutHandler(),
         _ => throw new NotSupportedException(
             $"No HarmonyOS handler registered for {element.GetType().Name} (extend HarmonyHandlerFactory)")
