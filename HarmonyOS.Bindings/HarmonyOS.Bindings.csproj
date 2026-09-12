@@ -2,9 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>preview</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>HARMONYOS</DefineConstants>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <IsTrimmable>true</IsTrimmable>
@@ -154,5 +152,9 @@
     <Compile Remove="Api\Wifi.Enums.cs" />
     <Compile Remove="Api\WifiManager.Enums.cs" />
     <Compile Remove="Api\Window.Enums.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Handler 层手势池化复用需要读取 internal 配置（ArkTapGesture.TapCount 等） -->
+    <InternalsVisibleTo Include="HarmonyOS.Maui" />
   </ItemGroup>
 </Project>

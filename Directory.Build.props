@@ -1,0 +1,14 @@
+<!--
+  Directory.Build.props：全仓公共属性收敛（此前 LangVersion/常量在 4 个 csproj 重复）。
+  注意：ImplicitUsings 保持各工程自设（HarmonyOS.Bindings 关闭以保留显式 using 风格，其余开启）。
+-->
+<Project>
+
+  <PropertyGroup>
+    <!-- 统一 .NET 10 / C# 14（preview）：first-class span conversions、extension members、
+         null-conditional assignment、field 关键字等在 Binding/Handler 层均有落地 -->
+    <LangVersion>preview</LangVersion>
+    <DefineConstants>$(DefineConstants);HARMONYOS</DefineConstants>
+  </PropertyGroup>
+
+</Project>
