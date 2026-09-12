@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 目标：linux-musl-arm64 NativeAOT 共享库 → libs/arm64-v8a/libapp.so（仿 HelloApp） -->
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- NativeAOT 共享库（dlopen 由宿主 C shim 完成） -->
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+
+    <!-- 鸿蒙 musl 环境：绕开 ICU 初始化依赖（shim 亦设 ICU_DATA，双保险） -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <!-- 引擎回流跳板依赖完整根（UnmanagedCallersOnly），保守裁剪 -->
+    <TrimMode>full</TrimMode>
+    <IlcGenerateStackTraceData Condition="'$(Configuration)' == 'Debug'">true</IlcGenerateStackTraceData>
+
+    <OutputType>Library</OutputType>
+    <AssemblyName>app</AssemblyName>
+
+    <!-- 本工程即应用入口：ModuleInitializer 在宿主 dlopen 后、任何导出调用前建场景，CA2255 不适用 -->
+    <NoWarn>$(NoWarn);CA2255</NoWarn>
+
+    <!-- ArkTS 引擎实验宿主模板（含 initEngine 通道与引擎 .ets）；
+         共享 C 节点 API 模板 samples/HarmonyHost 原样保留给 HelloApp -->
+    <HarmonyHostRoot>$(MSBuildThisFileDirectory)..\..\HarmonyHostEngine</HarmonyHostRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 刻意不引用 src/HarmonyOS.Maui：引擎实验层不经过 Handler 层 -->
+    <ProjectReference Include="..\..\..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+  </ItemGroup>
+
+  <!-- MAUI 风格平台编排：dotnet build -t:HarmonyRun（libapp.so → HAP → 部署），targets 与 MAUI 无耦合 -->
+  <Import Project="$(MSBuildThisFileDirectory)../../../src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets" />
+
+</Project>
