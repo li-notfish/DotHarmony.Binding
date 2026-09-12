@@ -13,7 +13,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// ArkUI RadioButton（ARKUI_NODE_RADIO）不支持 Content 文本属性（SDK 无 NODE_RADIO_CONTENT），
 /// 平台视图为 Row（Radio 圆点 + Text），Content 文本由 Text 节点呈现。
 /// </summary>
-public class HarmonyRadioButtonHandler : ViewHandler<IRadioButton, ArkRow>, IRadioButtonHandler
+public class HarmonyRadioButtonHandler : HarmonyViewHandler<IRadioButton, ArkRow>, IRadioButtonHandler
 {
     public static PropertyMapper<IRadioButton, IRadioButtonHandler> Mapper = new(ViewMapper)
     {

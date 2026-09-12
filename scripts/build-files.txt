@@ -13,4 +13,5 @@ src
 HarmonyOS.Bindings
 samples
 scripts
+Directory.Build.props
 ArkTsBinding.slnx

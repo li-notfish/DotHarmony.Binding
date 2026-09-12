@@ -61,6 +61,11 @@ public partial class MainPage : ContentPage
         Navigation.PushAsync(new ControlsDemoPage()).FireAndForgetNavigation();
     }
 
+    private void OnOpenGesturesDemoClicked(object? sender, EventArgs e)
+    {
+        Navigation.PushAsync(new GesturesDemoPage()).FireAndForgetNavigation();
+    }
+
     private void OnOpenModalClicked(object? sender, EventArgs e)
     {
         // 模态：标准 INavigation API（经 RootNavigationAdapter 转接到宿主模态层）
@@ -77,7 +82,8 @@ internal static class NavigationFireAndForget
         task.ContinueWith(t =>
         {
             if (t.Exception is not null)
-                System.Diagnostics.Debug.WriteLine($"navigation failed: {t.Exception.InnerException}");
+                HarmonyOS.Bindings.Runtime.HiLog.Error("HelloNav",
+                    $"navigation failed: {t.Exception.InnerException?.GetType().Name}: {t.Exception.InnerException?.Message}");
         }, TaskScheduler.Default);
     }
 }

@@ -21,11 +21,16 @@ $tarArgs = Get-Content (Join-Path $scriptDir "build-files.txt") |
 $DemoApp = if ($env:DEMO_APP) { $env:DEMO_APP } else { "HelloApp" }
 Write-Host "=== demo app: $DemoApp ==="
 
+# libapp.so 落地的宿主目录：HOST_DIR 覆盖（targets 生成的按应用暂存宿主），默认共享模板
+$HostDir = if ($env:HOST_DIR) { $env:HOST_DIR } else { Join-Path $projectRoot "samples/HarmonyHost" }
+
 # LOCAL 模式——仍走"打包 → 复制进 WSL 原生文件系统 → 构建 → 取回"。
 # 不要直接在 /mnt/*（9p 挂载）上构建：海量小文件 I/O 会慢一个数量级以上。
 if ($env:LOCAL -eq "true") {
     # wsl.exe 会把参数交给 Linux shell 解析，反斜杠会被当转义符吃掉——必须换成正斜杠
     $wslRoot = (& wsl wslpath -a ($projectRoot -replace '\\', '/')).Trim()
+    if ($LASTEXITCODE -ne 0) { throw "wslpath 转换失败" }
+    $hostWsl = (& wsl wslpath -a ($HostDir -replace '\\', '/')).Trim()
     if ($LASTEXITCODE -ne 0) { throw "wslpath 转换失败" }
 
     Write-Host "=== 1. 打包源码 ==="
@@ -42,11 +47,11 @@ if ($env:LOCAL -eq "true") {
     & wsl bash -c "DEMO_APP='$DemoApp' bash '$BUILD/scripts/build-libapp.sh'"
     if ($LASTEXITCODE -ne 0) { throw "本地 WSL 构建失败" }
 
-    Write-Host "=== 4. 取回 libapp.so（双架构） ==="
-    & wsl bash -c "mkdir -p '$wslRoot/samples/HarmonyHost/entry/libs/arm64-v8a' '$wslRoot/samples/HarmonyHost/entry/libs/x86_64' && cp '$BUILD/samples/dotnet/$DemoApp/bin/Release/net10.0/linux-musl-arm64/publish/app.so' '$wslRoot/samples/HarmonyHost/entry/libs/arm64-v8a/libapp.so' && cp '$BUILD/samples/dotnet/$DemoApp/bin/Release/net10.0/linux-musl-x64/publish/app.so' '$wslRoot/samples/HarmonyHost/entry/libs/x86_64/libapp.so'"
+    Write-Host "=== 4. 取回 libapp.so（双架构）→ $HostDir ==="
+    & wsl bash -c "mkdir -p '$hostWsl/entry/libs/arm64-v8a' '$hostWsl/entry/libs/x86_64' && cp '$BUILD/samples/dotnet/$DemoApp/bin/Release/net10.0/linux-musl-arm64/publish/app.so' '$hostWsl/entry/libs/arm64-v8a/libapp.so' && cp '$BUILD/samples/dotnet/$DemoApp/bin/Release/net10.0/linux-musl-x64/publish/app.so' '$hostWsl/entry/libs/x86_64/libapp.so'"
     if ($LASTEXITCODE -ne 0) { throw "复制 libapp.so 失败" }
 
-    Get-ChildItem "samples\HarmonyHost\entry\libs\arm64-v8a\libapp.so", "samples\HarmonyHost\entry\libs\x86_64\libapp.so" | Format-Table -AutoSize
+    Get-ChildItem (Join-Path $HostDir "entry/libs/arm64-v8a/libapp.so"), (Join-Path $HostDir "entry/libs/x86_64/libapp.so") | Format-Table -AutoSize
     Write-Host "=== 完成 ==="
     exit 0
 }
@@ -71,20 +76,20 @@ Write-Host "=== 3. 远程构建 ==="
 & ssh $REMOTE "bash $BUILD/scripts/build-libapp.sh"
 if ($LASTEXITCODE -ne 0) { throw "远程构建失败" }
 
-Write-Host "=== 4. 取回 libapp.so（双架构） ==="
+Write-Host "=== 4. 取回 libapp.so（双架构）→ $HostDir ==="
 # 创建本地目标目录
-New-Item -ItemType Directory -Force -Path "samples/HarmonyHost/entry/libs/arm64-v8a" | Out-Null
-New-Item -ItemType Directory -Force -Path "samples/HarmonyHost/entry/libs/x86_64"   | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $HostDir "entry/libs/arm64-v8a") | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $HostDir "entry/libs/x86_64")   | Out-Null
 
 & scp -q "$($REMOTE):$BUILD/samples/dotnet/$DemoApp/bin/Release/net10.0/linux-musl-arm64/publish/app.so" `
-       "samples/HarmonyHost/entry/libs/arm64-v8a/libapp.so"
+       (Join-Path $HostDir "entry/libs/arm64-v8a/libapp.so")
 if ($LASTEXITCODE -ne 0) { throw "取回 arm64 架构文件失败" }
 
 & scp -q "$($REMOTE):$BUILD/samples/dotnet/$DemoApp/bin/Release/net10.0/linux-musl-x64/publish/app.so" `
-       "samples/HarmonyHost/entry/libs/x86_64/libapp.so"
+       (Join-Path $HostDir "entry/libs/x86_64/libapp.so")
 if ($LASTEXITCODE -ne 0) { throw "取回 x86_64 架构文件失败" }
 
 # 显示取回的文件信息
-Get-ChildItem -Recurse "samples/HarmonyHost/entry/libs/arm64-v8a/libapp.so", "samples/HarmonyHost/entry/libs/x86_64/libapp.so" | Format-Table -AutoSize
+Get-ChildItem -Recurse (Join-Path $HostDir "entry/libs/arm64-v8a/libapp.so"), (Join-Path $HostDir "entry/libs/x86_64/libapp.so") | Format-Table -AutoSize
 
 Write-Host "=== 完成 ==="

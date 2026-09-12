@@ -100,11 +100,12 @@ public readonly unsafe struct ArkUINodeEvent
 
 /// <summary>
 /// 全局事件分发总线。
-/// registerNodeEventReceiver 只能注册一个原生接收器，此处以 targetId 路由到各节点。
+/// registerNodeEventReceiver 只能注册一个原生接收器，此处以 (targetId, eventType) 复合键
+/// 路由到各节点——同节点可并存多种事件订阅（如 Button 的 Click 与手势通道的 Touch）。
 /// </summary>
 internal static unsafe class NodeEventBus
 {
-    private static readonly ConcurrentDictionary<int, Action<ArkUINodeEvent>> Handlers = new();
+    private static readonly ConcurrentDictionary<(int TargetId, int EventType), Action<ArkUINodeEvent>> Handlers = new();
     private static delegate* unmanaged<ArkUI_NodeEvent*, void> _receiverPtr;
     private static int _nextTargetId;
     private static bool _registered;
@@ -112,15 +113,15 @@ internal static unsafe class NodeEventBus
     /// <summary>分配进程内唯一的 targetId</summary>
     internal static int NextTargetId() => Interlocked.Increment(ref _nextTargetId);
 
-    internal static void Register(int targetId, Action<ArkUINodeEvent> handler)
+    internal static void Register(int targetId, ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
     {
         EnsureRegistered();
-        Handlers[targetId] = handler;
+        Handlers[(targetId, (int)eventType)] = handler;
     }
 
-    internal static void Unregister(int targetId)
+    internal static void Unregister(int targetId, ArkUI_NodeEventType eventType)
     {
-        Handlers.TryRemove(targetId, out _);
+        Handlers.TryRemove((targetId, (int)eventType), out _);
     }
 
     private static void EnsureRegistered()
@@ -137,14 +138,10 @@ internal static unsafe class NodeEventBus
     {
         try
         {
-            var targetId = ArkUINativeApi.GetTargetId(eventPtr);
-            if (Handlers.TryGetValue(targetId, out var handler))
+            var key = (ArkUINativeApi.GetTargetId(eventPtr), (int)ArkUINativeApi.GetEventType(eventPtr));
+            if (Handlers.TryGetValue(key, out var handler))
             {
                 handler(new ArkUINodeEvent(eventPtr));
-            }
-            else
-            {
-                Runtime.HiLog.Warn("HarmonyHost", $"[EventBus] no handler for targetId={targetId}");
             }
         }
         catch (Exception ex)

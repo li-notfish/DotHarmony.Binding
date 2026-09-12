@@ -11,7 +11,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// TimePicker → ArkUI TimePicker（内嵌滚轮节点）。
 /// M1 限制：MAUI TimePicker 是弹窗交互、ArkUI 是内嵌滚轮，视觉有差异（ROADMAP 1.4）。
 /// </summary>
-public class HarmonyTimePickerHandler : ViewHandler<MTimePicker, ArkTimePicker>
+public class HarmonyTimePickerHandler : HarmonyViewHandler<MTimePicker, ArkTimePicker>
 {
     public static PropertyMapper<MTimePicker, HarmonyTimePickerHandler> Mapper = new(ViewMapper)
     {

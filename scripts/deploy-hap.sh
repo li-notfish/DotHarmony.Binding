@@ -6,7 +6,11 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-BUNDLE=com.arktsbinding.harmonyhost
+# bundle 名：HOST_DIR 为暂存宿主时由 stage-host 写入 app.json5，这里同步读取；默认共享模板
+if [ -n "$HOST_DIR" ] && [ -f "$HOST_DIR/AppScope/app.json5" ]; then
+    BUNDLE=$(sed -n 's/.*"bundleName"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$HOST_DIR/AppScope/app.json5" | head -1)
+fi
+BUNDLE="${BUNDLE:-com.arktsbinding.harmonyhost}"
 ABILITY=EntryAbility
 MODULE=entry
 
@@ -31,7 +35,8 @@ hdc_t() {
 }
 
 # ---- 定位 HAP ----
-HAP="${PROJECT_ROOT}/samples/HarmonyHost/entry/build/default/outputs/default/${MODULE}-default-unsigned.hap"
+# HAP 路径：HOST_DIR 覆盖（targets 生成的按应用暂存宿主），默认共享模板
+HAP="${HOST_DIR:-${PROJECT_ROOT}/samples/HarmonyHost}/entry/build/default/outputs/default/${MODULE}-default-unsigned.hap"
 if [ ! -f "$HAP" ]; then
     echo "错误: 找不到 HAP：$HAP（请先运行 scripts/build-hap.cmd）" >&2
     exit 1

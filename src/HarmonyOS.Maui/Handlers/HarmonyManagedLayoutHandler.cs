@@ -24,19 +24,23 @@ using MAbsolute = Microsoft.Maui.Controls.AbsoluteLayout;
 using MALayoutFlags = Microsoft.Maui.Layouts.AbsoluteLayoutFlags;
 using MBindableObject = Microsoft.Maui.Controls.BindableObject;
 using MControlsLayout = Microsoft.Maui.Controls.Layout;
+using MALIGNMENT = Microsoft.Maui.Primitives.LayoutAlignment;
 
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Grid / AbsoluteLayout 的 HarmonyOS Handler（MAUI 托管布局 + 绝对定位）。</summary>
-public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack>
+public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, ArkStack>
 {
+    /// <summary>布局热路径诊断日志开关（插值分配只在开启时发生）</summary>
+    private const bool LogLayout = false;
+
     public static PropertyMapper<MControlsLayout, HarmonyManagedLayoutHandler> Mapper =
         new(ViewHandler.ViewMapper)
         {
             [nameof(MControlsLayout.BackgroundColor)] = (h, v) =>
             {
                 if (v.BackgroundColor is { } c)
-                    h.PlatformView.SetBackgroundColor((byte)(c.Red * 255), (byte)(c.Green * 255), (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+                    h.PlatformView.SetBackgroundColor(c.ToUint());
             },
         };
 
@@ -49,7 +53,16 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
             [nameof(ILayoutHandler.Clear)] = (h, v, args) => ((HarmonyManagedLayoutHandler)h).Clear(),
             [nameof(ILayoutHandler.Insert)] = (h, v, args) => { if (args is LayoutHandlerUpdate u) ((HarmonyManagedLayoutHandler)h).Add(u.View); },
             [nameof(ILayoutHandler.Update)] = (h, v, args) => { if (args is LayoutHandlerUpdate u) ((HarmonyManagedLayoutHandler)h).Add(u.View); },
-            [nameof(ILayoutHandler.UpdateZIndex)] = (h, v, args) => { /* Stack 按 addChild 顺序决定叠放，M1 忽略 */ },
+            [nameof(ILayoutHandler.UpdateZIndex)] = (h, v, args) =>
+            {
+                // NODE_Z_INDEX（值大者在上）；Arrange 循环同步初始值，此处处理运行时变更
+                if (args is LayoutHandlerUpdate u
+                    && ((HarmonyManagedLayoutHandler)h)._children.TryGetValue(u.View, out var ch)
+                    && ch.PlatformView is ArkUINode node)
+                {
+                    node.SetZIndex(u.View.ZIndex);
+                }
+            },
         };
 
     public HarmonyManagedLayoutHandler() : base(Mapper, LayoutCommandMapper) { }
@@ -58,6 +71,9 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
     private float _containerW;
     private float _containerH;
     private readonly Dictionary<IView, IElementHandler> _children = new();
+    // 上次应用到节点的布局结果：AREA_CHANGE 回调 → Arrange 幂等（值未变不写属性），
+    // 防止"设置尺寸 → 触发 AreaChange → 再 Arrange"回环
+    private readonly Dictionary<IView, (float X, float Y, float W, float H, int Z, bool WAuto, bool HAuto)> _lastApplied = new();
 
     protected override ArkStack CreatePlatformView() => new();
 
@@ -65,10 +81,16 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
     {
         base.ConnectHandler(platformView);
         platformView.SizeChange += OnSizeChange;
-        // 让 Stack 填满父容器（Column），确保 ArkUI 给它真实尺寸，SizeChange 能触发
+        // 交叉轴（宽度）填满父容器，确保 SizeChange 能触发
         platformView.SetWidthPercent(1.0f);
-        platformView.SetHeightPercent(1.0f);
-        HiLog.Debug("Grid", $"ConnectHandler#{GetHashCode():X}: Stack W%+H% set, children={VirtualView.Children.Count}");
+        // 高度：页面根布局填满（ContentPage/Navigation 的宿主 Column 不会替子节点撑满）；
+        // 嵌套在其他 Layout 内时主轴取自然高度（MAUI StackLayout 主轴 Fill = DesiredSize），
+        // 显式 HeightRequest 时用显式值。无条件 100% 会让嵌套 Grid 撑爆父容器（实测踩过）
+        if (VirtualView.HeightRequest > 0)
+            platformView.SetHeight((float)VirtualView.HeightRequest);
+        else if (VirtualView.Parent is not Microsoft.Maui.Controls.Layout)
+            platformView.SetHeightPercent(1.0f);
+        if (LogLayout) HiLog.Debug("Grid", $"ConnectHandler#{GetHashCode():X}: Stack W%+H% set, children={VirtualView.Children.Count}");
         // 连接时全量同步已存在的 Children（Controls 侧在 Handler 连接前添加的子节点不会发 Add 命令）
         foreach (var child in VirtualView.Children)
         {
@@ -80,9 +102,12 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
     {
         _containerW = e.SizeChangeWidth;
         _containerH = e.SizeChangeHeight;
-        HiLog.Debug("Grid", $"SizeChange: W={_containerW} H={_containerH}");
+        if (LogLayout) HiLog.Debug("Grid", $"SizeChange: W={_containerW} H={_containerH}");
         Arrange();
     }
+
+    /// <summary>子节点区域变化（内容变化/自量测变化）→ 触发重排；幂等保护下重复触发无副作用</summary>
+    private void OnChildAreaChange() => Arrange();
 
     protected override void DisconnectHandler(ArkStack platformView)
     {
@@ -100,6 +125,7 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
             // 尺寸与位置全部由 Arrange 决定，此处不设任何布局属性
             PlatformView.AddChild(node);
             _children[view] = handler;
+            node.SetAreaChangeObserver(OnChildAreaChange);
             Arrange();
         }
     }
@@ -110,14 +136,22 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
     {
         if (_children.Remove(view, out var handler) && handler.PlatformView is ArkUINode node)
         {
+            node.SetAreaChangeObserver(null);
+            _lastApplied.Remove(view);
             PlatformView.RemoveChild(node);
         }
     }
 
     internal void Clear()
     {
+        foreach (var handler in _children.Values)
+        {
+            if (handler.PlatformView is ArkUINode node)
+                node.SetAreaChangeObserver(null);
+        }
         PlatformView.RemoveAllChildren();
         _children.Clear();
+        _lastApplied.Clear();
     }
 
     // ───────────────────────── 托管布局 ─────────────────────────
@@ -208,12 +242,12 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
                 };
         }
 
-        HiLog.Debug("Grid", $"Auto rows: [{string.Join(",", rowAuto.Select(x => x.ToString("F0")))}] cols: [{string.Join(",", colAuto.Select(x => x.ToString("F0")))}]");
+        if (LogLayout) HiLog.Debug("Grid", $"Auto rows: [{FormatTracks(rowAuto)}] cols: [{FormatTracks(colAuto)}]");
 
         var widths = ResolveTracks(colUnit, colValue, colAuto, _containerW);
         var heights = ResolveTracks(rowUnit, rowValue, rowAuto, _containerH);
 
-        HiLog.Debug("Grid", $"Tracks: widths=[{string.Join(",", widths.Select(x => x.ToString("F0")))}] heights=[{string.Join(",", heights.Select(x => x.ToString("F0")))}]");
+        if (LogLayout) HiLog.Debug("Grid", $"Tracks: widths=[{FormatTracks(widths)}] heights=[{FormatTracks(heights)}]");
 
         foreach (var (view, handler) in _children)
         {
@@ -228,12 +262,18 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
             float w = Sum(widths, c, cs);
             float h = Sum(heights, r, rs);
 
-            var size = node.MeasuredSize;
-            HiLog.Debug("Grid", $"  [{view.GetType().Name}] r={r}c={c} span={rs}x{cs} -> ({x:F0},{y:F0}) {w:F0}x{h:F0} measured={size.width}x{size.height}");
-
             // 自适应维不设显式尺寸，让节点内容自撑（下一帧据此量测 Auto 轨道）
             bool wAuto = colUnit[c] == GridUnitType.Auto && cs == 1;
             bool hAuto = rowUnit[r] == GridUnitType.Auto && rs == 1;
+
+            // MAUI 对齐语义（官方：布局管理器发全尺寸 frame，Start/Center/End 由子节点
+            // 按实测尺寸在 frame 内摆放，Fill 拉伸）：非 auto 维在单元格内收缩+偏移。
+            // 实测尺寸尚未产生（首帧）时保持 Fill，AREA_CHANGE 触发下一轮后生效
+            var size = node.MeasuredSize;
+            if (!wAuto)
+                (x, w) = ApplyAlignment(view.HorizontalLayoutAlignment, x, w, size.width / density);
+            if (!hAuto)
+                (y, h) = ApplyAlignment(view.VerticalLayoutAlignment, y, h, size.height / density);
 
             // MAUI 子节点 Margin：在轨道单元内内缩（auto 维不缩，让内容自撑）
             var mg = view.Margin;
@@ -245,9 +285,23 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
                 if (!hAuto) h = Math.Max(h - mgT - mgB, 0);
             }
 
+            int z = view.ZIndex;
+
+            // 幂等：与上次应用结果一致则跳过（AREA_CHANGE 回环的终止条件）
+            if (_lastApplied.TryGetValue(view, out var prev)
+                && prev.X == x && prev.Y == y && prev.W == w && prev.H == h
+                && prev.Z == z && prev.WAuto == wAuto && prev.HAuto == hAuto)
+            {
+                continue;
+            }
+            _lastApplied[view] = (x, y, w, h, z, wAuto, hAuto);
+
+            if (LogLayout) HiLog.Debug("Grid", $"  [{view.GetType().Name}] r={r}c={c} span={rs}x{cs} -> ({x:F0},{y:F0}) {w:F0}x{h:F0} z={z}");
+
             if (!wAuto) node.SetWidth(w);
             if (!hAuto) node.SetHeight(h);
             node.SetPosition(x, y);
+            node.SetZIndex(z);
         }
     }
 
@@ -284,6 +338,24 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
             if (!hAuto) node.SetHeight(h);
             node.SetPosition(Math.Max(x, 0), Math.Max(y, 0));
         }
+    }
+
+    /// <summary>
+    /// MAUI 对齐语义（官方布局管理器发全尺寸 frame，非 Fill 由子节点按实测尺寸在 frame 内摆放）。
+    /// Fill / 内容未量测（&lt;=0）/ 内容不小于 frame → 保持 frame 原样；否则收缩并在 frame 内偏移。
+    /// </summary>
+    internal static (float Offset, float Size) ApplyAlignment(
+        MALIGNMENT alignment, float offset, float frameSize, double contentSize)
+    {
+        if (alignment == MALIGNMENT.Fill || contentSize <= 0 || contentSize >= frameSize)
+            return (offset, frameSize);
+        var cs = (float)contentSize;
+        return alignment switch
+        {
+            MALIGNMENT.Center => (offset + (frameSize - cs) / 2, cs),
+            MALIGNMENT.End => (offset + frameSize - cs, cs),
+            _ => (offset, cs), // Start
+        };
     }
 
     /// <summary>按 Absolute/Auto/Star 语义解析轨道尺寸（vp）；无 Star 时剩余空间留空。</summary>
@@ -327,5 +399,18 @@ public class HarmonyManagedLayoutHandler : ViewHandler<MControlsLayout, ArkStack
         for (int i = start; i < start + count && i < tracks.Length; i++)
             sum += tracks[i];
         return sum;
+    }
+
+    /// <summary>轨道数组 → "1,2,3"（仅诊断用；显式循环避免 LINQ 在布局热路径分配）</summary>
+    private static string FormatTracks(float[] tracks)
+    {
+        if (tracks.Length == 0) return string.Empty;
+        var sb = new System.Text.StringBuilder();
+        for (int i = 0; i < tracks.Length; i++)
+        {
+            if (i > 0) sb.Append(',');
+            sb.Append((int)tracks[i]);
+        }
+        return sb.ToString();
     }
 }

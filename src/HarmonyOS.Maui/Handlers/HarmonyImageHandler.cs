@@ -8,7 +8,7 @@ using MImage = Microsoft.Maui.IImage;
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Image 的 HarmonyOS Handler（ArkUI Image 节点）。</summary>
-public class HarmonyImageHandler : ViewHandler<MImage, ArkImage>
+public class HarmonyImageHandler : HarmonyViewHandler<MImage, ArkImage>
 {
     public static PropertyMapper<MImage, HarmonyImageHandler> Mapper = new(ViewMapper)
     {

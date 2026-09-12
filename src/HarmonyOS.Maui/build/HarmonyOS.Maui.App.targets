@@ -2,9 +2,18 @@
      应用工程以 <Import Project=".../HarmonyOS.Maui.App.targets" /> 引入；
      平台启动代码放应用工程的 Platforms/HarmonyOS/（默认 Compile 通配已包含）。
 
+     宿主工程自动生成：HarmonyStageHost 把共享模板（samples/HarmonyHost）实例化到应用
+     obj/harmony/host/，按应用重写 bundleName/应用名——用户工程不感知宿主的存在，也不需要
+     在 DevEco 里手动建工程。设 HarmonyGenerateHost=false + HarmonyHostRoot=<自备宿主> 可退回。
+
      可用属性：
-       HarmonyHostRoot   ArkTS 宿主工程根目录（默认 samples/HarmonyHost，工作负载级模板）
-       HarmonyPowerShell pwsh 可执行文件（默认 pwsh，需 PowerShell 7+） -->
+       HarmonyHostRoot      ArkTS 宿主模板目录（默认 samples/HarmonyHost）
+       HarmonyGenerateHost  是否生成按应用宿主实例（默认 true）
+       HarmonyBundleId      应用包名（默认 com.arktsbinding.<去符号小写工程名>；点分小写域名形式）
+       HarmonyAppTitle      应用显示名（默认工程名）
+       HarmonyHostDir       宿主实例目录（默认 $(MSBuildProjectDirectory)\obj\harmony\host）
+       HarmonyPowerShell    pwsh 可执行文件（默认 pwsh，需 PowerShell 7+）
+     注意：修改 HarmonyBundleId/HarmonyAppTitle 后需删 obj/harmony 重新 stage（脚本按内容戳增量） -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
@@ -14,23 +23,39 @@
     <HarmonyPowerShell Condition="'$(HarmonyPowerShell)' == ''">pwsh</HarmonyPowerShell>
     <_HarmonyRepoRoot>$(MSBuildThisFileDirectory)../../../</_HarmonyRepoRoot>
     <_HarmonyScripts>$(_HarmonyRepoRoot)scripts\</_HarmonyScripts>
+    <HarmonyHostRoot Condition="'$(HarmonyHostRoot)' == ''">$(_HarmonyRepoRoot)samples\HarmonyHost</HarmonyHostRoot>
+    <HarmonyGenerateHost Condition="'$(HarmonyGenerateHost)' == ''">true</HarmonyGenerateHost>
+    <HarmonyHostDir Condition="'$(HarmonyHostDir)' == ''">$(MSBuildProjectDirectory)\obj\harmony\host</HarmonyHostDir>
+    <HarmonyBundleId Condition="'$(HarmonyBundleId)' == ''">com.arktsbinding.$([System.Text.RegularExpressions.Regex]::Replace('$(MSBuildProjectName)', '[^a-zA-Z0-9]', '').ToLower())</HarmonyBundleId>
+    <HarmonyAppTitle Condition="'$(HarmonyAppTitle)' == ''">$(MSBuildProjectName)</HarmonyAppTitle>
+    <!-- 实际参与构建的宿主目录（生成模式下为暂存实例） -->
+    <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' == 'true'">$(HarmonyHostDir)</_HarmonyEffectiveHostDir>
+    <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' != 'true'">$(HarmonyHostRoot)</_HarmonyEffectiveHostDir>
   </PropertyGroup>
 
+  <!-- 0/3：宿主工程生成（模板 → 按应用实例：bundleName/应用名重写，构建产物剔除）。
+       增量判断在 stage-host.ps1 内（内容戳：模板 mtime + bundle/title），故此目标不加 Inputs/Outputs -->
+  <Target Name="HarmonyStageHost" Condition="'$(HarmonyGenerateHost)' == 'true'">
+    <Message Importance="high" Text="=== staging host for $(HarmonyDemoApp): bundle=$(HarmonyBundleId) -> $(HarmonyHostDir)" />
+    <Exec Command="&quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)stage-host.ps1&quot; -Template &quot;$(HarmonyHostRoot)&quot; -Destination &quot;$(HarmonyHostDir)&quot; -BundleId &quot;$(HarmonyBundleId)&quot; -AppTitle &quot;$(HarmonyAppTitle)&quot;"
+          WorkingDirectory="$(_HarmonyRepoRoot)" />
+  </Target>
+
   <!-- 1/3：NativeAOT 交叉编译 libapp.so（arm64 + x86_64），LOCAL=true 走本地 WSL -->
-  <Target Name="HarmonyBuildLibApp">
-    <Exec Command="set LOCAL=true&amp;&amp; set DEMO_APP=$(HarmonyDemoApp)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)remote-build.ps1&quot;"
+  <Target Name="HarmonyBuildLibApp" DependsOnTargets="HarmonyStageHost">
+    <Exec Command="set LOCAL=true&amp;&amp; set DEMO_APP=$(HarmonyDemoApp)&amp;&amp; set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)remote-build.ps1&quot;"
           WorkingDirectory="$(_HarmonyRepoRoot)" />
   </Target>
 
   <!-- 2/3：hvigor 打 HAP（DevEco 路径自动探测） -->
-  <Target Name="HarmonyBuildHap">
-    <Exec Command="&quot;$(_HarmonyScripts)build-hap.cmd&quot;"
+  <Target Name="HarmonyBuildHap" DependsOnTargets="HarmonyStageHost">
+    <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(_HarmonyScripts)build-hap.cmd&quot;"
           WorkingDirectory="$(_HarmonyRepoRoot)" />
   </Target>
 
   <!-- 3/3：hdc 安装 → 启动 → 抓取日志 -->
-  <Target Name="HarmonyDeploy">
-    <Exec Command="&quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)deploy-hap.ps1&quot;"
+  <Target Name="HarmonyDeploy" DependsOnTargets="HarmonyStageHost">
+    <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)deploy-hap.ps1&quot;"
           WorkingDirectory="$(_HarmonyRepoRoot)" />
   </Target>
 

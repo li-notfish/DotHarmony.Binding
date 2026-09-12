@@ -10,7 +10,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// MAUI Frame / Border 的 HarmonyOS Handler（映射到 ArkUI Stack 容器）。
 /// Frame 已废弃，Border 是其替代品；两者都映射到此 Handler。
 /// </summary>
-public class HarmonyFrameHandler : ViewHandler<Border, ArkStack>
+public class HarmonyFrameHandler : HarmonyViewHandler<Border, ArkStack>
 {
     public static PropertyMapper<Border, HarmonyFrameHandler> Mapper = new(ViewMapper)
     {
@@ -41,9 +41,7 @@ public class HarmonyFrameHandler : ViewHandler<Border, ArkStack>
     {
         // XAML BackgroundColor 设置的是 VisualElement.BackgroundColor（Color），与 Background（Brush）不互通
         if (v.BackgroundColor is { } c)
-            h.PlatformView.SetBackgroundColor(
-                (byte)(c.Red * 255), (byte)(c.Green * 255),
-                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+            h.PlatformView.SetBackgroundColor(c.ToUint());
     }
 
     public static void MapBackground(HarmonyFrameHandler h, Border v)

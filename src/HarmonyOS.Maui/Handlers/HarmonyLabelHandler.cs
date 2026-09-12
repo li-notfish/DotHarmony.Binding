@@ -7,7 +7,7 @@ using ArkText = HarmonyOS.ArkUI.Text;
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Label 的 HarmonyOS Handler（ArkUI Text 节点）。</summary>
-public class HarmonyLabelHandler : ViewHandler<Label, ArkText>
+public class HarmonyLabelHandler : HarmonyViewHandler<Label, ArkText>
 {
     public static PropertyMapper<Label, HarmonyLabelHandler> Mapper = new(ViewMapper)
     {
@@ -31,9 +31,7 @@ public class HarmonyLabelHandler : ViewHandler<Label, ArkText>
     public static void MapTextColor(HarmonyLabelHandler h, Label v)
     {
         if (v.TextColor is { } c)
-            h.PlatformView.SetFontColor(
-                (byte)(c.Red * 255), (byte)(c.Green * 255),
-                (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+            h.PlatformView.SetFontColor(c);
     }
 
     public static void MapFontSize(HarmonyLabelHandler h, Label v)

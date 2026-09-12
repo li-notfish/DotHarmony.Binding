@@ -6,7 +6,7 @@ using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonyRefreshViewHandler : ViewHandler<IRefreshView, ArkRefresh>, IRefreshViewHandler
+public class HarmonyRefreshViewHandler : HarmonyViewHandler<IRefreshView, ArkRefresh>, IRefreshViewHandler
 {
     public static PropertyMapper<IRefreshView, IRefreshViewHandler> Mapper = new(ViewMapper)
     {
