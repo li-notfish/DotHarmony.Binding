@@ -283,9 +283,15 @@ NodeApi.CreateCallbackFunction 做回调），回调内重读属性+去重缓存
 chargingStatus=0 → 按 Discharging 处理，贴近 MAUI 语义）。
 
 **剩余清单（立项待做）**：ISecureStorage（@ohos.data.preferences 已转正，事务性 API 在自定义
-entry 写入路径）、IMainThread（借 napi 线程检查）、IVibration/IConnectivity（net.connection
+entry 写入路径）、IMainThread（借 napi 线程检查）、IConnectivity（net.connection
 灰度需转正）、传感器（Sensor 已可实测——2.9 有事件回路沉淀）等
 按价值逐项接入；电池事件的模拟器触发验证（需改电量通道）。
+
+**IVibration（✅ 2026-09-13 第七个服务）**：@ohos.vibrator，Vibrate 走现代 startVibration
+（{type:'time', duration:ms} + {usage:'unknown'}，非 Api 9 起废弃的 vibrate(duration)），
+Cancel 走 stopVibration() 同步重载；时长钳制 [0,5s]、默认 500ms 对齐 MAUI。
+VIBRATE 为 system_grant，宿主模板 module.json5 已声明。**本批按用户指示未构建未部署**——
+真机/模拟器触摸验证留待下次构建。
 
 ---
 

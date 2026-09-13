@@ -108,7 +108,7 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | IClipboard | SetDefault | pasteboard SystemPasteboard（user_grant 授权闭环） | ✅ 2026-09-13 |
 | IPreferences | SetDefault | data.preferences（值用类型标签字符串编码；getSync/putSync 经 NodeApi 直调——包装的 ValueType 签名被 distributedData 同名枚举污染） | ✅ 2026-09-13（43/44 测试含编解码 21 个） |
 | IBattery | SetDefault | batteryInfo（纯同步属性）+ @ohos.power.getPowerMode()（省电模式）；变化事件走 usual.event.BATTERY_CHANGED / POWER_SAVE_MODE_CHANGED commonEvent 订阅（回调内重读属性+去重） | ✅ 2026-09-13（模拟器实测 level/state/source/saver；chargingStatus=0 → 按 Discharging 处理） |
-| IVibration | SetDefault | vibrator | 待做（模块已转正） |
+| IVibration | SetDefault | vibrator（startVibration {type:'time'} + stopVibration() 同步重载；时长钳制 [0,5s] 对齐 MAUI）；VIBRATE 为 system_grant，宿主模板已声明 | ✅ 2026-09-13（未构建未部署——按用户指示；真机触摸验证留待下次构建） |
 | IConnectivity | SetCurrent | net.connection（灰度，需转正；含事件） | 待做 |
 | IFileSystem | SetCurrent | file.fs（灰度） | 待做 |
 | ILauncher / IShare / IEmail / IPhoneDialer / IBrowser | SetDefault | want/startAbility（abilityContext 通道） | 待做 |

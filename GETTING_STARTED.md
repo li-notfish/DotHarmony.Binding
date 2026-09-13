@@ -205,7 +205,7 @@ dotnet build samples/dotnet/MyApp -t:HarmonyRun
 | Shell（flyout/tab/URI 路由） | ❌ 需改造 | 入口改为 `new NavigationPage(...)`；TabbedPage 后续支持 |
 | 自绘（Shape/GraphicsView） | ❌ 待支持 | 需 MAUI Graphics 前端（ROADMAP 1.4 剩余） |
 | CollectionView 大数据量 | ⚠️ 可用 | 当前全量物化无虚拟化（NodeAdapter 后续做） |
-| **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` 等） | ✅ 首批六个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；MauiHarmonyHost.Run 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery；新服务适配见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
+| **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` / `Vibration.Default` 等） | ✅ 首批七个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；MauiHarmonyHost.Run 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration；新服务适配见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
 | 自定义 Handler / 平台服务 | ❌ 需移植 | 按 [HANDLERS.md](HANDLERS.md) 五步流程写鸿蒙侧 Handler |
 
 ### Step 2：建鸿蒙外壳工程
