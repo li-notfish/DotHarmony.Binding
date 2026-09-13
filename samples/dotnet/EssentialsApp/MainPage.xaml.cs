@@ -1,4 +1,4 @@
-// Essentials 四服务的标准入口验证：DeviceInfo / DeviceDisplay / AppInfo / Clipboard。
+// Essentials 六服务的标准入口验证：DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery。
 // 实现由 HarmonyOS.Maui 启动时注入；netstandard 缺省实现会 throw——本页任何一栏有值即注入生效。
 // 剪贴板读权限（READ_PASTEBOARD，user_grant）：首次点击会弹系统授权对话框，
 // 允许后回环显示写入文本；拒绝则显示失败原因（可到系统设置改为"始终允许"）。
@@ -93,6 +93,28 @@ public partial class MainPage : ContentPage
         {
             PreferencesLabel.Text = "preferences FAILED: " + ex.GetType().Name + ": " + ex.Message;
         }
+    }
+
+    private void OnBatteryClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            var b = Battery.Default;
+            BatteryLabel.Text = $"battery: level={b.ChargeLevel:P0} · state={b.State} · source={b.PowerSource} · saver={b.EnergySaverStatus}";
+
+            // 事件订阅验证：模拟器改电量/接拔充电线即可触发 BATTERY_CHANGED
+            Battery.Default.BatteryInfoChanged -= OnBatteryChanged;
+            Battery.Default.BatteryInfoChanged += OnBatteryChanged;
+        }
+        catch (Exception ex)
+        {
+            BatteryLabel.Text = "battery FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private void OnBatteryChanged(object? sender, BatteryInfoChangedEventArgs e)
+    {
+        BatteryLabel.Text = $"event! level={e.ChargeLevel:P0} · state={e.State} · source={e.PowerSource}";
     }
 
     private void OnRefreshDisplayClicked(object? sender, EventArgs e)

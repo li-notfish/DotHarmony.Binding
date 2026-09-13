@@ -27,6 +27,11 @@
         <Label x:Name="PreferencesLabel"
                HorizontalTextAlignment="Center"
                BackgroundColor="White" Padding="8" />
+        <Button Text="Battery info + change events"
+                Clicked="OnBatteryClicked" />
+        <Label x:Name="BatteryLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
         <Button Text="Refresh display info"
                 Clicked="OnRefreshDisplayClicked" />
     </StackLayout>
