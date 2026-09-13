@@ -113,6 +113,39 @@ internal static class NativeValue
     }
 
     /// <summary>
+    /// 从 JS Map/对象取数值键的值：普通对象命名属性优先（不存在的命名属性返回 undefined 不抛），
+    /// 回退 Map.get；无值返回 IntPtr.Zero。配合 FromMap 消费 asset 查询结果。
+    /// </summary>
+    public static IntPtr GetMapped(IntPtr obj, double key)
+    {
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_named_property(env, obj, Encoding.UTF8.GetBytes(key.ToString("0")), out var byProp).ThrowIfFailed();
+        NativeNodeApi.napi_typeof(env, byProp, out var byPropType).ThrowIfFailed();
+        if (byPropType != NativeNodeApi.napi_valuetype.napi_undefined)
+            return byProp;
+        NativeNodeApi.napi_get_named_property(env, obj, Encoding.UTF8.GetBytes("get"), out var getFn).ThrowIfFailed();
+        NativeNodeApi.napi_call_function(env, obj, getFn, 1, [From(key)], out var byGet).ThrowIfFailed();
+        NativeNodeApi.napi_typeof(env, byGet, out var byGetType).ThrowIfFailed();
+        return byGetType == NativeNodeApi.napi_valuetype.napi_undefined ? IntPtr.Zero : byGet;
+    }
+
+    /// <summary>
+    /// 将 (数值键, napi 值) 对构造为真正的 JS Map（global→Map 构造器→new→set 逐项写入）。
+    /// asset.AssetMap = Map<Tag, Value>——普通 JS 对象不被接受（实测 "Expect Map type."）。
+    /// </summary>
+    public static IntPtr FromMap(params (double Key, IntPtr Value)[] entries)
+    {
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_global(env, out var global).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, global, Encoding.UTF8.GetBytes("Map"), out var mapCtor).ThrowIfFailed();
+        NativeNodeApi.napi_new_instance(env, mapCtor, 0, ReadOnlySpan<IntPtr>.Empty, out var map).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, map, Encoding.UTF8.GetBytes("set"), out var setFn).ThrowIfFailed();
+        foreach (var (key, value) in entries)
+            NativeNodeApi.napi_call_function(env, map, setFn, 2, [From(key), value], out _).ThrowIfFailed();
+        return map;
+    }
+
+    /// <summary>
     /// 将字节数组封送为新的 JS ArrayBuffer（拷贝语义：后续修改 C# 数组不影响 JS 侧）
     /// </summary>
     public static IntPtr From(byte[] value)
