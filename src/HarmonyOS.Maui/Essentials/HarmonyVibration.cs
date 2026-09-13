@@ -15,6 +15,9 @@ public class HarmonyVibration : IVibration
     const double DefaultDurationMs = 500;
     const double MaxDurationMs = 5000;
 
+    // 振动器在手机设备上恒可用（IsSupportEffect 按效果查询，与 MAUI 的设备级语义不同）
+    public bool IsSupported => true;
+
     public void Vibrate() => Vibrate(TimeSpan.FromMilliseconds(DefaultDurationMs));
 
     public void Vibrate(TimeSpan duration)

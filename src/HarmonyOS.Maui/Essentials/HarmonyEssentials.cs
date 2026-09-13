@@ -44,6 +44,20 @@ public static class HarmonyEssentials
             new HarmonyVibration(), static (m, impl) => m.CreateDelegate<Action<IVibration>>()(impl));
         SetImplementation(typeof(global::Microsoft.Maui.Networking.Connectivity), "SetCurrent",
             new HarmonyConnectivity(), static (m, impl) => m.CreateDelegate<Action<IConnectivity>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.Storage.FileSystem), "SetCurrent",
+            new HarmonyFileSystem(), static (m, impl) => m.CreateDelegate<Action<IFileSystem>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.ApplicationModel.Launcher), "SetDefault",
+            new HarmonyLauncher(), static (m, impl) => m.CreateDelegate<Action<ILauncher>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.ApplicationModel.Browser), "SetDefault",
+            new HarmonyBrowser(), static (m, impl) => m.CreateDelegate<Action<IBrowser>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.ApplicationModel.Communication.PhoneDialer), "SetDefault",
+            new HarmonyPhoneDialer(), static (m, impl) => m.CreateDelegate<Action<IPhoneDialer>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.ApplicationModel.DataTransfer.Share), "SetDefault",
+            new HarmonyShare(), static (m, impl) => m.CreateDelegate<Action<IShare>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.ApplicationModel.Communication.Email), "SetDefault",
+            new HarmonyEmail(), static (m, impl) => m.CreateDelegate<Action<IEmail>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.Storage.SecureStorage), "SetDefault",
+            new HarmonySecureStorage(), static (m, impl) => m.CreateDelegate<Action<ISecureStorage>>()(impl));
 
         // IMainThread：注入点签名特殊（双委托而非接口）——SetCustomImplementation(Func<bool>, Action<Action>)
         var mainThread = new HarmonyMainThread();
@@ -55,7 +69,7 @@ public static class HarmonyEssentials
             [(Func<bool>)(() => mainThread.IsMainThread()), (Action<Action>)(mainThread.BeginInvokeOnMainThread)]);
 
         HiLog.Info("Essentials",
-            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / MainThread");
+            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / FileSystem / Launcher / Browser / PhoneDialer / Share / Email / SecureStorage / MainThread");
     }
 
     private delegate void Setter<TInterface>(MethodInfo m, TInterface impl);

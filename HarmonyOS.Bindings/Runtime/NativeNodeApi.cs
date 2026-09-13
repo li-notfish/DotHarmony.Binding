@@ -266,6 +266,15 @@ internal static partial class NativeNodeApi
         IntPtr byte_length,
         out IntPtr data,
         out napi_value result);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_create_typedarray(
+        napi_env env,
+        int type,
+        IntPtr length,
+        napi_value arraybuffer,
+        IntPtr byte_offset,
+        out napi_value result);
     [LibraryImport(NApiLib)]
     internal static partial napi_status napi_is_typedarray(
         napi_env env,

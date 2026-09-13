@@ -97,6 +97,22 @@ internal static class NativeValue
     public static IntPtr From(Enum? value) => value == null ? IntPtr.Zero : From(Convert.ToInt32(value));
 
     /// <summary>
+    /// 将字节数组封送为新的 JS Uint8Array（拷贝语义）。asset 等 BYTES 参数要求 Uint8Array
+    /// （而非 From(byte[]) 的 ArrayBuffer），两者并存。
+    /// </summary>
+    public static IntPtr FromUint8Array(byte[] value)
+    {
+        if (value == null) return IntPtr.Zero;
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_create_arraybuffer(env, (IntPtr)value.Length, out var data, out var buffer).ThrowIfFailed();
+        if (value.Length > 0)
+            Marshal.Copy(value, 0, data, value.Length);
+        // napi_typedarray_type.napi_uint8_array = 1
+        NativeNodeApi.napi_create_typedarray(env, 1, (IntPtr)value.Length, buffer, IntPtr.Zero, out var result).ThrowIfFailed();
+        return result;
+    }
+
+    /// <summary>
     /// 将字节数组封送为新的 JS ArrayBuffer（拷贝语义：后续修改 C# 数组不影响 JS 侧）
     /// </summary>
     public static IntPtr From(byte[] value)

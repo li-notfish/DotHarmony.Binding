@@ -27,7 +27,7 @@ public class HarmonyConnectivity : IConnectivity
             if (caps is not null && (Array.IndexOf(caps.NetworkCap, HNetCap.NetCapabilityInternet) >= 0 ||
                                      Array.IndexOf(caps.NetworkCap, HNetCap.NetCapabilityValidated) >= 0))
                 return NetworkAccess.Internet;
-            return NetworkAccess.LocalNetwork;
+            return NetworkAccess.Local;
         }
     }
 
