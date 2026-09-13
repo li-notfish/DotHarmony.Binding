@@ -55,7 +55,7 @@ internal static class NativeCallbacks
         }
         catch
         {
-            if (NativeNodeApi.napi_get_undefined(env, out var undefined) == NativeNodeApi.napi_status.napi_ok)
+            if (NativeNodeApi.napi_get_undefined(env, out var undefined) == napi_status.napi_ok)
                 return undefined;
             return IntPtr.Zero;
         }
