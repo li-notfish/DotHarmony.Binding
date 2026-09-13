@@ -37,6 +37,18 @@
         <Label x:Name="VibrationLabel"
                HorizontalTextAlignment="Center"
                BackgroundColor="White" Padding="8" />
+        <Button Text="Connectivity info + change events"
+                Clicked="OnConnectivityClicked" />
+        <Label x:Name="ConnectivityLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Open system settings"
+                Clicked="OnSettingsClicked" />
+        <Button Text="Toggle keep screen on"
+                Clicked="OnKeepScreenOnClicked" />
+        <Label x:Name="KeepScreenOnLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
         <Button Text="Refresh display info"
                 Clicked="OnRefreshDisplayClicked" />
     </StackLayout>

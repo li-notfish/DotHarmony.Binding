@@ -1,4 +1,4 @@
-// Essentials 七服务的标准入口验证：DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration。
+// Essentials 九服务的标准入口验证：DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / MainThread。
 // 实现由 HarmonyOS.Maui 启动时注入；netstandard 缺省实现会 throw——本页任何一栏有值即注入生效。
 // 剪贴板读权限（READ_PASTEBOARD，user_grant）：首次点击会弹系统授权对话框，
 // 允许后回环显示写入文本；拒绝则显示失败原因（可到系统设置改为"始终允许"）。
@@ -52,7 +52,7 @@ public partial class MainPage : ContentPage
         try
         {
             AppInfoLabel.Text =
-                $"pkg {AppInfo.Current.PackageName} v{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString}) · {AppInfo.Current.PackagingModel}";
+                $"pkg {AppInfo.Current.PackageName} v{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString}) · {AppInfo.Current.PackagingModel} · theme={AppInfo.Current.RequestedTheme}";
         }
         catch (Exception ex)
         {
@@ -127,6 +127,55 @@ public partial class MainPage : ContentPage
         catch (Exception ex)
         {
             VibrationLabel.Text = "vibration FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private void OnConnectivityClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            var c = Connectivity.Current;
+            var profiles = string.Join("/", c.ConnectionProfiles);
+            ConnectivityLabel.Text = $"network: {c.NetworkAccess} · [{profiles}]";
+
+            // 事件订阅验证：模拟器开关 Wi-Fi / 飞行模式即可触发
+            Connectivity.Current.ConnectivityChanged -= OnConnectivityChanged;
+            Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
+        }
+        catch (Exception ex)
+        {
+            ConnectivityLabel.Text = "connectivity FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e)
+    {
+        var profiles = string.Join("/", e.ConnectionProfiles);
+        ConnectivityLabel.Text = $"event! {e.NetworkAccess} · [{profiles}]";
+    }
+
+    private void OnSettingsClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            AppInfo.Current.ShowSettingsUI();
+        }
+        catch (Exception ex)
+        {
+            KeepScreenOnLabel.Text = "settings FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private void OnKeepScreenOnClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            DeviceDisplay.Current.KeepScreenOn = !DeviceDisplay.Current.KeepScreenOn;
+            KeepScreenOnLabel.Text = $"keepScreenOn={DeviceDisplay.Current.KeepScreenOn}";
+        }
+        catch (Exception ex)
+        {
+            KeepScreenOnLabel.Text = "keepScreenOn FAILED: " + ex.GetType().Name + ": " + ex.Message;
         }
     }
 
