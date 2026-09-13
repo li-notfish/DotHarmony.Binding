@@ -12,6 +12,7 @@ using System.Reflection;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Microsoft.Maui.Devices;
+using Microsoft.Maui.Storage;
 using HarmonyOS.Bindings.Runtime;
 
 namespace HarmonyOS.Maui.Essentials;
@@ -35,8 +36,11 @@ public static class HarmonyEssentials
             new HarmonyAppInfo(), static (m, impl) => m.CreateDelegate<Action<IAppInfo>>()(impl));
         SetImplementation(typeof(Clipboard), "SetDefault",
             new HarmonyClipboard(), static (m, impl) => m.CreateDelegate<Action<IClipboard>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefault",
+            new HarmonyPreferences(), static (m, impl) => m.CreateDelegate<Action<IPreferences>>()(impl));
 
-        HiLog.Info("Essentials", "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard");
+        HiLog.Info("Essentials",
+            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences");
     }
 
     private delegate void Setter<TInterface>(MethodInfo m, TInterface impl);
