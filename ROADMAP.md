@@ -307,9 +307,23 @@ VIBRATE 为 system_grant，宿主模板 module.json5 已声明。**本批按用�
 - **IMainThread**：SetCustomImplementation 双委托；JS 线程 == UI 线程 == Install 线程，
   IsMainThread 捕获比对，BeginInvokeOnMainThread 直接内联（TSFN 仅 native→.NET 方向，无反向投递）
 
-**剩余清单（立项待做）**：ISecureStorage（security.asset 事务性 API）、IFileSystem（file.fs
-灰度）、ILauncher（want 通道就位）、传感器（Sensor 已可实测——2.9 有事件回路沉淀）等
-按价值逐项接入；电池/网络事件的模拟器触发验证。
+**最终批次（✅ 2026-09-13 Essentials 16 服务全量收口）**：
+- **IFileSystem**：目录经 ability 上下文 filesDir/cacheDir，包内文件经 resourceManager.getRawFileContent
+  （file.fs 灰度本接口不需要）
+- **ILauncher**（canOpenLink + startAbility({uri}) + fileuri.getUriFromPath）/ **IBrowser**（{uri}
+  拉起系统浏览器）/ **IPhoneDialer**（tel: + sim.getSimStateSync）/ **IEmail**（mailto: URI 编码）
+  —— 全走 want 通道
+- **IShare**：文本走 ohos.want.action.sendData；文件分享需跨应用 URI 授权通道（ability.params.stream），
+  唯一留白
+- **ISecureStorage**：@ohos.security.asset，AssetMap 数字 Tag 键经 IDictionary 字符串键构造，
+  BYTES 值要求 Uint8Array（Runtime 补 FromUint8Array = napi_create_arraybuffer +
+  napi_create_typedarray，非 ArrayBuffer）
+- **前两批未构建代码的编译缺口全数补齐**（IVibration.IsSupported / IEmail.IsComposeSupported /
+  NetworkAccess.Local / EmailMessage.Cc/Bcc——均为成员名出入，75/75 测试绿）
+
+**剩余清单（立项待做）**：IShare 文件分享（需跨应用 URI 授权）、传感器族/定位/媒体选择
+（Sensor 已可实测——2.9 有事件回路沉淀）等按价值逐项接入；电池/网络/SecureStorage 事件的
+模拟器触发验证。
 
 ---
 

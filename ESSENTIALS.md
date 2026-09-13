@@ -110,11 +110,15 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | IBattery | SetDefault | batteryInfo（纯同步属性）+ @ohos.power.getPowerMode()（省电模式）；变化事件走 usual.event.BATTERY_CHANGED / POWER_SAVE_MODE_CHANGED commonEvent 订阅（回调内重读属性+去重） | ✅ 2026-09-13（模拟器实测 level/state/source/saver；chargingStatus=0 → 按 Discharging 处理） |
 | IVibration | SetDefault | vibrator（startVibration {type:'time'} + stopVibration() 同步重载；时长钳制 [0,5s] 对齐 MAUI）；VIBRATE 为 system_grant，宿主模板已声明 | ✅ 2026-09-13（未构建未部署——按用户指示；真机触摸验证留待下次构建） |
 | IConnectivity | SetCurrent | net.connection（2026-09-13 出灰度；HasDefaultNetSync + getNetCapabilitiesSync 的 NET_CAPABILITY_INTERNET=12/VALIDATED=16 判定；bearerTypes 映射；netAvailable/netLost/netConnectionChange 监听） | ✅ 2026-09-13（未构建未部署；真机开关 Wi-Fi 验证留待下次构建） |
-| IFileSystem | SetCurrent | file.fs（灰度） | 待做 |
-| ILauncher / IShare / IEmail / IPhoneDialer / IBrowser | SetDefault | want/startAbility（abilityContext 通道；AppInfo.ShowSettingsUI 已走通 startAbility({uri:'ohos.settings'})） | 待做（Launcher 最简） |
+| IFileSystem | SetCurrent | 目录经 ability 上下文 filesDir/cacheDir；包内文件经 resourceManager.getRawFileContent（rawfile 相对路径）。file.fs（灰度）本接口不需要 | ✅ 2026-09-13（未构建未部署前已补构建验证，75/75 测试绿；模拟器路径验证留待下次部署） |
+| ILauncher | SetDefault | want/startAbility（{uri}）；CanOpenAsync 经 bundleManager.canOpenLink（API 12；自定义 scheme 需 app.json5 声明 querySchemes 白名单）；OpenFileRequest 经 fileuri.getUriFromPath 折算 file:// | ✅ 2026-09-13 |
 | IMainThread | SetCustomImplementation（双委托） | JS 线程 == UI 线程 == Install 线程；IsMainThread 捕获比对，BeginInvokeOnMainThread 直接内联（无 .NET→JS 线程投递通道，TSFN 仅 native→.NET 方向） | ✅ 2026-09-13 |
-| ISecureStorage | SetDefault | security.asset | 待做 |
+| ISecureStorage | SetDefault | security.asset（AssetMap 数字 Tag 键：SECRET=BYTES\|0x01 / ALIAS=BYTES\|0x02 / ACCESSIBILITY=NUMBER\|0x03 等，经 IDictionary 字符串键构造；BYTES 值要求 Uint8Array——Runtime 补 FromUint8Array，非 ArrayBuffer） | ✅ 2026-09-13 |
+| IBrowser | SetDefault | want/startAbility（{uri} 拉起系统默认浏览器）；BrowserLaunchMode 的进程内模式无系统通道，统一系统浏览器 | ✅ 2026-09-13 |
+| IPhoneDialer | SetDefault | startAbility({uri:'tel:'+number})；IsSupported 经 sim.getSimStateSync（卡槽 0，无 SIM = 不支持） | ✅ 2026-09-13 |
+| IShare | SetDefault | 文本经 startAbility({action:'ohos.want.action.sendData', type:'text/plain', parameters:{text}})；**文件分享需跨应用 URI 授权通道（ability.params.stream），抛 FeatureNotSupportedException 留待立项** | ✅ 2026-09-13（文本） |
+| IEmail | SetDefault | mailto: URI（to/cc/bcc/subject/body 编码进 query）+ startAbility；IsComposeSupported 尽力 true（mailto 由系统路由） | ✅ 2026-09-13 |
 | ITextToSpeech / IHapticFeedback / IFlashlight | SetDefault | textToSpeech / vibrator / brightness | 远期 |
 | IGeolocation / IMap / ISensors 族 / IMediaPicker / IFilePicker / IScreenshot | SetDefault | 各自子系统 | 远期 |
 
-已实现服务的成员级缺口（非阻塞、按价值补）：~~AppInfo.RequestedTheme/ShowSettingsUI~~（✅ 2026-09-13：getColorMode + startAbility({uri:'ohos.settings'})）、~~DeviceDisplay.KeepScreenOn~~（✅ 2026-09-13：window.GetLastWindowAsync → setWindowKeepScreenOn）、DeviceInfo.Idiom 平板判定。
+已实现服务的成员级缺口（非阻塞、按价值补）：~~AppInfo.RequestedTheme/ShowSettingsUI~~（✅ 2026-09-13）、~~DeviceDisplay.KeepScreenOn~~（✅ 2026-09-13）、~~IShare 文件分享~~（需跨应用 URI 授权，见上表）、DeviceInfo.Idiom 平板判定。
