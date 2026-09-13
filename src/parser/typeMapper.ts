@@ -360,6 +360,24 @@ export class TypeMapper {
         this.TYPE_MAP[typescript] = { typescript, csharp, isNative };
     }
 
+    /** 仅当尚无映射时登记（首登记者优先）：用于导入类型 IntPtr 回退，不覆盖全局字面量别名扫描的 string 映射 */
+    static addMappingIfAbsent(typescript: string, csharp: string, isNative: boolean = false): void {
+        if (this.TYPE_MAP[typescript] !== undefined) return;
+        this.TYPE_MAP[typescript] = { typescript, csharp, isNative };
+    }
+
+    /** 字面量联合别名（Permissions 等）——导入回退须为其保留 string 映射，但仅限此名单 */
+    private static readonly stringLiteralAliases = new Set<string>();
+
+    static registerStringLiteralAlias(typescript: string): void {
+        this.TYPE_MAP[typescript] = { typescript, csharp: 'string', isNative: false };
+        this.stringLiteralAliases.add(typescript);
+    }
+
+    static isStringLiteralAlias(typescript: string): boolean {
+        return this.stringLiteralAliases.has(typescript);
+    }
+
     /** 移除映射（record 可封送性收敛时调用，移除后类型退回 IntPtr 句柄） */
     static removeMapping(typescript: string): void {
         delete this.TYPE_MAP[typescript];

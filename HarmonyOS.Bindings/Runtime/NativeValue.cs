@@ -110,6 +110,22 @@ internal static class NativeValue
     }
 
     /// <summary>
+    /// 将字符串数组封送为新的 JS Array<string>（napi_create_array_with_length + 逐元素 set；
+    /// 生成器对 Array<string> 参数发射 string[] 签名——此前无封送实现，调用即 NotSupportedException）
+    /// </summary>
+    public static IntPtr From(string[] value)
+    {
+        if (value == null) return IntPtr.Zero;
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_create_array_with_length(env, value.Length, out var result).ThrowIfFailed();
+        for (uint i = 0; i < value.Length; i++)
+        {
+            NativeNodeApi.napi_set_element(env, result, i, From(value[i] ?? string.Empty)).ThrowIfFailed();
+        }
+        return result;
+    }
+
+    /// <summary>
     /// 将 JsBigInt 封送为 JS bigint（napi_create_bigint_int64——不是 number！）
     /// </summary>
     public static IntPtr From(JsBigInt value)
@@ -146,6 +162,7 @@ internal static class NativeValue
         Enum e => From(e),
         JsBigInt bi => From(bi),
         byte[] buf => From(buf),
+        string[] strs => From(strs),
         JsObject j => From(j),
         Delegate d => From(d),
         _ => FromRecord(value)

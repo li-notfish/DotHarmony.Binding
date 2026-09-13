@@ -99,14 +99,6 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// verifyAccessToken
     /// </summary>
-    public Task<global::HarmonyOS.ArkUI.GrantStatus> VerifyAccessTokenAsync(double tokenID, IntPtr permissionName)
-    {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.GrantStatus>(_verifyAccessToken, tokenID, permissionName);
-    }
-
-    /// <summary>
-    /// verifyAccessToken
-    /// </summary>
     public Task<global::HarmonyOS.ArkUI.GrantStatus> VerifyAccessTokenAsync(double tokenID, string permissionName)
     {
         return CallMethodAsync<global::HarmonyOS.ArkUI.GrantStatus>(_verifyAccessToken, tokenID, permissionName);
@@ -115,7 +107,7 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// verifyAccessTokenSync
     /// </summary>
-    public global::HarmonyOS.ArkUI.GrantStatus VerifyAccessTokenSync(double tokenID, IntPtr permissionName)
+    public global::HarmonyOS.ArkUI.GrantStatus VerifyAccessTokenSync(double tokenID, string permissionName)
     {
         return CallMethod<global::HarmonyOS.ArkUI.GrantStatus>(_verifyAccessTokenSync, tokenID, permissionName);
     }
@@ -123,7 +115,7 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// checkAccessToken
     /// </summary>
-    public Task<global::HarmonyOS.ArkUI.GrantStatus> CheckAccessTokenAsync(double tokenID, IntPtr permissionName)
+    public Task<global::HarmonyOS.ArkUI.GrantStatus> CheckAccessTokenAsync(double tokenID, string permissionName)
     {
         return CallMethodAsync<global::HarmonyOS.ArkUI.GrantStatus>(_checkAccessToken, tokenID, permissionName);
     }
@@ -131,7 +123,7 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// checkAccessTokenSync
     /// </summary>
-    public global::HarmonyOS.ArkUI.GrantStatus CheckAccessTokenSync(double tokenID, IntPtr permissionName)
+    public global::HarmonyOS.ArkUI.GrantStatus CheckAccessTokenSync(double tokenID, string permissionName)
     {
         return CallMethod<global::HarmonyOS.ArkUI.GrantStatus>(_checkAccessTokenSync, tokenID, permissionName);
     }
@@ -139,7 +131,7 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// requestPermissionsFromUser
     /// </summary>
-    public Task<IntPtr> RequestPermissionsFromUserAsync(IntPtr context, IntPtr[] permissionList)
+    public Task<IntPtr> RequestPermissionsFromUserAsync(IntPtr context, string[] permissionList)
     {
         return CallMethodAsync<IntPtr>(_requestPermissionsFromUser, context, permissionList);
     }
@@ -147,7 +139,7 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// on
     /// </summary>
-    public void On(string type, IntPtr[] permissionList, IntPtr callback)
+    public void On(string type, string[] permissionList, IntPtr callback)
     {
         CallMethodVoid(_on, type, permissionList, callback);
     }
@@ -155,7 +147,7 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string type, IntPtr[] permissionList, IntPtr callback)
+    public void Off(string type, string[] permissionList, IntPtr callback)
     {
         CallMethodVoid(_off, type, permissionList, callback);
     }
@@ -163,7 +155,7 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// requestPermissionOnSetting
     /// </summary>
-    public Task<global::HarmonyOS.ArkUI.GrantStatus[]> RequestPermissionOnSettingAsync(IntPtr context, IntPtr[] permissionList)
+    public Task<global::HarmonyOS.ArkUI.GrantStatus[]> RequestPermissionOnSettingAsync(IntPtr context, string[] permissionList)
     {
         return CallMethodAsync(_requestPermissionOnSetting, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.GrantStatus>(e)), context, permissionList);
     }
@@ -171,7 +163,7 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// openPermissionOnSetting
     /// </summary>
-    public Task<global::HarmonyOS.ArkUI.SelectedResult> OpenPermissionOnSettingAsync(IntPtr context, IntPtr permission)
+    public Task<global::HarmonyOS.ArkUI.SelectedResult> OpenPermissionOnSettingAsync(IntPtr context, string permission)
     {
         return CallMethodAsync<global::HarmonyOS.ArkUI.SelectedResult>(_openPermissionOnSetting, context, permission);
     }
@@ -187,7 +179,7 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// getSelfPermissionStatus
     /// </summary>
-    public global::HarmonyOS.ArkUI.PermissionStatus GetSelfPermissionStatus(IntPtr permissionName)
+    public global::HarmonyOS.ArkUI.PermissionStatus GetSelfPermissionStatus(string permissionName)
     {
         return CallMethod<global::HarmonyOS.ArkUI.PermissionStatus>(_getSelfPermissionStatus, permissionName);
     }
@@ -197,10 +189,10 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<IntPtr> callback, IntPtr[] permissionList)
+    public void On(string type, System.Action<PermissionStateChangeInfo> callback, string[] permissionList)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback(new PermissionStateChangeInfo(args[0])),
             js => NodeApi.CallMethodVoid(Handle, _on, type, js, permissionList));
     }
 
@@ -215,7 +207,7 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<IntPtr> callback, IntPtr[] permissionList)
+    public void Off(string type, System.Action<PermissionStateChangeInfo> callback, string[] permissionList)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, permissionList));
     }
@@ -223,12 +215,12 @@ public sealed partial class AtManager : JsObject
     /// <summary>
     /// 监听 selfPermissionStateChange 事件（对应 on/off）
     /// </summary>
-    public event System.Action<IntPtr> SelfPermissionStateChange
+    public event System.Action<PermissionStateChangeInfo> SelfPermissionStateChange
     {
         add
         {
             _eventListeners.Add(("selfPermissionStateChange", value),
-                args => value(args[0]),
+                args => value(new PermissionStateChangeInfo(args[0])),
                 js => NodeApi.CallMethodVoid(Handle, _on, "selfPermissionStateChange", js));
         }
         remove
@@ -236,5 +228,32 @@ public sealed partial class AtManager : JsObject
             _eventListeners.Remove(("selfPermissionStateChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "selfPermissionStateChange", js));
         }
     }
+
+}
+
+/// <summary>
+/// PermissionStateChangeInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PermissionStateChangeInfo : JsObject
+{
+    public PermissionStateChangeInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _change => "change"u8;
+    private static ReadOnlySpan<byte> _tokenID => "tokenID"u8;
+    private static ReadOnlySpan<byte> _permissionName => "permissionName"u8;
+    /// <summary>
+    /// change
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PermissionStateChangeType Change => (global::HarmonyOS.ArkUI.PermissionStateChangeType)NativeValue.ToInt(GetPropertyRaw(_change));
+
+    /// <summary>
+    /// tokenID
+    /// </summary>
+    public double TokenId => NativeValue.ToDouble(GetPropertyRaw(_tokenID));
+
+    /// <summary>
+    /// permissionName
+    /// </summary>
+    public string PermissionName => NativeValue.ToString(GetPropertyRaw(_permissionName)) ?? string.Empty;
 
 }

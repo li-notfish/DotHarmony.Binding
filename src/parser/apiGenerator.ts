@@ -146,7 +146,9 @@ export class ApiGenerator {
             ...component.classes.map(c => c.name),
         ]);
         for (const n of importedTypeNames) {
-            if (!ownTypeNames.has(n)) {
+            if (!ownTypeNames.has(n) && !TypeMapper.isStringLiteralAlias(n)) {
+                // 字面量联合别名（Permissions→string）由 processFullSDK 入口扫描登记，回退不得覆盖；
+                // 其余导入类型维持旧行为：无条件 IntPtr（全局保守降级，避免引用未生成的包装类型）
                 TypeMapper.addMapping(n, 'IntPtr');
             }
         }
@@ -645,7 +647,7 @@ export class ApiGenerator {
         lines.push('                    fixed (byte* p = utf8)');
         lines.push('                    {');
         lines.push('                        var status = NativeNodeApi.napi_load_module(env, p, out var module);');
-        lines.push('                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)');
+        lines.push('                        if (status == napi_status.napi_ok && module != IntPtr.Zero)');
         lines.push('                        {');
         lines.push('                            _moduleRef = new NapiReference(module);');
         lines.push('                            break;');
