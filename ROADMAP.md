@@ -275,9 +275,17 @@ MAUI 生态代码因此零改造可用。
 NodeApi 直调（生成包装的 ValueType 签名被 distributedData 同名枚举污染——跨模块同名别名
 解析是生成器剩余债）；跨重启持久化实测（计数器延续）。适配指南见 **[ESSENTIALS.md](ESSENTIALS.md)**。
 
+**IBattery（✅ 2026-09-13 第六个服务）**：@ohos.batteryInfo 纯同步属性 + @ohos.power.getPowerMode()
+（省电模式）；ChargeLevel 从 batterySOC(0-100) 折算。变化事件走 usual.event.BATTERY_CHANGED /
+POWER_SAVE_MODE_CHANGED commonEvent 订阅（IDictionary 路径造 subscribeInfo、
+NodeApi.CreateCallbackFunction 做回调），回调内重读属性+去重缓存（MAUI 同款语义）。
+模拟器实测：`level=100% · state=Discharging · source=Battery · saver=Off`（模拟器
+chargingStatus=0 → 按 Discharging 处理，贴近 MAUI 语义）。
+
 **剩余清单（立项待做）**：ISecureStorage（@ohos.data.preferences 已转正，事务性 API 在自定义
-entry 写入路径）、IMainThread（借 napi 线程检查）、电池/传感器（Sensor 已可实测——2.9 有事件回路沉淀）等
-按价值逐项接入；ClipboardContentChanged 事件通道。
+entry 写入路径）、IMainThread（借 napi 线程检查）、IVibration/IConnectivity（net.connection
+灰度需转正）、传感器（Sensor 已可实测——2.9 有事件回路沉淀）等
+按价值逐项接入；电池事件的模拟器触发验证（需改电量通道）。
 
 ---
 
