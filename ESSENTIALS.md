@@ -31,7 +31,7 @@ MAUI 的 Essentials 静态入口（`DeviceInfo.Current` / `Preferences.Default` 
 |---|---|---|
 | `Xxx.Current` | `internal static void SetCurrent(IXxx? impl)` | DeviceInfo / DeviceDisplay / AppInfo / FileSystem / Geocoding / Connectivity / AppActions |
 | `Xxx.Default` | `internal static void SetDefault(IXxx? impl)` | Clipboard / Preferences / SecureStorage / Vibration / Battery / Launcher / Share / Email / PhoneDialer / Flashlight / Map / MediaPicker / FilePicker / Screenshot / TextToSpeech / HapticFeedback / Browser / Geolocation |
-| 例外 | `internal static void SetCustomImplementation(Func<bool> isMainThread, Action<Action> beginInvokeOnMainThread)` | MainThread（两个委托，非接口实现） |
+| 例外 | `internal static void SetCustomImplementation(Func<bool> isMainThread, Action<Action> beginInvokeOnMainThread)` | MainThread（两个委托，非接口实现）——**MAUI 10.0.11 尚无此注入点（.NET 11 main 才加），见下表 IMainThread 行** |
 
 现有四个实现可作为范式：同步属性型（HarmonyDeviceInfo）、事件转发型（HarmonyDeviceDisplay）、
 异步 Promise 型（HarmonyClipboard）。
@@ -112,8 +112,8 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | IConnectivity | SetCurrent | net.connection（2026-09-13 出灰度；HasDefaultNetSync + getNetCapabilitiesSync 的 NET_CAPABILITY_INTERNET=12/VALIDATED=16 判定；bearerTypes 映射；netAvailable/netLost/netConnectionChange 监听） | ✅ 2026-09-13（未构建未部署；真机开关 Wi-Fi 验证留待下次构建） |
 | IFileSystem | SetCurrent | 目录经 ability 上下文 filesDir/cacheDir；包内文件经 resourceManager.getRawFileContent（rawfile 相对路径）。file.fs（灰度）本接口不需要 | ✅ 2026-09-13（未构建未部署前已补构建验证，75/75 测试绿；模拟器路径验证留待下次部署） |
 | ILauncher | SetDefault | want/startAbility（{uri}）；CanOpenAsync 经 bundleManager.canOpenLink（API 12；自定义 scheme 需 app.json5 声明 querySchemes 白名单）；OpenFileRequest 经 fileuri.getUriFromPath 折算 file:// | ✅ 2026-09-13 |
-| IMainThread | SetCustomImplementation（双委托） | JS 线程 == UI 线程 == Install 线程；IsMainThread 捕获比对，BeginInvokeOnMainThread 直接内联（无 .NET→JS 线程投递通道，TSFN 仅 native→.NET 方向） | ✅ 2026-09-13 |
-| ISecureStorage | SetDefault | security.asset（AssetMap 数字 Tag 键：SECRET=BYTES\|0x01 / ALIAS=BYTES\|0x02 / ACCESSIBILITY=NUMBER\|0x03 等，经 IDictionary 字符串键构造；BYTES 值要求 Uint8Array——Runtime 补 FromUint8Array，非 ArrayBuffer） | ✅ 2026-09-13 |
+| IMainThread | 不注入 | **MAUI 10.0.11 的 MainThread 没有注入点**——PlatformIsMainThread 直接 throw，`SetCustomImplementation(Func<bool>, Action<Action>)` 是 .NET 11 main 分支才加的 API（曾误判为 AOT 裁剪，反编译 net10.0 产物实锤：`CustomImplementation` 0 次）。本宿主 .NET 代码全在原生 UI 线程跑（TSFN 回调同线程），无需 MainThread 静态入口；升级到含 SetCustomImplementation 的 MAUI 版本后再接回。static MainThread 在 net10.0 TFM 抛 NotSupported | ❌ 暂缓（等 MAUI 升级） |
+| ISecureStorage | SetDefault | security.asset（**AssetMap = 真 JS Map\<Tag,Value\>——普通对象被拒，实测 "Expect Map type."，经 NativeValue.FromMap 构造**；数字 Tag 键：SECRET=BYTES\|0x01 / ALIAS=BYTES\|0x02 / ACCESSIBILITY=NUMBER\|0x03 等；BYTES 值要求 Uint8Array——Runtime 补 FromUint8Array，非 ArrayBuffer；查询结果经 GetMapped（命名属性优先/Map.get 兜底）取值；**不走 preQuery/postQuery——那是用户认证流程的 challenge**，querySync 无结果直接抛 not found 捕获 → null） | ✅ 2026-09-13（模拟器实测 set/get roundtrip） |
 | IBrowser | SetDefault | want/startAbility（{uri} 拉起系统默认浏览器）；BrowserLaunchMode 的进程内模式无系统通道，统一系统浏览器 | ✅ 2026-09-13 |
 | IPhoneDialer | SetDefault | startAbility({uri:'tel:'+number})；IsSupported 经 sim.getSimStateSync（卡槽 0，无 SIM = 不支持） | ✅ 2026-09-13 |
 | IShare | SetDefault | 文本经 startAbility({action:'ohos.want.action.sendData', type:'text/plain', parameters:{text}})；**文件分享需跨应用 URI 授权通道（ability.params.stream），抛 FeatureNotSupportedException 留待立项** | ✅ 2026-09-13（文本） |
