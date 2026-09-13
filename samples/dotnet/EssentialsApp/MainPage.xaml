@@ -3,7 +3,8 @@
              x:Class="EssentialsApp.MainPage"
              Title="Essentials"
              BackgroundColor="LightGray">
-    <StackLayout Spacing="12" Padding="12">
+    <ScrollView>
+        <StackLayout Spacing="12" Padding="12">
         <Label x:Name="TitleLabel"
                Text="Essentials on HarmonyOS"
                HorizontalTextAlignment="Center"
@@ -66,4 +67,5 @@
         <Button Text="Refresh display info"
                 Clicked="OnRefreshDisplayClicked" />
     </StackLayout>
+    </ScrollView>
 </ContentPage>
