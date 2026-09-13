@@ -257,7 +257,7 @@ public sealed partial class PickerPhotoSelectOptions : JsObject
     /// <summary>
     /// MIMEType
     /// </summary>
-    public IntPtr MimeType => GetPropertyRaw(_MIMEType);
+    public global::HarmonyOS.ArkUI.PickerPhotoViewMIMETypes? MimeType => (global::HarmonyOS.ArkUI.PickerPhotoViewMIMETypes?)(global::HarmonyOS.ArkUI.PickerPhotoViewMIMETypes)NativeValue.ToInt(GetPropertyRaw(_MIMEType));
 
     /// <summary>
     /// maxSelectNumber

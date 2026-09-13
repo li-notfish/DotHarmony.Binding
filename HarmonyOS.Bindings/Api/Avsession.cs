@@ -433,17 +433,17 @@ public sealed partial class AVSession : JsObject
     /// <summary>
     /// getOutputDevice
     /// </summary>
-    public Task<OutputDeviceInfo> GetOutputDeviceAsync()
+    public Task<IntPtr> GetOutputDeviceAsync()
     {
-        return CallMethodAsync(_getOutputDevice, static h => new OutputDeviceInfo(h));
+        return CallMethodAsync<IntPtr>(_getOutputDevice);
     }
 
     /// <summary>
     /// getOutputDeviceSync
     /// </summary>
-    public OutputDeviceInfo GetOutputDeviceSync()
+    public IntPtr GetOutputDeviceSync()
     {
-        return CallMethod(_getOutputDeviceSync, static h => new OutputDeviceInfo(h));
+        return CallMethod<IntPtr>(_getOutputDeviceSync);
     }
 
     /// <summary>
@@ -1235,17 +1235,17 @@ public sealed partial class AVSessionController : JsObject
     /// <summary>
     /// getOutputDevice
     /// </summary>
-    public Task<OutputDeviceInfo> GetOutputDeviceAsync()
+    public Task<IntPtr> GetOutputDeviceAsync()
     {
-        return CallMethodAsync(_getOutputDevice, static h => new OutputDeviceInfo(h));
+        return CallMethodAsync<IntPtr>(_getOutputDevice);
     }
 
     /// <summary>
     /// getOutputDeviceSync
     /// </summary>
-    public OutputDeviceInfo GetOutputDeviceSync()
+    public IntPtr GetOutputDeviceSync()
     {
-        return CallMethod(_getOutputDeviceSync, static h => new OutputDeviceInfo(h));
+        return CallMethod<IntPtr>(_getOutputDeviceSync);
     }
 
     /// <summary>
@@ -2549,20 +2549,5 @@ public sealed partial class AVCastController : JsObject
             _eventListeners.Remove(("customDataChange", value), js => NodeApi.CallMethodVoid(Handle, _off, "customDataChange", js));
         }
     }
-
-}
-
-/// <summary>
-/// OutputDeviceInfo 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class OutputDeviceInfo : JsObject
-{
-    public OutputDeviceInfo(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _devices => "devices"u8;
-    /// <summary>
-    /// devices
-    /// </summary>
-    public IntPtr[] Devices => ValueConverter.ConvertArray(GetPropertyRaw(_devices), static e => ValueConverter.Convert<IntPtr>(e));
 
 }

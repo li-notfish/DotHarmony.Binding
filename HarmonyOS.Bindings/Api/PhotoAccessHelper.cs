@@ -550,7 +550,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// <summary>
     /// addResource
     /// </summary>
-    public void AddResource(global::HarmonyOS.ArkUI.ResourceType type, string fileUri)
+    public void AddResource(global::HarmonyOS.ArkUI.PhotoAccessHelperResourceType type, string fileUri)
     {
         CallMethodVoid(_addResource, type, fileUri);
     }
@@ -558,7 +558,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// <summary>
     /// addResource
     /// </summary>
-    public void AddResource(global::HarmonyOS.ArkUI.ResourceType type, byte[] data)
+    public void AddResource(global::HarmonyOS.ArkUI.PhotoAccessHelperResourceType type, byte[] data)
     {
         CallMethodVoid(_addResource, type, data);
     }

@@ -856,9 +856,9 @@ public sealed partial class WebviewController : JsObject
     /// <summary>
     /// getSecurityLevel
     /// </summary>
-    public global::HarmonyOS.ArkUI.SecurityLevel GetSecurityLevel()
+    public global::HarmonyOS.ArkUI.WebviewSecurityLevel GetSecurityLevel()
     {
-        return CallMethod<global::HarmonyOS.ArkUI.SecurityLevel>(_getSecurityLevel);
+        return CallMethod<global::HarmonyOS.ArkUI.WebviewSecurityLevel>(_getSecurityLevel);
     }
 
     /// <summary>

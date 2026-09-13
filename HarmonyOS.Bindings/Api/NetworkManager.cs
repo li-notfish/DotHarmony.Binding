@@ -166,7 +166,7 @@ public static unsafe partial class NetworkManager
     /// <summary>
     /// addFirewallRule
     /// </summary>
-    public static void AddFirewallRule(IntPtr admin, IntPtr firewallRule)
+    public static void AddFirewallRule(IntPtr admin, FirewallRule firewallRule)
     {
         NodeApi.CallMethodVoid(Module, _addFirewallRule, admin, firewallRule);
     }
@@ -174,7 +174,7 @@ public static unsafe partial class NetworkManager
     /// <summary>
     /// removeFirewallRule
     /// </summary>
-    public static void RemoveFirewallRule(IntPtr admin, IntPtr? firewallRule = null)
+    public static void RemoveFirewallRule(IntPtr admin, FirewallRule? firewallRule = null)
     {
         NodeApi.CallMethodVoid(Module, _removeFirewallRule, admin, firewallRule);
     }
@@ -182,15 +182,15 @@ public static unsafe partial class NetworkManager
     /// <summary>
     /// getFirewallRules
     /// </summary>
-    public static IntPtr[] GetFirewallRules(IntPtr admin)
+    public static FirewallRule[] GetFirewallRules(IntPtr admin)
     {
-        return NodeApi.CallMethod(Module, _getFirewallRules, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), admin);
+        return NodeApi.CallMethod(Module, _getFirewallRules, h => ValueConverter.ConvertArray(h, static e => new FirewallRule(e)), admin);
     }
 
     /// <summary>
     /// addDomainFilterRule
     /// </summary>
-    public static void AddDomainFilterRule(IntPtr admin, IntPtr domainFilterRule)
+    public static void AddDomainFilterRule(IntPtr admin, DomainFilterRule domainFilterRule)
     {
         NodeApi.CallMethodVoid(Module, _addDomainFilterRule, admin, domainFilterRule);
     }
@@ -198,7 +198,7 @@ public static unsafe partial class NetworkManager
     /// <summary>
     /// removeDomainFilterRule
     /// </summary>
-    public static void RemoveDomainFilterRule(IntPtr admin, IntPtr? domainFilterRule = null)
+    public static void RemoveDomainFilterRule(IntPtr admin, DomainFilterRule? domainFilterRule = null)
     {
         NodeApi.CallMethodVoid(Module, _removeDomainFilterRule, admin, domainFilterRule);
     }
@@ -206,9 +206,9 @@ public static unsafe partial class NetworkManager
     /// <summary>
     /// getDomainFilterRules
     /// </summary>
-    public static IntPtr[] GetDomainFilterRules(IntPtr admin)
+    public static DomainFilterRule[] GetDomainFilterRules(IntPtr admin)
     {
-        return NodeApi.CallMethod(Module, _getDomainFilterRules, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), admin);
+        return NodeApi.CallMethod(Module, _getDomainFilterRules, h => ValueConverter.ConvertArray(h, static e => new DomainFilterRule(e)), admin);
     }
 
     /// <summary>
@@ -282,6 +282,120 @@ public static unsafe partial class NetworkManager
     {
         NodeApi.CallMethodVoid(Module, _setEthernetConfig, admin, networkInterface, config);
     }
+
+}
+
+/// <summary>
+/// FirewallRule 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class FirewallRule : JsObject
+{
+    public FirewallRule(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _srcAddr => "srcAddr"u8;
+    private static ReadOnlySpan<byte> _destAddr => "destAddr"u8;
+    private static ReadOnlySpan<byte> _srcPort => "srcPort"u8;
+    private static ReadOnlySpan<byte> _destPort => "destPort"u8;
+    private static ReadOnlySpan<byte> _appUid => "appUid"u8;
+    private static ReadOnlySpan<byte> _direction => "direction"u8;
+    private static ReadOnlySpan<byte> _action => "action"u8;
+    private static ReadOnlySpan<byte> _protocol => "protocol"u8;
+    private static ReadOnlySpan<byte> _family => "family"u8;
+    private static ReadOnlySpan<byte> _logType => "logType"u8;
+    /// <summary>
+    /// srcAddr
+    /// </summary>
+    public string? SrcAddr => (string?)NativeValue.ToString(GetPropertyRaw(_srcAddr)) ?? string.Empty;
+
+    /// <summary>
+    /// destAddr
+    /// </summary>
+    public string? DestAddr => (string?)NativeValue.ToString(GetPropertyRaw(_destAddr)) ?? string.Empty;
+
+    /// <summary>
+    /// srcPort
+    /// </summary>
+    public string? SrcPort => (string?)NativeValue.ToString(GetPropertyRaw(_srcPort)) ?? string.Empty;
+
+    /// <summary>
+    /// destPort
+    /// </summary>
+    public string? DestPort => (string?)NativeValue.ToString(GetPropertyRaw(_destPort)) ?? string.Empty;
+
+    /// <summary>
+    /// appUid
+    /// </summary>
+    public string? AppUid => (string?)NativeValue.ToString(GetPropertyRaw(_appUid)) ?? string.Empty;
+
+    /// <summary>
+    /// direction
+    /// </summary>
+    public global::HarmonyOS.ArkUI.NetworkManagerDirection? Direction => (global::HarmonyOS.ArkUI.NetworkManagerDirection?)(global::HarmonyOS.ArkUI.NetworkManagerDirection)NativeValue.ToInt(GetPropertyRaw(_direction));
+
+    /// <summary>
+    /// action
+    /// </summary>
+    public global::HarmonyOS.ArkUI.NetworkManagerAction? Action => (global::HarmonyOS.ArkUI.NetworkManagerAction?)(global::HarmonyOS.ArkUI.NetworkManagerAction)NativeValue.ToInt(GetPropertyRaw(_action));
+
+    /// <summary>
+    /// protocol
+    /// </summary>
+    public global::HarmonyOS.ArkUI.NetworkManagerProtocol? Protocol => (global::HarmonyOS.ArkUI.NetworkManagerProtocol?)(global::HarmonyOS.ArkUI.NetworkManagerProtocol)NativeValue.ToInt(GetPropertyRaw(_protocol));
+
+    /// <summary>
+    /// family
+    /// </summary>
+    public double? Family => (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
+
+    /// <summary>
+    /// logType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.LogType? LogType => (global::HarmonyOS.ArkUI.LogType?)(global::HarmonyOS.ArkUI.LogType)NativeValue.ToInt(GetPropertyRaw(_logType));
+
+}
+
+/// <summary>
+/// DomainFilterRule 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DomainFilterRule : JsObject
+{
+    public DomainFilterRule(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _domainName => "domainName"u8;
+    private static ReadOnlySpan<byte> _appUid => "appUid"u8;
+    private static ReadOnlySpan<byte> _action => "action"u8;
+    private static ReadOnlySpan<byte> _direction => "direction"u8;
+    private static ReadOnlySpan<byte> _family => "family"u8;
+    private static ReadOnlySpan<byte> _logType => "logType"u8;
+    /// <summary>
+    /// domainName
+    /// </summary>
+    public string? DomainName => (string?)NativeValue.ToString(GetPropertyRaw(_domainName)) ?? string.Empty;
+
+    /// <summary>
+    /// appUid
+    /// </summary>
+    public string? AppUid => (string?)NativeValue.ToString(GetPropertyRaw(_appUid)) ?? string.Empty;
+
+    /// <summary>
+    /// action
+    /// </summary>
+    public global::HarmonyOS.ArkUI.NetworkManagerAction? Action => (global::HarmonyOS.ArkUI.NetworkManagerAction?)(global::HarmonyOS.ArkUI.NetworkManagerAction)NativeValue.ToInt(GetPropertyRaw(_action));
+
+    /// <summary>
+    /// direction
+    /// </summary>
+    public global::HarmonyOS.ArkUI.NetworkManagerDirection? Direction => (global::HarmonyOS.ArkUI.NetworkManagerDirection?)(global::HarmonyOS.ArkUI.NetworkManagerDirection)NativeValue.ToInt(GetPropertyRaw(_direction));
+
+    /// <summary>
+    /// family
+    /// </summary>
+    public double? Family => (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
+
+    /// <summary>
+    /// logType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.LogType? LogType => (global::HarmonyOS.ArkUI.LogType?)(global::HarmonyOS.ArkUI.LogType)NativeValue.ToInt(GetPropertyRaw(_logType));
 
 }
 

@@ -83,7 +83,7 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// on
     /// </summary>
-    public static void On(string type, IntPtr request, IntPtr callback)
+    public static void On(string type, GeolocationLocationRequest request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, request, callback);
     }
@@ -113,9 +113,17 @@ public static unsafe partial class Geolocation
     }
 
     /// <summary>
+    /// on
+    /// </summary>
+    public static void On(string type, GeolocationGeofenceRequest request, IntPtr want)
+    {
+        NodeApi.CallMethodVoid(Module, _on, type, request, want);
+    }
+
+    /// <summary>
     /// off
     /// </summary>
-    public static void Off(string type, IntPtr request, IntPtr want)
+    public static void Off(string type, GeolocationGeofenceRequest request, IntPtr want)
     {
         NodeApi.CallMethodVoid(Module, _off, type, request, want);
     }
@@ -123,7 +131,7 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// getCurrentLocation
     /// </summary>
-    public static Task<GeolocationLocation> GetCurrentLocationAsync(IntPtr request)
+    public static Task<GeolocationLocation> GetCurrentLocationAsync(GeolocationCurrentLocationRequest request)
     {
         return NodeApi.CallMethodAsync(Module, _getCurrentLocation, static h => new GeolocationLocation(h), request);
     }
@@ -203,7 +211,7 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// sendCommand
     /// </summary>
-    public static Task<bool> SendCommandAsync(IntPtr command)
+    public static Task<bool> SendCommandAsync(GeolocationLocationCommand command)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _sendCommand, command);
     }
@@ -213,7 +221,7 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<GeolocationLocation> callback, IntPtr request)
+    public static void On(string type, System.Action<GeolocationLocation> callback, GeolocationLocationRequest request)
     {
         _eventListeners.Add((type, callback),
             args => callback(new GeolocationLocation(args[0])),
@@ -311,7 +319,7 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action callback, IntPtr request, IntPtr want)
+    public static void On(string type, System.Action callback, GeolocationGeofenceRequest request, IntPtr want)
     {
         _eventListeners.Add((type, callback),
             args => callback(),
@@ -321,7 +329,7 @@ public static unsafe partial class Geolocation
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action callback, IntPtr request, IntPtr want)
+    public static void Off(string type, System.Action callback, GeolocationGeofenceRequest request, IntPtr want)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, request, want));
     }
@@ -431,6 +439,42 @@ public static unsafe partial class Geolocation
 }
 
 /// <summary>
+/// LocationRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record GeolocationLocationRequest(
+    global::HarmonyOS.ArkUI.GeolocationLocationRequestPriority? Priority = null,
+    global::HarmonyOS.ArkUI.GeolocationLocationRequestScenario? Scenario = null,
+    double? TimeInterval = null,
+    double? DistanceInterval = null,
+    double? MaxAccuracy = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _priorityName => "priority"u8;
+    private static ReadOnlySpan<byte> _scenarioName => "scenario"u8;
+    private static ReadOnlySpan<byte> _timeIntervalName => "timeInterval"u8;
+    private static ReadOnlySpan<byte> _distanceIntervalName => "distanceInterval"u8;
+    private static ReadOnlySpan<byte> _maxAccuracyName => "maxAccuracy"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _priorityV = NativeValue.From(Priority);
+        if (_priorityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
+        var _scenarioV = NativeValue.From(Scenario);
+        if (_scenarioV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV);
+        var _timeIntervalV = NativeValue.From(TimeInterval);
+        if (_timeIntervalV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _timeIntervalName, _timeIntervalV);
+        var _distanceIntervalV = NativeValue.From(DistanceInterval);
+        if (_distanceIntervalV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _distanceIntervalName, _distanceIntervalV);
+        var _maxAccuracyV = NativeValue.From(MaxAccuracy);
+        if (_maxAccuracyV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxAccuracyName, _maxAccuracyV);
+    }
+}
+
+/// <summary>
 /// CachedGnssLocationsRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
 public sealed record GeolocationCachedGnssLocationsRequest(
@@ -448,6 +492,32 @@ public sealed record GeolocationCachedGnssLocationsRequest(
         var _wakeUpCacheQueueFullV = NativeValue.From(WakeUpCacheQueueFull);
         if (_wakeUpCacheQueueFullV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _wakeUpCacheQueueFullName, _wakeUpCacheQueueFullV);
+    }
+}
+
+/// <summary>
+/// GeofenceRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record GeolocationGeofenceRequest(
+    global::HarmonyOS.ArkUI.GeolocationLocationRequestPriority Priority,
+    global::HarmonyOS.ArkUI.GeolocationLocationRequestScenario Scenario,
+    GeolocationGeofence Geofence
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _priorityName => "priority"u8;
+    private static ReadOnlySpan<byte> _scenarioName => "scenario"u8;
+    private static ReadOnlySpan<byte> _geofenceName => "geofence"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _priorityV = NativeValue.From(Priority);
+        if (_priorityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
+        var _scenarioV = NativeValue.From(Scenario);
+        if (_scenarioV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV);
+        var _geofenceV = NativeValue.From(Geofence);
+        if (_geofenceV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _geofenceName, _geofenceV);
     }
 }
 
@@ -518,6 +588,37 @@ public sealed partial class GeolocationLocation : JsObject
     /// </summary>
     public double? AdditionSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_additionSize));
 
+}
+
+/// <summary>
+/// CurrentLocationRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record GeolocationCurrentLocationRequest(
+    global::HarmonyOS.ArkUI.GeolocationLocationRequestPriority? Priority = null,
+    global::HarmonyOS.ArkUI.GeolocationLocationRequestScenario? Scenario = null,
+    double? MaxAccuracy = null,
+    double? TimeoutMs = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _priorityName => "priority"u8;
+    private static ReadOnlySpan<byte> _scenarioName => "scenario"u8;
+    private static ReadOnlySpan<byte> _maxAccuracyName => "maxAccuracy"u8;
+    private static ReadOnlySpan<byte> _timeoutMsName => "timeoutMs"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _priorityV = NativeValue.From(Priority);
+        if (_priorityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
+        var _scenarioV = NativeValue.From(Scenario);
+        if (_scenarioV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV);
+        var _maxAccuracyV = NativeValue.From(MaxAccuracy);
+        if (_maxAccuracyV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxAccuracyName, _maxAccuracyV);
+        var _timeoutMsV = NativeValue.From(TimeoutMs);
+        if (_timeoutMsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _timeoutMsName, _timeoutMsV);
+    }
 }
 
 /// <summary>
@@ -715,6 +816,27 @@ public sealed record GeolocationGeoCodeRequest(
 }
 
 /// <summary>
+/// LocationCommand（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record GeolocationLocationCommand(
+    global::HarmonyOS.ArkUI.GeolocationLocationRequestScenario Scenario,
+    string Command
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _scenarioName => "scenario"u8;
+    private static ReadOnlySpan<byte> _commandName => "command"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _scenarioV = NativeValue.From(Scenario);
+        if (_scenarioV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV);
+        var _commandV = NativeValue.From(Command);
+        if (_commandV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _commandName, _commandV);
+    }
+}
+
+/// <summary>
 /// SatelliteStatusInfo 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -757,4 +879,35 @@ public sealed partial class GeolocationSatelliteStatusInfo : JsObject
     /// </summary>
     public double[] CarrierFrequencies => ValueConverter.ConvertArray(GetPropertyRaw(_carrierFrequencies), static e => ValueConverter.Convert<double>(e));
 
+}
+
+/// <summary>
+/// Geofence（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record GeolocationGeofence(
+    double Latitude,
+    double Longitude,
+    double Radius,
+    double Expiration
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _latitudeName => "latitude"u8;
+    private static ReadOnlySpan<byte> _longitudeName => "longitude"u8;
+    private static ReadOnlySpan<byte> _radiusName => "radius"u8;
+    private static ReadOnlySpan<byte> _expirationName => "expiration"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _latitudeV = NativeValue.From(Latitude);
+        if (_latitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _latitudeName, _latitudeV);
+        var _longitudeV = NativeValue.From(Longitude);
+        if (_longitudeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _longitudeName, _longitudeV);
+        var _radiusV = NativeValue.From(Radius);
+        if (_radiusV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _radiusName, _radiusV);
+        var _expirationV = NativeValue.From(Expiration);
+        if (_expirationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _expirationName, _expirationV);
+    }
 }

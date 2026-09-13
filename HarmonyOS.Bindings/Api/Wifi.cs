@@ -109,15 +109,15 @@ public static unsafe partial class Wifi
     /// <summary>
     /// getScanInfos
     /// </summary>
-    public static Task<IntPtr[]> GetScanInfosAsync()
+    public static Task<WifiScanInfo[]> GetScanInfosAsync()
     {
-        return NodeApi.CallMethodAsync(Module, _getScanInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        return NodeApi.CallMethodAsync(Module, _getScanInfos, h => ValueConverter.ConvertArray(h, static e => new WifiScanInfo(e)));
     }
 
     /// <summary>
     /// addUntrustedConfig
     /// </summary>
-    public static Task<bool> AddUntrustedConfigAsync(IntPtr config)
+    public static Task<bool> AddUntrustedConfigAsync(WifiDeviceConfig config)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _addUntrustedConfig, config);
     }
@@ -125,7 +125,7 @@ public static unsafe partial class Wifi
     /// <summary>
     /// removeUntrustedConfig
     /// </summary>
-    public static Task<bool> RemoveUntrustedConfigAsync(IntPtr config)
+    public static Task<bool> RemoveUntrustedConfigAsync(WifiDeviceConfig config)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _removeUntrustedConfig, config);
     }
@@ -189,9 +189,9 @@ public static unsafe partial class Wifi
     /// <summary>
     /// getCurrentGroup
     /// </summary>
-    public static Task<IntPtr> GetCurrentGroupAsync()
+    public static Task<WifiP2pGroupInfo> GetCurrentGroupAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentGroup);
+        return NodeApi.CallMethodAsync(Module, _getCurrentGroup, static h => new WifiP2pGroupInfo(h));
     }
 
     /// <summary>
@@ -556,6 +556,105 @@ public static unsafe partial class Wifi
 }
 
 /// <summary>
+/// WifiScanInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiScanInfo : JsObject
+{
+    public WifiScanInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _ssid => "ssid"u8;
+    private static ReadOnlySpan<byte> _bssid => "bssid"u8;
+    private static ReadOnlySpan<byte> _capabilities => "capabilities"u8;
+    private static ReadOnlySpan<byte> _securityType => "securityType"u8;
+    private static ReadOnlySpan<byte> _rssi => "rssi"u8;
+    private static ReadOnlySpan<byte> _band => "band"u8;
+    private static ReadOnlySpan<byte> _frequency => "frequency"u8;
+    private static ReadOnlySpan<byte> _channelWidth => "channelWidth"u8;
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    /// <summary>
+    /// ssid
+    /// </summary>
+    public string Ssid => NativeValue.ToString(GetPropertyRaw(_ssid)) ?? string.Empty;
+
+    /// <summary>
+    /// bssid
+    /// </summary>
+    public string Bssid => NativeValue.ToString(GetPropertyRaw(_bssid)) ?? string.Empty;
+
+    /// <summary>
+    /// capabilities
+    /// </summary>
+    public string Capabilities => NativeValue.ToString(GetPropertyRaw(_capabilities)) ?? string.Empty;
+
+    /// <summary>
+    /// securityType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiWifiSecurityType SecurityType => (global::HarmonyOS.ArkUI.WifiWifiSecurityType)NativeValue.ToInt(GetPropertyRaw(_securityType));
+
+    /// <summary>
+    /// rssi
+    /// </summary>
+    public double Rssi => NativeValue.ToDouble(GetPropertyRaw(_rssi));
+
+    /// <summary>
+    /// band
+    /// </summary>
+    public double Band => NativeValue.ToDouble(GetPropertyRaw(_band));
+
+    /// <summary>
+    /// frequency
+    /// </summary>
+    public double Frequency => NativeValue.ToDouble(GetPropertyRaw(_frequency));
+
+    /// <summary>
+    /// channelWidth
+    /// </summary>
+    public double ChannelWidth => NativeValue.ToDouble(GetPropertyRaw(_channelWidth));
+
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+}
+
+/// <summary>
+/// WifiDeviceConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record WifiDeviceConfig(
+    string Ssid,
+    string Bssid,
+    string PreSharedKey,
+    bool IsHiddenSsid,
+    global::HarmonyOS.ArkUI.WifiWifiSecurityType SecurityType
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _ssidName => "ssid"u8;
+    private static ReadOnlySpan<byte> _bssidName => "bssid"u8;
+    private static ReadOnlySpan<byte> _preSharedKeyName => "preSharedKey"u8;
+    private static ReadOnlySpan<byte> _isHiddenSsidName => "isHiddenSsid"u8;
+    private static ReadOnlySpan<byte> _securityTypeName => "securityType"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _ssidV = NativeValue.From(Ssid);
+        if (_ssidV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _ssidName, _ssidV);
+        var _bssidV = NativeValue.From(Bssid);
+        if (_bssidV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _bssidName, _bssidV);
+        var _preSharedKeyV = NativeValue.From(PreSharedKey);
+        if (_preSharedKeyV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _preSharedKeyName, _preSharedKeyV);
+        var _isHiddenSsidV = NativeValue.From(IsHiddenSsid);
+        if (_isHiddenSsidV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _isHiddenSsidName, _isHiddenSsidV);
+        var _securityTypeV = NativeValue.From(SecurityType);
+        if (_securityTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _securityTypeName, _securityTypeV);
+    }
+}
+
+/// <summary>
 /// WifiLinkedInfo 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -705,6 +804,69 @@ public sealed partial class WifiP2pLinkedInfo : JsObject
     /// groupOwnerAddr
     /// </summary>
     public string GroupOwnerAddr => NativeValue.ToString(GetPropertyRaw(_groupOwnerAddr)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// WifiP2pGroupInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiP2pGroupInfo : JsObject
+{
+    public WifiP2pGroupInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _isP2pGo => "isP2pGo"u8;
+    private static ReadOnlySpan<byte> _ownerInfo => "ownerInfo"u8;
+    private static ReadOnlySpan<byte> _passphrase => "passphrase"u8;
+    private static ReadOnlySpan<byte> _interface => "interface"u8;
+    private static ReadOnlySpan<byte> _groupName => "groupName"u8;
+    private static ReadOnlySpan<byte> _networkId => "networkId"u8;
+    private static ReadOnlySpan<byte> _frequency => "frequency"u8;
+    private static ReadOnlySpan<byte> _clientDevices => "clientDevices"u8;
+    private static ReadOnlySpan<byte> _goIpAddress => "goIpAddress"u8;
+    /// <summary>
+    /// isP2pGo
+    /// </summary>
+    public bool IsP2pGo => NativeValue.ToBool(GetPropertyRaw(_isP2pGo));
+
+    /// <summary>
+    /// ownerInfo
+    /// </summary>
+    public WifiP2pDevice OwnerInfo => new WifiP2pDevice(GetPropertyRaw(_ownerInfo));
+
+    /// <summary>
+    /// passphrase
+    /// </summary>
+    public string Passphrase => NativeValue.ToString(GetPropertyRaw(_passphrase)) ?? string.Empty;
+
+    /// <summary>
+    /// interface
+    /// </summary>
+    public string Interface => NativeValue.ToString(GetPropertyRaw(_interface)) ?? string.Empty;
+
+    /// <summary>
+    /// groupName
+    /// </summary>
+    public string GroupName => NativeValue.ToString(GetPropertyRaw(_groupName)) ?? string.Empty;
+
+    /// <summary>
+    /// networkId
+    /// </summary>
+    public double NetworkId => NativeValue.ToDouble(GetPropertyRaw(_networkId));
+
+    /// <summary>
+    /// frequency
+    /// </summary>
+    public double Frequency => NativeValue.ToDouble(GetPropertyRaw(_frequency));
+
+    /// <summary>
+    /// clientDevices
+    /// </summary>
+    public WifiP2pDevice[] ClientDevices => ValueConverter.ConvertArray(GetPropertyRaw(_clientDevices), static e => new WifiP2pDevice(e));
+
+    /// <summary>
+    /// goIpAddress
+    /// </summary>
+    public string GoIPAddress => NativeValue.ToString(GetPropertyRaw(_goIpAddress)) ?? string.Empty;
 
 }
 

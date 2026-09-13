@@ -113,7 +113,7 @@ public static unsafe partial class ResourcescheduleBackgroundTaskManager
     /// <summary>
     /// startBackgroundRunning
     /// </summary>
-    public static Task StartBackgroundRunningAsync(IntPtr context, global::HarmonyOS.ArkUI.BackgroundMode bgMode, IntPtr wantAgent)
+    public static Task StartBackgroundRunningAsync(IntPtr context, global::HarmonyOS.ArkUI.ResourcescheduleBackgroundTaskManagerBackgroundMode bgMode, IntPtr wantAgent)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, context, bgMode, wantAgent);
     }

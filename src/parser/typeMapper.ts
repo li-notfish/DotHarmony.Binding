@@ -383,6 +383,11 @@ export class TypeMapper {
         delete this.TYPE_MAP[typescript];
     }
 
+    /** 读取映射（apiGenerator 改名枚举的原始名临时映射需要保存/恢复） */
+    static getMapping(typescript: string): { typescript: string; csharp: string; isNative: boolean } | undefined {
+        return this.TYPE_MAP[typescript];
+    }
+
     static extractBaseType(typeWithUnion: string): string {
         const parts = typeWithUnion.split('|').map(p => p.trim());
         if (parts.length > 0) {

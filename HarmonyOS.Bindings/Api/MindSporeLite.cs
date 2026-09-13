@@ -385,7 +385,7 @@ public sealed partial class MSTensor : JsObject
     /// <summary>
     /// dtype
     /// </summary>
-    public IntPtr Dtype => GetPropertyRaw(_dtype);
+    public global::HarmonyOS.ArkUI.MindSporeLiteDataType Dtype => (global::HarmonyOS.ArkUI.MindSporeLiteDataType)NativeValue.ToInt(GetPropertyRaw(_dtype));
 
     /// <summary>
     /// format

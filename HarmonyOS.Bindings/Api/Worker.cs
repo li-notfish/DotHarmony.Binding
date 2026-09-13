@@ -311,7 +311,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// <summary>
     /// postMessageAtFront
     /// </summary>
-    public void PostMessageAtFront(IntPtr message, global::HarmonyOS.ArkUI.Priority priority, byte[][]? transfer = null)
+    public void PostMessageAtFront(IntPtr message, global::HarmonyOS.ArkUI.WorkerPriority priority, byte[][]? transfer = null)
     {
         CallMethodVoid(_postMessageAtFront, message, priority, transfer);
     }

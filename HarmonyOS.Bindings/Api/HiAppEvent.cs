@@ -108,7 +108,7 @@ public static unsafe partial class HiAppEvent
     /// <summary>
     /// write
     /// </summary>
-    public static Task WriteAsync(string eventName, global::HarmonyOS.ArkUI.EventType eventType, IntPtr keyValues)
+    public static Task WriteAsync(string eventName, global::HarmonyOS.ArkUI.HiAppEventEventType eventType, IntPtr keyValues)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _write, eventName, eventType, keyValues);
     }

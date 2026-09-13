@@ -138,7 +138,7 @@ public static unsafe partial class UsbManagerSerial
     /// <summary>
     /// setAttribute
     /// </summary>
-    public static void SetAttribute(double portId, IntPtr attribute)
+    public static void SetAttribute(double portId, SerialAttribute attribute)
     {
         NodeApi.CallMethodVoid(Module, _setAttribute, portId, attribute);
     }
@@ -175,4 +175,35 @@ public static unsafe partial class UsbManagerSerial
         return NodeApi.CallMethod<double>(Module, _writeSync, portId, buffer, timeout);
     }
 
+}
+
+/// <summary>
+/// SerialAttribute（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record SerialAttribute(
+    global::HarmonyOS.ArkUI.BaudRates BaudRate,
+    global::HarmonyOS.ArkUI.UsbManagerSerialDataBits? DataBits = null,
+    global::HarmonyOS.ArkUI.UsbManagerSerialParity? Parity = null,
+    global::HarmonyOS.ArkUI.UsbManagerSerialStopBits? StopBits = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _baudRateName => "baudRate"u8;
+    private static ReadOnlySpan<byte> _dataBitsName => "dataBits"u8;
+    private static ReadOnlySpan<byte> _parityName => "parity"u8;
+    private static ReadOnlySpan<byte> _stopBitsName => "stopBits"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _baudRateV = NativeValue.From(BaudRate);
+        if (_baudRateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _baudRateName, _baudRateV);
+        var _dataBitsV = NativeValue.From(DataBits);
+        if (_dataBitsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _dataBitsName, _dataBitsV);
+        var _parityV = NativeValue.From(Parity);
+        if (_parityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _parityName, _parityV);
+        var _stopBitsV = NativeValue.From(StopBits);
+        if (_stopBitsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _stopBitsName, _stopBitsV);
+    }
 }

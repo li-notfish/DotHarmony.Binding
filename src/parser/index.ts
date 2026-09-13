@@ -902,6 +902,7 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
                 if (ARKUI_RESERVED_NAMES.has(name)
                     || (writtenEnumNames.has(name) && writtenEnumNames.get(name) !== moduleInfo.module)) {
                     name = `${moduleInfo.className}${name}`;
+                    (e as any).originalName = e.name;
                 }
                 return { ...e, name };
             };

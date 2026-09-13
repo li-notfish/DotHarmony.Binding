@@ -76,7 +76,7 @@ public static unsafe partial class NetworkSecurity
     /// <summary>
     /// certVerification
     /// </summary>
-    public static Task<double> CertVerificationAsync(IntPtr cert, IntPtr? caCert = null)
+    public static Task<double> CertVerificationAsync(NetworkSecurityCertBlob cert, NetworkSecurityCertBlob? caCert = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _certVerification, cert, caCert);
     }
@@ -84,7 +84,7 @@ public static unsafe partial class NetworkSecurity
     /// <summary>
     /// certVerificationSync
     /// </summary>
-    public static double CertVerificationSync(IntPtr cert, IntPtr? caCert = null)
+    public static double CertVerificationSync(NetworkSecurityCertBlob cert, NetworkSecurityCertBlob? caCert = null)
     {
         return NodeApi.CallMethod<double>(Module, _certVerificationSync, cert, caCert);
     }
@@ -92,9 +92,9 @@ public static unsafe partial class NetworkSecurity
     /// <summary>
     /// verifyCertChain
     /// </summary>
-    public static Task<IntPtr[]> VerifyCertChainAsync(IntPtr[] cert, IntPtr? caCert = null, string? hostname = null)
+    public static Task<NetworkSecurityCertBlob[]> VerifyCertChainAsync(NetworkSecurityCertBlob[] cert, NetworkSecurityCertBlob? caCert = null, string? hostname = null)
     {
-        return NodeApi.CallMethodAsync(Module, _verifyCertChain, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), cert, caCert, hostname);
+        return NodeApi.CallMethodAsync(Module, _verifyCertChain, h => ValueConverter.ConvertArray(h, static e => new NetworkSecurityCertBlob(e)), cert, caCert, hostname);
     }
 
     /// <summary>
@@ -112,5 +112,26 @@ public static unsafe partial class NetworkSecurity
     {
         return NodeApi.CallMethod<bool>(Module, _isCleartextPermittedByHostName, hostName);
     }
+
+}
+
+/// <summary>
+/// CertBlob 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class NetworkSecurityCertBlob : JsObject
+{
+    public NetworkSecurityCertBlob(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _data => "data"u8;
+    /// <summary>
+    /// type
+    /// </summary>
+    public global::HarmonyOS.ArkUI.NetworkSecurityCertType Type => (global::HarmonyOS.ArkUI.NetworkSecurityCertType)NativeValue.ToInt(GetPropertyRaw(_type));
+
+    /// <summary>
+    /// data
+    /// </summary>
+    public string Data => NativeValue.ToString(GetPropertyRaw(_data)) ?? string.Empty;
 
 }

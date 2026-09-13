@@ -2614,7 +2614,7 @@ public sealed partial class ShaderEffect : JsObject
     /// <summary>
     /// createLinearGradient
     /// </summary>
-    public ShaderEffect CreateLinearGradient(IntPtr startPt, IntPtr endPt, double[] colors, global::HarmonyOS.ArkUI.TileMode mode, double[]? pos = null, Matrix? matrix = null)
+    public ShaderEffect CreateLinearGradient(IntPtr startPt, IntPtr endPt, double[] colors, global::HarmonyOS.ArkUI.DrawingTileMode mode, double[]? pos = null, Matrix? matrix = null)
     {
         return CallMethod(_createLinearGradient, static h => new ShaderEffect(h), startPt, endPt, colors, mode, pos, matrix);
     }
@@ -2622,7 +2622,7 @@ public sealed partial class ShaderEffect : JsObject
     /// <summary>
     /// createRadialGradient
     /// </summary>
-    public ShaderEffect CreateRadialGradient(IntPtr centerPt, double radius, double[] colors, global::HarmonyOS.ArkUI.TileMode mode, double[]? pos = null, Matrix? matrix = null)
+    public ShaderEffect CreateRadialGradient(IntPtr centerPt, double radius, double[] colors, global::HarmonyOS.ArkUI.DrawingTileMode mode, double[]? pos = null, Matrix? matrix = null)
     {
         return CallMethod(_createRadialGradient, static h => new ShaderEffect(h), centerPt, radius, colors, mode, pos, matrix);
     }
@@ -2630,7 +2630,7 @@ public sealed partial class ShaderEffect : JsObject
     /// <summary>
     /// createSweepGradient
     /// </summary>
-    public ShaderEffect CreateSweepGradient(IntPtr centerPt, double[] colors, global::HarmonyOS.ArkUI.TileMode mode, double startAngle, double endAngle, double[]? pos = null, Matrix? matrix = null)
+    public ShaderEffect CreateSweepGradient(IntPtr centerPt, double[] colors, global::HarmonyOS.ArkUI.DrawingTileMode mode, double startAngle, double endAngle, double[]? pos = null, Matrix? matrix = null)
     {
         return CallMethod(_createSweepGradient, static h => new ShaderEffect(h), centerPt, colors, mode, startAngle, endAngle, pos, matrix);
     }
@@ -2638,7 +2638,7 @@ public sealed partial class ShaderEffect : JsObject
     /// <summary>
     /// createConicalGradient
     /// </summary>
-    public ShaderEffect CreateConicalGradient(IntPtr startPt, double startRadius, IntPtr endPt, double endRadius, double[] colors, global::HarmonyOS.ArkUI.TileMode mode, double[]? pos = null, Matrix? matrix = null)
+    public ShaderEffect CreateConicalGradient(IntPtr startPt, double startRadius, IntPtr endPt, double endRadius, double[] colors, global::HarmonyOS.ArkUI.DrawingTileMode mode, double[]? pos = null, Matrix? matrix = null)
     {
         return CallMethod(_createConicalGradient, static h => new ShaderEffect(h), startPt, startRadius, endPt, endRadius, colors, mode, pos, matrix);
     }
@@ -2646,7 +2646,7 @@ public sealed partial class ShaderEffect : JsObject
     /// <summary>
     /// createImageShader
     /// </summary>
-    public ShaderEffect CreateImageShader(IntPtr pixelmap, global::HarmonyOS.ArkUI.TileMode tileX, global::HarmonyOS.ArkUI.TileMode tileY, SamplingOptions samplingOptions, Matrix? matrix = null)
+    public ShaderEffect CreateImageShader(IntPtr pixelmap, global::HarmonyOS.ArkUI.DrawingTileMode tileX, global::HarmonyOS.ArkUI.DrawingTileMode tileY, SamplingOptions samplingOptions, Matrix? matrix = null)
     {
         return CallMethod(_createImageShader, static h => new ShaderEffect(h), pixelmap, tileX, tileY, samplingOptions, matrix);
     }
@@ -2758,7 +2758,7 @@ public sealed partial class ImageFilter : JsObject
     /// <summary>
     /// createBlurImageFilter
     /// </summary>
-    public ImageFilter CreateBlurImageFilter(double sigmaX, double sigmaY, global::HarmonyOS.ArkUI.TileMode tileMode, ImageFilter? imageFilter = null)
+    public ImageFilter CreateBlurImageFilter(double sigmaX, double sigmaY, global::HarmonyOS.ArkUI.DrawingTileMode tileMode, ImageFilter? imageFilter = null)
     {
         return CallMethod(_createBlurImageFilter, static h => new ImageFilter(h), sigmaX, sigmaY, tileMode, imageFilter);
     }

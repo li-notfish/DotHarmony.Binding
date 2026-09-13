@@ -130,6 +130,7 @@ export class ApiGenerator {
         importedTypeNames: ReadonlySet<string> = new Set()
     ): ApiGenResult {
         this.moduleClassName = moduleInfo.className;
+        const savedOriginalMappings = new Map<string, { typescript: string; csharp: string; isNative: boolean } | undefined>();
         // 枚举类型引用一律全限定，避免与 System.* 同名类型（如 Action）冲突（CS0104）
         this.enumNames = new Set(allEnums.map(e => `global::HarmonyOS.ArkUI.${e.name}`));
         this.specs = [];
@@ -138,6 +139,14 @@ export class ApiGenerator {
         // 1. 登记映射：枚举（全部参与映射，去重只影响 Enums.cs 写盘）+ 实例类型
         for (const e of allEnums) {
             TypeMapper.addMapping(e.name, `global::HarmonyOS.ArkUI.${e.name}`);
+            // 改名枚举（originalName 随迁）：本模块内临时把原始 TS 名映射到自身固定名——
+            // 否则签名引用原始名会解析到其它模块的同名枚举（灰度产物不被编译，转正后 CS0234）。
+            // 生成完本模块后恢复原映射（TypeMapper 全局共享，不能让本模块的映射泄漏到后续模块）
+            if ((e as any).originalName !== undefined && (e as any).originalName !== e.name) {
+                savedOriginalMappings.set((e as any).originalName,
+                    TypeMapper.getMapping((e as any).originalName));
+                TypeMapper.addMapping((e as any).originalName, `global::HarmonyOS.ArkUI.${e.name}`);
+            }
         }
         // 本模块未定义的跨模块导入类型 → IntPtr 句柄（映射注册顺序保证自有类型优先）
         const ownTypeNames = new Set<string>([
@@ -206,6 +215,12 @@ export class ApiGenerator {
         let enumCode: string | null = null;
         if (enums.length > 0) {
             enumCode = this.enumGenerator.generateMultipleEnums(enums);
+        }
+
+        // 恢复本模块临时改写的原始名映射（TypeMapper 全局共享，不能泄漏到后续模块）
+        for (const [name, prev] of savedOriginalMappings) {
+            if (prev !== undefined) TypeMapper.addMapping(name, prev.csharp);
+            else TypeMapper.removeMapping(name);
         }
 
         return {

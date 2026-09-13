@@ -373,7 +373,7 @@ public sealed partial class InputMethodAbility : JsObject
     /// <summary>
     /// createPanel
     /// </summary>
-    public Task<PanelObject> CreatePanelAsync(IntPtr ctx, IntPtr info)
+    public Task<PanelObject> CreatePanelAsync(IntPtr ctx, InputMethodEnginePanelInfo info)
     {
         return CallMethodAsync(_createPanel, static h => new PanelObject(h), ctx, info);
     }
@@ -921,6 +921,27 @@ public sealed partial class KeyboardDelegate : JsObject
 }
 
 /// <summary>
+/// AttachOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class InputMethodEngineAttachOptions : JsObject
+{
+    public InputMethodEngineAttachOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _requestKeyboardReason => "requestKeyboardReason"u8;
+    private static ReadOnlySpan<byte> _isSimpleKeyboardEnabled => "isSimpleKeyboardEnabled"u8;
+    /// <summary>
+    /// requestKeyboardReason
+    /// </summary>
+    public global::HarmonyOS.ArkUI.InputMethodEngineRequestKeyboardReason? RequestKeyboardReason => (global::HarmonyOS.ArkUI.InputMethodEngineRequestKeyboardReason?)(global::HarmonyOS.ArkUI.InputMethodEngineRequestKeyboardReason)NativeValue.ToInt(GetPropertyRaw(_requestKeyboardReason));
+
+    /// <summary>
+    /// isSimpleKeyboardEnabled
+    /// </summary>
+    public bool? IsSimpleKeyboardEnabled => (bool?)NativeValue.ToBool(GetPropertyRaw(_isSimpleKeyboardEnabled));
+
+}
+
+/// <summary>
 /// KeyboardController 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -1135,7 +1156,7 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// selectByMovement
     /// </summary>
-    public Task SelectByMovementAsync(IntPtr movement)
+    public Task SelectByMovementAsync(InputMethodEngineMovement movement)
     {
         return CallMethodAsyncVoid(_selectByMovement, movement);
     }
@@ -1143,7 +1164,7 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// selectByMovementSync
     /// </summary>
-    public void SelectByMovementSync(IntPtr movement)
+    public void SelectByMovementSync(InputMethodEngineMovement movement)
     {
         CallMethodVoid(_selectByMovementSync, movement);
     }
@@ -1167,7 +1188,7 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// sendExtendAction
     /// </summary>
-    public Task SendExtendActionAsync(global::HarmonyOS.ArkUI.ExtendAction action)
+    public Task SendExtendActionAsync(global::HarmonyOS.ArkUI.InputMethodEngineExtendAction action)
     {
         return CallMethodAsyncVoid(_sendExtendAction, action);
     }
@@ -1239,9 +1260,9 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// getAttachOptions
     /// </summary>
-    public IntPtr GetAttachOptions()
+    public InputMethodEngineAttachOptions GetAttachOptions()
     {
-        return CallMethod<IntPtr>(_getAttachOptions);
+        return CallMethod(_getAttachOptions, static h => new InputMethodEngineAttachOptions(h));
     }
 
     /// <summary>
@@ -1265,10 +1286,10 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<IntPtr> callback)
+    public void On(string type, System.Action<InputMethodEngineAttachOptions> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback(new InputMethodEngineAttachOptions(args[0])),
             js => NodeApi.CallMethodVoid(Handle, _on, type, js));
     }
 
@@ -1283,7 +1304,7 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<IntPtr> callback)
+    public void Off(string type, System.Action<InputMethodEngineAttachOptions> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
     }
@@ -1291,12 +1312,12 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// 监听 attachOptionsDidChange 事件（对应 on/off）
     /// </summary>
-    public event System.Action<IntPtr> AttachOptionsDidChange
+    public event System.Action<InputMethodEngineAttachOptions> AttachOptionsDidChange
     {
         add
         {
             _eventListeners.Add(("attachOptionsDidChange", value),
-                args => value(args[0]),
+                args => value(new InputMethodEngineAttachOptions(args[0])),
                 js => NodeApi.CallMethodVoid(Handle, _on, "attachOptionsDidChange", js));
         }
         remove
@@ -1305,6 +1326,27 @@ public sealed partial class InputClient : JsObject
         }
     }
 
+}
+
+/// <summary>
+/// PanelInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record InputMethodEnginePanelInfo(
+    global::HarmonyOS.ArkUI.InputMethodEnginePanelType Type,
+    global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag? Flag = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _typeName => "type"u8;
+    private static ReadOnlySpan<byte> _flagName => "flag"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _typeV = NativeValue.From(Type);
+        if (_typeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
+        var _flagV = NativeValue.From(Flag);
+        if (_flagV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _flagName, _flagV);
+    }
 }
 
 /// <summary>
@@ -1418,7 +1460,7 @@ public sealed partial class PanelObject : JsObject
     /// <summary>
     /// changeFlag
     /// </summary>
-    public void ChangeFlag(global::HarmonyOS.ArkUI.PanelFlag flag)
+    public void ChangeFlag(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag flag)
     {
         CallMethodVoid(_changeFlag, flag);
     }
@@ -1434,7 +1476,7 @@ public sealed partial class PanelObject : JsObject
     /// <summary>
     /// adjustPanelRect
     /// </summary>
-    public void AdjustPanelRect(global::HarmonyOS.ArkUI.PanelFlag flag, IntPtr rect)
+    public void AdjustPanelRect(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag flag, IntPtr rect)
     {
         CallMethodVoid(_adjustPanelRect, flag, rect);
     }
@@ -1442,7 +1484,7 @@ public sealed partial class PanelObject : JsObject
     /// <summary>
     /// updatePanelRect
     /// </summary>
-    public Task UpdatePanelRectAsync(global::HarmonyOS.ArkUI.PanelFlag flag, IntPtr rect)
+    public Task UpdatePanelRectAsync(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag flag, IntPtr rect)
     {
         return CallMethodAsyncVoid(_updatePanelRect, flag, rect);
     }
@@ -1450,7 +1492,7 @@ public sealed partial class PanelObject : JsObject
     /// <summary>
     /// updatePanelRectSync
     /// </summary>
-    public void UpdatePanelRectSync(global::HarmonyOS.ArkUI.PanelFlag flag, IntPtr rect)
+    public void UpdatePanelRectSync(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag flag, IntPtr rect)
     {
         CallMethodVoid(_updatePanelRectSync, flag, rect);
     }
@@ -1703,6 +1745,22 @@ public sealed record InputMethodEngineRange(
         var _endV = NativeValue.From(End);
         if (_endV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV);
+    }
+}
+
+/// <summary>
+/// Movement（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record InputMethodEngineMovement(
+    global::HarmonyOS.ArkUI.InputMethodEngineDirection Direction
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _directionName => "direction"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _directionV = NativeValue.From(Direction);
+        if (_directionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _directionName, _directionV);
     }
 }
 

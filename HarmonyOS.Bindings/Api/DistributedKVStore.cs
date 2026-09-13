@@ -95,7 +95,7 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// <summary>
     /// getKVStore
     /// </summary>
-    public Task<IntPtr> GetKvStoreAsync(string storeId, IntPtr options)
+    public Task<IntPtr> GetKvStoreAsync(string storeId, DistributedKVStoreOptions options)
     {
         return CallMethodAsync<IntPtr>(_getKVStore, storeId, options);
     }
@@ -111,7 +111,7 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// <summary>
     /// closeKVStore
     /// </summary>
-    public Task CloseKvStoreAsync(string appId, string storeId, IntPtr? kvConfig = null)
+    public Task CloseKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null)
     {
         return CallMethodAsyncVoid(_closeKVStore, appId, storeId, kvConfig);
     }
@@ -127,7 +127,7 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// <summary>
     /// deleteKVStore
     /// </summary>
-    public Task DeleteKvStoreAsync(string appId, string storeId, IntPtr? kvConfig = null)
+    public Task DeleteKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null)
     {
         return CallMethodAsyncVoid(_deleteKVStore, appId, storeId, kvConfig);
     }
@@ -200,39 +200,6 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
             _eventListeners.Remove(("distributedDataServiceDie", value), js => NodeApi.CallMethodVoid(Handle, _off, "distributedDataServiceDie", js));
         }
     }
-
-}
-
-/// <summary>
-/// ChangeNotification 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class DistributedKVStoreChangeNotification : JsObject
-{
-    public DistributedKVStoreChangeNotification(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _insertEntries => "insertEntries"u8;
-    private static ReadOnlySpan<byte> _updateEntries => "updateEntries"u8;
-    private static ReadOnlySpan<byte> _deleteEntries => "deleteEntries"u8;
-    private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
-    /// <summary>
-    /// insertEntries
-    /// </summary>
-    public IntPtr[] InsertEntries => ValueConverter.ConvertArray(GetPropertyRaw(_insertEntries), static e => ValueConverter.Convert<IntPtr>(e));
-
-    /// <summary>
-    /// updateEntries
-    /// </summary>
-    public IntPtr[] UpdateEntries => ValueConverter.ConvertArray(GetPropertyRaw(_updateEntries), static e => ValueConverter.Convert<IntPtr>(e));
-
-    /// <summary>
-    /// deleteEntries
-    /// </summary>
-    public IntPtr[] DeleteEntries => ValueConverter.ConvertArray(GetPropertyRaw(_deleteEntries), static e => ValueConverter.Convert<IntPtr>(e));
-
-    /// <summary>
-    /// deviceId
-    /// </summary>
-    public string DeviceId => NativeValue.ToString(GetPropertyRaw(_deviceId)) ?? string.Empty;
 
 }
 
@@ -525,4 +492,55 @@ public sealed partial class DistributedKVStoreQuery : JsObject
         return CallMethod<string>(_getSqlLike);
     }
 
+}
+
+/// <summary>
+/// Options（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record DistributedKVStoreOptions(
+    bool? CreateIfMissing,
+    bool? Encrypt,
+    bool? Backup,
+    bool? AutoSync,
+    global::HarmonyOS.ArkUI.DistributedKVStoreKVStoreType? KvStoreType,
+    global::HarmonyOS.ArkUI.DistributedKVStoreSecurityLevel SecurityLevel,
+    DistributedKVStoreSchema? Schema = null,
+    string? RootDir = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _createIfMissingName => "createIfMissing"u8;
+    private static ReadOnlySpan<byte> _encryptName => "encrypt"u8;
+    private static ReadOnlySpan<byte> _backupName => "backup"u8;
+    private static ReadOnlySpan<byte> _autoSyncName => "autoSync"u8;
+    private static ReadOnlySpan<byte> _kvStoreTypeName => "kvStoreType"u8;
+    private static ReadOnlySpan<byte> _securityLevelName => "securityLevel"u8;
+    private static ReadOnlySpan<byte> _schemaName => "schema"u8;
+    private static ReadOnlySpan<byte> _rootDirName => "rootDir"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _createIfMissingV = NativeValue.From(CreateIfMissing);
+        if (_createIfMissingV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _createIfMissingName, _createIfMissingV);
+        var _encryptV = NativeValue.From(Encrypt);
+        if (_encryptV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _encryptName, _encryptV);
+        var _backupV = NativeValue.From(Backup);
+        if (_backupV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _backupName, _backupV);
+        var _autoSyncV = NativeValue.From(AutoSync);
+        if (_autoSyncV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _autoSyncName, _autoSyncV);
+        var _kvStoreTypeV = NativeValue.From(KvStoreType);
+        if (_kvStoreTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _kvStoreTypeName, _kvStoreTypeV);
+        var _securityLevelV = NativeValue.From(SecurityLevel);
+        if (_securityLevelV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _securityLevelName, _securityLevelV);
+        var _schemaV = NativeValue.From(Schema);
+        if (_schemaV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _schemaName, _schemaV);
+        var _rootDirV = NativeValue.From(RootDir);
+        if (_rootDirV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _rootDirName, _rootDirV);
+    }
 }
