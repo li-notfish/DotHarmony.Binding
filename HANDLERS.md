@@ -370,7 +370,15 @@ MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实�
 
 **原生 recognizer 生命周期铁律**：不得在事件分发回调内 `dispose()` recognizer——dispose 后原生管线仍派发事件（SIGSEGV UAF，实测）。重建场景 Detach + 入池复用（`HarmonyGestureManager.Rebuild`），dispose 仅在 Handler 断连时统一执行。
 
-单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑，共 16 用例（含漏斗纪律源码扫描闸）。
+单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑、Essentials 密度/方向映射，共 23 用例（含漏斗纪律源码扫描闸）。
+
+### 6.2 Essentials 注入适配要点
+
+MAUI 的 Essentials 静态类（`DeviceInfo.Current`/`DeviceDisplay`/`AppInfo`/`Clipboard`）在 netstandard 产物中默认实现全部抛异常，平台侧经 internal `SetCurrent`/`SetDefault` 注入点装载。本仓库实现：`HarmonyEssentials.Install()`（反射桥模式，同手势桥：`[DynamicDependency]` 收根 + `CreateDelegate` 缓存）+ 四个 `Harmony*` 实现（`src/HarmonyOS.Maui/Essentials/`）。注意：
+
+- **装载时机是铁律**：`Install()` 必须在 `MauiHarmonyHost.Run` 的 `RootBuilder` lambda 内调用（UI 线程首次构建时，napi env 已就绪）——放 ModuleInitializer（dlopen 时）会因 napi 未初始化直接闪退（实测 DfxFaultLogger 崩在 HarmonyInit+16）；
+- 实现类构造时即创建底层包装对象（如 `HarmonyClipboard` 构造时取 SystemPasteboard）——构造发生在 Install 时（napi 就绪），但**包装句柄跨时长持有会失效**（见 §7 PinnedValue 行）；
+- 剪贴板读权限（API 26 起 `READ_PASTEBOARD` 为 user_grant）完整链路见 `HarmonyClipboard`：读前 `getSelfPermissionStatus` 主动查状态 → 未授权经 host 导出的 `globalThis.abilityContext` 发 `requestPermissionsFromUser` 弹窗 → 重试读。**宿主模板 EntryAbility.ets 已导出 `globalThis.abilityContext`**（自建宿主缺这行则剪贴板读永远拿不到授权弹窗）；同步 getter（`HasText`）无法弹窗，回退到最近已知状态。
 
 ---
 
@@ -395,3 +403,9 @@ MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实�
 | Windows 本地编译过、WSL AOT 编译不过（CS0246 等） | 根目录级共享文件（如 `Directory.Build.props`）不在 `scripts/build-files.txt` 打包清单里 | 新增根目录共享文件时同步加入打包清单 |
 | PushAsync/PopAsync 静默失败（无日志无崩溃，后续导航全挂起） | 工厂抛 `NotSupportedException` 等异常被 `FireAndForget` 吞掉；MAUI 的 SendHandlerUpdateAsync 信号量不释放，后续导航永久排队 | `FireAndForget` 兜底必须打 hilog（HelloApp 的 FireAndForgetNavigation 已改）；推入新控件页面前先确认工厂注册 |
 | 嵌套 Grid/AbsoluteLayout 撑爆父容器（后续兄弟节点被推出屏幕） | 托管布局容器无条件 `SetHeightPercent(1.0)`——只对页面根布局正确；MAUI 语义里 StackLayout 主轴 Fill = 自然高度 | `ConnectHandler` 按 `HeightRequest > 0 → 显式高；Parent 是 Layout → 自然高；否则 100%` |
+| Essentials 注入后启动闪退（DfxFaultLogger 崩在 HarmonyInit） | `HarmonyEssentials.Install()`（或任何 napi 调用）放进了 ModuleInitializer——dlopen 时 napi env 尚未初始化 | 注入必须发生在 `RootBuilder` lambda 内（UI 线程首次构建时）；见 §6.2 |
+| 包装对象隔一段时间后方法调用全挂（`napi_function_expected`） | JsObject 实例方法曾用创建时的裸 `Handle`——句柄范围关闭 + ArkTS GC 后失效 | 基类已修：实例调用统一走 `PinnedValue`（napi 强引用 `NapiReference` 重取）；自写包装别直接用 `Handle` |
+| JS 抛错只见 `napi_pending_exception` 状态码，错误文本全无 | `ThrowIfFailed` 只抛状态不取异常对象 | 已修：pending_exception 时 `get_and_clear` 并读 `.message` 带进 NapiException 消息 |
+| `requestPermissionsFromUser` 等 JS API 报 "must be Array"（401） | 生成器对 `string[]` 参数发射 `IntPtr[]` 签名无法封送；直传单个字符串也不行 | 经 `NodeApi.CreateInstance(global, "Array"u8, item)` 构造真 JS 数组再传（HarmonyClipboard 先例） |
+| user_grant 权限被拒读剪贴板"成功"但 recordCount=0 | API 26 被拒时系统返回空 PasteData 壳而非抛错，读请求根本不落到剪贴板服务 | 读前 `getSelfPermissionStatus` 主动查状态 → 未授权走授权弹窗 → 重试（HarmonyClipboard 完整实现） |
+| 宿主模板改了 EntryAbility.ets 但 HAP 里还是旧代码 | stage-host 的内容戳只比对 app.json5 的 mtime | 已修：脚本对全模板取最新 mtime 比对；改模板后任一文件都会触发重导出 |

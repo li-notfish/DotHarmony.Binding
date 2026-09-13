@@ -43,7 +43,8 @@ bash scripts/deploy-hap.sh         # hdc 安装 + 启动（多设备：HDC_TARGE
 ## 1. 路线 A：从零创建鸿蒙 MAUI 应用
 
 > 完整可运行的参照：[samples/dotnet/HelloApp](samples/dotnet/HelloApp)（XAML + 导航 + 手势 + 托管布局）与
-> [samples/dotnet/ApiDemo](samples/dotnet/ApiDemo)（@ohos.* 服务调用）。
+> [samples/dotnet/ApiDemo](samples/dotnet/ApiDemo)（@ohos.* 服务调用）与
+> [samples/dotnet/EssentialsApp](samples/dotnet/EssentialsApp)（DeviceInfo/Clipboard 等 Essentials 标准 API）。
 > **当前约束**：应用工程须放在本仓库 `samples/dotnet/<应用名>/` 下（打包清单与 libapp.so 取回路径按此约定；
 > NuGet 化后解除，见 ROADMAP M3）。
 
@@ -204,7 +205,7 @@ dotnet build samples/dotnet/MyApp -t:HarmonyRun
 | Shell（flyout/tab/URI 路由） | ❌ 需改造 | 入口改为 `new NavigationPage(...)`；TabbedPage 后续支持 |
 | 自绘（Shape/GraphicsView） | ❌ 待支持 | 需 MAUI Graphics 前端（ROADMAP 1.4 剩余） |
 | CollectionView 大数据量 | ⚠️ 可用 | 当前全量物化无虚拟化（NodeAdapter 后续做） |
-| Essentials（DeviceInfo/Clipboard…） | ⚠️ 部分 | M2 服务层可用 `@ohos.*` 绑定替代；Essentials 接口实现未启动 |
+| **Essentials 标准 API**（`DeviceInfo.Current` / `DeviceDisplay.MainDisplayInfo` / `AppInfo.Name` / `Clipboard.SetTextAsync`） | ✅ 首批已完成 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；MauiHarmonyHost.Run 自动安装。Preferences/ClipboardContentChanged 待补 |
 | 自定义 Handler / 平台服务 | ❌ 需移植 | 按 [HANDLERS.md](HANDLERS.md) 五步流程写鸿蒙侧 Handler |
 
 ### Step 2：建鸿蒙外壳工程
@@ -286,6 +287,6 @@ re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——�
 - **控件**：22 个 Handler（基础控件 + Picker/RefreshView/BoxView + CollectionView/CarouselView 物化版）
 - **手势**：Tap/Pan/Pinch/Swipe/Pointer；Drag/Drop、hover、鼠标按键区分待做
 - **布局**：StackLayout（flex 托管）+ Grid/AbsoluteLayout（MAUI 托管，对齐/ZIndex/Auto 轨道自适应已对齐）
-- **服务**：438 个 @ohos.* 模块绑定（Promise→Task、.NET 事件、ArrayBuffer/Map）；Essentials 未启动
+- **服务**：438 个 @ohos.* 模块绑定（Promise→Task、.NET 事件、ArrayBuffer/Map；bundleManager 已转正）+ **Essentials 首批**（DeviceInfo/DeviceDisplay/AppInfo/Clipboard）
 - **证书/签名**：模拟器免签；真机需自行准备签名物料
 - 路线图：[ROADMAP.md](ROADMAP.md)（M1 控件/M2 服务已完成，M3 NuGet 打包等工程化远期）

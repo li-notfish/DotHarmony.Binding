@@ -249,9 +249,30 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 1. `ohosImports.ets` 自动登记 ✅（已实现）；但**每个被用到的模块是否需要权限**（位置/相机/蓝牙等）需要生成器顺带产出 `module.json5` 的 `requestPermissions` 清单，否则运行时才爆
 2. 全量产物先以"生成但不进编译"姿态评审（恢复 `Compile Remove` 灰度策略），按模块逐个转正
 
-### 2.4 Essentials 平台实现（可选，价值高）
+### 2.4 Essentials 平台实现（✅ 首批已完成，2026-09-13）
 
-`Microsoft.Maui.Essentials` 的 `IDeviceInfo/IDisplay/IClipboard` 等接口做鸿蒙实现，让 MAUI 生态的标准 API 直接可用（M1 中已出现与 Essentials 的 DeviceInfo 撞名——说明生态对接是真实需求）。
+`Microsoft.Maui.Essentials` 的接口做鸿蒙实现，让 MAUI 生态的标准 API 直接可用。
+
+**接线原理**：MAUI 10 的 Essentials 静态入口（`DeviceInfo.Current` / `DeviceDisplay.MainDisplayInfo` /
+`AppInfo.Name` / `Clipboard.SetTextAsync`…）在 netstandard 产物中缺省实现全部 throw，但每个静态类留有
+internal `SetCurrent`/`SetDefault` 注入点。`HarmonyEssentials.Install()`（`MauiHarmonyHost.Run` 自动调用）
+经 `[DynamicDependency]` 收根 + `CreateDelegate` 缓存强类型委托完成注入——与手势反射桥同款 AOT 安全模式，
+MAUI 生态代码因此零改造可用。
+
+**首批四个服务**（底层模块均已转正编译）：
+
+| Essentials 接口 | 底层模块 | 说明 |
+|---|---|---|
+| `IDeviceInfo` | `@ohos.deviceInfo`（同步属性） | Model=productModel / Manufacturer=manufacture / Name=marketName；Version 从 OsFullName 尾段解析（OpenHarmony-7.0.0.105），失败回退 SdkApiVersion；DeviceType 以 emu/simulator 启发式判虚拟机 |
+| `IDeviceDisplay` | `@ohos.display` 的 `getDefaultDisplaySync` | DisplayInfo 语义对齐 Android（Width/Height px，Density=DPI/160）；Rotation 0~3 映射；MainDisplayInfoChanged 经模块级 `Change` 事件转发。**同步 getter 不允许 await promise**（JS 线程内联续体，阻塞即死锁） |
+| `IAppInfo` | `@ohos.bundle.bundleManager`（`getBundleInfoForSelfSync`） | PackageName=BundleInfo.Name；Name=AppInfo.Label；Version 回退版本码。**本项促使 bundleManager 从灰度转正**（移除 Compile Remove 即过编译——当年灰度原因无存证） |
+| `IClipboard` | `@ohos.pasteboard` SystemPasteboard | HasText/SetTextAsync 走同步通道即时生效；GetTextAsync 走 promise。ClipboardContentChanged 声明但不触发（生成器未为 SystemPasteboard 发射 onRemoteUpdate 访问器，留待补接）。**读权限完整闭环（2026-09-13 实测）**：API 26 起 `READ_PASTEBOARD` 为 user_grant，被拒时系统返回空 PasteData 壳而非抛错——读前 `getSelfPermissionStatus` 主动查状态，未授权经宿主导出的 `globalThis.abilityContext` 发 `requestPermissionsFromUser` 弹窗后重试（宿主模板 EntryAbility.ets 已导出该上下文）；授权后回环 `hasText=True text=hello-essentials`，同步 `HasText` 回退最近已知状态 |
+
+**独立示例**：`samples/dotnet/EssentialsApp`——四服务单独验证应用（DeviceInfo/DeviceDisplay/AppInfo 信息栏 + 剪贴板回环按钮），`dotnet build -t:HarmonyRun` 一键部署；HelloApp（Controls 示例）不再混入 Essentials 内容。
+
+**剩余清单（立项待做）**：IPreferences/ISecureStorage（@ohos.data.preferences 已转正，事务性 API 在自定义
+entry 写入路径）、IMainThread（借 napi 线程检查）、电池/传感器（Sensor 已可实测——2.9 有事件回路沉淀）等
+按价值逐项接入；ClipboardContentChanged 事件通道。
 
 ---
 
