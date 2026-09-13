@@ -38,9 +38,11 @@ public static class HarmonyEssentials
             new HarmonyClipboard(), static (m, impl) => m.CreateDelegate<Action<IClipboard>>()(impl));
         SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefault",
             new HarmonyPreferences(), static (m, impl) => m.CreateDelegate<Action<IPreferences>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.Devices.Battery), "SetDefault",
+            new HarmonyBattery(), static (m, impl) => m.CreateDelegate<Action<IBattery>>()(impl));
 
         HiLog.Info("Essentials",
-            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences");
+            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery");
     }
 
     private delegate void Setter<TInterface>(MethodInfo m, TInterface impl);
