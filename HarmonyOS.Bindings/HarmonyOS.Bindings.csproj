@@ -38,7 +38,6 @@
     <Compile Remove="Api\BluetoothManager.cs" />
     <Compile Remove="Api\Browser.cs" />
     <Compile Remove="Api\Bundle.cs" />
-    <Compile Remove="Api\BundleManager.cs" />
     <Compile Remove="Api\Call.cs" />
     <Compile Remove="Api\ComponentSnapshot.cs" />
     <Compile Remove="Api\ComponentUtils.cs" />
@@ -101,7 +100,6 @@
     <Compile Remove="Api\BluetoothManager.Enums.cs" />
     <Compile Remove="Api\Browser.Enums.cs" />
     <Compile Remove="Api\Bundle.Enums.cs" />
-    <Compile Remove="Api\BundleManager.Enums.cs" />
     <Compile Remove="Api\Call.Enums.cs" />
     <Compile Remove="Api\ComponentSnapshot.Enums.cs" />
     <Compile Remove="Api\ComponentUtils.Enums.cs" />

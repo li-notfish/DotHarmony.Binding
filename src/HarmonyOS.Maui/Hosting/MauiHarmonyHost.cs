@@ -12,11 +12,17 @@ public static class MauiHarmonyHost
     /// <summary>
     /// 注册 MAUI 根页面工厂。rootFactory 在 UI 主线程（HarmonyBuildUI 时序）被调用，
     /// 返回的首页经 HarmonyHandlerFactory 装配 handler 并挂载上屏。
+    /// 同时注入 Essentials 鸿蒙实现（DeviceInfo/DeviceDisplay/AppInfo/Clipboard，
+    /// MAUI 生态的标准静态入口自此可用）。
     /// </summary>
     public static void Run(Func<MPage> rootFactory)
     {
         Host.RootBuilder = contentHandle =>
         {
+            // Essentials 在 UI 线程首次构建时装入（napi env 已可用）——
+            // 不能在 ModuleInitializer 阶段（此时 napi 未初始化会闪退）
+            Essentials.HarmonyEssentials.Install();
+
             // 宿主根容器：页面栈 + 模态层的挂载点（Stack 叠加语义）
             var container = new ArkStack();
             container.SetWidthPercent(1.0f);
