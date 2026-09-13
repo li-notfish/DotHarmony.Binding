@@ -1,4 +1,5 @@
-// Essentials 九服务的标准入口验证：DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / MainThread。
+// Essentials 全部 16 服务的标准入口验证：DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery /
+// Vibration / Connectivity / FileSystem / Launcher / Browser / PhoneDialer / Share / Email / SecureStorage / MainThread。
 // 实现由 HarmonyOS.Maui 启动时注入；netstandard 缺省实现会 throw——本页任何一栏有值即注入生效。
 // 剪贴板读权限（READ_PASTEBOARD，user_grant）：首次点击会弹系统授权对话框，
 // 允许后回环显示写入文本；拒绝则显示失败原因（可到系统设置改为"始终允许"）。
@@ -18,6 +19,21 @@ public partial class MainPage : ContentPage
         RefreshDeviceInfo();
         RefreshDisplayInfo();
         RefreshAppInfo();
+        RefreshFileSystem();
+    }
+
+    private void RefreshFileSystem()
+    {
+        try
+        {
+            var data = FileSystem.Current.AppDataDirectory;
+            var cache = FileSystem.Current.CacheDirectory;
+            FileSystemLabel.Text = $"files=…{data[(data.LastIndexOf('/') + 1)..]} · cache=…{cache[(cache.LastIndexOf('/') + 1)..]}";
+        }
+        catch (Exception ex)
+        {
+            FileSystemLabel.Text = "FileSystem FAILED: " + ex.Message;
+        }
     }
 
     private void RefreshDeviceInfo()
@@ -176,6 +192,58 @@ public partial class MainPage : ContentPage
         catch (Exception ex)
         {
             KeepScreenOnLabel.Text = "keepScreenOn FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private void OnBrowserClicked(object? sender, EventArgs e)
+    {
+        _ = Browser.Default.OpenAsync("https://example.com");
+    }
+
+    private async void OnShareClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            await Share.Default.RequestAsync(new ShareTextRequest
+            {
+                Text = "hello from DotHarmony.Binding Essentials on HarmonyOS",
+                Title = "Share via HarmonyOS",
+            });
+        }
+        catch (Exception ex)
+        {
+            SecureStorageLabel.Text = "share FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private async void OnEmailClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            await Email.Default.ComposeAsync(new EmailMessage
+            {
+                Subject = "hello-essentials",
+                Body = "composed on HarmonyOS",
+                To = ["example@example.com"],
+            });
+        }
+        catch (Exception ex)
+        {
+            SecureStorageLabel.Text = "email FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private async void OnSecureStorageClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            await SecureStorage.Default.SetAsync("secure.demo", $"secret-{DateTime.Now:HHmmss}");
+            var value = await SecureStorage.Default.GetAsync("secure.demo");
+            SecureStorageLabel.Text = $"secure roundtrip: {(value is null ? "MISSING" : value)}";
+        }
+        catch (Exception ex)
+        {
+            SecureStorageLabel.Text = "secure storage FAILED: " + ex.GetType().Name + ": " + ex.Message;
         }
     }
 
