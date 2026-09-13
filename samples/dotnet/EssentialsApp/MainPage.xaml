@@ -22,6 +22,11 @@
         <Label x:Name="ClipboardLabel"
                HorizontalTextAlignment="Center"
                BackgroundColor="White" Padding="8" />
+        <Button Text="Preferences round trip (int/string/DateTime)"
+                Clicked="OnPreferencesClicked" />
+        <Label x:Name="PreferencesLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
         <Button Text="Refresh display info"
                 Clicked="OnRefreshDisplayClicked" />
     </StackLayout>

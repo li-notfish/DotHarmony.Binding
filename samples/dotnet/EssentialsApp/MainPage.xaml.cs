@@ -6,6 +6,7 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Devices;
+using Microsoft.Maui.Storage;
 
 namespace EssentialsApp;
 
@@ -70,6 +71,27 @@ public partial class MainPage : ContentPage
         catch (Exception ex)
         {
             ClipboardLabel.Text = "clipboard FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private void OnPreferencesClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            // 先读旧值再写新值：计数器跨重启延续（进程内变量重启即失，能延续的只有持久层）
+            var clicks = Preferences.Default.Get("prefs.clicks", 0) + 1;
+            Preferences.Default.Set("prefs.clicks", clicks);
+            Preferences.Default.Set("prefs.time", DateTime.Now);
+            Preferences.Default.Set("prefs.text", $"written at #{clicks}");
+
+            var time = Preferences.Default.Get("prefs.time", DateTime.MinValue);
+            var text = Preferences.Default.Get("prefs.text", "missing");
+            PreferencesLabel.Text =
+                $"clicks={clicks} (persisted across restarts) · time={time:HH:mm:ss.ffffff} · text={text}";
+        }
+        catch (Exception ex)
+        {
+            PreferencesLabel.Text = "preferences FAILED: " + ex.GetType().Name + ": " + ex.Message;
         }
     }
 
