@@ -1,4 +1,4 @@
-// Essentials 六服务的标准入口验证：DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery。
+// Essentials 七服务的标准入口验证：DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration。
 // 实现由 HarmonyOS.Maui 启动时注入；netstandard 缺省实现会 throw——本页任何一栏有值即注入生效。
 // 剪贴板读权限（READ_PASTEBOARD，user_grant）：首次点击会弹系统授权对话框，
 // 允许后回环显示写入文本；拒绝则显示失败原因（可到系统设置改为"始终允许"）。
@@ -115,6 +115,19 @@ public partial class MainPage : ContentPage
     private void OnBatteryChanged(object? sender, BatteryInfoChangedEventArgs e)
     {
         BatteryLabel.Text = $"event! level={e.ChargeLevel:P0} · state={e.State} · source={e.PowerSource}";
+    }
+
+    private void OnVibrateClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(500));
+            VibrationLabel.Text = "vibrating 500ms (touch the device to feel it)";
+        }
+        catch (Exception ex)
+        {
+            VibrationLabel.Text = "vibration FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
     }
 
     private void OnRefreshDisplayClicked(object? sender, EventArgs e)

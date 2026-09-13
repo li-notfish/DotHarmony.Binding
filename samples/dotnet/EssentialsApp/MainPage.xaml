@@ -32,6 +32,11 @@
         <Label x:Name="BatteryLabel"
                HorizontalTextAlignment="Center"
                BackgroundColor="White" Padding="8" />
+        <Button Text="Vibrate 500ms"
+                Clicked="OnVibrateClicked" />
+        <Label x:Name="VibrationLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
         <Button Text="Refresh display info"
                 Clicked="OnRefreshDisplayClicked" />
     </StackLayout>
