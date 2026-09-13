@@ -18,8 +18,11 @@ if ($BundleId -notmatch '^[a-z0-9]+(\.[a-z0-9_-]+)+$') {
 }
 
 $buildStamp = Join-Path $Destination ".stage-stamp"
+# 模板最新 mtime：任一模板文件改动（EntryAbility/ohosImports/module.json5 等）都应触发重导出
+$templateLatestMtime = (Get-ChildItem $Template -Recurse -File |
+    Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1).LastWriteTimeUtc
 $upToDate = (Test-Path $buildStamp) -and
-    ((Get-Item $buildStamp).LastWriteTimeUtc -ge (Get-Item "$Template/AppScope/app.json5").LastWriteTimeUtc) -and
+    ((Get-Item $buildStamp).LastWriteTimeUtc -ge $templateLatestMtime) -and
     ((Get-Content $buildStamp -Raw).Trim() -eq "$BundleId|$AppTitle".Trim())
 if ($upToDate) {
     Write-Host "=== host staged (up-to-date): $Destination"

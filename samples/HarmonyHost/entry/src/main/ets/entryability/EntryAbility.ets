@@ -7,6 +7,9 @@ const TAG: string = 'HarmonyHost';
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, TAG, 'Ability onCreate');
+    // UIAbility 上下文：.NET 侧权限申请（AbilityAccessCtrl.requestPermissionsFromUser）
+    // 等 ability 级系统能力需要它，经 globalThis 跨 napi 边界传递
+    globalThis.abilityContext = this.context;
     // .NET 侧 Promise 桥测试用的全局函数：
     // somePromiseApi → resolve(number)；willFail → reject(string reason)
     globalThis.somePromiseApi = (): Promise<number> => {

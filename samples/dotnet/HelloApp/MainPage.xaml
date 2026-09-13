@@ -8,9 +8,6 @@
                Text="Hello XAML on HarmonyOS!"
                HorizontalTextAlignment="Center"
                BackgroundColor="White" Padding="8" />
-        <Label x:Name="DeviceLabel"
-               HorizontalTextAlignment="Center"
-               BackgroundColor="White" Padding="8" />
         <Button x:Name="TapButton"
                 Text="Tap me (XAML)"
                 Clicked="OnTapClicked" />
