@@ -109,13 +109,12 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | IPreferences | SetDefault | data.preferences（值用类型标签字符串编码；getSync/putSync 经 NodeApi 直调——包装的 ValueType 签名被 distributedData 同名枚举污染） | ✅ 2026-09-13（43/44 测试含编解码 21 个） |
 | IBattery | SetDefault | batteryInfo（纯同步属性）+ @ohos.power.getPowerMode()（省电模式）；变化事件走 usual.event.BATTERY_CHANGED / POWER_SAVE_MODE_CHANGED commonEvent 订阅（回调内重读属性+去重） | ✅ 2026-09-13（模拟器实测 level/state/source/saver；chargingStatus=0 → 按 Discharging 处理） |
 | IVibration | SetDefault | vibrator（startVibration {type:'time'} + stopVibration() 同步重载；时长钳制 [0,5s] 对齐 MAUI）；VIBRATE 为 system_grant，宿主模板已声明 | ✅ 2026-09-13（未构建未部署——按用户指示；真机触摸验证留待下次构建） |
-| IConnectivity | SetCurrent | net.connection（灰度，需转正；含事件） | 待做 |
+| IConnectivity | SetCurrent | net.connection（2026-09-13 出灰度；HasDefaultNetSync + getNetCapabilitiesSync 的 NET_CAPABILITY_INTERNET=12/VALIDATED=16 判定；bearerTypes 映射；netAvailable/netLost/netConnectionChange 监听） | ✅ 2026-09-13（未构建未部署；真机开关 Wi-Fi 验证留待下次构建） |
 | IFileSystem | SetCurrent | file.fs（灰度） | 待做 |
-| ILauncher / IShare / IEmail / IPhoneDialer / IBrowser | SetDefault | want/startAbility（abilityContext 通道） | 待做 |
-| IMainThread | SetCustomImplementation（双委托） | JS 线程 == UI 线程，直接执行 | 待做 |
+| ILauncher / IShare / IEmail / IPhoneDialer / IBrowser | SetDefault | want/startAbility（abilityContext 通道；AppInfo.ShowSettingsUI 已走通 startAbility({uri:'ohos.settings'})） | 待做（Launcher 最简） |
+| IMainThread | SetCustomImplementation（双委托） | JS 线程 == UI 线程 == Install 线程；IsMainThread 捕获比对，BeginInvokeOnMainThread 直接内联（无 .NET→JS 线程投递通道，TSFN 仅 native→.NET 方向） | ✅ 2026-09-13 |
 | ISecureStorage | SetDefault | security.asset | 待做 |
 | ITextToSpeech / IHapticFeedback / IFlashlight | SetDefault | textToSpeech / vibrator / brightness | 远期 |
 | IGeolocation / IMap / ISensors 族 / IMediaPicker / IFilePicker / IScreenshot | SetDefault | 各自子系统 | 远期 |
 
-已实现服务的成员级缺口（非阻塞、按价值补）：AppInfo.RequestedTheme/ShowSettingsUI、
-DeviceDisplay.KeepScreenOn、DeviceInfo.Idiom 平板判定——abilityContext 通道已就位。
+已实现服务的成员级缺口（非阻塞、按价值补）：~~AppInfo.RequestedTheme/ShowSettingsUI~~（✅ 2026-09-13：getColorMode + startAbility({uri:'ohos.settings'})）、~~DeviceDisplay.KeepScreenOn~~（✅ 2026-09-13：window.GetLastWindowAsync → setWindowKeepScreenOn）、DeviceInfo.Idiom 平板判定。

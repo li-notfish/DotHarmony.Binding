@@ -293,6 +293,24 @@ Cancel 走 stopVibration() 同步重载；时长钳制 [0,5s]、默认 500ms 对
 VIBRATE 为 system_grant，宿主模板 module.json5 已声明。**本批按用户指示未构建未部署**——
 真机/模拟器触摸验证留待下次构建。
 
+**收尾批次（✅ 2026-09-13 第八/九个服务 + 生成器修复）**：
+- **IConnectivity**：@ohos.net.connection 出灰度，HasDefaultNetSync + getNetCapabilitiesSync
+  （NET_CAPABILITY_INTERNET=12/VALIDATED=16 → Internet）+ bearerTypes 映射（全网络并集）；
+  事件走 createNetConnection 默认监听 + netAvailable/netLost/netConnectionChange（回调内重读+去重）
+- **AppInfo 补缺**：RequestedTheme 经 ability 上下文 → getApplicationContext().getColorMode()
+  （COLOR_MODE_DARK=1）；ShowSettingsUI 走通 startAbility({uri:'ohos.settings'})——
+  want/startAbility 通道就位（ILauncher 最简待做）
+- **KeepScreenOn**：@ohos.window 出灰度，window.GetLastWindowAsync(abilityContext) →
+  setWindowKeepScreenOn；**促使生成器修复 WindowRect 撞名**（takenTypeNames 改名后的候选名
+  不复查——window.Rect→WindowRect 撞 dialogRequest.WindowRect，改为加计数后缀避让，
+  产物 WindowRect2；regen 验证仅 Window.cs 变化）
+- **IMainThread**：SetCustomImplementation 双委托；JS 线程 == UI 线程 == Install 线程，
+  IsMainThread 捕获比对，BeginInvokeOnMainThread 直接内联（TSFN 仅 native→.NET 方向，无反向投递）
+
+**剩余清单（立项待做）**：ISecureStorage（security.asset 事务性 API）、IFileSystem（file.fs
+灰度）、ILauncher（want 通道就位）、传感器（Sensor 已可实测——2.9 有事件回路沉淀）等
+按价值逐项接入；电池/网络事件的模拟器触发验证。
+
 ---
 
 ## M3 —— 工程化（远期）

@@ -154,7 +154,7 @@ src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/Content
 samples/HarmonyHost/         鸿蒙宿主模板（ArkTS + C shim + CMake + ohosImports.ets 模块登记；targets 按应用 stage 到 obj/harmony/host）
 samples/dotnet/HelloApp/     M1 控件 demo（XAML + NativeAOT → libapp.so）
 samples/dotnet/ApiDemo/      M2 API 绑定 demo（模块验证/Promise→Task/TSFN；DEMO_APP=ApiDemo 切换）
-samples/dotnet/EssentialsApp/ M2.4 Essentials 验证（DeviceInfo/DeviceDisplay/AppInfo + 剪贴板授权回环 + Preferences 持久化 + Battery + Vibration）
+samples/dotnet/EssentialsApp/ M2.4 Essentials 验证（DeviceInfo/DeviceDisplay/AppInfo + 剪贴板授权回环 + Preferences 持久化 + Battery + Vibration + Connectivity/KeepScreenOn）
                              两者的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
                              对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
                              由 src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets 提供
@@ -180,7 +180,7 @@ tests/                       jest（解析器/生成器 76 用例）
 
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
 - M1 尾巴（完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~、~~Grid/AbsoluteLayout（MAUI 托管布局）~~、~~布局遗留修复（Grid 对齐/ZIndex/Auto 重排）+ 返回动画 + NavigationPage 标题栏 + .NET 10 / C# 14 优化批次~~；剩真机验证
-- M2 全部完成（含 Essentials 平台实现首批：DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration）：~~TSFN 异步层~~、~~codeGenerator 修复~~、~~@ohos.* 全量生成（438 模块/375 转正）~~、~~Promise→Task/AsyncCallback/.NET 事件/ArrayBuffer/Map~~、~~端到端模拟器验证~~、~~零分配调用路径~~、~~2.4 Essentials 首批（含剪贴板 user_grant 授权闭环 + Preferences 跨重启持久化 + Battery commonEvent 事件 + Vibration，2026-09-13）~~
+- M2 全部完成（含 Essentials 平台实现首批：DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/MainThread）：~~TSFN 异步层~~、~~codeGenerator 修复~~、~~@ohos.* 全量生成（438 模块/375 转正）~~、~~Promise→Task/AsyncCallback/.NET 事件/ArrayBuffer/Map~~、~~端到端模拟器验证~~、~~零分配调用路径~~、~~2.4 Essentials 首批（含剪贴板 user_grant 授权闭环 + Preferences 跨重启持久化 + Battery commonEvent 事件 + Vibration + Connectivity/KeepScreenOn/MainThread，2026-09-13）~~
 - M3：NuGet 打包、单项目体验、CI
 
 ## 致谢 / Acknowledgements
