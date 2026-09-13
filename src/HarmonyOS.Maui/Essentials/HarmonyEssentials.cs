@@ -59,17 +59,13 @@ public static class HarmonyEssentials
         SetImplementation(typeof(global::Microsoft.Maui.Storage.SecureStorage), "SetDefault",
             new HarmonySecureStorage(), static (m, impl) => m.CreateDelegate<Action<ISecureStorage>>()(impl));
 
-        // IMainThread：注入点签名特殊（双委托而非接口）——SetCustomImplementation(Func<bool>, Action<Action>)
-        var mainThread = new HarmonyMainThread();
-        var setCustom = typeof(global::Microsoft.Maui.ApplicationModel.MainThread).GetMethod(
-                "SetCustomImplementation", BindingFlags.NonPublic | BindingFlags.Static, null,
-                [typeof(Func<bool>), typeof(Action<Action>)], null)
-            ?? throw new MissingMethodException("MainThread", "SetCustomImplementation");
-        setCustom.Invoke(null,
-            [(Func<bool>)(() => mainThread.IsMainThread()), (Action<Action>)(mainThread.BeginInvokeOnMainThread)]);
+        // IMainThread 不注入：MAUI 10.0.11 的 MainThread 没有注入点（PlatformIsMainThread 直接 throw，
+        // SetCustomImplementation 是 .NET 11 main 才加的 API）——曾误判为 AOT 裁剪，反编译 net10.0 产物实锤。
+        // 本宿主 .NET 代码全在原生 UI 线程上跑（TSFN 回调同线程），无需 MainThread 静态入口；
+        // 升级到含 SetCustomImplementation 的 MAUI 版本后再接回。
 
         HiLog.Info("Essentials",
-            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / FileSystem / Launcher / Browser / PhoneDialer / Share / Email / SecureStorage / MainThread");
+            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / FileSystem / Launcher / Browser / PhoneDialer / Share / Email / SecureStorage");
     }
 
     private delegate void Setter<TInterface>(MethodInfo m, TInterface impl);
