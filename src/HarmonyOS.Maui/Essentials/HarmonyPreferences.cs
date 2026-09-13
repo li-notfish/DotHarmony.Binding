@@ -32,7 +32,8 @@ public class HarmonyPreferences : IPreferences
                 "host did not export globalThis.abilityContext; Preferences requires an ability context");
     }
 
-    static IntPtr Context
+    // internal：HarmonyAppInfo（RequestedTheme/ShowSettingsUI）复用同一 ability 上下文通道
+    internal static IntPtr Context
     {
         get
         {

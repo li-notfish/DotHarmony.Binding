@@ -1,10 +1,12 @@
 // IDeviceDisplay 鸿蒙实现：@ohos.display 的 getDefaultDisplaySync（避免异步 promise 在
 // 同步 getter 里内联等待——续体在 JS 线程内联恢复，同步阻塞会死锁）。
 // DisplayInfo 语义对齐 Android Essentials：Width/Height 为 px，Density = DPI/160 缩放系数。
-// KeepScreenOn 需要 window 通道（宿主 ability 上下文），M2.4 首批仅记录状态不生效。
+// KeepScreenOn 经 @ohos.window.GetLastWindowAsync(abilityContext) → setWindowKeepScreenOn
+// （window 模块 2026-09-13 出灰度，WindowRect 撞名经生成器改名避让修复）。
 #nullable enable
 using Microsoft.Maui.Devices;
 using HDisplay = HarmonyOS.Bindings.Api.Display;
+using HWindow = HarmonyOS.Bindings.Api.Window;
 using HarmonyOS.Bindings.Runtime;
 
 namespace HarmonyOS.Maui.Essentials;
@@ -27,7 +29,22 @@ public class HarmonyDeviceDisplay : IDeviceDisplay
             if (_keepScreenOn == value)
                 return;
             _keepScreenOn = value;
-            HiLog.Warn("Essentials", "KeepScreenOn state recorded but not yet effective (window channel pending)");
+            // getLastWindow 异步：promise 续体在 JS 线程恢复，fire-and-forget（同步 getter 语义不变）
+            _ = ApplyKeepScreenOnAsync(value);
+        }
+    }
+
+    private static async Task ApplyKeepScreenOnAsync(bool keepOn)
+    {
+        try
+        {
+            var win = await HWindow.GetLastWindowAsync(HarmonyPreferences.Context);
+            if (win is not null)
+                await win.SetKeepScreenOnAsync(keepOn);
+        }
+        catch (Exception ex)
+        {
+            HiLog.Warn("Essentials", $"KeepScreenOn apply failed: {ex.Message}");
         }
     }
 

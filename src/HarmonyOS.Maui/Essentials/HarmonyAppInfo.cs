@@ -1,6 +1,7 @@
 // IAppInfo 鸿蒙实现：@ohos.bundle.bundleManager 的 getBundleInfoForSelfSync。
 // flag 1 = GET_BUNDLE_INFO_WITH_APPLICATION（带出 appInfo.label 即应用显示名）。
-// RequestedTheme/LayoutDirection/设置页 URI 无系统通道，按 Unspecified/Ltr/无操作记录。
+// RequestedTheme 经 ability 上下文 → getApplicationContext().getColorMode()（COLOR_MODE_DARK=1）；
+// ShowSettingsUI 经 startAbility({uri:'ohos.settings'}) 拉起系统设置；LayoutDirection 无系统通道按 Ltr。
 #nullable enable
 using Microsoft.Maui.ApplicationModel;
 using HBundleManager = HarmonyOS.Bindings.Api.BundleManager;
@@ -28,10 +29,31 @@ public class HarmonyAppInfo : IAppInfo
 
     public string BuildString => $"{_info.VersionName} ({(long)_info.VersionCode})";
 
-    public void ShowSettingsUI() =>
-        HiLog.Warn("Essentials", "ShowSettingsUI: OpenHarmony has no standard per-app settings URI");
+    public void ShowSettingsUI()
+    {
+        var want = NativeValue.From(new Dictionary<string, object?>
+        {
+            ["uri"] = "ohos.settings",
+        });
+        _ = NodeApi.CallMethodAsync<object?>(HarmonyPreferences.Context, "startAbility", want);
+    }
 
-    public AppTheme RequestedTheme => AppTheme.Unspecified;
+    public AppTheme RequestedTheme
+    {
+        get
+        {
+            try
+            {
+                var appCtx = NodeApi.CallMethod<IntPtr>(HarmonyPreferences.Context, "getApplicationContext"u8);
+                var mode = NodeApi.CallMethod<double>(appCtx, "getColorMode"u8);
+                return mode == 1 ? AppTheme.Dark : AppTheme.Light; // COLOR_MODE_DARK=1, COLOR_MODE_LIGHT=0
+            }
+            catch (Exception)
+            {
+                return AppTheme.Unspecified;
+            }
+        }
+    }
 
     public AppPackagingModel PackagingModel => AppPackagingModel.Packaged; // HAP 分发
 

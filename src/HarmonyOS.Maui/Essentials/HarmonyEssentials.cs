@@ -42,9 +42,20 @@ public static class HarmonyEssentials
             new HarmonyBattery(), static (m, impl) => m.CreateDelegate<Action<IBattery>>()(impl));
         SetImplementation(typeof(global::Microsoft.Maui.Devices.Vibration), "SetDefault",
             new HarmonyVibration(), static (m, impl) => m.CreateDelegate<Action<IVibration>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.Networking.Connectivity), "SetCurrent",
+            new HarmonyConnectivity(), static (m, impl) => m.CreateDelegate<Action<IConnectivity>>()(impl));
+
+        // IMainThread：注入点签名特殊（双委托而非接口）——SetCustomImplementation(Func<bool>, Action<Action>)
+        var mainThread = new HarmonyMainThread();
+        var setCustom = typeof(global::Microsoft.Maui.ApplicationModel.MainThread).GetMethod(
+                "SetCustomImplementation", BindingFlags.NonPublic | BindingFlags.Static, null,
+                [typeof(Func<bool>), typeof(Action<Action>)], null)
+            ?? throw new MissingMethodException("MainThread", "SetCustomImplementation");
+        setCustom.Invoke(null,
+            [(Func<bool>)(() => mainThread.IsMainThread()), (Action<Action>)(mainThread.BeginInvokeOnMainThread)]);
 
         HiLog.Info("Essentials",
-            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration");
+            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / MainThread");
     }
 
     private delegate void Setter<TInterface>(MethodInfo m, TInterface impl);
