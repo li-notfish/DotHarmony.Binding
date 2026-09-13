@@ -40,9 +40,11 @@ public static class HarmonyEssentials
             new HarmonyPreferences(), static (m, impl) => m.CreateDelegate<Action<IPreferences>>()(impl));
         SetImplementation(typeof(global::Microsoft.Maui.Devices.Battery), "SetDefault",
             new HarmonyBattery(), static (m, impl) => m.CreateDelegate<Action<IBattery>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.Devices.Vibration), "SetDefault",
+            new HarmonyVibration(), static (m, impl) => m.CreateDelegate<Action<IVibration>>()(impl));
 
         HiLog.Info("Essentials",
-            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery");
+            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration");
     }
 
     private delegate void Setter<TInterface>(MethodInfo m, TInterface impl);
