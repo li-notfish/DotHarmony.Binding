@@ -270,7 +270,12 @@ MAUI 生态代码因此零改造可用。
 
 **独立示例**：`samples/dotnet/EssentialsApp`——四服务单独验证应用（DeviceInfo/DeviceDisplay/AppInfo 信息栏 + 剪贴板回环按钮），`dotnet build -t:HarmonyRun` 一键部署；HelloApp（Controls 示例）不再混入 Essentials 内容。
 
-**剩余清单（立项待做）**：IPreferences/ISecureStorage（@ohos.data.preferences 已转正，事务性 API 在自定义
+**IPreferences（✅ 2026-09-13 第五个服务）**：@ohos.data.preferences，值用「类型标签:载荷」
+字符串编码规避 OHOS number 对 long/DateTime.ToBinary 的 2^53 精度丢失；getSync/putSync 经
+NodeApi 直调（生成包装的 ValueType 签名被 distributedData 同名枚举污染——跨模块同名别名
+解析是生成器剩余债）；跨重启持久化实测（计数器延续）。适配指南见 **[ESSENTIALS.md](ESSENTIALS.md)**。
+
+**剩余清单（立项待做）**：ISecureStorage（@ohos.data.preferences 已转正，事务性 API 在自定义
 entry 写入路径）、IMainThread（借 napi 线程检查）、电池/传感器（Sensor 已可实测——2.9 有事件回路沉淀）等
 按价值逐项接入；ClipboardContentChanged 事件通道。
 
