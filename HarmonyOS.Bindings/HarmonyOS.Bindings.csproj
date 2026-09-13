@@ -62,7 +62,6 @@
     <Compile Remove="Api\InputMethodEngine.cs" />
     <Compile Remove="Api\LinkEnhance.cs" />
     <Compile Remove="Api\LocationManager.cs" />
-    <Compile Remove="Api\NetConnection.cs" />
     <Compile Remove="Api\NetSocket.cs" />
     <Compile Remove="Api\NetworkManager.cs" />
     <Compile Remove="Api\Observer.cs" />
@@ -87,7 +86,6 @@
     <Compile Remove="Api\WebNativeMessagingExtensionManager.cs" />
     <Compile Remove="Api\Wifi.cs" />
     <Compile Remove="Api\WifiManager.cs" />
-    <Compile Remove="Api\Window.cs" />
     <Compile Remove="Api\Accessibility.Enums.cs" />
     <Compile Remove="Api\AccountManager.Enums.cs" />
     <Compile Remove="Api\AdminManager.Enums.cs" />
@@ -124,7 +122,6 @@
     <Compile Remove="Api\InputMethodEngine.Enums.cs" />
     <Compile Remove="Api\LinkEnhance.Enums.cs" />
     <Compile Remove="Api\LocationManager.Enums.cs" />
-    <Compile Remove="Api\NetConnection.Enums.cs" />
     <Compile Remove="Api\NetSocket.Enums.cs" />
     <Compile Remove="Api\NetworkManager.Enums.cs" />
     <Compile Remove="Api\Observer.Enums.cs" />
@@ -149,7 +146,6 @@
     <Compile Remove="Api\WebNativeMessagingExtensionManager.Enums.cs" />
     <Compile Remove="Api\Wifi.Enums.cs" />
     <Compile Remove="Api\WifiManager.Enums.cs" />
-    <Compile Remove="Api\Window.Enums.cs" />
   </ItemGroup>
   <ItemGroup>
     <!-- Handler 层手势池化复用需要读取 internal 配置（ArkTapGesture.TapCount 等） -->

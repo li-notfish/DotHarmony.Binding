@@ -627,8 +627,8 @@ const PILOT_MODULES = [
     '@ohos.zlib',
 ]
 
-/** 全局枚举名去重（processFullSDK 作用域内） */
-const writtenEnumNames = new Map<string, string>(); // enum 名 → 首个发射它的模块 id（@ohos.xxx）
+    /** 全局枚举名去重（processFullSDK 作用域内） */
+    const writtenEnumNames = new Map<string, string>(); // enum 名 → 首个发射它的模块 id（@ohos.xxx）
 
 /**
  * 手写 Nodes/*.cs 在 HarmonyOS.ArkUI 命名空间已占用的类型名。
@@ -723,9 +723,8 @@ const GRAYSCALE_MODULES = new Set<string>([
     'RemoteDevice',
     'Observer',
     // 第三轮：TS 声明合并（window.WindowRect 双定义）/ 跨模块枚举映射漂移残留
-    'Window',
+    // 2026-09-13：Window/NetConnection 出灰度（IConnectivity / KeepScreenOn；WindowRect 改名避让已修）
     'TelephonyObserver',
-    'NetConnection',
     'Connection',
     'ResourcescheduleBackgroundTaskManager',
     // className 唯一化后的新名称（net.socket → NetSocket 等）

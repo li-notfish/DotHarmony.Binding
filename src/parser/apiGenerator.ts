@@ -225,8 +225,14 @@ export class ApiGenerator {
             ? `${tsName}Object` : tsName;
         const owner = takenTypeNames.get(csharp);
         if (owner !== undefined && owner !== this.moduleClassName) {
-            // 跨模块同名（如 Rect/Size）：加模块前缀避免跨文件重复定义
+            // 跨模块同名（如 Rect/Size）：加模块前缀避免跨文件重复定义。
+            // 前缀名本身也可能被其它模块占用（window.Rect → WindowRect 撞 dialogRequest.WindowRect），
+            // 加计数后缀避让，直到候选名无人认领。
             csharp = `${this.moduleClassName}${tsName}`;
+            let suffix = 2;
+            while (takenTypeNames.get(csharp) !== undefined && takenTypeNames.get(csharp) !== this.moduleClassName) {
+                csharp = `${this.moduleClassName}${tsName}${suffix++}`;
+            }
             takenTypeNames.set(csharp, this.moduleClassName);
         } else if (owner === undefined) {
             takenTypeNames.set(csharp, this.moduleClassName);

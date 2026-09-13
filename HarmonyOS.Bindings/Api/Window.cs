@@ -551,9 +551,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// getGlobalRect
     /// </summary>
-    public WindowRect GetGlobalRect()
+    public WindowRect2 GetGlobalRect()
     {
-        return CallMethod(_getGlobalRect, static h => new WindowRect(h));
+        return CallMethod(_getGlobalRect, static h => new WindowRect2(h));
     }
 
     /// <summary>
@@ -1351,7 +1351,7 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setTouchableAreas
     /// </summary>
-    public Task SetTouchableAreasAsync(WindowRect[] rects)
+    public Task SetTouchableAreasAsync(WindowRect2[] rects)
     {
         return CallMethodAsyncVoid(_setTouchableAreas, rects);
     }
@@ -2461,7 +2461,7 @@ public sealed partial class WindowWindowInfo : JsObject
     /// <summary>
     /// rect
     /// </summary>
-    public WindowRect Rect => new WindowRect(GetPropertyRaw(_rect));
+    public WindowRect2 Rect => new WindowRect2(GetPropertyRaw(_rect));
 
     /// <summary>
     /// bundleName
@@ -2491,7 +2491,7 @@ public sealed partial class WindowWindowInfo : JsObject
     /// <summary>
     /// globalDisplayRect
     /// </summary>
-    public WindowRect? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect(GetPropertyRaw(_globalDisplayRect));
+    public WindowRect2? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_globalDisplayRect));
 
     /// <summary>
     /// displayId
@@ -2501,7 +2501,7 @@ public sealed partial class WindowWindowInfo : JsObject
     /// <summary>
     /// globalRect
     /// </summary>
-    public WindowRect? GlobalRect => GetPropertyRaw(_globalRect) == IntPtr.Zero ? null : new WindowRect(GetPropertyRaw(_globalRect));
+    public WindowRect2? GlobalRect => GetPropertyRaw(_globalRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_globalRect));
 
 }
 
@@ -2517,7 +2517,7 @@ public sealed partial class WindowLayoutInfo : JsObject
     /// <summary>
     /// windowRect
     /// </summary>
-    public WindowRect WindowRect => new WindowRect(GetPropertyRaw(_windowRect));
+    public WindowRect2 WindowRect => new WindowRect2(GetPropertyRaw(_windowRect));
 
     /// <summary>
     /// windowAlpha
@@ -2675,22 +2675,22 @@ public sealed partial class AvoidArea : JsObject
     /// <summary>
     /// leftRect
     /// </summary>
-    public WindowRect LeftRect => new WindowRect(GetPropertyRaw(_leftRect));
+    public WindowRect2 LeftRect => new WindowRect2(GetPropertyRaw(_leftRect));
 
     /// <summary>
     /// topRect
     /// </summary>
-    public WindowRect TopRect => new WindowRect(GetPropertyRaw(_topRect));
+    public WindowRect2 TopRect => new WindowRect2(GetPropertyRaw(_topRect));
 
     /// <summary>
     /// rightRect
     /// </summary>
-    public WindowRect RightRect => new WindowRect(GetPropertyRaw(_rightRect));
+    public WindowRect2 RightRect => new WindowRect2(GetPropertyRaw(_rightRect));
 
     /// <summary>
     /// bottomRect
     /// </summary>
-    public WindowRect BottomRect => new WindowRect(GetPropertyRaw(_bottomRect));
+    public WindowRect2 BottomRect => new WindowRect2(GetPropertyRaw(_bottomRect));
 
 }
 
@@ -2784,9 +2784,9 @@ public sealed record MoveConfiguration(
 /// Rect 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class WindowRect : JsObject
+public sealed partial class WindowRect2 : JsObject
 {
-    public WindowRect(IntPtr handle) : base(handle) { }
+    public WindowRect2(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _left => "left"u8;
     private static ReadOnlySpan<byte> _top => "top"u8;
     private static ReadOnlySpan<byte> _width => "width"u8;
@@ -2841,12 +2841,12 @@ public sealed partial class WindowProperties : JsObject
     /// <summary>
     /// windowRect
     /// </summary>
-    public WindowRect WindowRect => new WindowRect(GetPropertyRaw(_windowRect));
+    public WindowRect2 WindowRect => new WindowRect2(GetPropertyRaw(_windowRect));
 
     /// <summary>
     /// drawableRect
     /// </summary>
-    public WindowRect DrawableRect => new WindowRect(GetPropertyRaw(_drawableRect));
+    public WindowRect2 DrawableRect => new WindowRect2(GetPropertyRaw(_drawableRect));
 
     /// <summary>
     /// type
@@ -2926,7 +2926,7 @@ public sealed partial class WindowProperties : JsObject
     /// <summary>
     /// globalDisplayRect
     /// </summary>
-    public WindowRect? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect(GetPropertyRaw(_globalDisplayRect));
+    public WindowRect2? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_globalDisplayRect));
 
 }
 
@@ -3159,7 +3159,7 @@ public sealed record SubWindowOptions(
     bool DecorEnabled,
     bool? IsModal = null,
     global::HarmonyOS.ArkUI.ModalityType? ModalityType = null,
-    WindowRect? WindowRect = null,
+    WindowRect2? WindowRect = null,
     bool? MaximizeSupported = null,
     double? ZLevel = null,
     bool? OutlineEnabled = null,
