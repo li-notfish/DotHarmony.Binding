@@ -1,0 +1,8 @@
+{
+  "modelVersion": "5.1.0",
+  "description": "HarmonyOS host for .NET NativeAOT (ArkTsBinding sample)",
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hypium": "1.0.21"
+  }
+}

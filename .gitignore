@@ -44,15 +44,26 @@ obj/
 # .NET 构建产物
 samples/dotnet/HelloApp/bin/
 samples/dotnet/HelloApp/obj/
+samples/dotnet/EngineLab/bin/
+samples/dotnet/EngineLab/obj/
 
-# HarmonyHost 构建产物
+# HarmonyHost 构建产物（共享 C 节点 API 宿主 + ArkTS 引擎实验宿主，两条模板同规则）
 samples/HarmonyHost/entry/build/
 samples/HarmonyHost/entry/.cxx/
 samples/HarmonyHost/.hvigor/
+samples/HarmonyHostEngine/entry/build/
+samples/HarmonyHostEngine/entry/.cxx/
+samples/HarmonyHostEngine/.hvigor/
 
-# libapp.so 为远程 NativeAOT 构建产物（scripts/remote-build.sh 生成）
-samples/HarmonyHost/entry/libs/*/libapp.so
+# libapp.so 为 NativeAOT 构建产物（remote-build/WSL 生成），任意目录一律不追踪
+libapp.so
+
+# 宿主模板 oh_modules（hvigor 依赖安装产物）
 samples/HarmonyHost/oh_modules/
+samples/HarmonyHostEngine/oh_modules/
+
+# ZCode 会话计划文件（本地工作记录，不入库）
+.zcode/plans/
 
 # Visual Studio
 .vs/

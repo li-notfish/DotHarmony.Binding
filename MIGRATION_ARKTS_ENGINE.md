@@ -209,3 +209,38 @@ B 在没有 A 的情况下只能做演示级静态页面。B 的价值在 A 跑�
 C NDK API 是 ArkUI-X 跨平台与游戏引擎接入的官方通道，整体移除概率低；**现实威胁是 API 演进**
 （结构体加字段、函数表版本升级、属性枚举重组——gesture API 的 version 首成员已是这种痕迹）。
 漏斗层使这类演进同样只改一处。P0 对冲已执行（机械闸测试）；P1~P4 在触发条件出现时再启动。
+
+## 7. 实验层状态（P2 完整版，2026-09-14；种子 2026-09-12）
+
+方案 A 的实验已落地并推进到 P2 完整版（**未激活为产品路径**，与 C 后端并存，零改动现有 C 节点代码）：
+
+| 组件 | 位置 | 说明 |
+|---|---|---|
+| `VirtualNode` | `HarmonyOS.Bindings/Experimental/VirtualNode.cs` | ArkUINodeBase 公开面子集；写操作全部翻译为指令入队，`MeasuredSize` 读影子快照；P2 增补 `SetPosition`/`SetPlaceholder`/`SetImageSource` |
+| `ArkTsEngine` | `HarmonyOS.Bindings/Experimental/ArkTsEngine.cs` | 指令队列 + `Flush()` 单次 napi 批量下发（布局 pass 边界钩子）；桥挂接（导出符号 `HarmonyEngineInit`）；事件/量测/文本回流分发；P2 增补 16ms tick 自动冲刷（引擎侧 setInterval → 'tick' 回流 → C# napi 回调线程内冲刷，兜底替代显式 Flush） |
+| `ArkTsCommand` | `HarmonyOS.Bindings/Experimental/ArkTsCommand.cs` | 指令模型（create/setAttrs/setChildren/setEvents/delete/setRoot），纯托管可单测 |
+| 引擎宿主模板 | `samples/HarmonyHostEngine/`（由 `samples/HarmonyHost` 复制） | C shim 仅增 `initEngine` 通道；`ets/engine/`：EngineScene（SceneGraph + 增量 diff）、DynamicNode（递归渲染，Stack/Scroll/Text/Entry/Image/Button 六类 + position）、EngineBridge（tick 通道 + textChange 回流）、EngineHost |
+| 实验应用 | `samples/dotnet/EngineLab/` | 指令环演示：建树 → 点击/输入回流 → 改属性 → tick 自动冲刷；定位色块 + Entry textChange + 量测打日志。**不引用 src/HarmonyOS.Maui** |
+
+关键通道设计：`initDotnet()`（HarmonyInit，env 注入）→ `initEngine(bridge)`（dlsym HarmonyEngineInit）
+→ C# 存桥引用、注入 onEvent 回调、开启 16ms tick 自动冲刷、冲刷积压指令——dlopen 时 ModuleInitializer
+即可构建场景（纯托管入队无需 env），握手在 ArkTS `aboutToAppear` 同步完成首帧渲染。
+
+**P2 完整版增量（相对种子，2026-09-14）**：
+- **自动冲刷**：引擎侧 16ms `setInterval` 发 'tick' 回流（id=-1 哨兵），C# 在 napi 回调线程内
+  冲刷积压指令——同帧属性写合并为单次 napi，事件处理内无需显式 Flush；显式 `Flush()` 保留为
+  布局 pass 边界钩子（宿主层 arrange 收尾调用）。
+- **增量 diff 渲染**：EngineScene 持渲染缓存（id → RenderNode 实例）+ 变更集（dirty）+ 父指针表；
+  只有被指令改动的节点 rev 前进，未变更子树的实例原位复用，ArkUI 按 ForEach key（id:rev）复用组件；
+  无变更的批次不下发渲染快照。根包装浅拷贝使 EngineHost `@State` 以引用变更感知本轮更新。
+- **x/y 定位属性**：引擎侧 `.position({x,y})`（vp），未设置时传 undefined 不生效（Stack 子级
+  默认对齐语义不受影响）。
+- **扩展节点/事件**：Stack/Scroll/Text/Entry/Image/Button 六类；事件 click/area/textChange
+  （Entry onChange 载荷携带文本值）。
+
+**模拟器实测通过（种子，2026-09-12，127.0.0.1:5555）**：`dotnet build samples/dotnet/EngineLab -t:HarmonyRun`
+全链路绿（WSL AOT + hvigor 编译引擎 .ets 一次通过 + 部署）。hilog 证据：桥挂接后 21 条积压指令
+单次 napi 冲刷；4 节点 onAreaChange 量测回流（根 1320x2409px @3.50 密度，影子缓存生效）；
+uitest 点击按钮 → click 回流 → `flushed 1 commands`（单次 napi）→ dumpLayout 显示
+"clicked 0 times"→"clicked 1 times"。§2.4 硬点①的影子量测与指令批合并的核心语义即此验证。
+**P2 完整版的远端构建/模拟器验证（tick 冲刷、增量 diff、Entry/定位/扩展节点）待执行。**
