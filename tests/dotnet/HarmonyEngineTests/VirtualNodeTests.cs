@@ -166,6 +166,57 @@ public class VirtualNodeTests
         ArkTsEngine.SetRoot(node);
         Assert.Equal(before + 1, ArkTsEngineTestAccess.PendingCommandCount);
     }
+
+    [Fact]
+    public void SetPosition_ProducesXYAttrs()
+    {
+        var (node, sink) = NewNode();
+        node.SetPosition(16f, 32f);
+
+        var cmds = sink.Commands.Where(c => c.Op == ArkTsCommandOp.SetAttrs).ToList();
+        Assert.Equal(2, cmds.Count);
+        Assert.Equal("x", cmds[0].Attrs![0].Key);
+        Assert.Equal(16f, cmds[0].Attrs[0].Value);
+        Assert.Equal("y", cmds[1].Attrs![0].Key);
+        Assert.Equal(32f, cmds[1].Attrs[0].Value);
+    }
+
+    [Fact]
+    public void ImageAndEntryHelpers_ProduceAttrs()
+    {
+        var (image, sink) = NewNode("Image");
+        image.SetImageSource("icon.png");
+        Assert.Equal("src", sink.Commands.Last(c => c.Op == ArkTsCommandOp.SetAttrs).Attrs![0].Key);
+        Assert.Equal("icon.png", sink.Commands.Last(c => c.Op == ArkTsCommandOp.SetAttrs).Attrs![0].Value);
+
+        var (entry, entrySink) = NewNode("Entry");
+        entry.SetPlaceholder("type here").SetText("abc");
+        var attrs = entrySink.Commands.Where(c => c.Op == ArkTsCommandOp.SetAttrs).ToList();
+        Assert.Equal(("placeholder", "type here"), (attrs[0].Attrs![0].Key, attrs[0].Attrs[0].Value));
+        Assert.Equal(("text", "abc"), (attrs[1].Attrs![0].Key, attrs[1].Attrs[0].Value));
+    }
+
+    [Fact]
+    public void TextChangeSubscription_SetEventsIncludes()
+    {
+        var (node, sink) = NewNode("Entry");
+        node.On("textChange", _ => { });
+
+        var cmd = Assert.Single(sink.Commands, c => c.Op == ArkTsCommandOp.SetEvents);
+        Assert.Equal(new[] { "textChange" }, cmd.Events);
+    }
+
+    [Fact]
+    public void DispatchEvent_TextChangeCarriesTextValue()
+    {
+        var (node, _) = NewNode("Entry");
+        string? received = null;
+        node.On("textChange", e => received = e.Text);
+
+        node.DispatchEvent(new ArkTsEventArgs { Kind = "textChange", Text = "hello" });
+
+        Assert.Equal("hello", received);
+    }
 }
 
 /// <summary>测试桥（internal 访问面）</summary>
