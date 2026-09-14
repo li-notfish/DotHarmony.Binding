@@ -116,7 +116,7 @@ public static unsafe partial class Connection
     /// <summary>
     /// pairDevice
     /// </summary>
-    public static Task PairDeviceAsync(BluetoothAddress deviceId)
+    public static Task PairDeviceAsync(IntPtr deviceId)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pairDevice, deviceId);
     }

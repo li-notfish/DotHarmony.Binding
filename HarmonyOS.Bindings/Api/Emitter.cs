@@ -230,19 +230,18 @@ public sealed record InnerEvent(
 }
 
 /// <summary>
-/// Options（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// Options 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record EmitterOptions(
-    global::HarmonyOS.ArkUI.EventPriority? Priority = null
-) : INapiRecord
+public sealed partial class EmitterOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _priorityName => "priority"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _priorityV = NativeValue.From(Priority);
-        if (_priorityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
-    }
+    public EmitterOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _priority => "priority"u8;
+    /// <summary>
+    /// priority
+    /// </summary>
+    public global::HarmonyOS.ArkUI.EventPriority? Priority => (global::HarmonyOS.ArkUI.EventPriority?)(global::HarmonyOS.ArkUI.EventPriority)NativeValue.ToInt(GetPropertyRaw(_priority));
+
 }
 
 /// <summary>

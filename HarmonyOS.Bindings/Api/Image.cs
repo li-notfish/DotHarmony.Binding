@@ -2192,34 +2192,36 @@ public sealed partial class XMPNamespace : JsObject
 }
 
 /// <summary>
-/// PositionArea（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PositionArea 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PositionArea(
-    byte[] Pixels,
-    double Offset,
-    double Stride,
-    ImageRegion Region
-) : INapiRecord
+public sealed partial class PositionArea : JsObject
 {
-    private static ReadOnlySpan<byte> _pixelsName => "pixels"u8;
-    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
-    private static ReadOnlySpan<byte> _strideName => "stride"u8;
-    private static ReadOnlySpan<byte> _regionName => "region"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _pixelsV = NativeValue.From(Pixels);
-        if (_pixelsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pixelsName, _pixelsV);
-        var _offsetV = NativeValue.From(Offset);
-        if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
-        var _strideV = NativeValue.From(Stride);
-        if (_strideV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _strideName, _strideV);
-        var _regionV = NativeValue.From(Region);
-        if (_regionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _regionName, _regionV);
-    }
+    public PositionArea(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _pixels => "pixels"u8;
+    private static ReadOnlySpan<byte> _offset => "offset"u8;
+    private static ReadOnlySpan<byte> _stride => "stride"u8;
+    private static ReadOnlySpan<byte> _region => "region"u8;
+    /// <summary>
+    /// pixels
+    /// </summary>
+    public byte[] Pixels => ValueConverter.ConvertArray(GetPropertyRaw(_pixels), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// offset
+    /// </summary>
+    public double Offset => NativeValue.ToDouble(GetPropertyRaw(_offset));
+
+    /// <summary>
+    /// stride
+    /// </summary>
+    public double Stride => NativeValue.ToDouble(GetPropertyRaw(_stride));
+
+    /// <summary>
+    /// region
+    /// </summary>
+    public ImageRegion Region => new ImageRegion(GetPropertyRaw(_region));
+
 }
 
 /// <summary>
@@ -2274,71 +2276,72 @@ public sealed partial class ImageInfo : JsObject
 }
 
 /// <summary>
-/// ImagePropertyOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ImagePropertyOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record ImagePropertyOptions(
-    double? Index = null,
-    string? DefaultValue = null
-) : INapiRecord
+public sealed partial class ImagePropertyOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _indexName => "index"u8;
-    private static ReadOnlySpan<byte> _defaultValueName => "defaultValue"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _indexV = NativeValue.From(Index);
-        if (_indexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _indexName, _indexV);
-        var _defaultValueV = NativeValue.From(DefaultValue);
-        if (_defaultValueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _defaultValueName, _defaultValueV);
-    }
+    public ImagePropertyOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _index => "index"u8;
+    private static ReadOnlySpan<byte> _defaultValue => "defaultValue"u8;
+    /// <summary>
+    /// index
+    /// </summary>
+    public double? Index => (double?)NativeValue.ToDouble(GetPropertyRaw(_index));
+
+    /// <summary>
+    /// defaultValue
+    /// </summary>
+    public string? DefaultValue => (string?)NativeValue.ToString(GetPropertyRaw(_defaultValue)) ?? string.Empty;
+
 }
 
 /// <summary>
-/// GetImagePropertyOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// GetImagePropertyOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record GetImagePropertyOptions(
-    double? Index = null,
-    string? DefaultValue = null
-) : INapiRecord
+public sealed partial class GetImagePropertyOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _indexName => "index"u8;
-    private static ReadOnlySpan<byte> _defaultValueName => "defaultValue"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _indexV = NativeValue.From(Index);
-        if (_indexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _indexName, _indexV);
-        var _defaultValueV = NativeValue.From(DefaultValue);
-        if (_defaultValueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _defaultValueName, _defaultValueV);
-    }
+    public GetImagePropertyOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _index => "index"u8;
+    private static ReadOnlySpan<byte> _defaultValue => "defaultValue"u8;
+    /// <summary>
+    /// index
+    /// </summary>
+    public double? Index => (double?)NativeValue.ToDouble(GetPropertyRaw(_index));
+
+    /// <summary>
+    /// defaultValue
+    /// </summary>
+    public string? DefaultValue => (string?)NativeValue.ToString(GetPropertyRaw(_defaultValue)) ?? string.Empty;
+
 }
 
 /// <summary>
-/// DecodingOptionsForPicture（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// DecodingOptionsForPicture 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record DecodingOptionsForPicture(
-    global::HarmonyOS.ArkUI.AuxiliaryPictureType[] DesiredAuxiliaryPictures,
-    ImageSize? DesiredSizeForMainPixelMap = null,
-    global::HarmonyOS.ArkUI.PixelMapFormat? DesiredPixelFormat = null
-) : INapiRecord
+public sealed partial class DecodingOptionsForPicture : JsObject
 {
-    private static ReadOnlySpan<byte> _desiredAuxiliaryPicturesName => "desiredAuxiliaryPictures"u8;
-    private static ReadOnlySpan<byte> _desiredSizeForMainPixelMapName => "desiredSizeForMainPixelMap"u8;
-    private static ReadOnlySpan<byte> _desiredPixelFormatName => "desiredPixelFormat"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _desiredAuxiliaryPicturesV = NativeValue.From(DesiredAuxiliaryPictures);
-        if (_desiredAuxiliaryPicturesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _desiredAuxiliaryPicturesName, _desiredAuxiliaryPicturesV);
-        var _desiredSizeForMainPixelMapV = NativeValue.From(DesiredSizeForMainPixelMap);
-        if (_desiredSizeForMainPixelMapV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _desiredSizeForMainPixelMapName, _desiredSizeForMainPixelMapV);
-        var _desiredPixelFormatV = NativeValue.From(DesiredPixelFormat);
-        if (_desiredPixelFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _desiredPixelFormatName, _desiredPixelFormatV);
-    }
+    public DecodingOptionsForPicture(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _desiredAuxiliaryPictures => "desiredAuxiliaryPictures"u8;
+    private static ReadOnlySpan<byte> _desiredSizeForMainPixelMap => "desiredSizeForMainPixelMap"u8;
+    private static ReadOnlySpan<byte> _desiredPixelFormat => "desiredPixelFormat"u8;
+    /// <summary>
+    /// desiredAuxiliaryPictures
+    /// </summary>
+    public global::HarmonyOS.ArkUI.AuxiliaryPictureType[] DesiredAuxiliaryPictures => ValueConverter.ConvertArray(GetPropertyRaw(_desiredAuxiliaryPictures), static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.AuxiliaryPictureType>(e));
+
+    /// <summary>
+    /// desiredSizeForMainPixelMap
+    /// </summary>
+    public ImageSize? DesiredSizeForMainPixelMap => GetPropertyRaw(_desiredSizeForMainPixelMap) == IntPtr.Zero ? null : new ImageSize(GetPropertyRaw(_desiredSizeForMainPixelMap));
+
+    /// <summary>
+    /// desiredPixelFormat
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PixelMapFormat? DesiredPixelFormat => (global::HarmonyOS.ArkUI.PixelMapFormat?)(global::HarmonyOS.ArkUI.PixelMapFormat)NativeValue.ToInt(GetPropertyRaw(_desiredPixelFormat));
+
 }
 
 /// <summary>
@@ -2438,178 +2441,192 @@ public sealed partial class ImageRawData : JsObject
 }
 
 /// <summary>
-/// DecodingOptionsForThumbnail（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// DecodingOptionsForThumbnail 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record DecodingOptionsForThumbnail(
-    bool? GenerateThumbnailIfAbsent = null,
-    double? MaxGeneratedPixelDimension = null
-) : INapiRecord
+public sealed partial class DecodingOptionsForThumbnail : JsObject
 {
-    private static ReadOnlySpan<byte> _generateThumbnailIfAbsentName => "generateThumbnailIfAbsent"u8;
-    private static ReadOnlySpan<byte> _maxGeneratedPixelDimensionName => "maxGeneratedPixelDimension"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _generateThumbnailIfAbsentV = NativeValue.From(GenerateThumbnailIfAbsent);
-        if (_generateThumbnailIfAbsentV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _generateThumbnailIfAbsentName, _generateThumbnailIfAbsentV);
-        var _maxGeneratedPixelDimensionV = NativeValue.From(MaxGeneratedPixelDimension);
-        if (_maxGeneratedPixelDimensionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxGeneratedPixelDimensionName, _maxGeneratedPixelDimensionV);
-    }
+    public DecodingOptionsForThumbnail(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _generateThumbnailIfAbsent => "generateThumbnailIfAbsent"u8;
+    private static ReadOnlySpan<byte> _maxGeneratedPixelDimension => "maxGeneratedPixelDimension"u8;
+    /// <summary>
+    /// generateThumbnailIfAbsent
+    /// </summary>
+    public bool? GenerateThumbnailIfAbsent => (bool?)NativeValue.ToBool(GetPropertyRaw(_generateThumbnailIfAbsent));
+
+    /// <summary>
+    /// maxGeneratedPixelDimension
+    /// </summary>
+    public double? MaxGeneratedPixelDimension => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxGeneratedPixelDimension));
+
 }
 
 /// <summary>
-/// PackingOption（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PackingOption 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PackingOption(
-    string Format,
-    double Quality,
-    double? BufferSize = null,
-    global::HarmonyOS.ArkUI.PackingDynamicRange? DesiredDynamicRange = null,
-    bool? NeedsPackProperties = null,
-    double? MaxEmbedThumbnailDimension = null,
-    PackingOptionsForTiff? TiffPackingOptions = null,
-    double? BackgroundColor = null,
-    PackingSizeLimit? SizeLimit = null,
-    bool? NeedsPackGps = null
-) : INapiRecord
+public sealed partial class PackingOption : JsObject
 {
-    private static ReadOnlySpan<byte> _formatName => "format"u8;
-    private static ReadOnlySpan<byte> _qualityName => "quality"u8;
-    private static ReadOnlySpan<byte> _bufferSizeName => "bufferSize"u8;
-    private static ReadOnlySpan<byte> _desiredDynamicRangeName => "desiredDynamicRange"u8;
-    private static ReadOnlySpan<byte> _needsPackPropertiesName => "needsPackProperties"u8;
-    private static ReadOnlySpan<byte> _maxEmbedThumbnailDimensionName => "maxEmbedThumbnailDimension"u8;
-    private static ReadOnlySpan<byte> _tiffPackingOptionsName => "tiffPackingOptions"u8;
-    private static ReadOnlySpan<byte> _backgroundColorName => "backgroundColor"u8;
-    private static ReadOnlySpan<byte> _sizeLimitName => "sizeLimit"u8;
-    private static ReadOnlySpan<byte> _needsPackGpsName => "needsPackGPS"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _formatV = NativeValue.From(Format);
-        if (_formatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _formatName, _formatV);
-        var _qualityV = NativeValue.From(Quality);
-        if (_qualityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _qualityName, _qualityV);
-        var _bufferSizeV = NativeValue.From(BufferSize);
-        if (_bufferSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bufferSizeName, _bufferSizeV);
-        var _desiredDynamicRangeV = NativeValue.From(DesiredDynamicRange);
-        if (_desiredDynamicRangeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _desiredDynamicRangeName, _desiredDynamicRangeV);
-        var _needsPackPropertiesV = NativeValue.From(NeedsPackProperties);
-        if (_needsPackPropertiesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _needsPackPropertiesName, _needsPackPropertiesV);
-        var _maxEmbedThumbnailDimensionV = NativeValue.From(MaxEmbedThumbnailDimension);
-        if (_maxEmbedThumbnailDimensionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxEmbedThumbnailDimensionName, _maxEmbedThumbnailDimensionV);
-        var _tiffPackingOptionsV = NativeValue.From(TiffPackingOptions);
-        if (_tiffPackingOptionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tiffPackingOptionsName, _tiffPackingOptionsV);
-        var _backgroundColorV = NativeValue.From(BackgroundColor);
-        if (_backgroundColorV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _backgroundColorName, _backgroundColorV);
-        var _sizeLimitV = NativeValue.From(SizeLimit);
-        if (_sizeLimitV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sizeLimitName, _sizeLimitV);
-        var _needsPackGpsV = NativeValue.From(NeedsPackGps);
-        if (_needsPackGpsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _needsPackGpsName, _needsPackGpsV);
-    }
+    public PackingOption(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _format => "format"u8;
+    private static ReadOnlySpan<byte> _quality => "quality"u8;
+    private static ReadOnlySpan<byte> _bufferSize => "bufferSize"u8;
+    private static ReadOnlySpan<byte> _desiredDynamicRange => "desiredDynamicRange"u8;
+    private static ReadOnlySpan<byte> _needsPackProperties => "needsPackProperties"u8;
+    private static ReadOnlySpan<byte> _maxEmbedThumbnailDimension => "maxEmbedThumbnailDimension"u8;
+    private static ReadOnlySpan<byte> _tiffPackingOptions => "tiffPackingOptions"u8;
+    private static ReadOnlySpan<byte> _backgroundColor => "backgroundColor"u8;
+    private static ReadOnlySpan<byte> _sizeLimit => "sizeLimit"u8;
+    private static ReadOnlySpan<byte> _needsPackGPS => "needsPackGPS"u8;
+    /// <summary>
+    /// format
+    /// </summary>
+    public string Format => NativeValue.ToString(GetPropertyRaw(_format)) ?? string.Empty;
+
+    /// <summary>
+    /// quality
+    /// </summary>
+    public double Quality => NativeValue.ToDouble(GetPropertyRaw(_quality));
+
+    /// <summary>
+    /// bufferSize
+    /// </summary>
+    public double? BufferSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_bufferSize));
+
+    /// <summary>
+    /// desiredDynamicRange
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PackingDynamicRange? DesiredDynamicRange => (global::HarmonyOS.ArkUI.PackingDynamicRange?)(global::HarmonyOS.ArkUI.PackingDynamicRange)NativeValue.ToInt(GetPropertyRaw(_desiredDynamicRange));
+
+    /// <summary>
+    /// needsPackProperties
+    /// </summary>
+    public bool? NeedsPackProperties => (bool?)NativeValue.ToBool(GetPropertyRaw(_needsPackProperties));
+
+    /// <summary>
+    /// maxEmbedThumbnailDimension
+    /// </summary>
+    public double? MaxEmbedThumbnailDimension => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxEmbedThumbnailDimension));
+
+    /// <summary>
+    /// tiffPackingOptions
+    /// </summary>
+    public PackingOptionsForTiff? TiffPackingOptions => GetPropertyRaw(_tiffPackingOptions) == IntPtr.Zero ? null : new PackingOptionsForTiff(GetPropertyRaw(_tiffPackingOptions));
+
+    /// <summary>
+    /// backgroundColor
+    /// </summary>
+    public double? BackgroundColor => (double?)NativeValue.ToDouble(GetPropertyRaw(_backgroundColor));
+
+    /// <summary>
+    /// sizeLimit
+    /// </summary>
+    public PackingSizeLimit? SizeLimit => GetPropertyRaw(_sizeLimit) == IntPtr.Zero ? null : new PackingSizeLimit(GetPropertyRaw(_sizeLimit));
+
+    /// <summary>
+    /// needsPackGPS
+    /// </summary>
+    public bool? NeedsPackGps => (bool?)NativeValue.ToBool(GetPropertyRaw(_needsPackGPS));
+
 }
 
 /// <summary>
-/// PackingOptionsForSequence（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PackingOptionsForSequence 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PackingOptionsForSequence(
-    double FrameCount,
-    double[] DelayTimeList,
-    double[]? DisposalTypes = null,
-    double? LoopCount = null
-) : INapiRecord
+public sealed partial class PackingOptionsForSequence : JsObject
 {
-    private static ReadOnlySpan<byte> _frameCountName => "frameCount"u8;
-    private static ReadOnlySpan<byte> _delayTimeListName => "delayTimeList"u8;
-    private static ReadOnlySpan<byte> _disposalTypesName => "disposalTypes"u8;
-    private static ReadOnlySpan<byte> _loopCountName => "loopCount"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _frameCountV = NativeValue.From(FrameCount);
-        if (_frameCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _frameCountName, _frameCountV);
-        var _delayTimeListV = NativeValue.From(DelayTimeList);
-        if (_delayTimeListV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _delayTimeListName, _delayTimeListV);
-        var _disposalTypesV = NativeValue.From(DisposalTypes);
-        if (_disposalTypesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disposalTypesName, _disposalTypesV);
-        var _loopCountV = NativeValue.From(LoopCount);
-        if (_loopCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _loopCountName, _loopCountV);
-    }
+    public PackingOptionsForSequence(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _frameCount => "frameCount"u8;
+    private static ReadOnlySpan<byte> _delayTimeList => "delayTimeList"u8;
+    private static ReadOnlySpan<byte> _disposalTypes => "disposalTypes"u8;
+    private static ReadOnlySpan<byte> _loopCount => "loopCount"u8;
+    /// <summary>
+    /// frameCount
+    /// </summary>
+    public double FrameCount => NativeValue.ToDouble(GetPropertyRaw(_frameCount));
+
+    /// <summary>
+    /// delayTimeList
+    /// </summary>
+    public double[] DelayTimeList => ValueConverter.ConvertArray(GetPropertyRaw(_delayTimeList), static e => ValueConverter.Convert<double>(e));
+
+    /// <summary>
+    /// disposalTypes
+    /// </summary>
+    public double[] DisposalTypes => ValueConverter.ConvertArray(GetPropertyRaw(_disposalTypes), static e => ValueConverter.Convert<double>(e));
+
+    /// <summary>
+    /// loopCount
+    /// </summary>
+    public double? LoopCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_loopCount));
+
 }
 
 /// <summary>
-/// BinaryBufferInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// BinaryBufferInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record BinaryBufferInfo(
-    ImageSize Size,
-    byte[] Data,
-    double? BytesPerRow = null
-) : INapiRecord
+public sealed partial class BinaryBufferInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _sizeName => "size"u8;
-    private static ReadOnlySpan<byte> _dataName => "data"u8;
-    private static ReadOnlySpan<byte> _bytesPerRowName => "bytesPerRow"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _sizeV = NativeValue.From(Size);
-        if (_sizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV);
-        var _dataV = NativeValue.From(Data);
-        if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
-        var _bytesPerRowV = NativeValue.From(BytesPerRow);
-        if (_bytesPerRowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bytesPerRowName, _bytesPerRowV);
-    }
+    public BinaryBufferInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _size => "size"u8;
+    private static ReadOnlySpan<byte> _data => "data"u8;
+    private static ReadOnlySpan<byte> _bytesPerRow => "bytesPerRow"u8;
+    /// <summary>
+    /// size
+    /// </summary>
+    public ImageSize Size => new ImageSize(GetPropertyRaw(_size));
+
+    /// <summary>
+    /// data
+    /// </summary>
+    public byte[] Data => ValueConverter.ConvertArray(GetPropertyRaw(_data), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// bytesPerRow
+    /// </summary>
+    public double? BytesPerRow => (double?)NativeValue.ToDouble(GetPropertyRaw(_bytesPerRow));
+
 }
 
 /// <summary>
-/// PackingOptionsForTiff（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PackingOptionsForTiff 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PackingOptionsForTiff(
-    double? Compression = null,
-    global::HarmonyOS.ArkUI.ImageOrientation? Orientation = null,
-    double? XResolution = null,
-    double? YResolution = null,
-    double? ResolutionUnit = null
-) : INapiRecord
+public sealed partial class PackingOptionsForTiff : JsObject
 {
-    private static ReadOnlySpan<byte> _compressionName => "compression"u8;
-    private static ReadOnlySpan<byte> _orientationName => "orientation"u8;
-    private static ReadOnlySpan<byte> _xResolutionName => "xResolution"u8;
-    private static ReadOnlySpan<byte> _yResolutionName => "yResolution"u8;
-    private static ReadOnlySpan<byte> _resolutionUnitName => "resolutionUnit"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _compressionV = NativeValue.From(Compression);
-        if (_compressionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _compressionName, _compressionV);
-        var _orientationV = NativeValue.From(Orientation);
-        if (_orientationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _orientationName, _orientationV);
-        var _xResolutionV = NativeValue.From(XResolution);
-        if (_xResolutionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xResolutionName, _xResolutionV);
-        var _yResolutionV = NativeValue.From(YResolution);
-        if (_yResolutionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _yResolutionName, _yResolutionV);
-        var _resolutionUnitV = NativeValue.From(ResolutionUnit);
-        if (_resolutionUnitV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _resolutionUnitName, _resolutionUnitV);
-    }
+    public PackingOptionsForTiff(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _compression => "compression"u8;
+    private static ReadOnlySpan<byte> _orientation => "orientation"u8;
+    private static ReadOnlySpan<byte> _xResolution => "xResolution"u8;
+    private static ReadOnlySpan<byte> _yResolution => "yResolution"u8;
+    private static ReadOnlySpan<byte> _resolutionUnit => "resolutionUnit"u8;
+    /// <summary>
+    /// compression
+    /// </summary>
+    public double? Compression => (double?)NativeValue.ToDouble(GetPropertyRaw(_compression));
+
+    /// <summary>
+    /// orientation
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ImageOrientation? Orientation => (global::HarmonyOS.ArkUI.ImageOrientation?)(global::HarmonyOS.ArkUI.ImageOrientation)NativeValue.ToInt(GetPropertyRaw(_orientation));
+
+    /// <summary>
+    /// xResolution
+    /// </summary>
+    public double? XResolution => (double?)NativeValue.ToDouble(GetPropertyRaw(_xResolution));
+
+    /// <summary>
+    /// yResolution
+    /// </summary>
+    public double? YResolution => (double?)NativeValue.ToDouble(GetPropertyRaw(_yResolution));
+
+    /// <summary>
+    /// resolutionUnit
+    /// </summary>
+    public double? ResolutionUnit => (double?)NativeValue.ToDouble(GetPropertyRaw(_resolutionUnit));
+
 }
 
 /// <summary>
@@ -2688,19 +2705,18 @@ public sealed partial class ImageImage : JsObject
 }
 
 /// <summary>
-/// HdrComposeOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// HdrComposeOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record HdrComposeOptions(
-    global::HarmonyOS.ArkUI.PixelMapFormat? DesiredPixelFormat = null
-) : INapiRecord
+public sealed partial class HdrComposeOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _desiredPixelFormatName => "desiredPixelFormat"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _desiredPixelFormatV = NativeValue.From(DesiredPixelFormat);
-        if (_desiredPixelFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _desiredPixelFormatName, _desiredPixelFormatV);
-    }
+    public HdrComposeOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _desiredPixelFormat => "desiredPixelFormat"u8;
+    /// <summary>
+    /// desiredPixelFormat
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PixelMapFormat? DesiredPixelFormat => (global::HarmonyOS.ArkUI.PixelMapFormat?)(global::HarmonyOS.ArkUI.PixelMapFormat)NativeValue.ToInt(GetPropertyRaw(_desiredPixelFormat));
+
 }
 
 /// <summary>
@@ -5035,24 +5051,24 @@ public sealed partial class AvisMetadata : JsObject
 }
 
 /// <summary>
-/// PackingSizeLimit（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PackingSizeLimit 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PackingSizeLimit(
-    ImageSize MaxSize,
-    global::HarmonyOS.ArkUI.AntiAliasingLevel Level
-) : INapiRecord
+public sealed partial class PackingSizeLimit : JsObject
 {
-    private static ReadOnlySpan<byte> _maxSizeName => "maxSize"u8;
-    private static ReadOnlySpan<byte> _levelName => "level"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _maxSizeV = NativeValue.From(MaxSize);
-        if (_maxSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxSizeName, _maxSizeV);
-        var _levelV = NativeValue.From(Level);
-        if (_levelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _levelName, _levelV);
-    }
+    public PackingSizeLimit(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _maxSize => "maxSize"u8;
+    private static ReadOnlySpan<byte> _level => "level"u8;
+    /// <summary>
+    /// maxSize
+    /// </summary>
+    public ImageSize MaxSize => new ImageSize(GetPropertyRaw(_maxSize));
+
+    /// <summary>
+    /// level
+    /// </summary>
+    public global::HarmonyOS.ArkUI.AntiAliasingLevel Level => (global::HarmonyOS.ArkUI.AntiAliasingLevel)NativeValue.ToInt(GetPropertyRaw(_level));
+
 }
 
 /// <summary>
@@ -5149,22 +5165,22 @@ public sealed partial class XMPTag : JsObject
 }
 
 /// <summary>
-/// XMPEnumerateOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// XMPEnumerateOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record XMPEnumerateOptions(
-    bool? IsRecursive = null,
-    bool? OnlyQualifier = null
-) : INapiRecord
+public sealed partial class XMPEnumerateOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _isRecursiveName => "isRecursive"u8;
-    private static ReadOnlySpan<byte> _onlyQualifierName => "onlyQualifier"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _isRecursiveV = NativeValue.From(IsRecursive);
-        if (_isRecursiveV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isRecursiveName, _isRecursiveV);
-        var _onlyQualifierV = NativeValue.From(OnlyQualifier);
-        if (_onlyQualifierV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _onlyQualifierName, _onlyQualifierV);
-    }
+    public XMPEnumerateOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _isRecursive => "isRecursive"u8;
+    private static ReadOnlySpan<byte> _onlyQualifier => "onlyQualifier"u8;
+    /// <summary>
+    /// isRecursive
+    /// </summary>
+    public bool? IsRecursive => (bool?)NativeValue.ToBool(GetPropertyRaw(_isRecursive));
+
+    /// <summary>
+    /// onlyQualifier
+    /// </summary>
+    public bool? OnlyQualifier => (bool?)NativeValue.ToBool(GetPropertyRaw(_onlyQualifier));
+
 }

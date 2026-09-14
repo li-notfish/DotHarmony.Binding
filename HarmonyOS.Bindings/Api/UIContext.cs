@@ -2060,218 +2060,6 @@ public sealed partial class FontObject : JsObject
 }
 
 /// <summary>
-/// ClickActionProposal 实例包装（@ohos 命名空间内嵌套类）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class ClickActionProposal : JsObject
-{
-    public ClickActionProposal(IntPtr handle) : base(handle) { }
-
-    private static ReadOnlySpan<byte> _ClickActionProposal => "ClickActionProposal"u8;
-    private static ReadOnlySpan<byte> _action => "action"u8;
-    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
-    private static ReadOnlySpan<byte> _node => "node"u8;
-    /// <summary>
-    /// action
-    /// </summary>
-    public IntPtr Action => GetPropertyRaw(_action);
-
-    /// <summary>
-    /// operateIntention
-    /// </summary>
-    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
-
-    /// <summary>
-    /// node
-    /// </summary>
-    public IntPtr Node => GetPropertyRaw(_node);
-
-}
-
-/// <summary>
-/// SelectActionProposal 实例包装（@ohos 命名空间内嵌套类）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class SelectActionProposal : JsObject
-{
-    public SelectActionProposal(IntPtr handle) : base(handle) { }
-
-    private static ReadOnlySpan<byte> _SelectActionProposal => "SelectActionProposal"u8;
-    private static ReadOnlySpan<byte> _action => "action"u8;
-    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
-    private static ReadOnlySpan<byte> _node => "node"u8;
-    /// <summary>
-    /// action
-    /// </summary>
-    public IntPtr Action => GetPropertyRaw(_action);
-
-    /// <summary>
-    /// operateIntention
-    /// </summary>
-    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
-
-    /// <summary>
-    /// node
-    /// </summary>
-    public IntPtr Node => GetPropertyRaw(_node);
-
-}
-
-/// <summary>
-/// NoneActionProposal 实例包装（@ohos 命名空间内嵌套类）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class NoneActionProposal : JsObject
-{
-    public NoneActionProposal(IntPtr handle) : base(handle) { }
-
-    private static ReadOnlySpan<byte> _NoneActionProposal => "NoneActionProposal"u8;
-
-    public NoneActionProposal()
-        : this(NodeApi.CreateInstance(UIContext.Module, _NoneActionProposal)) { }
-    private static ReadOnlySpan<byte> _action => "action"u8;
-    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
-    /// <summary>
-    /// action
-    /// </summary>
-    public IntPtr Action => GetPropertyRaw(_action);
-
-    /// <summary>
-    /// operateIntention
-    /// </summary>
-    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
-
-}
-
-/// <summary>
-/// BackPressActionProposal 实例包装（@ohos 命名空间内嵌套类）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class BackPressActionProposal : JsObject
-{
-    public BackPressActionProposal(IntPtr handle) : base(handle) { }
-
-    private static ReadOnlySpan<byte> _BackPressActionProposal => "BackPressActionProposal"u8;
-
-    public BackPressActionProposal()
-        : this(NodeApi.CreateInstance(UIContext.Module, _BackPressActionProposal)) { }
-    private static ReadOnlySpan<byte> _action => "action"u8;
-    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
-    /// <summary>
-    /// action
-    /// </summary>
-    public IntPtr Action => GetPropertyRaw(_action);
-
-    /// <summary>
-    /// operateIntention
-    /// </summary>
-    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
-
-}
-
-/// <summary>
-/// PageSwitchActionProposal 实例包装（@ohos 命名空间内嵌套类）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class PageSwitchActionProposal : JsObject
-{
-    public PageSwitchActionProposal(IntPtr handle) : base(handle) { }
-
-    private static ReadOnlySpan<byte> _PageSwitchActionProposal => "PageSwitchActionProposal"u8;
-
-    public PageSwitchActionProposal(IntPtr node, double pageCount)
-        : this(NodeApi.CreateInstance(UIContext.Module, _PageSwitchActionProposal, node, pageCount)) { }
-    private static ReadOnlySpan<byte> _action => "action"u8;
-    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
-    private static ReadOnlySpan<byte> _node => "node"u8;
-    private static ReadOnlySpan<byte> _pageCount => "pageCount"u8;
-    /// <summary>
-    /// action
-    /// </summary>
-    public IntPtr Action => GetPropertyRaw(_action);
-
-    /// <summary>
-    /// operateIntention
-    /// </summary>
-    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
-
-    /// <summary>
-    /// node
-    /// </summary>
-    public IntPtr Node => GetPropertyRaw(_node);
-
-    /// <summary>
-    /// pageCount
-    /// </summary>
-    public double PageCount => NativeValue.ToDouble(GetPropertyRaw(_pageCount));
-
-}
-
-/// <summary>
-/// ScrollActionProposal 实例包装（@ohos 命名空间内嵌套类）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class ScrollActionProposal : JsObject
-{
-    public ScrollActionProposal(IntPtr handle) : base(handle) { }
-
-    private static ReadOnlySpan<byte> _ScrollActionProposal => "ScrollActionProposal"u8;
-
-    public ScrollActionProposal(IntPtr node, double distance)
-        : this(NodeApi.CreateInstance(UIContext.Module, _ScrollActionProposal, node, distance)) { }
-    private static ReadOnlySpan<byte> _action => "action"u8;
-    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
-    private static ReadOnlySpan<byte> _node => "node"u8;
-    private static ReadOnlySpan<byte> _distance => "distance"u8;
-    /// <summary>
-    /// action
-    /// </summary>
-    public IntPtr Action => GetPropertyRaw(_action);
-
-    /// <summary>
-    /// operateIntention
-    /// </summary>
-    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
-
-    /// <summary>
-    /// node
-    /// </summary>
-    public IntPtr Node => GetPropertyRaw(_node);
-
-    /// <summary>
-    /// distance
-    /// </summary>
-    public double? Distance => (double?)NativeValue.ToDouble(GetPropertyRaw(_distance));
-
-}
-
-/// <summary>
-/// GestureHandlingResolution 实例包装（@ohos 命名空间内嵌套类）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class GestureHandlingResolution : JsObject
-{
-    public GestureHandlingResolution(IntPtr handle) : base(handle) { }
-
-    private static ReadOnlySpan<byte> _GestureHandlingResolution => "GestureHandlingResolution"u8;
-
-    public GestureHandlingResolution(bool isConsumed)
-        : this(NodeApi.CreateInstance(UIContext.Module, _GestureHandlingResolution, isConsumed)) { }
-    private static ReadOnlySpan<byte> _isConsumed => "isConsumed"u8;
-    private static ReadOnlySpan<byte> _selectedProposal => "selectedProposal"u8;
-    /// <summary>
-    /// isConsumed
-    /// </summary>
-    public bool IsConsumed => NativeValue.ToBool(GetPropertyRaw(_isConsumed));
-
-    /// <summary>
-    /// selectedProposal
-    /// </summary>
-    public BaseGestureHandlingProposal? SelectedProposal => GetPropertyRaw(_selectedProposal) == IntPtr.Zero ? null : new BaseGestureHandlingProposal(GetPropertyRaw(_selectedProposal));
-
-}
-
-/// <summary>
 /// UIContext 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -3060,12 +2848,75 @@ public sealed partial class UIContextObject : JsObject
 }
 
 /// <summary>
-/// BaseGestureHandlingProposal 实例包装（@ohos 命名空间内嵌套类）。
+/// ClickActionProposal 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class BaseGestureHandlingProposal : JsObject
+public sealed partial class ClickActionProposal : JsObject
 {
-    public BaseGestureHandlingProposal(IntPtr handle) : base(handle) { }
+    public ClickActionProposal(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _ClickActionProposal => "ClickActionProposal"u8;
+    private static ReadOnlySpan<byte> _action => "action"u8;
+    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
+    private static ReadOnlySpan<byte> _node => "node"u8;
+    /// <summary>
+    /// action
+    /// </summary>
+    public IntPtr Action => GetPropertyRaw(_action);
+
+    /// <summary>
+    /// operateIntention
+    /// </summary>
+    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
+
+    /// <summary>
+    /// node
+    /// </summary>
+    public IntPtr Node => GetPropertyRaw(_node);
+
+}
+
+/// <summary>
+/// SelectActionProposal 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SelectActionProposal : JsObject
+{
+    public SelectActionProposal(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _SelectActionProposal => "SelectActionProposal"u8;
+    private static ReadOnlySpan<byte> _action => "action"u8;
+    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
+    private static ReadOnlySpan<byte> _node => "node"u8;
+    /// <summary>
+    /// action
+    /// </summary>
+    public IntPtr Action => GetPropertyRaw(_action);
+
+    /// <summary>
+    /// operateIntention
+    /// </summary>
+    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
+
+    /// <summary>
+    /// node
+    /// </summary>
+    public IntPtr Node => GetPropertyRaw(_node);
+
+}
+
+/// <summary>
+/// NoneActionProposal 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class NoneActionProposal : JsObject
+{
+    public NoneActionProposal(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _NoneActionProposal => "NoneActionProposal"u8;
+
+    public NoneActionProposal()
+        : this(NodeApi.CreateInstance(UIContext.Module, _NoneActionProposal)) { }
     private static ReadOnlySpan<byte> _action => "action"u8;
     private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
     /// <summary>
@@ -3077,6 +2928,134 @@ public sealed partial class BaseGestureHandlingProposal : JsObject
     /// operateIntention
     /// </summary>
     public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
+
+}
+
+/// <summary>
+/// BackPressActionProposal 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class BackPressActionProposal : JsObject
+{
+    public BackPressActionProposal(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _BackPressActionProposal => "BackPressActionProposal"u8;
+
+    public BackPressActionProposal()
+        : this(NodeApi.CreateInstance(UIContext.Module, _BackPressActionProposal)) { }
+    private static ReadOnlySpan<byte> _action => "action"u8;
+    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
+    /// <summary>
+    /// action
+    /// </summary>
+    public IntPtr Action => GetPropertyRaw(_action);
+
+    /// <summary>
+    /// operateIntention
+    /// </summary>
+    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
+
+}
+
+/// <summary>
+/// PageSwitchActionProposal 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class PageSwitchActionProposal : JsObject
+{
+    public PageSwitchActionProposal(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _PageSwitchActionProposal => "PageSwitchActionProposal"u8;
+
+    public PageSwitchActionProposal(IntPtr node, double pageCount)
+        : this(NodeApi.CreateInstance(UIContext.Module, _PageSwitchActionProposal, node, pageCount)) { }
+    private static ReadOnlySpan<byte> _action => "action"u8;
+    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
+    private static ReadOnlySpan<byte> _node => "node"u8;
+    private static ReadOnlySpan<byte> _pageCount => "pageCount"u8;
+    /// <summary>
+    /// action
+    /// </summary>
+    public IntPtr Action => GetPropertyRaw(_action);
+
+    /// <summary>
+    /// operateIntention
+    /// </summary>
+    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
+
+    /// <summary>
+    /// node
+    /// </summary>
+    public IntPtr Node => GetPropertyRaw(_node);
+
+    /// <summary>
+    /// pageCount
+    /// </summary>
+    public double PageCount => NativeValue.ToDouble(GetPropertyRaw(_pageCount));
+
+}
+
+/// <summary>
+/// ScrollActionProposal 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ScrollActionProposal : JsObject
+{
+    public ScrollActionProposal(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _ScrollActionProposal => "ScrollActionProposal"u8;
+
+    public ScrollActionProposal(IntPtr node, double distance)
+        : this(NodeApi.CreateInstance(UIContext.Module, _ScrollActionProposal, node, distance)) { }
+    private static ReadOnlySpan<byte> _action => "action"u8;
+    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
+    private static ReadOnlySpan<byte> _node => "node"u8;
+    private static ReadOnlySpan<byte> _distance => "distance"u8;
+    /// <summary>
+    /// action
+    /// </summary>
+    public IntPtr Action => GetPropertyRaw(_action);
+
+    /// <summary>
+    /// operateIntention
+    /// </summary>
+    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
+
+    /// <summary>
+    /// node
+    /// </summary>
+    public IntPtr Node => GetPropertyRaw(_node);
+
+    /// <summary>
+    /// distance
+    /// </summary>
+    public double? Distance => (double?)NativeValue.ToDouble(GetPropertyRaw(_distance));
+
+}
+
+/// <summary>
+/// GestureHandlingResolution 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class GestureHandlingResolution : JsObject
+{
+    public GestureHandlingResolution(IntPtr handle) : base(handle) { }
+
+    private static ReadOnlySpan<byte> _GestureHandlingResolution => "GestureHandlingResolution"u8;
+
+    public GestureHandlingResolution(bool isConsumed)
+        : this(NodeApi.CreateInstance(UIContext.Module, _GestureHandlingResolution, isConsumed)) { }
+    private static ReadOnlySpan<byte> _isConsumed => "isConsumed"u8;
+    private static ReadOnlySpan<byte> _selectedProposal => "selectedProposal"u8;
+    /// <summary>
+    /// isConsumed
+    /// </summary>
+    public bool IsConsumed => NativeValue.ToBool(GetPropertyRaw(_isConsumed));
+
+    /// <summary>
+    /// selectedProposal
+    /// </summary>
+    public BaseGestureHandlingProposal? SelectedProposal => GetPropertyRaw(_selectedProposal) == IntPtr.Zero ? null : new BaseGestureHandlingProposal(GetPropertyRaw(_selectedProposal));
 
 }
 
@@ -5585,38 +5564,58 @@ public sealed partial class SmartGestureController : JsObject
 }
 
 /// <summary>
-/// TargetInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// BaseGestureHandlingProposal 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record TargetInfo(
-    string Id,
-    double? ComponentId = null
-) : INapiRecord
+public sealed partial class BaseGestureHandlingProposal : JsObject
 {
-    private static ReadOnlySpan<byte> _idName => "id"u8;
-    private static ReadOnlySpan<byte> _componentIdName => "componentId"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _idV = NativeValue.From(Id);
-        if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
-        var _componentIdV = NativeValue.From(ComponentId);
-        if (_componentIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _componentIdName, _componentIdV);
-    }
+    public BaseGestureHandlingProposal(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _action => "action"u8;
+    private static ReadOnlySpan<byte> _operateIntention => "operateIntention"u8;
+    /// <summary>
+    /// action
+    /// </summary>
+    public IntPtr Action => GetPropertyRaw(_action);
+
+    /// <summary>
+    /// operateIntention
+    /// </summary>
+    public IntPtr OperateIntention => GetPropertyRaw(_operateIntention);
+
 }
 
 /// <summary>
-/// GestureObserverConfigs（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// TargetInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record GestureObserverConfigs(
-    global::HarmonyOS.ArkUI.GestureActionPhase[] ActionPhases
-) : INapiRecord
+public sealed partial class TargetInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _actionPhasesName => "actionPhases"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _actionPhasesV = NativeValue.From(ActionPhases);
-        if (_actionPhasesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _actionPhasesName, _actionPhasesV);
-    }
+    public TargetInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _id => "id"u8;
+    private static ReadOnlySpan<byte> _componentId => "componentId"u8;
+    /// <summary>
+    /// id
+    /// </summary>
+    public string Id => NativeValue.ToString(GetPropertyRaw(_id)) ?? string.Empty;
+
+    /// <summary>
+    /// componentId
+    /// </summary>
+    public double? ComponentId => (double?)NativeValue.ToDouble(GetPropertyRaw(_componentId));
+
+}
+
+/// <summary>
+/// GestureObserverConfigs 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class GestureObserverConfigs : JsObject
+{
+    public GestureObserverConfigs(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _actionPhases => "actionPhases"u8;
+    /// <summary>
+    /// actionPhases
+    /// </summary>
+    public global::HarmonyOS.ArkUI.GestureActionPhase[] ActionPhases => ValueConverter.ConvertArray(GetPropertyRaw(_actionPhases), static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.GestureActionPhase>(e));
+
 }

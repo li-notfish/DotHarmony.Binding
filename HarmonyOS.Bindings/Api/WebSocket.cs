@@ -672,84 +672,88 @@ public sealed partial class WebSocketMessage : JsObject
 }
 
 /// <summary>
-/// WebSocketCloseOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// WebSocketCloseOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record WebSocketCloseOptions(
-    double? Code = null,
-    string? Reason = null
-) : INapiRecord
+public sealed partial class WebSocketCloseOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _codeName => "code"u8;
-    private static ReadOnlySpan<byte> _reasonName => "reason"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _codeV = NativeValue.From(Code);
-        if (_codeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _codeName, _codeV);
-        var _reasonV = NativeValue.From(Reason);
-        if (_reasonV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reasonName, _reasonV);
-    }
+    public WebSocketCloseOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _code => "code"u8;
+    private static ReadOnlySpan<byte> _reason => "reason"u8;
+    /// <summary>
+    /// code
+    /// </summary>
+    public double? Code => (double?)NativeValue.ToDouble(GetPropertyRaw(_code));
+
+    /// <summary>
+    /// reason
+    /// </summary>
+    public string? Reason => (string?)NativeValue.ToString(GetPropertyRaw(_reason)) ?? string.Empty;
+
 }
 
 /// <summary>
-/// WebSocketServerConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// WebSocketServerConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record WebSocketServerConfig(
-    double MaxConnectionsForOneClient,
-    double MaxConcurrentClientsNumber,
-    double ServerPort,
-    string? ServerIP = null,
-    ServerCert? ServerCert = null,
-    string? Protocol = null
-) : INapiRecord
+public sealed partial class WebSocketServerConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _maxConnectionsForOneClientName => "maxConnectionsForOneClient"u8;
-    private static ReadOnlySpan<byte> _maxConcurrentClientsNumberName => "maxConcurrentClientsNumber"u8;
-    private static ReadOnlySpan<byte> _serverPortName => "serverPort"u8;
-    private static ReadOnlySpan<byte> _serverIPName => "serverIP"u8;
-    private static ReadOnlySpan<byte> _serverCertName => "serverCert"u8;
-    private static ReadOnlySpan<byte> _protocolName => "protocol"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _maxConnectionsForOneClientV = NativeValue.From(MaxConnectionsForOneClient);
-        if (_maxConnectionsForOneClientV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxConnectionsForOneClientName, _maxConnectionsForOneClientV);
-        var _maxConcurrentClientsNumberV = NativeValue.From(MaxConcurrentClientsNumber);
-        if (_maxConcurrentClientsNumberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxConcurrentClientsNumberName, _maxConcurrentClientsNumberV);
-        var _serverPortV = NativeValue.From(ServerPort);
-        if (_serverPortV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serverPortName, _serverPortV);
-        var _serverIPV = NativeValue.From(ServerIP);
-        if (_serverIPV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serverIPName, _serverIPV);
-        var _serverCertV = NativeValue.From(ServerCert);
-        if (_serverCertV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serverCertName, _serverCertV);
-        var _protocolV = NativeValue.From(Protocol);
-        if (_protocolV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _protocolName, _protocolV);
-    }
+    public WebSocketServerConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _maxConnectionsForOneClient => "maxConnectionsForOneClient"u8;
+    private static ReadOnlySpan<byte> _maxConcurrentClientsNumber => "maxConcurrentClientsNumber"u8;
+    private static ReadOnlySpan<byte> _serverPort => "serverPort"u8;
+    private static ReadOnlySpan<byte> _serverIP => "serverIP"u8;
+    private static ReadOnlySpan<byte> _serverCert => "serverCert"u8;
+    private static ReadOnlySpan<byte> _protocol => "protocol"u8;
+    /// <summary>
+    /// maxConnectionsForOneClient
+    /// </summary>
+    public double MaxConnectionsForOneClient => NativeValue.ToDouble(GetPropertyRaw(_maxConnectionsForOneClient));
+
+    /// <summary>
+    /// maxConcurrentClientsNumber
+    /// </summary>
+    public double MaxConcurrentClientsNumber => NativeValue.ToDouble(GetPropertyRaw(_maxConcurrentClientsNumber));
+
+    /// <summary>
+    /// serverPort
+    /// </summary>
+    public double ServerPort => NativeValue.ToDouble(GetPropertyRaw(_serverPort));
+
+    /// <summary>
+    /// serverIP
+    /// </summary>
+    public string? ServerIP => (string?)NativeValue.ToString(GetPropertyRaw(_serverIP)) ?? string.Empty;
+
+    /// <summary>
+    /// serverCert
+    /// </summary>
+    public ServerCert? ServerCert => GetPropertyRaw(_serverCert) == IntPtr.Zero ? null : new ServerCert(GetPropertyRaw(_serverCert));
+
+    /// <summary>
+    /// protocol
+    /// </summary>
+    public string? Protocol => (string?)NativeValue.ToString(GetPropertyRaw(_protocol)) ?? string.Empty;
+
 }
 
 /// <summary>
-/// ServerCert（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ServerCert 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record ServerCert(
-    string CertPath,
-    string KeyPath
-) : INapiRecord
+public sealed partial class ServerCert : JsObject
 {
-    private static ReadOnlySpan<byte> _certPathName => "certPath"u8;
-    private static ReadOnlySpan<byte> _keyPathName => "keyPath"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _certPathV = NativeValue.From(CertPath);
-        if (_certPathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certPathName, _certPathV);
-        var _keyPathV = NativeValue.From(KeyPath);
-        if (_keyPathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyPathName, _keyPathV);
-    }
+    public ServerCert(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _certPath => "certPath"u8;
+    private static ReadOnlySpan<byte> _keyPath => "keyPath"u8;
+    /// <summary>
+    /// certPath
+    /// </summary>
+    public string CertPath => NativeValue.ToString(GetPropertyRaw(_certPath)) ?? string.Empty;
+
+    /// <summary>
+    /// keyPath
+    /// </summary>
+    public string KeyPath => NativeValue.ToString(GetPropertyRaw(_keyPath)) ?? string.Empty;
+
 }

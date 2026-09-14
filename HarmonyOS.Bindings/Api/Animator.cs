@@ -214,54 +214,60 @@ public static unsafe partial class Animator
 }
 
 /// <summary>
-/// AnimatorOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AnimatorOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AnimatorOptions(
-    double Duration,
-    string Easing,
-    double Delay,
-    string Fill,
-    string Direction,
-    double Iterations,
-    double Begin,
-    double End
-) : INapiRecord
+public sealed partial class AnimatorOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _durationName => "duration"u8;
-    private static ReadOnlySpan<byte> _easingName => "easing"u8;
-    private static ReadOnlySpan<byte> _delayName => "delay"u8;
-    private static ReadOnlySpan<byte> _fillName => "fill"u8;
-    private static ReadOnlySpan<byte> _directionName => "direction"u8;
-    private static ReadOnlySpan<byte> _iterationsName => "iterations"u8;
-    private static ReadOnlySpan<byte> _beginName => "begin"u8;
-    private static ReadOnlySpan<byte> _endName => "end"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _durationV = NativeValue.From(Duration);
-        if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
-        var _easingV = NativeValue.From(Easing);
-        if (_easingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _easingName, _easingV);
-        var _delayV = NativeValue.From(Delay);
-        if (_delayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _delayName, _delayV);
-        var _fillV = NativeValue.From(Fill);
-        if (_fillV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fillName, _fillV);
-        var _directionV = NativeValue.From(Direction);
-        if (_directionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _directionName, _directionV);
-        var _iterationsV = NativeValue.From(Iterations);
-        if (_iterationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iterationsName, _iterationsV);
-        var _beginV = NativeValue.From(Begin);
-        if (_beginV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _beginName, _beginV);
-        var _endV = NativeValue.From(End);
-        if (_endV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV);
-    }
+    public AnimatorOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _duration => "duration"u8;
+    private static ReadOnlySpan<byte> _easing => "easing"u8;
+    private static ReadOnlySpan<byte> _delay => "delay"u8;
+    private static ReadOnlySpan<byte> _fill => "fill"u8;
+    private static ReadOnlySpan<byte> _direction => "direction"u8;
+    private static ReadOnlySpan<byte> _iterations => "iterations"u8;
+    private static ReadOnlySpan<byte> _begin => "begin"u8;
+    private static ReadOnlySpan<byte> _end => "end"u8;
+    /// <summary>
+    /// duration
+    /// </summary>
+    public double Duration => NativeValue.ToDouble(GetPropertyRaw(_duration));
+
+    /// <summary>
+    /// easing
+    /// </summary>
+    public string Easing => NativeValue.ToString(GetPropertyRaw(_easing)) ?? string.Empty;
+
+    /// <summary>
+    /// delay
+    /// </summary>
+    public double Delay => NativeValue.ToDouble(GetPropertyRaw(_delay));
+
+    /// <summary>
+    /// fill
+    /// </summary>
+    public string Fill => NativeValue.ToString(GetPropertyRaw(_fill)) ?? string.Empty;
+
+    /// <summary>
+    /// direction
+    /// </summary>
+    public string Direction => NativeValue.ToString(GetPropertyRaw(_direction)) ?? string.Empty;
+
+    /// <summary>
+    /// iterations
+    /// </summary>
+    public double Iterations => NativeValue.ToDouble(GetPropertyRaw(_iterations));
+
+    /// <summary>
+    /// begin
+    /// </summary>
+    public double Begin => NativeValue.ToDouble(GetPropertyRaw(_begin));
+
+    /// <summary>
+    /// end
+    /// </summary>
+    public double End => NativeValue.ToDouble(GetPropertyRaw(_end));
+
 }
 
 /// <summary>

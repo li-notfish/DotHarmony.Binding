@@ -99,7 +99,7 @@ public sealed partial class AbilityObject : JsObject
     /// <summary>
     /// onConfigurationUpdate
     /// </summary>
-    public void OnConfigurationUpdate(IntPtr newConfig)
+    public void OnConfigurationUpdate(global::HarmonyOS.Bindings.Api.ConfigurationObject newConfig)
     {
         CallMethodVoid(_onConfigurationUpdate, newConfig);
     }

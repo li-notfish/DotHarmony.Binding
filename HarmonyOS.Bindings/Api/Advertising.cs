@@ -159,70 +159,75 @@ public sealed record AdDisplayOptions(
 }
 
 /// <summary>
-/// AdRequestParams（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AdRequestParams 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AdRequestParams(
-    string AdId,
-    double? AdType = null,
-    double? AdCount = null,
-    double? AdWidth = null,
-    double? AdHeight = null,
-    string? AdSearchKeyword = null
-) : INapiRecord
+public sealed partial class AdRequestParams : JsObject
 {
-    private static ReadOnlySpan<byte> _adIdName => "adId"u8;
-    private static ReadOnlySpan<byte> _adTypeName => "adType"u8;
-    private static ReadOnlySpan<byte> _adCountName => "adCount"u8;
-    private static ReadOnlySpan<byte> _adWidthName => "adWidth"u8;
-    private static ReadOnlySpan<byte> _adHeightName => "adHeight"u8;
-    private static ReadOnlySpan<byte> _adSearchKeywordName => "adSearchKeyword"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _adIdV = NativeValue.From(AdId);
-        if (_adIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adIdName, _adIdV);
-        var _adTypeV = NativeValue.From(AdType);
-        if (_adTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adTypeName, _adTypeV);
-        var _adCountV = NativeValue.From(AdCount);
-        if (_adCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adCountName, _adCountV);
-        var _adWidthV = NativeValue.From(AdWidth);
-        if (_adWidthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adWidthName, _adWidthV);
-        var _adHeightV = NativeValue.From(AdHeight);
-        if (_adHeightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adHeightName, _adHeightV);
-        var _adSearchKeywordV = NativeValue.From(AdSearchKeyword);
-        if (_adSearchKeywordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adSearchKeywordName, _adSearchKeywordV);
-    }
+    public AdRequestParams(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _adId => "adId"u8;
+    private static ReadOnlySpan<byte> _adType => "adType"u8;
+    private static ReadOnlySpan<byte> _adCount => "adCount"u8;
+    private static ReadOnlySpan<byte> _adWidth => "adWidth"u8;
+    private static ReadOnlySpan<byte> _adHeight => "adHeight"u8;
+    private static ReadOnlySpan<byte> _adSearchKeyword => "adSearchKeyword"u8;
+    /// <summary>
+    /// adId
+    /// </summary>
+    public string AdId => NativeValue.ToString(GetPropertyRaw(_adId)) ?? string.Empty;
+
+    /// <summary>
+    /// adType
+    /// </summary>
+    public double? AdType => (double?)NativeValue.ToDouble(GetPropertyRaw(_adType));
+
+    /// <summary>
+    /// adCount
+    /// </summary>
+    public double? AdCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_adCount));
+
+    /// <summary>
+    /// adWidth
+    /// </summary>
+    public double? AdWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_adWidth));
+
+    /// <summary>
+    /// adHeight
+    /// </summary>
+    public double? AdHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_adHeight));
+
+    /// <summary>
+    /// adSearchKeyword
+    /// </summary>
+    public string? AdSearchKeyword => (string?)NativeValue.ToString(GetPropertyRaw(_adSearchKeyword)) ?? string.Empty;
+
 }
 
 /// <summary>
-/// AdOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AdOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AdOptions(
-    double? TagForChildProtection = null,
-    string? AdContentClassification = null,
-    double? NonPersonalizedAd = null
-) : INapiRecord
+public sealed partial class AdOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _tagForChildProtectionName => "tagForChildProtection"u8;
-    private static ReadOnlySpan<byte> _adContentClassificationName => "adContentClassification"u8;
-    private static ReadOnlySpan<byte> _nonPersonalizedAdName => "nonPersonalizedAd"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _tagForChildProtectionV = NativeValue.From(TagForChildProtection);
-        if (_tagForChildProtectionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tagForChildProtectionName, _tagForChildProtectionV);
-        var _adContentClassificationV = NativeValue.From(AdContentClassification);
-        if (_adContentClassificationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _adContentClassificationName, _adContentClassificationV);
-        var _nonPersonalizedAdV = NativeValue.From(NonPersonalizedAd);
-        if (_nonPersonalizedAdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nonPersonalizedAdName, _nonPersonalizedAdV);
-    }
+    public AdOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _tagForChildProtection => "tagForChildProtection"u8;
+    private static ReadOnlySpan<byte> _adContentClassification => "adContentClassification"u8;
+    private static ReadOnlySpan<byte> _nonPersonalizedAd => "nonPersonalizedAd"u8;
+    /// <summary>
+    /// tagForChildProtection
+    /// </summary>
+    public double? TagForChildProtection => (double?)NativeValue.ToDouble(GetPropertyRaw(_tagForChildProtection));
+
+    /// <summary>
+    /// adContentClassification
+    /// </summary>
+    public string? AdContentClassification => (string?)NativeValue.ToString(GetPropertyRaw(_adContentClassification)) ?? string.Empty;
+
+    /// <summary>
+    /// nonPersonalizedAd
+    /// </summary>
+    public double? NonPersonalizedAd => (double?)NativeValue.ToDouble(GetPropertyRaw(_nonPersonalizedAd));
+
 }
 
 /// <summary>

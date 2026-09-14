@@ -228,7 +228,7 @@ public static unsafe partial class TelephonyObserver
     public static void On(string type, System.Action<global::HarmonyOS.ArkUI.DataFlowType> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback((global::HarmonyOS.ArkUI.DataFlowType)NativeValue.ToInt(args[0])),
             js => NodeApi.CallMethodVoid(Module, _on, type, js));
     }
 
@@ -238,7 +238,7 @@ public static unsafe partial class TelephonyObserver
     public static void On(string type, System.Action<global::HarmonyOS.ArkUI.DataFlowType> callback, TelephonyObserverObserverOptions options)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback((global::HarmonyOS.ArkUI.DataFlowType)NativeValue.ToInt(args[0])),
             js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
     }
 
@@ -256,7 +256,7 @@ public static unsafe partial class TelephonyObserver
     public static void On(string type, System.Action<global::HarmonyOS.ArkUI.TelCallState> callback, TelephonyObserverObserverOptions? options = null)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback((global::HarmonyOS.ArkUI.TelCallState)NativeValue.ToInt(args[0])),
             js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
     }
 
@@ -396,7 +396,7 @@ public static unsafe partial class TelephonyObserver
         add
         {
             _eventListeners.Add(("cellularDataFlowChange", value),
-                args => value(args[0]),
+                args => value((global::HarmonyOS.ArkUI.DataFlowType)NativeValue.ToInt(args[0])),
                 js => NodeApi.CallMethodVoid(Module, _on, "cellularDataFlowChange", js));
         }
         remove
@@ -413,7 +413,7 @@ public static unsafe partial class TelephonyObserver
         add
         {
             _eventListeners.Add(("cellularDataFlowChange", value),
-                args => value(args[0]),
+                args => value((global::HarmonyOS.ArkUI.DataFlowType)NativeValue.ToInt(args[0])),
                 js => NodeApi.CallMethodVoid(Module, _on, "cellularDataFlowChange", js));
         }
         remove
@@ -464,7 +464,7 @@ public static unsafe partial class TelephonyObserver
         add
         {
             _eventListeners.Add(("callStateChangeEx", value),
-                args => value(args[0]),
+                args => value((global::HarmonyOS.ArkUI.TelCallState)NativeValue.ToInt(args[0])),
                 js => NodeApi.CallMethodVoid(Module, _on, "callStateChangeEx", js));
         }
         remove

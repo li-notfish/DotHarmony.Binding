@@ -670,44 +670,48 @@ public sealed partial class OperResult : JsObject
 }
 
 /// <summary>
-/// UserInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// UserInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AvMusicTemplateUserInfo(
-    string UserInfoId,
-    string NickName,
-    string ProfilePicUrl,
-    string Tips,
-    bool IsLogin,
-    bool IsVip
-) : INapiRecord
+public sealed partial class AvMusicTemplateUserInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _userInfoIdName => "userInfoId"u8;
-    private static ReadOnlySpan<byte> _nickNameName => "nickName"u8;
-    private static ReadOnlySpan<byte> _profilePicUrlName => "profilePicUrl"u8;
-    private static ReadOnlySpan<byte> _tipsName => "tips"u8;
-    private static ReadOnlySpan<byte> _isLoginName => "isLogin"u8;
-    private static ReadOnlySpan<byte> _isVipName => "isVip"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _userInfoIdV = NativeValue.From(UserInfoId);
-        if (_userInfoIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userInfoIdName, _userInfoIdV);
-        var _nickNameV = NativeValue.From(NickName);
-        if (_nickNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nickNameName, _nickNameV);
-        var _profilePicUrlV = NativeValue.From(ProfilePicUrl);
-        if (_profilePicUrlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _profilePicUrlName, _profilePicUrlV);
-        var _tipsV = NativeValue.From(Tips);
-        if (_tipsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tipsName, _tipsV);
-        var _isLoginV = NativeValue.From(IsLogin);
-        if (_isLoginV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isLoginName, _isLoginV);
-        var _isVipV = NativeValue.From(IsVip);
-        if (_isVipV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isVipName, _isVipV);
-    }
+    public AvMusicTemplateUserInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _userInfoId => "userInfoId"u8;
+    private static ReadOnlySpan<byte> _nickName => "nickName"u8;
+    private static ReadOnlySpan<byte> _profilePicUrl => "profilePicUrl"u8;
+    private static ReadOnlySpan<byte> _tips => "tips"u8;
+    private static ReadOnlySpan<byte> _isLogin => "isLogin"u8;
+    private static ReadOnlySpan<byte> _isVip => "isVip"u8;
+    /// <summary>
+    /// userInfoId
+    /// </summary>
+    public string UserInfoId => NativeValue.ToString(GetPropertyRaw(_userInfoId)) ?? string.Empty;
+
+    /// <summary>
+    /// nickName
+    /// </summary>
+    public string NickName => NativeValue.ToString(GetPropertyRaw(_nickName)) ?? string.Empty;
+
+    /// <summary>
+    /// profilePicUrl
+    /// </summary>
+    public string ProfilePicUrl => NativeValue.ToString(GetPropertyRaw(_profilePicUrl)) ?? string.Empty;
+
+    /// <summary>
+    /// tips
+    /// </summary>
+    public string Tips => NativeValue.ToString(GetPropertyRaw(_tips)) ?? string.Empty;
+
+    /// <summary>
+    /// isLogin
+    /// </summary>
+    public bool IsLogin => NativeValue.ToBool(GetPropertyRaw(_isLogin));
+
+    /// <summary>
+    /// isVip
+    /// </summary>
+    public bool IsVip => NativeValue.ToBool(GetPropertyRaw(_isVip));
+
 }
 
 /// <summary>

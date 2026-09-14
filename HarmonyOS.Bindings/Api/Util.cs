@@ -1200,56 +1200,54 @@ public sealed partial class StringDecoder : JsObject
 }
 
 /// <summary>
-/// TextDecoderOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// TextDecoderOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record TextDecoderOptions(
-    bool? Fatal = null,
-    bool? IgnoreBom = null
-) : INapiRecord
+public sealed partial class TextDecoderOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _fatalName => "fatal"u8;
-    private static ReadOnlySpan<byte> _ignoreBomName => "ignoreBOM"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _fatalV = NativeValue.From(Fatal);
-        if (_fatalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fatalName, _fatalV);
-        var _ignoreBomV = NativeValue.From(IgnoreBom);
-        if (_ignoreBomV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _ignoreBomName, _ignoreBomV);
-    }
+    public TextDecoderOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _fatal => "fatal"u8;
+    private static ReadOnlySpan<byte> _ignoreBOM => "ignoreBOM"u8;
+    /// <summary>
+    /// fatal
+    /// </summary>
+    public bool? Fatal => (bool?)NativeValue.ToBool(GetPropertyRaw(_fatal));
+
+    /// <summary>
+    /// ignoreBOM
+    /// </summary>
+    public bool? IgnoreBom => (bool?)NativeValue.ToBool(GetPropertyRaw(_ignoreBOM));
+
 }
 
 /// <summary>
-/// DecodeWithStreamOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// DecodeWithStreamOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record DecodeWithStreamOptions(
-    bool? Stream = null
-) : INapiRecord
+public sealed partial class DecodeWithStreamOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _streamName => "stream"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _streamV = NativeValue.From(Stream);
-        if (_streamV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _streamName, _streamV);
-    }
+    public DecodeWithStreamOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _stream => "stream"u8;
+    /// <summary>
+    /// stream
+    /// </summary>
+    public bool? Stream => (bool?)NativeValue.ToBool(GetPropertyRaw(_stream));
+
 }
 
 /// <summary>
-/// DecodeToStringOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// DecodeToStringOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record DecodeToStringOptions(
-    bool? Stream = null
-) : INapiRecord
+public sealed partial class DecodeToStringOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _streamName => "stream"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _streamV = NativeValue.From(Stream);
-        if (_streamV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _streamName, _streamV);
-    }
+    public DecodeToStringOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _stream => "stream"u8;
+    /// <summary>
+    /// stream
+    /// </summary>
+    public bool? Stream => (bool?)NativeValue.ToBool(GetPropertyRaw(_stream));
+
 }
 
 /// <summary>

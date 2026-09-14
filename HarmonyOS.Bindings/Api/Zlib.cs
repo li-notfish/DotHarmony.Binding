@@ -1043,64 +1043,72 @@ public sealed partial class DecompressionOutputInfo : JsObject
 }
 
 /// <summary>
-/// GzHeader（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// GzHeader 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record GzHeader(
-    bool? IsText = null,
-    double? Os = null,
-    double? Time = null,
-    double? Xflags = null,
-    byte[]? Extra = null,
-    double? ExtraLen = null,
-    byte[]? Name = null,
-    byte[]? Comment = null,
-    bool? Hcrc = null,
-    bool? Done = null
-) : INapiRecord
+public sealed partial class GzHeader : JsObject
 {
-    private static ReadOnlySpan<byte> _isTextName => "isText"u8;
-    private static ReadOnlySpan<byte> _osName => "os"u8;
-    private static ReadOnlySpan<byte> _timeName => "time"u8;
-    private static ReadOnlySpan<byte> _xflagsName => "xflags"u8;
-    private static ReadOnlySpan<byte> _extraName => "extra"u8;
-    private static ReadOnlySpan<byte> _extraLenName => "extraLen"u8;
-    private static ReadOnlySpan<byte> _nameName => "name"u8;
-    private static ReadOnlySpan<byte> _commentName => "comment"u8;
-    private static ReadOnlySpan<byte> _hcrcName => "hcrc"u8;
-    private static ReadOnlySpan<byte> _doneName => "done"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _isTextV = NativeValue.From(IsText);
-        if (_isTextV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isTextName, _isTextV);
-        var _osV = NativeValue.From(Os);
-        if (_osV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _osName, _osV);
-        var _timeV = NativeValue.From(Time);
-        if (_timeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeName, _timeV);
-        var _xflagsV = NativeValue.From(Xflags);
-        if (_xflagsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xflagsName, _xflagsV);
-        var _extraV = NativeValue.From(Extra);
-        if (_extraV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extraName, _extraV);
-        var _extraLenV = NativeValue.From(ExtraLen);
-        if (_extraLenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extraLenName, _extraLenV);
-        var _nameV = NativeValue.From(Name);
-        if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
-        var _commentV = NativeValue.From(Comment);
-        if (_commentV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _commentName, _commentV);
-        var _hcrcV = NativeValue.From(Hcrc);
-        if (_hcrcV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _hcrcName, _hcrcV);
-        var _doneV = NativeValue.From(Done);
-        if (_doneV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _doneName, _doneV);
-    }
+    public GzHeader(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _isText => "isText"u8;
+    private static ReadOnlySpan<byte> _os => "os"u8;
+    private static ReadOnlySpan<byte> _time => "time"u8;
+    private static ReadOnlySpan<byte> _xflags => "xflags"u8;
+    private static ReadOnlySpan<byte> _extra => "extra"u8;
+    private static ReadOnlySpan<byte> _extraLen => "extraLen"u8;
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _comment => "comment"u8;
+    private static ReadOnlySpan<byte> _hcrc => "hcrc"u8;
+    private static ReadOnlySpan<byte> _done => "done"u8;
+    /// <summary>
+    /// isText
+    /// </summary>
+    public bool? IsText => (bool?)NativeValue.ToBool(GetPropertyRaw(_isText));
+
+    /// <summary>
+    /// os
+    /// </summary>
+    public double? Os => (double?)NativeValue.ToDouble(GetPropertyRaw(_os));
+
+    /// <summary>
+    /// time
+    /// </summary>
+    public double? Time => (double?)NativeValue.ToDouble(GetPropertyRaw(_time));
+
+    /// <summary>
+    /// xflags
+    /// </summary>
+    public double? Xflags => (double?)NativeValue.ToDouble(GetPropertyRaw(_xflags));
+
+    /// <summary>
+    /// extra
+    /// </summary>
+    public byte[] Extra => ValueConverter.ConvertArray(GetPropertyRaw(_extra), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// extraLen
+    /// </summary>
+    public double? ExtraLen => (double?)NativeValue.ToDouble(GetPropertyRaw(_extraLen));
+
+    /// <summary>
+    /// name
+    /// </summary>
+    public byte[] Name => ValueConverter.ConvertArray(GetPropertyRaw(_name), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// comment
+    /// </summary>
+    public byte[] Comment => ValueConverter.ConvertArray(GetPropertyRaw(_comment), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// hcrc
+    /// </summary>
+    public bool? Hcrc => (bool?)NativeValue.ToBool(GetPropertyRaw(_hcrc));
+
+    /// <summary>
+    /// done
+    /// </summary>
+    public bool? Done => (bool?)NativeValue.ToBool(GetPropertyRaw(_done));
+
 }
 
 /// <summary>

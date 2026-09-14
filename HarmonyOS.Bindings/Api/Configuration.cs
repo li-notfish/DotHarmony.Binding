@@ -67,3 +67,74 @@ public static unsafe partial class Configuration
     }
 
 }
+
+/// <summary>
+/// Configuration（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ConfigurationObject(
+    string? Language = null,
+    IntPtr? ColorMode = null,
+    IntPtr? Direction = null,
+    IntPtr? ScreenDensity = null,
+    double? DisplayId = null,
+    bool? HasPointerDevice = null,
+    string? FontId = null,
+    double? FontSizeScale = null,
+    double? FontWeightScale = null,
+    string? Mcc = null,
+    string? Mnc = null,
+    IntPtr? Locale = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _languageName => "language"u8;
+    private static ReadOnlySpan<byte> _colorModeName => "colorMode"u8;
+    private static ReadOnlySpan<byte> _directionName => "direction"u8;
+    private static ReadOnlySpan<byte> _screenDensityName => "screenDensity"u8;
+    private static ReadOnlySpan<byte> _displayIdName => "displayId"u8;
+    private static ReadOnlySpan<byte> _hasPointerDeviceName => "hasPointerDevice"u8;
+    private static ReadOnlySpan<byte> _fontIdName => "fontId"u8;
+    private static ReadOnlySpan<byte> _fontSizeScaleName => "fontSizeScale"u8;
+    private static ReadOnlySpan<byte> _fontWeightScaleName => "fontWeightScale"u8;
+    private static ReadOnlySpan<byte> _mccName => "mcc"u8;
+    private static ReadOnlySpan<byte> _mncName => "mnc"u8;
+    private static ReadOnlySpan<byte> _localeName => "locale"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _languageV = NativeValue.From(Language);
+        if (_languageV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _languageName, _languageV);
+        var _colorModeV = NativeValue.From(ColorMode);
+        if (_colorModeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _colorModeName, _colorModeV);
+        var _directionV = NativeValue.From(Direction);
+        if (_directionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _directionName, _directionV);
+        var _screenDensityV = NativeValue.From(ScreenDensity);
+        if (_screenDensityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _screenDensityName, _screenDensityV);
+        var _displayIdV = NativeValue.From(DisplayId);
+        if (_displayIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV);
+        var _hasPointerDeviceV = NativeValue.From(HasPointerDevice);
+        if (_hasPointerDeviceV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _hasPointerDeviceName, _hasPointerDeviceV);
+        var _fontIdV = NativeValue.From(FontId);
+        if (_fontIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fontIdName, _fontIdV);
+        var _fontSizeScaleV = NativeValue.From(FontSizeScale);
+        if (_fontSizeScaleV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fontSizeScaleName, _fontSizeScaleV);
+        var _fontWeightScaleV = NativeValue.From(FontWeightScale);
+        if (_fontWeightScaleV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fontWeightScaleName, _fontWeightScaleV);
+        var _mccV = NativeValue.From(Mcc);
+        if (_mccV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _mccName, _mccV);
+        var _mncV = NativeValue.From(Mnc);
+        if (_mncV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _mncName, _mncV);
+        var _localeV = NativeValue.From(Locale);
+        if (_localeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _localeName, _localeV);
+    }
+}

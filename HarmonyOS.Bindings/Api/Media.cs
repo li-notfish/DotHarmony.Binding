@@ -3527,74 +3527,84 @@ public sealed partial class MediaDescription : JsObject
 }
 
 /// <summary>
-/// PlaybackStrategy（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PlaybackStrategy 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PlaybackStrategy(
-    double? PreferredWidth = null,
-    double? PreferredHeight = null,
-    double? PreferredBufferDuration = null,
-    bool? PreferredHdr = null,
-    global::HarmonyOS.ArkUI.MediaType? MutedMediaType = null,
-    string? PreferredAudioLanguage = null,
-    string? PreferredSubtitleLanguage = null,
-    bool? ShowFirstFrameOnPrepare = null,
-    double? PreferredBufferDurationForPlaying = null,
-    bool? EnableSuperResolution = null,
-    double? ThresholdForAutoQuickPlay = null,
-    bool? KeepDecodingOnMute = null
-) : INapiRecord
+public sealed partial class PlaybackStrategy : JsObject
 {
-    private static ReadOnlySpan<byte> _preferredWidthName => "preferredWidth"u8;
-    private static ReadOnlySpan<byte> _preferredHeightName => "preferredHeight"u8;
-    private static ReadOnlySpan<byte> _preferredBufferDurationName => "preferredBufferDuration"u8;
-    private static ReadOnlySpan<byte> _preferredHdrName => "preferredHdr"u8;
-    private static ReadOnlySpan<byte> _mutedMediaTypeName => "mutedMediaType"u8;
-    private static ReadOnlySpan<byte> _preferredAudioLanguageName => "preferredAudioLanguage"u8;
-    private static ReadOnlySpan<byte> _preferredSubtitleLanguageName => "preferredSubtitleLanguage"u8;
-    private static ReadOnlySpan<byte> _showFirstFrameOnPrepareName => "showFirstFrameOnPrepare"u8;
-    private static ReadOnlySpan<byte> _preferredBufferDurationForPlayingName => "preferredBufferDurationForPlaying"u8;
-    private static ReadOnlySpan<byte> _enableSuperResolutionName => "enableSuperResolution"u8;
-    private static ReadOnlySpan<byte> _thresholdForAutoQuickPlayName => "thresholdForAutoQuickPlay"u8;
-    private static ReadOnlySpan<byte> _keepDecodingOnMuteName => "keepDecodingOnMute"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _preferredWidthV = NativeValue.From(PreferredWidth);
-        if (_preferredWidthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _preferredWidthName, _preferredWidthV);
-        var _preferredHeightV = NativeValue.From(PreferredHeight);
-        if (_preferredHeightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _preferredHeightName, _preferredHeightV);
-        var _preferredBufferDurationV = NativeValue.From(PreferredBufferDuration);
-        if (_preferredBufferDurationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _preferredBufferDurationName, _preferredBufferDurationV);
-        var _preferredHdrV = NativeValue.From(PreferredHdr);
-        if (_preferredHdrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _preferredHdrName, _preferredHdrV);
-        var _mutedMediaTypeV = NativeValue.From(MutedMediaType);
-        if (_mutedMediaTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mutedMediaTypeName, _mutedMediaTypeV);
-        var _preferredAudioLanguageV = NativeValue.From(PreferredAudioLanguage);
-        if (_preferredAudioLanguageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _preferredAudioLanguageName, _preferredAudioLanguageV);
-        var _preferredSubtitleLanguageV = NativeValue.From(PreferredSubtitleLanguage);
-        if (_preferredSubtitleLanguageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _preferredSubtitleLanguageName, _preferredSubtitleLanguageV);
-        var _showFirstFrameOnPrepareV = NativeValue.From(ShowFirstFrameOnPrepare);
-        if (_showFirstFrameOnPrepareV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _showFirstFrameOnPrepareName, _showFirstFrameOnPrepareV);
-        var _preferredBufferDurationForPlayingV = NativeValue.From(PreferredBufferDurationForPlaying);
-        if (_preferredBufferDurationForPlayingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _preferredBufferDurationForPlayingName, _preferredBufferDurationForPlayingV);
-        var _enableSuperResolutionV = NativeValue.From(EnableSuperResolution);
-        if (_enableSuperResolutionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enableSuperResolutionName, _enableSuperResolutionV);
-        var _thresholdForAutoQuickPlayV = NativeValue.From(ThresholdForAutoQuickPlay);
-        if (_thresholdForAutoQuickPlayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _thresholdForAutoQuickPlayName, _thresholdForAutoQuickPlayV);
-        var _keepDecodingOnMuteV = NativeValue.From(KeepDecodingOnMute);
-        if (_keepDecodingOnMuteV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keepDecodingOnMuteName, _keepDecodingOnMuteV);
-    }
+    public PlaybackStrategy(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _preferredWidth => "preferredWidth"u8;
+    private static ReadOnlySpan<byte> _preferredHeight => "preferredHeight"u8;
+    private static ReadOnlySpan<byte> _preferredBufferDuration => "preferredBufferDuration"u8;
+    private static ReadOnlySpan<byte> _preferredHdr => "preferredHdr"u8;
+    private static ReadOnlySpan<byte> _mutedMediaType => "mutedMediaType"u8;
+    private static ReadOnlySpan<byte> _preferredAudioLanguage => "preferredAudioLanguage"u8;
+    private static ReadOnlySpan<byte> _preferredSubtitleLanguage => "preferredSubtitleLanguage"u8;
+    private static ReadOnlySpan<byte> _showFirstFrameOnPrepare => "showFirstFrameOnPrepare"u8;
+    private static ReadOnlySpan<byte> _preferredBufferDurationForPlaying => "preferredBufferDurationForPlaying"u8;
+    private static ReadOnlySpan<byte> _enableSuperResolution => "enableSuperResolution"u8;
+    private static ReadOnlySpan<byte> _thresholdForAutoQuickPlay => "thresholdForAutoQuickPlay"u8;
+    private static ReadOnlySpan<byte> _keepDecodingOnMute => "keepDecodingOnMute"u8;
+    /// <summary>
+    /// preferredWidth
+    /// </summary>
+    public double? PreferredWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredWidth));
+
+    /// <summary>
+    /// preferredHeight
+    /// </summary>
+    public double? PreferredHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredHeight));
+
+    /// <summary>
+    /// preferredBufferDuration
+    /// </summary>
+    public double? PreferredBufferDuration => (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredBufferDuration));
+
+    /// <summary>
+    /// preferredHdr
+    /// </summary>
+    public bool? PreferredHdr => (bool?)NativeValue.ToBool(GetPropertyRaw(_preferredHdr));
+
+    /// <summary>
+    /// mutedMediaType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.MediaType? MutedMediaType => (global::HarmonyOS.ArkUI.MediaType?)(global::HarmonyOS.ArkUI.MediaType)NativeValue.ToInt(GetPropertyRaw(_mutedMediaType));
+
+    /// <summary>
+    /// preferredAudioLanguage
+    /// </summary>
+    public string? PreferredAudioLanguage => (string?)NativeValue.ToString(GetPropertyRaw(_preferredAudioLanguage)) ?? string.Empty;
+
+    /// <summary>
+    /// preferredSubtitleLanguage
+    /// </summary>
+    public string? PreferredSubtitleLanguage => (string?)NativeValue.ToString(GetPropertyRaw(_preferredSubtitleLanguage)) ?? string.Empty;
+
+    /// <summary>
+    /// showFirstFrameOnPrepare
+    /// </summary>
+    public bool? ShowFirstFrameOnPrepare => (bool?)NativeValue.ToBool(GetPropertyRaw(_showFirstFrameOnPrepare));
+
+    /// <summary>
+    /// preferredBufferDurationForPlaying
+    /// </summary>
+    public double? PreferredBufferDurationForPlaying => (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredBufferDurationForPlaying));
+
+    /// <summary>
+    /// enableSuperResolution
+    /// </summary>
+    public bool? EnableSuperResolution => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableSuperResolution));
+
+    /// <summary>
+    /// thresholdForAutoQuickPlay
+    /// </summary>
+    public double? ThresholdForAutoQuickPlay => (double?)NativeValue.ToDouble(GetPropertyRaw(_thresholdForAutoQuickPlay));
+
+    /// <summary>
+    /// keepDecodingOnMute
+    /// </summary>
+    public bool? KeepDecodingOnMute => (bool?)NativeValue.ToBool(GetPropertyRaw(_keepDecodingOnMute));
+
 }
 
 /// <summary>
@@ -3715,34 +3725,36 @@ public sealed partial class MediaRange : JsObject
 }
 
 /// <summary>
-/// WatermarkConfiguration（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// WatermarkConfiguration 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record WatermarkConfiguration(
-    double Top,
-    double Left,
-    double? Width = null,
-    double? Height = null
-) : INapiRecord
+public sealed partial class WatermarkConfiguration : JsObject
 {
-    private static ReadOnlySpan<byte> _topName => "top"u8;
-    private static ReadOnlySpan<byte> _leftName => "left"u8;
-    private static ReadOnlySpan<byte> _widthName => "width"u8;
-    private static ReadOnlySpan<byte> _heightName => "height"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _topV = NativeValue.From(Top);
-        if (_topV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _topName, _topV);
-        var _leftV = NativeValue.From(Left);
-        if (_leftV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _leftName, _leftV);
-        var _widthV = NativeValue.From(Width);
-        if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
-        var _heightV = NativeValue.From(Height);
-        if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
-    }
+    public WatermarkConfiguration(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _top => "top"u8;
+    private static ReadOnlySpan<byte> _left => "left"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// top
+    /// </summary>
+    public double Top => NativeValue.ToDouble(GetPropertyRaw(_top));
+
+    /// <summary>
+    /// left
+    /// </summary>
+    public double Left => NativeValue.ToDouble(GetPropertyRaw(_left));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double? Width => (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double? Height => (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
+
 }
 
 /// <summary>
@@ -3803,223 +3815,246 @@ public sealed partial class EncoderInfo : JsObject
 }
 
 /// <summary>
-/// AudioRecorderConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AudioRecorderConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AudioRecorderConfig(
-    global::HarmonyOS.ArkUI.AudioEncoder? AudioEncoder,
-    double? AudioEncodeBitRate,
-    double? AudioSampleRate,
-    double? NumberOfChannels,
-    global::HarmonyOS.ArkUI.AudioOutputFormat? Format,
-    string Uri,
-    MediaLocation? Location = null,
-    global::HarmonyOS.ArkUI.CodecMimeType? AudioEncoderMime = null,
-    global::HarmonyOS.ArkUI.ContainerFormatType? FileFormat = null
-) : INapiRecord
+public sealed partial class AudioRecorderConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _audioEncoderName => "audioEncoder"u8;
-    private static ReadOnlySpan<byte> _audioEncodeBitRateName => "audioEncodeBitRate"u8;
-    private static ReadOnlySpan<byte> _audioSampleRateName => "audioSampleRate"u8;
-    private static ReadOnlySpan<byte> _numberOfChannelsName => "numberOfChannels"u8;
-    private static ReadOnlySpan<byte> _formatName => "format"u8;
-    private static ReadOnlySpan<byte> _uriName => "uri"u8;
-    private static ReadOnlySpan<byte> _locationName => "location"u8;
-    private static ReadOnlySpan<byte> _audioEncoderMimeName => "audioEncoderMime"u8;
-    private static ReadOnlySpan<byte> _fileFormatName => "fileFormat"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _audioEncoderV = NativeValue.From(AudioEncoder);
-        if (_audioEncoderV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioEncoderName, _audioEncoderV);
-        var _audioEncodeBitRateV = NativeValue.From(AudioEncodeBitRate);
-        if (_audioEncodeBitRateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioEncodeBitRateName, _audioEncodeBitRateV);
-        var _audioSampleRateV = NativeValue.From(AudioSampleRate);
-        if (_audioSampleRateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioSampleRateName, _audioSampleRateV);
-        var _numberOfChannelsV = NativeValue.From(NumberOfChannels);
-        if (_numberOfChannelsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _numberOfChannelsName, _numberOfChannelsV);
-        var _formatV = NativeValue.From(Format);
-        if (_formatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _formatName, _formatV);
-        var _uriV = NativeValue.From(Uri);
-        if (_uriV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uriName, _uriV);
-        var _locationV = NativeValue.From(Location);
-        if (_locationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _locationName, _locationV);
-        var _audioEncoderMimeV = NativeValue.From(AudioEncoderMime);
-        if (_audioEncoderMimeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioEncoderMimeName, _audioEncoderMimeV);
-        var _fileFormatV = NativeValue.From(FileFormat);
-        if (_fileFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileFormatName, _fileFormatV);
-    }
+    public AudioRecorderConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _audioEncoder => "audioEncoder"u8;
+    private static ReadOnlySpan<byte> _audioEncodeBitRate => "audioEncodeBitRate"u8;
+    private static ReadOnlySpan<byte> _audioSampleRate => "audioSampleRate"u8;
+    private static ReadOnlySpan<byte> _numberOfChannels => "numberOfChannels"u8;
+    private static ReadOnlySpan<byte> _format => "format"u8;
+    private static ReadOnlySpan<byte> _uri => "uri"u8;
+    private static ReadOnlySpan<byte> _location => "location"u8;
+    private static ReadOnlySpan<byte> _audioEncoderMime => "audioEncoderMime"u8;
+    private static ReadOnlySpan<byte> _fileFormat => "fileFormat"u8;
+    /// <summary>
+    /// audioEncoder
+    /// </summary>
+    public global::HarmonyOS.ArkUI.AudioEncoder? AudioEncoder => (global::HarmonyOS.ArkUI.AudioEncoder?)(global::HarmonyOS.ArkUI.AudioEncoder)NativeValue.ToInt(GetPropertyRaw(_audioEncoder));
+
+    /// <summary>
+    /// audioEncodeBitRate
+    /// </summary>
+    public double? AudioEncodeBitRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioEncodeBitRate));
+
+    /// <summary>
+    /// audioSampleRate
+    /// </summary>
+    public double? AudioSampleRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioSampleRate));
+
+    /// <summary>
+    /// numberOfChannels
+    /// </summary>
+    public double? NumberOfChannels => (double?)NativeValue.ToDouble(GetPropertyRaw(_numberOfChannels));
+
+    /// <summary>
+    /// format
+    /// </summary>
+    public global::HarmonyOS.ArkUI.AudioOutputFormat? Format => (global::HarmonyOS.ArkUI.AudioOutputFormat?)(global::HarmonyOS.ArkUI.AudioOutputFormat)NativeValue.ToInt(GetPropertyRaw(_format));
+
+    /// <summary>
+    /// uri
+    /// </summary>
+    public string Uri => NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
+
+    /// <summary>
+    /// location
+    /// </summary>
+    public MediaLocation? Location => GetPropertyRaw(_location) == IntPtr.Zero ? null : new MediaLocation(GetPropertyRaw(_location));
+
+    /// <summary>
+    /// audioEncoderMime
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CodecMimeType? AudioEncoderMime => (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_audioEncoderMime));
+
+    /// <summary>
+    /// fileFormat
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ContainerFormatType? FileFormat => (global::HarmonyOS.ArkUI.ContainerFormatType?)(global::HarmonyOS.ArkUI.ContainerFormatType)NativeValue.ToInt(GetPropertyRaw(_fileFormat));
+
 }
 
 /// <summary>
-/// AVScreenCaptureRecordConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AVScreenCaptureRecordConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AVScreenCaptureRecordConfig(
-    double Fd,
-    double? FrameWidth = null,
-    double? FrameHeight = null,
-    double? VideoBitrate = null,
-    double? AudioSampleRate = null,
-    double? AudioChannelCount = null,
-    double? AudioBitrate = null,
-    global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset? Preset = null,
-    double? DisplayId = null,
-    global::HarmonyOS.ArkUI.AVScreenCaptureFillMode? FillMode = null,
-    AVScreenCaptureStrategy? Strategy = null
-) : INapiRecord
+public sealed partial class AVScreenCaptureRecordConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _fdName => "fd"u8;
-    private static ReadOnlySpan<byte> _frameWidthName => "frameWidth"u8;
-    private static ReadOnlySpan<byte> _frameHeightName => "frameHeight"u8;
-    private static ReadOnlySpan<byte> _videoBitrateName => "videoBitrate"u8;
-    private static ReadOnlySpan<byte> _audioSampleRateName => "audioSampleRate"u8;
-    private static ReadOnlySpan<byte> _audioChannelCountName => "audioChannelCount"u8;
-    private static ReadOnlySpan<byte> _audioBitrateName => "audioBitrate"u8;
-    private static ReadOnlySpan<byte> _presetName => "preset"u8;
-    private static ReadOnlySpan<byte> _displayIdName => "displayId"u8;
-    private static ReadOnlySpan<byte> _fillModeName => "fillMode"u8;
-    private static ReadOnlySpan<byte> _strategyName => "strategy"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _fdV = NativeValue.From(Fd);
-        if (_fdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fdName, _fdV);
-        var _frameWidthV = NativeValue.From(FrameWidth);
-        if (_frameWidthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _frameWidthName, _frameWidthV);
-        var _frameHeightV = NativeValue.From(FrameHeight);
-        if (_frameHeightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _frameHeightName, _frameHeightV);
-        var _videoBitrateV = NativeValue.From(VideoBitrate);
-        if (_videoBitrateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _videoBitrateName, _videoBitrateV);
-        var _audioSampleRateV = NativeValue.From(AudioSampleRate);
-        if (_audioSampleRateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioSampleRateName, _audioSampleRateV);
-        var _audioChannelCountV = NativeValue.From(AudioChannelCount);
-        if (_audioChannelCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioChannelCountName, _audioChannelCountV);
-        var _audioBitrateV = NativeValue.From(AudioBitrate);
-        if (_audioBitrateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioBitrateName, _audioBitrateV);
-        var _presetV = NativeValue.From(Preset);
-        if (_presetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _presetName, _presetV);
-        var _displayIdV = NativeValue.From(DisplayId);
-        if (_displayIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV);
-        var _fillModeV = NativeValue.From(FillMode);
-        if (_fillModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fillModeName, _fillModeV);
-        var _strategyV = NativeValue.From(Strategy);
-        if (_strategyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _strategyName, _strategyV);
-    }
+    public AVScreenCaptureRecordConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _fd => "fd"u8;
+    private static ReadOnlySpan<byte> _frameWidth => "frameWidth"u8;
+    private static ReadOnlySpan<byte> _frameHeight => "frameHeight"u8;
+    private static ReadOnlySpan<byte> _videoBitrate => "videoBitrate"u8;
+    private static ReadOnlySpan<byte> _audioSampleRate => "audioSampleRate"u8;
+    private static ReadOnlySpan<byte> _audioChannelCount => "audioChannelCount"u8;
+    private static ReadOnlySpan<byte> _audioBitrate => "audioBitrate"u8;
+    private static ReadOnlySpan<byte> _preset => "preset"u8;
+    private static ReadOnlySpan<byte> _displayId => "displayId"u8;
+    private static ReadOnlySpan<byte> _fillMode => "fillMode"u8;
+    private static ReadOnlySpan<byte> _strategy => "strategy"u8;
+    /// <summary>
+    /// fd
+    /// </summary>
+    public double Fd => NativeValue.ToDouble(GetPropertyRaw(_fd));
+
+    /// <summary>
+    /// frameWidth
+    /// </summary>
+    public double? FrameWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_frameWidth));
+
+    /// <summary>
+    /// frameHeight
+    /// </summary>
+    public double? FrameHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_frameHeight));
+
+    /// <summary>
+    /// videoBitrate
+    /// </summary>
+    public double? VideoBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_videoBitrate));
+
+    /// <summary>
+    /// audioSampleRate
+    /// </summary>
+    public double? AudioSampleRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioSampleRate));
+
+    /// <summary>
+    /// audioChannelCount
+    /// </summary>
+    public double? AudioChannelCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioChannelCount));
+
+    /// <summary>
+    /// audioBitrate
+    /// </summary>
+    public double? AudioBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioBitrate));
+
+    /// <summary>
+    /// preset
+    /// </summary>
+    public global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset? Preset => (global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset?)(global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset)NativeValue.ToInt(GetPropertyRaw(_preset));
+
+    /// <summary>
+    /// displayId
+    /// </summary>
+    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+
+    /// <summary>
+    /// fillMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.AVScreenCaptureFillMode? FillMode => (global::HarmonyOS.ArkUI.AVScreenCaptureFillMode?)(global::HarmonyOS.ArkUI.AVScreenCaptureFillMode)NativeValue.ToInt(GetPropertyRaw(_fillMode));
+
+    /// <summary>
+    /// strategy
+    /// </summary>
+    public AVScreenCaptureStrategy? Strategy => GetPropertyRaw(_strategy) == IntPtr.Zero ? null : new AVScreenCaptureStrategy(GetPropertyRaw(_strategy));
+
 }
 
 /// <summary>
-/// AVTranscoderConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AVTranscoderConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AVTranscoderConfig(
-    double? AudioBitrate,
-    global::HarmonyOS.ArkUI.CodecMimeType? AudioCodec,
-    global::HarmonyOS.ArkUI.CodecMimeType? AudioCodecV2,
-    global::HarmonyOS.ArkUI.ContainerFormatType FileFormat,
-    double? VideoBitrate = null,
-    global::HarmonyOS.ArkUI.CodecMimeType? VideoCodec = null,
-    double? VideoFrameWidth = null,
-    double? VideoFrameHeight = null,
-    bool? EnableBFrame = null
-) : INapiRecord
+public sealed partial class AVTranscoderConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _audioBitrateName => "audioBitrate"u8;
-    private static ReadOnlySpan<byte> _audioCodecName => "audioCodec"u8;
-    private static ReadOnlySpan<byte> _audioCodecV2Name => "audioCodecV2"u8;
-    private static ReadOnlySpan<byte> _fileFormatName => "fileFormat"u8;
-    private static ReadOnlySpan<byte> _videoBitrateName => "videoBitrate"u8;
-    private static ReadOnlySpan<byte> _videoCodecName => "videoCodec"u8;
-    private static ReadOnlySpan<byte> _videoFrameWidthName => "videoFrameWidth"u8;
-    private static ReadOnlySpan<byte> _videoFrameHeightName => "videoFrameHeight"u8;
-    private static ReadOnlySpan<byte> _enableBFrameName => "enableBFrame"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _audioBitrateV = NativeValue.From(AudioBitrate);
-        if (_audioBitrateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioBitrateName, _audioBitrateV);
-        var _audioCodecV = NativeValue.From(AudioCodec);
-        if (_audioCodecV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioCodecName, _audioCodecV);
-        var _audioCodecV2V = NativeValue.From(AudioCodecV2);
-        if (_audioCodecV2V != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioCodecV2Name, _audioCodecV2V);
-        var _fileFormatV = NativeValue.From(FileFormat);
-        if (_fileFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileFormatName, _fileFormatV);
-        var _videoBitrateV = NativeValue.From(VideoBitrate);
-        if (_videoBitrateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _videoBitrateName, _videoBitrateV);
-        var _videoCodecV = NativeValue.From(VideoCodec);
-        if (_videoCodecV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _videoCodecName, _videoCodecV);
-        var _videoFrameWidthV = NativeValue.From(VideoFrameWidth);
-        if (_videoFrameWidthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _videoFrameWidthName, _videoFrameWidthV);
-        var _videoFrameHeightV = NativeValue.From(VideoFrameHeight);
-        if (_videoFrameHeightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _videoFrameHeightName, _videoFrameHeightV);
-        var _enableBFrameV = NativeValue.From(EnableBFrame);
-        if (_enableBFrameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enableBFrameName, _enableBFrameV);
-    }
+    public AVTranscoderConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _audioBitrate => "audioBitrate"u8;
+    private static ReadOnlySpan<byte> _audioCodec => "audioCodec"u8;
+    private static ReadOnlySpan<byte> _audioCodecV2 => "audioCodecV2"u8;
+    private static ReadOnlySpan<byte> _fileFormat => "fileFormat"u8;
+    private static ReadOnlySpan<byte> _videoBitrate => "videoBitrate"u8;
+    private static ReadOnlySpan<byte> _videoCodec => "videoCodec"u8;
+    private static ReadOnlySpan<byte> _videoFrameWidth => "videoFrameWidth"u8;
+    private static ReadOnlySpan<byte> _videoFrameHeight => "videoFrameHeight"u8;
+    private static ReadOnlySpan<byte> _enableBFrame => "enableBFrame"u8;
+    /// <summary>
+    /// audioBitrate
+    /// </summary>
+    public double? AudioBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioBitrate));
+
+    /// <summary>
+    /// audioCodec
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CodecMimeType? AudioCodec => (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_audioCodec));
+
+    /// <summary>
+    /// audioCodecV2
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CodecMimeType? AudioCodecV2 => (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_audioCodecV2));
+
+    /// <summary>
+    /// fileFormat
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ContainerFormatType FileFormat => (global::HarmonyOS.ArkUI.ContainerFormatType)NativeValue.ToInt(GetPropertyRaw(_fileFormat));
+
+    /// <summary>
+    /// videoBitrate
+    /// </summary>
+    public double? VideoBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_videoBitrate));
+
+    /// <summary>
+    /// videoCodec
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CodecMimeType? VideoCodec => (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_videoCodec));
+
+    /// <summary>
+    /// videoFrameWidth
+    /// </summary>
+    public double? VideoFrameWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_videoFrameWidth));
+
+    /// <summary>
+    /// videoFrameHeight
+    /// </summary>
+    public double? VideoFrameHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_videoFrameHeight));
+
+    /// <summary>
+    /// enableBFrame
+    /// </summary>
+    public bool? EnableBFrame => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableBFrame));
+
 }
 
 /// <summary>
-/// PixelMapParams（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PixelMapParams 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PixelMapParams(
-    double? Width = null,
-    double? Height = null
-) : INapiRecord
+public sealed partial class PixelMapParams : JsObject
 {
-    private static ReadOnlySpan<byte> _widthName => "width"u8;
-    private static ReadOnlySpan<byte> _heightName => "height"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _widthV = NativeValue.From(Width);
-        if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
-        var _heightV = NativeValue.From(Height);
-        if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
-    }
+    public PixelMapParams(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// width
+    /// </summary>
+    public double? Width => (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double? Height => (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
+
 }
 
 /// <summary>
-/// OutputSize（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// OutputSize 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record OutputSize(
-    double? Width = null,
-    double? Height = null
-) : INapiRecord
+public sealed partial class OutputSize : JsObject
 {
-    private static ReadOnlySpan<byte> _widthName => "width"u8;
-    private static ReadOnlySpan<byte> _heightName => "height"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _widthV = NativeValue.From(Width);
-        if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
-        var _heightV = NativeValue.From(Height);
-        if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
-    }
+    public OutputSize(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// width
+    /// </summary>
+    public double? Width => (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double? Height => (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
+
 }
 
 /// <summary>
@@ -4044,53 +4079,55 @@ public sealed partial class VideoSize : JsObject
 }
 
 /// <summary>
-/// Location（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// Location 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record MediaLocation(
-    double Latitude,
-    double Longitude
-) : INapiRecord
+public sealed partial class MediaLocation : JsObject
 {
-    private static ReadOnlySpan<byte> _latitudeName => "latitude"u8;
-    private static ReadOnlySpan<byte> _longitudeName => "longitude"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _latitudeV = NativeValue.From(Latitude);
-        if (_latitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _latitudeName, _latitudeV);
-        var _longitudeV = NativeValue.From(Longitude);
-        if (_longitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _longitudeName, _longitudeV);
-    }
+    public MediaLocation(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _latitude => "latitude"u8;
+    private static ReadOnlySpan<byte> _longitude => "longitude"u8;
+    /// <summary>
+    /// latitude
+    /// </summary>
+    public double Latitude => NativeValue.ToDouble(GetPropertyRaw(_latitude));
+
+    /// <summary>
+    /// longitude
+    /// </summary>
+    public double Longitude => NativeValue.ToDouble(GetPropertyRaw(_longitude));
+
 }
 
 /// <summary>
-/// AVScreenCaptureStrategy（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AVScreenCaptureStrategy 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AVScreenCaptureStrategy(
-    bool? KeepCaptureDuringCall = null,
-    bool? EnableBFrame = null,
-    double? PrivacyMaskMode = null,
-    bool? EnablePause = null
-) : INapiRecord
+public sealed partial class AVScreenCaptureStrategy : JsObject
 {
-    private static ReadOnlySpan<byte> _keepCaptureDuringCallName => "keepCaptureDuringCall"u8;
-    private static ReadOnlySpan<byte> _enableBFrameName => "enableBFrame"u8;
-    private static ReadOnlySpan<byte> _privacyMaskModeName => "privacyMaskMode"u8;
-    private static ReadOnlySpan<byte> _enablePauseName => "enablePause"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _keepCaptureDuringCallV = NativeValue.From(KeepCaptureDuringCall);
-        if (_keepCaptureDuringCallV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keepCaptureDuringCallName, _keepCaptureDuringCallV);
-        var _enableBFrameV = NativeValue.From(EnableBFrame);
-        if (_enableBFrameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enableBFrameName, _enableBFrameV);
-        var _privacyMaskModeV = NativeValue.From(PrivacyMaskMode);
-        if (_privacyMaskModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _privacyMaskModeName, _privacyMaskModeV);
-        var _enablePauseV = NativeValue.From(EnablePause);
-        if (_enablePauseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enablePauseName, _enablePauseV);
-    }
+    public AVScreenCaptureStrategy(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _keepCaptureDuringCall => "keepCaptureDuringCall"u8;
+    private static ReadOnlySpan<byte> _enableBFrame => "enableBFrame"u8;
+    private static ReadOnlySpan<byte> _privacyMaskMode => "privacyMaskMode"u8;
+    private static ReadOnlySpan<byte> _enablePause => "enablePause"u8;
+    /// <summary>
+    /// keepCaptureDuringCall
+    /// </summary>
+    public bool? KeepCaptureDuringCall => (bool?)NativeValue.ToBool(GetPropertyRaw(_keepCaptureDuringCall));
+
+    /// <summary>
+    /// enableBFrame
+    /// </summary>
+    public bool? EnableBFrame => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableBFrame));
+
+    /// <summary>
+    /// privacyMaskMode
+    /// </summary>
+    public double? PrivacyMaskMode => (double?)NativeValue.ToDouble(GetPropertyRaw(_privacyMaskMode));
+
+    /// <summary>
+    /// enablePause
+    /// </summary>
+    public bool? EnablePause => (bool?)NativeValue.ToBool(GetPropertyRaw(_enablePause));
+
 }

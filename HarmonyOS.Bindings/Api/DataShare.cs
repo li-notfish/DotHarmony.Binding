@@ -235,22 +235,22 @@ public sealed partial class DataProxyResult : JsObject
 }
 
 /// <summary>
-/// DataProxyConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// DataProxyConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record DataProxyConfig(
-    global::HarmonyOS.ArkUI.DataProxyType Type,
-    global::HarmonyOS.ArkUI.DataProxyMaxValueLength? MaxValueLength = null
-) : INapiRecord
+public sealed partial class DataProxyConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _typeName => "type"u8;
-    private static ReadOnlySpan<byte> _maxValueLengthName => "maxValueLength"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _typeV = NativeValue.From(Type);
-        if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
-        var _maxValueLengthV = NativeValue.From(MaxValueLength);
-        if (_maxValueLengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxValueLengthName, _maxValueLengthV);
-    }
+    public DataProxyConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _maxValueLength => "maxValueLength"u8;
+    /// <summary>
+    /// type
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DataProxyType Type => (global::HarmonyOS.ArkUI.DataProxyType)NativeValue.ToInt(GetPropertyRaw(_type));
+
+    /// <summary>
+    /// maxValueLength
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DataProxyMaxValueLength? MaxValueLength => (global::HarmonyOS.ArkUI.DataProxyMaxValueLength?)(global::HarmonyOS.ArkUI.DataProxyMaxValueLength)NativeValue.ToInt(GetPropertyRaw(_maxValueLength));
+
 }

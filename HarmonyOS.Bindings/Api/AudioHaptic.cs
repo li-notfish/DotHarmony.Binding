@@ -304,48 +304,49 @@ public sealed partial class AudioHapticPlayer : JsObject
 }
 
 /// <summary>
-/// AudioHapticPlayerOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AudioHapticPlayerOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AudioHapticPlayerOptions(
-    bool? MuteAudio = null,
-    bool? MuteHaptics = null
-) : INapiRecord
+public sealed partial class AudioHapticPlayerOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _muteAudioName => "muteAudio"u8;
-    private static ReadOnlySpan<byte> _muteHapticsName => "muteHaptics"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _muteAudioV = NativeValue.From(MuteAudio);
-        if (_muteAudioV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _muteAudioName, _muteAudioV);
-        var _muteHapticsV = NativeValue.From(MuteHaptics);
-        if (_muteHapticsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _muteHapticsName, _muteHapticsV);
-    }
+    public AudioHapticPlayerOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _muteAudio => "muteAudio"u8;
+    private static ReadOnlySpan<byte> _muteHaptics => "muteHaptics"u8;
+    /// <summary>
+    /// muteAudio
+    /// </summary>
+    public bool? MuteAudio => (bool?)NativeValue.ToBool(GetPropertyRaw(_muteAudio));
+
+    /// <summary>
+    /// muteHaptics
+    /// </summary>
+    public bool? MuteHaptics => (bool?)NativeValue.ToBool(GetPropertyRaw(_muteHaptics));
+
 }
 
 /// <summary>
-/// AudioHapticFileDescriptor（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AudioHapticFileDescriptor 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AudioHapticFileDescriptor(
-    double Fd,
-    double? Length = null,
-    double? Offset = null
-) : INapiRecord
+public sealed partial class AudioHapticFileDescriptor : JsObject
 {
-    private static ReadOnlySpan<byte> _fdName => "fd"u8;
-    private static ReadOnlySpan<byte> _lengthName => "length"u8;
-    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _fdV = NativeValue.From(Fd);
-        if (_fdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fdName, _fdV);
-        var _lengthV = NativeValue.From(Length);
-        if (_lengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _lengthName, _lengthV);
-        var _offsetV = NativeValue.From(Offset);
-        if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
-    }
+    public AudioHapticFileDescriptor(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _fd => "fd"u8;
+    private static ReadOnlySpan<byte> _length => "length"u8;
+    private static ReadOnlySpan<byte> _offset => "offset"u8;
+    /// <summary>
+    /// fd
+    /// </summary>
+    public double Fd => NativeValue.ToDouble(GetPropertyRaw(_fd));
+
+    /// <summary>
+    /// length
+    /// </summary>
+    public double? Length => (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
+
+    /// <summary>
+    /// offset
+    /// </summary>
+    public double? Offset => (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
+
 }

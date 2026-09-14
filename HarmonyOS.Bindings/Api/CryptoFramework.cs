@@ -1130,19 +1130,18 @@ public sealed partial class CryptoFrameworkKey : JsObject
 }
 
 /// <summary>
-/// ParamsSpec（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ParamsSpec 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record ParamsSpec(
-    string AlgName
-) : INapiRecord
+public sealed partial class ParamsSpec : JsObject
 {
-    private static ReadOnlySpan<byte> _algNameName => "algName"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _algNameV = NativeValue.From(AlgName);
-        if (_algNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _algNameName, _algNameV);
-    }
+    public ParamsSpec(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _algName => "algName"u8;
+    /// <summary>
+    /// algName
+    /// </summary>
+    public string AlgName => NativeValue.ToString(GetPropertyRaw(_algName)) ?? string.Empty;
+
 }
 
 /// <summary>
@@ -1349,19 +1348,18 @@ public sealed partial class PubKey : JsObject
 }
 
 /// <summary>
-/// KdfSpec（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// KdfSpec 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record KdfSpec(
-    string AlgName
-) : INapiRecord
+public sealed partial class KdfSpec : JsObject
 {
-    private static ReadOnlySpan<byte> _algNameName => "algName"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _algNameV = NativeValue.From(AlgName);
-        if (_algNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _algNameName, _algNameV);
-    }
+    public KdfSpec(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _algName => "algName"u8;
+    /// <summary>
+    /// algName
+    /// </summary>
+    public string AlgName => NativeValue.ToString(GetPropertyRaw(_algName)) ?? string.Empty;
+
 }
 
 /// <summary>
@@ -1386,22 +1384,22 @@ public sealed partial class KemEncapResult : JsObject
 }
 
 /// <summary>
-/// KeyEncodingConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// KeyEncodingConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record KeyEncodingConfig(
-    string Password,
-    string CipherName
-) : INapiRecord
+public sealed partial class KeyEncodingConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _passwordName => "password"u8;
-    private static ReadOnlySpan<byte> _cipherNameName => "cipherName"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _passwordV = NativeValue.From(Password);
-        if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
-        var _cipherNameV = NativeValue.From(CipherName);
-        if (_cipherNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cipherNameName, _cipherNameV);
-    }
+    public KeyEncodingConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _password => "password"u8;
+    private static ReadOnlySpan<byte> _cipherName => "cipherName"u8;
+    /// <summary>
+    /// password
+    /// </summary>
+    public string Password => NativeValue.ToString(GetPropertyRaw(_password)) ?? string.Empty;
+
+    /// <summary>
+    /// cipherName
+    /// </summary>
+    public string CipherName => NativeValue.ToString(GetPropertyRaw(_cipherName)) ?? string.Empty;
+
 }

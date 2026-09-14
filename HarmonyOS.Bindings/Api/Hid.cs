@@ -140,7 +140,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// <summary>
     /// connect
     /// </summary>
-    public void Connect(BluetoothAddress deviceId)
+    public void Connect(IntPtr deviceId)
     {
         CallMethodVoid(_connect, deviceId);
     }
@@ -260,78 +260,85 @@ public sealed partial class HidDeviceProfile : JsObject
 }
 
 /// <summary>
-/// HidDeviceSdp（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// HidDeviceSdp 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record HidDeviceSdp(
-    string Name,
-    string Description,
-    string Provider,
-    global::HarmonyOS.ArkUI.Subclass Subclass,
-    byte[] Descriptors
-) : INapiRecord
+public sealed partial class HidDeviceSdp : JsObject
 {
-    private static ReadOnlySpan<byte> _nameName => "name"u8;
-    private static ReadOnlySpan<byte> _descriptionName => "description"u8;
-    private static ReadOnlySpan<byte> _providerName => "provider"u8;
-    private static ReadOnlySpan<byte> _subclassName => "subclass"u8;
-    private static ReadOnlySpan<byte> _descriptorsName => "descriptors"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _nameV = NativeValue.From(Name);
-        if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
-        var _descriptionV = NativeValue.From(Description);
-        if (_descriptionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _descriptionName, _descriptionV);
-        var _providerV = NativeValue.From(Provider);
-        if (_providerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _providerName, _providerV);
-        var _subclassV = NativeValue.From(Subclass);
-        if (_subclassV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _subclassName, _subclassV);
-        var _descriptorsV = NativeValue.From(Descriptors);
-        if (_descriptorsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _descriptorsName, _descriptorsV);
-    }
+    public HidDeviceSdp(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _description => "description"u8;
+    private static ReadOnlySpan<byte> _provider => "provider"u8;
+    private static ReadOnlySpan<byte> _subclass => "subclass"u8;
+    private static ReadOnlySpan<byte> _descriptors => "descriptors"u8;
+    /// <summary>
+    /// name
+    /// </summary>
+    public string Name => NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+
+    /// <summary>
+    /// description
+    /// </summary>
+    public string Description => NativeValue.ToString(GetPropertyRaw(_description)) ?? string.Empty;
+
+    /// <summary>
+    /// provider
+    /// </summary>
+    public string Provider => NativeValue.ToString(GetPropertyRaw(_provider)) ?? string.Empty;
+
+    /// <summary>
+    /// subclass
+    /// </summary>
+    public global::HarmonyOS.ArkUI.Subclass Subclass => (global::HarmonyOS.ArkUI.Subclass)NativeValue.ToInt(GetPropertyRaw(_subclass));
+
+    /// <summary>
+    /// descriptors
+    /// </summary>
+    public byte[] Descriptors => ValueConverter.ConvertArray(GetPropertyRaw(_descriptors), static e => ValueConverter.Convert<byte>(e));
+
 }
 
 /// <summary>
-/// HidDeviceQos（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// HidDeviceQos 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record HidDeviceQos(
-    global::HarmonyOS.ArkUI.ServiceType? ServiceType = null,
-    double? TokenRate = null,
-    double? TokenBucketSize = null,
-    double? PeakBandwidth = null,
-    double? Latency = null,
-    double? DelayVariation = null
-) : INapiRecord
+public sealed partial class HidDeviceQos : JsObject
 {
-    private static ReadOnlySpan<byte> _serviceTypeName => "serviceType"u8;
-    private static ReadOnlySpan<byte> _tokenRateName => "tokenRate"u8;
-    private static ReadOnlySpan<byte> _tokenBucketSizeName => "tokenBucketSize"u8;
-    private static ReadOnlySpan<byte> _peakBandwidthName => "peakBandwidth"u8;
-    private static ReadOnlySpan<byte> _latencyName => "latency"u8;
-    private static ReadOnlySpan<byte> _delayVariationName => "delayVariation"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _serviceTypeV = NativeValue.From(ServiceType);
-        if (_serviceTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceTypeName, _serviceTypeV);
-        var _tokenRateV = NativeValue.From(TokenRate);
-        if (_tokenRateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tokenRateName, _tokenRateV);
-        var _tokenBucketSizeV = NativeValue.From(TokenBucketSize);
-        if (_tokenBucketSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tokenBucketSizeName, _tokenBucketSizeV);
-        var _peakBandwidthV = NativeValue.From(PeakBandwidth);
-        if (_peakBandwidthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _peakBandwidthName, _peakBandwidthV);
-        var _latencyV = NativeValue.From(Latency);
-        if (_latencyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _latencyName, _latencyV);
-        var _delayVariationV = NativeValue.From(DelayVariation);
-        if (_delayVariationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _delayVariationName, _delayVariationV);
-    }
+    public HidDeviceQos(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _serviceType => "serviceType"u8;
+    private static ReadOnlySpan<byte> _tokenRate => "tokenRate"u8;
+    private static ReadOnlySpan<byte> _tokenBucketSize => "tokenBucketSize"u8;
+    private static ReadOnlySpan<byte> _peakBandwidth => "peakBandwidth"u8;
+    private static ReadOnlySpan<byte> _latency => "latency"u8;
+    private static ReadOnlySpan<byte> _delayVariation => "delayVariation"u8;
+    /// <summary>
+    /// serviceType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ServiceType? ServiceType => (global::HarmonyOS.ArkUI.ServiceType?)(global::HarmonyOS.ArkUI.ServiceType)NativeValue.ToInt(GetPropertyRaw(_serviceType));
+
+    /// <summary>
+    /// tokenRate
+    /// </summary>
+    public double? TokenRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_tokenRate));
+
+    /// <summary>
+    /// tokenBucketSize
+    /// </summary>
+    public double? TokenBucketSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_tokenBucketSize));
+
+    /// <summary>
+    /// peakBandwidth
+    /// </summary>
+    public double? PeakBandwidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_peakBandwidth));
+
+    /// <summary>
+    /// latency
+    /// </summary>
+    public double? Latency => (double?)NativeValue.ToDouble(GetPropertyRaw(_latency));
+
+    /// <summary>
+    /// delayVariation
+    /// </summary>
+    public double? DelayVariation => (double?)NativeValue.ToDouble(GetPropertyRaw(_delayVariation));
+
 }

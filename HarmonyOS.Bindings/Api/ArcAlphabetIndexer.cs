@@ -132,7 +132,7 @@ public static unsafe partial class ArcAlphabetIndexer
     /// <summary>
     /// selectedFont
     /// </summary>
-    public static IntPtr SelectedFont(Font font)
+    public static IntPtr SelectedFont(IntPtr font)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _selectedFont, font);
     }
@@ -140,7 +140,7 @@ public static unsafe partial class ArcAlphabetIndexer
     /// <summary>
     /// popupFont
     /// </summary>
-    public static IntPtr PopupFont(Font font)
+    public static IntPtr PopupFont(IntPtr font)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _popupFont, font);
     }
@@ -148,7 +148,7 @@ public static unsafe partial class ArcAlphabetIndexer
     /// <summary>
     /// font
     /// </summary>
-    public static IntPtr Font(Font font)
+    public static IntPtr Font(IntPtr font)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _font, font);
     }

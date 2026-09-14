@@ -224,32 +224,34 @@ public sealed partial class TouchController : JsObject
 }
 
 /// <summary>
-/// TouchPoint（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// TouchPoint 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record TouchPoint(
-    double Id,
-    double DisplayId,
-    double DisplayX,
-    double DisplayY
-) : INapiRecord
+public sealed partial class TouchPoint : JsObject
 {
-    private static ReadOnlySpan<byte> _idName => "id"u8;
-    private static ReadOnlySpan<byte> _displayIdName => "displayId"u8;
-    private static ReadOnlySpan<byte> _displayXName => "displayX"u8;
-    private static ReadOnlySpan<byte> _displayYName => "displayY"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _idV = NativeValue.From(Id);
-        if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
-        var _displayIdV = NativeValue.From(DisplayId);
-        if (_displayIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV);
-        var _displayXV = NativeValue.From(DisplayX);
-        if (_displayXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayXName, _displayXV);
-        var _displayYV = NativeValue.From(DisplayY);
-        if (_displayYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayYName, _displayYV);
-    }
+    public TouchPoint(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _id => "id"u8;
+    private static ReadOnlySpan<byte> _displayId => "displayId"u8;
+    private static ReadOnlySpan<byte> _displayX => "displayX"u8;
+    private static ReadOnlySpan<byte> _displayY => "displayY"u8;
+    /// <summary>
+    /// id
+    /// </summary>
+    public double Id => NativeValue.ToDouble(GetPropertyRaw(_id));
+
+    /// <summary>
+    /// displayId
+    /// </summary>
+    public double DisplayId => NativeValue.ToDouble(GetPropertyRaw(_displayId));
+
+    /// <summary>
+    /// displayX
+    /// </summary>
+    public double DisplayX => NativeValue.ToDouble(GetPropertyRaw(_displayX));
+
+    /// <summary>
+    /// displayY
+    /// </summary>
+    public double DisplayY => NativeValue.ToDouble(GetPropertyRaw(_displayY));
+
 }

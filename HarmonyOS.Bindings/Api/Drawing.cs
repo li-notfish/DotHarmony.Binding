@@ -2515,24 +2515,24 @@ public sealed partial class DrawingFont : JsObject
 }
 
 /// <summary>
-/// FontFeature（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// FontFeature 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record FontFeature(
-    string Name,
-    double Value
-) : INapiRecord
+public sealed partial class FontFeature : JsObject
 {
-    private static ReadOnlySpan<byte> _nameName => "name"u8;
-    private static ReadOnlySpan<byte> _valueName => "value"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _nameV = NativeValue.From(Name);
-        if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
-        var _valueV = NativeValue.From(Value);
-        if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
-    }
+    public FontFeature(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _value => "value"u8;
+    /// <summary>
+    /// name
+    /// </summary>
+    public string Name => NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+
+    /// <summary>
+    /// value
+    /// </summary>
+    public double Value => NativeValue.ToDouble(GetPropertyRaw(_value));
+
 }
 
 /// <summary>
@@ -3107,27 +3107,28 @@ public sealed partial class FontMetrics : JsObject
 }
 
 /// <summary>
-/// TextBlobRunBuffer（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// TextBlobRunBuffer 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record TextBlobRunBuffer(
-    double Glyph,
-    double PositionX,
-    double PositionY
-) : INapiRecord
+public sealed partial class TextBlobRunBuffer : JsObject
 {
-    private static ReadOnlySpan<byte> _glyphName => "glyph"u8;
-    private static ReadOnlySpan<byte> _positionXName => "positionX"u8;
-    private static ReadOnlySpan<byte> _positionYName => "positionY"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _glyphV = NativeValue.From(Glyph);
-        if (_glyphV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _glyphName, _glyphV);
-        var _positionXV = NativeValue.From(PositionX);
-        if (_positionXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _positionXName, _positionXV);
-        var _positionYV = NativeValue.From(PositionY);
-        if (_positionYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _positionYName, _positionYV);
-    }
+    public TextBlobRunBuffer(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _glyph => "glyph"u8;
+    private static ReadOnlySpan<byte> _positionX => "positionX"u8;
+    private static ReadOnlySpan<byte> _positionY => "positionY"u8;
+    /// <summary>
+    /// glyph
+    /// </summary>
+    public double Glyph => NativeValue.ToDouble(GetPropertyRaw(_glyph));
+
+    /// <summary>
+    /// positionX
+    /// </summary>
+    public double PositionX => NativeValue.ToDouble(GetPropertyRaw(_positionX));
+
+    /// <summary>
+    /// positionY
+    /// </summary>
+    public double PositionY => NativeValue.ToDouble(GetPropertyRaw(_positionY));
+
 }

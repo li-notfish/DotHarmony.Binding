@@ -435,32 +435,34 @@ public sealed record ReuseUnlockResult(
 }
 
 /// <summary>
-/// UserAuthResult（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// UserAuthResult 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record UserAuthResult(
-    double Result,
-    byte[]? Token = null,
-    global::HarmonyOS.ArkUI.UserAuthType? AuthType = null,
-    EnrolledState? EnrolledState = null
-) : INapiRecord
+public sealed partial class UserAuthResult : JsObject
 {
-    private static ReadOnlySpan<byte> _resultName => "result"u8;
-    private static ReadOnlySpan<byte> _tokenName => "token"u8;
-    private static ReadOnlySpan<byte> _authTypeName => "authType"u8;
-    private static ReadOnlySpan<byte> _enrolledStateName => "enrolledState"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _resultV = NativeValue.From(Result);
-        if (_resultV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _resultName, _resultV);
-        var _tokenV = NativeValue.From(Token);
-        if (_tokenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tokenName, _tokenV);
-        var _authTypeV = NativeValue.From(AuthType);
-        if (_authTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _authTypeName, _authTypeV);
-        var _enrolledStateV = NativeValue.From(EnrolledState);
-        if (_enrolledStateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enrolledStateName, _enrolledStateV);
-    }
+    public UserAuthResult(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _result => "result"u8;
+    private static ReadOnlySpan<byte> _token => "token"u8;
+    private static ReadOnlySpan<byte> _authType => "authType"u8;
+    private static ReadOnlySpan<byte> _enrolledState => "enrolledState"u8;
+    /// <summary>
+    /// result
+    /// </summary>
+    public double Result => NativeValue.ToDouble(GetPropertyRaw(_result));
+
+    /// <summary>
+    /// token
+    /// </summary>
+    public byte[] Token => ValueConverter.ConvertArray(GetPropertyRaw(_token), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// authType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.UserAuthType? AuthType => (global::HarmonyOS.ArkUI.UserAuthType?)(global::HarmonyOS.ArkUI.UserAuthType)NativeValue.ToInt(GetPropertyRaw(_authType));
+
+    /// <summary>
+    /// enrolledState
+    /// </summary>
+    public EnrolledState? EnrolledState => GetPropertyRaw(_enrolledState) == IntPtr.Zero ? null : new EnrolledState(GetPropertyRaw(_enrolledState));
+
 }

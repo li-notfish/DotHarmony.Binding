@@ -408,7 +408,7 @@ public sealed partial class InputMethodController : JsObject
     /// <summary>
     /// attachWithUIContext
     /// </summary>
-    public Task AttachWithUiContextAsync(IntPtr uiContext, TextConfig textConfig, AttachOptions? attachOptions = null)
+    public Task AttachWithUiContextAsync(global::HarmonyOS.Bindings.Api.UIContextObject uiContext, TextConfig textConfig, AttachOptions? attachOptions = null)
     {
         return CallMethodAsyncVoid(_attachWithUIContext, uiContext, textConfig, attachOptions);
     }
@@ -890,137 +890,147 @@ public sealed partial class Movement : JsObject
 }
 
 /// <summary>
-/// TextConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// TextConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record TextConfig(
-    InputAttribute InputAttribute,
-    CursorInfo? CursorInfo = null,
-    InputMethodRange? Selection = null,
-    double? WindowId = null,
-    bool? NewEditBox = null,
-    global::HarmonyOS.ArkUI.CapitalizeMode? CapitalizeMode = null
-) : INapiRecord
+public sealed partial class TextConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _inputAttributeName => "inputAttribute"u8;
-    private static ReadOnlySpan<byte> _cursorInfoName => "cursorInfo"u8;
-    private static ReadOnlySpan<byte> _selectionName => "selection"u8;
-    private static ReadOnlySpan<byte> _windowIdName => "windowId"u8;
-    private static ReadOnlySpan<byte> _newEditBoxName => "newEditBox"u8;
-    private static ReadOnlySpan<byte> _capitalizeModeName => "capitalizeMode"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _inputAttributeV = NativeValue.From(InputAttribute);
-        if (_inputAttributeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _inputAttributeName, _inputAttributeV);
-        var _cursorInfoV = NativeValue.From(CursorInfo);
-        if (_cursorInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cursorInfoName, _cursorInfoV);
-        var _selectionV = NativeValue.From(Selection);
-        if (_selectionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _selectionName, _selectionV);
-        var _windowIdV = NativeValue.From(WindowId);
-        if (_windowIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _windowIdName, _windowIdV);
-        var _newEditBoxV = NativeValue.From(NewEditBox);
-        if (_newEditBoxV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _newEditBoxName, _newEditBoxV);
-        var _capitalizeModeV = NativeValue.From(CapitalizeMode);
-        if (_capitalizeModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _capitalizeModeName, _capitalizeModeV);
-    }
+    public TextConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _inputAttribute => "inputAttribute"u8;
+    private static ReadOnlySpan<byte> _cursorInfo => "cursorInfo"u8;
+    private static ReadOnlySpan<byte> _selection => "selection"u8;
+    private static ReadOnlySpan<byte> _windowId => "windowId"u8;
+    private static ReadOnlySpan<byte> _newEditBox => "newEditBox"u8;
+    private static ReadOnlySpan<byte> _capitalizeMode => "capitalizeMode"u8;
+    /// <summary>
+    /// inputAttribute
+    /// </summary>
+    public InputAttribute InputAttribute => new InputAttribute(GetPropertyRaw(_inputAttribute));
+
+    /// <summary>
+    /// cursorInfo
+    /// </summary>
+    public CursorInfo? CursorInfo => GetPropertyRaw(_cursorInfo) == IntPtr.Zero ? null : new CursorInfo(GetPropertyRaw(_cursorInfo));
+
+    /// <summary>
+    /// selection
+    /// </summary>
+    public InputMethodRange? Selection => GetPropertyRaw(_selection) == IntPtr.Zero ? null : new InputMethodRange(GetPropertyRaw(_selection));
+
+    /// <summary>
+    /// windowId
+    /// </summary>
+    public double? WindowId => (double?)NativeValue.ToDouble(GetPropertyRaw(_windowId));
+
+    /// <summary>
+    /// newEditBox
+    /// </summary>
+    public bool? NewEditBox => (bool?)NativeValue.ToBool(GetPropertyRaw(_newEditBox));
+
+    /// <summary>
+    /// capitalizeMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CapitalizeMode? CapitalizeMode => (global::HarmonyOS.ArkUI.CapitalizeMode?)(global::HarmonyOS.ArkUI.CapitalizeMode)NativeValue.ToInt(GetPropertyRaw(_capitalizeMode));
+
 }
 
 /// <summary>
-/// AttachOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AttachOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AttachOptions(
-    bool? ShowKeyboard = null,
-    global::HarmonyOS.ArkUI.RequestKeyboardReason? RequestKeyboardReason = null
-) : INapiRecord
+public sealed partial class AttachOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _showKeyboardName => "showKeyboard"u8;
-    private static ReadOnlySpan<byte> _requestKeyboardReasonName => "requestKeyboardReason"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _showKeyboardV = NativeValue.From(ShowKeyboard);
-        if (_showKeyboardV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _showKeyboardName, _showKeyboardV);
-        var _requestKeyboardReasonV = NativeValue.From(RequestKeyboardReason);
-        if (_requestKeyboardReasonV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _requestKeyboardReasonName, _requestKeyboardReasonV);
-    }
+    public AttachOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _showKeyboard => "showKeyboard"u8;
+    private static ReadOnlySpan<byte> _requestKeyboardReason => "requestKeyboardReason"u8;
+    /// <summary>
+    /// showKeyboard
+    /// </summary>
+    public bool? ShowKeyboard => (bool?)NativeValue.ToBool(GetPropertyRaw(_showKeyboard));
+
+    /// <summary>
+    /// requestKeyboardReason
+    /// </summary>
+    public global::HarmonyOS.ArkUI.RequestKeyboardReason? RequestKeyboardReason => (global::HarmonyOS.ArkUI.RequestKeyboardReason?)(global::HarmonyOS.ArkUI.RequestKeyboardReason)NativeValue.ToInt(GetPropertyRaw(_requestKeyboardReason));
+
 }
 
 /// <summary>
-/// CursorInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CursorInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CursorInfo(
-    double Left,
-    double Top,
-    double Width,
-    double Height,
-    double? DisplayId = null
-) : INapiRecord
+public sealed partial class CursorInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _leftName => "left"u8;
-    private static ReadOnlySpan<byte> _topName => "top"u8;
-    private static ReadOnlySpan<byte> _widthName => "width"u8;
-    private static ReadOnlySpan<byte> _heightName => "height"u8;
-    private static ReadOnlySpan<byte> _displayIdName => "displayId"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _leftV = NativeValue.From(Left);
-        if (_leftV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _leftName, _leftV);
-        var _topV = NativeValue.From(Top);
-        if (_topV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _topName, _topV);
-        var _widthV = NativeValue.From(Width);
-        if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
-        var _heightV = NativeValue.From(Height);
-        if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
-        var _displayIdV = NativeValue.From(DisplayId);
-        if (_displayIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV);
-    }
+    public CursorInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _left => "left"u8;
+    private static ReadOnlySpan<byte> _top => "top"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    private static ReadOnlySpan<byte> _displayId => "displayId"u8;
+    /// <summary>
+    /// left
+    /// </summary>
+    public double Left => NativeValue.ToDouble(GetPropertyRaw(_left));
+
+    /// <summary>
+    /// top
+    /// </summary>
+    public double Top => NativeValue.ToDouble(GetPropertyRaw(_top));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+    /// <summary>
+    /// displayId
+    /// </summary>
+    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+
 }
 
 /// <summary>
-/// InputAttribute（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// InputAttribute 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record InputAttribute(
-    global::HarmonyOS.ArkUI.TextInputType TextInputType,
-    global::HarmonyOS.ArkUI.EnterKeyType EnterKeyType,
-    string? Placeholder = null,
-    string? AbilityName = null,
-    bool? ConsumeKeyEvents = null
-) : INapiRecord
+public sealed partial class InputAttribute : JsObject
 {
-    private static ReadOnlySpan<byte> _textInputTypeName => "textInputType"u8;
-    private static ReadOnlySpan<byte> _enterKeyTypeName => "enterKeyType"u8;
-    private static ReadOnlySpan<byte> _placeholderName => "placeholder"u8;
-    private static ReadOnlySpan<byte> _abilityNameName => "abilityName"u8;
-    private static ReadOnlySpan<byte> _consumeKeyEventsName => "consumeKeyEvents"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _textInputTypeV = NativeValue.From(TextInputType);
-        if (_textInputTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _textInputTypeName, _textInputTypeV);
-        var _enterKeyTypeV = NativeValue.From(EnterKeyType);
-        if (_enterKeyTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enterKeyTypeName, _enterKeyTypeV);
-        var _placeholderV = NativeValue.From(Placeholder);
-        if (_placeholderV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _placeholderName, _placeholderV);
-        var _abilityNameV = NativeValue.From(AbilityName);
-        if (_abilityNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _abilityNameName, _abilityNameV);
-        var _consumeKeyEventsV = NativeValue.From(ConsumeKeyEvents);
-        if (_consumeKeyEventsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _consumeKeyEventsName, _consumeKeyEventsV);
-    }
+    public InputAttribute(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _textInputType => "textInputType"u8;
+    private static ReadOnlySpan<byte> _enterKeyType => "enterKeyType"u8;
+    private static ReadOnlySpan<byte> _placeholder => "placeholder"u8;
+    private static ReadOnlySpan<byte> _abilityName => "abilityName"u8;
+    private static ReadOnlySpan<byte> _consumeKeyEvents => "consumeKeyEvents"u8;
+    /// <summary>
+    /// textInputType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.TextInputType TextInputType => (global::HarmonyOS.ArkUI.TextInputType)NativeValue.ToInt(GetPropertyRaw(_textInputType));
+
+    /// <summary>
+    /// enterKeyType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.EnterKeyType EnterKeyType => (global::HarmonyOS.ArkUI.EnterKeyType)NativeValue.ToInt(GetPropertyRaw(_enterKeyType));
+
+    /// <summary>
+    /// placeholder
+    /// </summary>
+    public string? Placeholder => (string?)NativeValue.ToString(GetPropertyRaw(_placeholder)) ?? string.Empty;
+
+    /// <summary>
+    /// abilityName
+    /// </summary>
+    public string? AbilityName => (string?)NativeValue.ToString(GetPropertyRaw(_abilityName)) ?? string.Empty;
+
+    /// <summary>
+    /// consumeKeyEvents
+    /// </summary>
+    public bool? ConsumeKeyEvents => (bool?)NativeValue.ToBool(GetPropertyRaw(_consumeKeyEvents));
+
 }
 
 /// <summary>
@@ -1051,17 +1061,16 @@ public sealed partial class MessageHandler : JsObject
 }
 
 /// <summary>
-/// FunctionKey（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// FunctionKey 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record FunctionKey(
-    global::HarmonyOS.ArkUI.EnterKeyType EnterKeyType
-) : INapiRecord
+public sealed partial class FunctionKey : JsObject
 {
-    private static ReadOnlySpan<byte> _enterKeyTypeName => "enterKeyType"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _enterKeyTypeV = NativeValue.From(EnterKeyType);
-        if (_enterKeyTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enterKeyTypeName, _enterKeyTypeV);
-    }
+    public FunctionKey(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _enterKeyType => "enterKeyType"u8;
+    /// <summary>
+    /// enterKeyType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.EnterKeyType EnterKeyType => (global::HarmonyOS.ArkUI.EnterKeyType)NativeValue.ToInt(GetPropertyRaw(_enterKeyType));
+
 }

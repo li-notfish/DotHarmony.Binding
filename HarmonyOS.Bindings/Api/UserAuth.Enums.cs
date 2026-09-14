@@ -120,9 +120,9 @@ public enum UserAuthTipCode
 }
 
 /// <summary>
-/// UserAuthResultCode 枚举
+/// UserAuthResultCode2 枚举
 /// </summary>
-public enum UserAuthResultCode
+public enum UserAuthResultCode2
 {
     Success = 12500000,
     Fail = 12500001,

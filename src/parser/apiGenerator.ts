@@ -88,6 +88,13 @@ export class ApiGenerator {
     private crossModuleWrappers = new Set<string>();
     /** 本模块被其它模块引用的 tsName：record 收敛时钉住（不被移除映射） */
     private demandedTs = new Set<string>();
+    /** 本模块的跨模块解析上下文（enumFinalNames 等全局集合） */
+    private crossModule?: {
+        imports: Map<string, string>;
+        demandedTs: Set<string>;
+        returnDemandTs: Set<string>;
+        enumFinalNames?: Set<string>;
+    };
 
     constructor() {
         this.enumGenerator = new EnumGenerator();
@@ -138,10 +145,13 @@ export class ApiGenerator {
             demandedTs: Set<string>;
             /** 本模块被其它模块在返回/回调位置引用的 tsName：强制 wrapper（返回位必须可从句柄构造） */
             returnDemandTs: Set<string>;
+            /** 全部模块的枚举终名（泄漏映射验证的裸名识别：跨模块枚举 FQN 引用不得误判为未知类型） */
+            enumFinalNames?: Set<string>;
         }
     ): ApiGenResult {
         this.moduleClassName = moduleInfo.className;
         this.demandedTs = crossModule?.demandedTs ?? new Set();
+        this.crossModule = crossModule;
         this.crossModuleWrappers = new Set<string>(
             [...(crossModule?.imports.values() ?? [])].filter(v => v.startsWith('global::')));
         const savedOriginalMappings = new Map<string, { typescript: string; csharp: string; isNative: boolean } | undefined>();
@@ -190,21 +200,46 @@ export class ApiGenerator {
         this.convergeRecordMarshaling(component);
 
         // 3. 映射模块成员
-        const members = this.mapMembers(component);
+        let members = this.mapMembers(component);
 
         // 3.5 事件元数据：类型化 On/Off/Once + .NET event（回调参数类型参与可达性/升级扫描）。
         // 注意：包装类（嵌套接口/类）上的实例事件回调参数同样参与扫描，
         // 否则其载荷类型（如 camera 的 Photo）不会被发射导致 CS0246。
-        const moduleEvents = this.buildEventInfos(component.methods);
+        let moduleEvents = this.buildEventInfos(component.methods);
         const allEventMethods = [
             ...component.methods,
             ...component.interfaces.flatMap(i => i.methods),
             ...component.classes.flatMap(c => c.methods),
         ];
-        const eventCallbackArgs = this.buildEventInfos(allEventMethods)
+        let eventCallbackArgs = this.buildEventInfos(allEventMethods)
             .filter(e => e.fnName === 'on' || e.fnName === 'once')
             .flatMap(e => e.callbackArgs)
             .filter(t => t !== 'IntPtr');
+
+        // 3.6 泄漏映射收敛：签名引用的裸类型若非（基元/枚举/本模块实例类型/跨模块解析类型/运行时模式），
+        // 一律重映射 IntPtr（TypeMapper 全局映射泄漏的兜底——认领名未被发射的 TaskObject、未导入的
+        // Font/Task、解析缺口类型 SendRequestResult），保证产物不引用不存在的裸类型（CS0246）。
+        // 事件元数据同样参与扫描并在降级后重算
+        for (let round = 0; round < 5; round++) {
+            const unknown = this.findUnknownTypeRefs(members, eventCallbackArgs);
+            if (unknown.size === 0) break;
+            for (const id of unknown) {
+                // 映射结果名反查源名（如 @ohos.request 的 Task→TaskObject 泄漏：降级源名才能
+                // 让 mapType 真正返回 IntPtr；无映射的裸未知类型直接降级）
+                const sources = TypeMapper.findSources(id).filter(s => s !== id);
+                if (sources.length > 0) {
+                    for (const s of sources) TypeMapper.addMapping(s, 'IntPtr');
+                } else {
+                    TypeMapper.addMapping(id, 'IntPtr');
+                }
+            }
+            members = this.mapMembers(component);
+            moduleEvents = this.buildEventInfos(component.methods);
+            eventCallbackArgs = this.buildEventInfos(allEventMethods)
+                .filter(e => e.fnName === 'on' || e.fnName === 'once')
+                .flatMap(e => e.callbackArgs)
+                .filter(t => t !== 'IntPtr');
+        }
 
         // 4. 分类收敛：record 被返回位置引用 → 升级为 wrapper
         this.convergeRecordUsage(members, eventCallbackArgs);
@@ -453,6 +488,65 @@ export class ApiGenerator {
 
     // ---------- 分类收敛 / 可达性 ----------
 
+    /** 已知类型标识白名单（运行时模式/命名空间段/TS 内建——泄漏映射验证不视为未知） */
+    private static readonly IDENT_ALLOWLIST = new Set([
+        'Task', 'System', 'global', 'HarmonyOS', 'Bindings', 'Api', 'ArkUI',
+        'JsMap', 'JsBigInt', 'JsObject', 'Action', 'Func',
+        'object', 'void', 'String', 'Object', 'Number', 'Boolean', 'Error',
+        'Record', 'Array', 'Map', 'Set', 'Promise', 'Callback', 'AsyncCallback',
+        'Function', 'Optional', 'Awaitable', 'ESObject', 'data',
+    ]);
+
+    /** 收集映射后签名中的未知裸类型引用（findUnknownTypeRefs 供泄漏映射收敛用） */
+    private findUnknownTypeRefs(members: EmitMember[], extra: string[]): Set<string> {
+        const strings = [
+            ...members.flatMap(m => [m.retType, ...m.params.map(p => p.type)]),
+            ...extra,
+        ];
+        // 本模块实例类型的成员签名同样参与（嵌套接口方法参数引用的裸类型也会 CS0246）
+        for (const spec of this.specs) {
+            const props = spec.iface ? this.mergedProperties(spec.iface) : (spec.cls?.properties ?? []);
+            for (const p of props) strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
+            const methods = spec.kind === 'wrapper' ? this.wrapperMembers(spec).methods : [];
+            for (const m of methods) {
+                for (const t of this.wrapperMethodTypeStrings(m)) {
+                    strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(t)));
+                }
+            }
+        }
+        const unknown = new Set<string>();
+        for (const s of strings) {
+            for (const id of s.match(/[A-Za-z_]\w*/g) ?? []) {
+                if (this.isKnownTypeIdent(id)) continue;
+                unknown.add(id);
+            }
+        }
+        return unknown;
+    }
+
+    private isKnownTypeIdent(id: string): boolean {
+        return ApiGenerator.IDENT_ALLOWLIST.has(id)
+            || PRIMITIVE_TYPES.has(id)
+            || this.specByCsharp.has(id)
+            || this.crossModuleWrappers.has(`global::HarmonyOS.Bindings.Api.${id}`)
+            || this.enumNames.has(`global::HarmonyOS.ArkUI.${id}`)
+            || (this.crossModule?.enumFinalNames?.has(id) ?? false);
+    }
+
+    /** wrapper 方法参与可达性/升级扫描的全部类型串：返回 + 参数 + 命名 AsyncCallback 内层。
+     *  emitWrapper 会把命名 AsyncCallback<T> 参数剥掉接为 Task<T>（工厂构造载荷），
+     *  而裸 AsyncCallback<T> 经 mapType 退化为 IntPtr——扫描不同步覆盖即载荷类型不发射（CS0246，
+     *  实测 rpc.RemoteObject.sendRequest 的 SendRequestResult）。 */
+    private wrapperMethodTypeStrings(m: MethodInfo): string[] {
+        const strs = [m.returnType, ...m.parameters.map(p => p.type)];
+        if (m.asyncResultType !== undefined) strs.push(m.asyncResultType);
+        for (const p of m.parameters) {
+            const namedCb = /^AsyncCallback<(.+)>$/.exec(p.type);
+            if (namedCb) strs.push(namedCb[1]);
+        }
+        return strs;
+    }
+
     private convergeRecordUsage(members: EmitMember[], extraReturnStrings: string[] = []): void {
         for (let round = 0; round < 5; round++) {
             let changed = false;
@@ -464,7 +558,9 @@ export class ApiGenerator {
             for (const spec of this.specs) {
                 if (spec.kind !== 'wrapper' || !this.specByCsharp.has(spec.csharpName)) continue;
                 for (const m of this.wrapperMembers(spec).methods) {
-                    returnStrings.push(TypeMapper.mapType(TypeMapper.cleanOptional(m.returnType)));
+                    for (const t of this.wrapperMethodTypeStrings(m)) {
+                        returnStrings.push(TypeMapper.mapType(TypeMapper.cleanOptional(t)));
+                    }
                 }
                 for (const p of this.wrapperMembers(spec).properties) {
                     returnStrings.push(TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
@@ -528,9 +624,8 @@ export class ApiGenerator {
             const strings: string[] = [];
             if (spec.kind === 'wrapper') {
                 for (const m of this.wrapperMembers(spec).methods) {
-                    strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(m.returnType)));
-                    for (const p of m.parameters) {
-                        strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(p.type)));
+                    for (const t of this.wrapperMethodTypeStrings(m)) {
+                        strings.push(TypeMapper.mapType(TypeMapper.cleanOptional(t)));
                     }
                 }
                 for (const p of this.wrapperMembers(spec).properties) {
@@ -1022,6 +1117,12 @@ export class ApiGenerator {
         return { type: 'IntPtr', expr: raw };
     }
 
+    /** 枚举类型判定：本模块枚举或任何 HarmonyOS.ArkUI 命名空间 FQN（枚举生成在该命名空间，
+     *  跨模块枚举经 TypeMapper 泄漏解析后同为 FQN——适配器/取值必须同样识别） */
+    private isEnumCsType(mapped: string): boolean {
+        return this.enumNames.has(mapped) || mapped.startsWith('global::HarmonyOS.ArkUI.');
+    }
+
     /** 基元/枚举类型的取值表达式 */
     private primitiveGetterExpr(mapped: string, rawExpr: string): string {
         switch (mapped) {
@@ -1034,7 +1135,7 @@ export class ApiGenerator {
             case 'byte': return `NativeValue.ToByte(${rawExpr})`;
             case 'string': return `NativeValue.ToString(${rawExpr}) ?? string.Empty`;
             default:
-                if (this.enumNames.has(mapped)) return `(${mapped})NativeValue.ToInt(${rawExpr})`;
+                if (this.isEnumCsType(mapped)) return `(${mapped})NativeValue.ToInt(${rawExpr})`;
                 return rawExpr;
         }
     }
@@ -1122,7 +1223,7 @@ export class ApiGenerator {
             case 'JsBigInt': return `NativeValue.ToBigInt(${arg})`;
             case 'void': return 'default';
         }
-        if (this.enumNames.has(mapped)) return `(${mapped})NativeValue.ToInt(${arg})`;
+        if (this.isEnumCsType(mapped)) return `(${mapped})NativeValue.ToInt(${arg})`;
         const wrapper = this.resolveWrapperCtor(mapped);
         if (wrapper) return `new ${wrapper}(${arg})`;
         if (mapped.startsWith('JsMap<')) return this.jsMapCtorExpr(mapped, arg);

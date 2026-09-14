@@ -444,44 +444,48 @@ public sealed partial class PrintDocumentAdapter : JsObject
 }
 
 /// <summary>
-/// PrintAttributes（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PrintAttributes 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PrintAttributes(
-    double? CopyNumber = null,
-    PrintPageRange? PageRange = null,
-    PrintPageSize? PageSize = null,
-    global::HarmonyOS.ArkUI.PrintDirectionMode? DirectionMode = null,
-    global::HarmonyOS.ArkUI.PrintColorMode? ColorMode = null,
-    global::HarmonyOS.ArkUI.PrintDuplexMode? DuplexMode = null
-) : INapiRecord
+public sealed partial class PrintAttributes : JsObject
 {
-    private static ReadOnlySpan<byte> _copyNumberName => "copyNumber"u8;
-    private static ReadOnlySpan<byte> _pageRangeName => "pageRange"u8;
-    private static ReadOnlySpan<byte> _pageSizeName => "pageSize"u8;
-    private static ReadOnlySpan<byte> _directionModeName => "directionMode"u8;
-    private static ReadOnlySpan<byte> _colorModeName => "colorMode"u8;
-    private static ReadOnlySpan<byte> _duplexModeName => "duplexMode"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _copyNumberV = NativeValue.From(CopyNumber);
-        if (_copyNumberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _copyNumberName, _copyNumberV);
-        var _pageRangeV = NativeValue.From(PageRange);
-        if (_pageRangeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageRangeName, _pageRangeV);
-        var _pageSizeV = NativeValue.From(PageSize);
-        if (_pageSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSizeName, _pageSizeV);
-        var _directionModeV = NativeValue.From(DirectionMode);
-        if (_directionModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _directionModeName, _directionModeV);
-        var _colorModeV = NativeValue.From(ColorMode);
-        if (_colorModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _colorModeName, _colorModeV);
-        var _duplexModeV = NativeValue.From(DuplexMode);
-        if (_duplexModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _duplexModeName, _duplexModeV);
-    }
+    public PrintAttributes(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _copyNumber => "copyNumber"u8;
+    private static ReadOnlySpan<byte> _pageRange => "pageRange"u8;
+    private static ReadOnlySpan<byte> _pageSize => "pageSize"u8;
+    private static ReadOnlySpan<byte> _directionMode => "directionMode"u8;
+    private static ReadOnlySpan<byte> _colorMode => "colorMode"u8;
+    private static ReadOnlySpan<byte> _duplexMode => "duplexMode"u8;
+    /// <summary>
+    /// copyNumber
+    /// </summary>
+    public double? CopyNumber => (double?)NativeValue.ToDouble(GetPropertyRaw(_copyNumber));
+
+    /// <summary>
+    /// pageRange
+    /// </summary>
+    public PrintPageRange? PageRange => GetPropertyRaw(_pageRange) == IntPtr.Zero ? null : new PrintPageRange(GetPropertyRaw(_pageRange));
+
+    /// <summary>
+    /// pageSize
+    /// </summary>
+    public PrintPageSize? PageSize => GetPropertyRaw(_pageSize) == IntPtr.Zero ? null : new PrintPageSize(GetPropertyRaw(_pageSize));
+
+    /// <summary>
+    /// directionMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PrintDirectionMode? DirectionMode => (global::HarmonyOS.ArkUI.PrintDirectionMode?)(global::HarmonyOS.ArkUI.PrintDirectionMode)NativeValue.ToInt(GetPropertyRaw(_directionMode));
+
+    /// <summary>
+    /// colorMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PrintColorMode? ColorMode => (global::HarmonyOS.ArkUI.PrintColorMode?)(global::HarmonyOS.ArkUI.PrintColorMode)NativeValue.ToInt(GetPropertyRaw(_colorMode));
+
+    /// <summary>
+    /// duplexMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PrintDuplexMode? DuplexMode => (global::HarmonyOS.ArkUI.PrintDuplexMode?)(global::HarmonyOS.ArkUI.PrintDuplexMode)NativeValue.ToInt(GetPropertyRaw(_duplexMode));
+
 }
 
 /// <summary>
@@ -682,60 +686,63 @@ public sealed partial class PrinterInformation : JsObject
 }
 
 /// <summary>
-/// PrintPageRange（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PrintPageRange 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PrintPageRange(
-    double? StartPage = null,
-    double? EndPage = null,
-    double[]? Pages = null
-) : INapiRecord
+public sealed partial class PrintPageRange : JsObject
 {
-    private static ReadOnlySpan<byte> _startPageName => "startPage"u8;
-    private static ReadOnlySpan<byte> _endPageName => "endPage"u8;
-    private static ReadOnlySpan<byte> _pagesName => "pages"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _startPageV = NativeValue.From(StartPage);
-        if (_startPageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _startPageName, _startPageV);
-        var _endPageV = NativeValue.From(EndPage);
-        if (_endPageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _endPageName, _endPageV);
-        var _pagesV = NativeValue.From(Pages);
-        if (_pagesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pagesName, _pagesV);
-    }
+    public PrintPageRange(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _startPage => "startPage"u8;
+    private static ReadOnlySpan<byte> _endPage => "endPage"u8;
+    private static ReadOnlySpan<byte> _pages => "pages"u8;
+    /// <summary>
+    /// startPage
+    /// </summary>
+    public double? StartPage => (double?)NativeValue.ToDouble(GetPropertyRaw(_startPage));
+
+    /// <summary>
+    /// endPage
+    /// </summary>
+    public double? EndPage => (double?)NativeValue.ToDouble(GetPropertyRaw(_endPage));
+
+    /// <summary>
+    /// pages
+    /// </summary>
+    public double[] Pages => ValueConverter.ConvertArray(GetPropertyRaw(_pages), static e => ValueConverter.Convert<double>(e));
+
 }
 
 /// <summary>
-/// PrintPageSize（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PrintPageSize 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PrintPageSize(
-    string Id,
-    string Name,
-    double Width,
-    double Height
-) : INapiRecord
+public sealed partial class PrintPageSize : JsObject
 {
-    private static ReadOnlySpan<byte> _idName => "id"u8;
-    private static ReadOnlySpan<byte> _nameName => "name"u8;
-    private static ReadOnlySpan<byte> _widthName => "width"u8;
-    private static ReadOnlySpan<byte> _heightName => "height"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _idV = NativeValue.From(Id);
-        if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
-        var _nameV = NativeValue.From(Name);
-        if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
-        var _widthV = NativeValue.From(Width);
-        if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
-        var _heightV = NativeValue.From(Height);
-        if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
-    }
+    public PrintPageSize(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _id => "id"u8;
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// id
+    /// </summary>
+    public string Id => NativeValue.ToString(GetPropertyRaw(_id)) ?? string.Empty;
+
+    /// <summary>
+    /// name
+    /// </summary>
+    public string Name => NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
 }
 
 /// <summary>

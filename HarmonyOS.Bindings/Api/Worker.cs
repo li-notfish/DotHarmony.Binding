@@ -656,40 +656,39 @@ public sealed partial class EventListener : JsObject
 }
 
 /// <summary>
-/// Event（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// Event 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record WorkerEvent(
-    string Type,
-    double TimeStamp
-) : INapiRecord
+public sealed partial class WorkerEvent : JsObject
 {
-    private static ReadOnlySpan<byte> _typeName => "type"u8;
-    private static ReadOnlySpan<byte> _timeStampName => "timeStamp"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _typeV = NativeValue.From(Type);
-        if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
-        var _timeStampV = NativeValue.From(TimeStamp);
-        if (_timeStampV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeStampName, _timeStampV);
-    }
+    public WorkerEvent(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _timeStamp => "timeStamp"u8;
+    /// <summary>
+    /// type
+    /// </summary>
+    public string Type => NativeValue.ToString(GetPropertyRaw(_type)) ?? string.Empty;
+
+    /// <summary>
+    /// timeStamp
+    /// </summary>
+    public double TimeStamp => NativeValue.ToDouble(GetPropertyRaw(_timeStamp));
+
 }
 
 /// <summary>
-/// PostMessageOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PostMessageOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PostMessageOptions(
-    IntPtr[]? Transfer = null
-) : INapiRecord
+public sealed partial class PostMessageOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _transferName => "transfer"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _transferV = NativeValue.From(Transfer);
-        if (_transferV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _transferName, _transferV);
-    }
+    public PostMessageOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _transfer => "transfer"u8;
+    /// <summary>
+    /// transfer
+    /// </summary>
+    public IntPtr[] Transfer => ValueConverter.ConvertArray(GetPropertyRaw(_transfer), static e => ValueConverter.Convert<IntPtr>(e));
+
 }
 
 /// <summary>

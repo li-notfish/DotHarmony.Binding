@@ -82,9 +82,9 @@ public static unsafe partial class WebNativeMessagingExtensionContext
     /// <summary>
     /// startAbilityForResult
     /// </summary>
-    public static TaskpoolTask StartAbilityForResult(IntPtr want, IntPtr? options = null)
+    public static IntPtr StartAbilityForResult(IntPtr want, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<TaskpoolTask>(Module, _startAbilityForResult, want, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _startAbilityForResult, want, options);
     }
 
     /// <summary>

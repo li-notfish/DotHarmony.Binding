@@ -1215,24 +1215,24 @@ public sealed partial class FsFile : JsObject
 }
 
 /// <summary>
-/// ReadOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ReadOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record ReadOptions(
-    double? Offset = null,
-    double? Length = null
-) : INapiRecord
+public sealed partial class ReadOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
-    private static ReadOnlySpan<byte> _lengthName => "length"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _offsetV = NativeValue.From(Offset);
-        if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
-        var _lengthV = NativeValue.From(Length);
-        if (_lengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _lengthName, _lengthV);
-    }
+    public ReadOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _offset => "offset"u8;
+    private static ReadOnlySpan<byte> _length => "length"u8;
+    /// <summary>
+    /// offset
+    /// </summary>
+    public double? Offset => (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
+
+    /// <summary>
+    /// length
+    /// </summary>
+    public double? Length => (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
+
 }
 
 /// <summary>
@@ -1296,29 +1296,30 @@ public sealed record ReadTextOptions(
 }
 
 /// <summary>
-/// WriteOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// WriteOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record WriteOptions(
-    string? Encoding = null,
-    double? Offset = null,
-    double? Length = null
-) : INapiRecord
+public sealed partial class WriteOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _encodingName => "encoding"u8;
-    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
-    private static ReadOnlySpan<byte> _lengthName => "length"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _encodingV = NativeValue.From(Encoding);
-        if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
-        var _offsetV = NativeValue.From(Offset);
-        if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
-        var _lengthV = NativeValue.From(Length);
-        if (_lengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _lengthName, _lengthV);
-    }
+    public WriteOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _encoding => "encoding"u8;
+    private static ReadOnlySpan<byte> _offset => "offset"u8;
+    private static ReadOnlySpan<byte> _length => "length"u8;
+    /// <summary>
+    /// encoding
+    /// </summary>
+    public string? Encoding => (string?)NativeValue.ToString(GetPropertyRaw(_encoding)) ?? string.Empty;
+
+    /// <summary>
+    /// offset
+    /// </summary>
+    public double? Offset => (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
+
+    /// <summary>
+    /// length
+    /// </summary>
+    public double? Length => (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
+
 }
 
 /// <summary>
@@ -1505,29 +1506,30 @@ public sealed partial class AtomicFile : JsObject
 }
 
 /// <summary>
-/// WatchEvent（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// WatchEvent 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record WatchEvent(
-    string FileName,
-    double Event,
-    double Cookie
-) : INapiRecord
+public sealed partial class WatchEvent : JsObject
 {
-    private static ReadOnlySpan<byte> _fileNameName => "fileName"u8;
-    private static ReadOnlySpan<byte> _eventName => "event"u8;
-    private static ReadOnlySpan<byte> _cookieName => "cookie"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _fileNameV = NativeValue.From(FileName);
-        if (_fileNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileNameName, _fileNameV);
-        var _eventV = NativeValue.From(Event);
-        if (_eventV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eventName, _eventV);
-        var _cookieV = NativeValue.From(Cookie);
-        if (_cookieV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cookieName, _cookieV);
-    }
+    public WatchEvent(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _fileName => "fileName"u8;
+    private static ReadOnlySpan<byte> _event => "event"u8;
+    private static ReadOnlySpan<byte> _cookie => "cookie"u8;
+    /// <summary>
+    /// fileName
+    /// </summary>
+    public string FileName => NativeValue.ToString(GetPropertyRaw(_fileName)) ?? string.Empty;
+
+    /// <summary>
+    /// event
+    /// </summary>
+    public double Event => NativeValue.ToDouble(GetPropertyRaw(_event));
+
+    /// <summary>
+    /// cookie
+    /// </summary>
+    public double Cookie => NativeValue.ToDouble(GetPropertyRaw(_cookie));
+
 }
 
 /// <summary>

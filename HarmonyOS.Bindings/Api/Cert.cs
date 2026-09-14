@@ -1338,24 +1338,24 @@ public sealed partial class CmsParser : JsObject
 }
 
 /// <summary>
-/// PrivateKeyInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PrivateKeyInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PrivateKeyInfo(
-    string Key,
-    string? Password = null
-) : INapiRecord
+public sealed partial class PrivateKeyInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _keyName => "key"u8;
-    private static ReadOnlySpan<byte> _passwordName => "password"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _keyV = NativeValue.From(Key);
-        if (_keyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyName, _keyV);
-        var _passwordV = NativeValue.From(Password);
-        if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
-    }
+    public PrivateKeyInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _key => "key"u8;
+    private static ReadOnlySpan<byte> _password => "password"u8;
+    /// <summary>
+    /// key
+    /// </summary>
+    public string Key => NativeValue.ToString(GetPropertyRaw(_key)) ?? string.Empty;
+
+    /// <summary>
+    /// password
+    /// </summary>
+    public string? Password => (string?)NativeValue.ToString(GetPropertyRaw(_password)) ?? string.Empty;
+
 }
 
 /// <summary>
@@ -1465,29 +1465,30 @@ public sealed partial class X509CrlEntry : JsObject
 }
 
 /// <summary>
-/// CertChainData（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CertChainData 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CertChainData(
-    byte[] Data,
-    double Count,
-    global::HarmonyOS.ArkUI.EncodingFormat EncodingFormat
-) : INapiRecord
+public sealed partial class CertChainData : JsObject
 {
-    private static ReadOnlySpan<byte> _dataName => "data"u8;
-    private static ReadOnlySpan<byte> _countName => "count"u8;
-    private static ReadOnlySpan<byte> _encodingFormatName => "encodingFormat"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _dataV = NativeValue.From(Data);
-        if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
-        var _countV = NativeValue.From(Count);
-        if (_countV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _countName, _countV);
-        var _encodingFormatV = NativeValue.From(EncodingFormat);
-        if (_encodingFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encodingFormatName, _encodingFormatV);
-    }
+    public CertChainData(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _data => "data"u8;
+    private static ReadOnlySpan<byte> _count => "count"u8;
+    private static ReadOnlySpan<byte> _encodingFormat => "encodingFormat"u8;
+    /// <summary>
+    /// data
+    /// </summary>
+    public byte[] Data => ValueConverter.ConvertArray(GetPropertyRaw(_data), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// count
+    /// </summary>
+    public double Count => NativeValue.ToDouble(GetPropertyRaw(_count));
+
+    /// <summary>
+    /// encodingFormat
+    /// </summary>
+    public global::HarmonyOS.ArkUI.EncodingFormat EncodingFormat => (global::HarmonyOS.ArkUI.EncodingFormat)NativeValue.ToInt(GetPropertyRaw(_encodingFormat));
+
 }
 
 /// <summary>
@@ -1619,117 +1620,123 @@ public sealed partial class CertChainValidationResult : JsObject
 }
 
 /// <summary>
-/// CmsSignerConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CmsSignerConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CmsSignerConfig(
-    string MdName,
-    global::HarmonyOS.ArkUI.CmsRsaSignaturePadding? RsaSignaturePadding = null,
-    bool? AddCert = null,
-    bool? AddAttr = null,
-    bool? AddSmimeCapAttr = null
-) : INapiRecord
+public sealed partial class CmsSignerConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _mdNameName => "mdName"u8;
-    private static ReadOnlySpan<byte> _rsaSignaturePaddingName => "rsaSignaturePadding"u8;
-    private static ReadOnlySpan<byte> _addCertName => "addCert"u8;
-    private static ReadOnlySpan<byte> _addAttrName => "addAttr"u8;
-    private static ReadOnlySpan<byte> _addSmimeCapAttrName => "addSmimeCapAttr"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _mdNameV = NativeValue.From(MdName);
-        if (_mdNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mdNameName, _mdNameV);
-        var _rsaSignaturePaddingV = NativeValue.From(RsaSignaturePadding);
-        if (_rsaSignaturePaddingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rsaSignaturePaddingName, _rsaSignaturePaddingV);
-        var _addCertV = NativeValue.From(AddCert);
-        if (_addCertV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addCertName, _addCertV);
-        var _addAttrV = NativeValue.From(AddAttr);
-        if (_addAttrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addAttrName, _addAttrV);
-        var _addSmimeCapAttrV = NativeValue.From(AddSmimeCapAttr);
-        if (_addSmimeCapAttrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addSmimeCapAttrName, _addSmimeCapAttrV);
-    }
+    public CmsSignerConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _mdName => "mdName"u8;
+    private static ReadOnlySpan<byte> _rsaSignaturePadding => "rsaSignaturePadding"u8;
+    private static ReadOnlySpan<byte> _addCert => "addCert"u8;
+    private static ReadOnlySpan<byte> _addAttr => "addAttr"u8;
+    private static ReadOnlySpan<byte> _addSmimeCapAttr => "addSmimeCapAttr"u8;
+    /// <summary>
+    /// mdName
+    /// </summary>
+    public string MdName => NativeValue.ToString(GetPropertyRaw(_mdName)) ?? string.Empty;
+
+    /// <summary>
+    /// rsaSignaturePadding
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CmsRsaSignaturePadding? RsaSignaturePadding => (global::HarmonyOS.ArkUI.CmsRsaSignaturePadding?)(global::HarmonyOS.ArkUI.CmsRsaSignaturePadding)NativeValue.ToInt(GetPropertyRaw(_rsaSignaturePadding));
+
+    /// <summary>
+    /// addCert
+    /// </summary>
+    public bool? AddCert => (bool?)NativeValue.ToBool(GetPropertyRaw(_addCert));
+
+    /// <summary>
+    /// addAttr
+    /// </summary>
+    public bool? AddAttr => (bool?)NativeValue.ToBool(GetPropertyRaw(_addAttr));
+
+    /// <summary>
+    /// addSmimeCapAttr
+    /// </summary>
+    public bool? AddSmimeCapAttr => (bool?)NativeValue.ToBool(GetPropertyRaw(_addSmimeCapAttr));
+
 }
 
 /// <summary>
-/// CmsRecipientInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CmsRecipientInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CmsRecipientInfo(
-    CmsKeyTransRecipientInfo? KeyTransInfo = null,
-    CmsKeyAgreeRecipientInfo? KeyAgreeInfo = null
-) : INapiRecord
+public sealed partial class CmsRecipientInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _keyTransInfoName => "keyTransInfo"u8;
-    private static ReadOnlySpan<byte> _keyAgreeInfoName => "keyAgreeInfo"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _keyTransInfoV = NativeValue.From(KeyTransInfo);
-        if (_keyTransInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyTransInfoName, _keyTransInfoV);
-        var _keyAgreeInfoV = NativeValue.From(KeyAgreeInfo);
-        if (_keyAgreeInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyAgreeInfoName, _keyAgreeInfoV);
-    }
+    public CmsRecipientInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _keyTransInfo => "keyTransInfo"u8;
+    private static ReadOnlySpan<byte> _keyAgreeInfo => "keyAgreeInfo"u8;
+    /// <summary>
+    /// keyTransInfo
+    /// </summary>
+    public CmsKeyTransRecipientInfo? KeyTransInfo => GetPropertyRaw(_keyTransInfo) == IntPtr.Zero ? null : new CmsKeyTransRecipientInfo(GetPropertyRaw(_keyTransInfo));
+
+    /// <summary>
+    /// keyAgreeInfo
+    /// </summary>
+    public CmsKeyAgreeRecipientInfo? KeyAgreeInfo => GetPropertyRaw(_keyAgreeInfo) == IntPtr.Zero ? null : new CmsKeyAgreeRecipientInfo(GetPropertyRaw(_keyAgreeInfo));
+
 }
 
 /// <summary>
-/// CmsGeneratorOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CmsGeneratorOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CmsGeneratorOptions(
-    global::HarmonyOS.ArkUI.CmsContentDataFormat? ContentDataFormat = null,
-    global::HarmonyOS.ArkUI.CmsFormat? OutFormat = null,
-    bool? IsDetached = null
-) : INapiRecord
+public sealed partial class CmsGeneratorOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _contentDataFormatName => "contentDataFormat"u8;
-    private static ReadOnlySpan<byte> _outFormatName => "outFormat"u8;
-    private static ReadOnlySpan<byte> _isDetachedName => "isDetached"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _contentDataFormatV = NativeValue.From(ContentDataFormat);
-        if (_contentDataFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _contentDataFormatName, _contentDataFormatV);
-        var _outFormatV = NativeValue.From(OutFormat);
-        if (_outFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _outFormatName, _outFormatV);
-        var _isDetachedV = NativeValue.From(IsDetached);
-        if (_isDetachedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isDetachedName, _isDetachedV);
-    }
+    public CmsGeneratorOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _contentDataFormat => "contentDataFormat"u8;
+    private static ReadOnlySpan<byte> _outFormat => "outFormat"u8;
+    private static ReadOnlySpan<byte> _isDetached => "isDetached"u8;
+    /// <summary>
+    /// contentDataFormat
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CmsContentDataFormat? ContentDataFormat => (global::HarmonyOS.ArkUI.CmsContentDataFormat?)(global::HarmonyOS.ArkUI.CmsContentDataFormat)NativeValue.ToInt(GetPropertyRaw(_contentDataFormat));
+
+    /// <summary>
+    /// outFormat
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CmsFormat? OutFormat => (global::HarmonyOS.ArkUI.CmsFormat?)(global::HarmonyOS.ArkUI.CmsFormat)NativeValue.ToInt(GetPropertyRaw(_outFormat));
+
+    /// <summary>
+    /// isDetached
+    /// </summary>
+    public bool? IsDetached => (bool?)NativeValue.ToBool(GetPropertyRaw(_isDetached));
+
 }
 
 /// <summary>
-/// CmsEnvelopedDecryptionConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CmsEnvelopedDecryptionConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CmsEnvelopedDecryptionConfig(
-    PrivateKeyInfo? KeyInfo = null,
-    X509Cert? Cert = null,
-    byte[]? EncryptedContentData = null,
-    global::HarmonyOS.ArkUI.CmsContentDataFormat? ContentDataFormat = null
-) : INapiRecord
+public sealed partial class CmsEnvelopedDecryptionConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _keyInfoName => "keyInfo"u8;
-    private static ReadOnlySpan<byte> _certName => "cert"u8;
-    private static ReadOnlySpan<byte> _encryptedContentDataName => "encryptedContentData"u8;
-    private static ReadOnlySpan<byte> _contentDataFormatName => "contentDataFormat"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _keyInfoV = NativeValue.From(KeyInfo);
-        if (_keyInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyInfoName, _keyInfoV);
-        var _certV = NativeValue.From(Cert);
-        if (_certV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certName, _certV);
-        var _encryptedContentDataV = NativeValue.From(EncryptedContentData);
-        if (_encryptedContentDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptedContentDataName, _encryptedContentDataV);
-        var _contentDataFormatV = NativeValue.From(ContentDataFormat);
-        if (_contentDataFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _contentDataFormatName, _contentDataFormatV);
-    }
+    public CmsEnvelopedDecryptionConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _keyInfo => "keyInfo"u8;
+    private static ReadOnlySpan<byte> _cert => "cert"u8;
+    private static ReadOnlySpan<byte> _encryptedContentData => "encryptedContentData"u8;
+    private static ReadOnlySpan<byte> _contentDataFormat => "contentDataFormat"u8;
+    /// <summary>
+    /// keyInfo
+    /// </summary>
+    public PrivateKeyInfo? KeyInfo => GetPropertyRaw(_keyInfo) == IntPtr.Zero ? null : new PrivateKeyInfo(GetPropertyRaw(_keyInfo));
+
+    /// <summary>
+    /// cert
+    /// </summary>
+    public X509Cert? Cert => GetPropertyRaw(_cert) == IntPtr.Zero ? null : new X509Cert(GetPropertyRaw(_cert));
+
+    /// <summary>
+    /// encryptedContentData
+    /// </summary>
+    public byte[] EncryptedContentData => ValueConverter.ConvertArray(GetPropertyRaw(_encryptedContentData), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// contentDataFormat
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CmsContentDataFormat? ContentDataFormat => (global::HarmonyOS.ArkUI.CmsContentDataFormat?)(global::HarmonyOS.ArkUI.CmsContentDataFormat)NativeValue.ToInt(GetPropertyRaw(_contentDataFormat));
+
 }
 
 /// <summary>
@@ -1759,38 +1766,37 @@ public sealed record PbesParams(
 }
 
 /// <summary>
-/// CmsKeyTransRecipientInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CmsKeyTransRecipientInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CmsKeyTransRecipientInfo(
-    X509Cert Cert
-) : INapiRecord
+public sealed partial class CmsKeyTransRecipientInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _certName => "cert"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _certV = NativeValue.From(Cert);
-        if (_certV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certName, _certV);
-    }
+    public CmsKeyTransRecipientInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _cert => "cert"u8;
+    /// <summary>
+    /// cert
+    /// </summary>
+    public X509Cert Cert => new X509Cert(GetPropertyRaw(_cert));
+
 }
 
 /// <summary>
-/// CmsKeyAgreeRecipientInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CmsKeyAgreeRecipientInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CmsKeyAgreeRecipientInfo(
-    X509Cert Cert,
-    global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm? DigestAlgorithm = null
-) : INapiRecord
+public sealed partial class CmsKeyAgreeRecipientInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _certName => "cert"u8;
-    private static ReadOnlySpan<byte> _digestAlgorithmName => "digestAlgorithm"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _certV = NativeValue.From(Cert);
-        if (_certV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certName, _certV);
-        var _digestAlgorithmV = NativeValue.From(DigestAlgorithm);
-        if (_digestAlgorithmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _digestAlgorithmName, _digestAlgorithmV);
-    }
+    public CmsKeyAgreeRecipientInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _cert => "cert"u8;
+    private static ReadOnlySpan<byte> _digestAlgorithm => "digestAlgorithm"u8;
+    /// <summary>
+    /// cert
+    /// </summary>
+    public X509Cert Cert => new X509Cert(GetPropertyRaw(_cert));
+
+    /// <summary>
+    /// digestAlgorithm
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm? DigestAlgorithm => (global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm?)(global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm)NativeValue.ToInt(GetPropertyRaw(_digestAlgorithm));
+
 }

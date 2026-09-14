@@ -391,24 +391,24 @@ public sealed partial class ProvisionRequest : JsObject
 }
 
 /// <summary>
-/// EventInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// EventInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record DrmEventInfo(
-    byte[] Info,
-    string ExtraInfo
-) : INapiRecord
+public sealed partial class DrmEventInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _infoName => "info"u8;
-    private static ReadOnlySpan<byte> _extraInfoName => "extraInfo"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _infoV = NativeValue.From(Info);
-        if (_infoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _infoName, _infoV);
-        var _extraInfoV = NativeValue.From(ExtraInfo);
-        if (_extraInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extraInfoName, _extraInfoV);
-    }
+    public DrmEventInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _info => "info"u8;
+    private static ReadOnlySpan<byte> _extraInfo => "extraInfo"u8;
+    /// <summary>
+    /// info
+    /// </summary>
+    public byte[] Info => ValueConverter.ConvertArray(GetPropertyRaw(_info), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// extraInfo
+    /// </summary>
+    public string ExtraInfo => NativeValue.ToString(GetPropertyRaw(_extraInfo)) ?? string.Empty;
+
 }
 
 /// <summary>
@@ -669,24 +669,24 @@ public sealed partial class MediaKeyRequest : JsObject
 }
 
 /// <summary>
-/// OptionsData（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// OptionsData 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record OptionsData(
-    string Name,
-    string Value
-) : INapiRecord
+public sealed partial class OptionsData : JsObject
 {
-    private static ReadOnlySpan<byte> _nameName => "name"u8;
-    private static ReadOnlySpan<byte> _valueName => "value"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _nameV = NativeValue.From(Name);
-        if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
-        var _valueV = NativeValue.From(Value);
-        if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
-    }
+    public OptionsData(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _value => "value"u8;
+    /// <summary>
+    /// name
+    /// </summary>
+    public string Name => NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+
+    /// <summary>
+    /// value
+    /// </summary>
+    public string Value => NativeValue.ToString(GetPropertyRaw(_value)) ?? string.Empty;
+
 }
 
 /// <summary>
@@ -711,22 +711,22 @@ public sealed partial class MediaKeyStatus : JsObject
 }
 
 /// <summary>
-/// KeysInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// KeysInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record KeysInfo(
-    byte[] KeyId,
-    string Value
-) : INapiRecord
+public sealed partial class KeysInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _keyIdName => "keyId"u8;
-    private static ReadOnlySpan<byte> _valueName => "value"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _keyIdV = NativeValue.From(KeyId);
-        if (_keyIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyIdName, _keyIdV);
-        var _valueV = NativeValue.From(Value);
-        if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
-    }
+    public KeysInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _keyId => "keyId"u8;
+    private static ReadOnlySpan<byte> _value => "value"u8;
+    /// <summary>
+    /// keyId
+    /// </summary>
+    public byte[] KeyId => ValueConverter.ConvertArray(GetPropertyRaw(_keyId), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// value
+    /// </summary>
+    public string Value => NativeValue.ToString(GetPropertyRaw(_value)) ?? string.Empty;
+
 }

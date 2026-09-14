@@ -125,32 +125,34 @@ public sealed partial class WebExtensionConnectionCallback : JsObject
 }
 
 /// <summary>
-/// ConnectionNativeInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ConnectionNativeInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record ConnectionNativeInfo(
-    double ConnectionId,
-    string BundleName,
-    string ExtensionOrigin,
-    double ExtensionPid
-) : INapiRecord
+public sealed partial class ConnectionNativeInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _connectionIdName => "connectionId"u8;
-    private static ReadOnlySpan<byte> _bundleNameName => "bundleName"u8;
-    private static ReadOnlySpan<byte> _extensionOriginName => "extensionOrigin"u8;
-    private static ReadOnlySpan<byte> _extensionPidName => "extensionPid"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _connectionIdV = NativeValue.From(ConnectionId);
-        if (_connectionIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _connectionIdName, _connectionIdV);
-        var _bundleNameV = NativeValue.From(BundleName);
-        if (_bundleNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bundleNameName, _bundleNameV);
-        var _extensionOriginV = NativeValue.From(ExtensionOrigin);
-        if (_extensionOriginV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extensionOriginName, _extensionOriginV);
-        var _extensionPidV = NativeValue.From(ExtensionPid);
-        if (_extensionPidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extensionPidName, _extensionPidV);
-    }
+    public ConnectionNativeInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _connectionId => "connectionId"u8;
+    private static ReadOnlySpan<byte> _bundleName => "bundleName"u8;
+    private static ReadOnlySpan<byte> _extensionOrigin => "extensionOrigin"u8;
+    private static ReadOnlySpan<byte> _extensionPid => "extensionPid"u8;
+    /// <summary>
+    /// connectionId
+    /// </summary>
+    public double ConnectionId => NativeValue.ToDouble(GetPropertyRaw(_connectionId));
+
+    /// <summary>
+    /// bundleName
+    /// </summary>
+    public string BundleName => NativeValue.ToString(GetPropertyRaw(_bundleName)) ?? string.Empty;
+
+    /// <summary>
+    /// extensionOrigin
+    /// </summary>
+    public string ExtensionOrigin => NativeValue.ToString(GetPropertyRaw(_extensionOrigin)) ?? string.Empty;
+
+    /// <summary>
+    /// extensionPid
+    /// </summary>
+    public double ExtensionPid => NativeValue.ToDouble(GetPropertyRaw(_extensionPid));
+
 }

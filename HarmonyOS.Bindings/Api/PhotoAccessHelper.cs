@@ -677,81 +677,84 @@ public sealed partial class MediaAlbumChangeRequest : JsObject
 }
 
 /// <summary>
-/// CreateOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CreateOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CreateOptions(
-    string? Title = null,
-    global::HarmonyOS.ArkUI.PhotoSubtype? Subtype = null
-) : INapiRecord
+public sealed partial class CreateOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _titleName => "title"u8;
-    private static ReadOnlySpan<byte> _subtypeName => "subtype"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _titleV = NativeValue.From(Title);
-        if (_titleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _titleName, _titleV);
-        var _subtypeV = NativeValue.From(Subtype);
-        if (_subtypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _subtypeName, _subtypeV);
-    }
+    public CreateOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _title => "title"u8;
+    private static ReadOnlySpan<byte> _subtype => "subtype"u8;
+    /// <summary>
+    /// title
+    /// </summary>
+    public string? Title => (string?)NativeValue.ToString(GetPropertyRaw(_title)) ?? string.Empty;
+
+    /// <summary>
+    /// subtype
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PhotoSubtype? Subtype => (global::HarmonyOS.ArkUI.PhotoSubtype?)(global::HarmonyOS.ArkUI.PhotoSubtype)NativeValue.ToInt(GetPropertyRaw(_subtype));
+
 }
 
 /// <summary>
-/// PhotoCreationConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PhotoCreationConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PhotoCreationConfig(
-    string? Title,
-    string FileNameExtension,
-    global::HarmonyOS.ArkUI.PhotoType PhotoType,
-    global::HarmonyOS.ArkUI.PhotoSubtype? Subtype = null
-) : INapiRecord
+public sealed partial class PhotoCreationConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _titleName => "title"u8;
-    private static ReadOnlySpan<byte> _fileNameExtensionName => "fileNameExtension"u8;
-    private static ReadOnlySpan<byte> _photoTypeName => "photoType"u8;
-    private static ReadOnlySpan<byte> _subtypeName => "subtype"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _titleV = NativeValue.From(Title);
-        if (_titleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _titleName, _titleV);
-        var _fileNameExtensionV = NativeValue.From(FileNameExtension);
-        if (_fileNameExtensionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileNameExtensionName, _fileNameExtensionV);
-        var _photoTypeV = NativeValue.From(PhotoType);
-        if (_photoTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _photoTypeName, _photoTypeV);
-        var _subtypeV = NativeValue.From(Subtype);
-        if (_subtypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _subtypeName, _subtypeV);
-    }
+    public PhotoCreationConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _title => "title"u8;
+    private static ReadOnlySpan<byte> _fileNameExtension => "fileNameExtension"u8;
+    private static ReadOnlySpan<byte> _photoType => "photoType"u8;
+    private static ReadOnlySpan<byte> _subtype => "subtype"u8;
+    /// <summary>
+    /// title
+    /// </summary>
+    public string? Title => (string?)NativeValue.ToString(GetPropertyRaw(_title)) ?? string.Empty;
+
+    /// <summary>
+    /// fileNameExtension
+    /// </summary>
+    public string FileNameExtension => NativeValue.ToString(GetPropertyRaw(_fileNameExtension)) ?? string.Empty;
+
+    /// <summary>
+    /// photoType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PhotoType PhotoType => (global::HarmonyOS.ArkUI.PhotoType)NativeValue.ToInt(GetPropertyRaw(_photoType));
+
+    /// <summary>
+    /// subtype
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PhotoSubtype? Subtype => (global::HarmonyOS.ArkUI.PhotoSubtype?)(global::HarmonyOS.ArkUI.PhotoSubtype)NativeValue.ToInt(GetPropertyRaw(_subtype));
+
 }
 
 /// <summary>
-/// CreationSetting（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CreationSetting 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CreationSetting(
-    string? Title,
-    string FileNameExtension,
-    global::HarmonyOS.ArkUI.PhotoType PhotoType
-) : INapiRecord
+public sealed partial class CreationSetting : JsObject
 {
-    private static ReadOnlySpan<byte> _titleName => "title"u8;
-    private static ReadOnlySpan<byte> _fileNameExtensionName => "fileNameExtension"u8;
-    private static ReadOnlySpan<byte> _photoTypeName => "photoType"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _titleV = NativeValue.From(Title);
-        if (_titleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _titleName, _titleV);
-        var _fileNameExtensionV = NativeValue.From(FileNameExtension);
-        if (_fileNameExtensionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileNameExtensionName, _fileNameExtensionV);
-        var _photoTypeV = NativeValue.From(PhotoType);
-        if (_photoTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _photoTypeName, _photoTypeV);
-    }
+    public CreationSetting(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _title => "title"u8;
+    private static ReadOnlySpan<byte> _fileNameExtension => "fileNameExtension"u8;
+    private static ReadOnlySpan<byte> _photoType => "photoType"u8;
+    /// <summary>
+    /// title
+    /// </summary>
+    public string? Title => (string?)NativeValue.ToString(GetPropertyRaw(_title)) ?? string.Empty;
+
+    /// <summary>
+    /// fileNameExtension
+    /// </summary>
+    public string FileNameExtension => NativeValue.ToString(GetPropertyRaw(_fileNameExtension)) ?? string.Empty;
+
+    /// <summary>
+    /// photoType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PhotoType PhotoType => (global::HarmonyOS.ArkUI.PhotoType)NativeValue.ToInt(GetPropertyRaw(_photoType));
+
 }
 
 /// <summary>
@@ -776,19 +779,18 @@ public sealed partial class RequestReadPermissionResult : JsObject
 }
 
 /// <summary>
-/// MediaChangeRequest（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// MediaChangeRequest 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record MediaChangeRequest(
-    string Comment
-) : INapiRecord
+public sealed partial class MediaChangeRequest : JsObject
 {
-    private static ReadOnlySpan<byte> _commentName => "comment"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _commentV = NativeValue.From(Comment);
-        if (_commentV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _commentName, _commentV);
-    }
+    public MediaChangeRequest(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _comment => "comment"u8;
+    /// <summary>
+    /// comment
+    /// </summary>
+    public string Comment => NativeValue.ToString(GetPropertyRaw(_comment)) ?? string.Empty;
+
 }
 
 /// <summary>

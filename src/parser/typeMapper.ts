@@ -388,6 +388,15 @@ export class TypeMapper {
         return this.TYPE_MAP[typescript];
     }
 
+    /** 反查映射到指定 C# 名的全部源 TS 名（泄漏映射验证降级源名——降映射结果名对 mapType 无效） */
+    static findSources(csharp: string): string[] {
+        const sources: string[] = [];
+        for (const key of Object.keys(this.TYPE_MAP)) {
+            if (this.TYPE_MAP[key].csharp === csharp) sources.push(key);
+        }
+        return sources;
+    }
+
     static extractBaseType(typeWithUnion: string): string {
         const parts = typeWithUnion.split('|').map(p => p.trim());
         if (parts.length > 0) {

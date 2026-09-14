@@ -1604,96 +1604,102 @@ public sealed partial class BLEConnectChangedState : JsObject
 }
 
 /// <summary>
-/// AdvertiseSetting（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AdvertiseSetting 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record BluetoothAdvertiseSetting(
-    double? Interval = null,
-    double? TxPower = null,
-    bool? Connectable = null
-) : INapiRecord
+public sealed partial class BluetoothAdvertiseSetting : JsObject
 {
-    private static ReadOnlySpan<byte> _intervalName => "interval"u8;
-    private static ReadOnlySpan<byte> _txPowerName => "txPower"u8;
-    private static ReadOnlySpan<byte> _connectableName => "connectable"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _intervalV = NativeValue.From(Interval);
-        if (_intervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
-        var _txPowerV = NativeValue.From(TxPower);
-        if (_txPowerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _txPowerName, _txPowerV);
-        var _connectableV = NativeValue.From(Connectable);
-        if (_connectableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _connectableName, _connectableV);
-    }
+    public BluetoothAdvertiseSetting(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _interval => "interval"u8;
+    private static ReadOnlySpan<byte> _txPower => "txPower"u8;
+    private static ReadOnlySpan<byte> _connectable => "connectable"u8;
+    /// <summary>
+    /// interval
+    /// </summary>
+    public double? Interval => (double?)NativeValue.ToDouble(GetPropertyRaw(_interval));
+
+    /// <summary>
+    /// txPower
+    /// </summary>
+    public double? TxPower => (double?)NativeValue.ToDouble(GetPropertyRaw(_txPower));
+
+    /// <summary>
+    /// connectable
+    /// </summary>
+    public bool? Connectable => (bool?)NativeValue.ToBool(GetPropertyRaw(_connectable));
+
 }
 
 /// <summary>
-/// NotifyCharacteristic（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// NotifyCharacteristic 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record BluetoothNotifyCharacteristic(
-    string ServiceUuid,
-    string CharacteristicUuid,
-    byte[] CharacteristicValue,
-    bool Confirm
-) : INapiRecord
+public sealed partial class BluetoothNotifyCharacteristic : JsObject
 {
-    private static ReadOnlySpan<byte> _serviceUuidName => "serviceUuid"u8;
-    private static ReadOnlySpan<byte> _characteristicUuidName => "characteristicUuid"u8;
-    private static ReadOnlySpan<byte> _characteristicValueName => "characteristicValue"u8;
-    private static ReadOnlySpan<byte> _confirmName => "confirm"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _serviceUuidV = NativeValue.From(ServiceUuid);
-        if (_serviceUuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuidName, _serviceUuidV);
-        var _characteristicUuidV = NativeValue.From(CharacteristicUuid);
-        if (_characteristicUuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _characteristicUuidName, _characteristicUuidV);
-        var _characteristicValueV = NativeValue.From(CharacteristicValue);
-        if (_characteristicValueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _characteristicValueName, _characteristicValueV);
-        var _confirmV = NativeValue.From(Confirm);
-        if (_confirmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _confirmName, _confirmV);
-    }
+    public BluetoothNotifyCharacteristic(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _serviceUuid => "serviceUuid"u8;
+    private static ReadOnlySpan<byte> _characteristicUuid => "characteristicUuid"u8;
+    private static ReadOnlySpan<byte> _characteristicValue => "characteristicValue"u8;
+    private static ReadOnlySpan<byte> _confirm => "confirm"u8;
+    /// <summary>
+    /// serviceUuid
+    /// </summary>
+    public string ServiceUuid => NativeValue.ToString(GetPropertyRaw(_serviceUuid)) ?? string.Empty;
+
+    /// <summary>
+    /// characteristicUuid
+    /// </summary>
+    public string CharacteristicUuid => NativeValue.ToString(GetPropertyRaw(_characteristicUuid)) ?? string.Empty;
+
+    /// <summary>
+    /// characteristicValue
+    /// </summary>
+    public byte[] CharacteristicValue => ValueConverter.ConvertArray(GetPropertyRaw(_characteristicValue), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// confirm
+    /// </summary>
+    public bool Confirm => NativeValue.ToBool(GetPropertyRaw(_confirm));
+
 }
 
 /// <summary>
-/// ServerResponse（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ServerResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record BluetoothServerResponse(
-    string DeviceId,
-    double TransId,
-    double Status,
-    double Offset,
-    byte[] Value
-) : INapiRecord
+public sealed partial class BluetoothServerResponse : JsObject
 {
-    private static ReadOnlySpan<byte> _deviceIdName => "deviceId"u8;
-    private static ReadOnlySpan<byte> _transIdName => "transId"u8;
-    private static ReadOnlySpan<byte> _statusName => "status"u8;
-    private static ReadOnlySpan<byte> _offsetName => "offset"u8;
-    private static ReadOnlySpan<byte> _valueName => "value"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _deviceIdV = NativeValue.From(DeviceId);
-        if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
-        var _transIdV = NativeValue.From(TransId);
-        if (_transIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _transIdName, _transIdV);
-        var _statusV = NativeValue.From(Status);
-        if (_statusV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _statusName, _statusV);
-        var _offsetV = NativeValue.From(Offset);
-        if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
-        var _valueV = NativeValue.From(Value);
-        if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
-    }
+    public BluetoothServerResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
+    private static ReadOnlySpan<byte> _transId => "transId"u8;
+    private static ReadOnlySpan<byte> _status => "status"u8;
+    private static ReadOnlySpan<byte> _offset => "offset"u8;
+    private static ReadOnlySpan<byte> _value => "value"u8;
+    /// <summary>
+    /// deviceId
+    /// </summary>
+    public string DeviceId => NativeValue.ToString(GetPropertyRaw(_deviceId)) ?? string.Empty;
+
+    /// <summary>
+    /// transId
+    /// </summary>
+    public double TransId => NativeValue.ToDouble(GetPropertyRaw(_transId));
+
+    /// <summary>
+    /// status
+    /// </summary>
+    public double Status => NativeValue.ToDouble(GetPropertyRaw(_status));
+
+    /// <summary>
+    /// offset
+    /// </summary>
+    public double Offset => NativeValue.ToDouble(GetPropertyRaw(_offset));
+
+    /// <summary>
+    /// value
+    /// </summary>
+    public byte[] Value => ValueConverter.ConvertArray(GetPropertyRaw(_value), static e => ValueConverter.Convert<byte>(e));
+
 }
 
 /// <summary>

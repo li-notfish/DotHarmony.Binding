@@ -2503,39 +2503,42 @@ public sealed partial class CameraSize : JsObject
 }
 
 /// <summary>
-/// PhotoCaptureSetting（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PhotoCaptureSetting 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PhotoCaptureSetting(
-    global::HarmonyOS.ArkUI.QualityLevel? Quality = null,
-    global::HarmonyOS.ArkUI.ImageRotation? Rotation = null,
-    CameraLocation? Location = null,
-    bool? Mirror = null,
-    double? CompressionQuality = null
-) : INapiRecord
+public sealed partial class PhotoCaptureSetting : JsObject
 {
-    private static ReadOnlySpan<byte> _qualityName => "quality"u8;
-    private static ReadOnlySpan<byte> _rotationName => "rotation"u8;
-    private static ReadOnlySpan<byte> _locationName => "location"u8;
-    private static ReadOnlySpan<byte> _mirrorName => "mirror"u8;
-    private static ReadOnlySpan<byte> _compressionQualityName => "compressionQuality"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _qualityV = NativeValue.From(Quality);
-        if (_qualityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _qualityName, _qualityV);
-        var _rotationV = NativeValue.From(Rotation);
-        if (_rotationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rotationName, _rotationV);
-        var _locationV = NativeValue.From(Location);
-        if (_locationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _locationName, _locationV);
-        var _mirrorV = NativeValue.From(Mirror);
-        if (_mirrorV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mirrorName, _mirrorV);
-        var _compressionQualityV = NativeValue.From(CompressionQuality);
-        if (_compressionQualityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _compressionQualityName, _compressionQualityV);
-    }
+    public PhotoCaptureSetting(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _quality => "quality"u8;
+    private static ReadOnlySpan<byte> _rotation => "rotation"u8;
+    private static ReadOnlySpan<byte> _location => "location"u8;
+    private static ReadOnlySpan<byte> _mirror => "mirror"u8;
+    private static ReadOnlySpan<byte> _compressionQuality => "compressionQuality"u8;
+    /// <summary>
+    /// quality
+    /// </summary>
+    public global::HarmonyOS.ArkUI.QualityLevel? Quality => (global::HarmonyOS.ArkUI.QualityLevel?)(global::HarmonyOS.ArkUI.QualityLevel)NativeValue.ToInt(GetPropertyRaw(_quality));
+
+    /// <summary>
+    /// rotation
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ImageRotation? Rotation => (global::HarmonyOS.ArkUI.ImageRotation?)(global::HarmonyOS.ArkUI.ImageRotation)NativeValue.ToInt(GetPropertyRaw(_rotation));
+
+    /// <summary>
+    /// location
+    /// </summary>
+    public CameraLocation? Location => GetPropertyRaw(_location) == IntPtr.Zero ? null : new CameraLocation(GetPropertyRaw(_location));
+
+    /// <summary>
+    /// mirror
+    /// </summary>
+    public bool? Mirror => (bool?)NativeValue.ToBool(GetPropertyRaw(_mirror));
+
+    /// <summary>
+    /// compressionQuality
+    /// </summary>
+    public double? CompressionQuality => (double?)NativeValue.ToDouble(GetPropertyRaw(_compressionQuality));
+
 }
 
 /// <summary>
@@ -2578,27 +2581,28 @@ public sealed partial class CameraOutput : JsObject
 }
 
 /// <summary>
-/// Location（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// Location 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CameraLocation(
-    double Latitude,
-    double Longitude,
-    double Altitude
-) : INapiRecord
+public sealed partial class CameraLocation : JsObject
 {
-    private static ReadOnlySpan<byte> _latitudeName => "latitude"u8;
-    private static ReadOnlySpan<byte> _longitudeName => "longitude"u8;
-    private static ReadOnlySpan<byte> _altitudeName => "altitude"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _latitudeV = NativeValue.From(Latitude);
-        if (_latitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _latitudeName, _latitudeV);
-        var _longitudeV = NativeValue.From(Longitude);
-        if (_longitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _longitudeName, _longitudeV);
-        var _altitudeV = NativeValue.From(Altitude);
-        if (_altitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _altitudeName, _altitudeV);
-    }
+    public CameraLocation(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _latitude => "latitude"u8;
+    private static ReadOnlySpan<byte> _longitude => "longitude"u8;
+    private static ReadOnlySpan<byte> _altitude => "altitude"u8;
+    /// <summary>
+    /// latitude
+    /// </summary>
+    public double Latitude => NativeValue.ToDouble(GetPropertyRaw(_latitude));
+
+    /// <summary>
+    /// longitude
+    /// </summary>
+    public double Longitude => NativeValue.ToDouble(GetPropertyRaw(_longitude));
+
+    /// <summary>
+    /// altitude
+    /// </summary>
+    public double Altitude => NativeValue.ToDouble(GetPropertyRaw(_altitude));
+
 }

@@ -88,87 +88,100 @@ public static unsafe partial class Measure
 }
 
 /// <summary>
-/// MeasureOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// MeasureOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record MeasureOptions(
-    string TextContent,
-    double? ConstraintWidth = null,
-    double? FontSize = null,
-    double? FontStyle = null,
-    double? FontWeight = null,
-    string? FontFamily = null,
-    double? LetterSpacing = null,
-    double? TextAlign = null,
-    double? Overflow = null,
-    double? MaxLines = null,
-    double? LineHeight = null,
-    double? BaselineOffset = null,
-    double? TextCase = null,
-    double? TextIndent = null,
-    global::HarmonyOS.ArkUI.WordBreak? WordBreak = null
-) : INapiRecord
+public sealed partial class MeasureOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _textContentName => "textContent"u8;
-    private static ReadOnlySpan<byte> _constraintWidthName => "constraintWidth"u8;
-    private static ReadOnlySpan<byte> _fontSizeName => "fontSize"u8;
-    private static ReadOnlySpan<byte> _fontStyleName => "fontStyle"u8;
-    private static ReadOnlySpan<byte> _fontWeightName => "fontWeight"u8;
-    private static ReadOnlySpan<byte> _fontFamilyName => "fontFamily"u8;
-    private static ReadOnlySpan<byte> _letterSpacingName => "letterSpacing"u8;
-    private static ReadOnlySpan<byte> _textAlignName => "textAlign"u8;
-    private static ReadOnlySpan<byte> _overflowName => "overflow"u8;
-    private static ReadOnlySpan<byte> _maxLinesName => "maxLines"u8;
-    private static ReadOnlySpan<byte> _lineHeightName => "lineHeight"u8;
-    private static ReadOnlySpan<byte> _baselineOffsetName => "baselineOffset"u8;
-    private static ReadOnlySpan<byte> _textCaseName => "textCase"u8;
-    private static ReadOnlySpan<byte> _textIndentName => "textIndent"u8;
-    private static ReadOnlySpan<byte> _wordBreakName => "wordBreak"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _textContentV = NativeValue.From(TextContent);
-        if (_textContentV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _textContentName, _textContentV);
-        var _constraintWidthV = NativeValue.From(ConstraintWidth);
-        if (_constraintWidthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _constraintWidthName, _constraintWidthV);
-        var _fontSizeV = NativeValue.From(FontSize);
-        if (_fontSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fontSizeName, _fontSizeV);
-        var _fontStyleV = NativeValue.From(FontStyle);
-        if (_fontStyleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fontStyleName, _fontStyleV);
-        var _fontWeightV = NativeValue.From(FontWeight);
-        if (_fontWeightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fontWeightName, _fontWeightV);
-        var _fontFamilyV = NativeValue.From(FontFamily);
-        if (_fontFamilyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fontFamilyName, _fontFamilyV);
-        var _letterSpacingV = NativeValue.From(LetterSpacing);
-        if (_letterSpacingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _letterSpacingName, _letterSpacingV);
-        var _textAlignV = NativeValue.From(TextAlign);
-        if (_textAlignV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _textAlignName, _textAlignV);
-        var _overflowV = NativeValue.From(Overflow);
-        if (_overflowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _overflowName, _overflowV);
-        var _maxLinesV = NativeValue.From(MaxLines);
-        if (_maxLinesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxLinesName, _maxLinesV);
-        var _lineHeightV = NativeValue.From(LineHeight);
-        if (_lineHeightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _lineHeightName, _lineHeightV);
-        var _baselineOffsetV = NativeValue.From(BaselineOffset);
-        if (_baselineOffsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _baselineOffsetName, _baselineOffsetV);
-        var _textCaseV = NativeValue.From(TextCase);
-        if (_textCaseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _textCaseName, _textCaseV);
-        var _textIndentV = NativeValue.From(TextIndent);
-        if (_textIndentV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _textIndentName, _textIndentV);
-        var _wordBreakV = NativeValue.From(WordBreak);
-        if (_wordBreakV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _wordBreakName, _wordBreakV);
-    }
+    public MeasureOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _textContent => "textContent"u8;
+    private static ReadOnlySpan<byte> _constraintWidth => "constraintWidth"u8;
+    private static ReadOnlySpan<byte> _fontSize => "fontSize"u8;
+    private static ReadOnlySpan<byte> _fontStyle => "fontStyle"u8;
+    private static ReadOnlySpan<byte> _fontWeight => "fontWeight"u8;
+    private static ReadOnlySpan<byte> _fontFamily => "fontFamily"u8;
+    private static ReadOnlySpan<byte> _letterSpacing => "letterSpacing"u8;
+    private static ReadOnlySpan<byte> _textAlign => "textAlign"u8;
+    private static ReadOnlySpan<byte> _overflow => "overflow"u8;
+    private static ReadOnlySpan<byte> _maxLines => "maxLines"u8;
+    private static ReadOnlySpan<byte> _lineHeight => "lineHeight"u8;
+    private static ReadOnlySpan<byte> _baselineOffset => "baselineOffset"u8;
+    private static ReadOnlySpan<byte> _textCase => "textCase"u8;
+    private static ReadOnlySpan<byte> _textIndent => "textIndent"u8;
+    private static ReadOnlySpan<byte> _wordBreak => "wordBreak"u8;
+    /// <summary>
+    /// textContent
+    /// </summary>
+    public string TextContent => NativeValue.ToString(GetPropertyRaw(_textContent)) ?? string.Empty;
+
+    /// <summary>
+    /// constraintWidth
+    /// </summary>
+    public double? ConstraintWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_constraintWidth));
+
+    /// <summary>
+    /// fontSize
+    /// </summary>
+    public double? FontSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_fontSize));
+
+    /// <summary>
+    /// fontStyle
+    /// </summary>
+    public double? FontStyle => (double?)NativeValue.ToDouble(GetPropertyRaw(_fontStyle));
+
+    /// <summary>
+    /// fontWeight
+    /// </summary>
+    public double? FontWeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_fontWeight));
+
+    /// <summary>
+    /// fontFamily
+    /// </summary>
+    public string? FontFamily => (string?)NativeValue.ToString(GetPropertyRaw(_fontFamily)) ?? string.Empty;
+
+    /// <summary>
+    /// letterSpacing
+    /// </summary>
+    public double? LetterSpacing => (double?)NativeValue.ToDouble(GetPropertyRaw(_letterSpacing));
+
+    /// <summary>
+    /// textAlign
+    /// </summary>
+    public double? TextAlign => (double?)NativeValue.ToDouble(GetPropertyRaw(_textAlign));
+
+    /// <summary>
+    /// overflow
+    /// </summary>
+    public double? Overflow => (double?)NativeValue.ToDouble(GetPropertyRaw(_overflow));
+
+    /// <summary>
+    /// maxLines
+    /// </summary>
+    public double? MaxLines => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxLines));
+
+    /// <summary>
+    /// lineHeight
+    /// </summary>
+    public double? LineHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_lineHeight));
+
+    /// <summary>
+    /// baselineOffset
+    /// </summary>
+    public double? BaselineOffset => (double?)NativeValue.ToDouble(GetPropertyRaw(_baselineOffset));
+
+    /// <summary>
+    /// textCase
+    /// </summary>
+    public double? TextCase => (double?)NativeValue.ToDouble(GetPropertyRaw(_textCase));
+
+    /// <summary>
+    /// textIndent
+    /// </summary>
+    public double? TextIndent => (double?)NativeValue.ToDouble(GetPropertyRaw(_textIndent));
+
+    /// <summary>
+    /// wordBreak
+    /// </summary>
+    public IntPtr WordBreak => GetPropertyRaw(_wordBreak);
+
 }

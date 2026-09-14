@@ -799,9 +799,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// getUIContext
     /// </summary>
-    public IntPtr GetUiContext()
+    public global::HarmonyOS.Bindings.Api.UIContextObject GetUiContext()
     {
-        return CallMethod<IntPtr>(_getUIContext);
+        return CallMethod(_getUIContext, static h => new global::HarmonyOS.Bindings.Api.UIContextObject(h));
     }
 
     /// <summary>
@@ -2788,67 +2788,32 @@ public sealed partial class WindowRectChangeOptions : JsObject
 }
 
 /// <summary>
-/// ShowWindowOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record ShowWindowOptions(
-    bool? FocusOnShow = null
-) : INapiRecord
-{
-    private static ReadOnlySpan<byte> _focusOnShowName => "focusOnShow"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _focusOnShowV = NativeValue.From(FocusOnShow);
-        if (_focusOnShowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _focusOnShowName, _focusOnShowV);
-    }
-}
-
-/// <summary>
-/// MoveConfiguration（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record MoveConfiguration(
-    double? DisplayId = null
-) : INapiRecord
-{
-    private static ReadOnlySpan<byte> _displayIdName => "displayId"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _displayIdV = NativeValue.From(DisplayId);
-        if (_displayIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV);
-    }
-}
-
-/// <summary>
-/// Rect 实例包装（@ohos 命名空间内嵌套接口）。
+/// ShowWindowOptions 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class WindowRect2 : JsObject
+public sealed partial class ShowWindowOptions : JsObject
 {
-    public WindowRect2(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _left => "left"u8;
-    private static ReadOnlySpan<byte> _top => "top"u8;
-    private static ReadOnlySpan<byte> _width => "width"u8;
-    private static ReadOnlySpan<byte> _height => "height"u8;
+    public ShowWindowOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _focusOnShow => "focusOnShow"u8;
     /// <summary>
-    /// left
+    /// focusOnShow
     /// </summary>
-    public double Left => NativeValue.ToDouble(GetPropertyRaw(_left));
+    public bool? FocusOnShow => (bool?)NativeValue.ToBool(GetPropertyRaw(_focusOnShow));
 
-    /// <summary>
-    /// top
-    /// </summary>
-    public double Top => NativeValue.ToDouble(GetPropertyRaw(_top));
+}
 
+/// <summary>
+/// MoveConfiguration 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class MoveConfiguration : JsObject
+{
+    public MoveConfiguration(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _displayId => "displayId"u8;
     /// <summary>
-    /// width
+    /// displayId
     /// </summary>
-    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
-
-    /// <summary>
-    /// height
-    /// </summary>
-    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
 
 }
 
@@ -2970,6 +2935,39 @@ public sealed partial class WindowProperties : JsObject
 }
 
 /// <summary>
+/// Rect 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowRect2 : JsObject
+{
+    public WindowRect2(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _left => "left"u8;
+    private static ReadOnlySpan<byte> _top => "top"u8;
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// left
+    /// </summary>
+    public double Left => NativeValue.ToDouble(GetPropertyRaw(_left));
+
+    /// <summary>
+    /// top
+    /// </summary>
+    public double Top => NativeValue.ToDouble(GetPropertyRaw(_top));
+
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+}
+
+/// <summary>
 /// WindowDensityInfo 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -3084,29 +3082,30 @@ public sealed partial class OrientationResult : JsObject
 }
 
 /// <summary>
-/// MaximizeOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// MaximizeOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record MaximizeOptions(
-    global::HarmonyOS.ArkUI.MaximizePresentation? MaximizePresentation = null,
-    global::HarmonyOS.ArkUI.AcrossDisplayPresentation? AcrossDisplayPresentation = null,
-    WindowSnapshotAnimationConfig? SnapshotAnimationConfig = null
-) : INapiRecord
+public sealed partial class MaximizeOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _maximizePresentationName => "maximizePresentation"u8;
-    private static ReadOnlySpan<byte> _acrossDisplayPresentationName => "acrossDisplayPresentation"u8;
-    private static ReadOnlySpan<byte> _snapshotAnimationConfigName => "snapshotAnimationConfig"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _maximizePresentationV = NativeValue.From(MaximizePresentation);
-        if (_maximizePresentationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maximizePresentationName, _maximizePresentationV);
-        var _acrossDisplayPresentationV = NativeValue.From(AcrossDisplayPresentation);
-        if (_acrossDisplayPresentationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _acrossDisplayPresentationName, _acrossDisplayPresentationV);
-        var _snapshotAnimationConfigV = NativeValue.From(SnapshotAnimationConfig);
-        if (_snapshotAnimationConfigV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _snapshotAnimationConfigName, _snapshotAnimationConfigV);
-    }
+    public MaximizeOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _maximizePresentation => "maximizePresentation"u8;
+    private static ReadOnlySpan<byte> _acrossDisplayPresentation => "acrossDisplayPresentation"u8;
+    private static ReadOnlySpan<byte> _snapshotAnimationConfig => "snapshotAnimationConfig"u8;
+    /// <summary>
+    /// maximizePresentation
+    /// </summary>
+    public global::HarmonyOS.ArkUI.MaximizePresentation? MaximizePresentation => (global::HarmonyOS.ArkUI.MaximizePresentation?)(global::HarmonyOS.ArkUI.MaximizePresentation)NativeValue.ToInt(GetPropertyRaw(_maximizePresentation));
+
+    /// <summary>
+    /// acrossDisplayPresentation
+    /// </summary>
+    public global::HarmonyOS.ArkUI.AcrossDisplayPresentation? AcrossDisplayPresentation => (global::HarmonyOS.ArkUI.AcrossDisplayPresentation?)(global::HarmonyOS.ArkUI.AcrossDisplayPresentation)NativeValue.ToInt(GetPropertyRaw(_acrossDisplayPresentation));
+
+    /// <summary>
+    /// snapshotAnimationConfig
+    /// </summary>
+    public WindowSnapshotAnimationConfig? SnapshotAnimationConfig => GetPropertyRaw(_snapshotAnimationConfig) == IntPtr.Zero ? null : new WindowSnapshotAnimationConfig(GetPropertyRaw(_snapshotAnimationConfig));
+
 }
 
 /// <summary>
@@ -3149,24 +3148,24 @@ public sealed partial class WindowLimits : JsObject
 }
 
 /// <summary>
-/// WindowSnapshotAnimationConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// WindowSnapshotAnimationConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record WindowSnapshotAnimationConfig(
-    double? Duration = null,
-    double? Delay = null
-) : INapiRecord
+public sealed partial class WindowSnapshotAnimationConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _durationName => "duration"u8;
-    private static ReadOnlySpan<byte> _delayName => "delay"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _durationV = NativeValue.From(Duration);
-        if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
-        var _delayV = NativeValue.From(Delay);
-        if (_delayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _delayName, _delayV);
-    }
+    public WindowSnapshotAnimationConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _duration => "duration"u8;
+    private static ReadOnlySpan<byte> _delay => "delay"u8;
+    /// <summary>
+    /// duration
+    /// </summary>
+    public double? Duration => (double?)NativeValue.ToDouble(GetPropertyRaw(_duration));
+
+    /// <summary>
+    /// delay
+    /// </summary>
+    public double? Delay => (double?)NativeValue.ToDouble(GetPropertyRaw(_delay));
+
 }
 
 /// <summary>
@@ -3191,59 +3190,66 @@ public sealed partial class WindowPosition : JsObject
 }
 
 /// <summary>
-/// SubWindowOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// SubWindowOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record SubWindowOptions(
-    string Title,
-    bool DecorEnabled,
-    bool? IsModal = null,
-    global::HarmonyOS.ArkUI.ModalityType? ModalityType = null,
-    WindowRect2? WindowRect = null,
-    bool? MaximizeSupported = null,
-    double? ZLevel = null,
-    bool? OutlineEnabled = null,
-    bool? ZLevelAboveParentLoosened = null
-) : INapiRecord
+public sealed partial class SubWindowOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _titleName => "title"u8;
-    private static ReadOnlySpan<byte> _decorEnabledName => "decorEnabled"u8;
-    private static ReadOnlySpan<byte> _isModalName => "isModal"u8;
-    private static ReadOnlySpan<byte> _modalityTypeName => "modalityType"u8;
-    private static ReadOnlySpan<byte> _windowRectName => "windowRect"u8;
-    private static ReadOnlySpan<byte> _maximizeSupportedName => "maximizeSupported"u8;
-    private static ReadOnlySpan<byte> _zLevelName => "zLevel"u8;
-    private static ReadOnlySpan<byte> _outlineEnabledName => "outlineEnabled"u8;
-    private static ReadOnlySpan<byte> _zLevelAboveParentLoosenedName => "zLevelAboveParentLoosened"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _titleV = NativeValue.From(Title);
-        if (_titleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _titleName, _titleV);
-        var _decorEnabledV = NativeValue.From(DecorEnabled);
-        if (_decorEnabledV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _decorEnabledName, _decorEnabledV);
-        var _isModalV = NativeValue.From(IsModal);
-        if (_isModalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isModalName, _isModalV);
-        var _modalityTypeV = NativeValue.From(ModalityType);
-        if (_modalityTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _modalityTypeName, _modalityTypeV);
-        var _windowRectV = NativeValue.From(WindowRect);
-        if (_windowRectV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _windowRectName, _windowRectV);
-        var _maximizeSupportedV = NativeValue.From(MaximizeSupported);
-        if (_maximizeSupportedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maximizeSupportedName, _maximizeSupportedV);
-        var _zLevelV = NativeValue.From(ZLevel);
-        if (_zLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _zLevelName, _zLevelV);
-        var _outlineEnabledV = NativeValue.From(OutlineEnabled);
-        if (_outlineEnabledV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _outlineEnabledName, _outlineEnabledV);
-        var _zLevelAboveParentLoosenedV = NativeValue.From(ZLevelAboveParentLoosened);
-        if (_zLevelAboveParentLoosenedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _zLevelAboveParentLoosenedName, _zLevelAboveParentLoosenedV);
-    }
+    public SubWindowOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _title => "title"u8;
+    private static ReadOnlySpan<byte> _decorEnabled => "decorEnabled"u8;
+    private static ReadOnlySpan<byte> _isModal => "isModal"u8;
+    private static ReadOnlySpan<byte> _modalityType => "modalityType"u8;
+    private static ReadOnlySpan<byte> _windowRect => "windowRect"u8;
+    private static ReadOnlySpan<byte> _maximizeSupported => "maximizeSupported"u8;
+    private static ReadOnlySpan<byte> _zLevel => "zLevel"u8;
+    private static ReadOnlySpan<byte> _outlineEnabled => "outlineEnabled"u8;
+    private static ReadOnlySpan<byte> _zLevelAboveParentLoosened => "zLevelAboveParentLoosened"u8;
+    /// <summary>
+    /// title
+    /// </summary>
+    public string Title => NativeValue.ToString(GetPropertyRaw(_title)) ?? string.Empty;
+
+    /// <summary>
+    /// decorEnabled
+    /// </summary>
+    public bool DecorEnabled => NativeValue.ToBool(GetPropertyRaw(_decorEnabled));
+
+    /// <summary>
+    /// isModal
+    /// </summary>
+    public bool? IsModal => (bool?)NativeValue.ToBool(GetPropertyRaw(_isModal));
+
+    /// <summary>
+    /// modalityType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ModalityType? ModalityType => (global::HarmonyOS.ArkUI.ModalityType?)(global::HarmonyOS.ArkUI.ModalityType)NativeValue.ToInt(GetPropertyRaw(_modalityType));
+
+    /// <summary>
+    /// windowRect
+    /// </summary>
+    public WindowRect2? WindowRect => GetPropertyRaw(_windowRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_windowRect));
+
+    /// <summary>
+    /// maximizeSupported
+    /// </summary>
+    public bool? MaximizeSupported => (bool?)NativeValue.ToBool(GetPropertyRaw(_maximizeSupported));
+
+    /// <summary>
+    /// zLevel
+    /// </summary>
+    public double? ZLevel => (double?)NativeValue.ToDouble(GetPropertyRaw(_zLevel));
+
+    /// <summary>
+    /// outlineEnabled
+    /// </summary>
+    public bool? OutlineEnabled => (bool?)NativeValue.ToBool(GetPropertyRaw(_outlineEnabled));
+
+    /// <summary>
+    /// zLevelAboveParentLoosened
+    /// </summary>
+    public bool? ZLevelAboveParentLoosened => (bool?)NativeValue.ToBool(GetPropertyRaw(_zLevelAboveParentLoosened));
+
 }
 
 /// <summary>

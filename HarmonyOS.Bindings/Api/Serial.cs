@@ -220,54 +220,60 @@ public sealed partial class SerialPort : JsObject
 }
 
 /// <summary>
-/// SerialConfigs（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// SerialConfigs 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record SerialConfigs(
-    double? BaudRate = null,
-    global::HarmonyOS.ArkUI.DataBits? DataBits = null,
-    global::HarmonyOS.ArkUI.StopBits? StopBits = null,
-    global::HarmonyOS.ArkUI.Parity? Parity = null,
-    bool? Rtscts = null,
-    bool? Xon = null,
-    bool? Xoff = null,
-    bool? Xany = null
-) : INapiRecord
+public sealed partial class SerialConfigs : JsObject
 {
-    private static ReadOnlySpan<byte> _baudRateName => "baudRate"u8;
-    private static ReadOnlySpan<byte> _dataBitsName => "dataBits"u8;
-    private static ReadOnlySpan<byte> _stopBitsName => "stopBits"u8;
-    private static ReadOnlySpan<byte> _parityName => "parity"u8;
-    private static ReadOnlySpan<byte> _rtsctsName => "rtscts"u8;
-    private static ReadOnlySpan<byte> _xonName => "xon"u8;
-    private static ReadOnlySpan<byte> _xoffName => "xoff"u8;
-    private static ReadOnlySpan<byte> _xanyName => "xany"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _baudRateV = NativeValue.From(BaudRate);
-        if (_baudRateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _baudRateName, _baudRateV);
-        var _dataBitsV = NativeValue.From(DataBits);
-        if (_dataBitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataBitsName, _dataBitsV);
-        var _stopBitsV = NativeValue.From(StopBits);
-        if (_stopBitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _stopBitsName, _stopBitsV);
-        var _parityV = NativeValue.From(Parity);
-        if (_parityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _parityName, _parityV);
-        var _rtsctsV = NativeValue.From(Rtscts);
-        if (_rtsctsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rtsctsName, _rtsctsV);
-        var _xonV = NativeValue.From(Xon);
-        if (_xonV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xonName, _xonV);
-        var _xoffV = NativeValue.From(Xoff);
-        if (_xoffV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xoffName, _xoffV);
-        var _xanyV = NativeValue.From(Xany);
-        if (_xanyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xanyName, _xanyV);
-    }
+    public SerialConfigs(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _baudRate => "baudRate"u8;
+    private static ReadOnlySpan<byte> _dataBits => "dataBits"u8;
+    private static ReadOnlySpan<byte> _stopBits => "stopBits"u8;
+    private static ReadOnlySpan<byte> _parity => "parity"u8;
+    private static ReadOnlySpan<byte> _rtscts => "rtscts"u8;
+    private static ReadOnlySpan<byte> _xon => "xon"u8;
+    private static ReadOnlySpan<byte> _xoff => "xoff"u8;
+    private static ReadOnlySpan<byte> _xany => "xany"u8;
+    /// <summary>
+    /// baudRate
+    /// </summary>
+    public double? BaudRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_baudRate));
+
+    /// <summary>
+    /// dataBits
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DataBits? DataBits => (global::HarmonyOS.ArkUI.DataBits?)(global::HarmonyOS.ArkUI.DataBits)NativeValue.ToInt(GetPropertyRaw(_dataBits));
+
+    /// <summary>
+    /// stopBits
+    /// </summary>
+    public global::HarmonyOS.ArkUI.StopBits? StopBits => (global::HarmonyOS.ArkUI.StopBits?)(global::HarmonyOS.ArkUI.StopBits)NativeValue.ToInt(GetPropertyRaw(_stopBits));
+
+    /// <summary>
+    /// parity
+    /// </summary>
+    public global::HarmonyOS.ArkUI.Parity? Parity => (global::HarmonyOS.ArkUI.Parity?)(global::HarmonyOS.ArkUI.Parity)NativeValue.ToInt(GetPropertyRaw(_parity));
+
+    /// <summary>
+    /// rtscts
+    /// </summary>
+    public bool? Rtscts => (bool?)NativeValue.ToBool(GetPropertyRaw(_rtscts));
+
+    /// <summary>
+    /// xon
+    /// </summary>
+    public bool? Xon => (bool?)NativeValue.ToBool(GetPropertyRaw(_xon));
+
+    /// <summary>
+    /// xoff
+    /// </summary>
+    public bool? Xoff => (bool?)NativeValue.ToBool(GetPropertyRaw(_xoff));
+
+    /// <summary>
+    /// xany
+    /// </summary>
+    public bool? Xany => (bool?)NativeValue.ToBool(GetPropertyRaw(_xany));
+
 }
 
 /// <summary>

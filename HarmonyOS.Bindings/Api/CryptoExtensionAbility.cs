@@ -87,137 +87,137 @@ public static unsafe partial class CryptoExtensionAbility
     /// <summary>
     /// onGetResourceId
     /// </summary>
-    public static TaskObject OnGetResourceId(IntPtr[] @params)
+    public static IntPtr OnGetResourceId(IntPtr[] @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onGetResourceId, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onGetResourceId, @params);
     }
 
     /// <summary>
     /// onOpenResource
     /// </summary>
-    public static TaskObject OnOpenResource(string resourceId, IntPtr[] @params)
+    public static IntPtr OnOpenResource(string resourceId, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onOpenResource, resourceId, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onOpenResource, resourceId, @params);
     }
 
     /// <summary>
     /// onCloseResource
     /// </summary>
-    public static TaskObject OnCloseResource(string handle, IntPtr[] @params)
+    public static IntPtr OnCloseResource(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onCloseResource, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onCloseResource, handle, @params);
     }
 
     /// <summary>
     /// onGetProperty
     /// </summary>
-    public static TaskObject OnGetProperty(string handle, string propertyId, IntPtr[] @params)
+    public static IntPtr OnGetProperty(string handle, string propertyId, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onGetProperty, handle, propertyId, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onGetProperty, handle, propertyId, @params);
     }
 
     /// <summary>
     /// onSetProperty
     /// </summary>
-    public static TaskObject OnSetProperty(string handle, string propertyId, IntPtr[] @params)
+    public static IntPtr OnSetProperty(string handle, string propertyId, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onSetProperty, handle, propertyId, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onSetProperty, handle, propertyId, @params);
     }
 
     /// <summary>
     /// onAuthUkeyPin
     /// </summary>
-    public static TaskObject OnAuthUkeyPin(string handle, IntPtr[] @params)
+    public static IntPtr OnAuthUkeyPin(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onAuthUkeyPin, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onAuthUkeyPin, handle, @params);
     }
 
     /// <summary>
     /// onGetUkeyPinAuthState
     /// </summary>
-    public static TaskObject OnGetUkeyPinAuthState(string handle, IntPtr[] @params)
+    public static IntPtr OnGetUkeyPinAuthState(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onGetUkeyPinAuthState, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onGetUkeyPinAuthState, handle, @params);
     }
 
     /// <summary>
     /// onClearUkeyPinAuthState
     /// </summary>
-    public static TaskObject OnClearUkeyPinAuthState(string handle, IntPtr[] @params)
+    public static IntPtr OnClearUkeyPinAuthState(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onClearUkeyPinAuthState, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onClearUkeyPinAuthState, handle, @params);
     }
 
     /// <summary>
     /// onInitSession
     /// </summary>
-    public static TaskObject OnInitSession(string handle, IntPtr @params)
+    public static IntPtr OnInitSession(string handle, IntPtr @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onInitSession, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onInitSession, handle, @params);
     }
 
     /// <summary>
     /// onUpdateSession
     /// </summary>
-    public static TaskObject OnUpdateSession(string initHandle, IntPtr @params)
+    public static IntPtr OnUpdateSession(string initHandle, IntPtr @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onUpdateSession, initHandle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onUpdateSession, initHandle, @params);
     }
 
     /// <summary>
     /// onFinishSession
     /// </summary>
-    public static TaskObject OnFinishSession(string initHandle, IntPtr @params)
+    public static IntPtr OnFinishSession(string initHandle, IntPtr @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onFinishSession, initHandle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onFinishSession, initHandle, @params);
     }
 
     /// <summary>
     /// onExportCertificate
     /// </summary>
-    public static TaskObject OnExportCertificate(string resourceId, IntPtr[]? @params = null)
+    public static IntPtr OnExportCertificate(string resourceId, IntPtr[]? @params = null)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onExportCertificate, resourceId, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onExportCertificate, resourceId, @params);
     }
 
     /// <summary>
     /// onImportCertificate
     /// </summary>
-    public static TaskObject OnImportCertificate(string handle, IntPtr[] @params, IntPtr certInfo)
+    public static IntPtr OnImportCertificate(string handle, IntPtr[] @params, IntPtr certInfo)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onImportCertificate, handle, @params, certInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _onImportCertificate, handle, @params, certInfo);
     }
 
     /// <summary>
     /// onEnumCertificates
     /// </summary>
-    public static TaskObject OnEnumCertificates(IntPtr[]? @params = null)
+    public static IntPtr OnEnumCertificates(IntPtr[]? @params = null)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onEnumCertificates, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onEnumCertificates, @params);
     }
 
     /// <summary>
     /// onGenerateKeyItem
     /// </summary>
-    public static TaskObject OnGenerateKeyItem(string handle, IntPtr[] @params)
+    public static IntPtr OnGenerateKeyItem(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onGenerateKeyItem, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onGenerateKeyItem, handle, @params);
     }
 
     /// <summary>
     /// onExportKeyItem
     /// </summary>
-    public static TaskObject OnExportKeyItem(string handle, IntPtr[] @params)
+    public static IntPtr OnExportKeyItem(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onExportKeyItem, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onExportKeyItem, handle, @params);
     }
 
     /// <summary>
     /// onImportWrappedKeyItem
     /// </summary>
-    public static TaskObject OnImportWrappedKeyItem(string handle, string wrappingHandle, IntPtr[] @params, byte[] wrappedKey)
+    public static IntPtr OnImportWrappedKeyItem(string handle, string wrappingHandle, IntPtr[] @params, byte[] wrappedKey)
     {
-        return NodeApi.CallMethod<TaskObject>(Module, _onImportWrappedKeyItem, handle, wrappingHandle, @params, wrappedKey);
+        return NodeApi.CallMethod<IntPtr>(Module, _onImportWrappedKeyItem, handle, wrappingHandle, @params, wrappedKey);
     }
 
 }

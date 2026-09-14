@@ -350,27 +350,28 @@ public sealed partial class SsapServer : JsObject
 }
 
 /// <summary>
-/// ServerResponse（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ServerResponse 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record SsapServerResponse(
-    string Address,
-    double RequestId,
-    byte[] Value
-) : INapiRecord
+public sealed partial class SsapServerResponse : JsObject
 {
-    private static ReadOnlySpan<byte> _addressName => "address"u8;
-    private static ReadOnlySpan<byte> _requestIdName => "requestId"u8;
-    private static ReadOnlySpan<byte> _valueName => "value"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _addressV = NativeValue.From(Address);
-        if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
-        var _requestIdV = NativeValue.From(RequestId);
-        if (_requestIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _requestIdName, _requestIdV);
-        var _valueV = NativeValue.From(Value);
-        if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
-    }
+    public SsapServerResponse(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _address => "address"u8;
+    private static ReadOnlySpan<byte> _requestId => "requestId"u8;
+    private static ReadOnlySpan<byte> _value => "value"u8;
+    /// <summary>
+    /// address
+    /// </summary>
+    public string Address => NativeValue.ToString(GetPropertyRaw(_address)) ?? string.Empty;
+
+    /// <summary>
+    /// requestId
+    /// </summary>
+    public double RequestId => NativeValue.ToDouble(GetPropertyRaw(_requestId));
+
+    /// <summary>
+    /// value
+    /// </summary>
+    public byte[] Value => ValueConverter.ConvertArray(GetPropertyRaw(_value), static e => ValueConverter.Convert<byte>(e));
+
 }

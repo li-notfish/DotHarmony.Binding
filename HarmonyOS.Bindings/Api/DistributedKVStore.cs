@@ -495,52 +495,58 @@ public sealed partial class DistributedKVStoreQuery : JsObject
 }
 
 /// <summary>
-/// Options（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// Options 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record DistributedKVStoreOptions(
-    bool? CreateIfMissing,
-    bool? Encrypt,
-    bool? Backup,
-    bool? AutoSync,
-    global::HarmonyOS.ArkUI.DistributedKVStoreKVStoreType? KvStoreType,
-    global::HarmonyOS.ArkUI.DistributedKVStoreSecurityLevel SecurityLevel,
-    DistributedKVStoreSchema? Schema = null,
-    string? RootDir = null
-) : INapiRecord
+public sealed partial class DistributedKVStoreOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _createIfMissingName => "createIfMissing"u8;
-    private static ReadOnlySpan<byte> _encryptName => "encrypt"u8;
-    private static ReadOnlySpan<byte> _backupName => "backup"u8;
-    private static ReadOnlySpan<byte> _autoSyncName => "autoSync"u8;
-    private static ReadOnlySpan<byte> _kvStoreTypeName => "kvStoreType"u8;
-    private static ReadOnlySpan<byte> _securityLevelName => "securityLevel"u8;
-    private static ReadOnlySpan<byte> _schemaName => "schema"u8;
-    private static ReadOnlySpan<byte> _rootDirName => "rootDir"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _createIfMissingV = NativeValue.From(CreateIfMissing);
-        if (_createIfMissingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _createIfMissingName, _createIfMissingV);
-        var _encryptV = NativeValue.From(Encrypt);
-        if (_encryptV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptName, _encryptV);
-        var _backupV = NativeValue.From(Backup);
-        if (_backupV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _backupName, _backupV);
-        var _autoSyncV = NativeValue.From(AutoSync);
-        if (_autoSyncV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoSyncName, _autoSyncV);
-        var _kvStoreTypeV = NativeValue.From(KvStoreType);
-        if (_kvStoreTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _kvStoreTypeName, _kvStoreTypeV);
-        var _securityLevelV = NativeValue.From(SecurityLevel);
-        if (_securityLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _securityLevelName, _securityLevelV);
-        var _schemaV = NativeValue.From(Schema);
-        if (_schemaV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _schemaName, _schemaV);
-        var _rootDirV = NativeValue.From(RootDir);
-        if (_rootDirV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rootDirName, _rootDirV);
-    }
+    public DistributedKVStoreOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _createIfMissing => "createIfMissing"u8;
+    private static ReadOnlySpan<byte> _encrypt => "encrypt"u8;
+    private static ReadOnlySpan<byte> _backup => "backup"u8;
+    private static ReadOnlySpan<byte> _autoSync => "autoSync"u8;
+    private static ReadOnlySpan<byte> _kvStoreType => "kvStoreType"u8;
+    private static ReadOnlySpan<byte> _securityLevel => "securityLevel"u8;
+    private static ReadOnlySpan<byte> _schema => "schema"u8;
+    private static ReadOnlySpan<byte> _rootDir => "rootDir"u8;
+    /// <summary>
+    /// createIfMissing
+    /// </summary>
+    public bool? CreateIfMissing => (bool?)NativeValue.ToBool(GetPropertyRaw(_createIfMissing));
+
+    /// <summary>
+    /// encrypt
+    /// </summary>
+    public bool? Encrypt => (bool?)NativeValue.ToBool(GetPropertyRaw(_encrypt));
+
+    /// <summary>
+    /// backup
+    /// </summary>
+    public bool? Backup => (bool?)NativeValue.ToBool(GetPropertyRaw(_backup));
+
+    /// <summary>
+    /// autoSync
+    /// </summary>
+    public bool? AutoSync => (bool?)NativeValue.ToBool(GetPropertyRaw(_autoSync));
+
+    /// <summary>
+    /// kvStoreType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DistributedKVStoreKVStoreType? KvStoreType => (global::HarmonyOS.ArkUI.DistributedKVStoreKVStoreType?)(global::HarmonyOS.ArkUI.DistributedKVStoreKVStoreType)NativeValue.ToInt(GetPropertyRaw(_kvStoreType));
+
+    /// <summary>
+    /// securityLevel
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DistributedKVStoreSecurityLevel SecurityLevel => (global::HarmonyOS.ArkUI.DistributedKVStoreSecurityLevel)NativeValue.ToInt(GetPropertyRaw(_securityLevel));
+
+    /// <summary>
+    /// schema
+    /// </summary>
+    public DistributedKVStoreSchema? Schema => GetPropertyRaw(_schema) == IntPtr.Zero ? null : new DistributedKVStoreSchema(GetPropertyRaw(_schema));
+
+    /// <summary>
+    /// rootDir
+    /// </summary>
+    public string? RootDir => (string?)NativeValue.ToString(GetPropertyRaw(_rootDir)) ?? string.Empty;
+
 }

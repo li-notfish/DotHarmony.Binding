@@ -605,49 +605,54 @@ public sealed partial class Query : JsObject
 }
 
 /// <summary>
-/// Options（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// Options 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record Options(
-    bool? CreateIfMissing = null,
-    bool? Encrypt = null,
-    bool? Backup = null,
-    bool? AutoSync = null,
-    global::HarmonyOS.ArkUI.KVStoreType? KvStoreType = null,
-    global::HarmonyOS.ArkUI.SecurityLevel? SecurityLevel = null,
-    Schema? Schema = null
-) : INapiRecord
+public sealed partial class Options : JsObject
 {
-    private static ReadOnlySpan<byte> _createIfMissingName => "createIfMissing"u8;
-    private static ReadOnlySpan<byte> _encryptName => "encrypt"u8;
-    private static ReadOnlySpan<byte> _backupName => "backup"u8;
-    private static ReadOnlySpan<byte> _autoSyncName => "autoSync"u8;
-    private static ReadOnlySpan<byte> _kvStoreTypeName => "kvStoreType"u8;
-    private static ReadOnlySpan<byte> _securityLevelName => "securityLevel"u8;
-    private static ReadOnlySpan<byte> _schemaName => "schema"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _createIfMissingV = NativeValue.From(CreateIfMissing);
-        if (_createIfMissingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _createIfMissingName, _createIfMissingV);
-        var _encryptV = NativeValue.From(Encrypt);
-        if (_encryptV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptName, _encryptV);
-        var _backupV = NativeValue.From(Backup);
-        if (_backupV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _backupName, _backupV);
-        var _autoSyncV = NativeValue.From(AutoSync);
-        if (_autoSyncV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoSyncName, _autoSyncV);
-        var _kvStoreTypeV = NativeValue.From(KvStoreType);
-        if (_kvStoreTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _kvStoreTypeName, _kvStoreTypeV);
-        var _securityLevelV = NativeValue.From(SecurityLevel);
-        if (_securityLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _securityLevelName, _securityLevelV);
-        var _schemaV = NativeValue.From(Schema);
-        if (_schemaV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _schemaName, _schemaV);
-    }
+    public Options(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _createIfMissing => "createIfMissing"u8;
+    private static ReadOnlySpan<byte> _encrypt => "encrypt"u8;
+    private static ReadOnlySpan<byte> _backup => "backup"u8;
+    private static ReadOnlySpan<byte> _autoSync => "autoSync"u8;
+    private static ReadOnlySpan<byte> _kvStoreType => "kvStoreType"u8;
+    private static ReadOnlySpan<byte> _securityLevel => "securityLevel"u8;
+    private static ReadOnlySpan<byte> _schema => "schema"u8;
+    /// <summary>
+    /// createIfMissing
+    /// </summary>
+    public bool? CreateIfMissing => (bool?)NativeValue.ToBool(GetPropertyRaw(_createIfMissing));
+
+    /// <summary>
+    /// encrypt
+    /// </summary>
+    public bool? Encrypt => (bool?)NativeValue.ToBool(GetPropertyRaw(_encrypt));
+
+    /// <summary>
+    /// backup
+    /// </summary>
+    public bool? Backup => (bool?)NativeValue.ToBool(GetPropertyRaw(_backup));
+
+    /// <summary>
+    /// autoSync
+    /// </summary>
+    public bool? AutoSync => (bool?)NativeValue.ToBool(GetPropertyRaw(_autoSync));
+
+    /// <summary>
+    /// kvStoreType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.KVStoreType? KvStoreType => (global::HarmonyOS.ArkUI.KVStoreType?)(global::HarmonyOS.ArkUI.KVStoreType)NativeValue.ToInt(GetPropertyRaw(_kvStoreType));
+
+    /// <summary>
+    /// securityLevel
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SecurityLevel? SecurityLevel => (global::HarmonyOS.ArkUI.SecurityLevel?)(global::HarmonyOS.ArkUI.SecurityLevel)NativeValue.ToInt(GetPropertyRaw(_securityLevel));
+
+    /// <summary>
+    /// schema
+    /// </summary>
+    public Schema? Schema => GetPropertyRaw(_schema) == IntPtr.Zero ? null : new Schema(GetPropertyRaw(_schema));
+
 }
 
 /// <summary>

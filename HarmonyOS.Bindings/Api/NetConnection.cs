@@ -782,19 +782,18 @@ public sealed partial class NetAddress : JsObject
 }
 
 /// <summary>
-/// QueryOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// QueryOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record QueryOptions(
-    global::HarmonyOS.ArkUI.FamilyType? Family = null
-) : INapiRecord
+public sealed partial class QueryOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _familyName => "family"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _familyV = NativeValue.From(Family);
-        if (_familyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _familyName, _familyV);
-    }
+    public QueryOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _family => "family"u8;
+    /// <summary>
+    /// family
+    /// </summary>
+    public global::HarmonyOS.ArkUI.FamilyType? Family => (global::HarmonyOS.ArkUI.FamilyType?)(global::HarmonyOS.ArkUI.FamilyType)NativeValue.ToInt(GetPropertyRaw(_family));
+
 }
 
 /// <summary>

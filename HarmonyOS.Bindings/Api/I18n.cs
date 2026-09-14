@@ -1182,54 +1182,60 @@ public sealed partial class ZoneRules : JsObject
 }
 
 /// <summary>
-/// ChineseCalendarTime（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ChineseCalendarTime 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record ChineseCalendarTime(
-    double GregorianYear,
-    double CyclicalYear,
-    double Month,
-    double Date,
-    bool? IsLeapMonth = null,
-    double? Hour = null,
-    double? Minute = null,
-    double? Second = null
-) : INapiRecord
+public sealed partial class ChineseCalendarTime : JsObject
 {
-    private static ReadOnlySpan<byte> _gregorianYearName => "gregorianYear"u8;
-    private static ReadOnlySpan<byte> _cyclicalYearName => "cyclicalYear"u8;
-    private static ReadOnlySpan<byte> _monthName => "month"u8;
-    private static ReadOnlySpan<byte> _dateName => "date"u8;
-    private static ReadOnlySpan<byte> _isLeapMonthName => "isLeapMonth"u8;
-    private static ReadOnlySpan<byte> _hourName => "hour"u8;
-    private static ReadOnlySpan<byte> _minuteName => "minute"u8;
-    private static ReadOnlySpan<byte> _secondName => "second"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _gregorianYearV = NativeValue.From(GregorianYear);
-        if (_gregorianYearV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _gregorianYearName, _gregorianYearV);
-        var _cyclicalYearV = NativeValue.From(CyclicalYear);
-        if (_cyclicalYearV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cyclicalYearName, _cyclicalYearV);
-        var _monthV = NativeValue.From(Month);
-        if (_monthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _monthName, _monthV);
-        var _dateV = NativeValue.From(Date);
-        if (_dateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dateName, _dateV);
-        var _isLeapMonthV = NativeValue.From(IsLeapMonth);
-        if (_isLeapMonthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isLeapMonthName, _isLeapMonthV);
-        var _hourV = NativeValue.From(Hour);
-        if (_hourV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _hourName, _hourV);
-        var _minuteV = NativeValue.From(Minute);
-        if (_minuteV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minuteName, _minuteV);
-        var _secondV = NativeValue.From(Second);
-        if (_secondV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _secondName, _secondV);
-    }
+    public ChineseCalendarTime(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _gregorianYear => "gregorianYear"u8;
+    private static ReadOnlySpan<byte> _cyclicalYear => "cyclicalYear"u8;
+    private static ReadOnlySpan<byte> _month => "month"u8;
+    private static ReadOnlySpan<byte> _date => "date"u8;
+    private static ReadOnlySpan<byte> _isLeapMonth => "isLeapMonth"u8;
+    private static ReadOnlySpan<byte> _hour => "hour"u8;
+    private static ReadOnlySpan<byte> _minute => "minute"u8;
+    private static ReadOnlySpan<byte> _second => "second"u8;
+    /// <summary>
+    /// gregorianYear
+    /// </summary>
+    public double GregorianYear => NativeValue.ToDouble(GetPropertyRaw(_gregorianYear));
+
+    /// <summary>
+    /// cyclicalYear
+    /// </summary>
+    public double CyclicalYear => NativeValue.ToDouble(GetPropertyRaw(_cyclicalYear));
+
+    /// <summary>
+    /// month
+    /// </summary>
+    public double Month => NativeValue.ToDouble(GetPropertyRaw(_month));
+
+    /// <summary>
+    /// date
+    /// </summary>
+    public double Date => NativeValue.ToDouble(GetPropertyRaw(_date));
+
+    /// <summary>
+    /// isLeapMonth
+    /// </summary>
+    public bool? IsLeapMonth => (bool?)NativeValue.ToBool(GetPropertyRaw(_isLeapMonth));
+
+    /// <summary>
+    /// hour
+    /// </summary>
+    public double? Hour => (double?)NativeValue.ToDouble(GetPropertyRaw(_hour));
+
+    /// <summary>
+    /// minute
+    /// </summary>
+    public double? Minute => (double?)NativeValue.ToDouble(GetPropertyRaw(_minute));
+
+    /// <summary>
+    /// second
+    /// </summary>
+    public double? Second => (double?)NativeValue.ToDouble(GetPropertyRaw(_second));
+
 }
 
 /// <summary>

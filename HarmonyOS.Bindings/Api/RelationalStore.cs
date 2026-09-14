@@ -1059,89 +1059,102 @@ public sealed partial class RelationalStoreRdbStore : JsObject
 }
 
 /// <summary>
-/// StoreConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// StoreConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record RelationalStoreStoreConfig(
-    string Name,
-    global::HarmonyOS.ArkUI.RelationalStoreSecurityLevel SecurityLevel,
-    bool? Encrypt = null,
-    string? DataGroupId = null,
-    string? CustomDir = null,
-    string? RootDir = null,
-    bool? AutoCleanDirtyData = null,
-    bool? AllowRebuild = null,
-    bool? Vector = null,
-    bool? IsReadOnly = null,
-    string[]? PluginLibs = null,
-    CryptoParam? CryptoParam = null,
-    global::HarmonyOS.ArkUI.Tokenizer? Tokenizer = null,
-    bool? Persist = null,
-    bool? EnableSemanticIndex = null
-) : INapiRecord
+public sealed partial class RelationalStoreStoreConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _nameName => "name"u8;
-    private static ReadOnlySpan<byte> _securityLevelName => "securityLevel"u8;
-    private static ReadOnlySpan<byte> _encryptName => "encrypt"u8;
-    private static ReadOnlySpan<byte> _dataGroupIdName => "dataGroupId"u8;
-    private static ReadOnlySpan<byte> _customDirName => "customDir"u8;
-    private static ReadOnlySpan<byte> _rootDirName => "rootDir"u8;
-    private static ReadOnlySpan<byte> _autoCleanDirtyDataName => "autoCleanDirtyData"u8;
-    private static ReadOnlySpan<byte> _allowRebuildName => "allowRebuild"u8;
-    private static ReadOnlySpan<byte> _vectorName => "vector"u8;
-    private static ReadOnlySpan<byte> _isReadOnlyName => "isReadOnly"u8;
-    private static ReadOnlySpan<byte> _pluginLibsName => "pluginLibs"u8;
-    private static ReadOnlySpan<byte> _cryptoParamName => "cryptoParam"u8;
-    private static ReadOnlySpan<byte> _tokenizerName => "tokenizer"u8;
-    private static ReadOnlySpan<byte> _persistName => "persist"u8;
-    private static ReadOnlySpan<byte> _enableSemanticIndexName => "enableSemanticIndex"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _nameV = NativeValue.From(Name);
-        if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
-        var _securityLevelV = NativeValue.From(SecurityLevel);
-        if (_securityLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _securityLevelName, _securityLevelV);
-        var _encryptV = NativeValue.From(Encrypt);
-        if (_encryptV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptName, _encryptV);
-        var _dataGroupIdV = NativeValue.From(DataGroupId);
-        if (_dataGroupIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataGroupIdName, _dataGroupIdV);
-        var _customDirV = NativeValue.From(CustomDir);
-        if (_customDirV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _customDirName, _customDirV);
-        var _rootDirV = NativeValue.From(RootDir);
-        if (_rootDirV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rootDirName, _rootDirV);
-        var _autoCleanDirtyDataV = NativeValue.From(AutoCleanDirtyData);
-        if (_autoCleanDirtyDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoCleanDirtyDataName, _autoCleanDirtyDataV);
-        var _allowRebuildV = NativeValue.From(AllowRebuild);
-        if (_allowRebuildV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _allowRebuildName, _allowRebuildV);
-        var _vectorV = NativeValue.From(Vector);
-        if (_vectorV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _vectorName, _vectorV);
-        var _isReadOnlyV = NativeValue.From(IsReadOnly);
-        if (_isReadOnlyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isReadOnlyName, _isReadOnlyV);
-        var _pluginLibsV = NativeValue.From(PluginLibs);
-        if (_pluginLibsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pluginLibsName, _pluginLibsV);
-        var _cryptoParamV = NativeValue.From(CryptoParam);
-        if (_cryptoParamV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cryptoParamName, _cryptoParamV);
-        var _tokenizerV = NativeValue.From(Tokenizer);
-        if (_tokenizerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tokenizerName, _tokenizerV);
-        var _persistV = NativeValue.From(Persist);
-        if (_persistV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _persistName, _persistV);
-        var _enableSemanticIndexV = NativeValue.From(EnableSemanticIndex);
-        if (_enableSemanticIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enableSemanticIndexName, _enableSemanticIndexV);
-    }
+    public RelationalStoreStoreConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _securityLevel => "securityLevel"u8;
+    private static ReadOnlySpan<byte> _encrypt => "encrypt"u8;
+    private static ReadOnlySpan<byte> _dataGroupId => "dataGroupId"u8;
+    private static ReadOnlySpan<byte> _customDir => "customDir"u8;
+    private static ReadOnlySpan<byte> _rootDir => "rootDir"u8;
+    private static ReadOnlySpan<byte> _autoCleanDirtyData => "autoCleanDirtyData"u8;
+    private static ReadOnlySpan<byte> _allowRebuild => "allowRebuild"u8;
+    private static ReadOnlySpan<byte> _vector => "vector"u8;
+    private static ReadOnlySpan<byte> _isReadOnly => "isReadOnly"u8;
+    private static ReadOnlySpan<byte> _pluginLibs => "pluginLibs"u8;
+    private static ReadOnlySpan<byte> _cryptoParam => "cryptoParam"u8;
+    private static ReadOnlySpan<byte> _tokenizer => "tokenizer"u8;
+    private static ReadOnlySpan<byte> _persist => "persist"u8;
+    private static ReadOnlySpan<byte> _enableSemanticIndex => "enableSemanticIndex"u8;
+    /// <summary>
+    /// name
+    /// </summary>
+    public string Name => NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+
+    /// <summary>
+    /// securityLevel
+    /// </summary>
+    public global::HarmonyOS.ArkUI.RelationalStoreSecurityLevel SecurityLevel => (global::HarmonyOS.ArkUI.RelationalStoreSecurityLevel)NativeValue.ToInt(GetPropertyRaw(_securityLevel));
+
+    /// <summary>
+    /// encrypt
+    /// </summary>
+    public bool? Encrypt => (bool?)NativeValue.ToBool(GetPropertyRaw(_encrypt));
+
+    /// <summary>
+    /// dataGroupId
+    /// </summary>
+    public string? DataGroupId => (string?)NativeValue.ToString(GetPropertyRaw(_dataGroupId)) ?? string.Empty;
+
+    /// <summary>
+    /// customDir
+    /// </summary>
+    public string? CustomDir => (string?)NativeValue.ToString(GetPropertyRaw(_customDir)) ?? string.Empty;
+
+    /// <summary>
+    /// rootDir
+    /// </summary>
+    public string? RootDir => (string?)NativeValue.ToString(GetPropertyRaw(_rootDir)) ?? string.Empty;
+
+    /// <summary>
+    /// autoCleanDirtyData
+    /// </summary>
+    public bool? AutoCleanDirtyData => (bool?)NativeValue.ToBool(GetPropertyRaw(_autoCleanDirtyData));
+
+    /// <summary>
+    /// allowRebuild
+    /// </summary>
+    public bool? AllowRebuild => (bool?)NativeValue.ToBool(GetPropertyRaw(_allowRebuild));
+
+    /// <summary>
+    /// vector
+    /// </summary>
+    public bool? Vector => (bool?)NativeValue.ToBool(GetPropertyRaw(_vector));
+
+    /// <summary>
+    /// isReadOnly
+    /// </summary>
+    public bool? IsReadOnly => (bool?)NativeValue.ToBool(GetPropertyRaw(_isReadOnly));
+
+    /// <summary>
+    /// pluginLibs
+    /// </summary>
+    public string[] PluginLibs => ValueConverter.ConvertArray(GetPropertyRaw(_pluginLibs), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// cryptoParam
+    /// </summary>
+    public CryptoParam? CryptoParam => GetPropertyRaw(_cryptoParam) == IntPtr.Zero ? null : new CryptoParam(GetPropertyRaw(_cryptoParam));
+
+    /// <summary>
+    /// tokenizer
+    /// </summary>
+    public global::HarmonyOS.ArkUI.Tokenizer? Tokenizer => (global::HarmonyOS.ArkUI.Tokenizer?)(global::HarmonyOS.ArkUI.Tokenizer)NativeValue.ToInt(GetPropertyRaw(_tokenizer));
+
+    /// <summary>
+    /// persist
+    /// </summary>
+    public bool? Persist => (bool?)NativeValue.ToBool(GetPropertyRaw(_persist));
+
+    /// <summary>
+    /// enableSemanticIndex
+    /// </summary>
+    public bool? EnableSemanticIndex => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableSemanticIndex));
+
 }
 
 /// <summary>
@@ -1543,24 +1556,24 @@ public sealed partial class Result : JsObject
 }
 
 /// <summary>
-/// ReturningConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ReturningConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record ReturningConfig(
-    string[] Columns,
-    double? MaxReturningCount = null
-) : INapiRecord
+public sealed partial class ReturningConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _columnsName => "columns"u8;
-    private static ReadOnlySpan<byte> _maxReturningCountName => "maxReturningCount"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _columnsV = NativeValue.From(Columns);
-        if (_columnsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _columnsName, _columnsV);
-        var _maxReturningCountV = NativeValue.From(MaxReturningCount);
-        if (_maxReturningCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxReturningCountName, _maxReturningCountV);
-    }
+    public ReturningConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _columns => "columns"u8;
+    private static ReadOnlySpan<byte> _maxReturningCount => "maxReturningCount"u8;
+    /// <summary>
+    /// columns
+    /// </summary>
+    public string[] Columns => ValueConverter.ConvertArray(GetPropertyRaw(_columns), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// maxReturningCount
+    /// </summary>
+    public double? MaxReturningCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxReturningCount));
+
 }
 
 /// <summary>
@@ -2032,54 +2045,60 @@ public sealed partial class LiteResultSet : JsObject
 }
 
 /// <summary>
-/// DistributedConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// DistributedConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record DistributedConfig(
-    bool AutoSync,
-    bool? AsyncDownloadAsset = null,
-    bool? EnableCloud = null,
-    global::HarmonyOS.ArkUI.DistributedTableType? TableType = null,
-    global::HarmonyOS.ArkUI.AssetConflictPolicy? AssetConflictPolicy = null,
-    string? AssetTempPath = null,
-    bool? AssetDownloadOnDemand = null,
-    bool? AutoSyncSwitch = null
-) : INapiRecord
+public sealed partial class DistributedConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _autoSyncName => "autoSync"u8;
-    private static ReadOnlySpan<byte> _asyncDownloadAssetName => "asyncDownloadAsset"u8;
-    private static ReadOnlySpan<byte> _enableCloudName => "enableCloud"u8;
-    private static ReadOnlySpan<byte> _tableTypeName => "tableType"u8;
-    private static ReadOnlySpan<byte> _assetConflictPolicyName => "assetConflictPolicy"u8;
-    private static ReadOnlySpan<byte> _assetTempPathName => "assetTempPath"u8;
-    private static ReadOnlySpan<byte> _assetDownloadOnDemandName => "assetDownloadOnDemand"u8;
-    private static ReadOnlySpan<byte> _autoSyncSwitchName => "autoSyncSwitch"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _autoSyncV = NativeValue.From(AutoSync);
-        if (_autoSyncV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoSyncName, _autoSyncV);
-        var _asyncDownloadAssetV = NativeValue.From(AsyncDownloadAsset);
-        if (_asyncDownloadAssetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _asyncDownloadAssetName, _asyncDownloadAssetV);
-        var _enableCloudV = NativeValue.From(EnableCloud);
-        if (_enableCloudV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enableCloudName, _enableCloudV);
-        var _tableTypeV = NativeValue.From(TableType);
-        if (_tableTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _tableTypeName, _tableTypeV);
-        var _assetConflictPolicyV = NativeValue.From(AssetConflictPolicy);
-        if (_assetConflictPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _assetConflictPolicyName, _assetConflictPolicyV);
-        var _assetTempPathV = NativeValue.From(AssetTempPath);
-        if (_assetTempPathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _assetTempPathName, _assetTempPathV);
-        var _assetDownloadOnDemandV = NativeValue.From(AssetDownloadOnDemand);
-        if (_assetDownloadOnDemandV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _assetDownloadOnDemandName, _assetDownloadOnDemandV);
-        var _autoSyncSwitchV = NativeValue.From(AutoSyncSwitch);
-        if (_autoSyncSwitchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoSyncSwitchName, _autoSyncSwitchV);
-    }
+    public DistributedConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _autoSync => "autoSync"u8;
+    private static ReadOnlySpan<byte> _asyncDownloadAsset => "asyncDownloadAsset"u8;
+    private static ReadOnlySpan<byte> _enableCloud => "enableCloud"u8;
+    private static ReadOnlySpan<byte> _tableType => "tableType"u8;
+    private static ReadOnlySpan<byte> _assetConflictPolicy => "assetConflictPolicy"u8;
+    private static ReadOnlySpan<byte> _assetTempPath => "assetTempPath"u8;
+    private static ReadOnlySpan<byte> _assetDownloadOnDemand => "assetDownloadOnDemand"u8;
+    private static ReadOnlySpan<byte> _autoSyncSwitch => "autoSyncSwitch"u8;
+    /// <summary>
+    /// autoSync
+    /// </summary>
+    public bool AutoSync => NativeValue.ToBool(GetPropertyRaw(_autoSync));
+
+    /// <summary>
+    /// asyncDownloadAsset
+    /// </summary>
+    public bool? AsyncDownloadAsset => (bool?)NativeValue.ToBool(GetPropertyRaw(_asyncDownloadAsset));
+
+    /// <summary>
+    /// enableCloud
+    /// </summary>
+    public bool? EnableCloud => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableCloud));
+
+    /// <summary>
+    /// tableType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DistributedTableType? TableType => (global::HarmonyOS.ArkUI.DistributedTableType?)(global::HarmonyOS.ArkUI.DistributedTableType)NativeValue.ToInt(GetPropertyRaw(_tableType));
+
+    /// <summary>
+    /// assetConflictPolicy
+    /// </summary>
+    public global::HarmonyOS.ArkUI.AssetConflictPolicy? AssetConflictPolicy => (global::HarmonyOS.ArkUI.AssetConflictPolicy?)(global::HarmonyOS.ArkUI.AssetConflictPolicy)NativeValue.ToInt(GetPropertyRaw(_assetConflictPolicy));
+
+    /// <summary>
+    /// assetTempPath
+    /// </summary>
+    public string? AssetTempPath => (string?)NativeValue.ToString(GetPropertyRaw(_assetTempPath)) ?? string.Empty;
+
+    /// <summary>
+    /// assetDownloadOnDemand
+    /// </summary>
+    public bool? AssetDownloadOnDemand => (bool?)NativeValue.ToBool(GetPropertyRaw(_assetDownloadOnDemand));
+
+    /// <summary>
+    /// autoSyncSwitch
+    /// </summary>
+    public bool? AutoSyncSwitch => (bool?)NativeValue.ToBool(GetPropertyRaw(_autoSyncSwitch));
+
 }
 
 /// <summary>
@@ -2110,29 +2129,30 @@ public sealed partial class SyncResult : JsObject
 }
 
 /// <summary>
-/// CloudSyncConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CloudSyncConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CloudSyncConfig(
-    global::HarmonyOS.ArkUI.RelationalStoreSyncMode Mode,
-    bool? EnablePredicate = null,
-    RelationalStoreRdbPredicates? Predicate = null
-) : INapiRecord
+public sealed partial class CloudSyncConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _modeName => "mode"u8;
-    private static ReadOnlySpan<byte> _enablePredicateName => "enablePredicate"u8;
-    private static ReadOnlySpan<byte> _predicateName => "predicate"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _modeV = NativeValue.From(Mode);
-        if (_modeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _modeName, _modeV);
-        var _enablePredicateV = NativeValue.From(EnablePredicate);
-        if (_enablePredicateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enablePredicateName, _enablePredicateV);
-        var _predicateV = NativeValue.From(Predicate);
-        if (_predicateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _predicateName, _predicateV);
-    }
+    public CloudSyncConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _mode => "mode"u8;
+    private static ReadOnlySpan<byte> _enablePredicate => "enablePredicate"u8;
+    private static ReadOnlySpan<byte> _predicate => "predicate"u8;
+    /// <summary>
+    /// mode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.RelationalStoreSyncMode Mode => (global::HarmonyOS.ArkUI.RelationalStoreSyncMode)NativeValue.ToInt(GetPropertyRaw(_mode));
+
+    /// <summary>
+    /// enablePredicate
+    /// </summary>
+    public bool? EnablePredicate => (bool?)NativeValue.ToBool(GetPropertyRaw(_enablePredicate));
+
+    /// <summary>
+    /// predicate
+    /// </summary>
+    public RelationalStoreRdbPredicates? Predicate => GetPropertyRaw(_predicate) == IntPtr.Zero ? null : new RelationalStoreRdbPredicates(GetPropertyRaw(_predicate));
+
 }
 
 /// <summary>
@@ -2397,60 +2417,63 @@ public sealed partial class Transaction : JsObject
 }
 
 /// <summary>
-/// TransactionOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// TransactionOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record TransactionOptions(
-    global::HarmonyOS.ArkUI.TransactionType? TransactionType = null
-) : INapiRecord
+public sealed partial class TransactionOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _transactionTypeName => "transactionType"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _transactionTypeV = NativeValue.From(TransactionType);
-        if (_transactionTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _transactionTypeName, _transactionTypeV);
-    }
+    public TransactionOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _transactionType => "transactionType"u8;
+    /// <summary>
+    /// transactionType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.TransactionType? TransactionType => (global::HarmonyOS.ArkUI.TransactionType?)(global::HarmonyOS.ArkUI.TransactionType)NativeValue.ToInt(GetPropertyRaw(_transactionType));
+
 }
 
 /// <summary>
-/// CryptoParam（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// CryptoParam 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record CryptoParam(
-    byte[] EncryptionKey,
-    double? IterationCount = null,
-    global::HarmonyOS.ArkUI.EncryptionAlgo? EncryptionAlgo = null,
-    global::HarmonyOS.ArkUI.HmacAlgo? HmacAlgo = null,
-    global::HarmonyOS.ArkUI.KdfAlgo? KdfAlgo = null,
-    double? CryptoPageSize = null
-) : INapiRecord
+public sealed partial class CryptoParam : JsObject
 {
-    private static ReadOnlySpan<byte> _encryptionKeyName => "encryptionKey"u8;
-    private static ReadOnlySpan<byte> _iterationCountName => "iterationCount"u8;
-    private static ReadOnlySpan<byte> _encryptionAlgoName => "encryptionAlgo"u8;
-    private static ReadOnlySpan<byte> _hmacAlgoName => "hmacAlgo"u8;
-    private static ReadOnlySpan<byte> _kdfAlgoName => "kdfAlgo"u8;
-    private static ReadOnlySpan<byte> _cryptoPageSizeName => "cryptoPageSize"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _encryptionKeyV = NativeValue.From(EncryptionKey);
-        if (_encryptionKeyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptionKeyName, _encryptionKeyV);
-        var _iterationCountV = NativeValue.From(IterationCount);
-        if (_iterationCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iterationCountName, _iterationCountV);
-        var _encryptionAlgoV = NativeValue.From(EncryptionAlgo);
-        if (_encryptionAlgoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptionAlgoName, _encryptionAlgoV);
-        var _hmacAlgoV = NativeValue.From(HmacAlgo);
-        if (_hmacAlgoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _hmacAlgoName, _hmacAlgoV);
-        var _kdfAlgoV = NativeValue.From(KdfAlgo);
-        if (_kdfAlgoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _kdfAlgoName, _kdfAlgoV);
-        var _cryptoPageSizeV = NativeValue.From(CryptoPageSize);
-        if (_cryptoPageSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cryptoPageSizeName, _cryptoPageSizeV);
-    }
+    public CryptoParam(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _encryptionKey => "encryptionKey"u8;
+    private static ReadOnlySpan<byte> _iterationCount => "iterationCount"u8;
+    private static ReadOnlySpan<byte> _encryptionAlgo => "encryptionAlgo"u8;
+    private static ReadOnlySpan<byte> _hmacAlgo => "hmacAlgo"u8;
+    private static ReadOnlySpan<byte> _kdfAlgo => "kdfAlgo"u8;
+    private static ReadOnlySpan<byte> _cryptoPageSize => "cryptoPageSize"u8;
+    /// <summary>
+    /// encryptionKey
+    /// </summary>
+    public byte[] EncryptionKey => ValueConverter.ConvertArray(GetPropertyRaw(_encryptionKey), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// iterationCount
+    /// </summary>
+    public double? IterationCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_iterationCount));
+
+    /// <summary>
+    /// encryptionAlgo
+    /// </summary>
+    public global::HarmonyOS.ArkUI.EncryptionAlgo? EncryptionAlgo => (global::HarmonyOS.ArkUI.EncryptionAlgo?)(global::HarmonyOS.ArkUI.EncryptionAlgo)NativeValue.ToInt(GetPropertyRaw(_encryptionAlgo));
+
+    /// <summary>
+    /// hmacAlgo
+    /// </summary>
+    public global::HarmonyOS.ArkUI.HmacAlgo? HmacAlgo => (global::HarmonyOS.ArkUI.HmacAlgo?)(global::HarmonyOS.ArkUI.HmacAlgo)NativeValue.ToInt(GetPropertyRaw(_hmacAlgo));
+
+    /// <summary>
+    /// kdfAlgo
+    /// </summary>
+    public global::HarmonyOS.ArkUI.KdfAlgo? KdfAlgo => (global::HarmonyOS.ArkUI.KdfAlgo?)(global::HarmonyOS.ArkUI.KdfAlgo)NativeValue.ToInt(GetPropertyRaw(_kdfAlgo));
+
+    /// <summary>
+    /// cryptoPageSize
+    /// </summary>
+    public double? CryptoPageSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_cryptoPageSize));
+
 }
 
 /// <summary>

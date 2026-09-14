@@ -237,39 +237,42 @@ public sealed partial class ParagraphBuilder : JsObject
 }
 
 /// <summary>
-/// PlaceholderSpan（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PlaceholderSpan 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PlaceholderSpan(
-    double Width,
-    double Height,
-    global::HarmonyOS.ArkUI.PlaceholderAlignment Align,
-    global::HarmonyOS.ArkUI.TextBaseline Baseline,
-    double BaselineOffset
-) : INapiRecord
+public sealed partial class PlaceholderSpan : JsObject
 {
-    private static ReadOnlySpan<byte> _widthName => "width"u8;
-    private static ReadOnlySpan<byte> _heightName => "height"u8;
-    private static ReadOnlySpan<byte> _alignName => "align"u8;
-    private static ReadOnlySpan<byte> _baselineName => "baseline"u8;
-    private static ReadOnlySpan<byte> _baselineOffsetName => "baselineOffset"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _widthV = NativeValue.From(Width);
-        if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
-        var _heightV = NativeValue.From(Height);
-        if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
-        var _alignV = NativeValue.From(Align);
-        if (_alignV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _alignName, _alignV);
-        var _baselineV = NativeValue.From(Baseline);
-        if (_baselineV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _baselineName, _baselineV);
-        var _baselineOffsetV = NativeValue.From(BaselineOffset);
-        if (_baselineOffsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _baselineOffsetName, _baselineOffsetV);
-    }
+    public PlaceholderSpan(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    private static ReadOnlySpan<byte> _align => "align"u8;
+    private static ReadOnlySpan<byte> _baseline => "baseline"u8;
+    private static ReadOnlySpan<byte> _baselineOffset => "baselineOffset"u8;
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+    /// <summary>
+    /// align
+    /// </summary>
+    public global::HarmonyOS.ArkUI.PlaceholderAlignment Align => (global::HarmonyOS.ArkUI.PlaceholderAlignment)NativeValue.ToInt(GetPropertyRaw(_align));
+
+    /// <summary>
+    /// baseline
+    /// </summary>
+    public global::HarmonyOS.ArkUI.TextBaseline Baseline => (global::HarmonyOS.ArkUI.TextBaseline)NativeValue.ToInt(GetPropertyRaw(_baseline));
+
+    /// <summary>
+    /// baselineOffset
+    /// </summary>
+    public double BaselineOffset => NativeValue.ToDouble(GetPropertyRaw(_baselineOffset));
+
 }
 
 /// <summary>
@@ -722,24 +725,24 @@ public sealed partial class FontCollection : JsObject
 }
 
 /// <summary>
-/// TextRectSize（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// TextRectSize 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record TextRectSize(
-    double Width,
-    double Height
-) : INapiRecord
+public sealed partial class TextRectSize : JsObject
 {
-    private static ReadOnlySpan<byte> _widthName => "width"u8;
-    private static ReadOnlySpan<byte> _heightName => "height"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _widthV = NativeValue.From(Width);
-        if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
-        var _heightV = NativeValue.From(Height);
-        if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
-    }
+    public TextRectSize(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
 }
 
 /// <summary>

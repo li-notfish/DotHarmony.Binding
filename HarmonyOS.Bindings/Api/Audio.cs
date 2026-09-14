@@ -2087,29 +2087,30 @@ public sealed partial class InterruptEvent : JsObject
 }
 
 /// <summary>
-/// AudioInterrupt（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AudioInterrupt 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AudioInterrupt(
-    global::HarmonyOS.ArkUI.StreamUsage StreamUsage,
-    global::HarmonyOS.ArkUI.ContentType ContentType,
-    bool PauseWhenDucked
-) : INapiRecord
+public sealed partial class AudioInterrupt : JsObject
 {
-    private static ReadOnlySpan<byte> _streamUsageName => "streamUsage"u8;
-    private static ReadOnlySpan<byte> _contentTypeName => "contentType"u8;
-    private static ReadOnlySpan<byte> _pauseWhenDuckedName => "pauseWhenDucked"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _streamUsageV = NativeValue.From(StreamUsage);
-        if (_streamUsageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _streamUsageName, _streamUsageV);
-        var _contentTypeV = NativeValue.From(ContentType);
-        if (_contentTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _contentTypeName, _contentTypeV);
-        var _pauseWhenDuckedV = NativeValue.From(PauseWhenDucked);
-        if (_pauseWhenDuckedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pauseWhenDuckedName, _pauseWhenDuckedV);
-    }
+    public AudioInterrupt(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _streamUsage => "streamUsage"u8;
+    private static ReadOnlySpan<byte> _contentType => "contentType"u8;
+    private static ReadOnlySpan<byte> _pauseWhenDucked => "pauseWhenDucked"u8;
+    /// <summary>
+    /// streamUsage
+    /// </summary>
+    public global::HarmonyOS.ArkUI.StreamUsage StreamUsage => (global::HarmonyOS.ArkUI.StreamUsage)NativeValue.ToInt(GetPropertyRaw(_streamUsage));
+
+    /// <summary>
+    /// contentType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.ContentType ContentType => (global::HarmonyOS.ArkUI.ContentType)NativeValue.ToInt(GetPropertyRaw(_contentType));
+
+    /// <summary>
+    /// pauseWhenDucked
+    /// </summary>
+    public bool PauseWhenDucked => NativeValue.ToBool(GetPropertyRaw(_pauseWhenDucked));
+
 }
 
 /// <summary>
@@ -3532,19 +3533,18 @@ public sealed partial class AudioTimestampInfo : JsObject
 }
 
 /// <summary>
-/// AudioSessionStrategy（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// AudioSessionStrategy 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record AudioSessionStrategy(
-    global::HarmonyOS.ArkUI.AudioConcurrencyMode ConcurrencyMode
-) : INapiRecord
+public sealed partial class AudioSessionStrategy : JsObject
 {
-    private static ReadOnlySpan<byte> _concurrencyModeName => "concurrencyMode"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _concurrencyModeV = NativeValue.From(ConcurrencyMode);
-        if (_concurrencyModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _concurrencyModeName, _concurrencyModeV);
-    }
+    public AudioSessionStrategy(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _concurrencyMode => "concurrencyMode"u8;
+    /// <summary>
+    /// concurrencyMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.AudioConcurrencyMode ConcurrencyMode => (global::HarmonyOS.ArkUI.AudioConcurrencyMode)NativeValue.ToInt(GetPropertyRaw(_concurrencyMode));
+
 }
 
 /// <summary>
@@ -3866,19 +3866,18 @@ public sealed partial class AudioVolumeGroupManager : JsObject
 }
 
 /// <summary>
-/// SystemRecordControllerConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// SystemRecordControllerConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record SystemRecordControllerConfig(
-    global::HarmonyOS.ArkUI.SourceType SourceType
-) : INapiRecord
+public sealed partial class SystemRecordControllerConfig : JsObject
 {
-    private static ReadOnlySpan<byte> _sourceTypeName => "sourceType"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _sourceTypeV = NativeValue.From(SourceType);
-        if (_sourceTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sourceTypeName, _sourceTypeV);
-    }
+    public SystemRecordControllerConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _sourceType => "sourceType"u8;
+    /// <summary>
+    /// sourceType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.SourceType SourceType => (global::HarmonyOS.ArkUI.SourceType)NativeValue.ToInt(GetPropertyRaw(_sourceType));
+
 }
 
 /// <summary>

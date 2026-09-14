@@ -664,73 +664,7 @@ let ALL_MODE = false;
 
 // --all 全量模式下的灰度黑名单（2026-09-12 首轮全量筛选）：
 // 类型映射缺口（UIContext/SecurityManager 等复杂 ArkUI/系统能力类型），逐个修复后移入转正
-const GRAYSCALE_MODULES = new Set<string>([
-    'Accessibility',
-    'AccountManager',
-    'AdminManager',
-    'ApplicationManager',
-    'ArcAlphabetIndexer',
-    'BackgroundTaskManager',
-    'Bluetooth',
-    'BluetoothManager',
-    'Browser',
-    'Bundle',
-    'ComponentSnapshot',
-    'ComponentUtils',
-    'Configuration',
-    'CryptoExtensionAbility',
-    'DeviceControl',
-    'DeviceManager',
-    'DeviceSettings',
-    'DistributedDeviceManager',
-    'DlpPermission',
-    'DragController',
-    'Eap',
-    'FloatingBall',
-    'Hid',
-    'InputMethodEngine',
-    'LinkEnhance',
-    'LocationManager',
-    'NetworkManager',
-    'OsAccount',
-    'Policy',
-    'Restrictions',
-    'Rpc',
-    'Scan',
-    'SecurityManager',
-    'Serial',
-    'SystemManager',
-    'Tag',
-    'TelephonyManager',
-    'UIContext',
-    'VpnExtension',
-    'WebNativeMessagingExtensionManager',
-    'Wifi',
-    'WifiManager',
-    // 第二轮：跨模块类型引用缺口（net.socket→NetAddress 等），待跨模块依赖解析立项
-    'Socket',
-    'InputConsumer',
-    'InputMethod',
-    'InputEventClient',
-    'InputDevice',
-    'Drawing',
-    'SelectionManager',
-    'Avsession',
-    'AvMusicTemplate',
-    // 依赖灰度模块的跨模块枚举（Call/DataTransfer/RemoteDevice → Avsession.CallState 等）
-    'Call',
-    'DataTransfer',
-    'RemoteDevice',
-    'Observer',
-    // 第三轮：TS 声明合并（window.WindowRect 双定义）/ 跨模块枚举映射漂移残留
-    // 2026-09-13：Window/NetConnection 出灰度（IConnectivity / KeepScreenOn；WindowRect 改名避让已修）
-    'TelephonyObserver',
-    'Connection',
-    'ResourcescheduleBackgroundTaskManager',
-    // className 唯一化后的新名称（net.socket → NetSocket 等）
-    'NetSocket',
-    'UserAuth',
-]);
+const GRAYSCALE_MODULES = new Set<string>([]);
 
 
 /**
@@ -931,8 +865,23 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
             }
             return { ...e, name };
         };
-        pm.finalNewEnums = newEnums.map(fixEnumName);
-        pm.finalAllEnums = pm.enums.map(fixEnumName);
+        // 模块内终名重名避让（如 ResultCode 改名撞原生 UserAuthResultCode → CS0101）：后缀避让
+        const dedupeFinalNames = (enums: EnumInfo[]): EnumInfo[] => {
+            const seen = new Set<string>();
+            return enums.map(e => {
+                let name = e.name;
+                if (seen.has(name)) {
+                    let n = 2;
+                    while (seen.has(`${name}${n}`)) n++;
+                    name = `${name}${n}`;
+                    if ((e as any).originalName === undefined) (e as any).originalName = e.name;
+                }
+                seen.add(name);
+                return name === e.name ? e : { ...e, name };
+            });
+        };
+        pm.finalNewEnums = dedupeFinalNames(newEnums.map(fixEnumName));
+        pm.finalAllEnums = dedupeFinalNames(pm.enums.map(fixEnumName));
     }
 
     // 全局类型注册表：moduleModule → tsName → { csharpName, kind }（认领与 registerSpec 同序同规则）
@@ -968,6 +917,11 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
     // 返回/回调位 demandReturn：强制 wrapper——返回位必须可从句柄构造）
     const demandInput = new Map<string, Set<string>>();
     const demandReturn = new Map<string, Set<string>>();
+    // 全部模块的枚举终名（泄漏映射验证的裸名识别：跨模块枚举 FQN 引用不得误判为未知类型）
+    const allEnumFinalNames = new Set<string>();
+    for (const pm of parsedModules) {
+        for (const e of pm.finalAllEnums) allEnumFinalNames.add(e.name);
+    }
     const demandFor = (m: Map<string, Set<string>>, key: string) => {
         let s = m.get(key);
         if (!s) { s = new Set(); m.set(key, s); }
@@ -1044,6 +998,7 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
                         ...(demandReturn.get(pm.moduleInfo.module) ?? []),
                     ]),
                     returnDemandTs: demandReturn.get(pm.moduleInfo.module) ?? new Set(),
+                    enumFinalNames: allEnumFinalNames,
                 }
             );
 
@@ -1069,6 +1024,18 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
     }
 
     // 写 ohosImports.ets
+    // 清理陈旧孤儿文件：SDK 中已不存在的模块（或 className 唯一化改名前）的旧产物——
+    // 编译时会因引用失效类型而 CS0246（实测 Hid.cs/Connection.cs）
+    const writtenClassNames = new Set(boundModules.map(m => m.className));
+    for (const f of fs.readdirSync(apiOutputDir)) {
+        if (!f.endsWith('.cs')) continue;
+        const stem = f.replace(/\.Enums\.cs$/, '').replace(/\.cs$/, '');
+        if (!writtenClassNames.has(stem)) {
+            fs.unlinkSync(path.join(apiOutputDir, f));
+            console.log(`  Removed stale: ${f}`);
+        }
+    }
+
     writeOhosImports(boundModules);
 
     // 写 module.json5 的 requestPermissions（过滤掉 SDK 中不存在的权限）

@@ -1872,6 +1872,39 @@ public sealed partial class MessageSequence : JsObject
 }
 
 /// <summary>
+/// SendRequestResult 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SendRequestResult : JsObject
+{
+    public SendRequestResult(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _errCode => "errCode"u8;
+    private static ReadOnlySpan<byte> _code => "code"u8;
+    private static ReadOnlySpan<byte> _data => "data"u8;
+    private static ReadOnlySpan<byte> _reply => "reply"u8;
+    /// <summary>
+    /// errCode
+    /// </summary>
+    public double ErrCode => NativeValue.ToDouble(GetPropertyRaw(_errCode));
+
+    /// <summary>
+    /// code
+    /// </summary>
+    public double Code => NativeValue.ToDouble(GetPropertyRaw(_code));
+
+    /// <summary>
+    /// data
+    /// </summary>
+    public MessageParcel Data => new MessageParcel(GetPropertyRaw(_data));
+
+    /// <summary>
+    /// reply
+    /// </summary>
+    public MessageParcel Reply => new MessageParcel(GetPropertyRaw(_reply));
+
+}
+
+/// <summary>
 /// DeathRecipient 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>

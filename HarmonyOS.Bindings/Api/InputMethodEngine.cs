@@ -1329,24 +1329,24 @@ public sealed partial class InputClient : JsObject
 }
 
 /// <summary>
-/// PanelInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PanelInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record InputMethodEnginePanelInfo(
-    global::HarmonyOS.ArkUI.InputMethodEnginePanelType Type,
-    global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag? Flag = null
-) : INapiRecord
+public sealed partial class InputMethodEnginePanelInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _typeName => "type"u8;
-    private static ReadOnlySpan<byte> _flagName => "flag"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _typeV = NativeValue.From(Type);
-        if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
-        var _flagV = NativeValue.From(Flag);
-        if (_flagV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _flagName, _flagV);
-    }
+    public InputMethodEnginePanelInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _flag => "flag"u8;
+    /// <summary>
+    /// type
+    /// </summary>
+    public global::HarmonyOS.ArkUI.InputMethodEnginePanelType Type => (global::HarmonyOS.ArkUI.InputMethodEnginePanelType)NativeValue.ToInt(GetPropertyRaw(_type));
+
+    /// <summary>
+    /// flag
+    /// </summary>
+    public global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag? Flag => (global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag?)(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag)NativeValue.ToInt(GetPropertyRaw(_flag));
+
 }
 
 /// <summary>
@@ -1707,61 +1707,60 @@ public sealed partial class TextInputClient : JsObject
 }
 
 /// <summary>
-/// KeyEvent（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// KeyEvent 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record InputMethodEngineKeyEvent(
-    double KeyCode,
-    double KeyAction
-) : INapiRecord
+public sealed partial class InputMethodEngineKeyEvent : JsObject
 {
-    private static ReadOnlySpan<byte> _keyCodeName => "keyCode"u8;
-    private static ReadOnlySpan<byte> _keyActionName => "keyAction"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _keyCodeV = NativeValue.From(KeyCode);
-        if (_keyCodeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyCodeName, _keyCodeV);
-        var _keyActionV = NativeValue.From(KeyAction);
-        if (_keyActionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyActionName, _keyActionV);
-    }
+    public InputMethodEngineKeyEvent(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _keyCode => "keyCode"u8;
+    private static ReadOnlySpan<byte> _keyAction => "keyAction"u8;
+    /// <summary>
+    /// keyCode
+    /// </summary>
+    public double KeyCode => NativeValue.ToDouble(GetPropertyRaw(_keyCode));
+
+    /// <summary>
+    /// keyAction
+    /// </summary>
+    public double KeyAction => NativeValue.ToDouble(GetPropertyRaw(_keyAction));
+
 }
 
 /// <summary>
-/// Range（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// Range 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record InputMethodEngineRange(
-    double Start,
-    double End
-) : INapiRecord
+public sealed partial class InputMethodEngineRange : JsObject
 {
-    private static ReadOnlySpan<byte> _startName => "start"u8;
-    private static ReadOnlySpan<byte> _endName => "end"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _startV = NativeValue.From(Start);
-        if (_startV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV);
-        var _endV = NativeValue.From(End);
-        if (_endV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV);
-    }
+    public InputMethodEngineRange(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _start => "start"u8;
+    private static ReadOnlySpan<byte> _end => "end"u8;
+    /// <summary>
+    /// start
+    /// </summary>
+    public double Start => NativeValue.ToDouble(GetPropertyRaw(_start));
+
+    /// <summary>
+    /// end
+    /// </summary>
+    public double End => NativeValue.ToDouble(GetPropertyRaw(_end));
+
 }
 
 /// <summary>
-/// Movement（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// Movement 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record InputMethodEngineMovement(
-    global::HarmonyOS.ArkUI.InputMethodEngineDirection Direction
-) : INapiRecord
+public sealed partial class InputMethodEngineMovement : JsObject
 {
-    private static ReadOnlySpan<byte> _directionName => "direction"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _directionV = NativeValue.From(Direction);
-        if (_directionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _directionName, _directionV);
-    }
+    public InputMethodEngineMovement(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _direction => "direction"u8;
+    /// <summary>
+    /// direction
+    /// </summary>
+    public global::HarmonyOS.ArkUI.InputMethodEngineDirection Direction => (global::HarmonyOS.ArkUI.InputMethodEngineDirection)NativeValue.ToInt(GetPropertyRaw(_direction));
+
 }
 
 /// <summary>
@@ -1792,24 +1791,24 @@ public sealed partial class InputMethodEngineMessageHandler : JsObject
 }
 
 /// <summary>
-/// ImmersiveEffect（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ImmersiveEffect 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record ImmersiveEffect(
-    double GradientHeight,
-    global::HarmonyOS.ArkUI.GradientMode GradientMode
-) : INapiRecord
+public sealed partial class ImmersiveEffect : JsObject
 {
-    private static ReadOnlySpan<byte> _gradientHeightName => "gradientHeight"u8;
-    private static ReadOnlySpan<byte> _gradientModeName => "gradientMode"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _gradientHeightV = NativeValue.From(GradientHeight);
-        if (_gradientHeightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _gradientHeightName, _gradientHeightV);
-        var _gradientModeV = NativeValue.From(GradientMode);
-        if (_gradientModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _gradientModeName, _gradientModeV);
-    }
+    public ImmersiveEffect(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _gradientHeight => "gradientHeight"u8;
+    private static ReadOnlySpan<byte> _gradientMode => "gradientMode"u8;
+    /// <summary>
+    /// gradientHeight
+    /// </summary>
+    public double GradientHeight => NativeValue.ToDouble(GetPropertyRaw(_gradientHeight));
+
+    /// <summary>
+    /// gradientMode
+    /// </summary>
+    public global::HarmonyOS.ArkUI.GradientMode GradientMode => (global::HarmonyOS.ArkUI.GradientMode)NativeValue.ToInt(GetPropertyRaw(_gradientMode));
+
 }
 
 /// <summary>

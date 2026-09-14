@@ -2461,118 +2461,120 @@ public sealed partial class SocketStateBase : JsObject
 }
 
 /// <summary>
-/// UDPExtraOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// UDPExtraOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record UDPExtraOptions(
-    double? ReceiveBufferSize = null,
-    double? SendBufferSize = null,
-    bool? ReuseAddress = null,
-    double? SocketTimeout = null,
-    bool? Broadcast = null
-) : INapiRecord
+public sealed partial class UDPExtraOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _receiveBufferSizeName => "receiveBufferSize"u8;
-    private static ReadOnlySpan<byte> _sendBufferSizeName => "sendBufferSize"u8;
-    private static ReadOnlySpan<byte> _reuseAddressName => "reuseAddress"u8;
-    private static ReadOnlySpan<byte> _socketTimeoutName => "socketTimeout"u8;
-    private static ReadOnlySpan<byte> _broadcastName => "broadcast"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _receiveBufferSizeV = NativeValue.From(ReceiveBufferSize);
-        if (_receiveBufferSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _receiveBufferSizeName, _receiveBufferSizeV);
-        var _sendBufferSizeV = NativeValue.From(SendBufferSize);
-        if (_sendBufferSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sendBufferSizeName, _sendBufferSizeV);
-        var _reuseAddressV = NativeValue.From(ReuseAddress);
-        if (_reuseAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reuseAddressName, _reuseAddressV);
-        var _socketTimeoutV = NativeValue.From(SocketTimeout);
-        if (_socketTimeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _socketTimeoutName, _socketTimeoutV);
-        var _broadcastV = NativeValue.From(Broadcast);
-        if (_broadcastV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _broadcastName, _broadcastV);
-    }
+    public UDPExtraOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _receiveBufferSize => "receiveBufferSize"u8;
+    private static ReadOnlySpan<byte> _sendBufferSize => "sendBufferSize"u8;
+    private static ReadOnlySpan<byte> _reuseAddress => "reuseAddress"u8;
+    private static ReadOnlySpan<byte> _socketTimeout => "socketTimeout"u8;
+    private static ReadOnlySpan<byte> _broadcast => "broadcast"u8;
+    /// <summary>
+    /// receiveBufferSize
+    /// </summary>
+    public double? ReceiveBufferSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_receiveBufferSize));
+
+    /// <summary>
+    /// sendBufferSize
+    /// </summary>
+    public double? SendBufferSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_sendBufferSize));
+
+    /// <summary>
+    /// reuseAddress
+    /// </summary>
+    public bool? ReuseAddress => (bool?)NativeValue.ToBool(GetPropertyRaw(_reuseAddress));
+
+    /// <summary>
+    /// socketTimeout
+    /// </summary>
+    public double? SocketTimeout => (double?)NativeValue.ToDouble(GetPropertyRaw(_socketTimeout));
+
+    /// <summary>
+    /// broadcast
+    /// </summary>
+    public bool? Broadcast => (bool?)NativeValue.ToBool(GetPropertyRaw(_broadcast));
+
 }
 
 /// <summary>
-/// TCPSendOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// TCPSendOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record TCPSendOptions(
-    string Data,
-    string? Encoding = null
-) : INapiRecord
+public sealed partial class TCPSendOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _dataName => "data"u8;
-    private static ReadOnlySpan<byte> _encodingName => "encoding"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _dataV = NativeValue.From(Data);
-        if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
-        var _encodingV = NativeValue.From(Encoding);
-        if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
-    }
+    public TCPSendOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _data => "data"u8;
+    private static ReadOnlySpan<byte> _encoding => "encoding"u8;
+    /// <summary>
+    /// data
+    /// </summary>
+    public string Data => NativeValue.ToString(GetPropertyRaw(_data)) ?? string.Empty;
+
+    /// <summary>
+    /// encoding
+    /// </summary>
+    public string? Encoding => (string?)NativeValue.ToString(GetPropertyRaw(_encoding)) ?? string.Empty;
+
 }
 
 /// <summary>
-/// LocalAddress（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// LocalAddress 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record LocalAddress(
-    string Address
-) : INapiRecord
+public sealed partial class LocalAddress : JsObject
 {
-    private static ReadOnlySpan<byte> _addressName => "address"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _addressV = NativeValue.From(Address);
-        if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
-    }
+    public LocalAddress(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _address => "address"u8;
+    /// <summary>
+    /// address
+    /// </summary>
+    public string Address => NativeValue.ToString(GetPropertyRaw(_address)) ?? string.Empty;
+
 }
 
 /// <summary>
-/// LocalConnectOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// LocalConnectOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record LocalConnectOptions(
-    LocalAddress Address,
-    double? Timeout = null
-) : INapiRecord
+public sealed partial class LocalConnectOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _addressName => "address"u8;
-    private static ReadOnlySpan<byte> _timeoutName => "timeout"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _addressV = NativeValue.From(Address);
-        if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
-        var _timeoutV = NativeValue.From(Timeout);
-        if (_timeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeoutName, _timeoutV);
-    }
+    public LocalConnectOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _address => "address"u8;
+    private static ReadOnlySpan<byte> _timeout => "timeout"u8;
+    /// <summary>
+    /// address
+    /// </summary>
+    public LocalAddress Address => new LocalAddress(GetPropertyRaw(_address));
+
+    /// <summary>
+    /// timeout
+    /// </summary>
+    public double? Timeout => (double?)NativeValue.ToDouble(GetPropertyRaw(_timeout));
+
 }
 
 /// <summary>
-/// LocalSendOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// LocalSendOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record LocalSendOptions(
-    string Data,
-    string? Encoding = null
-) : INapiRecord
+public sealed partial class LocalSendOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _dataName => "data"u8;
-    private static ReadOnlySpan<byte> _encodingName => "encoding"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _dataV = NativeValue.From(Data);
-        if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
-        var _encodingV = NativeValue.From(Encoding);
-        if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
-    }
+    public LocalSendOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _data => "data"u8;
+    private static ReadOnlySpan<byte> _encoding => "encoding"u8;
+    /// <summary>
+    /// data
+    /// </summary>
+    public string Data => NativeValue.ToString(GetPropertyRaw(_data)) ?? string.Empty;
+
+    /// <summary>
+    /// encoding
+    /// </summary>
+    public string? Encoding => (string?)NativeValue.ToString(GetPropertyRaw(_encoding)) ?? string.Empty;
+
 }
 
 /// <summary>

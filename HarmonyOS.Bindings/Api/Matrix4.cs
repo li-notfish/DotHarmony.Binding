@@ -241,161 +241,172 @@ public sealed partial class Matrix4Transit : JsObject
 }
 
 /// <summary>
-/// TranslateOption（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// TranslateOption 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record TranslateOption(
-    double? X = null,
-    double? Y = null,
-    double? Z = null
-) : INapiRecord
+public sealed partial class TranslateOption : JsObject
 {
-    private static ReadOnlySpan<byte> _xName => "x"u8;
-    private static ReadOnlySpan<byte> _yName => "y"u8;
-    private static ReadOnlySpan<byte> _zName => "z"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _xV = NativeValue.From(X);
-        if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
-        var _yV = NativeValue.From(Y);
-        if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
-        var _zV = NativeValue.From(Z);
-        if (_zV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _zName, _zV);
-    }
+    public TranslateOption(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    /// <summary>
+    /// x
+    /// </summary>
+    public double? X => (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double? Y => (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double? Z => (double?)NativeValue.ToDouble(GetPropertyRaw(_z));
+
 }
 
 /// <summary>
-/// ScaleOption（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// ScaleOption 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record ScaleOption(
-    double? X = null,
-    double? Y = null,
-    double? Z = null,
-    double? CenterX = null,
-    double? CenterY = null
-) : INapiRecord
+public sealed partial class ScaleOption : JsObject
 {
-    private static ReadOnlySpan<byte> _xName => "x"u8;
-    private static ReadOnlySpan<byte> _yName => "y"u8;
-    private static ReadOnlySpan<byte> _zName => "z"u8;
-    private static ReadOnlySpan<byte> _centerXName => "centerX"u8;
-    private static ReadOnlySpan<byte> _centerYName => "centerY"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _xV = NativeValue.From(X);
-        if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
-        var _yV = NativeValue.From(Y);
-        if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
-        var _zV = NativeValue.From(Z);
-        if (_zV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _zName, _zV);
-        var _centerXV = NativeValue.From(CenterX);
-        if (_centerXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _centerXName, _centerXV);
-        var _centerYV = NativeValue.From(CenterY);
-        if (_centerYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _centerYName, _centerYV);
-    }
+    public ScaleOption(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    private static ReadOnlySpan<byte> _centerX => "centerX"u8;
+    private static ReadOnlySpan<byte> _centerY => "centerY"u8;
+    /// <summary>
+    /// x
+    /// </summary>
+    public double? X => (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double? Y => (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double? Z => (double?)NativeValue.ToDouble(GetPropertyRaw(_z));
+
+    /// <summary>
+    /// centerX
+    /// </summary>
+    public double? CenterX => (double?)NativeValue.ToDouble(GetPropertyRaw(_centerX));
+
+    /// <summary>
+    /// centerY
+    /// </summary>
+    public double? CenterY => (double?)NativeValue.ToDouble(GetPropertyRaw(_centerY));
+
 }
 
 /// <summary>
-/// RotateOption（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// RotateOption 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record RotateOption(
-    double? X = null,
-    double? Y = null,
-    double? Z = null,
-    double? CenterX = null,
-    double? CenterY = null,
-    double? Angle = null
-) : INapiRecord
+public sealed partial class RotateOption : JsObject
 {
-    private static ReadOnlySpan<byte> _xName => "x"u8;
-    private static ReadOnlySpan<byte> _yName => "y"u8;
-    private static ReadOnlySpan<byte> _zName => "z"u8;
-    private static ReadOnlySpan<byte> _centerXName => "centerX"u8;
-    private static ReadOnlySpan<byte> _centerYName => "centerY"u8;
-    private static ReadOnlySpan<byte> _angleName => "angle"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _xV = NativeValue.From(X);
-        if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
-        var _yV = NativeValue.From(Y);
-        if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
-        var _zV = NativeValue.From(Z);
-        if (_zV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _zName, _zV);
-        var _centerXV = NativeValue.From(CenterX);
-        if (_centerXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _centerXName, _centerXV);
-        var _centerYV = NativeValue.From(CenterY);
-        if (_centerYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _centerYName, _centerYV);
-        var _angleV = NativeValue.From(Angle);
-        if (_angleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _angleName, _angleV);
-    }
+    public RotateOption(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    private static ReadOnlySpan<byte> _z => "z"u8;
+    private static ReadOnlySpan<byte> _centerX => "centerX"u8;
+    private static ReadOnlySpan<byte> _centerY => "centerY"u8;
+    private static ReadOnlySpan<byte> _angle => "angle"u8;
+    /// <summary>
+    /// x
+    /// </summary>
+    public double? X => (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double? Y => (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
+
+    /// <summary>
+    /// z
+    /// </summary>
+    public double? Z => (double?)NativeValue.ToDouble(GetPropertyRaw(_z));
+
+    /// <summary>
+    /// centerX
+    /// </summary>
+    public double? CenterX => (double?)NativeValue.ToDouble(GetPropertyRaw(_centerX));
+
+    /// <summary>
+    /// centerY
+    /// </summary>
+    public double? CenterY => (double?)NativeValue.ToDouble(GetPropertyRaw(_centerY));
+
+    /// <summary>
+    /// angle
+    /// </summary>
+    public double? Angle => (double?)NativeValue.ToDouble(GetPropertyRaw(_angle));
+
 }
 
 /// <summary>
-/// PolyToPolyOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PolyToPolyOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PolyToPolyOptions(
-    Matrix4Point[] Src,
-    double? SrcIndex,
-    Matrix4Point[] Dst,
-    double? DstIndex = null,
-    double? PointCount = null
-) : INapiRecord
+public sealed partial class PolyToPolyOptions : JsObject
 {
-    private static ReadOnlySpan<byte> _srcName => "src"u8;
-    private static ReadOnlySpan<byte> _srcIndexName => "srcIndex"u8;
-    private static ReadOnlySpan<byte> _dstName => "dst"u8;
-    private static ReadOnlySpan<byte> _dstIndexName => "dstIndex"u8;
-    private static ReadOnlySpan<byte> _pointCountName => "pointCount"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _srcV = NativeValue.From(Src);
-        if (_srcV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _srcName, _srcV);
-        var _srcIndexV = NativeValue.From(SrcIndex);
-        if (_srcIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _srcIndexName, _srcIndexV);
-        var _dstV = NativeValue.From(Dst);
-        if (_dstV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dstName, _dstV);
-        var _dstIndexV = NativeValue.From(DstIndex);
-        if (_dstIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dstIndexName, _dstIndexV);
-        var _pointCountV = NativeValue.From(PointCount);
-        if (_pointCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pointCountName, _pointCountV);
-    }
+    public PolyToPolyOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _src => "src"u8;
+    private static ReadOnlySpan<byte> _srcIndex => "srcIndex"u8;
+    private static ReadOnlySpan<byte> _dst => "dst"u8;
+    private static ReadOnlySpan<byte> _dstIndex => "dstIndex"u8;
+    private static ReadOnlySpan<byte> _pointCount => "pointCount"u8;
+    /// <summary>
+    /// src
+    /// </summary>
+    public Matrix4Point[] Src => ValueConverter.ConvertArray(GetPropertyRaw(_src), static e => new Matrix4Point(e));
+
+    /// <summary>
+    /// srcIndex
+    /// </summary>
+    public double? SrcIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_srcIndex));
+
+    /// <summary>
+    /// dst
+    /// </summary>
+    public Matrix4Point[] Dst => ValueConverter.ConvertArray(GetPropertyRaw(_dst), static e => new Matrix4Point(e));
+
+    /// <summary>
+    /// dstIndex
+    /// </summary>
+    public double? DstIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_dstIndex));
+
+    /// <summary>
+    /// pointCount
+    /// </summary>
+    public double? PointCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_pointCount));
+
 }
 
 /// <summary>
-/// Point（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// Point 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record Matrix4Point(
-    double X,
-    double Y
-) : INapiRecord
+public sealed partial class Matrix4Point : JsObject
 {
-    private static ReadOnlySpan<byte> _xName => "x"u8;
-    private static ReadOnlySpan<byte> _yName => "y"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _xV = NativeValue.From(X);
-        if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
-        var _yV = NativeValue.From(Y);
-        if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
-    }
+    public Matrix4Point(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _x => "x"u8;
+    private static ReadOnlySpan<byte> _y => "y"u8;
+    /// <summary>
+    /// x
+    /// </summary>
+    public double X => NativeValue.ToDouble(GetPropertyRaw(_x));
+
+    /// <summary>
+    /// y
+    /// </summary>
+    public double Y => NativeValue.ToDouble(GetPropertyRaw(_y));
+
 }

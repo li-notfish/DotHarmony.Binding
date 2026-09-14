@@ -120,23 +120,7 @@ public static unsafe partial class Observer
     /// <summary>
     /// on
     /// </summary>
-    public static void On(string type, UIContextObject context, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _on, type, context, callback);
-    }
-
-    /// <summary>
-    /// off
-    /// </summary>
-    public static void Off(string type, UIContextObject context, IntPtr callback)
-    {
-        NodeApi.CallMethodVoid(Module, _off, type, context, callback);
-    }
-
-    /// <summary>
-    /// on
-    /// </summary>
-    public static void On(string type, UIContextObject context, IntPtr observerOptions, IntPtr callback)
+    public static void On(string type, IntPtr context, IntPtr observerOptions, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, context, observerOptions, callback);
     }
@@ -144,7 +128,7 @@ public static unsafe partial class Observer
     /// <summary>
     /// off
     /// </summary>
-    public static void Off(string type, UIContextObject context, IntPtr observerOptions, IntPtr callback)
+    public static void Off(string type, IntPtr context, IntPtr observerOptions, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, context, observerOptions, callback);
     }
@@ -216,7 +200,7 @@ public static unsafe partial class Observer
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<RouterPageInfo> callback, UIContextObject context)
+    public static void On(string type, System.Action<RouterPageInfo> callback, IntPtr context)
     {
         _eventListeners.Add((type, callback),
             args => callback(new RouterPageInfo(args[0])),
@@ -226,7 +210,7 @@ public static unsafe partial class Observer
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action<RouterPageInfo> callback, UIContextObject context)
+    public static void Off(string type, System.Action<RouterPageInfo> callback, IntPtr context)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, context));
     }
@@ -234,7 +218,7 @@ public static unsafe partial class Observer
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<DensityInfo> callback, UIContextObject context)
+    public static void On(string type, System.Action<DensityInfo> callback, IntPtr context)
     {
         _eventListeners.Add((type, callback),
             args => callback(new DensityInfo(args[0])),
@@ -244,7 +228,7 @@ public static unsafe partial class Observer
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action<DensityInfo> callback, UIContextObject context)
+    public static void Off(string type, System.Action<DensityInfo> callback, IntPtr context)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, context));
     }
@@ -252,7 +236,7 @@ public static unsafe partial class Observer
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action callback, UIContextObject context)
+    public static void On(string type, System.Action callback, IntPtr context)
     {
         _eventListeners.Add((type, callback),
             args => callback(),
@@ -262,7 +246,7 @@ public static unsafe partial class Observer
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action callback, UIContextObject context)
+    public static void Off(string type, System.Action callback, IntPtr context)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, context));
     }
@@ -306,25 +290,7 @@ public static unsafe partial class Observer
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<IntPtr> callback, UIContextObject context)
-    {
-        _eventListeners.Add((type, callback),
-            args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, context));
-    }
-
-    /// <summary>
-    /// off(type, callback)：解除订阅（按 handler 匹配）
-    /// </summary>
-    public static void Off(string type, System.Action<IntPtr> callback, UIContextObject context)
-    {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, context));
-    }
-
-    /// <summary>
-    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
-    /// </summary>
-    public static void On(string type, System.Action<IntPtr> callback, UIContextObject context, IntPtr observerOptions)
+    public static void On(string type, System.Action<IntPtr> callback, IntPtr context, IntPtr observerOptions)
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
@@ -334,7 +300,7 @@ public static unsafe partial class Observer
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action<IntPtr> callback, UIContextObject context, IntPtr observerOptions)
+    public static void Off(string type, System.Action<IntPtr> callback, IntPtr context, IntPtr observerOptions)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, context, observerOptions));
     }

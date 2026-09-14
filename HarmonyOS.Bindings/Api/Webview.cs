@@ -2021,54 +2021,60 @@ public sealed partial class JsMessageExt : JsObject
 }
 
 /// <summary>
-/// PdfConfiguration（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// PdfConfiguration 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record PdfConfiguration(
-    double Width,
-    double Height,
-    double MarginTop,
-    double MarginBottom,
-    double MarginRight,
-    double MarginLeft,
-    double? Scale = null,
-    bool? ShouldPrintBackground = null
-) : INapiRecord
+public sealed partial class PdfConfiguration : JsObject
 {
-    private static ReadOnlySpan<byte> _widthName => "width"u8;
-    private static ReadOnlySpan<byte> _heightName => "height"u8;
-    private static ReadOnlySpan<byte> _marginTopName => "marginTop"u8;
-    private static ReadOnlySpan<byte> _marginBottomName => "marginBottom"u8;
-    private static ReadOnlySpan<byte> _marginRightName => "marginRight"u8;
-    private static ReadOnlySpan<byte> _marginLeftName => "marginLeft"u8;
-    private static ReadOnlySpan<byte> _scaleName => "scale"u8;
-    private static ReadOnlySpan<byte> _shouldPrintBackgroundName => "shouldPrintBackground"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _widthV = NativeValue.From(Width);
-        if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
-        var _heightV = NativeValue.From(Height);
-        if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
-        var _marginTopV = NativeValue.From(MarginTop);
-        if (_marginTopV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _marginTopName, _marginTopV);
-        var _marginBottomV = NativeValue.From(MarginBottom);
-        if (_marginBottomV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _marginBottomName, _marginBottomV);
-        var _marginRightV = NativeValue.From(MarginRight);
-        if (_marginRightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _marginRightName, _marginRightV);
-        var _marginLeftV = NativeValue.From(MarginLeft);
-        if (_marginLeftV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _marginLeftName, _marginLeftV);
-        var _scaleV = NativeValue.From(Scale);
-        if (_scaleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _scaleName, _scaleV);
-        var _shouldPrintBackgroundV = NativeValue.From(ShouldPrintBackground);
-        if (_shouldPrintBackgroundV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _shouldPrintBackgroundName, _shouldPrintBackgroundV);
-    }
+    public PdfConfiguration(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _width => "width"u8;
+    private static ReadOnlySpan<byte> _height => "height"u8;
+    private static ReadOnlySpan<byte> _marginTop => "marginTop"u8;
+    private static ReadOnlySpan<byte> _marginBottom => "marginBottom"u8;
+    private static ReadOnlySpan<byte> _marginRight => "marginRight"u8;
+    private static ReadOnlySpan<byte> _marginLeft => "marginLeft"u8;
+    private static ReadOnlySpan<byte> _scale => "scale"u8;
+    private static ReadOnlySpan<byte> _shouldPrintBackground => "shouldPrintBackground"u8;
+    /// <summary>
+    /// width
+    /// </summary>
+    public double Width => NativeValue.ToDouble(GetPropertyRaw(_width));
+
+    /// <summary>
+    /// height
+    /// </summary>
+    public double Height => NativeValue.ToDouble(GetPropertyRaw(_height));
+
+    /// <summary>
+    /// marginTop
+    /// </summary>
+    public double MarginTop => NativeValue.ToDouble(GetPropertyRaw(_marginTop));
+
+    /// <summary>
+    /// marginBottom
+    /// </summary>
+    public double MarginBottom => NativeValue.ToDouble(GetPropertyRaw(_marginBottom));
+
+    /// <summary>
+    /// marginRight
+    /// </summary>
+    public double MarginRight => NativeValue.ToDouble(GetPropertyRaw(_marginRight));
+
+    /// <summary>
+    /// marginLeft
+    /// </summary>
+    public double MarginLeft => NativeValue.ToDouble(GetPropertyRaw(_marginLeft));
+
+    /// <summary>
+    /// scale
+    /// </summary>
+    public double? Scale => (double?)NativeValue.ToDouble(GetPropertyRaw(_scale));
+
+    /// <summary>
+    /// shouldPrintBackground
+    /// </summary>
+    public bool? ShouldPrintBackground => (bool?)NativeValue.ToBool(GetPropertyRaw(_shouldPrintBackground));
+
 }
 
 /// <summary>
@@ -2120,59 +2126,66 @@ public sealed partial class BackForwardList : JsObject
 }
 
 /// <summary>
-/// WebCustomScheme（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// WebCustomScheme 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record WebCustomScheme(
-    string SchemeName,
-    bool IsSupportCors,
-    bool IsSupportFetch,
-    bool? IsStandard = null,
-    bool? IsLocal = null,
-    bool? IsDisplayIsolated = null,
-    bool? IsSecure = null,
-    bool? IsCspBypassing = null,
-    bool? IsCodeCacheSupported = null
-) : INapiRecord
+public sealed partial class WebCustomScheme : JsObject
 {
-    private static ReadOnlySpan<byte> _schemeNameName => "schemeName"u8;
-    private static ReadOnlySpan<byte> _isSupportCorsName => "isSupportCORS"u8;
-    private static ReadOnlySpan<byte> _isSupportFetchName => "isSupportFetch"u8;
-    private static ReadOnlySpan<byte> _isStandardName => "isStandard"u8;
-    private static ReadOnlySpan<byte> _isLocalName => "isLocal"u8;
-    private static ReadOnlySpan<byte> _isDisplayIsolatedName => "isDisplayIsolated"u8;
-    private static ReadOnlySpan<byte> _isSecureName => "isSecure"u8;
-    private static ReadOnlySpan<byte> _isCspBypassingName => "isCspBypassing"u8;
-    private static ReadOnlySpan<byte> _isCodeCacheSupportedName => "isCodeCacheSupported"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _schemeNameV = NativeValue.From(SchemeName);
-        if (_schemeNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _schemeNameName, _schemeNameV);
-        var _isSupportCorsV = NativeValue.From(IsSupportCors);
-        if (_isSupportCorsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isSupportCorsName, _isSupportCorsV);
-        var _isSupportFetchV = NativeValue.From(IsSupportFetch);
-        if (_isSupportFetchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isSupportFetchName, _isSupportFetchV);
-        var _isStandardV = NativeValue.From(IsStandard);
-        if (_isStandardV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isStandardName, _isStandardV);
-        var _isLocalV = NativeValue.From(IsLocal);
-        if (_isLocalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isLocalName, _isLocalV);
-        var _isDisplayIsolatedV = NativeValue.From(IsDisplayIsolated);
-        if (_isDisplayIsolatedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isDisplayIsolatedName, _isDisplayIsolatedV);
-        var _isSecureV = NativeValue.From(IsSecure);
-        if (_isSecureV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isSecureName, _isSecureV);
-        var _isCspBypassingV = NativeValue.From(IsCspBypassing);
-        if (_isCspBypassingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isCspBypassingName, _isCspBypassingV);
-        var _isCodeCacheSupportedV = NativeValue.From(IsCodeCacheSupported);
-        if (_isCodeCacheSupportedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isCodeCacheSupportedName, _isCodeCacheSupportedV);
-    }
+    public WebCustomScheme(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _schemeName => "schemeName"u8;
+    private static ReadOnlySpan<byte> _isSupportCORS => "isSupportCORS"u8;
+    private static ReadOnlySpan<byte> _isSupportFetch => "isSupportFetch"u8;
+    private static ReadOnlySpan<byte> _isStandard => "isStandard"u8;
+    private static ReadOnlySpan<byte> _isLocal => "isLocal"u8;
+    private static ReadOnlySpan<byte> _isDisplayIsolated => "isDisplayIsolated"u8;
+    private static ReadOnlySpan<byte> _isSecure => "isSecure"u8;
+    private static ReadOnlySpan<byte> _isCspBypassing => "isCspBypassing"u8;
+    private static ReadOnlySpan<byte> _isCodeCacheSupported => "isCodeCacheSupported"u8;
+    /// <summary>
+    /// schemeName
+    /// </summary>
+    public string SchemeName => NativeValue.ToString(GetPropertyRaw(_schemeName)) ?? string.Empty;
+
+    /// <summary>
+    /// isSupportCORS
+    /// </summary>
+    public bool IsSupportCors => NativeValue.ToBool(GetPropertyRaw(_isSupportCORS));
+
+    /// <summary>
+    /// isSupportFetch
+    /// </summary>
+    public bool IsSupportFetch => NativeValue.ToBool(GetPropertyRaw(_isSupportFetch));
+
+    /// <summary>
+    /// isStandard
+    /// </summary>
+    public bool? IsStandard => (bool?)NativeValue.ToBool(GetPropertyRaw(_isStandard));
+
+    /// <summary>
+    /// isLocal
+    /// </summary>
+    public bool? IsLocal => (bool?)NativeValue.ToBool(GetPropertyRaw(_isLocal));
+
+    /// <summary>
+    /// isDisplayIsolated
+    /// </summary>
+    public bool? IsDisplayIsolated => (bool?)NativeValue.ToBool(GetPropertyRaw(_isDisplayIsolated));
+
+    /// <summary>
+    /// isSecure
+    /// </summary>
+    public bool? IsSecure => (bool?)NativeValue.ToBool(GetPropertyRaw(_isSecure));
+
+    /// <summary>
+    /// isCspBypassing
+    /// </summary>
+    public bool? IsCspBypassing => (bool?)NativeValue.ToBool(GetPropertyRaw(_isCspBypassing));
+
+    /// <summary>
+    /// isCodeCacheSupported
+    /// </summary>
+    public bool? IsCodeCacheSupported => (bool?)NativeValue.ToBool(GetPropertyRaw(_isCodeCacheSupported));
+
 }
 
 /// <summary>
@@ -2248,29 +2261,30 @@ public sealed partial class WebSchemeHandler : JsObject
 }
 
 /// <summary>
-/// RequestInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// RequestInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record WebviewRequestInfo(
-    string Url,
-    string Method,
-    string FormData
-) : INapiRecord
+public sealed partial class WebviewRequestInfo : JsObject
 {
-    private static ReadOnlySpan<byte> _urlName => "url"u8;
-    private static ReadOnlySpan<byte> _methodName => "method"u8;
-    private static ReadOnlySpan<byte> _formDataName => "formData"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _urlV = NativeValue.From(Url);
-        if (_urlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _urlName, _urlV);
-        var _methodV = NativeValue.From(Method);
-        if (_methodV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _methodName, _methodV);
-        var _formDataV = NativeValue.From(FormData);
-        if (_formDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _formDataName, _formDataV);
-    }
+    public WebviewRequestInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _url => "url"u8;
+    private static ReadOnlySpan<byte> _method => "method"u8;
+    private static ReadOnlySpan<byte> _formData => "formData"u8;
+    /// <summary>
+    /// url
+    /// </summary>
+    public string Url => NativeValue.ToString(GetPropertyRaw(_url)) ?? string.Empty;
+
+    /// <summary>
+    /// method
+    /// </summary>
+    public string Method => NativeValue.ToString(GetPropertyRaw(_method)) ?? string.Empty;
+
+    /// <summary>
+    /// formData
+    /// </summary>
+    public string FormData => NativeValue.ToString(GetPropertyRaw(_formData)) ?? string.Empty;
+
 }
 
 /// <summary>
@@ -2511,49 +2525,54 @@ public sealed partial class BlanklessInfo : JsObject
 }
 
 /// <summary>
-/// SecurityParams（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// SecurityParams 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed record SecurityParams(
-    bool? DisableJitCompilation = null,
-    bool? DisableWebAssembly = null,
-    bool? DisableWebGl = null,
-    bool? DisablePdfViewer = null,
-    bool? DisableMathMl = null,
-    bool? DisableServiceWorker = null,
-    bool? DisableNonProxyUdp = null
-) : INapiRecord
+public sealed partial class SecurityParams : JsObject
 {
-    private static ReadOnlySpan<byte> _disableJitCompilationName => "disableJITCompilation"u8;
-    private static ReadOnlySpan<byte> _disableWebAssemblyName => "disableWebAssembly"u8;
-    private static ReadOnlySpan<byte> _disableWebGlName => "disableWebGL"u8;
-    private static ReadOnlySpan<byte> _disablePdfViewerName => "disablePDFViewer"u8;
-    private static ReadOnlySpan<byte> _disableMathMlName => "disableMathML"u8;
-    private static ReadOnlySpan<byte> _disableServiceWorkerName => "disableServiceWorker"u8;
-    private static ReadOnlySpan<byte> _disableNonProxyUdpName => "disableNonProxyUDP"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _disableJitCompilationV = NativeValue.From(DisableJitCompilation);
-        if (_disableJitCompilationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableJitCompilationName, _disableJitCompilationV);
-        var _disableWebAssemblyV = NativeValue.From(DisableWebAssembly);
-        if (_disableWebAssemblyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableWebAssemblyName, _disableWebAssemblyV);
-        var _disableWebGlV = NativeValue.From(DisableWebGl);
-        if (_disableWebGlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableWebGlName, _disableWebGlV);
-        var _disablePdfViewerV = NativeValue.From(DisablePdfViewer);
-        if (_disablePdfViewerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disablePdfViewerName, _disablePdfViewerV);
-        var _disableMathMlV = NativeValue.From(DisableMathMl);
-        if (_disableMathMlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableMathMlName, _disableMathMlV);
-        var _disableServiceWorkerV = NativeValue.From(DisableServiceWorker);
-        if (_disableServiceWorkerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableServiceWorkerName, _disableServiceWorkerV);
-        var _disableNonProxyUdpV = NativeValue.From(DisableNonProxyUdp);
-        if (_disableNonProxyUdpV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableNonProxyUdpName, _disableNonProxyUdpV);
-    }
+    public SecurityParams(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _disableJITCompilation => "disableJITCompilation"u8;
+    private static ReadOnlySpan<byte> _disableWebAssembly => "disableWebAssembly"u8;
+    private static ReadOnlySpan<byte> _disableWebGL => "disableWebGL"u8;
+    private static ReadOnlySpan<byte> _disablePDFViewer => "disablePDFViewer"u8;
+    private static ReadOnlySpan<byte> _disableMathML => "disableMathML"u8;
+    private static ReadOnlySpan<byte> _disableServiceWorker => "disableServiceWorker"u8;
+    private static ReadOnlySpan<byte> _disableNonProxyUDP => "disableNonProxyUDP"u8;
+    /// <summary>
+    /// disableJITCompilation
+    /// </summary>
+    public bool? DisableJitCompilation => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableJITCompilation));
+
+    /// <summary>
+    /// disableWebAssembly
+    /// </summary>
+    public bool? DisableWebAssembly => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableWebAssembly));
+
+    /// <summary>
+    /// disableWebGL
+    /// </summary>
+    public bool? DisableWebGl => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableWebGL));
+
+    /// <summary>
+    /// disablePDFViewer
+    /// </summary>
+    public bool? DisablePdfViewer => (bool?)NativeValue.ToBool(GetPropertyRaw(_disablePDFViewer));
+
+    /// <summary>
+    /// disableMathML
+    /// </summary>
+    public bool? DisableMathMl => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableMathML));
+
+    /// <summary>
+    /// disableServiceWorker
+    /// </summary>
+    public bool? DisableServiceWorker => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableServiceWorker));
+
+    /// <summary>
+    /// disableNonProxyUDP
+    /// </summary>
+    public bool? DisableNonProxyUdp => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableNonProxyUDP));
+
 }
 
 /// <summary>

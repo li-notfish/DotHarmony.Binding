@@ -72,7 +72,7 @@ public static unsafe partial class AutoFillManager
     /// <summary>
     /// requestAutoSave
     /// </summary>
-    public static void RequestAutoSave(IntPtr context, AutoSaveCallback? callback = null)
+    public static void RequestAutoSave(global::HarmonyOS.Bindings.Api.UIContextObject context, AutoSaveCallback? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _requestAutoSave, context, callback);
     }
@@ -80,7 +80,7 @@ public static unsafe partial class AutoFillManager
     /// <summary>
     /// requestAutoSave
     /// </summary>
-    public static void RequestAutoSave(IntPtr context, IntPtr request, AutoSaveCallback? callback = null)
+    public static void RequestAutoSave(global::HarmonyOS.Bindings.Api.UIContextObject context, IntPtr request, AutoSaveCallback? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _requestAutoSave, context, request, callback);
     }
@@ -88,7 +88,7 @@ public static unsafe partial class AutoFillManager
     /// <summary>
     /// requestAutoFill
     /// </summary>
-    public static void RequestAutoFill(IntPtr context, IntPtr request, IntPtr? callback = null)
+    public static void RequestAutoFill(global::HarmonyOS.Bindings.Api.UIContextObject context, IntPtr request, IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _requestAutoFill, context, request, callback);
     }
