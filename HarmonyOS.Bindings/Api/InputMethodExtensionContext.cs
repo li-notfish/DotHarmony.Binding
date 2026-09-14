@@ -94,3 +94,30 @@ public static unsafe partial class InputMethodExtensionContext
     }
 
 }
+
+/// <summary>
+/// InputMethodExtensionContext 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class InputMethodExtensionContextObject : JsObject
+{
+    public InputMethodExtensionContextObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _destroy => "destroy"u8;
+    private static ReadOnlySpan<byte> _startAbility => "startAbility"u8;
+    /// <summary>
+    /// destroy
+    /// </summary>
+    public Task DestroyAsync()
+    {
+        return CallMethodAsyncVoid(_destroy);
+    }
+
+    /// <summary>
+    /// startAbility
+    /// </summary>
+    public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want)
+    {
+        return CallMethodAsyncVoid(_startAbility, want);
+    }
+
+}

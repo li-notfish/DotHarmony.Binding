@@ -195,3 +195,117 @@ declare namespace testsvc {
 `);
     expect(cs).not.toMatch(/SensorInfoParamX\? \w+ = null, IntPtr callback/);
 });
+
+describe('跨模块强类型解析（M2 残留：导入类型不再无条件 IntPtr）', () => {
+    function generateTwo(files: Record<string, string>): { owner: string; importer: string } {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ohos-xmod-'));
+        const parser = new ArkTsParser();
+        const results: Record<string, string> = {};
+        const parsed: Record<string, { component: any; moduleInfo: any; imports: any[] }> = {};
+        // 预处理阶段同序：先解析全部，再按序认领类型名
+        for (const name of Object.keys(files)) {
+            const file = path.join(dir, name);
+            fs.writeFileSync(file, files[name]);
+            parsed[name] = { ...parser.parseFile(file), moduleInfo: ApiGenerator.dtsToModuleInfo(name) };
+        }
+        for (const name of Object.keys(files)) {
+            const p = parsed[name];
+            for (const iface of p.component.interfaces) {
+                ApiGenerator.claimTypeName(iface.name, p.moduleInfo.className);
+            }
+        }
+        for (const name of Object.keys(files)) {
+            const p = parsed[name];
+            results[name] = new ApiGenerator().generate(
+                p.component, p.moduleInfo, [], [], [],
+                { imports: new Map(), demandedTs: new Set(), returnDemandTs: new Set() }
+            ).csharp;
+        }
+        return { owner: results['@ohos.owner.d.ts'], importer: results['@ohos.importer.d.ts'] };
+    }
+
+    test('返回位跨模块引用 → 完全限定包装类型 + 工厂（来源模块转正）', () => {
+        const { owner, importer } = generateTwo({
+            '@ohos.owner.d.ts': `
+declare namespace owner {
+    interface DeviceInfoRec { name: string; mac: string; }
+}
+`,
+            '@ohos.importer.d.ts': `
+import type { DeviceInfoRec } from './@ohos.owner';
+declare namespace importer {
+    function getDevice(): Promise<DeviceInfoRec>;
+    function setDevice(device: DeviceInfoRec): void;
+}
+`,
+        });
+        // importer 侧手工传入解析表（模拟 index.ts 预计算：来源模块转正 → FQN）
+        // 上面的 generateTwo 未传 FQN——用第二个生成调用验证 FQN 映射
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ohos-xmod2-'));
+        const parser = new ArkTsParser();
+        const file = path.join(dir, '@ohos.importer2.d.ts');
+        fs.writeFileSync(file, `
+import type { DeviceInfoRec } from './@ohos.owner';
+declare namespace importer2 {
+    function getDevice(): Promise<DeviceInfoRec>;
+}
+`);
+        const parsed = parser.parseFile(file);
+        const moduleInfo = ApiGenerator.dtsToModuleInfo(path.basename(file));
+        const imports = new Map([['DeviceInfoRec', 'global::HarmonyOS.Bindings.Api.DeviceInfoRec']]);
+        const cs = new ApiGenerator().generate(
+            parsed.component, moduleInfo, [], [], [],
+            { imports, demandedTs: new Set(), returnDemandTs: new Set(['DeviceInfoRec']) }
+        ).csharp;
+        expect(cs).toContain('public static Task<global::HarmonyOS.Bindings.Api.DeviceInfoRec> GetDeviceAsync()');
+        expect(cs).toContain('static h => new global::HarmonyOS.Bindings.Api.DeviceInfoRec(h)');
+        // IntPtr 解析表（来源模块灰度等价场景）→ 保守降级
+        const cs2 = new ApiGenerator().generate(
+            parsed.component, moduleInfo, [], [], [],
+            { imports: new Map([['DeviceInfoRec', 'IntPtr']]), demandedTs: new Set(), returnDemandTs: new Set() }
+        ).csharp;
+        expect(cs2).toContain('public static Task<IntPtr> GetDeviceAsync()');
+    });
+
+    test('返回位 demand 强制 owner 发射本模块无成员引用的类型（record 升级 wrapper）', () => {
+        // owner 定义 Config 但模块自身无任何成员引用；importer 在返回位引用
+        // → owner 必须发射（否则引用方 CS0246）
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ohos-xmod3-'));
+        const parser = new ArkTsParser();
+        const ownerFile = path.join(dir, '@ohos.owner3.d.ts');
+        fs.writeFileSync(ownerFile, `
+declare namespace owner3 {
+    interface Config { name: string; }
+}
+`);
+        const parsed = parser.parseFile(ownerFile);
+        const moduleInfo = ApiGenerator.dtsToModuleInfo(path.basename(ownerFile));
+        ApiGenerator.claimTypeName('Config', moduleInfo.className);
+        const cs = new ApiGenerator().generate(
+            parsed.component, moduleInfo, [], [], [],
+            { imports: new Map(), demandedTs: new Set(['Config']), returnDemandTs: new Set(['Config']) }
+        ).csharp;
+        expect(cs).toContain('class Config : JsObject');
+    });
+
+    test('输入位 demand 钉住不可封送 record（收敛不移除，引用方不 CS0246）', () => {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ohos-xmod4-'));
+        const parser = new ArkTsParser();
+        const ownerFile = path.join(dir, '@ohos.owner4.d.ts');
+        fs.writeFileSync(ownerFile, `
+declare namespace owner4 {
+    interface Options { name: string; extra: UnknownThing; }
+}
+`);
+        const parsed = parser.parseFile(ownerFile);
+        const moduleInfo = ApiGenerator.dtsToModuleInfo(path.basename(ownerFile));
+        ApiGenerator.claimTypeName('Options', moduleInfo.className);
+        // demandedTs（输入位）→ record 钉住：属性含未注册类型（IntPtr）通常被收敛移除，钉住后仍发射
+        const cs = new ApiGenerator().generate(
+            parsed.component, moduleInfo, [], [], [],
+            { imports: new Map(), demandedTs: new Set(['Options']), returnDemandTs: new Set() }
+        ).csharp;
+        expect(cs).toContain('record Options');
+        expect(cs).toContain('IntPtr Extra');
+    });
+});

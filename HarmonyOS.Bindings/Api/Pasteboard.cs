@@ -126,7 +126,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createWantData
     /// </summary>
-    public static PasteData CreateWantData(IntPtr want)
+    public static PasteData CreateWantData(global::HarmonyOS.Bindings.Api.WantObject want)
     {
         return NodeApi.CallMethod(Module, _createWantData, static h => new PasteData(h), want);
     }
@@ -174,7 +174,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createWantRecord
     /// </summary>
-    public static PasteDataRecord CreateWantRecord(IntPtr want)
+    public static PasteDataRecord CreateWantRecord(global::HarmonyOS.Bindings.Api.WantObject want)
     {
         return NodeApi.CallMethod(Module, _createWantRecord, static h => new PasteDataRecord(h), want);
     }
@@ -257,7 +257,7 @@ public sealed partial class PasteData : JsObject
     /// <summary>
     /// addWantRecord
     /// </summary>
-    public void AddWantRecord(IntPtr want)
+    public void AddWantRecord(global::HarmonyOS.Bindings.Api.WantObject want)
     {
         CallMethodVoid(_addWantRecord, want);
     }
@@ -313,9 +313,9 @@ public sealed partial class PasteData : JsObject
     /// <summary>
     /// getPrimaryWant
     /// </summary>
-    public IntPtr GetPrimaryWant()
+    public global::HarmonyOS.Bindings.Api.WantObject GetPrimaryWant()
     {
-        return CallMethod<IntPtr>(_getPrimaryWant);
+        return CallMethod(_getPrimaryWant, static h => new global::HarmonyOS.Bindings.Api.WantObject(h));
     }
 
     /// <summary>
@@ -491,7 +491,7 @@ public sealed partial class PasteDataRecord : JsObject
     /// <summary>
     /// want
     /// </summary>
-    public IntPtr Want => GetPropertyRaw(_want);
+    public global::HarmonyOS.Bindings.Api.WantObject Want => new global::HarmonyOS.Bindings.Api.WantObject(GetPropertyRaw(_want));
 
     /// <summary>
     /// mimeType

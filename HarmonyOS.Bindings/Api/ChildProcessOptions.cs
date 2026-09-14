@@ -67,3 +67,24 @@ public static unsafe partial class ChildProcessOptions
     }
 
 }
+
+/// <summary>
+/// ChildProcessOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ChildProcessOptionsObject(
+    bool? IsolationMode = null,
+    bool? IsolationUid = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _isolationModeName => "isolationMode"u8;
+    private static ReadOnlySpan<byte> _isolationUidName => "isolationUid"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _isolationModeV = NativeValue.From(IsolationMode);
+        if (_isolationModeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _isolationModeName, _isolationModeV);
+        var _isolationUidV = NativeValue.From(IsolationUid);
+        if (_isolationUidV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _isolationUidName, _isolationUidV);
+    }
+}

@@ -81,9 +81,9 @@ public static unsafe partial class FeatureAbility
     /// <summary>
     /// getWant
     /// </summary>
-    public static Task<IntPtr> GetWantAsync()
+    public static Task<global::HarmonyOS.Bindings.Api.WantObject> GetWantAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getWant);
+        return NodeApi.CallMethodAsync(Module, _getWant, static h => new global::HarmonyOS.Bindings.Api.WantObject(h));
     }
 
     /// <summary>
@@ -145,7 +145,7 @@ public static unsafe partial class FeatureAbility
     /// <summary>
     /// connectAbility
     /// </summary>
-    public static double ConnectAbility(IntPtr request, IntPtr options)
+    public static double ConnectAbility(global::HarmonyOS.Bindings.Api.WantObject request, IntPtr options)
     {
         return NodeApi.CallMethod<double>(Module, _connectAbility, request, options);
     }

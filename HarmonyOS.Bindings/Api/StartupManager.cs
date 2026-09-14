@@ -75,7 +75,7 @@ public static unsafe partial class StartupManager
     /// <summary>
     /// run
     /// </summary>
-    public static Task RunAsync(string[] startupTasks, IntPtr? config = null)
+    public static Task RunAsync(string[] startupTasks, global::HarmonyOS.Bindings.Api.StartupConfigObject? config = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _run, startupTasks, config);
     }
@@ -83,7 +83,7 @@ public static unsafe partial class StartupManager
     /// <summary>
     /// run
     /// </summary>
-    public static Task RunAsync(string[] startupTasks, IntPtr context, IntPtr config)
+    public static Task RunAsync(string[] startupTasks, IntPtr context, global::HarmonyOS.Bindings.Api.StartupConfigObject config)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _run, startupTasks, context, config);
     }

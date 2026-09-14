@@ -113,7 +113,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addDisallowedRunningBundlesSync
     /// </summary>
-    public static void AddDisallowedRunningBundlesSync(IntPtr admin, string[] appIds, double? accountId = null)
+    public static void AddDisallowedRunningBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedRunningBundlesSync, admin, appIds, accountId);
     }
@@ -121,7 +121,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeDisallowedRunningBundlesSync
     /// </summary>
-    public static void RemoveDisallowedRunningBundlesSync(IntPtr admin, string[] appIds, double? accountId = null)
+    public static void RemoveDisallowedRunningBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedRunningBundlesSync, admin, appIds, accountId);
     }
@@ -129,7 +129,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getDisallowedRunningBundlesSync
     /// </summary>
-    public static string[] GetDisallowedRunningBundlesSync(IntPtr admin, double? accountId = null)
+    public static string[] GetDisallowedRunningBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, double? accountId = null)
     {
         return NodeApi.CallMethod(Module, _getDisallowedRunningBundlesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, accountId);
     }
@@ -137,7 +137,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addAllowedRunningBundles
     /// </summary>
-    public static void AddAllowedRunningBundles(IntPtr admin, string[] appIdentifiers, double accountId)
+    public static void AddAllowedRunningBundles(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIdentifiers, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedRunningBundles, admin, appIdentifiers, accountId);
     }
@@ -145,7 +145,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeAllowedRunningBundles
     /// </summary>
-    public static void RemoveAllowedRunningBundles(IntPtr admin, string[] appIdentifiers, double accountId)
+    public static void RemoveAllowedRunningBundles(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIdentifiers, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedRunningBundles, admin, appIdentifiers, accountId);
     }
@@ -153,7 +153,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getAllowedRunningBundles
     /// </summary>
-    public static string[] GetAllowedRunningBundles(IntPtr admin, double accountId)
+    public static string[] GetAllowedRunningBundles(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getAllowedRunningBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, accountId);
     }
@@ -161,7 +161,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addAutoStartApps
     /// </summary>
-    public static void AddAutoStartApps(IntPtr admin, IntPtr[] autoStartApps)
+    public static void AddAutoStartApps(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.Bindings.Api.WantObject[] autoStartApps)
     {
         NodeApi.CallMethodVoid(Module, _addAutoStartApps, admin, autoStartApps);
     }
@@ -169,7 +169,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addAutoStartApps
     /// </summary>
-    public static void AddAutoStartApps(IntPtr admin, IntPtr[] autoStartApps, double accountId, bool disallowModify)
+    public static void AddAutoStartApps(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.Bindings.Api.WantObject[] autoStartApps, double accountId, bool disallowModify)
     {
         NodeApi.CallMethodVoid(Module, _addAutoStartApps, admin, autoStartApps, accountId, disallowModify);
     }
@@ -177,7 +177,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// isModifyAutoStartAppsDisallowed
     /// </summary>
-    public static bool IsModifyAutoStartAppsDisallowed(IntPtr admin, IntPtr autoStartApp, double accountId)
+    public static bool IsModifyAutoStartAppsDisallowed(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.Bindings.Api.WantObject autoStartApp, double accountId)
     {
         return NodeApi.CallMethod<bool>(Module, _isModifyAutoStartAppsDisallowed, admin, autoStartApp, accountId);
     }
@@ -185,7 +185,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeAutoStartApps
     /// </summary>
-    public static void RemoveAutoStartApps(IntPtr admin, IntPtr[] autoStartApps)
+    public static void RemoveAutoStartApps(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.Bindings.Api.WantObject[] autoStartApps)
     {
         NodeApi.CallMethodVoid(Module, _removeAutoStartApps, admin, autoStartApps);
     }
@@ -193,7 +193,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeAutoStartApps
     /// </summary>
-    public static void RemoveAutoStartApps(IntPtr admin, IntPtr[] autoStartApps, double accountId)
+    public static void RemoveAutoStartApps(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.Bindings.Api.WantObject[] autoStartApps, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeAutoStartApps, admin, autoStartApps, accountId);
     }
@@ -201,23 +201,23 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getAutoStartApps
     /// </summary>
-    public static IntPtr[] GetAutoStartApps(IntPtr admin)
+    public static global::HarmonyOS.Bindings.Api.WantObject[] GetAutoStartApps(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getAutoStartApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), admin);
+        return NodeApi.CallMethod(Module, _getAutoStartApps, h => ValueConverter.ConvertArray(h, static e => new global::HarmonyOS.Bindings.Api.WantObject(e)), admin);
     }
 
     /// <summary>
     /// getAutoStartApps
     /// </summary>
-    public static IntPtr[] GetAutoStartApps(IntPtr admin, double accountId)
+    public static global::HarmonyOS.Bindings.Api.WantObject[] GetAutoStartApps(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
-        return NodeApi.CallMethod(Module, _getAutoStartApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), admin, accountId);
+        return NodeApi.CallMethod(Module, _getAutoStartApps, h => ValueConverter.ConvertArray(h, static e => new global::HarmonyOS.Bindings.Api.WantObject(e)), admin, accountId);
     }
 
     /// <summary>
     /// addKeepAliveApps
     /// </summary>
-    public static void AddKeepAliveApps(IntPtr admin, string[] bundleNames, double accountId)
+    public static void AddKeepAliveApps(global::HarmonyOS.Bindings.Api.WantObject admin, string[] bundleNames, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addKeepAliveApps, admin, bundleNames, accountId);
     }
@@ -225,7 +225,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addKeepAliveApps
     /// </summary>
-    public static void AddKeepAliveApps(IntPtr admin, string[] bundleNames, double accountId, bool disallowModify)
+    public static void AddKeepAliveApps(global::HarmonyOS.Bindings.Api.WantObject admin, string[] bundleNames, double accountId, bool disallowModify)
     {
         NodeApi.CallMethodVoid(Module, _addKeepAliveApps, admin, bundleNames, accountId, disallowModify);
     }
@@ -233,7 +233,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// isModifyKeepAliveAppsDisallowed
     /// </summary>
-    public static bool IsModifyKeepAliveAppsDisallowed(IntPtr admin, double accountId, string bundleName)
+    public static bool IsModifyKeepAliveAppsDisallowed(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId, string bundleName)
     {
         return NodeApi.CallMethod<bool>(Module, _isModifyKeepAliveAppsDisallowed, admin, accountId, bundleName);
     }
@@ -241,7 +241,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeKeepAliveApps
     /// </summary>
-    public static void RemoveKeepAliveApps(IntPtr admin, string[] bundleNames, double accountId)
+    public static void RemoveKeepAliveApps(global::HarmonyOS.Bindings.Api.WantObject admin, string[] bundleNames, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeKeepAliveApps, admin, bundleNames, accountId);
     }
@@ -249,7 +249,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getKeepAliveApps
     /// </summary>
-    public static string[] GetKeepAliveApps(IntPtr admin, double accountId)
+    public static string[] GetKeepAliveApps(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getKeepAliveApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, accountId);
     }
@@ -257,7 +257,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// setAllowedKioskApps
     /// </summary>
-    public static void SetAllowedKioskApps(IntPtr admin, string[] appIdentifiers)
+    public static void SetAllowedKioskApps(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIdentifiers)
     {
         NodeApi.CallMethodVoid(Module, _setAllowedKioskApps, admin, appIdentifiers);
     }
@@ -265,7 +265,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getAllowedKioskApps
     /// </summary>
-    public static string[] GetAllowedKioskApps(IntPtr admin)
+    public static string[] GetAllowedKioskApps(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getAllowedKioskApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin);
     }
@@ -281,7 +281,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// setKioskFeatures
     /// </summary>
-    public static void SetKioskFeatures(IntPtr admin, global::HarmonyOS.ArkUI.KioskFeature[] features)
+    public static void SetKioskFeatures(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.KioskFeature[] features)
     {
         NodeApi.CallMethodVoid(Module, _setKioskFeatures, admin, features);
     }
@@ -289,7 +289,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// clearUpApplicationData
     /// </summary>
-    public static void ClearUpApplicationData(IntPtr admin, string bundleName, double appIndex, double accountId)
+    public static void ClearUpApplicationData(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, double appIndex, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _clearUpApplicationData, admin, bundleName, appIndex, accountId);
     }
@@ -297,7 +297,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addUserNonStopApps
     /// </summary>
-    public static void AddUserNonStopApps(IntPtr admin, IntPtr[] applicationInstances)
+    public static void AddUserNonStopApps(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr[] applicationInstances)
     {
         NodeApi.CallMethodVoid(Module, _addUserNonStopApps, admin, applicationInstances);
     }
@@ -305,7 +305,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeUserNonStopApps
     /// </summary>
-    public static void RemoveUserNonStopApps(IntPtr admin, IntPtr[] applicationInstances)
+    public static void RemoveUserNonStopApps(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr[] applicationInstances)
     {
         NodeApi.CallMethodVoid(Module, _removeUserNonStopApps, admin, applicationInstances);
     }
@@ -313,7 +313,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getUserNonStopApps
     /// </summary>
-    public static IntPtr[] GetUserNonStopApps(IntPtr admin)
+    public static IntPtr[] GetUserNonStopApps(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getUserNonStopApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), admin);
     }
@@ -321,7 +321,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addFreezeExemptedApps
     /// </summary>
-    public static void AddFreezeExemptedApps(IntPtr admin, IntPtr[] applicationInstances)
+    public static void AddFreezeExemptedApps(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr[] applicationInstances)
     {
         NodeApi.CallMethodVoid(Module, _addFreezeExemptedApps, admin, applicationInstances);
     }
@@ -329,7 +329,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeFreezeExemptedApps
     /// </summary>
-    public static void RemoveFreezeExemptedApps(IntPtr admin, IntPtr[] applicationInstances)
+    public static void RemoveFreezeExemptedApps(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr[] applicationInstances)
     {
         NodeApi.CallMethodVoid(Module, _removeFreezeExemptedApps, admin, applicationInstances);
     }
@@ -337,7 +337,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getFreezeExemptedApps
     /// </summary>
-    public static IntPtr[] GetFreezeExemptedApps(IntPtr admin)
+    public static IntPtr[] GetFreezeExemptedApps(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getFreezeExemptedApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), admin);
     }
@@ -345,7 +345,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// setAbilityDisabled
     /// </summary>
-    public static void SetAbilityDisabled(IntPtr admin, string bundleName, double accountId, string abilityName, bool isDisabled)
+    public static void SetAbilityDisabled(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, double accountId, string abilityName, bool isDisabled)
     {
         NodeApi.CallMethodVoid(Module, _setAbilityDisabled, admin, bundleName, accountId, abilityName, isDisabled);
     }
@@ -353,7 +353,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// isAbilityDisabled
     /// </summary>
-    public static bool IsAbilityDisabled(IntPtr admin, string bundleName, double accountId, string abilityName)
+    public static bool IsAbilityDisabled(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, double accountId, string abilityName)
     {
         return NodeApi.CallMethod<bool>(Module, _isAbilityDisabled, admin, bundleName, accountId, abilityName);
     }
@@ -361,7 +361,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addDockApp
     /// </summary>
-    public static void AddDockApp(IntPtr admin, string bundleName, string abilityName, double? index = null)
+    public static void AddDockApp(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, string abilityName, double? index = null)
     {
         NodeApi.CallMethodVoid(Module, _addDockApp, admin, bundleName, abilityName, index);
     }
@@ -369,7 +369,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeDockApp
     /// </summary>
-    public static void RemoveDockApp(IntPtr admin, string bundleName, string abilityName)
+    public static void RemoveDockApp(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, string abilityName)
     {
         NodeApi.CallMethodVoid(Module, _removeDockApp, admin, bundleName, abilityName);
     }
@@ -377,7 +377,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getDockApps
     /// </summary>
-    public static DockInfo[] GetDockApps(IntPtr admin)
+    public static DockInfo[] GetDockApps(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getDockApps, h => ValueConverter.ConvertArray(h, static e => new DockInfo(e)), admin);
     }
@@ -385,7 +385,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addAllowedDistributeAbilityConnBundles
     /// </summary>
-    public static void AddAllowedDistributeAbilityConnBundles(IntPtr admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.ApplicationManagerServiceType serviceType, double accountId)
+    public static void AddAllowedDistributeAbilityConnBundles(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.ApplicationManagerServiceType serviceType, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedDistributeAbilityConnBundles, admin, appIdentifiers, serviceType, accountId);
     }
@@ -393,7 +393,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeAllowedDistributeAbilityConnBundles
     /// </summary>
-    public static void RemoveAllowedDistributeAbilityConnBundles(IntPtr admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.ApplicationManagerServiceType serviceType, double accountId)
+    public static void RemoveAllowedDistributeAbilityConnBundles(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.ApplicationManagerServiceType serviceType, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedDistributeAbilityConnBundles, admin, appIdentifiers, serviceType, accountId);
     }
@@ -401,7 +401,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getAllowedDistributeAbilityConnBundles
     /// </summary>
-    public static string[] GetAllowedDistributeAbilityConnBundles(IntPtr admin, global::HarmonyOS.ArkUI.ApplicationManagerServiceType serviceType, double accountId)
+    public static string[] GetAllowedDistributeAbilityConnBundles(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.ApplicationManagerServiceType serviceType, double accountId)
     {
         return NodeApi.CallMethod(Module, _getAllowedDistributeAbilityConnBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, serviceType, accountId);
     }
@@ -409,7 +409,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addAllowedNotificationBundles
     /// </summary>
-    public static void AddAllowedNotificationBundles(IntPtr admin, string[] bundleNames, double accountId)
+    public static void AddAllowedNotificationBundles(global::HarmonyOS.Bindings.Api.WantObject admin, string[] bundleNames, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedNotificationBundles, admin, bundleNames, accountId);
     }
@@ -417,7 +417,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeAllowedNotificationBundles
     /// </summary>
-    public static void RemoveAllowedNotificationBundles(IntPtr admin, string[] bundleNames, double accountId)
+    public static void RemoveAllowedNotificationBundles(global::HarmonyOS.Bindings.Api.WantObject admin, string[] bundleNames, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedNotificationBundles, admin, bundleNames, accountId);
     }
@@ -425,7 +425,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getAllowedNotificationBundles
     /// </summary>
-    public static string[] GetAllowedNotificationBundles(IntPtr admin, double accountId)
+    public static string[] GetAllowedNotificationBundles(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getAllowedNotificationBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, accountId);
     }
@@ -433,7 +433,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addHideLauncherIcon
     /// </summary>
-    public static void AddHideLauncherIcon(IntPtr admin, string[] bundleNames)
+    public static void AddHideLauncherIcon(global::HarmonyOS.Bindings.Api.WantObject admin, string[] bundleNames)
     {
         NodeApi.CallMethodVoid(Module, _addHideLauncherIcon, admin, bundleNames);
     }
@@ -441,7 +441,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeHideLauncherIcon
     /// </summary>
-    public static void RemoveHideLauncherIcon(IntPtr admin, string[] bundleNames)
+    public static void RemoveHideLauncherIcon(global::HarmonyOS.Bindings.Api.WantObject admin, string[] bundleNames)
     {
         NodeApi.CallMethodVoid(Module, _removeHideLauncherIcon, admin, bundleNames);
     }
@@ -449,7 +449,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getHideLauncherIcon
     /// </summary>
-    public static string[] GetHideLauncherIcon(IntPtr admin)
+    public static string[] GetHideLauncherIcon(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getHideLauncherIcon, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin);
     }
@@ -457,7 +457,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// queryTrafficStats
     /// </summary>
-    public static Task<IntPtr> QueryTrafficStatsAsync(IntPtr admin, string bundleName, double appIndex, double accountId, IntPtr networkInfo)
+    public static Task<IntPtr> QueryTrafficStatsAsync(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, double appIndex, double accountId, IntPtr networkInfo)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _queryTrafficStats, admin, bundleName, appIndex, accountId, networkInfo);
     }
@@ -465,7 +465,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// queryBundleStatsInfos
     /// </summary>
-    public static BundleStatsInfo[] QueryBundleStatsInfos(IntPtr admin, double startTime, double endTime, double accountId)
+    public static BundleStatsInfo[] QueryBundleStatsInfos(global::HarmonyOS.Bindings.Api.WantObject admin, double startTime, double endTime, double accountId)
     {
         return NodeApi.CallMethod(Module, _queryBundleStatsInfos, h => ValueConverter.ConvertArray(h, static e => new BundleStatsInfo(e)), admin, startTime, endTime, accountId);
     }
@@ -473,7 +473,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getApplicationWindowStates
     /// </summary>
-    public static WindowStateInfo[] GetApplicationWindowStates(IntPtr admin, string bundleName, double appIndex)
+    public static WindowStateInfo[] GetApplicationWindowStates(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, double appIndex)
     {
         return NodeApi.CallMethod(Module, _getApplicationWindowStates, h => ValueConverter.ConvertArray(h, static e => new WindowStateInfo(e)), admin, bundleName, appIndex);
     }

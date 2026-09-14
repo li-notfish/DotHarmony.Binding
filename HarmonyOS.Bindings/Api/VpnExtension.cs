@@ -74,7 +74,7 @@ public static unsafe partial class VpnExtension
     /// <summary>
     /// startVpnExtensionAbility
     /// </summary>
-    public static Task StartVpnExtensionAbilityAsync(IntPtr want)
+    public static Task StartVpnExtensionAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startVpnExtensionAbility, want);
     }
@@ -82,7 +82,7 @@ public static unsafe partial class VpnExtension
     /// <summary>
     /// stopVpnExtensionAbility
     /// </summary>
-    public static Task StopVpnExtensionAbilityAsync(IntPtr want)
+    public static Task StopVpnExtensionAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopVpnExtensionAbility, want);
     }

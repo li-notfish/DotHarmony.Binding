@@ -164,3 +164,75 @@ public static unsafe partial class UIExtensionContentSession
     }
 
 }
+
+/// <summary>
+/// UIExtensionContentSession 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class UIExtensionContentSessionObject : JsObject
+{
+    public UIExtensionContentSessionObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _loadContent => "loadContent"u8;
+    private static ReadOnlySpan<byte> _loadContentByName => "loadContentByName"u8;
+    private static ReadOnlySpan<byte> _terminateSelf => "terminateSelf"u8;
+    private static ReadOnlySpan<byte> _terminateSelfWithResult => "terminateSelfWithResult"u8;
+    private static ReadOnlySpan<byte> _setWindowPrivacyMode => "setWindowPrivacyMode"u8;
+    private static ReadOnlySpan<byte> _startAbilityByType => "startAbilityByType"u8;
+    private static ReadOnlySpan<byte> _getUIExtensionWindowProxy => "getUIExtensionWindowProxy"u8;
+    /// <summary>
+    /// loadContent
+    /// </summary>
+    public void LoadContent(string path, IntPtr? storage = null)
+    {
+        CallMethodVoid(_loadContent, path, storage);
+    }
+
+    /// <summary>
+    /// loadContentByName
+    /// </summary>
+    public void LoadContentByName(string name, IntPtr? storage = null)
+    {
+        CallMethodVoid(_loadContentByName, name, storage);
+    }
+
+    /// <summary>
+    /// terminateSelf
+    /// </summary>
+    public Task TerminateSelfAsync()
+    {
+        return CallMethodAsyncVoid(_terminateSelf);
+    }
+
+    /// <summary>
+    /// terminateSelfWithResult
+    /// </summary>
+    public Task TerminateSelfWithResultAsync(IntPtr parameter)
+    {
+        return CallMethodAsyncVoid(_terminateSelfWithResult, parameter);
+    }
+
+    /// <summary>
+    /// setWindowPrivacyMode
+    /// </summary>
+    public Task SetWindowPrivacyModeAsync(bool isPrivacyMode)
+    {
+        return CallMethodAsyncVoid(_setWindowPrivacyMode, isPrivacyMode);
+    }
+
+    /// <summary>
+    /// startAbilityByType
+    /// </summary>
+    public Task StartAbilityByTypeAsync(string type, IntPtr wantParam, IntPtr abilityStartCallback)
+    {
+        return CallMethodAsyncVoid(_startAbilityByType, type, wantParam, abilityStartCallback);
+    }
+
+    /// <summary>
+    /// getUIExtensionWindowProxy
+    /// </summary>
+    public IntPtr GetUiExtensionWindowProxy()
+    {
+        return CallMethod<IntPtr>(_getUIExtensionWindowProxy);
+    }
+
+}

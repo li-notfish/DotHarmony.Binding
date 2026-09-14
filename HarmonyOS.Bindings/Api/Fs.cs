@@ -398,9 +398,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// dup
     /// </summary>
-    public static FsFile Dup(double fd)
+    public static IntPtr Dup(double fd)
     {
-        return NodeApi.CallMethod(Module, _dup, static h => new FsFile(h), fd);
+        return NodeApi.CallMethod<IntPtr>(Module, _dup, fd);
     }
 
     /// <summary>
@@ -630,9 +630,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// open
     /// </summary>
-    public static Task<FsFile> OpenAsync(string path, double? mode = null)
+    public static Task<IntPtr> OpenAsync(string path, double? mode = null)
     {
-        return NodeApi.CallMethodAsync(Module, _open, static h => new FsFile(h), path, mode);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _open, path, mode);
     }
 
     /// <summary>
@@ -646,9 +646,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// openSync
     /// </summary>
-    public static FsFile OpenSync(string path, double? mode = null)
+    public static IntPtr OpenSync(string path, double? mode = null)
     {
-        return NodeApi.CallMethod(Module, _openSync, static h => new FsFile(h), path, mode);
+        return NodeApi.CallMethod<IntPtr>(Module, _openSync, path, mode);
     }
 
     /// <summary>
@@ -1092,6 +1092,58 @@ public sealed partial class WatchEventListener : JsObject
 }
 
 /// <summary>
+/// ListFileOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ListFileOptions(
+    bool? Recursion = null,
+    double? ListNum = null,
+    FsFilter? Filter = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _recursionName => "recursion"u8;
+    private static ReadOnlySpan<byte> _listNumName => "listNum"u8;
+    private static ReadOnlySpan<byte> _filterName => "filter"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _recursionV = NativeValue.From(Recursion);
+        if (_recursionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _recursionName, _recursionV);
+        var _listNumV = NativeValue.From(ListNum);
+        if (_listNumV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _listNumName, _listNumV);
+        var _filterV = NativeValue.From(Filter);
+        if (_filterV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _filterName, _filterV);
+    }
+}
+
+/// <summary>
+/// ListFileExtOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ListFileExtOptions(
+    bool? Recursion = null,
+    double? ListNum = null,
+    FileFilter? FileFilter = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _recursionName => "recursion"u8;
+    private static ReadOnlySpan<byte> _listNumName => "listNum"u8;
+    private static ReadOnlySpan<byte> _fileFilterName => "fileFilter"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _recursionV = NativeValue.From(Recursion);
+        if (_recursionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _recursionName, _recursionV);
+        var _listNumV = NativeValue.From(ListNum);
+        if (_listNumV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _listNumName, _listNumV);
+        var _fileFilterV = NativeValue.From(FileFilter);
+        if (_fileFilterV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fileFilterName, _fileFilterV);
+    }
+}
+
+/// <summary>
 /// File 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -1160,58 +1212,6 @@ public sealed partial class FsFile : JsObject
         CallMethodVoid(_unlock);
     }
 
-}
-
-/// <summary>
-/// ListFileOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record ListFileOptions(
-    bool? Recursion = null,
-    double? ListNum = null,
-    FsFilter? Filter = null
-) : INapiRecord
-{
-    private static ReadOnlySpan<byte> _recursionName => "recursion"u8;
-    private static ReadOnlySpan<byte> _listNumName => "listNum"u8;
-    private static ReadOnlySpan<byte> _filterName => "filter"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _recursionV = NativeValue.From(Recursion);
-        if (_recursionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _recursionName, _recursionV);
-        var _listNumV = NativeValue.From(ListNum);
-        if (_listNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _listNumName, _listNumV);
-        var _filterV = NativeValue.From(Filter);
-        if (_filterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterName, _filterV);
-    }
-}
-
-/// <summary>
-/// ListFileExtOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record ListFileExtOptions(
-    bool? Recursion = null,
-    double? ListNum = null,
-    FileFilter? FileFilter = null
-) : INapiRecord
-{
-    private static ReadOnlySpan<byte> _recursionName => "recursion"u8;
-    private static ReadOnlySpan<byte> _listNumName => "listNum"u8;
-    private static ReadOnlySpan<byte> _fileFilterName => "fileFilter"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _recursionV = NativeValue.From(Recursion);
-        if (_recursionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _recursionName, _recursionV);
-        var _listNumV = NativeValue.From(ListNum);
-        if (_listNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _listNumName, _listNumV);
-        var _fileFilterV = NativeValue.From(FileFilter);
-        if (_fileFilterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileFilterName, _fileFilterV);
-    }
 }
 
 /// <summary>

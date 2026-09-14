@@ -86,3 +86,30 @@ public static unsafe partial class CompletionHandler
     }
 
 }
+
+/// <summary>
+/// CompletionHandler 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CompletionHandlerObject : JsObject
+{
+    public CompletionHandlerObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _onRequestSuccess => "onRequestSuccess"u8;
+    private static ReadOnlySpan<byte> _onRequestFailure => "onRequestFailure"u8;
+    /// <summary>
+    /// onRequestSuccess
+    /// </summary>
+    public void OnRequestSuccess(IntPtr elementName, string message)
+    {
+        CallMethodVoid(_onRequestSuccess, elementName, message);
+    }
+
+    /// <summary>
+    /// onRequestFailure
+    /// </summary>
+    public void OnRequestFailure(IntPtr elementName, string message)
+    {
+        CallMethodVoid(_onRequestFailure, elementName, message);
+    }
+
+}

@@ -67,3 +67,72 @@ public static unsafe partial class InputMethodSubtype
     }
 
 }
+
+/// <summary>
+/// InputMethodSubtype 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class InputMethodSubtypeObject : JsObject
+{
+    public InputMethodSubtypeObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _label => "label"u8;
+    private static ReadOnlySpan<byte> _labelId => "labelId"u8;
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _id => "id"u8;
+    private static ReadOnlySpan<byte> _mode => "mode"u8;
+    private static ReadOnlySpan<byte> _locale => "locale"u8;
+    private static ReadOnlySpan<byte> _language => "language"u8;
+    private static ReadOnlySpan<byte> _icon => "icon"u8;
+    private static ReadOnlySpan<byte> _iconId => "iconId"u8;
+    private static ReadOnlySpan<byte> _extra => "extra"u8;
+    /// <summary>
+    /// label
+    /// </summary>
+    public string? Label => (string?)NativeValue.ToString(GetPropertyRaw(_label)) ?? string.Empty;
+
+    /// <summary>
+    /// labelId
+    /// </summary>
+    public double? LabelId => (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
+
+    /// <summary>
+    /// name
+    /// </summary>
+    public string Name => NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+
+    /// <summary>
+    /// id
+    /// </summary>
+    public string Id => NativeValue.ToString(GetPropertyRaw(_id)) ?? string.Empty;
+
+    /// <summary>
+    /// mode
+    /// </summary>
+    public string? Mode => (string?)NativeValue.ToString(GetPropertyRaw(_mode)) ?? string.Empty;
+
+    /// <summary>
+    /// locale
+    /// </summary>
+    public string Locale => NativeValue.ToString(GetPropertyRaw(_locale)) ?? string.Empty;
+
+    /// <summary>
+    /// language
+    /// </summary>
+    public string Language => NativeValue.ToString(GetPropertyRaw(_language)) ?? string.Empty;
+
+    /// <summary>
+    /// icon
+    /// </summary>
+    public string? Icon => (string?)NativeValue.ToString(GetPropertyRaw(_icon)) ?? string.Empty;
+
+    /// <summary>
+    /// iconId
+    /// </summary>
+    public double? IconId => (double?)NativeValue.ToDouble(GetPropertyRaw(_iconId));
+
+    /// <summary>
+    /// extra
+    /// </summary>
+    public IntPtr Extra => GetPropertyRaw(_extra);
+
+}

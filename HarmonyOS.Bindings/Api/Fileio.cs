@@ -280,17 +280,17 @@ public static unsafe partial class Fileio
     /// <summary>
     /// fstat
     /// </summary>
-    public static Task<FileioStat> FstatAsync(double fd)
+    public static Task<IntPtr> FstatAsync(double fd)
     {
-        return NodeApi.CallMethodAsync(Module, _fstat, static h => new FileioStat(h), fd);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _fstat, fd);
     }
 
     /// <summary>
     /// fstatSync
     /// </summary>
-    public static FileioStat FstatSync(double fd)
+    public static IntPtr FstatSync(double fd)
     {
-        return NodeApi.CallMethod(Module, _fstatSync, static h => new FileioStat(h), fd);
+        return NodeApi.CallMethod<IntPtr>(Module, _fstatSync, fd);
     }
 
     /// <summary>
@@ -384,17 +384,17 @@ public static unsafe partial class Fileio
     /// <summary>
     /// lstat
     /// </summary>
-    public static Task<FileioStat> LstatAsync(string path)
+    public static Task<IntPtr> LstatAsync(string path)
     {
-        return NodeApi.CallMethodAsync(Module, _lstat, static h => new FileioStat(h), path);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _lstat, path);
     }
 
     /// <summary>
     /// lstatSync
     /// </summary>
-    public static FileioStat LstatSync(string path)
+    public static IntPtr LstatSync(string path)
     {
-        return NodeApi.CallMethod(Module, _lstatSync, static h => new FileioStat(h), path);
+        return NodeApi.CallMethod<IntPtr>(Module, _lstatSync, path);
     }
 
     /// <summary>
@@ -560,17 +560,17 @@ public static unsafe partial class Fileio
     /// <summary>
     /// stat
     /// </summary>
-    public static Task<FileioStat> StatAsync(string path)
+    public static Task<IntPtr> StatAsync(string path)
     {
-        return NodeApi.CallMethodAsync(Module, _stat, static h => new FileioStat(h), path);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _stat, path);
     }
 
     /// <summary>
     /// statSync
     /// </summary>
-    public static FileioStat StatSync(string path)
+    public static IntPtr StatSync(string path)
     {
-        return NodeApi.CallMethod(Module, _statSync, static h => new FileioStat(h), path);
+        return NodeApi.CallMethod<IntPtr>(Module, _statSync, path);
     }
 
     /// <summary>
@@ -659,150 +659,6 @@ public static unsafe partial class Fileio
     public static Task<double> CreateWatcherAsync(string filename, double events)
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _createWatcher, null, filename, events);
-    }
-
-}
-
-/// <summary>
-/// Stat 实例包装（@ohos 命名空间内嵌套接口）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class FileioStat : JsObject
-{
-    public FileioStat(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _dev => "dev"u8;
-    private static ReadOnlySpan<byte> _ino => "ino"u8;
-    private static ReadOnlySpan<byte> _mode => "mode"u8;
-    private static ReadOnlySpan<byte> _nlink => "nlink"u8;
-    private static ReadOnlySpan<byte> _uid => "uid"u8;
-    private static ReadOnlySpan<byte> _gid => "gid"u8;
-    private static ReadOnlySpan<byte> _rdev => "rdev"u8;
-    private static ReadOnlySpan<byte> _size => "size"u8;
-    private static ReadOnlySpan<byte> _blocks => "blocks"u8;
-    private static ReadOnlySpan<byte> _atime => "atime"u8;
-    private static ReadOnlySpan<byte> _mtime => "mtime"u8;
-    private static ReadOnlySpan<byte> _ctime => "ctime"u8;
-    private static ReadOnlySpan<byte> _isBlockDevice => "isBlockDevice"u8;
-    private static ReadOnlySpan<byte> _isCharacterDevice => "isCharacterDevice"u8;
-    private static ReadOnlySpan<byte> _isDirectory => "isDirectory"u8;
-    private static ReadOnlySpan<byte> _isFIFO => "isFIFO"u8;
-    private static ReadOnlySpan<byte> _isFile => "isFile"u8;
-    private static ReadOnlySpan<byte> _isSocket => "isSocket"u8;
-    private static ReadOnlySpan<byte> _isSymbolicLink => "isSymbolicLink"u8;
-    /// <summary>
-    /// dev
-    /// </summary>
-    public double Dev => NativeValue.ToDouble(GetPropertyRaw(_dev));
-
-    /// <summary>
-    /// ino
-    /// </summary>
-    public double Ino => NativeValue.ToDouble(GetPropertyRaw(_ino));
-
-    /// <summary>
-    /// mode
-    /// </summary>
-    public double Mode => NativeValue.ToDouble(GetPropertyRaw(_mode));
-
-    /// <summary>
-    /// nlink
-    /// </summary>
-    public double Nlink => NativeValue.ToDouble(GetPropertyRaw(_nlink));
-
-    /// <summary>
-    /// uid
-    /// </summary>
-    public double Uid => NativeValue.ToDouble(GetPropertyRaw(_uid));
-
-    /// <summary>
-    /// gid
-    /// </summary>
-    public double Gid => NativeValue.ToDouble(GetPropertyRaw(_gid));
-
-    /// <summary>
-    /// rdev
-    /// </summary>
-    public double Rdev => NativeValue.ToDouble(GetPropertyRaw(_rdev));
-
-    /// <summary>
-    /// size
-    /// </summary>
-    public double Size => NativeValue.ToDouble(GetPropertyRaw(_size));
-
-    /// <summary>
-    /// blocks
-    /// </summary>
-    public double Blocks => NativeValue.ToDouble(GetPropertyRaw(_blocks));
-
-    /// <summary>
-    /// atime
-    /// </summary>
-    public double Atime => NativeValue.ToDouble(GetPropertyRaw(_atime));
-
-    /// <summary>
-    /// mtime
-    /// </summary>
-    public double Mtime => NativeValue.ToDouble(GetPropertyRaw(_mtime));
-
-    /// <summary>
-    /// ctime
-    /// </summary>
-    public double Ctime => NativeValue.ToDouble(GetPropertyRaw(_ctime));
-
-    /// <summary>
-    /// isBlockDevice
-    /// </summary>
-    public bool IsBlockDevice()
-    {
-        return CallMethod<bool>(_isBlockDevice);
-    }
-
-    /// <summary>
-    /// isCharacterDevice
-    /// </summary>
-    public bool IsCharacterDevice()
-    {
-        return CallMethod<bool>(_isCharacterDevice);
-    }
-
-    /// <summary>
-    /// isDirectory
-    /// </summary>
-    public bool IsDirectory()
-    {
-        return CallMethod<bool>(_isDirectory);
-    }
-
-    /// <summary>
-    /// isFIFO
-    /// </summary>
-    public bool IsFifo()
-    {
-        return CallMethod<bool>(_isFIFO);
-    }
-
-    /// <summary>
-    /// isFile
-    /// </summary>
-    public bool IsFile()
-    {
-        return CallMethod<bool>(_isFile);
-    }
-
-    /// <summary>
-    /// isSocket
-    /// </summary>
-    public bool IsSocket()
-    {
-        return CallMethod<bool>(_isSocket);
-    }
-
-    /// <summary>
-    /// isSymbolicLink
-    /// </summary>
-    public bool IsSymbolicLink()
-    {
-        return CallMethod<bool>(_isSymbolicLink);
     }
 
 }

@@ -169,7 +169,7 @@ public sealed partial class UDPSocket : JsObject
     /// <summary>
     /// bind
     /// </summary>
-    public Task BindAsync(NetAddress address)
+    public Task BindAsync(global::HarmonyOS.Bindings.Api.NetAddress address)
     {
         return CallMethodAsyncVoid(_bind, address);
     }
@@ -177,9 +177,9 @@ public sealed partial class UDPSocket : JsObject
     /// <summary>
     /// getLocalAddress
     /// </summary>
-    public Task<NetAddress> GetLocalAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetLocalAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getLocalAddress);
+        return CallMethodAsync(_getLocalAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
@@ -380,7 +380,7 @@ public sealed partial class MulticastSocket : JsObject
     /// <summary>
     /// bind
     /// </summary>
-    public Task BindAsync(NetAddress address)
+    public Task BindAsync(global::HarmonyOS.Bindings.Api.NetAddress address)
     {
         return CallMethodAsyncVoid(_bind, address);
     }
@@ -388,9 +388,9 @@ public sealed partial class MulticastSocket : JsObject
     /// <summary>
     /// getLocalAddress
     /// </summary>
-    public Task<NetAddress> GetLocalAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetLocalAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getLocalAddress);
+        return CallMethodAsync(_getLocalAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
@@ -452,7 +452,7 @@ public sealed partial class MulticastSocket : JsObject
     /// <summary>
     /// addMembership
     /// </summary>
-    public Task AddMembershipAsync(NetAddress multicastAddress)
+    public Task AddMembershipAsync(global::HarmonyOS.Bindings.Api.NetAddress multicastAddress)
     {
         return CallMethodAsyncVoid(_addMembership, multicastAddress);
     }
@@ -460,7 +460,7 @@ public sealed partial class MulticastSocket : JsObject
     /// <summary>
     /// dropMembership
     /// </summary>
-    public Task DropMembershipAsync(NetAddress multicastAddress)
+    public Task DropMembershipAsync(global::HarmonyOS.Bindings.Api.NetAddress multicastAddress)
     {
         return CallMethodAsyncVoid(_dropMembership, multicastAddress);
     }
@@ -642,7 +642,7 @@ public sealed partial class TCPSocket : JsObject
     /// <summary>
     /// bind
     /// </summary>
-    public Task BindAsync(NetAddress address)
+    public Task BindAsync(global::HarmonyOS.Bindings.Api.NetAddress address)
     {
         return CallMethodAsyncVoid(_bind, address);
     }
@@ -674,9 +674,9 @@ public sealed partial class TCPSocket : JsObject
     /// <summary>
     /// getRemoteAddress
     /// </summary>
-    public Task<NetAddress> GetRemoteAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetRemoteAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getRemoteAddress);
+        return CallMethodAsync(_getRemoteAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
@@ -706,9 +706,9 @@ public sealed partial class TCPSocket : JsObject
     /// <summary>
     /// getLocalAddress
     /// </summary>
-    public Task<NetAddress> GetLocalAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetLocalAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getLocalAddress);
+        return CallMethodAsync(_getLocalAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
@@ -869,7 +869,7 @@ public sealed partial class TLSSocket : JsObject
     /// <summary>
     /// bind
     /// </summary>
-    public Task BindAsync(NetAddress address)
+    public Task BindAsync(global::HarmonyOS.Bindings.Api.NetAddress address)
     {
         return CallMethodAsyncVoid(_bind, address);
     }
@@ -877,9 +877,9 @@ public sealed partial class TLSSocket : JsObject
     /// <summary>
     /// getRemoteAddress
     /// </summary>
-    public Task<NetAddress> GetRemoteAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetRemoteAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getRemoteAddress);
+        return CallMethodAsync(_getRemoteAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
@@ -901,9 +901,9 @@ public sealed partial class TLSSocket : JsObject
     /// <summary>
     /// getLocalAddress
     /// </summary>
-    public Task<NetAddress> GetLocalAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetLocalAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getLocalAddress);
+        return CallMethodAsync(_getLocalAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
@@ -1128,7 +1128,7 @@ public sealed partial class TCPSocketServer : JsObject
     /// <summary>
     /// listen
     /// </summary>
-    public Task ListenAsync(NetAddress address)
+    public Task ListenAsync(global::HarmonyOS.Bindings.Api.NetAddress address)
     {
         return CallMethodAsyncVoid(_listen, address);
     }
@@ -1160,9 +1160,9 @@ public sealed partial class TCPSocketServer : JsObject
     /// <summary>
     /// getLocalAddress
     /// </summary>
-    public Task<NetAddress> GetLocalAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetLocalAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getLocalAddress);
+        return CallMethodAsync(_getLocalAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
@@ -1339,9 +1339,9 @@ public sealed partial class TLSSocketServer : JsObject
     /// <summary>
     /// getLocalAddress
     /// </summary>
-    public Task<NetAddress> GetLocalAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetLocalAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getLocalAddress);
+        return CallMethodAsync(_getLocalAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
@@ -2095,17 +2095,17 @@ public sealed partial class TCPSocketConnection : JsObject
     /// <summary>
     /// getRemoteAddress
     /// </summary>
-    public Task<NetAddress> GetRemoteAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetRemoteAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getRemoteAddress);
+        return CallMethodAsync(_getRemoteAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
     /// getLocalAddress
     /// </summary>
-    public Task<NetAddress> GetLocalAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetLocalAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getLocalAddress);
+        return CallMethodAsync(_getLocalAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
@@ -2273,9 +2273,9 @@ public sealed partial class TLSSocketConnection : JsObject
     /// <summary>
     /// getRemoteAddress
     /// </summary>
-    public Task<NetAddress> GetRemoteAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetRemoteAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getRemoteAddress);
+        return CallMethodAsync(_getRemoteAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>
@@ -2305,9 +2305,9 @@ public sealed partial class TLSSocketConnection : JsObject
     /// <summary>
     /// getLocalAddress
     /// </summary>
-    public Task<NetAddress> GetLocalAddressAsync()
+    public Task<global::HarmonyOS.Bindings.Api.NetAddress> GetLocalAddressAsync()
     {
-        return CallMethodAsync<NetAddress>(_getLocalAddress);
+        return CallMethodAsync(_getLocalAddress, static h => new global::HarmonyOS.Bindings.Api.NetAddress(h));
     }
 
     /// <summary>

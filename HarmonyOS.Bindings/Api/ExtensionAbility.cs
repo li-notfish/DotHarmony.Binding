@@ -67,3 +67,12 @@ public static unsafe partial class ExtensionAbility
     }
 
 }
+
+/// <summary>
+/// ExtensionAbility 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class ExtensionAbilityObject : JsObject
+{
+    public ExtensionAbilityObject(IntPtr handle) : base(handle) { }
+}

@@ -67,3 +67,18 @@ public static unsafe partial class BackupExtensionContext
     }
 
 }
+
+/// <summary>
+/// BackupExtensionContext 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class BackupExtensionContextObject : JsObject
+{
+    public BackupExtensionContextObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _backupDir => "backupDir"u8;
+    /// <summary>
+    /// backupDir
+    /// </summary>
+    public string BackupDir => NativeValue.ToString(GetPropertyRaw(_backupDir)) ?? string.Empty;
+
+}

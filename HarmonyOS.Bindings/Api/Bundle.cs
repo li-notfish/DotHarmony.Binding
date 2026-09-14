@@ -124,7 +124,7 @@ public static unsafe partial class Bundle
     /// <summary>
     /// queryAbilityByWant
     /// </summary>
-    public static Task<IntPtr[]> QueryAbilityByWantAsync(IntPtr want, double bundleFlags, double userId)
+    public static Task<IntPtr[]> QueryAbilityByWantAsync(global::HarmonyOS.Bindings.Api.WantObject want, double bundleFlags, double userId)
     {
         return NodeApi.CallMethodAsync(Module, _queryAbilityByWant, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), want, bundleFlags, userId);
     }
@@ -132,7 +132,7 @@ public static unsafe partial class Bundle
     /// <summary>
     /// queryAbilityByWant
     /// </summary>
-    public static Task<IntPtr[]> QueryAbilityByWantAsync(IntPtr want, double bundleFlags)
+    public static Task<IntPtr[]> QueryAbilityByWantAsync(global::HarmonyOS.Bindings.Api.WantObject want, double bundleFlags)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryAbilityByWant, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), want, bundleFlags);
     }
@@ -188,9 +188,9 @@ public static unsafe partial class Bundle
     /// <summary>
     /// getLaunchWantForBundle
     /// </summary>
-    public static Task<IntPtr> GetLaunchWantForBundleAsync(string bundleName)
+    public static Task<global::HarmonyOS.Bindings.Api.WantObject> GetLaunchWantForBundleAsync(string bundleName)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getLaunchWantForBundle, bundleName);
+        return NodeApi.CallMethodAsync(Module, _getLaunchWantForBundle, static h => new global::HarmonyOS.Bindings.Api.WantObject(h), bundleName);
     }
 
     /// <summary>

@@ -81,7 +81,7 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// isWifiActiveSync
     /// </summary>
-    public static bool IsWifiActiveSync(IntPtr admin)
+    public static bool IsWifiActiveSync(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod<bool>(Module, _isWifiActiveSync, admin);
     }
@@ -89,7 +89,7 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// setWifiProfileSync
     /// </summary>
-    public static void SetWifiProfileSync(IntPtr admin, WifiProfile profile)
+    public static void SetWifiProfileSync(global::HarmonyOS.Bindings.Api.WantObject admin, WifiProfile profile)
     {
         NodeApi.CallMethodVoid(Module, _setWifiProfileSync, admin, profile);
     }
@@ -97,7 +97,7 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// addDisallowedWifiList
     /// </summary>
-    public static void AddDisallowedWifiList(IntPtr admin, WifiAccessInfo[] list)
+    public static void AddDisallowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin, WifiAccessInfo[] list)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedWifiList, admin, list);
     }
@@ -105,7 +105,7 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// removeDisallowedWifiList
     /// </summary>
-    public static void RemoveDisallowedWifiList(IntPtr admin, WifiAccessInfo[] list)
+    public static void RemoveDisallowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin, WifiAccessInfo[] list)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedWifiList, admin, list);
     }
@@ -113,7 +113,7 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// getDisallowedWifiList
     /// </summary>
-    public static WifiAccessInfo[] GetDisallowedWifiList(IntPtr admin)
+    public static WifiAccessInfo[] GetDisallowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getDisallowedWifiList, h => ValueConverter.ConvertArray(h, static e => new WifiAccessInfo(e)), admin);
     }
@@ -121,7 +121,7 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// addAllowedWifiList
     /// </summary>
-    public static void AddAllowedWifiList(IntPtr admin, WifiAccessInfo[] list)
+    public static void AddAllowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin, WifiAccessInfo[] list)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedWifiList, admin, list);
     }
@@ -129,7 +129,7 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// removeAllowedWifiList
     /// </summary>
-    public static void RemoveAllowedWifiList(IntPtr admin, WifiAccessInfo[] list)
+    public static void RemoveAllowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin, WifiAccessInfo[] list)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedWifiList, admin, list);
     }
@@ -137,7 +137,7 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// getAllowedWifiList
     /// </summary>
-    public static WifiAccessInfo[] GetAllowedWifiList(IntPtr admin)
+    public static WifiAccessInfo[] GetAllowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getAllowedWifiList, h => ValueConverter.ConvertArray(h, static e => new WifiAccessInfo(e)), admin);
     }
@@ -145,7 +145,7 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// turnOnWifi
     /// </summary>
-    public static void TurnOnWifi(IntPtr admin, bool isForce)
+    public static void TurnOnWifi(global::HarmonyOS.Bindings.Api.WantObject admin, bool isForce)
     {
         NodeApi.CallMethodVoid(Module, _turnOnWifi, admin, isForce);
     }
@@ -153,7 +153,7 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// turnOffWifi
     /// </summary>
-    public static void TurnOffWifi(IntPtr admin)
+    public static void TurnOffWifi(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         NodeApi.CallMethodVoid(Module, _turnOffWifi, admin);
     }

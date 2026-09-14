@@ -83,7 +83,7 @@ public static unsafe partial class ChildProcessManager
     /// <summary>
     /// startArkChildProcess
     /// </summary>
-    public static Task<double> StartArkChildProcessAsync(string srcEntry, IntPtr args, IntPtr? options = null)
+    public static Task<double> StartArkChildProcessAsync(string srcEntry, global::HarmonyOS.Bindings.Api.ChildProcessArgsObject args, global::HarmonyOS.Bindings.Api.ChildProcessOptionsObject? options = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _startArkChildProcess, srcEntry, args, options);
     }
@@ -91,7 +91,7 @@ public static unsafe partial class ChildProcessManager
     /// <summary>
     /// startNativeChildProcess
     /// </summary>
-    public static Task<double> StartNativeChildProcessAsync(string entryPoint, IntPtr args, IntPtr? options = null)
+    public static Task<double> StartNativeChildProcessAsync(string entryPoint, global::HarmonyOS.Bindings.Api.ChildProcessArgsObject args, global::HarmonyOS.Bindings.Api.ChildProcessOptionsObject? options = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _startNativeChildProcess, entryPoint, args, options);
     }

@@ -86,3 +86,30 @@ public static unsafe partial class AppAbilityAbility
     }
 
 }
+
+/// <summary>
+/// Ability 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AbilityObject : JsObject
+{
+    public AbilityObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _onConfigurationUpdate => "onConfigurationUpdate"u8;
+    private static ReadOnlySpan<byte> _onMemoryLevel => "onMemoryLevel"u8;
+    /// <summary>
+    /// onConfigurationUpdate
+    /// </summary>
+    public void OnConfigurationUpdate(IntPtr newConfig)
+    {
+        CallMethodVoid(_onConfigurationUpdate, newConfig);
+    }
+
+    /// <summary>
+    /// onMemoryLevel
+    /// </summary>
+    public void OnMemoryLevel(IntPtr level)
+    {
+        CallMethodVoid(_onMemoryLevel, level);
+    }
+
+}

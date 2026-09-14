@@ -155,7 +155,7 @@ public static unsafe partial class InputMethod
     /// <summary>
     /// switchCurrentInputMethodSubtype
     /// </summary>
-    public static Task<bool> SwitchCurrentInputMethodSubtypeAsync(IntPtr target)
+    public static Task<bool> SwitchCurrentInputMethodSubtypeAsync(global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject target)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _switchCurrentInputMethodSubtype, target);
     }
@@ -163,15 +163,15 @@ public static unsafe partial class InputMethod
     /// <summary>
     /// getCurrentInputMethodSubtype
     /// </summary>
-    public static IntPtr GetCurrentInputMethodSubtype()
+    public static global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject GetCurrentInputMethodSubtype()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getCurrentInputMethodSubtype);
+        return NodeApi.CallMethod(Module, _getCurrentInputMethodSubtype, static h => new global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject(h));
     }
 
     /// <summary>
     /// switchCurrentInputMethodAndSubtype
     /// </summary>
-    public static Task<bool> SwitchCurrentInputMethodAndSubtypeAsync(IntPtr inputMethodProperty, IntPtr inputMethodSubtype)
+    public static Task<bool> SwitchCurrentInputMethodAndSubtypeAsync(IntPtr inputMethodProperty, global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject inputMethodSubtype)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _switchCurrentInputMethodAndSubtype, inputMethodProperty, inputMethodSubtype);
     }
@@ -240,17 +240,17 @@ public sealed partial class InputMethodSetting : JsObject
     /// <summary>
     /// listInputMethodSubtype
     /// </summary>
-    public Task<IntPtr[]> ListInputMethodSubtypeAsync(IntPtr inputMethodProperty)
+    public Task<global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject[]> ListInputMethodSubtypeAsync(IntPtr inputMethodProperty)
     {
-        return CallMethodAsync(_listInputMethodSubtype, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), inputMethodProperty);
+        return CallMethodAsync(_listInputMethodSubtype, h => ValueConverter.ConvertArray(h, static e => new global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject(e)), inputMethodProperty);
     }
 
     /// <summary>
     /// listCurrentInputMethodSubtype
     /// </summary>
-    public Task<IntPtr[]> ListCurrentInputMethodSubtypeAsync()
+    public Task<global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject[]> ListCurrentInputMethodSubtypeAsync()
     {
-        return CallMethodAsync(_listCurrentInputMethodSubtype, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        return CallMethodAsync(_listCurrentInputMethodSubtype, h => ValueConverter.ConvertArray(h, static e => new global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject(e)));
     }
 
     /// <summary>

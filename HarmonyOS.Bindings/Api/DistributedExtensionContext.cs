@@ -86,3 +86,30 @@ public static unsafe partial class DistributedExtensionContext
     }
 
 }
+
+/// <summary>
+/// DistributedExtensionContext 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DistributedExtensionContextObject : JsObject
+{
+    public DistributedExtensionContextObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _connectServiceExtensionAbility => "connectServiceExtensionAbility"u8;
+    private static ReadOnlySpan<byte> _disconnectServiceExtensionAbility => "disconnectServiceExtensionAbility"u8;
+    /// <summary>
+    /// connectServiceExtensionAbility
+    /// </summary>
+    public double ConnectServiceExtensionAbility(global::HarmonyOS.Bindings.Api.WantObject want, IntPtr options)
+    {
+        return CallMethod<double>(_connectServiceExtensionAbility, want, options);
+    }
+
+    /// <summary>
+    /// disconnectServiceExtensionAbility
+    /// </summary>
+    public Task DisconnectServiceExtensionAbilityAsync(double connection)
+    {
+        return CallMethodAsyncVoid(_disconnectServiceExtensionAbility, connection);
+    }
+
+}

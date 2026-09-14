@@ -89,7 +89,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// addAllowedInstallBundlesSync
     /// </summary>
-    public static void AddAllowedInstallBundlesSync(IntPtr admin, string[] appIds, double? accountId = null)
+    public static void AddAllowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedInstallBundlesSync, admin, appIds, accountId);
     }
@@ -97,7 +97,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// removeAllowedInstallBundlesSync
     /// </summary>
-    public static void RemoveAllowedInstallBundlesSync(IntPtr admin, string[] appIds, double? accountId = null)
+    public static void RemoveAllowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedInstallBundlesSync, admin, appIds, accountId);
     }
@@ -105,7 +105,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// getAllowedInstallBundlesSync
     /// </summary>
-    public static string[] GetAllowedInstallBundlesSync(IntPtr admin, double? accountId = null)
+    public static string[] GetAllowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, double? accountId = null)
     {
         return NodeApi.CallMethod(Module, _getAllowedInstallBundlesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, accountId);
     }
@@ -113,7 +113,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// addDisallowedInstallBundlesSync
     /// </summary>
-    public static void AddDisallowedInstallBundlesSync(IntPtr admin, string[] appIds, double? accountId = null)
+    public static void AddDisallowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedInstallBundlesSync, admin, appIds, accountId);
     }
@@ -121,7 +121,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// removeDisallowedInstallBundlesSync
     /// </summary>
-    public static void RemoveDisallowedInstallBundlesSync(IntPtr admin, string[] appIds, double? accountId = null)
+    public static void RemoveDisallowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedInstallBundlesSync, admin, appIds, accountId);
     }
@@ -129,7 +129,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// getDisallowedInstallBundlesSync
     /// </summary>
-    public static string[] GetDisallowedInstallBundlesSync(IntPtr admin, double? accountId = null)
+    public static string[] GetDisallowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, double? accountId = null)
     {
         return NodeApi.CallMethod(Module, _getDisallowedInstallBundlesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, accountId);
     }
@@ -137,7 +137,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// addDisallowedUninstallBundlesSync
     /// </summary>
-    public static void AddDisallowedUninstallBundlesSync(IntPtr admin, string[] appIds, double? accountId = null)
+    public static void AddDisallowedUninstallBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedUninstallBundlesSync, admin, appIds, accountId);
     }
@@ -145,7 +145,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// removeDisallowedUninstallBundlesSync
     /// </summary>
-    public static void RemoveDisallowedUninstallBundlesSync(IntPtr admin, string[] appIds, double? accountId = null)
+    public static void RemoveDisallowedUninstallBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedUninstallBundlesSync, admin, appIds, accountId);
     }
@@ -153,7 +153,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// getDisallowedUninstallBundlesSync
     /// </summary>
-    public static string[] GetDisallowedUninstallBundlesSync(IntPtr admin, double? accountId = null)
+    public static string[] GetDisallowedUninstallBundlesSync(global::HarmonyOS.Bindings.Api.WantObject admin, double? accountId = null)
     {
         return NodeApi.CallMethod(Module, _getDisallowedUninstallBundlesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, accountId);
     }
@@ -161,7 +161,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// uninstall
     /// </summary>
-    public static Task UninstallAsync(IntPtr admin, string bundleName, double? userId = null, bool? isKeepData = null)
+    public static Task UninstallAsync(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, double? userId = null, bool? isKeepData = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _uninstall, admin, bundleName, userId, isKeepData);
     }
@@ -169,7 +169,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// install
     /// </summary>
-    public static Task InstallAsync(IntPtr admin, string[] hapFilePaths, IntPtr? installParam = null)
+    public static Task InstallAsync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] hapFilePaths, IntPtr? installParam = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _install, admin, hapFilePaths, installParam);
     }
@@ -177,7 +177,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// installForResult
     /// </summary>
-    public static Task InstallForResultAsync(IntPtr admin, string[] hapFilePaths, IntPtr? installParam = null)
+    public static Task InstallForResultAsync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] hapFilePaths, IntPtr? installParam = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _installForResult, admin, hapFilePaths, installParam);
     }
@@ -185,7 +185,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// addInstallationAllowedAppDistributionTypes
     /// </summary>
-    public static void AddInstallationAllowedAppDistributionTypes(IntPtr admin, global::HarmonyOS.ArkUI.AppDistributionType[] appDistributionTypes)
+    public static void AddInstallationAllowedAppDistributionTypes(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.AppDistributionType[] appDistributionTypes)
     {
         NodeApi.CallMethodVoid(Module, _addInstallationAllowedAppDistributionTypes, admin, appDistributionTypes);
     }
@@ -193,7 +193,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// removeInstallationAllowedAppDistributionTypes
     /// </summary>
-    public static void RemoveInstallationAllowedAppDistributionTypes(IntPtr admin, global::HarmonyOS.ArkUI.AppDistributionType[] appDistributionTypes)
+    public static void RemoveInstallationAllowedAppDistributionTypes(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.AppDistributionType[] appDistributionTypes)
     {
         NodeApi.CallMethodVoid(Module, _removeInstallationAllowedAppDistributionTypes, admin, appDistributionTypes);
     }
@@ -201,7 +201,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// getInstallationAllowedAppDistributionTypes
     /// </summary>
-    public static global::HarmonyOS.ArkUI.AppDistributionType[] GetInstallationAllowedAppDistributionTypes(IntPtr admin)
+    public static global::HarmonyOS.ArkUI.AppDistributionType[] GetInstallationAllowedAppDistributionTypes(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getInstallationAllowedAppDistributionTypes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.AppDistributionType>(e)), admin);
     }
@@ -209,7 +209,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// getInstalledBundleList
     /// </summary>
-    public static Task<BundleInfo[]> GetInstalledBundleListAsync(IntPtr admin, double accountId)
+    public static Task<BundleInfo[]> GetInstalledBundleListAsync(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
         return NodeApi.CallMethodAsync(Module, _getInstalledBundleList, h => ValueConverter.ConvertArray(h, static e => new BundleInfo(e)), admin, accountId);
     }
@@ -217,7 +217,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// getInstalledBundleList
     /// </summary>
-    public static Task<BundleInfo[]> GetInstalledBundleListAsync(IntPtr admin, double accountId, double bundleInfoGetFlag)
+    public static Task<BundleInfo[]> GetInstalledBundleListAsync(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId, double bundleInfoGetFlag)
     {
         return NodeApi.CallMethodAsync(Module, _getInstalledBundleList, h => ValueConverter.ConvertArray(h, static e => new BundleInfo(e)), admin, accountId, bundleInfoGetFlag);
     }
@@ -225,7 +225,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// installMarketApps
     /// </summary>
-    public static void InstallMarketApps(IntPtr admin, string[] bundleNames)
+    public static void InstallMarketApps(global::HarmonyOS.Bindings.Api.WantObject admin, string[] bundleNames)
     {
         NodeApi.CallMethodVoid(Module, _installMarketApps, admin, bundleNames);
     }
@@ -233,7 +233,7 @@ public static unsafe partial class EnterpriseBundleManager
     /// <summary>
     /// getInstalledBundleStorageStats
     /// </summary>
-    public static Task<BundleStorageStats[]> GetInstalledBundleStorageStatsAsync(IntPtr admin, string[] bundleNames, double accountId)
+    public static Task<BundleStorageStats[]> GetInstalledBundleStorageStatsAsync(global::HarmonyOS.Bindings.Api.WantObject admin, string[] bundleNames, double accountId)
     {
         return NodeApi.CallMethodAsync(Module, _getInstalledBundleStorageStats, h => ValueConverter.ConvertArray(h, static e => new BundleStorageStats(e)), admin, bundleNames, accountId);
     }

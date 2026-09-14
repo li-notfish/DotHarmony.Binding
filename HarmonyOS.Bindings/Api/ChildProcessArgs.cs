@@ -67,3 +67,24 @@ public static unsafe partial class ChildProcessArgs
     }
 
 }
+
+/// <summary>
+/// ChildProcessArgs（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ChildProcessArgsObject(
+    string? EntryParams = null,
+    IntPtr? Fds = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _entryParamsName => "entryParams"u8;
+    private static ReadOnlySpan<byte> _fdsName => "fds"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _entryParamsV = NativeValue.From(EntryParams);
+        if (_entryParamsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _entryParamsName, _entryParamsV);
+        var _fdsV = NativeValue.From(Fds);
+        if (_fdsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fdsName, _fdsV);
+    }
+}

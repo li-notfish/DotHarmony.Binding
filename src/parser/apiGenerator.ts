@@ -84,6 +84,10 @@ export class ApiGenerator {
     private specs: TypeSpec[] = [];
     private specByCsharp = new Map<string, TypeSpec>();
     private moduleClassName = '';
+    /** 跨模块导入类型（完全限定 C# 名集合）：callExpr/getterExpr 等调用点包装类工厂查找的兜底注册表 */
+    private crossModuleWrappers = new Set<string>();
+    /** 本模块被其它模块引用的 tsName：record 收敛时钉住（不被移除映射） */
+    private demandedTs = new Set<string>();
 
     constructor() {
         this.enumGenerator = new EnumGenerator();
@@ -127,9 +131,19 @@ export class ApiGenerator {
         permissions: string[],
         enums: EnumInfo[],
         allEnums: EnumInfo[] = enums,
-        importedTypeNames: ReadonlySet<string> = new Set()
+        crossModule?: {
+            /** 导入类型解析表：tsName → 完全限定 C# 类型名（来源模块已转正）或 'IntPtr'（保守降级） */
+            imports: Map<string, string>;
+            /** 本模块被其它模块引用的 tsName（输入位 demand）：record 收敛钉住 + 可达性强制发射 */
+            demandedTs: Set<string>;
+            /** 本模块被其它模块在返回/回调位置引用的 tsName：强制 wrapper（返回位必须可从句柄构造） */
+            returnDemandTs: Set<string>;
+        }
     ): ApiGenResult {
         this.moduleClassName = moduleInfo.className;
+        this.demandedTs = crossModule?.demandedTs ?? new Set();
+        this.crossModuleWrappers = new Set<string>(
+            [...(crossModule?.imports.values() ?? [])].filter(v => v.startsWith('global::')));
         const savedOriginalMappings = new Map<string, { typescript: string; csharp: string; isNative: boolean } | undefined>();
         // 枚举类型引用一律全限定，避免与 System.* 同名类型（如 Action）冲突（CS0104）
         this.enumNames = new Set(allEnums.map(e => `global::HarmonyOS.ArkUI.${e.name}`));
@@ -148,22 +162,23 @@ export class ApiGenerator {
                 TypeMapper.addMapping((e as any).originalName, `global::HarmonyOS.ArkUI.${e.name}`);
             }
         }
-        // 本模块未定义的跨模块导入类型 → IntPtr 句柄（映射注册顺序保证自有类型优先）
+        // 本模块未定义的跨模块导入类型 → 按预计算解析表映射（映射注册顺序保证自有类型优先）
         const ownTypeNames = new Set<string>([
             ...allEnums.map(e => e.name),
             ...component.interfaces.map(i => i.name),
             ...component.classes.map(c => c.name),
         ]);
-        for (const n of importedTypeNames) {
-            if (!ownTypeNames.has(n) && !TypeMapper.isStringLiteralAlias(n)) {
-                // 字面量联合别名（Permissions→string）由 processFullSDK 入口扫描登记，回退不得覆盖；
-                // 其余导入类型维持旧行为：无条件 IntPtr（全局保守降级，避免引用未生成的包装类型）
-                TypeMapper.addMapping(n, 'IntPtr');
-            }
+        for (const [n, mapped] of crossModule?.imports ?? []) {
+            if (ownTypeNames.has(n)) continue;
+            if (TypeMapper.isStringLiteralAlias(n)) continue;
+            // 字面量联合别名（Permissions→string）由 processFullSDK 入口扫描登记，回退不得覆盖；
+            // 解析表：来源模块转正 → 完全限定包装类型（强类型），否则 IntPtr（保守降级）
+            TypeMapper.addMapping(n, mapped);
         }
         for (const iface of component.interfaces) {
             if (iface.typeParameters && iface.typeParameters.length > 0) continue; // 泛型接口不包装
-            const kind = iface.methods.length > 0 ? 'wrapper' : 'record';
+            const kind = (iface.methods.length > 0 || (crossModule?.returnDemandTs.has(iface.name) ?? false))
+                ? 'wrapper' : 'record';
             this.registerSpec(iface.name, kind, iface, undefined);
         }
         for (const cls of component.classes) {
@@ -195,7 +210,9 @@ export class ApiGenerator {
         this.convergeRecordUsage(members, eventCallbackArgs);
 
         // 5. 可达性：只生成被模块成员（传递）引用的实例类型
-        const reachable = this.collectReachable(members, eventCallbackArgs);
+        // 跨模块 demand 的类型强制发射（种子）：引用方生成的是具体类型，本体必须发射
+        const demandSeeds = this.specs.filter(s => this.demandedTs.has(s.tsName)).map(s => s.csharpName);
+        const reachable = this.collectReachable(members, [...eventCallbackArgs, ...demandSeeds]);
 
         // 6. 生成
         const needsTask = members.some(m => /^Task(<.+>)?$/.test(m.retType));
@@ -234,24 +251,33 @@ export class ApiGenerator {
 
     // ---------- 映射登记 ----------
 
-    private registerSpec(tsName: string, kind: 'wrapper' | 'record', iface?: InterfaceInfo, cls?: ClassInfo): void {
-        let csharp = (tsName === this.moduleClassName || FORBIDDEN_CSHARP_NAMES.has(tsName)
+    /**
+     * 跨模块类型名认领（幂等）：计算 C# 名并在全局 takenTypeNames 登记，重复调用返回同一名字。
+     * processFullSDK 预处理阶段按生成同序预登记全部模块类型，保证 registerSpec 与跨模块注册表一致。
+     */
+    static claimTypeName(tsName: string, moduleClassName: string): string {
+        let csharp = (tsName === moduleClassName || FORBIDDEN_CSHARP_NAMES.has(tsName)
             || reservedModuleClassNames.has(tsName))
             ? `${tsName}Object` : tsName;
         const owner = takenTypeNames.get(csharp);
-        if (owner !== undefined && owner !== this.moduleClassName) {
+        if (owner !== undefined && owner !== moduleClassName) {
             // 跨模块同名（如 Rect/Size）：加模块前缀避免跨文件重复定义。
             // 前缀名本身也可能被其它模块占用（window.Rect → WindowRect 撞 dialogRequest.WindowRect），
             // 加计数后缀避让，直到候选名无人认领。
-            csharp = `${this.moduleClassName}${tsName}`;
+            csharp = `${moduleClassName}${tsName}`;
             let suffix = 2;
-            while (takenTypeNames.get(csharp) !== undefined && takenTypeNames.get(csharp) !== this.moduleClassName) {
-                csharp = `${this.moduleClassName}${tsName}${suffix++}`;
+            while (takenTypeNames.get(csharp) !== undefined && takenTypeNames.get(csharp) !== moduleClassName) {
+                csharp = `${moduleClassName}${tsName}${suffix++}`;
             }
-            takenTypeNames.set(csharp, this.moduleClassName);
+            takenTypeNames.set(csharp, moduleClassName);
         } else if (owner === undefined) {
-            takenTypeNames.set(csharp, this.moduleClassName);
+            takenTypeNames.set(csharp, moduleClassName);
         }
+        return csharp;
+    }
+
+    private registerSpec(tsName: string, kind: 'wrapper' | 'record', iface?: InterfaceInfo, cls?: ClassInfo): void {
+        const csharp = ApiGenerator.claimTypeName(tsName, this.moduleClassName);
         const spec: TypeSpec = { tsName, csharpName: csharp, kind, iface, cls };
         this.specs.push(spec);
         this.specByCsharp.set(csharp, spec);
@@ -285,6 +311,8 @@ export class ApiGenerator {
     /**
      * 反复移除属性不可封送的 record 映射，直到不动点。
      * 移除后引用它的参数/返回类型退回 IntPtr（当前行为），保证产物可编译。
+     * 被其它模块引用的 record（demandedTs）钉住不移除：跨模块引用会生成具体类型，
+     * 移除映射会导致引用方 CS0246；钉住后 IntPtr 属性经 NativeValue.From 透传 napi_value。
      */
     private convergeRecordMarshaling(component: ComponentInfo): void {
         for (let round = 0; round < 5; round++) {
@@ -292,7 +320,7 @@ export class ApiGenerator {
             let changed = false;
             for (const spec of this.specs) {
                 if (spec.kind !== 'record') continue;
-                if (!this.isRecordMarshaling(spec, marshalingOk)) {
+                if (!this.demandedTs.has(spec.tsName) && !this.isRecordMarshaling(spec, marshalingOk)) {
                     TypeMapper.removeMapping(spec.tsName);
                     this.specByCsharp.delete(spec.csharpName);
                     changed = true;
@@ -302,9 +330,10 @@ export class ApiGenerator {
             }
             if (!changed) return;
         }
-        // 收敛兜底：仍未登记成功的 record 全部移除
+        // 收敛兜底：仍未登记成功的 record 全部移除（被跨模块引用的钉住 record 除外）
         for (const spec of this.specs) {
             if (spec.kind === 'record' && this.specByCsharp.has(spec.csharpName)
+                && !this.demandedTs.has(spec.tsName)
                 && !this.isRecordMarshaling(spec, new Set())) {
                 TypeMapper.removeMapping(spec.tsName);
                 this.specByCsharp.delete(spec.csharpName);
@@ -856,11 +885,11 @@ export class ApiGenerator {
             lines.push('');
             return;
         }
-        const wrapperSpec = this.specByCsharp.get(mapped);
+        const wrapperSpec = this.resolveWrapperCtor(mapped);
         if (p.optional && wrapperSpec) {
             // 可选包装属性：undefined → null
             const raw = `GetPropertyRaw(${u8})`;
-            lines.push(`    public ${wrapperSpec.csharpName}? ${pascal} => ${raw} == IntPtr.Zero ? null : new ${wrapperSpec.csharpName}(${raw});`);
+            lines.push(`    public ${wrapperSpec}? ${pascal} => ${raw} == IntPtr.Zero ? null : new ${wrapperSpec}(${raw});`);
             lines.push('');
             return;
         }
@@ -915,6 +944,14 @@ export class ApiGenerator {
 
     // ---------- 表达式构造 ----------
 
+    /** 包装类解析（句柄构造名）：本模块 specByCsharp 优先，未命中查跨模块注册表（完全限定名可直接 new） */
+    private resolveWrapperCtor(mapped: string): string | null {
+        const own = this.specByCsharp.get(mapped);
+        if (own) return own.csharpName;
+        if (this.crossModuleWrappers.has(mapped)) return mapped;
+        return null;
+    }
+
     /**
      * 方法调用表达式。instance=true 时目标是 JsObject 派生类自身（this.Handle + 受保护助手），
      * 否则为模块静态类（NodeApi + Module）。
@@ -938,10 +975,10 @@ export class ApiGenerator {
             ? (useCallbackBridge ? 'CallMethodAsyncCallback' : 'CallMethodAsync')
             : 'CallMethod';
 
-        const wrapper = this.specByCsharp.get(inner);
+        const wrapper = this.resolveWrapperCtor(inner);
         if (wrapper) {
             // 包装类：调用点显式工厂（AOT 安全，无反射）
-            return call(method, `, static h => new ${wrapper.csharpName}(h)`);
+            return call(method, `, static h => new ${wrapper}(h)`);
         }
         if (inner.startsWith('JsMap<')) {
             return call(method, `, h => ${this.jsMapCtorExpr(inner, 'h')}`);
@@ -949,9 +986,9 @@ export class ApiGenerator {
         const arrMatch = /^([\w.:]+)\[\]$/.exec(inner);
         if (arrMatch) {
             const elem = arrMatch[1];
-            const elemWrapper = this.specByCsharp.get(elem);
+            const elemWrapper = this.resolveWrapperCtor(elem);
             const conv = elemWrapper
-                ? `static e => new ${elemWrapper.csharpName}(e)`
+                ? `static e => new ${elemWrapper}(e)`
                 : `static e => ValueConverter.Convert<${elem}>(e)`;
             return call(method, `, h => ValueConverter.ConvertArray(h, ${conv})`);
         }
@@ -965,9 +1002,9 @@ export class ApiGenerator {
         if (PRIMITIVE_TYPES.has(mapped) || this.enumNames.has(mapped)) {
             return { type: mapped, expr: this.primitiveGetterExpr(mapped, raw) };
         }
-        const wrapper = this.specByCsharp.get(mapped);
+        const wrapper = this.resolveWrapperCtor(mapped);
         if (wrapper) {
-            return { type: wrapper.csharpName, expr: `new ${wrapper.csharpName}(${raw})` };
+            return { type: wrapper, expr: `new ${wrapper}(${raw})` };
         }
         if (mapped.startsWith('JsMap<')) {
             return { type: mapped, expr: this.jsMapCtorExpr(mapped, raw) };
@@ -975,9 +1012,9 @@ export class ApiGenerator {
         const arrMatch = /^([\w.:]+)\[\]$/.exec(mapped);
         if (arrMatch) {
             const elem = arrMatch[1];
-            const elemWrapper = this.specByCsharp.get(elem);
+            const elemWrapper = this.resolveWrapperCtor(elem);
             const conv = elemWrapper
-                ? `static e => new ${elemWrapper.csharpName}(e)`
+                ? `static e => new ${elemWrapper}(e)`
                 : `static e => ValueConverter.Convert<${elem}>(e)`;
             return { type: mapped, expr: `ValueConverter.ConvertArray(${raw}, ${conv})` };
         }
@@ -1066,8 +1103,8 @@ export class ApiGenerator {
     /** JsMap 构造表达式：值类型为包装类时带 valueFactory（活视图读取包装值） */
     private jsMapCtorExpr(mapped: string, handleExpr: string): string {
         const valueCs = mapped.slice('JsMap<'.length, mapped.length - 1).split(',')[1]?.trim();
-        const factory = valueCs && this.specByCsharp.get(valueCs)
-            ? `, static v => new ${valueCs}(v)` : '';
+        const valueW = valueCs ? this.resolveWrapperCtor(valueCs) : null;
+        const factory = valueW ? `, static v => new ${valueW}(v)` : '';
         return `new ${mapped}(${handleExpr}${factory})`;
     }
 
@@ -1086,16 +1123,16 @@ export class ApiGenerator {
             case 'void': return 'default';
         }
         if (this.enumNames.has(mapped)) return `(${mapped})NativeValue.ToInt(${arg})`;
-        const wrapper = this.specByCsharp.get(mapped);
-        if (wrapper) return `new ${wrapper.csharpName}(${arg})`;
+        const wrapper = this.resolveWrapperCtor(mapped);
+        if (wrapper) return `new ${wrapper}(${arg})`;
         if (mapped.startsWith('JsMap<')) return this.jsMapCtorExpr(mapped, arg);
         // 数组载荷（如 Callback<Array<Location>>）：逐元素转换
         const arrMatch = /^([\w.:]+)\[\]$/.exec(mapped);
         if (arrMatch) {
             const elem = arrMatch[1];
-            const elemWrapper = this.specByCsharp.get(elem);
+            const elemWrapper = this.resolveWrapperCtor(elem);
             const conv = elemWrapper
-                ? `static e => new ${elemWrapper.csharpName}(e)`
+                ? `static e => new ${elemWrapper}(e)`
                 : `static e => ValueConverter.Convert<${elem}>(e)`;
             return `ValueConverter.ConvertArray(${arg}, ${conv})`;
         }

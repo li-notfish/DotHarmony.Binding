@@ -2524,9 +2524,9 @@ public sealed partial class UIContextObject : JsObject
     /// <summary>
     /// createAnimator
     /// </summary>
-    public IntPtr CreateAnimator(IntPtr options)
+    public global::HarmonyOS.Bindings.Api.AnimatorResult CreateAnimator(global::HarmonyOS.Bindings.Api.AnimatorOptions options)
     {
-        return CallMethod<IntPtr>(_createAnimator, options);
+        return CallMethod(_createAnimator, static h => new global::HarmonyOS.Bindings.Api.AnimatorResult(h), options);
     }
 
     /// <summary>
@@ -2636,7 +2636,7 @@ public sealed partial class UIContextObject : JsObject
     /// <summary>
     /// dispatchKeyEvent
     /// </summary>
-    public bool DispatchKeyEvent(double node, IntPtr @event)
+    public bool DispatchKeyEvent(double node, global::HarmonyOS.Bindings.Api.KeyEventKeyEvent @event)
     {
         return CallMethod<bool>(_dispatchKeyEvent, node, @event);
     }
@@ -3334,9 +3334,9 @@ public sealed partial class ResolvedUIContext : JsObject
     /// <summary>
     /// createAnimator
     /// </summary>
-    public IntPtr CreateAnimator(IntPtr options)
+    public global::HarmonyOS.Bindings.Api.AnimatorResult CreateAnimator(global::HarmonyOS.Bindings.Api.AnimatorOptions options)
     {
-        return CallMethod<IntPtr>(_createAnimator, options);
+        return CallMethod(_createAnimator, static h => new global::HarmonyOS.Bindings.Api.AnimatorResult(h), options);
     }
 
     /// <summary>
@@ -3446,7 +3446,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// <summary>
     /// dispatchKeyEvent
     /// </summary>
-    public bool DispatchKeyEvent(double node, IntPtr @event)
+    public bool DispatchKeyEvent(double node, global::HarmonyOS.Bindings.Api.KeyEventKeyEvent @event)
     {
         return CallMethod<bool>(_dispatchKeyEvent, node, @event);
     }
@@ -4212,17 +4212,17 @@ public sealed partial class PromptActionObject : JsObject
     /// <summary>
     /// getTopOrder
     /// </summary>
-    public IntPtr GetTopOrder()
+    public global::HarmonyOS.Bindings.Api.LevelOrder GetTopOrder()
     {
-        return CallMethod<IntPtr>(_getTopOrder);
+        return CallMethod(_getTopOrder, static h => new global::HarmonyOS.Bindings.Api.LevelOrder(h));
     }
 
     /// <summary>
     /// getBottomOrder
     /// </summary>
-    public IntPtr GetBottomOrder()
+    public global::HarmonyOS.Bindings.Api.LevelOrder GetBottomOrder()
     {
-        return CallMethod<IntPtr>(_getBottomOrder);
+        return CallMethod(_getBottomOrder, static h => new global::HarmonyOS.Bindings.Api.LevelOrder(h));
     }
 
     /// <summary>
@@ -5043,7 +5043,7 @@ public sealed partial class OverlayManager : JsObject
     /// <summary>
     /// addComponentContentWithOrder
     /// </summary>
-    public void AddComponentContentWithOrder(IntPtr content, IntPtr? levelOrder = null)
+    public void AddComponentContentWithOrder(IntPtr content, global::HarmonyOS.Bindings.Api.LevelOrder? levelOrder = null)
     {
         CallMethodVoid(_addComponentContentWithOrder, content, levelOrder);
     }
@@ -5219,7 +5219,7 @@ public sealed partial class MeasureUtils : JsObject
     /// <summary>
     /// measureText
     /// </summary>
-    public double MeasureText(IntPtr options)
+    public double MeasureText(global::HarmonyOS.Bindings.Api.MeasureOptions options)
     {
         return CallMethod<double>(_measureText, options);
     }
@@ -5227,7 +5227,7 @@ public sealed partial class MeasureUtils : JsObject
     /// <summary>
     /// measureTextSize
     /// </summary>
-    public IntPtr MeasureTextSize(IntPtr options)
+    public IntPtr MeasureTextSize(global::HarmonyOS.Bindings.Api.MeasureOptions options)
     {
         return CallMethod<IntPtr>(_measureTextSize, options);
     }

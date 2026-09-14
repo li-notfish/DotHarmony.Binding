@@ -85,7 +85,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// setSimDisabled
     /// </summary>
-    public static void SetSimDisabled(IntPtr admin, double slotId)
+    public static void SetSimDisabled(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
         NodeApi.CallMethodVoid(Module, _setSimDisabled, admin, slotId);
     }
@@ -93,7 +93,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// setSimEnabled
     /// </summary>
-    public static void SetSimEnabled(IntPtr admin, double slotId)
+    public static void SetSimEnabled(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
         NodeApi.CallMethodVoid(Module, _setSimEnabled, admin, slotId);
     }
@@ -101,7 +101,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// isSimDisabled
     /// </summary>
-    public static bool IsSimDisabled(IntPtr admin, double slotId)
+    public static bool IsSimDisabled(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
         return NodeApi.CallMethod<bool>(Module, _isSimDisabled, admin, slotId);
     }
@@ -109,7 +109,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// addOutgoingCallPolicyNumbers
     /// </summary>
-    public static void AddOutgoingCallPolicyNumbers(IntPtr admin, IntPtr policy, string[] numbers)
+    public static void AddOutgoingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy, string[] numbers)
     {
         NodeApi.CallMethodVoid(Module, _addOutgoingCallPolicyNumbers, admin, policy, numbers);
     }
@@ -117,7 +117,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// removeOutgoingCallPolicyNumbers
     /// </summary>
-    public static void RemoveOutgoingCallPolicyNumbers(IntPtr admin, IntPtr policy, string[] numbers)
+    public static void RemoveOutgoingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy, string[] numbers)
     {
         NodeApi.CallMethodVoid(Module, _removeOutgoingCallPolicyNumbers, admin, policy, numbers);
     }
@@ -125,7 +125,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// getOutgoingCallPolicyNumbers
     /// </summary>
-    public static string[] GetOutgoingCallPolicyNumbers(IntPtr admin, IntPtr policy)
+    public static string[] GetOutgoingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy)
     {
         return NodeApi.CallMethod(Module, _getOutgoingCallPolicyNumbers, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, policy);
     }
@@ -133,7 +133,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// addIncomingCallPolicyNumbers
     /// </summary>
-    public static void AddIncomingCallPolicyNumbers(IntPtr admin, IntPtr policy, string[] numbers)
+    public static void AddIncomingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy, string[] numbers)
     {
         NodeApi.CallMethodVoid(Module, _addIncomingCallPolicyNumbers, admin, policy, numbers);
     }
@@ -141,7 +141,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// removeIncomingCallPolicyNumbers
     /// </summary>
-    public static void RemoveIncomingCallPolicyNumbers(IntPtr admin, IntPtr policy, string[] numbers)
+    public static void RemoveIncomingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy, string[] numbers)
     {
         NodeApi.CallMethodVoid(Module, _removeIncomingCallPolicyNumbers, admin, policy, numbers);
     }
@@ -149,7 +149,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// getIncomingCallPolicyNumbers
     /// </summary>
-    public static string[] GetIncomingCallPolicyNumbers(IntPtr admin, IntPtr policy)
+    public static string[] GetIncomingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy)
     {
         return NodeApi.CallMethod(Module, _getIncomingCallPolicyNumbers, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, policy);
     }
@@ -157,7 +157,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// hangupCalling
     /// </summary>
-    public static void HangupCalling(IntPtr admin)
+    public static void HangupCalling(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         NodeApi.CallMethodVoid(Module, _hangupCalling, admin);
     }
@@ -165,7 +165,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// activeSim
     /// </summary>
-    public static void ActiveSim(IntPtr admin, double slotId)
+    public static void ActiveSim(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
         NodeApi.CallMethodVoid(Module, _activeSim, admin, slotId);
     }
@@ -173,7 +173,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// deactiveSim
     /// </summary>
-    public static void DeactiveSim(IntPtr admin, double slotId)
+    public static void DeactiveSim(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
         NodeApi.CallMethodVoid(Module, _deactiveSim, admin, slotId);
     }
@@ -181,7 +181,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// setDefaultData
     /// </summary>
-    public static void SetDefaultData(IntPtr admin, double slotId)
+    public static void SetDefaultData(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
         NodeApi.CallMethodVoid(Module, _setDefaultData, admin, slotId);
     }
@@ -189,7 +189,7 @@ public static unsafe partial class TelephonyManager
     /// <summary>
     /// getDefaultData
     /// </summary>
-    public static double GetDefaultData(IntPtr admin)
+    public static double GetDefaultData(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod<double>(Module, _getDefaultData, admin);
     }

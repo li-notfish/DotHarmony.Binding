@@ -96,7 +96,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// setNTPServer
     /// </summary>
-    public static void SetNtpServer(IntPtr admin, string server)
+    public static void SetNtpServer(global::HarmonyOS.Bindings.Api.WantObject admin, string server)
     {
         NodeApi.CallMethodVoid(Module, _setNTPServer, admin, server);
     }
@@ -104,7 +104,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// getNTPServer
     /// </summary>
-    public static string GetNtpServer(IntPtr admin)
+    public static string GetNtpServer(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod<string>(Module, _getNTPServer, admin);
     }
@@ -112,7 +112,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// setOtaUpdatePolicy
     /// </summary>
-    public static void SetOtaUpdatePolicy(IntPtr admin, OtaUpdatePolicy policy)
+    public static void SetOtaUpdatePolicy(global::HarmonyOS.Bindings.Api.WantObject admin, OtaUpdatePolicy policy)
     {
         NodeApi.CallMethodVoid(Module, _setOtaUpdatePolicy, admin, policy);
     }
@@ -120,7 +120,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// getOtaUpdatePolicy
     /// </summary>
-    public static OtaUpdatePolicy GetOtaUpdatePolicy(IntPtr admin)
+    public static OtaUpdatePolicy GetOtaUpdatePolicy(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getOtaUpdatePolicy, static h => new OtaUpdatePolicy(h), admin);
     }
@@ -128,7 +128,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// notifyUpdatePackages
     /// </summary>
-    public static Task NotifyUpdatePackagesAsync(IntPtr admin, IntPtr packageInfo)
+    public static Task NotifyUpdatePackagesAsync(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr packageInfo)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _notifyUpdatePackages, admin, packageInfo);
     }
@@ -136,7 +136,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// getUpdateResult
     /// </summary>
-    public static Task<UpdateResult> GetUpdateResultAsync(IntPtr admin, string version)
+    public static Task<UpdateResult> GetUpdateResultAsync(global::HarmonyOS.Bindings.Api.WantObject admin, string version)
     {
         return NodeApi.CallMethodAsync(Module, _getUpdateResult, static h => new UpdateResult(h), admin, version);
     }
@@ -144,7 +144,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// getUpdateAuthData
     /// </summary>
-    public static Task<string> GetUpdateAuthDataAsync(IntPtr admin)
+    public static Task<string> GetUpdateAuthDataAsync(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getUpdateAuthData, admin);
     }
@@ -152,7 +152,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// setAutoUnlockAfterReboot
     /// </summary>
-    public static void SetAutoUnlockAfterReboot(IntPtr admin, bool isAllowed)
+    public static void SetAutoUnlockAfterReboot(global::HarmonyOS.Bindings.Api.WantObject admin, bool isAllowed)
     {
         NodeApi.CallMethodVoid(Module, _setAutoUnlockAfterReboot, admin, isAllowed);
     }
@@ -160,7 +160,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// getAutoUnlockAfterReboot
     /// </summary>
-    public static bool GetAutoUnlockAfterReboot(IntPtr admin)
+    public static bool GetAutoUnlockAfterReboot(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod<bool>(Module, _getAutoUnlockAfterReboot, admin);
     }
@@ -168,7 +168,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// addDisallowedNearLinkProtocols
     /// </summary>
-    public static void AddDisallowedNearLinkProtocols(IntPtr admin, global::HarmonyOS.ArkUI.NearLinkProtocol[] protocols, double accountId)
+    public static void AddDisallowedNearLinkProtocols(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.NearLinkProtocol[] protocols, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedNearLinkProtocols, admin, protocols, accountId);
     }
@@ -176,7 +176,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// removeDisallowedNearLinkProtocols
     /// </summary>
-    public static void RemoveDisallowedNearLinkProtocols(IntPtr admin, global::HarmonyOS.ArkUI.NearLinkProtocol[] protocols, double accountId)
+    public static void RemoveDisallowedNearLinkProtocols(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.NearLinkProtocol[] protocols, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedNearLinkProtocols, admin, protocols, accountId);
     }
@@ -184,7 +184,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// getDisallowedNearLinkProtocols
     /// </summary>
-    public static global::HarmonyOS.ArkUI.NearLinkProtocol[] GetDisallowedNearLinkProtocols(IntPtr admin, double accountId)
+    public static global::HarmonyOS.ArkUI.NearLinkProtocol[] GetDisallowedNearLinkProtocols(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getDisallowedNearLinkProtocols, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.NearLinkProtocol>(e)), admin, accountId);
     }
@@ -192,7 +192,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// setInstallLocalEnterpriseAppEnabled
     /// </summary>
-    public static void SetInstallLocalEnterpriseAppEnabled(IntPtr admin, bool isEnable)
+    public static void SetInstallLocalEnterpriseAppEnabled(global::HarmonyOS.Bindings.Api.WantObject admin, bool isEnable)
     {
         NodeApi.CallMethodVoid(Module, _setInstallLocalEnterpriseAppEnabled, admin, isEnable);
     }
@@ -200,7 +200,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// getInstallLocalEnterpriseAppEnabled
     /// </summary>
-    public static bool GetInstallLocalEnterpriseAppEnabled(IntPtr admin)
+    public static bool GetInstallLocalEnterpriseAppEnabled(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod<bool>(Module, _getInstallLocalEnterpriseAppEnabled, admin);
     }
@@ -208,7 +208,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// addKeyEventPolicies
     /// </summary>
-    public static void AddKeyEventPolicies(IntPtr admin, KeyEventPolicy[] keyPolicies)
+    public static void AddKeyEventPolicies(global::HarmonyOS.Bindings.Api.WantObject admin, KeyEventPolicy[] keyPolicies)
     {
         NodeApi.CallMethodVoid(Module, _addKeyEventPolicies, admin, keyPolicies);
     }
@@ -216,7 +216,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// removeKeyEventPolicies
     /// </summary>
-    public static void RemoveKeyEventPolicies(IntPtr admin, global::HarmonyOS.ArkUI.KeyCode[] keyCodes)
+    public static void RemoveKeyEventPolicies(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.KeyCode[] keyCodes)
     {
         NodeApi.CallMethodVoid(Module, _removeKeyEventPolicies, admin, keyCodes);
     }
@@ -224,7 +224,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// getKeyEventPolicies
     /// </summary>
-    public static KeyEventPolicy[] GetKeyEventPolicies(IntPtr admin)
+    public static KeyEventPolicy[] GetKeyEventPolicies(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getKeyEventPolicies, h => ValueConverter.ConvertArray(h, static e => new KeyEventPolicy(e)), admin);
     }
@@ -232,7 +232,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// setActivationLockDisabled
     /// </summary>
-    public static Task SetActivationLockDisabledAsync(IntPtr admin, bool isDisabled, string? credential = null)
+    public static Task SetActivationLockDisabledAsync(global::HarmonyOS.Bindings.Api.WantObject admin, bool isDisabled, string? credential = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setActivationLockDisabled, admin, isDisabled, credential);
     }
@@ -240,7 +240,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// isActivationLockDisabled
     /// </summary>
-    public static Task<bool> IsActivationLockDisabledAsync(IntPtr admin)
+    public static Task<bool> IsActivationLockDisabledAsync(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isActivationLockDisabled, admin);
     }
@@ -248,7 +248,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// startCollectLog
     /// </summary>
-    public static Task StartCollectLogAsync(IntPtr admin)
+    public static Task StartCollectLogAsync(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startCollectLog, admin);
     }
@@ -256,7 +256,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// finishLogCollected
     /// </summary>
-    public static void FinishLogCollected(IntPtr admin)
+    public static void FinishLogCollected(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         NodeApi.CallMethodVoid(Module, _finishLogCollected, admin);
     }
@@ -264,7 +264,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// setInstallLocalEnterpriseAppEnabledForAccount
     /// </summary>
-    public static void SetInstallLocalEnterpriseAppEnabledForAccount(IntPtr admin, bool isEnable, double accountId)
+    public static void SetInstallLocalEnterpriseAppEnabledForAccount(global::HarmonyOS.Bindings.Api.WantObject admin, bool isEnable, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _setInstallLocalEnterpriseAppEnabledForAccount, admin, isEnable, accountId);
     }
@@ -272,7 +272,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// getInstallLocalEnterpriseAppEnabledForAccount
     /// </summary>
-    public static bool GetInstallLocalEnterpriseAppEnabledForAccount(IntPtr admin, double accountId)
+    public static bool GetInstallLocalEnterpriseAppEnabledForAccount(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod<bool>(Module, _getInstallLocalEnterpriseAppEnabledForAccount, admin, accountId);
     }
@@ -280,7 +280,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// setOtaUpdateNonceEnable
     /// </summary>
-    public static void SetOtaUpdateNonceEnable(IntPtr admin, bool isEnable)
+    public static void SetOtaUpdateNonceEnable(global::HarmonyOS.Bindings.Api.WantObject admin, bool isEnable)
     {
         NodeApi.CallMethodVoid(Module, _setOtaUpdateNonceEnable, admin, isEnable);
     }
@@ -288,7 +288,7 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// isOtaUpdateNonceEnable
     /// </summary>
-    public static bool IsOtaUpdateNonceEnable(IntPtr admin)
+    public static bool IsOtaUpdateNonceEnable(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod<bool>(Module, _isOtaUpdateNonceEnable, admin);
     }

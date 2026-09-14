@@ -67,3 +67,84 @@ public static unsafe partial class KeyEvent
     }
 
 }
+
+/// <summary>
+/// KeyEvent 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class KeyEventKeyEvent : JsObject
+{
+    public KeyEventKeyEvent(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _action => "action"u8;
+    private static ReadOnlySpan<byte> _key => "key"u8;
+    private static ReadOnlySpan<byte> _unicodeChar => "unicodeChar"u8;
+    private static ReadOnlySpan<byte> _keys => "keys"u8;
+    private static ReadOnlySpan<byte> _ctrlKey => "ctrlKey"u8;
+    private static ReadOnlySpan<byte> _altKey => "altKey"u8;
+    private static ReadOnlySpan<byte> _shiftKey => "shiftKey"u8;
+    private static ReadOnlySpan<byte> _logoKey => "logoKey"u8;
+    private static ReadOnlySpan<byte> _fnKey => "fnKey"u8;
+    private static ReadOnlySpan<byte> _capsLock => "capsLock"u8;
+    private static ReadOnlySpan<byte> _numLock => "numLock"u8;
+    private static ReadOnlySpan<byte> _scrollLock => "scrollLock"u8;
+    /// <summary>
+    /// action
+    /// </summary>
+    public global::HarmonyOS.ArkUI.KeyEventAction Action => (global::HarmonyOS.ArkUI.KeyEventAction)NativeValue.ToInt(GetPropertyRaw(_action));
+
+    /// <summary>
+    /// key
+    /// </summary>
+    public IntPtr Key => GetPropertyRaw(_key);
+
+    /// <summary>
+    /// unicodeChar
+    /// </summary>
+    public double UnicodeChar => NativeValue.ToDouble(GetPropertyRaw(_unicodeChar));
+
+    /// <summary>
+    /// keys
+    /// </summary>
+    public IntPtr[] Keys => ValueConverter.ConvertArray(GetPropertyRaw(_keys), static e => ValueConverter.Convert<IntPtr>(e));
+
+    /// <summary>
+    /// ctrlKey
+    /// </summary>
+    public bool CtrlKey => NativeValue.ToBool(GetPropertyRaw(_ctrlKey));
+
+    /// <summary>
+    /// altKey
+    /// </summary>
+    public bool AltKey => NativeValue.ToBool(GetPropertyRaw(_altKey));
+
+    /// <summary>
+    /// shiftKey
+    /// </summary>
+    public bool ShiftKey => NativeValue.ToBool(GetPropertyRaw(_shiftKey));
+
+    /// <summary>
+    /// logoKey
+    /// </summary>
+    public bool LogoKey => NativeValue.ToBool(GetPropertyRaw(_logoKey));
+
+    /// <summary>
+    /// fnKey
+    /// </summary>
+    public bool FnKey => NativeValue.ToBool(GetPropertyRaw(_fnKey));
+
+    /// <summary>
+    /// capsLock
+    /// </summary>
+    public bool CapsLock => NativeValue.ToBool(GetPropertyRaw(_capsLock));
+
+    /// <summary>
+    /// numLock
+    /// </summary>
+    public bool NumLock => NativeValue.ToBool(GetPropertyRaw(_numLock));
+
+    /// <summary>
+    /// scrollLock
+    /// </summary>
+    public bool ScrollLock => NativeValue.ToBool(GetPropertyRaw(_scrollLock));
+
+}

@@ -67,3 +67,39 @@ public static unsafe partial class InputEvent
     }
 
 }
+
+/// <summary>
+/// InputEvent（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record InputEventObject(
+    double Id,
+    double DeviceId,
+    double ActionTime,
+    double ScreenId,
+    double WindowId
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _idName => "id"u8;
+    private static ReadOnlySpan<byte> _deviceIdName => "deviceId"u8;
+    private static ReadOnlySpan<byte> _actionTimeName => "actionTime"u8;
+    private static ReadOnlySpan<byte> _screenIdName => "screenId"u8;
+    private static ReadOnlySpan<byte> _windowIdName => "windowId"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _idV = NativeValue.From(Id);
+        if (_idV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
+        var _deviceIdV = NativeValue.From(DeviceId);
+        if (_deviceIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
+        var _actionTimeV = NativeValue.From(ActionTime);
+        if (_actionTimeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _actionTimeName, _actionTimeV);
+        var _screenIdV = NativeValue.From(ScreenId);
+        if (_screenIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _screenIdName, _screenIdV);
+        var _windowIdV = NativeValue.From(WindowId);
+        if (_windowIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _windowIdName, _windowIdV);
+    }
+}

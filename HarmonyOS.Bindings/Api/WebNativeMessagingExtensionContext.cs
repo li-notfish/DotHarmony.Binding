@@ -104,3 +104,48 @@ public static unsafe partial class WebNativeMessagingExtensionContext
     }
 
 }
+
+/// <summary>
+/// WebNativeMessagingExtensionContext 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WebNativeMessagingExtensionContextObject : JsObject
+{
+    public WebNativeMessagingExtensionContextObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _startAbility => "startAbility"u8;
+    private static ReadOnlySpan<byte> _startAbilityForResult => "startAbilityForResult"u8;
+    private static ReadOnlySpan<byte> _terminateSelf => "terminateSelf"u8;
+    private static ReadOnlySpan<byte> _stopNativeConnection => "stopNativeConnection"u8;
+    /// <summary>
+    /// startAbility
+    /// </summary>
+    public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want, global::HarmonyOS.Bindings.Api.StartOptionsObject? options = null)
+    {
+        return CallMethodAsyncVoid(_startAbility, want, options);
+    }
+
+    /// <summary>
+    /// startAbilityForResult
+    /// </summary>
+    public Task<IntPtr> StartAbilityForResultAsync(global::HarmonyOS.Bindings.Api.WantObject want, global::HarmonyOS.Bindings.Api.StartOptionsObject? options = null)
+    {
+        return CallMethodAsync<IntPtr>(_startAbilityForResult, want, options);
+    }
+
+    /// <summary>
+    /// terminateSelf
+    /// </summary>
+    public Task TerminateSelfAsync()
+    {
+        return CallMethodAsyncVoid(_terminateSelf);
+    }
+
+    /// <summary>
+    /// stopNativeConnection
+    /// </summary>
+    public Task StopNativeConnectionAsync(double connectionId)
+    {
+        return CallMethodAsyncVoid(_stopNativeConnection, connectionId);
+    }
+
+}

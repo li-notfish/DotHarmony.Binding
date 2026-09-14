@@ -811,25 +811,25 @@ public sealed partial class ResourceManagerObject : JsObject
     /// <summary>
     /// getDrawableDescriptor
     /// </summary>
-    public IntPtr GetDrawableDescriptor(double resId, double? density = null, double? type = null)
+    public global::HarmonyOS.Bindings.Api.DrawableDescriptorObject GetDrawableDescriptor(double resId, double? density = null, double? type = null)
     {
-        return CallMethod<IntPtr>(_getDrawableDescriptor, resId, density, type);
+        return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resId, density, type);
     }
 
     /// <summary>
     /// getDrawableDescriptorByName
     /// </summary>
-    public IntPtr GetDrawableDescriptorByName(string resName, double? density = null, double? type = null)
+    public global::HarmonyOS.Bindings.Api.DrawableDescriptorObject GetDrawableDescriptorByName(string resName, double? density = null, double? type = null)
     {
-        return CallMethod<IntPtr>(_getDrawableDescriptorByName, resName, density, type);
+        return CallMethod(_getDrawableDescriptorByName, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resName, density, type);
     }
 
     /// <summary>
     /// getDrawableDescriptor
     /// </summary>
-    public IntPtr GetDrawableDescriptor(IntPtr resource, double? density = null, double? type = null)
+    public global::HarmonyOS.Bindings.Api.DrawableDescriptorObject GetDrawableDescriptor(IntPtr resource, double? density = null, double? type = null)
     {
-        return CallMethod<IntPtr>(_getDrawableDescriptor, resource, density, type);
+        return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resource, density, type);
     }
 
     /// <summary>

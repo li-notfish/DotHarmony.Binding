@@ -67,3 +67,18 @@ public static unsafe partial class ExtraConfig
     }
 
 }
+
+/// <summary>
+/// InputMethodExtraConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class InputMethodExtraConfig : JsObject
+{
+    public InputMethodExtraConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _customSettings => "customSettings"u8;
+    /// <summary>
+    /// customSettings
+    /// </summary>
+    public IntPtr CustomSettings => GetPropertyRaw(_customSettings);
+
+}

@@ -8,7 +8,7 @@ import { EnumGenerator } from './enumGenerator';
 import { NativeCodeGenerator, EnumMetadata, NativeGap } from './nativeCodeGenerator';
 import { ApiGenerator, reservedModuleClassNames } from './apiGenerator';
 import { TypeMapper } from './typeMapper';
-import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo } from './models';
+import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo, ImportInfo } from './models';
 
 interface CacheEntry {
     hash: string;
@@ -863,56 +863,188 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
         return { ...info, className: candidate };
     };
 
+    // ---- 预处理阶段（两阶段生成，M2 跨模块强类型解析）----
+    // 解析全部模块一次（ParseResult 纯函数，生成循环不再重复解析），使跨模块类型解析在
+    // 生成前可全局计算：
+    // 1) 类型名认领（ApiGenerator.claimTypeName）按生成同序预登记 → 生成期 registerSpec 与注册表一致
+    // 2) 枚举终名（first-writer 增量）预计算 → 跨模块枚举引用不再依赖生成顺序
+    // 3) 跨模块 demand（输入位/返回位）→ 本体 record 钉住 / 强制 wrapper / 强制发射
+    type ParsedModule = {
+        file: string;
+        moduleInfo: { module: string; className: string; local: string };
+        component: ComponentInfo;
+        enums: EnumInfo[];
+        imports: ImportInfo[];
+        finalNewEnums: EnumInfo[];
+        finalAllEnums: EnumInfo[];
+    };
+    const parsedModules: ParsedModule[] = [];
     for (const file of apiFiles) {
-        const apiPath = path.join(apiDir, file);
         const moduleInfo = uniqueModuleInfo(ApiGenerator.dtsToModuleInfo(file));
-        const source = fs.readFileSync(apiPath, 'utf-8');
-        const permissions = ApiGenerator.extractPermissions(source);
-        permissions.forEach(p => allPermissions.add(p));
-
         try {
-            const result = parser.parseFile(apiPath);
+            const source = fs.readFileSync(path.join(apiDir, file), 'utf-8');
+            const result = parser.parseFile(path.join(apiDir, file));
             if (!result.component.name) {
                 console.log(`  Skipped (no namespace): ${file}`);
                 apiSkipped++;
                 continue;
             }
-
-            // 同模块内嵌套 namespace 同名枚举去重（否则同一 Enums.cs 内 CS0101）
-            const seenInModule = new Set<string>();
-            const newEnums = result.enums.filter(e => {
-                if (seenInModule.has(e.name)) return false;
-                seenInModule.add(e.name);
-                return true;
+            // `export import X = <alias>.<Type>`（TS 内部别名，如 net.socket 的
+            // NetAddress = connection.NetAddress）不在标准 import 列表——按默认导入别名的
+            // from 路径还原来源模块，把类型名并入该模块的导入列表参与跨模块解析
+            const aliasModules = new Map<string, string>();
+            for (const m of source.matchAll(/\bimport\s+(?:type\s+)?(\w+)\s+from\s+['"]\.\/([^'"]+)['"]/g)) {
+                if (!aliasModules.has(m[1])) aliasModules.set(m[1], m[2]);
+            }
+            for (const m of source.matchAll(/\bexport\s+import\s+(\w+)\s*=\s*(\w+)\.(\w+)\s*;/g)) {
+                const srcModule = aliasModules.get(m[2]);
+                if (srcModule) result.imports.push({ module: `./${srcModule}`, imports: [m[3]], isTypeOnly: true });
+            }
+            parsedModules.push({
+                file, moduleInfo,
+                component: result.component, enums: result.enums, imports: result.imports,
+                finalNewEnums: [], finalAllEnums: [],
             });
-            newEnums.forEach(e => {
-                if (!writtenEnumNames.has(e.name)) writtenEnumNames.set(e.name, moduleInfo.module);
+        } catch (e: any) {
+            console.error(`  Error: ${file} - ${e.message}`);
+            apiSkipped++;
+        }
+    }
+
+    // 枚举终名（与生成同序的 first-writer 增量登记，与原循环内逻辑逐行一致）
+    for (const pm of parsedModules) {
+        const seenInModule = new Set<string>();
+        const newEnums = pm.enums.filter(e => {
+            if (seenInModule.has(e.name)) return false;
+            seenInModule.add(e.name);
+            return true;
+        });
+        newEnums.forEach(e => {
+            if (!writtenEnumNames.has(e.name)) writtenEnumNames.set(e.name, pm.moduleInfo.module);
+        });
+        const fixEnumName = (e: EnumInfo) => {
+            let name = e.name;
+            if (ARKUI_RESERVED_NAMES.has(name)
+                || (writtenEnumNames.has(name) && writtenEnumNames.get(name) !== pm.moduleInfo.module)) {
+                name = `${pm.moduleInfo.className}${name}`;
+                (e as any).originalName = e.name;
+            }
+            return { ...e, name };
+        };
+        pm.finalNewEnums = newEnums.map(fixEnumName);
+        pm.finalAllEnums = pm.enums.map(fixEnumName);
+    }
+
+    // 全局类型注册表：moduleModule → tsName → { csharpName, kind }（认领与 registerSpec 同序同规则）
+    const moduleTypes = new Map<string, Map<string, { csharpName: string; kind: 'wrapper' | 'record' }>>();
+    // 枚举终名注册表：moduleModule → 原始 tsName → 枚举 FQN（跨模块枚举引用解析）
+    const moduleEnumTypes = new Map<string, Map<string, string>>();
+    for (const pm of parsedModules) {
+        const types = new Map<string, { csharpName: string; kind: 'wrapper' | 'record' }>();
+        for (const iface of pm.component.interfaces) {
+            if (iface.typeParameters && iface.typeParameters.length > 0) continue;
+            types.set(iface.name, {
+                csharpName: ApiGenerator.claimTypeName(iface.name, pm.moduleInfo.className),
+                kind: iface.methods.length > 0 ? 'wrapper' : 'record',
             });
+        }
+        for (const cls of pm.component.classes) {
+            if (cls.typeParameters && cls.typeParameters.length > 0) continue;
+            types.set(cls.name, {
+                csharpName: ApiGenerator.claimTypeName(cls.name, pm.moduleInfo.className),
+                kind: 'wrapper',
+            });
+        }
+        const enumTypes = new Map<string, string>();
+        for (const e of pm.finalAllEnums) {
+            const tsName = (e as any).originalName !== undefined ? (e as any).originalName : e.name;
+            enumTypes.set(tsName, `global::HarmonyOS.ArkUI.${e.name}`);
+        }
+        moduleTypes.set(pm.moduleInfo.module, types);
+        moduleEnumTypes.set(pm.moduleInfo.module, enumTypes);
+    }
 
-            // 跨模块 import 类型（如 socket 导入 net.netAddress.NetAddress）无法在本模块内解析，
-            // 降级为 IntPtr 句柄，避免生成引用不存在类型的产物（CS0246/CS0234）
-            const importedNames = new Set(result.imports.flatMap(i => i.imports));
+    // 跨模块需求图：ownerModule → tsName 集合（输入位 demandInput：record 钉住 + 强制发射；
+    // 返回/回调位 demandReturn：强制 wrapper——返回位必须可从句柄构造）
+    const demandInput = new Map<string, Set<string>>();
+    const demandReturn = new Map<string, Set<string>>();
+    const demandFor = (m: Map<string, Set<string>>, key: string) => {
+        let s = m.get(key);
+        if (!s) { s = new Set(); m.set(key, s); }
+        return s;
+    };
+    // 返回/回调位置类型串（近似 convergeRecordUsage 的种子集：模块方法返回 + 事件回调参数 +
+    // 接口/类实例成员的返回与属性）
+    const returnTypeStrings = (component: ComponentInfo): string[] => {
+        const strs: string[] = [];
+        const collect = (methods: { returnType: string; asyncResultType?: string; eventMeta?: { callbackArgs: string[] } }[]) => {
+            for (const m of methods) {
+                strs.push(m.returnType);
+                if (m.asyncResultType !== undefined) strs.push(m.asyncResultType);
+                if (m.eventMeta) strs.push(...m.eventMeta.callbackArgs);
+            }
+        };
+        collect(component.methods);
+        for (const i of component.interfaces) {
+            collect(i.methods);
+            for (const p of i.properties) strs.push(p.type);
+        }
+        for (const c of component.classes) {
+            collect(c.methods);
+            for (const p of c.properties) strs.push(p.type);
+        }
+        return strs;
+    };
 
-            // 枚举名冲突 → 加模块前缀，映射与写盘保持一致：
-            // a) 撞手写 Nodes 类型名（如 relationalStore.Progress vs Nodes/progress.cs）
-            // b) 撞其它模块已发射的枚举名（如 avsession.CallState vs telephony.call.CallState）——
-            //    各模块独立发射，避免"首发射者被灰度拖垮依赖者"的级联
-            const fixEnumName = (e: EnumInfo) => {
-                let name = e.name;
-                if (ARKUI_RESERVED_NAMES.has(name)
-                    || (writtenEnumNames.has(name) && writtenEnumNames.get(name) !== moduleInfo.module)) {
-                    name = `${moduleInfo.className}${name}`;
-                    (e as any).originalName = e.name;
+    // 每个导入方的类型解析表：tsName → 完全限定 C# 名（来源模块转正）或 'IntPtr'（保守降级）。
+    // 显式覆盖全部非自有导入名（与旧"无条件 IntPtr"行为一致），来源未知的导入同样降级
+    const crossMaps = new Map<string, Map<string, string>>();
+    for (const pm of parsedModules) {
+        const map = new Map<string, string>();
+        crossMaps.set(pm.moduleInfo.module, map);
+        const retJoined = returnTypeStrings(pm.component).join(' ');
+        const isReturnPosition = (name: string) => new RegExp(`\\b${name}\\b`).test(retJoined);
+        for (const imp of pm.imports) {
+            const src = imp.module.replace(/^\.\//, '');
+            if (src === pm.moduleInfo.module) continue;
+            const ownerTypes = moduleTypes.get(src);
+            const ownerEnums = moduleEnumTypes.get(src);
+            const ownerClassName = parsedModules.find(x => x.moduleInfo.module === src)?.moduleInfo.className ?? '';
+            const ownerPromoted = ownerClassName !== '' && !GRAYSCALE_MODULES.has(ownerClassName);
+            for (const name of imp.imports) {
+                const t = ownerTypes?.get(name);
+                if (t && ownerPromoted) {
+                    map.set(name, `global::HarmonyOS.Bindings.Api.${t.csharpName}`);
+                    demandFor(isReturnPosition(name) ? demandReturn : demandInput, src).add(name);
+                } else if (ownerEnums?.has(name) && ownerPromoted) {
+                    map.set(name, ownerEnums.get(name)!);
+                } else {
+                    map.set(name, 'IntPtr');
                 }
-                return { ...e, name };
-            };
+            }
+        }
+    }
+
+    for (const pm of parsedModules) {
+        const source = fs.readFileSync(path.join(apiDir, pm.file), 'utf-8');
+        const permissions = ApiGenerator.extractPermissions(source);
+        permissions.forEach(p => allPermissions.add(p));
+
+        try {
             const gen = apiGen.generate(
-                result.component,
-                moduleInfo,
+                pm.component,
+                pm.moduleInfo,
                 permissions,
-                newEnums.map(fixEnumName),
-                result.enums.map(fixEnumName),
-                importedNames
+                pm.finalNewEnums,
+                pm.finalAllEnums,
+                {
+                    imports: crossMaps.get(pm.moduleInfo.module) ?? new Map(),
+                    demandedTs: new Set([
+                        ...(demandInput.get(pm.moduleInfo.module) ?? []),
+                        ...(demandReturn.get(pm.moduleInfo.module) ?? []),
+                    ]),
+                    returnDemandTs: demandReturn.get(pm.moduleInfo.module) ?? new Set(),
+                }
             );
 
             const csPath = path.join(apiOutputDir, `${gen.className}.cs`);
@@ -929,9 +1061,9 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
                 if (fs.existsSync(enumCsPath)) fs.unlinkSync(enumCsPath);
             }
 
-            boundModules.push({ module: moduleInfo.module, local: moduleInfo.local, className: moduleInfo.className });
+            boundModules.push({ module: pm.moduleInfo.module, local: pm.moduleInfo.local, className: pm.moduleInfo.className });
         } catch (e: any) {
-            console.error(`  Error: ${file} - ${e.message}`);
+            console.error(`  Error: ${pm.file} - ${e.message}`);
             apiSkipped++;
         }
     }

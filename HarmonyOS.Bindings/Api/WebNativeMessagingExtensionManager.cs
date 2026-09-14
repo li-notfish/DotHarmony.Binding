@@ -73,7 +73,7 @@ public static unsafe partial class WebNativeMessagingExtensionManager
     /// <summary>
     /// connectNative
     /// </summary>
-    public static double ConnectNative(IntPtr context, IntPtr want, WebExtensionConnectionCallback callback)
+    public static double ConnectNative(IntPtr context, global::HarmonyOS.Bindings.Api.WantObject want, WebExtensionConnectionCallback callback)
     {
         return NodeApi.CallMethod<double>(Module, _connectNative, context, want, callback);
     }

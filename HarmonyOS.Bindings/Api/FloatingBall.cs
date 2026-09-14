@@ -172,7 +172,7 @@ public sealed partial class FloatingBallController : JsObject
     /// <summary>
     /// restoreMainWindow
     /// </summary>
-    public Task RestoreMainWindowAsync(IntPtr want)
+    public Task RestoreMainWindowAsync(global::HarmonyOS.Bindings.Api.WantObject want)
     {
         return CallMethodAsyncVoid(_restoreMainWindow, want);
     }

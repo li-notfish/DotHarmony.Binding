@@ -141,17 +141,17 @@ public static unsafe partial class InputConsumer
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<IntPtr> callback, KeyPressedConfig options)
+    public static void On(string type, System.Action<global::HarmonyOS.Bindings.Api.KeyEventKeyEvent> callback, KeyPressedConfig options)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback(new global::HarmonyOS.Bindings.Api.KeyEventKeyEvent(args[0])),
             js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
     }
 
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action<IntPtr> callback)
+    public static void Off(string type, System.Action<global::HarmonyOS.Bindings.Api.KeyEventKeyEvent> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
     }
@@ -176,12 +176,12 @@ public static unsafe partial class InputConsumer
     /// <summary>
     /// 监听 keyPressed 事件（对应 on/off）
     /// </summary>
-    public static event System.Action<IntPtr> KeyPressed
+    public static event System.Action<global::HarmonyOS.Bindings.Api.KeyEventKeyEvent> KeyPressed
     {
         add
         {
             _eventListeners.Add(("keyPressed", value),
-                args => value(args[0]),
+                args => value(new global::HarmonyOS.Bindings.Api.KeyEventKeyEvent(args[0])),
                 js => NodeApi.CallMethodVoid(Module, _on, "keyPressed", js));
         }
         remove

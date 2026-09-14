@@ -157,17 +157,17 @@ public static unsafe partial class BundleManager
     /// <summary>
     /// getLaunchWantForBundleSync
     /// </summary>
-    public static IntPtr GetLaunchWantForBundleSync(string bundleName, double? userId = null)
+    public static global::HarmonyOS.Bindings.Api.WantObject GetLaunchWantForBundleSync(string bundleName, double? userId = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getLaunchWantForBundleSync, bundleName, userId);
+        return NodeApi.CallMethod(Module, _getLaunchWantForBundleSync, static h => new global::HarmonyOS.Bindings.Api.WantObject(h), bundleName, userId);
     }
 
     /// <summary>
     /// getLaunchWant
     /// </summary>
-    public static IntPtr GetLaunchWant()
+    public static global::HarmonyOS.Bindings.Api.WantObject GetLaunchWant()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getLaunchWant);
+        return NodeApi.CallMethod(Module, _getLaunchWant, static h => new global::HarmonyOS.Bindings.Api.WantObject(h));
     }
 
     /// <summary>

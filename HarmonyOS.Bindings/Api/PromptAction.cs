@@ -163,6 +163,33 @@ public sealed partial class PromptActionActionMenuSuccessResponse : JsObject
 }
 
 /// <summary>
+/// LevelOrder 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class LevelOrder : JsObject
+{
+    public LevelOrder(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _clamp => "clamp"u8;
+    private static ReadOnlySpan<byte> _getOrder => "getOrder"u8;
+    /// <summary>
+    /// clamp
+    /// </summary>
+    public LevelOrder Clamp(double order)
+    {
+        return CallMethod(_clamp, static h => new LevelOrder(h), order);
+    }
+
+    /// <summary>
+    /// getOrder
+    /// </summary>
+    public double GetOrder()
+    {
+        return CallMethod<double>(_getOrder);
+    }
+
+}
+
+/// <summary>
 /// CommonController 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>

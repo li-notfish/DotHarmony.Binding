@@ -232,6 +232,69 @@ public static unsafe partial class DrawableDescriptor
 }
 
 /// <summary>
+/// DrawableDescriptor 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class DrawableDescriptorObject : JsObject
+{
+    public DrawableDescriptorObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _getPixelMap => "getPixelMap"u8;
+    private static ReadOnlySpan<byte> _loadSync => "loadSync"u8;
+    private static ReadOnlySpan<byte> _load => "load"u8;
+    private static ReadOnlySpan<byte> _release => "release"u8;
+    private static ReadOnlySpan<byte> _isReleased => "isReleased"u8;
+    private static ReadOnlySpan<byte> _invalidate => "invalidate"u8;
+    /// <summary>
+    /// getPixelMap
+    /// </summary>
+    public IntPtr GetPixelMap()
+    {
+        return CallMethod<IntPtr>(_getPixelMap);
+    }
+
+    /// <summary>
+    /// loadSync
+    /// </summary>
+    public DrawableDescriptorLoadedResult LoadSync()
+    {
+        return CallMethod(_loadSync, static h => new DrawableDescriptorLoadedResult(h));
+    }
+
+    /// <summary>
+    /// load
+    /// </summary>
+    public Task<DrawableDescriptorLoadedResult> LoadAsync()
+    {
+        return CallMethodAsync(_load, static h => new DrawableDescriptorLoadedResult(h));
+    }
+
+    /// <summary>
+    /// release
+    /// </summary>
+    public void Release()
+    {
+        CallMethodVoid(_release);
+    }
+
+    /// <summary>
+    /// isReleased
+    /// </summary>
+    public bool IsReleased()
+    {
+        return CallMethod<bool>(_isReleased);
+    }
+
+    /// <summary>
+    /// invalidate
+    /// </summary>
+    public void Invalidate()
+    {
+        CallMethodVoid(_invalidate);
+    }
+
+}
+
+/// <summary>
 /// LayeredDrawableDescriptor 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -578,69 +641,6 @@ public sealed partial class DrawableDescriptorLoadedResult : JsObject
     /// imageHeight
     /// </summary>
     public double ImageHeight => NativeValue.ToDouble(GetPropertyRaw(_imageHeight));
-
-}
-
-/// <summary>
-/// DrawableDescriptor 实例包装（@ohos 命名空间内嵌套类）。
-/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
-/// </summary>
-public sealed partial class DrawableDescriptorObject : JsObject
-{
-    public DrawableDescriptorObject(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _getPixelMap => "getPixelMap"u8;
-    private static ReadOnlySpan<byte> _loadSync => "loadSync"u8;
-    private static ReadOnlySpan<byte> _load => "load"u8;
-    private static ReadOnlySpan<byte> _release => "release"u8;
-    private static ReadOnlySpan<byte> _isReleased => "isReleased"u8;
-    private static ReadOnlySpan<byte> _invalidate => "invalidate"u8;
-    /// <summary>
-    /// getPixelMap
-    /// </summary>
-    public IntPtr GetPixelMap()
-    {
-        return CallMethod<IntPtr>(_getPixelMap);
-    }
-
-    /// <summary>
-    /// loadSync
-    /// </summary>
-    public DrawableDescriptorLoadedResult LoadSync()
-    {
-        return CallMethod(_loadSync, static h => new DrawableDescriptorLoadedResult(h));
-    }
-
-    /// <summary>
-    /// load
-    /// </summary>
-    public Task<DrawableDescriptorLoadedResult> LoadAsync()
-    {
-        return CallMethodAsync(_load, static h => new DrawableDescriptorLoadedResult(h));
-    }
-
-    /// <summary>
-    /// release
-    /// </summary>
-    public void Release()
-    {
-        CallMethodVoid(_release);
-    }
-
-    /// <summary>
-    /// isReleased
-    /// </summary>
-    public bool IsReleased()
-    {
-        return CallMethod<bool>(_isReleased);
-    }
-
-    /// <summary>
-    /// invalidate
-    /// </summary>
-    public void Invalidate()
-    {
-        CallMethodVoid(_invalidate);
-    }
 
 }
 

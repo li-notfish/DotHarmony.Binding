@@ -77,3 +77,21 @@ public static unsafe partial class SelectionExtensionContext
     }
 
 }
+
+/// <summary>
+/// SelectionExtensionContext 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class SelectionExtensionContextObject : JsObject
+{
+    public SelectionExtensionContextObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _startAbility => "startAbility"u8;
+    /// <summary>
+    /// startAbility
+    /// </summary>
+    public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want)
+    {
+        return CallMethodAsyncVoid(_startAbility, want);
+    }
+
+}

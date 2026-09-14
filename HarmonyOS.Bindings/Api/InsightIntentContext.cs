@@ -103,3 +103,45 @@ public static unsafe partial class InsightIntentContext
     }
 
 }
+
+/// <summary>
+/// InsightIntentContext 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class InsightIntentContextObject : JsObject
+{
+    public InsightIntentContextObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _instanceId => "instanceId"u8;
+    private static ReadOnlySpan<byte> _startAbility => "startAbility"u8;
+    private static ReadOnlySpan<byte> _setReturnModeForUIAbilityForeground => "setReturnModeForUIAbilityForeground"u8;
+    private static ReadOnlySpan<byte> _setReturnModeForUIExtensionAbility => "setReturnModeForUIExtensionAbility"u8;
+    /// <summary>
+    /// instanceId
+    /// </summary>
+    public double InstanceId => NativeValue.ToDouble(GetPropertyRaw(_instanceId));
+
+    /// <summary>
+    /// startAbility
+    /// </summary>
+    public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want)
+    {
+        return CallMethodAsyncVoid(_startAbility, want);
+    }
+
+    /// <summary>
+    /// setReturnModeForUIAbilityForeground
+    /// </summary>
+    public void SetReturnModeForUiAbilityForeground(IntPtr returnMode)
+    {
+        CallMethodVoid(_setReturnModeForUIAbilityForeground, returnMode);
+    }
+
+    /// <summary>
+    /// setReturnModeForUIExtensionAbility
+    /// </summary>
+    public void SetReturnModeForUiExtensionAbility(IntPtr returnMode)
+    {
+        CallMethodVoid(_setReturnModeForUIExtensionAbility, returnMode);
+    }
+
+}

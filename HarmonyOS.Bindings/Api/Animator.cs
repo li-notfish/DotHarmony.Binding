@@ -214,6 +214,186 @@ public static unsafe partial class Animator
 }
 
 /// <summary>
+/// AnimatorOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record AnimatorOptions(
+    double Duration,
+    string Easing,
+    double Delay,
+    string Fill,
+    string Direction,
+    double Iterations,
+    double Begin,
+    double End
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _durationName => "duration"u8;
+    private static ReadOnlySpan<byte> _easingName => "easing"u8;
+    private static ReadOnlySpan<byte> _delayName => "delay"u8;
+    private static ReadOnlySpan<byte> _fillName => "fill"u8;
+    private static ReadOnlySpan<byte> _directionName => "direction"u8;
+    private static ReadOnlySpan<byte> _iterationsName => "iterations"u8;
+    private static ReadOnlySpan<byte> _beginName => "begin"u8;
+    private static ReadOnlySpan<byte> _endName => "end"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _durationV = NativeValue.From(Duration);
+        if (_durationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
+        var _easingV = NativeValue.From(Easing);
+        if (_easingV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _easingName, _easingV);
+        var _delayV = NativeValue.From(Delay);
+        if (_delayV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _delayName, _delayV);
+        var _fillV = NativeValue.From(Fill);
+        if (_fillV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _fillName, _fillV);
+        var _directionV = NativeValue.From(Direction);
+        if (_directionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _directionName, _directionV);
+        var _iterationsV = NativeValue.From(Iterations);
+        if (_iterationsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _iterationsName, _iterationsV);
+        var _beginV = NativeValue.From(Begin);
+        if (_beginV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _beginName, _beginV);
+        var _endV = NativeValue.From(End);
+        if (_endV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV);
+    }
+}
+
+/// <summary>
+/// AnimatorResult 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class AnimatorResult : JsObject
+{
+    public AnimatorResult(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _onframe => "onframe"u8;
+    private static ReadOnlySpan<byte> _onFrame => "onFrame"u8;
+    private static ReadOnlySpan<byte> _onfinish => "onfinish"u8;
+    private static ReadOnlySpan<byte> _onFinish => "onFinish"u8;
+    private static ReadOnlySpan<byte> _oncancel => "oncancel"u8;
+    private static ReadOnlySpan<byte> _onCancel => "onCancel"u8;
+    private static ReadOnlySpan<byte> _onrepeat => "onrepeat"u8;
+    private static ReadOnlySpan<byte> _onRepeat => "onRepeat"u8;
+    private static ReadOnlySpan<byte> _update => "update"u8;
+    private static ReadOnlySpan<byte> _reset => "reset"u8;
+    private static ReadOnlySpan<byte> _play => "play"u8;
+    private static ReadOnlySpan<byte> _finish => "finish"u8;
+    private static ReadOnlySpan<byte> _pause => "pause"u8;
+    private static ReadOnlySpan<byte> _cancel => "cancel"u8;
+    private static ReadOnlySpan<byte> _reverse => "reverse"u8;
+    private static ReadOnlySpan<byte> _setExpectedFrameRateRange => "setExpectedFrameRateRange"u8;
+    /// <summary>
+    /// onframe
+    /// </summary>
+    public IntPtr Onframe => GetPropertyRaw(_onframe);
+
+    /// <summary>
+    /// onFrame
+    /// </summary>
+    public IntPtr OnFrame => GetPropertyRaw(_onFrame);
+
+    /// <summary>
+    /// onfinish
+    /// </summary>
+    public IntPtr Onfinish => GetPropertyRaw(_onfinish);
+
+    /// <summary>
+    /// onFinish
+    /// </summary>
+    public IntPtr OnFinish => GetPropertyRaw(_onFinish);
+
+    /// <summary>
+    /// oncancel
+    /// </summary>
+    public IntPtr Oncancel => GetPropertyRaw(_oncancel);
+
+    /// <summary>
+    /// onCancel
+    /// </summary>
+    public IntPtr OnCancel => GetPropertyRaw(_onCancel);
+
+    /// <summary>
+    /// onrepeat
+    /// </summary>
+    public IntPtr Onrepeat => GetPropertyRaw(_onrepeat);
+
+    /// <summary>
+    /// onRepeat
+    /// </summary>
+    public IntPtr OnRepeat => GetPropertyRaw(_onRepeat);
+
+    /// <summary>
+    /// update
+    /// </summary>
+    public void Update(AnimatorOptions options)
+    {
+        CallMethodVoid(_update, options);
+    }
+
+    /// <summary>
+    /// reset
+    /// </summary>
+    public void Reset(AnimatorOptions options)
+    {
+        CallMethodVoid(_reset, options);
+    }
+
+    /// <summary>
+    /// play
+    /// </summary>
+    public void Play()
+    {
+        CallMethodVoid(_play);
+    }
+
+    /// <summary>
+    /// finish
+    /// </summary>
+    public void Finish()
+    {
+        CallMethodVoid(_finish);
+    }
+
+    /// <summary>
+    /// pause
+    /// </summary>
+    public void Pause()
+    {
+        CallMethodVoid(_pause);
+    }
+
+    /// <summary>
+    /// cancel
+    /// </summary>
+    public void Cancel()
+    {
+        CallMethodVoid(_cancel);
+    }
+
+    /// <summary>
+    /// reverse
+    /// </summary>
+    public void Reverse()
+    {
+        CallMethodVoid(_reverse);
+    }
+
+    /// <summary>
+    /// setExpectedFrameRateRange
+    /// </summary>
+    public void SetExpectedFrameRateRange(IntPtr rateRange)
+    {
+        CallMethodVoid(_setExpectedFrameRateRange, rateRange);
+    }
+
+}
+
+/// <summary>
 /// SimpleAnimatorOptions 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>

@@ -200,7 +200,7 @@ public static unsafe partial class DlpPermission
     /// <summary>
     /// startDLPManagerForResult
     /// </summary>
-    public static Task<IntPtr> StartDlpManagerForResultAsync(IntPtr context, IntPtr want)
+    public static Task<IntPtr> StartDlpManagerForResultAsync(IntPtr context, global::HarmonyOS.Bindings.Api.WantObject want)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _startDLPManagerForResult, context, want);
     }

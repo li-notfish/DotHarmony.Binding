@@ -338,3 +338,303 @@ public static unsafe partial class UIAbility
     }
 
 }
+
+/// <summary>
+/// UIAbility 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class UIAbilityObject : JsObject
+{
+    public UIAbilityObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _context => "context"u8;
+    private static ReadOnlySpan<byte> _launchWant => "launchWant"u8;
+    private static ReadOnlySpan<byte> _lastRequestWant => "lastRequestWant"u8;
+    private static ReadOnlySpan<byte> _callee => "callee"u8;
+    private static ReadOnlySpan<byte> _specifiedId => "specifiedId"u8;
+    private static ReadOnlySpan<byte> _isDestroyed => "isDestroyed"u8;
+    private static ReadOnlySpan<byte> _onCreate => "onCreate"u8;
+    private static ReadOnlySpan<byte> _onWindowStageCreate => "onWindowStageCreate"u8;
+    private static ReadOnlySpan<byte> _onWindowStageWillDestroy => "onWindowStageWillDestroy"u8;
+    private static ReadOnlySpan<byte> _onWindowStageDestroy => "onWindowStageDestroy"u8;
+    private static ReadOnlySpan<byte> _onWindowStageRestore => "onWindowStageRestore"u8;
+    private static ReadOnlySpan<byte> _onDestroy => "onDestroy"u8;
+    private static ReadOnlySpan<byte> _onForeground => "onForeground"u8;
+    private static ReadOnlySpan<byte> _onWillForeground => "onWillForeground"u8;
+    private static ReadOnlySpan<byte> _onDidForeground => "onDidForeground"u8;
+    private static ReadOnlySpan<byte> _onBackground => "onBackground"u8;
+    private static ReadOnlySpan<byte> _onWillBackground => "onWillBackground"u8;
+    private static ReadOnlySpan<byte> _onDidBackground => "onDidBackground"u8;
+    private static ReadOnlySpan<byte> _onContinue => "onContinue"u8;
+    private static ReadOnlySpan<byte> _onNewWant => "onNewWant"u8;
+    private static ReadOnlySpan<byte> _onDump => "onDump"u8;
+    private static ReadOnlySpan<byte> _onSaveState => "onSaveState"u8;
+    private static ReadOnlySpan<byte> _onSaveStateAsync => "onSaveStateAsync"u8;
+    private static ReadOnlySpan<byte> _onShare => "onShare"u8;
+    private static ReadOnlySpan<byte> _onPrepareToTerminate => "onPrepareToTerminate"u8;
+    private static ReadOnlySpan<byte> _onPrepareToTerminateAsync => "onPrepareToTerminateAsync"u8;
+    private static ReadOnlySpan<byte> _onBackPressed => "onBackPressed"u8;
+    private static ReadOnlySpan<byte> _onCollaborate => "onCollaborate"u8;
+    /// <summary>
+    /// context
+    /// </summary>
+    public IntPtr Context => GetPropertyRaw(_context);
+
+    /// <summary>
+    /// launchWant
+    /// </summary>
+    public global::HarmonyOS.Bindings.Api.WantObject LaunchWant => new global::HarmonyOS.Bindings.Api.WantObject(GetPropertyRaw(_launchWant));
+
+    /// <summary>
+    /// lastRequestWant
+    /// </summary>
+    public global::HarmonyOS.Bindings.Api.WantObject LastRequestWant => new global::HarmonyOS.Bindings.Api.WantObject(GetPropertyRaw(_lastRequestWant));
+
+    /// <summary>
+    /// callee
+    /// </summary>
+    public Callee Callee => new Callee(GetPropertyRaw(_callee));
+
+    /// <summary>
+    /// specifiedId
+    /// </summary>
+    public string? SpecifiedId => (string?)NativeValue.ToString(GetPropertyRaw(_specifiedId)) ?? string.Empty;
+
+    /// <summary>
+    /// isDestroyed
+    /// </summary>
+    public bool IsDestroyed => NativeValue.ToBool(GetPropertyRaw(_isDestroyed));
+
+    /// <summary>
+    /// onCreate
+    /// </summary>
+    public void OnCreate(global::HarmonyOS.Bindings.Api.WantObject want, IntPtr launchParam)
+    {
+        CallMethodVoid(_onCreate, want, launchParam);
+    }
+
+    /// <summary>
+    /// onWindowStageCreate
+    /// </summary>
+    public void OnWindowStageCreate(IntPtr windowStage)
+    {
+        CallMethodVoid(_onWindowStageCreate, windowStage);
+    }
+
+    /// <summary>
+    /// onWindowStageWillDestroy
+    /// </summary>
+    public void OnWindowStageWillDestroy(IntPtr windowStage)
+    {
+        CallMethodVoid(_onWindowStageWillDestroy, windowStage);
+    }
+
+    /// <summary>
+    /// onWindowStageDestroy
+    /// </summary>
+    public void OnWindowStageDestroy()
+    {
+        CallMethodVoid(_onWindowStageDestroy);
+    }
+
+    /// <summary>
+    /// onWindowStageRestore
+    /// </summary>
+    public void OnWindowStageRestore(IntPtr windowStage)
+    {
+        CallMethodVoid(_onWindowStageRestore, windowStage);
+    }
+
+    /// <summary>
+    /// onDestroy
+    /// </summary>
+    public void OnDestroy()
+    {
+        CallMethodVoid(_onDestroy);
+    }
+
+    /// <summary>
+    /// onForeground
+    /// </summary>
+    public void OnForeground()
+    {
+        CallMethodVoid(_onForeground);
+    }
+
+    /// <summary>
+    /// onWillForeground
+    /// </summary>
+    public void OnWillForeground()
+    {
+        CallMethodVoid(_onWillForeground);
+    }
+
+    /// <summary>
+    /// onDidForeground
+    /// </summary>
+    public void OnDidForeground()
+    {
+        CallMethodVoid(_onDidForeground);
+    }
+
+    /// <summary>
+    /// onBackground
+    /// </summary>
+    public void OnBackground()
+    {
+        CallMethodVoid(_onBackground);
+    }
+
+    /// <summary>
+    /// onWillBackground
+    /// </summary>
+    public void OnWillBackground()
+    {
+        CallMethodVoid(_onWillBackground);
+    }
+
+    /// <summary>
+    /// onDidBackground
+    /// </summary>
+    public void OnDidBackground()
+    {
+        CallMethodVoid(_onDidBackground);
+    }
+
+    /// <summary>
+    /// onContinue
+    /// </summary>
+    public Task<IntPtr> OnContinueAsync(IntPtr wantParam)
+    {
+        return CallMethodAsync<IntPtr>(_onContinue, wantParam);
+    }
+
+    /// <summary>
+    /// onNewWant
+    /// </summary>
+    public void OnNewWant(global::HarmonyOS.Bindings.Api.WantObject want, IntPtr launchParam)
+    {
+        CallMethodVoid(_onNewWant, want, launchParam);
+    }
+
+    /// <summary>
+    /// onDump
+    /// </summary>
+    public string[] OnDump(string[] @params)
+    {
+        return CallMethod(_onDump, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), @params);
+    }
+
+    /// <summary>
+    /// onSaveState
+    /// </summary>
+    public IntPtr OnSaveState(IntPtr reason, IntPtr wantParam)
+    {
+        return CallMethod<IntPtr>(_onSaveState, reason, wantParam);
+    }
+
+    /// <summary>
+    /// onSaveStateAsync
+    /// </summary>
+    public Task<IntPtr> OnSaveStateAsync(IntPtr stateType, IntPtr wantParam)
+    {
+        return CallMethodAsync<IntPtr>(_onSaveStateAsync, stateType, wantParam);
+    }
+
+    /// <summary>
+    /// onShare
+    /// </summary>
+    public void OnShare(IntPtr wantParam)
+    {
+        CallMethodVoid(_onShare, wantParam);
+    }
+
+    /// <summary>
+    /// onPrepareToTerminate
+    /// </summary>
+    public bool OnPrepareToTerminate()
+    {
+        return CallMethod<bool>(_onPrepareToTerminate);
+    }
+
+    /// <summary>
+    /// onPrepareToTerminateAsync
+    /// </summary>
+    public Task<bool> OnPrepareToTerminateAsync()
+    {
+        return CallMethodAsync<bool>(_onPrepareToTerminateAsync);
+    }
+
+    /// <summary>
+    /// onBackPressed
+    /// </summary>
+    public bool OnBackPressed()
+    {
+        return CallMethod<bool>(_onBackPressed);
+    }
+
+    /// <summary>
+    /// onCollaborate
+    /// </summary>
+    public IntPtr OnCollaborate(IntPtr wantParam)
+    {
+        return CallMethod<IntPtr>(_onCollaborate, wantParam);
+    }
+
+}
+
+/// <summary>
+/// Callee 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Callee : JsObject
+{
+    public Callee(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _on => "on"u8;
+    private static ReadOnlySpan<byte> _off => "off"u8;
+    /// <summary>
+    /// on
+    /// </summary>
+    public void On(string method, IntPtr callback)
+    {
+        CallMethodVoid(_on, method, callback);
+    }
+
+    /// <summary>
+    /// off
+    /// </summary>
+    public void Off(string method)
+    {
+        CallMethodVoid(_off, method);
+    }
+
+    private readonly EventListenerRegistry _eventListeners = new();
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+}
+
+/// <summary>
+/// CalleeCallback 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CalleeCallback : JsObject
+{
+    public CalleeCallback(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> ___call__ => "__call__"u8;
+}

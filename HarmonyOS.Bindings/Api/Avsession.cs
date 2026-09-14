@@ -1267,7 +1267,7 @@ public sealed partial class AVSessionController : JsObject
     /// <summary>
     /// sendAVKeyEvent
     /// </summary>
-    public Task SendAVKeyEventAsync(IntPtr @event)
+    public Task SendAVKeyEventAsync(global::HarmonyOS.Bindings.Api.KeyEventKeyEvent @event)
     {
         return CallMethodAsyncVoid(_sendAVKeyEvent, @event);
     }

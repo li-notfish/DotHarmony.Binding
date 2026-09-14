@@ -149,7 +149,7 @@ public static unsafe partial class FormProvider
     /// <summary>
     /// openFormManager
     /// </summary>
-    public static void OpenFormManager(IntPtr want)
+    public static void OpenFormManager(global::HarmonyOS.Bindings.Api.WantObject want)
     {
         NodeApi.CallMethodVoid(Module, _openFormManager, want);
     }

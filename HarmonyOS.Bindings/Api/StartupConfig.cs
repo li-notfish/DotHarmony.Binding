@@ -67,3 +67,24 @@ public static unsafe partial class StartupConfig
     }
 
 }
+
+/// <summary>
+/// StartupConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class StartupConfigObject : JsObject
+{
+    public StartupConfigObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _timeoutMs => "timeoutMs"u8;
+    private static ReadOnlySpan<byte> _startupListener => "startupListener"u8;
+    /// <summary>
+    /// timeoutMs
+    /// </summary>
+    public double? TimeoutMs => (double?)NativeValue.ToDouble(GetPropertyRaw(_timeoutMs));
+
+    /// <summary>
+    /// startupListener
+    /// </summary>
+    public global::HarmonyOS.Bindings.Api.StartupListenerObject? StartupListener => GetPropertyRaw(_startupListener) == IntPtr.Zero ? null : new global::HarmonyOS.Bindings.Api.StartupListenerObject(GetPropertyRaw(_startupListener));
+
+}

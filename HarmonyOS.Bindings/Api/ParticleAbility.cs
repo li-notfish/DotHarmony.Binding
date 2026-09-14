@@ -118,7 +118,7 @@ public static unsafe partial class ParticleAbility
     /// <summary>
     /// connectAbility
     /// </summary>
-    public static double ConnectAbility(IntPtr request, IntPtr options)
+    public static double ConnectAbility(global::HarmonyOS.Bindings.Api.WantObject request, IntPtr options)
     {
         return NodeApi.CallMethod<double>(Module, _connectAbility, request, options);
     }

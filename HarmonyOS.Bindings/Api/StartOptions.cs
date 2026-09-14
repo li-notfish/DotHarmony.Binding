@@ -67,3 +67,132 @@ public static unsafe partial class StartOptions
     }
 
 }
+
+/// <summary>
+/// StartOptions 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class StartOptionsObject : JsObject
+{
+    public StartOptionsObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _windowMode => "windowMode"u8;
+    private static ReadOnlySpan<byte> _splitRatio => "splitRatio"u8;
+    private static ReadOnlySpan<byte> _displayId => "displayId"u8;
+    private static ReadOnlySpan<byte> _withAnimation => "withAnimation"u8;
+    private static ReadOnlySpan<byte> _windowLeft => "windowLeft"u8;
+    private static ReadOnlySpan<byte> _windowTop => "windowTop"u8;
+    private static ReadOnlySpan<byte> _windowWidth => "windowWidth"u8;
+    private static ReadOnlySpan<byte> _windowHeight => "windowHeight"u8;
+    private static ReadOnlySpan<byte> _processMode => "processMode"u8;
+    private static ReadOnlySpan<byte> _startupVisibility => "startupVisibility"u8;
+    private static ReadOnlySpan<byte> _startWindowIcon => "startWindowIcon"u8;
+    private static ReadOnlySpan<byte> _startWindowBackgroundColor => "startWindowBackgroundColor"u8;
+    private static ReadOnlySpan<byte> _supportWindowModes => "supportWindowModes"u8;
+    private static ReadOnlySpan<byte> _maxWindowHeight => "maxWindowHeight"u8;
+    private static ReadOnlySpan<byte> _minWindowWidth => "minWindowWidth"u8;
+    private static ReadOnlySpan<byte> _minWindowHeight => "minWindowHeight"u8;
+    private static ReadOnlySpan<byte> _maxWindowWidth => "maxWindowWidth"u8;
+    private static ReadOnlySpan<byte> _completionHandler => "completionHandler"u8;
+    private static ReadOnlySpan<byte> _hideStartWindow => "hideStartWindow"u8;
+    private static ReadOnlySpan<byte> _windowCreateParams => "windowCreateParams"u8;
+    /// <summary>
+    /// windowMode
+    /// </summary>
+    public double? WindowMode => (double?)NativeValue.ToDouble(GetPropertyRaw(_windowMode));
+
+    /// <summary>
+    /// splitRatio
+    /// </summary>
+    public IntPtr SplitRatio => GetPropertyRaw(_splitRatio);
+
+    /// <summary>
+    /// displayId
+    /// </summary>
+    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+
+    /// <summary>
+    /// withAnimation
+    /// </summary>
+    public bool? WithAnimation => (bool?)NativeValue.ToBool(GetPropertyRaw(_withAnimation));
+
+    /// <summary>
+    /// windowLeft
+    /// </summary>
+    public double? WindowLeft => (double?)NativeValue.ToDouble(GetPropertyRaw(_windowLeft));
+
+    /// <summary>
+    /// windowTop
+    /// </summary>
+    public double? WindowTop => (double?)NativeValue.ToDouble(GetPropertyRaw(_windowTop));
+
+    /// <summary>
+    /// windowWidth
+    /// </summary>
+    public double? WindowWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_windowWidth));
+
+    /// <summary>
+    /// windowHeight
+    /// </summary>
+    public double? WindowHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_windowHeight));
+
+    /// <summary>
+    /// processMode
+    /// </summary>
+    public IntPtr ProcessMode => GetPropertyRaw(_processMode);
+
+    /// <summary>
+    /// startupVisibility
+    /// </summary>
+    public IntPtr StartupVisibility => GetPropertyRaw(_startupVisibility);
+
+    /// <summary>
+    /// startWindowIcon
+    /// </summary>
+    public IntPtr StartWindowIcon => GetPropertyRaw(_startWindowIcon);
+
+    /// <summary>
+    /// startWindowBackgroundColor
+    /// </summary>
+    public string? StartWindowBackgroundColor => (string?)NativeValue.ToString(GetPropertyRaw(_startWindowBackgroundColor)) ?? string.Empty;
+
+    /// <summary>
+    /// supportWindowModes
+    /// </summary>
+    public IntPtr[] SupportWindowModes => ValueConverter.ConvertArray(GetPropertyRaw(_supportWindowModes), static e => ValueConverter.Convert<IntPtr>(e));
+
+    /// <summary>
+    /// maxWindowHeight
+    /// </summary>
+    public double? MaxWindowHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxWindowHeight));
+
+    /// <summary>
+    /// minWindowWidth
+    /// </summary>
+    public double? MinWindowWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_minWindowWidth));
+
+    /// <summary>
+    /// minWindowHeight
+    /// </summary>
+    public double? MinWindowHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_minWindowHeight));
+
+    /// <summary>
+    /// maxWindowWidth
+    /// </summary>
+    public double? MaxWindowWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxWindowWidth));
+
+    /// <summary>
+    /// completionHandler
+    /// </summary>
+    public global::HarmonyOS.Bindings.Api.CompletionHandlerObject? CompletionHandler => GetPropertyRaw(_completionHandler) == IntPtr.Zero ? null : new global::HarmonyOS.Bindings.Api.CompletionHandlerObject(GetPropertyRaw(_completionHandler));
+
+    /// <summary>
+    /// hideStartWindow
+    /// </summary>
+    public bool? HideStartWindow => (bool?)NativeValue.ToBool(GetPropertyRaw(_hideStartWindow));
+
+    /// <summary>
+    /// windowCreateParams
+    /// </summary>
+    public IntPtr WindowCreateParams => GetPropertyRaw(_windowCreateParams);
+
+}

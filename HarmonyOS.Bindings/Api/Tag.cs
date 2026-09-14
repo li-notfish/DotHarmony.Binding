@@ -282,7 +282,7 @@ public static unsafe partial class Tag
     /// <summary>
     /// getTagInfo
     /// </summary>
-    public static TagInfo GetTagInfo(IntPtr want)
+    public static TagInfo GetTagInfo(global::HarmonyOS.Bindings.Api.WantObject want)
     {
         return NodeApi.CallMethod(Module, _getTagInfo, static h => new TagInfo(h), want);
     }

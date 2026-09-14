@@ -85,7 +85,7 @@ public sealed partial class GesturePathObject : JsObject
     /// <summary>
     /// points
     /// </summary>
-    public IntPtr[] Points => ValueConverter.ConvertArray(GetPropertyRaw(_points), static e => ValueConverter.Convert<IntPtr>(e));
+    public global::HarmonyOS.Bindings.Api.GesturePointObject[] Points => ValueConverter.ConvertArray(GetPropertyRaw(_points), static e => new global::HarmonyOS.Bindings.Api.GesturePointObject(e));
 
     /// <summary>
     /// durationTime

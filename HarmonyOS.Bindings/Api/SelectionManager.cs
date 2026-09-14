@@ -99,7 +99,7 @@ public static unsafe partial class SelectionManager
     /// <summary>
     /// createPanel
     /// </summary>
-    public static Task<SelectionManagerPanel> CreatePanelAsync(IntPtr ctx, IntPtr info)
+    public static Task<SelectionManagerPanel> CreatePanelAsync(IntPtr ctx, global::HarmonyOS.Bindings.Api.SelectionPanelPanelInfo info)
     {
         return NodeApi.CallMethodAsync(Module, _createPanel, static h => new SelectionManagerPanel(h), ctx, info);
     }

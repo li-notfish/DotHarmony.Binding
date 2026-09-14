@@ -90,7 +90,7 @@ public static unsafe partial class AppRecovery
     /// <summary>
     /// setRestartWant
     /// </summary>
-    public static void SetRestartWant(IntPtr want)
+    public static void SetRestartWant(global::HarmonyOS.Bindings.Api.WantObject want)
     {
         NodeApi.CallMethodVoid(Module, _setRestartWant, want);
     }

@@ -86,3 +86,30 @@ public static unsafe partial class CompletionHandlerForAtomicService
     }
 
 }
+
+/// <summary>
+/// CompletionHandlerForAtomicService 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CompletionHandlerForAtomicServiceObject : JsObject
+{
+    public CompletionHandlerForAtomicServiceObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _onAtomicServiceRequestSuccess => "onAtomicServiceRequestSuccess"u8;
+    private static ReadOnlySpan<byte> _onAtomicServiceRequestFailure => "onAtomicServiceRequestFailure"u8;
+    /// <summary>
+    /// onAtomicServiceRequestSuccess
+    /// </summary>
+    public void OnAtomicServiceRequestSuccess(string appId)
+    {
+        CallMethodVoid(_onAtomicServiceRequestSuccess, appId);
+    }
+
+    /// <summary>
+    /// onAtomicServiceRequestFailure
+    /// </summary>
+    public void OnAtomicServiceRequestFailure(string appId, global::HarmonyOS.ArkUI.FailureCode failureCode, string failureMessage)
+    {
+        CallMethodVoid(_onAtomicServiceRequestFailure, appId, failureCode, failureMessage);
+    }
+
+}

@@ -122,3 +122,72 @@ public static unsafe partial class UIExtensionAbility
     }
 
 }
+
+/// <summary>
+/// UIExtensionAbility 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class UIExtensionAbilityObject : JsObject
+{
+    public UIExtensionAbilityObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _context => "context"u8;
+    private static ReadOnlySpan<byte> _onCreate => "onCreate"u8;
+    private static ReadOnlySpan<byte> _onSessionCreate => "onSessionCreate"u8;
+    private static ReadOnlySpan<byte> _onSessionDestroy => "onSessionDestroy"u8;
+    private static ReadOnlySpan<byte> _onForeground => "onForeground"u8;
+    private static ReadOnlySpan<byte> _onBackground => "onBackground"u8;
+    private static ReadOnlySpan<byte> _onDestroy => "onDestroy"u8;
+    /// <summary>
+    /// context
+    /// </summary>
+    public IntPtr Context => GetPropertyRaw(_context);
+
+    /// <summary>
+    /// onCreate
+    /// </summary>
+    public void OnCreate(IntPtr launchParam)
+    {
+        CallMethodVoid(_onCreate, launchParam);
+    }
+
+    /// <summary>
+    /// onSessionCreate
+    /// </summary>
+    public void OnSessionCreate(global::HarmonyOS.Bindings.Api.WantObject want, global::HarmonyOS.Bindings.Api.UIExtensionContentSessionObject session)
+    {
+        CallMethodVoid(_onSessionCreate, want, session);
+    }
+
+    /// <summary>
+    /// onSessionDestroy
+    /// </summary>
+    public void OnSessionDestroy(global::HarmonyOS.Bindings.Api.UIExtensionContentSessionObject session)
+    {
+        CallMethodVoid(_onSessionDestroy, session);
+    }
+
+    /// <summary>
+    /// onForeground
+    /// </summary>
+    public void OnForeground()
+    {
+        CallMethodVoid(_onForeground);
+    }
+
+    /// <summary>
+    /// onBackground
+    /// </summary>
+    public void OnBackground()
+    {
+        CallMethodVoid(_onBackground);
+    }
+
+    /// <summary>
+    /// onDestroy
+    /// </summary>
+    public void OnDestroy()
+    {
+        CallMethodVoid(_onDestroy);
+    }
+
+}

@@ -67,3 +67,39 @@ public static unsafe partial class SelectionPanel
     }
 
 }
+
+/// <summary>
+/// PanelInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record SelectionPanelPanelInfo(
+    global::HarmonyOS.ArkUI.SelectionPanelPanelType PanelType,
+    double X,
+    double Y,
+    double Width,
+    double Height
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _panelTypeName => "panelType"u8;
+    private static ReadOnlySpan<byte> _xName => "x"u8;
+    private static ReadOnlySpan<byte> _yName => "y"u8;
+    private static ReadOnlySpan<byte> _widthName => "width"u8;
+    private static ReadOnlySpan<byte> _heightName => "height"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _panelTypeV = NativeValue.From(PanelType);
+        if (_panelTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _panelTypeName, _panelTypeV);
+        var _xV = NativeValue.From(X);
+        if (_xV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
+        var _yV = NativeValue.From(Y);
+        if (_yV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
+        var _widthV = NativeValue.From(Width);
+        if (_widthV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
+        var _heightV = NativeValue.From(Height);
+        if (_heightV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
+    }
+}

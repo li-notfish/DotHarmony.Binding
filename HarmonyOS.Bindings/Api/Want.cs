@@ -67,3 +67,78 @@ public static unsafe partial class Want
     }
 
 }
+
+/// <summary>
+/// Want 实例包装（@ohos 命名空间内嵌套类）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WantObject : JsObject
+{
+    public WantObject(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _bundleName => "bundleName"u8;
+    private static ReadOnlySpan<byte> _abilityName => "abilityName"u8;
+    private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
+    private static ReadOnlySpan<byte> _uri => "uri"u8;
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _flags => "flags"u8;
+    private static ReadOnlySpan<byte> _action => "action"u8;
+    private static ReadOnlySpan<byte> _parameters => "parameters"u8;
+    private static ReadOnlySpan<byte> _entities => "entities"u8;
+    private static ReadOnlySpan<byte> _moduleName => "moduleName"u8;
+    private static ReadOnlySpan<byte> _fds => "fds"u8;
+    /// <summary>
+    /// bundleName
+    /// </summary>
+    public string? BundleName => (string?)NativeValue.ToString(GetPropertyRaw(_bundleName)) ?? string.Empty;
+
+    /// <summary>
+    /// abilityName
+    /// </summary>
+    public string? AbilityName => (string?)NativeValue.ToString(GetPropertyRaw(_abilityName)) ?? string.Empty;
+
+    /// <summary>
+    /// deviceId
+    /// </summary>
+    public string? DeviceId => (string?)NativeValue.ToString(GetPropertyRaw(_deviceId)) ?? string.Empty;
+
+    /// <summary>
+    /// uri
+    /// </summary>
+    public string? Uri => (string?)NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
+
+    /// <summary>
+    /// type
+    /// </summary>
+    public string? Type => (string?)NativeValue.ToString(GetPropertyRaw(_type)) ?? string.Empty;
+
+    /// <summary>
+    /// flags
+    /// </summary>
+    public double? Flags => (double?)NativeValue.ToDouble(GetPropertyRaw(_flags));
+
+    /// <summary>
+    /// action
+    /// </summary>
+    public string? Action => (string?)NativeValue.ToString(GetPropertyRaw(_action)) ?? string.Empty;
+
+    /// <summary>
+    /// parameters
+    /// </summary>
+    public IntPtr Parameters => GetPropertyRaw(_parameters);
+
+    /// <summary>
+    /// entities
+    /// </summary>
+    public string[] Entities => ValueConverter.ConvertArray(GetPropertyRaw(_entities), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// moduleName
+    /// </summary>
+    public string? ModuleName => (string?)NativeValue.ToString(GetPropertyRaw(_moduleName)) ?? string.Empty;
+
+    /// <summary>
+    /// fds
+    /// </summary>
+    public IntPtr Fds => GetPropertyRaw(_fds);
+
+}

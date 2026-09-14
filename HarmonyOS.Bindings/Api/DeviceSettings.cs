@@ -81,7 +81,7 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// setValue
     /// </summary>
-    public static void SetValue(IntPtr admin, string item, string value)
+    public static void SetValue(global::HarmonyOS.Bindings.Api.WantObject admin, string item, string value)
     {
         NodeApi.CallMethodVoid(Module, _setValue, admin, item, value);
     }
@@ -89,7 +89,7 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// getValue
     /// </summary>
-    public static string GetValue(IntPtr admin, string item)
+    public static string GetValue(global::HarmonyOS.Bindings.Api.WantObject admin, string item)
     {
         return NodeApi.CallMethod<string>(Module, _getValue, admin, item);
     }
@@ -97,7 +97,7 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// setHomeWallpaper
     /// </summary>
-    public static Task SetHomeWallpaperAsync(IntPtr admin, double fd)
+    public static Task SetHomeWallpaperAsync(global::HarmonyOS.Bindings.Api.WantObject admin, double fd)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setHomeWallpaper, admin, fd);
     }
@@ -105,7 +105,7 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// setUnlockWallpaper
     /// </summary>
-    public static Task SetUnlockWallpaperAsync(IntPtr admin, double fd)
+    public static Task SetUnlockWallpaperAsync(global::HarmonyOS.Bindings.Api.WantObject admin, double fd)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setUnlockWallpaper, admin, fd);
     }
@@ -113,7 +113,7 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// addHiddenSettingsMenu
     /// </summary>
-    public static void AddHiddenSettingsMenu(IntPtr admin, global::HarmonyOS.ArkUI.SettingsMenu[] menusToHidden)
+    public static void AddHiddenSettingsMenu(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.SettingsMenu[] menusToHidden)
     {
         NodeApi.CallMethodVoid(Module, _addHiddenSettingsMenu, admin, menusToHidden);
     }
@@ -121,7 +121,7 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// removeHiddenSettingsMenu
     /// </summary>
-    public static void RemoveHiddenSettingsMenu(IntPtr admin, global::HarmonyOS.ArkUI.SettingsMenu[] menusToHidden)
+    public static void RemoveHiddenSettingsMenu(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.SettingsMenu[] menusToHidden)
     {
         NodeApi.CallMethodVoid(Module, _removeHiddenSettingsMenu, admin, menusToHidden);
     }
@@ -129,7 +129,7 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// getHiddenSettingsMenu
     /// </summary>
-    public static global::HarmonyOS.ArkUI.SettingsMenu[] GetHiddenSettingsMenu(IntPtr admin)
+    public static global::HarmonyOS.ArkUI.SettingsMenu[] GetHiddenSettingsMenu(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getHiddenSettingsMenu, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.SettingsMenu>(e)), admin);
     }
@@ -137,7 +137,7 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// setValueForAccount
     /// </summary>
-    public static void SetValueForAccount(IntPtr admin, global::HarmonyOS.ArkUI.SettingsItem item, double accountId, string value)
+    public static void SetValueForAccount(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.SettingsItem item, double accountId, string value)
     {
         NodeApi.CallMethodVoid(Module, _setValueForAccount, admin, item, accountId, value);
     }
@@ -145,7 +145,7 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// getValueForAccount
     /// </summary>
-    public static string GetValueForAccount(IntPtr admin, global::HarmonyOS.ArkUI.SettingsItem item, double accountId)
+    public static string GetValueForAccount(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.SettingsItem item, double accountId)
     {
         return NodeApi.CallMethod<string>(Module, _getValueForAccount, admin, item, accountId);
     }
@@ -153,7 +153,7 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// setSwitchStatus
     /// </summary>
-    public static void SetSwitchStatus(IntPtr admin, global::HarmonyOS.ArkUI.SwitchKey key, global::HarmonyOS.ArkUI.SwitchStatus status)
+    public static void SetSwitchStatus(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.SwitchKey key, global::HarmonyOS.ArkUI.SwitchStatus status)
     {
         NodeApi.CallMethodVoid(Module, _setSwitchStatus, admin, key, status);
     }
