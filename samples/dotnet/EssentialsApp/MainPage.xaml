@@ -1,0 +1,71 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="EssentialsApp.MainPage"
+             Title="Essentials"
+             BackgroundColor="LightGray">
+    <ScrollView>
+        <StackLayout Spacing="12" Padding="12">
+        <Label x:Name="TitleLabel"
+               Text="Essentials on HarmonyOS"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Label x:Name="DeviceLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Label x:Name="DisplayLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Label x:Name="AppInfoLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Clipboard round trip"
+                Clicked="OnClipboardClicked" />
+        <Label x:Name="ClipboardLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Preferences round trip (int/string/DateTime)"
+                Clicked="OnPreferencesClicked" />
+        <Label x:Name="PreferencesLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Battery info + change events"
+                Clicked="OnBatteryClicked" />
+        <Label x:Name="BatteryLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Vibrate 500ms"
+                Clicked="OnVibrateClicked" />
+        <Label x:Name="VibrationLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Connectivity info + change events"
+                Clicked="OnConnectivityClicked" />
+        <Label x:Name="ConnectivityLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Open system settings"
+                Clicked="OnSettingsClicked" />
+        <Button Text="Toggle keep screen on"
+                Clicked="OnKeepScreenOnClicked" />
+        <Label x:Name="KeepScreenOnLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Label x:Name="FileSystemLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Open browser to example.com"
+                Clicked="OnBrowserClicked" />
+        <Button Text="Share text"
+                Clicked="OnShareClicked" />
+        <Button Text="Compose email"
+                Clicked="OnEmailClicked" />
+        <Button Text="Secure storage round trip"
+                Clicked="OnSecureStorageClicked" />
+        <Label x:Name="SecureStorageLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Refresh display info"
+                Clicked="OnRefreshDisplayClicked" />
+    </StackLayout>
+    </ScrollView>
+</ContentPage>

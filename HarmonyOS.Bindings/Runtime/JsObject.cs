@@ -47,7 +47,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return ValueConverter.Convert<T>(NodeApi.GetProperty(Handle, name));
+        return ValueConverter.Convert<T>(NodeApi.GetProperty(PinnedValue, name));
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -58,7 +58,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return NodeApi.GetProperty(Handle, name);
+        return NodeApi.GetProperty(PinnedValue, name);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -69,7 +69,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        NodeApi.SetProperty(Handle, name, value);
+        NodeApi.SetProperty(PinnedValue, name, value);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -80,7 +80,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return NodeApi.CallMethod<T>(Handle, methodName, args);
+        return NodeApi.CallMethod<T>(PinnedValue, methodName, args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -91,7 +91,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return NodeApi.CallMethod(Handle, methodName, convert, args);
+        return NodeApi.CallMethod(PinnedValue, methodName, convert, args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -102,7 +102,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        NodeApi.CallMethodVoid(Handle, methodName, args);
+        NodeApi.CallMethodVoid(PinnedValue, methodName, args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -113,7 +113,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return NodeApi.CallMethodAsync<T>(Handle, methodName, args);
+        return NodeApi.CallMethodAsync<T>(PinnedValue, methodName, args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -124,7 +124,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return NodeApi.CallMethodAsync(Handle, methodName, convert, args);
+        return NodeApi.CallMethodAsync(PinnedValue, methodName, convert, args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -135,7 +135,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return NodeApi.CallMethodAsyncVoid(Handle, methodName, args);
+        return NodeApi.CallMethodAsyncVoid(PinnedValue, methodName, args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -149,7 +149,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return NodeApi.CallMethodAsyncCallback<T>(Handle, methodName.ToArray(), convert, args);
+        return NodeApi.CallMethodAsyncCallback<T>(PinnedValue, methodName.ToArray(), convert, args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -160,7 +160,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return NodeApi.CallMethodAsyncCallbackVoid(Handle, methodName.ToArray(), args);
+        return NodeApi.CallMethodAsyncCallbackVoid(PinnedValue, methodName.ToArray(), args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif

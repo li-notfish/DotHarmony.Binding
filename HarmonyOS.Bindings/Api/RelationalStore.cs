@@ -44,7 +44,7 @@ public static unsafe partial class RelationalStore
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -80,7 +80,7 @@ public static unsafe partial class RelationalStore
     /// <summary>
     /// getRdbStore
     /// </summary>
-    public static Task<RelationalStoreRdbStore> GetRdbStoreAsync(IntPtr context, IntPtr config)
+    public static Task<RelationalStoreRdbStore> GetRdbStoreAsync(IntPtr context, RelationalStoreStoreConfig config)
     {
         return NodeApi.CallMethodAsync(Module, _getRdbStore, static h => new RelationalStoreRdbStore(h), context, config);
     }
@@ -88,7 +88,7 @@ public static unsafe partial class RelationalStore
     /// <summary>
     /// getRdbStoreSync
     /// </summary>
-    public static RelationalStoreRdbStore GetRdbStoreSync(IntPtr context, IntPtr config)
+    public static RelationalStoreRdbStore GetRdbStoreSync(IntPtr context, RelationalStoreStoreConfig config)
     {
         return NodeApi.CallMethod(Module, _getRdbStoreSync, static h => new RelationalStoreRdbStore(h), context, config);
     }
@@ -104,7 +104,7 @@ public static unsafe partial class RelationalStore
     /// <summary>
     /// deleteRdbStore
     /// </summary>
-    public static Task DeleteRdbStoreAsync(IntPtr context, IntPtr config)
+    public static Task DeleteRdbStoreAsync(IntPtr context, RelationalStoreStoreConfig config)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, context, config);
     }
@@ -639,7 +639,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// sync
     /// </summary>
-    public Task<object[]> SyncAsync(global::HarmonyOS.ArkUI.SyncMode mode, RelationalStoreRdbPredicates predicates)
+    public Task<object[]> SyncAsync(global::HarmonyOS.ArkUI.RelationalStoreSyncMode mode, RelationalStoreRdbPredicates predicates)
     {
         return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), mode, predicates);
     }
@@ -647,7 +647,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// syncEx
     /// </summary>
-    public Task<SyncResult[]> SyncExAsync(global::HarmonyOS.ArkUI.SyncMode mode, RelationalStoreRdbPredicates predicates)
+    public Task<SyncResult[]> SyncExAsync(global::HarmonyOS.ArkUI.RelationalStoreSyncMode mode, RelationalStoreRdbPredicates predicates)
     {
         return CallMethodAsync(_syncEx, h => ValueConverter.ConvertArray(h, static e => new SyncResult(e)), mode, predicates);
     }
@@ -655,7 +655,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// cloudSync
     /// </summary>
-    public Task CloudSyncAsync(global::HarmonyOS.ArkUI.SyncMode mode, IntPtr progress)
+    public Task CloudSyncAsync(global::HarmonyOS.ArkUI.RelationalStoreSyncMode mode, IntPtr progress)
     {
         return CallMethodAsyncVoid(_cloudSync, mode, progress);
     }
@@ -663,7 +663,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// cloudSync
     /// </summary>
-    public Task CloudSyncAsync(global::HarmonyOS.ArkUI.SyncMode mode, string[] tables, IntPtr progress)
+    public Task CloudSyncAsync(global::HarmonyOS.ArkUI.RelationalStoreSyncMode mode, string[] tables, IntPtr progress)
     {
         return CallMethodAsyncVoid(_cloudSync, mode, tables, progress);
     }
@@ -671,7 +671,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// cloudSyncEx
     /// </summary>
-    public Task CloudSyncExAsync(IntPtr config, IntPtr progress)
+    public Task CloudSyncExAsync(CloudSyncConfig config, IntPtr progress)
     {
         return CallMethodAsyncVoid(_cloudSyncEx, config, progress);
     }
@@ -695,7 +695,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// on
     /// </summary>
-    public void On(string @event, global::HarmonyOS.ArkUI.SubscribeType type, IntPtr observer)
+    public void On(string @event, global::HarmonyOS.ArkUI.RelationalStoreSubscribeType type, IntPtr observer)
     {
         CallMethodVoid(_on, @event, type, observer);
     }
@@ -719,7 +719,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string @event, global::HarmonyOS.ArkUI.SubscribeType type, IntPtr observer)
+    public void Off(string @event, global::HarmonyOS.ArkUI.RelationalStoreSubscribeType type, IntPtr observer)
     {
         CallMethodVoid(_off, @event, type, observer);
     }
@@ -767,7 +767,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// attach
     /// </summary>
-    public Task<double> AttachAsync(IntPtr context, IntPtr config, string attachName, double? waitTime = null)
+    public Task<double> AttachAsync(IntPtr context, RelationalStoreStoreConfig config, string attachName, double? waitTime = null)
     {
         return CallMethodAsync<double>(_attach, context, config, attachName, waitTime);
     }
@@ -841,7 +841,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<string[]> callback, global::HarmonyOS.ArkUI.SubscribeType type2)
+    public void On(string type, System.Action<string[]> callback, global::HarmonyOS.ArkUI.RelationalStoreSubscribeType type2)
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<string>(e))),
@@ -851,7 +851,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<IntPtr[]> callback, global::HarmonyOS.ArkUI.SubscribeType type2)
+    public void On(string type, System.Action<IntPtr[]> callback, global::HarmonyOS.ArkUI.RelationalStoreSubscribeType type2)
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<IntPtr>(e))),
@@ -909,7 +909,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<string[]> callback, global::HarmonyOS.ArkUI.SubscribeType type2)
+    public void Off(string type, System.Action<string[]> callback, global::HarmonyOS.ArkUI.RelationalStoreSubscribeType type2)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, type2));
     }
@@ -917,7 +917,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<IntPtr[]> callback, global::HarmonyOS.ArkUI.SubscribeType type2)
+    public void Off(string type, System.Action<IntPtr[]> callback, global::HarmonyOS.ArkUI.RelationalStoreSubscribeType type2)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, type2));
     }
@@ -1056,6 +1056,92 @@ public sealed partial class RelationalStoreRdbStore : JsObject
         }
     }
 
+}
+
+/// <summary>
+/// StoreConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record RelationalStoreStoreConfig(
+    string Name,
+    global::HarmonyOS.ArkUI.RelationalStoreSecurityLevel SecurityLevel,
+    bool? Encrypt = null,
+    string? DataGroupId = null,
+    string? CustomDir = null,
+    string? RootDir = null,
+    bool? AutoCleanDirtyData = null,
+    bool? AllowRebuild = null,
+    bool? Vector = null,
+    bool? IsReadOnly = null,
+    string[]? PluginLibs = null,
+    CryptoParam? CryptoParam = null,
+    global::HarmonyOS.ArkUI.Tokenizer? Tokenizer = null,
+    bool? Persist = null,
+    bool? EnableSemanticIndex = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _nameName => "name"u8;
+    private static ReadOnlySpan<byte> _securityLevelName => "securityLevel"u8;
+    private static ReadOnlySpan<byte> _encryptName => "encrypt"u8;
+    private static ReadOnlySpan<byte> _dataGroupIdName => "dataGroupId"u8;
+    private static ReadOnlySpan<byte> _customDirName => "customDir"u8;
+    private static ReadOnlySpan<byte> _rootDirName => "rootDir"u8;
+    private static ReadOnlySpan<byte> _autoCleanDirtyDataName => "autoCleanDirtyData"u8;
+    private static ReadOnlySpan<byte> _allowRebuildName => "allowRebuild"u8;
+    private static ReadOnlySpan<byte> _vectorName => "vector"u8;
+    private static ReadOnlySpan<byte> _isReadOnlyName => "isReadOnly"u8;
+    private static ReadOnlySpan<byte> _pluginLibsName => "pluginLibs"u8;
+    private static ReadOnlySpan<byte> _cryptoParamName => "cryptoParam"u8;
+    private static ReadOnlySpan<byte> _tokenizerName => "tokenizer"u8;
+    private static ReadOnlySpan<byte> _persistName => "persist"u8;
+    private static ReadOnlySpan<byte> _enableSemanticIndexName => "enableSemanticIndex"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _nameV = NativeValue.From(Name);
+        if (_nameV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
+        var _securityLevelV = NativeValue.From(SecurityLevel);
+        if (_securityLevelV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _securityLevelName, _securityLevelV);
+        var _encryptV = NativeValue.From(Encrypt);
+        if (_encryptV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _encryptName, _encryptV);
+        var _dataGroupIdV = NativeValue.From(DataGroupId);
+        if (_dataGroupIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _dataGroupIdName, _dataGroupIdV);
+        var _customDirV = NativeValue.From(CustomDir);
+        if (_customDirV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _customDirName, _customDirV);
+        var _rootDirV = NativeValue.From(RootDir);
+        if (_rootDirV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _rootDirName, _rootDirV);
+        var _autoCleanDirtyDataV = NativeValue.From(AutoCleanDirtyData);
+        if (_autoCleanDirtyDataV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _autoCleanDirtyDataName, _autoCleanDirtyDataV);
+        var _allowRebuildV = NativeValue.From(AllowRebuild);
+        if (_allowRebuildV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _allowRebuildName, _allowRebuildV);
+        var _vectorV = NativeValue.From(Vector);
+        if (_vectorV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _vectorName, _vectorV);
+        var _isReadOnlyV = NativeValue.From(IsReadOnly);
+        if (_isReadOnlyV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _isReadOnlyName, _isReadOnlyV);
+        var _pluginLibsV = NativeValue.From(PluginLibs);
+        if (_pluginLibsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _pluginLibsName, _pluginLibsV);
+        var _cryptoParamV = NativeValue.From(CryptoParam);
+        if (_cryptoParamV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _cryptoParamName, _cryptoParamV);
+        var _tokenizerV = NativeValue.From(Tokenizer);
+        if (_tokenizerV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _tokenizerName, _tokenizerV);
+        var _persistV = NativeValue.From(Persist);
+        if (_persistV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _persistName, _persistV);
+        var _enableSemanticIndexV = NativeValue.From(EnableSemanticIndex);
+        if (_enableSemanticIndexV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _enableSemanticIndexName, _enableSemanticIndexV);
+    }
 }
 
 /// <summary>
@@ -1686,9 +1772,9 @@ public sealed partial class ResultSet : JsObject
     /// <summary>
     /// getAsset
     /// </summary>
-    public IntPtr GetAsset(double columnIndex)
+    public RelationalStoreAsset GetAsset(double columnIndex)
     {
-        return CallMethod<IntPtr>(_getAsset, columnIndex);
+        return CallMethod(_getAsset, static h => new RelationalStoreAsset(h), columnIndex);
     }
 
     /// <summary>
@@ -1874,9 +1960,9 @@ public sealed partial class LiteResultSet : JsObject
     /// <summary>
     /// getAsset
     /// </summary>
-    public IntPtr GetAsset(double columnIndex)
+    public RelationalStoreAsset GetAsset(double columnIndex)
     {
-        return CallMethod<IntPtr>(_getAsset, columnIndex);
+        return CallMethod(_getAsset, static h => new RelationalStoreAsset(h), columnIndex);
     }
 
     /// <summary>
@@ -2021,6 +2107,32 @@ public sealed partial class SyncResult : JsObject
     /// </summary>
     public string Message => NativeValue.ToString(GetPropertyRaw(_message)) ?? string.Empty;
 
+}
+
+/// <summary>
+/// CloudSyncConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record CloudSyncConfig(
+    global::HarmonyOS.ArkUI.RelationalStoreSyncMode Mode,
+    bool? EnablePredicate = null,
+    RelationalStoreRdbPredicates? Predicate = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _modeName => "mode"u8;
+    private static ReadOnlySpan<byte> _enablePredicateName => "enablePredicate"u8;
+    private static ReadOnlySpan<byte> _predicateName => "predicate"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _modeV = NativeValue.From(Mode);
+        if (_modeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _modeName, _modeV);
+        var _enablePredicateV = NativeValue.From(EnablePredicate);
+        if (_enablePredicateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _enablePredicateName, _enablePredicateV);
+        var _predicateV = NativeValue.From(Predicate);
+        if (_predicateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _predicateName, _predicateV);
+    }
 }
 
 /// <summary>
@@ -2339,4 +2451,55 @@ public sealed record CryptoParam(
         if (_cryptoPageSizeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _cryptoPageSizeName, _cryptoPageSizeV);
     }
+}
+
+/// <summary>
+/// Asset 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class RelationalStoreAsset : JsObject
+{
+    public RelationalStoreAsset(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _name => "name"u8;
+    private static ReadOnlySpan<byte> _uri => "uri"u8;
+    private static ReadOnlySpan<byte> _path => "path"u8;
+    private static ReadOnlySpan<byte> _createTime => "createTime"u8;
+    private static ReadOnlySpan<byte> _modifyTime => "modifyTime"u8;
+    private static ReadOnlySpan<byte> _size => "size"u8;
+    private static ReadOnlySpan<byte> _status => "status"u8;
+    /// <summary>
+    /// name
+    /// </summary>
+    public string Name => NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+
+    /// <summary>
+    /// uri
+    /// </summary>
+    public string Uri => NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
+
+    /// <summary>
+    /// path
+    /// </summary>
+    public string Path => NativeValue.ToString(GetPropertyRaw(_path)) ?? string.Empty;
+
+    /// <summary>
+    /// createTime
+    /// </summary>
+    public string CreateTime => NativeValue.ToString(GetPropertyRaw(_createTime)) ?? string.Empty;
+
+    /// <summary>
+    /// modifyTime
+    /// </summary>
+    public string ModifyTime => NativeValue.ToString(GetPropertyRaw(_modifyTime)) ?? string.Empty;
+
+    /// <summary>
+    /// size
+    /// </summary>
+    public string Size => NativeValue.ToString(GetPropertyRaw(_size)) ?? string.Empty;
+
+    /// <summary>
+    /// status
+    /// </summary>
+    public global::HarmonyOS.ArkUI.RelationalStoreAssetStatus? Status => (global::HarmonyOS.ArkUI.RelationalStoreAssetStatus?)(global::HarmonyOS.ArkUI.RelationalStoreAssetStatus)NativeValue.ToInt(GetPropertyRaw(_status));
+
 }

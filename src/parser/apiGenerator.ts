@@ -130,6 +130,7 @@ export class ApiGenerator {
         importedTypeNames: ReadonlySet<string> = new Set()
     ): ApiGenResult {
         this.moduleClassName = moduleInfo.className;
+        const savedOriginalMappings = new Map<string, { typescript: string; csharp: string; isNative: boolean } | undefined>();
         // 枚举类型引用一律全限定，避免与 System.* 同名类型（如 Action）冲突（CS0104）
         this.enumNames = new Set(allEnums.map(e => `global::HarmonyOS.ArkUI.${e.name}`));
         this.specs = [];
@@ -138,6 +139,14 @@ export class ApiGenerator {
         // 1. 登记映射：枚举（全部参与映射，去重只影响 Enums.cs 写盘）+ 实例类型
         for (const e of allEnums) {
             TypeMapper.addMapping(e.name, `global::HarmonyOS.ArkUI.${e.name}`);
+            // 改名枚举（originalName 随迁）：本模块内临时把原始 TS 名映射到自身固定名——
+            // 否则签名引用原始名会解析到其它模块的同名枚举（灰度产物不被编译，转正后 CS0234）。
+            // 生成完本模块后恢复原映射（TypeMapper 全局共享，不能让本模块的映射泄漏到后续模块）
+            if ((e as any).originalName !== undefined && (e as any).originalName !== e.name) {
+                savedOriginalMappings.set((e as any).originalName,
+                    TypeMapper.getMapping((e as any).originalName));
+                TypeMapper.addMapping((e as any).originalName, `global::HarmonyOS.ArkUI.${e.name}`);
+            }
         }
         // 本模块未定义的跨模块导入类型 → IntPtr 句柄（映射注册顺序保证自有类型优先）
         const ownTypeNames = new Set<string>([
@@ -146,7 +155,9 @@ export class ApiGenerator {
             ...component.classes.map(c => c.name),
         ]);
         for (const n of importedTypeNames) {
-            if (!ownTypeNames.has(n)) {
+            if (!ownTypeNames.has(n) && !TypeMapper.isStringLiteralAlias(n)) {
+                // 字面量联合别名（Permissions→string）由 processFullSDK 入口扫描登记，回退不得覆盖；
+                // 其余导入类型维持旧行为：无条件 IntPtr（全局保守降级，避免引用未生成的包装类型）
                 TypeMapper.addMapping(n, 'IntPtr');
             }
         }
@@ -206,6 +217,12 @@ export class ApiGenerator {
             enumCode = this.enumGenerator.generateMultipleEnums(enums);
         }
 
+        // 恢复本模块临时改写的原始名映射（TypeMapper 全局共享，不能泄漏到后续模块）
+        for (const [name, prev] of savedOriginalMappings) {
+            if (prev !== undefined) TypeMapper.addMapping(name, prev.csharp);
+            else TypeMapper.removeMapping(name);
+        }
+
         return {
             csharp,
             enums: enumCode,
@@ -223,8 +240,14 @@ export class ApiGenerator {
             ? `${tsName}Object` : tsName;
         const owner = takenTypeNames.get(csharp);
         if (owner !== undefined && owner !== this.moduleClassName) {
-            // 跨模块同名（如 Rect/Size）：加模块前缀避免跨文件重复定义
+            // 跨模块同名（如 Rect/Size）：加模块前缀避免跨文件重复定义。
+            // 前缀名本身也可能被其它模块占用（window.Rect → WindowRect 撞 dialogRequest.WindowRect），
+            // 加计数后缀避让，直到候选名无人认领。
             csharp = `${this.moduleClassName}${tsName}`;
+            let suffix = 2;
+            while (takenTypeNames.get(csharp) !== undefined && takenTypeNames.get(csharp) !== this.moduleClassName) {
+                csharp = `${this.moduleClassName}${tsName}${suffix++}`;
+            }
             takenTypeNames.set(csharp, this.moduleClassName);
         } else if (owner === undefined) {
             takenTypeNames.set(csharp, this.moduleClassName);
@@ -645,7 +668,7 @@ export class ApiGenerator {
         lines.push('                    fixed (byte* p = utf8)');
         lines.push('                    {');
         lines.push('                        var status = NativeNodeApi.napi_load_module(env, p, out var module);');
-        lines.push('                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)');
+        lines.push('                        if (status == napi_status.napi_ok && module != IntPtr.Zero)');
         lines.push('                        {');
         lines.push('                            _moduleRef = new NapiReference(module);');
         lines.push('                            break;');

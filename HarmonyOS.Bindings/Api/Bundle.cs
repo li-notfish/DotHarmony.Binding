@@ -44,7 +44,7 @@ public static unsafe partial class Bundle
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -140,7 +140,7 @@ public static unsafe partial class Bundle
     /// <summary>
     /// getAllBundleInfo
     /// </summary>
-    public static Task<IntPtr[]> GetAllBundleInfoAsync(global::HarmonyOS.ArkUI.BundleFlag bundleFlag, double userId)
+    public static Task<IntPtr[]> GetAllBundleInfoAsync(global::HarmonyOS.ArkUI.BundleBundleFlag bundleFlag, double userId)
     {
         return NodeApi.CallMethodAsync(Module, _getAllBundleInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), bundleFlag, userId);
     }
@@ -148,7 +148,7 @@ public static unsafe partial class Bundle
     /// <summary>
     /// getAllBundleInfo
     /// </summary>
-    public static Task<IntPtr[]> GetAllBundleInfoAsync(global::HarmonyOS.ArkUI.BundleFlag bundleFlag)
+    public static Task<IntPtr[]> GetAllBundleInfoAsync(global::HarmonyOS.ArkUI.BundleBundleFlag bundleFlag)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _getAllBundleInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), bundleFlag);
     }

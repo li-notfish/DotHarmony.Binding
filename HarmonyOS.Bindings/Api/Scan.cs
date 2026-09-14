@@ -44,7 +44,7 @@ public static unsafe partial class Scan
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -75,7 +75,7 @@ public static unsafe partial class Scan
     /// <summary>
     /// startScan
     /// </summary>
-    public static Task StartScanAsync(ScanFilters[] filters, IntPtr? options = null)
+    public static Task StartScanAsync(ScanFilters[] filters, ScanScanOptions? options = null)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startScan, filters, options);
     }
@@ -144,5 +144,26 @@ public sealed record ScanFilters(
         var _rssiV = NativeValue.From(Rssi);
         if (_rssiV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _rssiName, _rssiV);
+    }
+}
+
+/// <summary>
+/// ScanOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record ScanScanOptions(
+    global::HarmonyOS.ArkUI.ScanScanMode? ScanMode = null,
+    double? Duration = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _scanModeName => "scanMode"u8;
+    private static ReadOnlySpan<byte> _durationName => "duration"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _scanModeV = NativeValue.From(ScanMode);
+        if (_scanModeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _scanModeName, _scanModeV);
+        var _durationV = NativeValue.From(Duration);
+        if (_durationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
     }
 }

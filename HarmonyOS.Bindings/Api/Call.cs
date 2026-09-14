@@ -44,7 +44,7 @@ public static unsafe partial class Call
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -150,17 +150,17 @@ public static unsafe partial class Call
     /// <summary>
     /// getCallState
     /// </summary>
-    public static Task<global::HarmonyOS.ArkUI.CallState> GetCallStateAsync()
+    public static Task<global::HarmonyOS.ArkUI.CallCallState> GetCallStateAsync()
     {
-        return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.CallState>(Module, _getCallState);
+        return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.CallCallState>(Module, _getCallState);
     }
 
     /// <summary>
     /// getCallStateSync
     /// </summary>
-    public static global::HarmonyOS.ArkUI.CallState GetCallStateSync()
+    public static global::HarmonyOS.ArkUI.CallCallState GetCallStateSync()
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.CallState>(Module, _getCallStateSync);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.CallCallState>(Module, _getCallStateSync);
     }
 
     /// <summary>

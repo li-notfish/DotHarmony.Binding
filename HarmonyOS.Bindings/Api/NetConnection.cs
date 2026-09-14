@@ -44,7 +44,7 @@ public static unsafe partial class NetConnection
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -394,7 +394,7 @@ public static unsafe partial class NetConnection
     /// <summary>
     /// getConnectOwnerUid
     /// </summary>
-    public static Task<double> GetConnectOwnerUidAsync(global::HarmonyOS.ArkUI.ProtocolType protocol, NetAddress local, NetAddress remote)
+    public static Task<double> GetConnectOwnerUidAsync(global::HarmonyOS.ArkUI.NetConnectionProtocolType protocol, NetAddress local, NetAddress remote)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getConnectOwnerUid, protocol, local, remote);
     }
@@ -402,7 +402,7 @@ public static unsafe partial class NetConnection
     /// <summary>
     /// getConnectOwnerUidSync
     /// </summary>
-    public static double GetConnectOwnerUidSync(global::HarmonyOS.ArkUI.ProtocolType protocol, NetAddress local, NetAddress remote)
+    public static double GetConnectOwnerUidSync(global::HarmonyOS.ArkUI.NetConnectionProtocolType protocol, NetAddress local, NetAddress remote)
     {
         return NodeApi.CallMethod<double>(Module, _getConnectOwnerUidSync, protocol, local, remote);
     }

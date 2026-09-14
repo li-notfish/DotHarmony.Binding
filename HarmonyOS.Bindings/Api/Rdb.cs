@@ -44,7 +44,7 @@ public static unsafe partial class Rdb
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -209,7 +209,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// sync
     /// </summary>
-    public Task<object[]> SyncAsync(global::HarmonyOS.ArkUI.SyncMode mode, RdbPredicates predicates)
+    public Task<object[]> SyncAsync(global::HarmonyOS.ArkUI.RdbSyncMode mode, RdbPredicates predicates)
     {
         return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), mode, predicates);
     }
@@ -217,7 +217,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// on
     /// </summary>
-    public void On(string @event, global::HarmonyOS.ArkUI.SubscribeType type, IntPtr observer)
+    public void On(string @event, global::HarmonyOS.ArkUI.RdbSubscribeType type, IntPtr observer)
     {
         CallMethodVoid(_on, @event, type, observer);
     }
@@ -225,7 +225,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// off
     /// </summary>
-    public void Off(string @event, global::HarmonyOS.ArkUI.SubscribeType type, IntPtr observer)
+    public void Off(string @event, global::HarmonyOS.ArkUI.RdbSubscribeType type, IntPtr observer)
     {
         CallMethodVoid(_off, @event, type, observer);
     }
@@ -235,7 +235,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<string[]> callback, global::HarmonyOS.ArkUI.SubscribeType type2)
+    public void On(string type, System.Action<string[]> callback, global::HarmonyOS.ArkUI.RdbSubscribeType type2)
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<string>(e))),
@@ -253,7 +253,7 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<string[]> callback, global::HarmonyOS.ArkUI.SubscribeType type2)
+    public void Off(string type, System.Action<string[]> callback, global::HarmonyOS.ArkUI.RdbSubscribeType type2)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, type2));
     }

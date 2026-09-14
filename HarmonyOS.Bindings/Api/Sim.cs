@@ -44,7 +44,7 @@ public static unsafe partial class Sim
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -193,17 +193,17 @@ public static unsafe partial class Sim
     /// <summary>
     /// getCardType
     /// </summary>
-    public static Task<global::HarmonyOS.ArkUI.CardType> GetCardTypeAsync(double slotId)
+    public static Task<global::HarmonyOS.ArkUI.SimCardType> GetCardTypeAsync(double slotId)
     {
-        return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.CardType>(Module, _getCardType, slotId);
+        return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.SimCardType>(Module, _getCardType, slotId);
     }
 
     /// <summary>
     /// getCardTypeSync
     /// </summary>
-    public static global::HarmonyOS.ArkUI.CardType GetCardTypeSync(double slotId)
+    public static global::HarmonyOS.ArkUI.SimCardType GetCardTypeSync(double slotId)
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.CardType>(Module, _getCardTypeSync, slotId);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.SimCardType>(Module, _getCardTypeSync, slotId);
     }
 
     /// <summary>

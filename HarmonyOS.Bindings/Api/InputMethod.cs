@@ -44,7 +44,7 @@ public static unsafe partial class InputMethod
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -580,17 +580,17 @@ public sealed partial class InputMethodController : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<IntPtr> callback)
+    public void On(string type, System.Action<Movement> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback(new Movement(args[0])),
             js => NodeApi.CallMethodVoid(Handle, _on, type, js));
     }
 
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<IntPtr> callback)
+    public void Off(string type, System.Action<Movement> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
     }
@@ -633,12 +633,12 @@ public sealed partial class InputMethodController : JsObject
     /// <summary>
     /// 监听 selectByMovement 事件（对应 on/off）
     /// </summary>
-    public event System.Action<IntPtr> SelectByMovement
+    public event System.Action<Movement> SelectByMovement
     {
         add
         {
             _eventListeners.Add(("selectByMovement", value),
-                args => value(args[0]),
+                args => value(new Movement(args[0])),
                 js => NodeApi.CallMethodVoid(Handle, _on, "selectByMovement", js));
         }
         remove
@@ -871,6 +871,21 @@ public sealed partial class InputMethodRange : JsObject
     /// end
     /// </summary>
     public double End => NativeValue.ToDouble(GetPropertyRaw(_end));
+
+}
+
+/// <summary>
+/// Movement 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class Movement : JsObject
+{
+    public Movement(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _direction => "direction"u8;
+    /// <summary>
+    /// direction
+    /// </summary>
+    public global::HarmonyOS.ArkUI.InputMethodDirection Direction => (global::HarmonyOS.ArkUI.InputMethodDirection)NativeValue.ToInt(GetPropertyRaw(_direction));
 
 }
 

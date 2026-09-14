@@ -1,11 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import * as ts from 'typescript';
 import { AstParser } from './astParser';
 import { CodeGenerator } from './codeGenerator';
 import { EnumGenerator } from './enumGenerator';
 import { NativeCodeGenerator, EnumMetadata, NativeGap } from './nativeCodeGenerator';
 import { ApiGenerator, reservedModuleClassNames } from './apiGenerator';
+import { TypeMapper } from './typeMapper';
 import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo } from './models';
 
 interface CacheEntry {
@@ -625,8 +627,8 @@ const PILOT_MODULES = [
     '@ohos.zlib',
 ]
 
-/** 全局枚举名去重（processFullSDK 作用域内） */
-const writtenEnumNames = new Map<string, string>(); // enum 名 → 首个发射它的模块 id（@ohos.xxx）
+    /** 全局枚举名去重（processFullSDK 作用域内） */
+    const writtenEnumNames = new Map<string, string>(); // enum 名 → 首个发射它的模块 id（@ohos.xxx）
 
 /**
  * 手写 Nodes/*.cs 在 HarmonyOS.ArkUI 命名空间已占用的类型名。
@@ -673,7 +675,6 @@ const GRAYSCALE_MODULES = new Set<string>([
     'BluetoothManager',
     'Browser',
     'Bundle',
-    'BundleManager',
     'ComponentSnapshot',
     'ComponentUtils',
     'Configuration',
@@ -722,15 +723,50 @@ const GRAYSCALE_MODULES = new Set<string>([
     'RemoteDevice',
     'Observer',
     // 第三轮：TS 声明合并（window.WindowRect 双定义）/ 跨模块枚举映射漂移残留
-    'Window',
+    // 2026-09-13：Window/NetConnection 出灰度（IConnectivity / KeepScreenOn；WindowRect 改名避让已修）
     'TelephonyObserver',
-    'NetConnection',
     'Connection',
     'ResourcescheduleBackgroundTaskManager',
     // className 唯一化后的新名称（net.socket → NetSocket 等）
     'NetSocket',
     'UserAuth',
 ]);
+
+
+/**
+ * 扫描 api 目录全部 d.ts（含非 @ohos. 文件）的顶层 `export type X = ...`，
+ * 成员全部为字符串字面量的联合别名登记 TypeMapper 映射为 string。
+ * 递归处理：union 成员允许嵌套 union（TS 允许，实际 SDK 中均为平铺字面量）。
+ */
+function registerStringLiteralUnionAliases(apiDir: string): void {
+    const registered: { name: string; file: string; count: number }[] = [];
+    for (const f of fs.readdirSync(apiDir)) {
+        if (!f.endsWith('.d.ts')) continue;
+        const source = fs.readFileSync(path.join(apiDir, f), 'utf-8');
+        const sf = ts.createSourceFile(f, source, ts.ScriptTarget.Latest, true);
+        sf.forEachChild(node => {
+            if (!ts.isTypeAliasDeclaration(node)) return;
+            const literals: string[] = [];
+            const isStringLiteralUnion = (t: ts.TypeNode): boolean => {
+                if (ts.isLiteralTypeNode(t) && ts.isStringLiteral(t.literal)) {
+                    literals.push(t.literal.text);
+                    return true;
+                }
+                if (ts.isUnionTypeNode(t)) return t.types.every(isStringLiteralUnion);
+                return false;
+            };
+            if (isStringLiteralUnion(node.type)) {
+                const name = node.name.getText();
+                TypeMapper.registerStringLiteralAlias(name);
+                registered.push({ name, file: f, count: literals.length });
+            }
+        });
+    }
+    if (registered.length > 0) {
+        console.log(`String-literal union aliases mapped to string: ${
+            registered.map(r => `${r.name}(${r.count})`).join(', ')}`);
+    }
+}
 
 
 export async function processFullSDK(sdkArg?: string, allModules: boolean = false): Promise<void> {
@@ -741,6 +777,13 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
 
     const parser = new ArkTsParser();
     const context = createParseContext();
+
+    // 字符串字面量联合别名登记（生成器不猜：直接读 d.ts 定义）——
+    // 非 @ohos.* 文件（如 permissions.d.ts 的 Permissions = 'a' | 'b' | ...）不进解析管线，
+    // 被 @ohos.* 签名引用时 TypeMapper 退回 IntPtr，导致 Array<Permissions> 发射为
+    // IntPtr[]（NativeValue.From 无法封送，调用即 NotSupportedException，requestPermissionsFromUser 实测）。
+    // 扫描 api 目录全部 d.ts 顶层别名，凡成员全部为字符串字面量的，登记映射为 string。
+    registerStringLiteralUnionAliases(apiDir);
 
     // 输出到 HarmonyOS.Bindings 项目
     const bindingsDir = path.join(__dirname, '../../HarmonyOS.Bindings');
@@ -859,6 +902,7 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
                 if (ARKUI_RESERVED_NAMES.has(name)
                     || (writtenEnumNames.has(name) && writtenEnumNames.get(name) !== moduleInfo.module)) {
                     name = `${moduleInfo.className}${name}`;
+                    (e as any).originalName = e.name;
                 }
                 return { ...e, name };
             };

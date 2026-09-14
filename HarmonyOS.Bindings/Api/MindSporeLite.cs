@@ -43,7 +43,7 @@ public static unsafe partial class MindSporeLite
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -385,7 +385,7 @@ public sealed partial class MSTensor : JsObject
     /// <summary>
     /// dtype
     /// </summary>
-    public IntPtr Dtype => GetPropertyRaw(_dtype);
+    public global::HarmonyOS.ArkUI.MindSporeLiteDataType Dtype => (global::HarmonyOS.ArkUI.MindSporeLiteDataType)NativeValue.ToInt(GetPropertyRaw(_dtype));
 
     /// <summary>
     /// format

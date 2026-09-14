@@ -43,7 +43,7 @@ public static unsafe partial class NotificationManager
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -125,7 +125,7 @@ public static unsafe partial class NotificationManager
     /// <summary>
     /// addSlot
     /// </summary>
-    public static Task AddSlotAsync(global::HarmonyOS.ArkUI.SlotType type)
+    public static Task AddSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType type)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _addSlot, type);
     }
@@ -133,7 +133,7 @@ public static unsafe partial class NotificationManager
     /// <summary>
     /// getSlot
     /// </summary>
-    public static Task<IntPtr> GetSlotAsync(global::HarmonyOS.ArkUI.SlotType slotType)
+    public static Task<IntPtr> GetSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType slotType)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getSlot, slotType);
     }
@@ -149,7 +149,7 @@ public static unsafe partial class NotificationManager
     /// <summary>
     /// removeSlot
     /// </summary>
-    public static Task RemoveSlotAsync(global::HarmonyOS.ArkUI.SlotType slotType)
+    public static Task RemoveSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType slotType)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeSlot, slotType);
     }

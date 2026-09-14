@@ -44,7 +44,7 @@ public static unsafe partial class Socket
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -86,7 +86,7 @@ public static unsafe partial class Socket
     /// <summary>
     /// sppListen
     /// </summary>
-    public static Task<double> SppListenAsync(string name, IntPtr options)
+    public static Task<double> SppListenAsync(string name, SppOptions options)
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _sppListen, null, name, options);
     }
@@ -110,7 +110,7 @@ public static unsafe partial class Socket
     /// <summary>
     /// sppConnect
     /// </summary>
-    public static Task<double> SppConnectAsync(string deviceId, IntPtr options)
+    public static Task<double> SppConnectAsync(string deviceId, SppOptions options)
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _sppConnect, null, deviceId, options);
     }
@@ -248,4 +248,35 @@ public static unsafe partial class Socket
         }
     }
 
+}
+
+/// <summary>
+/// SppOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record SppOptions(
+    string Uuid,
+    bool Secure,
+    global::HarmonyOS.ArkUI.SocketSppType Type,
+    double? Psm = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _uuidName => "uuid"u8;
+    private static ReadOnlySpan<byte> _secureName => "secure"u8;
+    private static ReadOnlySpan<byte> _typeName => "type"u8;
+    private static ReadOnlySpan<byte> _psmName => "psm"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _uuidV = NativeValue.From(Uuid);
+        if (_uuidV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV);
+        var _secureV = NativeValue.From(Secure);
+        if (_secureV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _secureName, _secureV);
+        var _typeV = NativeValue.From(Type);
+        if (_typeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
+        var _psmV = NativeValue.From(Psm);
+        if (_psmV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _psmName, _psmV);
+    }
 }

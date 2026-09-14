@@ -43,7 +43,7 @@ public static unsafe partial class Image
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -1599,7 +1599,7 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packing
     /// </summary>
-    public Task<byte[]> PackingAsync(ImageSource source, IntPtr option)
+    public Task<byte[]> PackingAsync(ImageSource source, PackingOption option)
     {
         return CallMethodAsync(_packing, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), source, option);
     }
@@ -1607,7 +1607,7 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packToData
     /// </summary>
-    public Task<byte[]> PackToDataAsync(ImageSource source, IntPtr options)
+    public Task<byte[]> PackToDataAsync(ImageSource source, PackingOption options)
     {
         return CallMethodAsync(_packToData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), source, options);
     }
@@ -1615,7 +1615,7 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packing
     /// </summary>
-    public Task<byte[]> PackingAsync(ImagePixelMap source, IntPtr option)
+    public Task<byte[]> PackingAsync(ImagePixelMap source, PackingOption option)
     {
         return CallMethodAsync(_packing, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), source, option);
     }
@@ -1623,7 +1623,7 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packToData
     /// </summary>
-    public Task<byte[]> PackToDataAsync(ImagePixelMap source, IntPtr options)
+    public Task<byte[]> PackToDataAsync(ImagePixelMap source, PackingOption options)
     {
         return CallMethodAsync(_packToData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), source, options);
     }
@@ -1639,7 +1639,7 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packToFile
     /// </summary>
-    public Task PackToFileAsync(ImageSource source, double fd, IntPtr options)
+    public Task PackToFileAsync(ImageSource source, double fd, PackingOption options)
     {
         return CallMethodAsyncVoid(_packToFile, source, fd, options);
     }
@@ -1647,7 +1647,7 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packToFile
     /// </summary>
-    public Task PackToFileAsync(ImagePixelMap source, double fd, IntPtr options)
+    public Task PackToFileAsync(ImagePixelMap source, double fd, PackingOption options)
     {
         return CallMethodAsyncVoid(_packToFile, source, fd, options);
     }
@@ -1671,7 +1671,7 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packing
     /// </summary>
-    public Task<byte[]> PackingAsync(Picture picture, IntPtr options)
+    public Task<byte[]> PackingAsync(Picture picture, PackingOption options)
     {
         return CallMethodAsync(_packing, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), picture, options);
     }
@@ -1679,7 +1679,7 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packToFile
     /// </summary>
-    public Task PackToFileAsync(Picture picture, double fd, IntPtr options)
+    public Task PackToFileAsync(Picture picture, double fd, PackingOption options)
     {
         return CallMethodAsyncVoid(_packToFile, picture, fd, options);
     }
@@ -1687,7 +1687,7 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packBinaryImageToTiffFile
     /// </summary>
-    public Task PackBinaryImageToTiffFileAsync(BinaryBufferInfo bufferInfo, double fd, IntPtr? options = null)
+    public Task PackBinaryImageToTiffFileAsync(BinaryBufferInfo bufferInfo, double fd, PackingOptionsForTiff? options = null)
     {
         return CallMethodAsyncVoid(_packBinaryImageToTiffFile, bufferInfo, fd, options);
     }
@@ -1695,7 +1695,7 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packBinaryImageToTiffData
     /// </summary>
-    public Task<byte[]> PackBinaryImageToTiffDataAsync(BinaryBufferInfo bufferInfo, IntPtr? options = null)
+    public Task<byte[]> PackBinaryImageToTiffDataAsync(BinaryBufferInfo bufferInfo, PackingOptionsForTiff? options = null)
     {
         return CallMethodAsync(_packBinaryImageToTiffData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), bufferInfo, options);
     }
@@ -2459,6 +2459,67 @@ public sealed record DecodingOptionsForThumbnail(
 }
 
 /// <summary>
+/// PackingOption（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record PackingOption(
+    string Format,
+    double Quality,
+    double? BufferSize = null,
+    global::HarmonyOS.ArkUI.PackingDynamicRange? DesiredDynamicRange = null,
+    bool? NeedsPackProperties = null,
+    double? MaxEmbedThumbnailDimension = null,
+    PackingOptionsForTiff? TiffPackingOptions = null,
+    double? BackgroundColor = null,
+    PackingSizeLimit? SizeLimit = null,
+    bool? NeedsPackGps = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _formatName => "format"u8;
+    private static ReadOnlySpan<byte> _qualityName => "quality"u8;
+    private static ReadOnlySpan<byte> _bufferSizeName => "bufferSize"u8;
+    private static ReadOnlySpan<byte> _desiredDynamicRangeName => "desiredDynamicRange"u8;
+    private static ReadOnlySpan<byte> _needsPackPropertiesName => "needsPackProperties"u8;
+    private static ReadOnlySpan<byte> _maxEmbedThumbnailDimensionName => "maxEmbedThumbnailDimension"u8;
+    private static ReadOnlySpan<byte> _tiffPackingOptionsName => "tiffPackingOptions"u8;
+    private static ReadOnlySpan<byte> _backgroundColorName => "backgroundColor"u8;
+    private static ReadOnlySpan<byte> _sizeLimitName => "sizeLimit"u8;
+    private static ReadOnlySpan<byte> _needsPackGpsName => "needsPackGPS"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _formatV = NativeValue.From(Format);
+        if (_formatV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _formatName, _formatV);
+        var _qualityV = NativeValue.From(Quality);
+        if (_qualityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _qualityName, _qualityV);
+        var _bufferSizeV = NativeValue.From(BufferSize);
+        if (_bufferSizeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _bufferSizeName, _bufferSizeV);
+        var _desiredDynamicRangeV = NativeValue.From(DesiredDynamicRange);
+        if (_desiredDynamicRangeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _desiredDynamicRangeName, _desiredDynamicRangeV);
+        var _needsPackPropertiesV = NativeValue.From(NeedsPackProperties);
+        if (_needsPackPropertiesV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _needsPackPropertiesName, _needsPackPropertiesV);
+        var _maxEmbedThumbnailDimensionV = NativeValue.From(MaxEmbedThumbnailDimension);
+        if (_maxEmbedThumbnailDimensionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxEmbedThumbnailDimensionName, _maxEmbedThumbnailDimensionV);
+        var _tiffPackingOptionsV = NativeValue.From(TiffPackingOptions);
+        if (_tiffPackingOptionsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _tiffPackingOptionsName, _tiffPackingOptionsV);
+        var _backgroundColorV = NativeValue.From(BackgroundColor);
+        if (_backgroundColorV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _backgroundColorName, _backgroundColorV);
+        var _sizeLimitV = NativeValue.From(SizeLimit);
+        if (_sizeLimitV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _sizeLimitName, _sizeLimitV);
+        var _needsPackGpsV = NativeValue.From(NeedsPackGps);
+        if (_needsPackGpsV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _needsPackGpsName, _needsPackGpsV);
+    }
+}
+
+/// <summary>
 /// PackingOptionsForSequence（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
 public sealed record PackingOptionsForSequence(
@@ -2512,6 +2573,42 @@ public sealed record BinaryBufferInfo(
         var _bytesPerRowV = NativeValue.From(BytesPerRow);
         if (_bytesPerRowV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _bytesPerRowName, _bytesPerRowV);
+    }
+}
+
+/// <summary>
+/// PackingOptionsForTiff（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record PackingOptionsForTiff(
+    double? Compression = null,
+    global::HarmonyOS.ArkUI.ImageOrientation? Orientation = null,
+    double? XResolution = null,
+    double? YResolution = null,
+    double? ResolutionUnit = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _compressionName => "compression"u8;
+    private static ReadOnlySpan<byte> _orientationName => "orientation"u8;
+    private static ReadOnlySpan<byte> _xResolutionName => "xResolution"u8;
+    private static ReadOnlySpan<byte> _yResolutionName => "yResolution"u8;
+    private static ReadOnlySpan<byte> _resolutionUnitName => "resolutionUnit"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _compressionV = NativeValue.From(Compression);
+        if (_compressionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _compressionName, _compressionV);
+        var _orientationV = NativeValue.From(Orientation);
+        if (_orientationV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _orientationName, _orientationV);
+        var _xResolutionV = NativeValue.From(XResolution);
+        if (_xResolutionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _xResolutionName, _xResolutionV);
+        var _yResolutionV = NativeValue.From(YResolution);
+        if (_yResolutionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _yResolutionName, _yResolutionV);
+        var _resolutionUnitV = NativeValue.From(ResolutionUnit);
+        if (_resolutionUnitV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _resolutionUnitName, _resolutionUnitV);
     }
 }
 
@@ -2881,7 +2978,7 @@ public sealed partial class ExifMetadata : JsObject
     /// <summary>
     /// orientation
     /// </summary>
-    public IntPtr Orientation => GetPropertyRaw(_orientation);
+    public global::HarmonyOS.ArkUI.ImageOrientation? Orientation => (global::HarmonyOS.ArkUI.ImageOrientation?)(global::HarmonyOS.ArkUI.ImageOrientation)NativeValue.ToInt(GetPropertyRaw(_orientation));
 
     /// <summary>
     /// samplesPerPixel
@@ -3779,7 +3876,7 @@ public sealed partial class MakerNoteHuaweiMetadata : JsObject
     /// <summary>
     /// focusMode
     /// </summary>
-    public IntPtr FocusMode => GetPropertyRaw(_focusMode);
+    public global::HarmonyOS.ArkUI.ImageFocusMode? FocusMode => (global::HarmonyOS.ArkUI.ImageFocusMode?)(global::HarmonyOS.ArkUI.ImageFocusMode)NativeValue.ToInt(GetPropertyRaw(_focusMode));
 
     /// <summary>
     /// createInstance
@@ -4613,7 +4710,7 @@ public sealed partial class TiffMetadata : JsObject
     /// <summary>
     /// orientation
     /// </summary>
-    public IntPtr Orientation => GetPropertyRaw(_orientation);
+    public global::HarmonyOS.ArkUI.ImageOrientation? Orientation => (global::HarmonyOS.ArkUI.ImageOrientation?)(global::HarmonyOS.ArkUI.ImageOrientation)NativeValue.ToInt(GetPropertyRaw(_orientation));
 
     /// <summary>
     /// xResolution
@@ -4935,6 +5032,27 @@ public sealed partial class AvisMetadata : JsObject
     /// </summary>
     public double? DelayTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_delayTime));
 
+}
+
+/// <summary>
+/// PackingSizeLimit（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record PackingSizeLimit(
+    ImageSize MaxSize,
+    global::HarmonyOS.ArkUI.AntiAliasingLevel Level
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _maxSizeName => "maxSize"u8;
+    private static ReadOnlySpan<byte> _levelName => "level"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _maxSizeV = NativeValue.From(MaxSize);
+        if (_maxSizeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxSizeName, _maxSizeV);
+        var _levelV = NativeValue.From(Level);
+        if (_levelV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _levelName, _levelV);
+    }
 }
 
 /// <summary>

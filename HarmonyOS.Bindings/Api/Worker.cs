@@ -43,7 +43,7 @@ public static unsafe partial class Worker
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -311,7 +311,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// <summary>
     /// postMessageAtFront
     /// </summary>
-    public void PostMessageAtFront(IntPtr message, global::HarmonyOS.ArkUI.Priority priority, byte[][]? transfer = null)
+    public void PostMessageAtFront(IntPtr message, global::HarmonyOS.ArkUI.WorkerPriority priority, byte[][]? transfer = null)
     {
         CallMethodVoid(_postMessageAtFront, message, priority, transfer);
     }

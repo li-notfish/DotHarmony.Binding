@@ -44,7 +44,7 @@ public static unsafe partial class Window
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -551,9 +551,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// getGlobalRect
     /// </summary>
-    public WindowRect GetGlobalRect()
+    public WindowRect2 GetGlobalRect()
     {
-        return CallMethod(_getGlobalRect, static h => new WindowRect(h));
+        return CallMethod(_getGlobalRect, static h => new WindowRect2(h));
     }
 
     /// <summary>
@@ -743,7 +743,7 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setPreferredOrientation
     /// </summary>
-    public Task SetPreferredOrientationAsync(global::HarmonyOS.ArkUI.Orientation orientation)
+    public Task SetPreferredOrientationAsync(global::HarmonyOS.ArkUI.WindowOrientation orientation)
     {
         return CallMethodAsyncVoid(_setPreferredOrientation, orientation);
     }
@@ -767,7 +767,7 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setPreferredOrientationWithResult
     /// </summary>
-    public Task<OrientationResult> SetPreferredOrientationWithResultAsync(global::HarmonyOS.ArkUI.Orientation orientation)
+    public Task<OrientationResult> SetPreferredOrientationWithResultAsync(global::HarmonyOS.ArkUI.WindowOrientation orientation)
     {
         return CallMethodAsync(_setPreferredOrientationWithResult, static h => new OrientationResult(h), orientation);
     }
@@ -775,9 +775,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// getPreferredOrientation
     /// </summary>
-    public global::HarmonyOS.ArkUI.Orientation GetPreferredOrientation()
+    public global::HarmonyOS.ArkUI.WindowOrientation GetPreferredOrientation()
     {
-        return CallMethod<global::HarmonyOS.ArkUI.Orientation>(_getPreferredOrientation);
+        return CallMethod<global::HarmonyOS.ArkUI.WindowOrientation>(_getPreferredOrientation);
     }
 
     /// <summary>
@@ -879,7 +879,7 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setColorSpace
     /// </summary>
-    public Task SetColorSpaceAsync(global::HarmonyOS.ArkUI.ColorSpace colorSpace)
+    public Task SetColorSpaceAsync(global::HarmonyOS.ArkUI.WindowColorSpace colorSpace)
     {
         return CallMethodAsyncVoid(_setColorSpace, colorSpace);
     }
@@ -887,7 +887,7 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setWindowColorSpace
     /// </summary>
-    public Task SetWindowColorSpaceAsync(global::HarmonyOS.ArkUI.ColorSpace colorSpace)
+    public Task SetWindowColorSpaceAsync(global::HarmonyOS.ArkUI.WindowColorSpace colorSpace)
     {
         return CallMethodAsyncVoid(_setWindowColorSpace, colorSpace);
     }
@@ -895,17 +895,17 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// getColorSpace
     /// </summary>
-    public Task<global::HarmonyOS.ArkUI.ColorSpace> GetColorSpaceAsync()
+    public Task<global::HarmonyOS.ArkUI.WindowColorSpace> GetColorSpaceAsync()
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ColorSpace>(_getColorSpace);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.WindowColorSpace>(_getColorSpace);
     }
 
     /// <summary>
     /// getWindowColorSpace
     /// </summary>
-    public global::HarmonyOS.ArkUI.ColorSpace GetWindowColorSpace()
+    public global::HarmonyOS.ArkUI.WindowColorSpace GetWindowColorSpace()
     {
-        return CallMethod<global::HarmonyOS.ArkUI.ColorSpace>(_getWindowColorSpace);
+        return CallMethod<global::HarmonyOS.ArkUI.WindowColorSpace>(_getWindowColorSpace);
     }
 
     /// <summary>
@@ -1351,7 +1351,7 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setTouchableAreas
     /// </summary>
-    public Task SetTouchableAreasAsync(WindowRect[] rects)
+    public Task SetTouchableAreasAsync(WindowRect2[] rects)
     {
         return CallMethodAsyncVoid(_setTouchableAreas, rects);
     }
@@ -1931,6 +1931,24 @@ public sealed partial class WindowObject : JsObject
     }
 
     /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<WindowRectChangeOptions> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new WindowRectChangeOptions(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<WindowRectChangeOptions> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
     /// 监听 rotationChange 事件（对应 on/off）
     /// </summary>
     public event System.Action RotationChange
@@ -2392,12 +2410,12 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// 监听 windowRectChange 事件（对应 on/off）
     /// </summary>
-    public event System.Action<IntPtr> WindowRectChange
+    public event System.Action<WindowRectChangeOptions> WindowRectChange
     {
         add
         {
             _eventListeners.Add(("windowRectChange", value),
-                args => value(args[0]),
+                args => value(new WindowRectChangeOptions(args[0])),
                 js => NodeApi.CallMethodVoid(Handle, _on, "windowRectChange", js));
         }
         remove
@@ -2409,12 +2427,12 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// 监听 rectChangeInGlobalDisplay 事件（对应 on/off）
     /// </summary>
-    public event System.Action<IntPtr> RectChangeInGlobalDisplay
+    public event System.Action<WindowRectChangeOptions> RectChangeInGlobalDisplay
     {
         add
         {
             _eventListeners.Add(("rectChangeInGlobalDisplay", value),
-                args => value(args[0]),
+                args => value(new WindowRectChangeOptions(args[0])),
                 js => NodeApi.CallMethodVoid(Handle, _on, "rectChangeInGlobalDisplay", js));
         }
         remove
@@ -2461,7 +2479,7 @@ public sealed partial class WindowWindowInfo : JsObject
     /// <summary>
     /// rect
     /// </summary>
-    public WindowRect Rect => new WindowRect(GetPropertyRaw(_rect));
+    public WindowRect2 Rect => new WindowRect2(GetPropertyRaw(_rect));
 
     /// <summary>
     /// bundleName
@@ -2491,7 +2509,7 @@ public sealed partial class WindowWindowInfo : JsObject
     /// <summary>
     /// globalDisplayRect
     /// </summary>
-    public WindowRect? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect(GetPropertyRaw(_globalDisplayRect));
+    public WindowRect2? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_globalDisplayRect));
 
     /// <summary>
     /// displayId
@@ -2501,7 +2519,7 @@ public sealed partial class WindowWindowInfo : JsObject
     /// <summary>
     /// globalRect
     /// </summary>
-    public WindowRect? GlobalRect => GetPropertyRaw(_globalRect) == IntPtr.Zero ? null : new WindowRect(GetPropertyRaw(_globalRect));
+    public WindowRect2? GlobalRect => GetPropertyRaw(_globalRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_globalRect));
 
 }
 
@@ -2517,7 +2535,7 @@ public sealed partial class WindowLayoutInfo : JsObject
     /// <summary>
     /// windowRect
     /// </summary>
-    public WindowRect WindowRect => new WindowRect(GetPropertyRaw(_windowRect));
+    public WindowRect2 WindowRect => new WindowRect2(GetPropertyRaw(_windowRect));
 
     /// <summary>
     /// windowAlpha
@@ -2675,22 +2693,22 @@ public sealed partial class AvoidArea : JsObject
     /// <summary>
     /// leftRect
     /// </summary>
-    public WindowRect LeftRect => new WindowRect(GetPropertyRaw(_leftRect));
+    public WindowRect2 LeftRect => new WindowRect2(GetPropertyRaw(_leftRect));
 
     /// <summary>
     /// topRect
     /// </summary>
-    public WindowRect TopRect => new WindowRect(GetPropertyRaw(_topRect));
+    public WindowRect2 TopRect => new WindowRect2(GetPropertyRaw(_topRect));
 
     /// <summary>
     /// rightRect
     /// </summary>
-    public WindowRect RightRect => new WindowRect(GetPropertyRaw(_rightRect));
+    public WindowRect2 RightRect => new WindowRect2(GetPropertyRaw(_rightRect));
 
     /// <summary>
     /// bottomRect
     /// </summary>
-    public WindowRect BottomRect => new WindowRect(GetPropertyRaw(_bottomRect));
+    public WindowRect2 BottomRect => new WindowRect2(GetPropertyRaw(_bottomRect));
 
 }
 
@@ -2749,6 +2767,27 @@ public sealed partial class TitleButtonRect : JsObject
 }
 
 /// <summary>
+/// RectChangeOptions 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WindowRectChangeOptions : JsObject
+{
+    public WindowRectChangeOptions(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _rect => "rect"u8;
+    private static ReadOnlySpan<byte> _reason => "reason"u8;
+    /// <summary>
+    /// rect
+    /// </summary>
+    public WindowRect2 Rect => new WindowRect2(GetPropertyRaw(_rect));
+
+    /// <summary>
+    /// reason
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WindowRectChangeReason Reason => (global::HarmonyOS.ArkUI.WindowRectChangeReason)NativeValue.ToInt(GetPropertyRaw(_reason));
+
+}
+
+/// <summary>
 /// ShowWindowOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
 public sealed record ShowWindowOptions(
@@ -2784,9 +2823,9 @@ public sealed record MoveConfiguration(
 /// Rect 实例包装（@ohos 命名空间内嵌套接口）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
-public sealed partial class WindowRect : JsObject
+public sealed partial class WindowRect2 : JsObject
 {
-    public WindowRect(IntPtr handle) : base(handle) { }
+    public WindowRect2(IntPtr handle) : base(handle) { }
     private static ReadOnlySpan<byte> _left => "left"u8;
     private static ReadOnlySpan<byte> _top => "top"u8;
     private static ReadOnlySpan<byte> _width => "width"u8;
@@ -2841,12 +2880,12 @@ public sealed partial class WindowProperties : JsObject
     /// <summary>
     /// windowRect
     /// </summary>
-    public WindowRect WindowRect => new WindowRect(GetPropertyRaw(_windowRect));
+    public WindowRect2 WindowRect => new WindowRect2(GetPropertyRaw(_windowRect));
 
     /// <summary>
     /// drawableRect
     /// </summary>
-    public WindowRect DrawableRect => new WindowRect(GetPropertyRaw(_drawableRect));
+    public WindowRect2 DrawableRect => new WindowRect2(GetPropertyRaw(_drawableRect));
 
     /// <summary>
     /// type
@@ -2926,7 +2965,7 @@ public sealed partial class WindowProperties : JsObject
     /// <summary>
     /// globalDisplayRect
     /// </summary>
-    public WindowRect? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect(GetPropertyRaw(_globalDisplayRect));
+    public WindowRect2? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_globalDisplayRect));
 
 }
 
@@ -3159,7 +3198,7 @@ public sealed record SubWindowOptions(
     bool DecorEnabled,
     bool? IsModal = null,
     global::HarmonyOS.ArkUI.ModalityType? ModalityType = null,
-    WindowRect? WindowRect = null,
+    WindowRect2? WindowRect = null,
     bool? MaximizeSupported = null,
     double? ZLevel = null,
     bool? OutlineEnabled = null,

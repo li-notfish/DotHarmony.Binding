@@ -43,7 +43,7 @@ public static unsafe partial class Webview
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -856,9 +856,9 @@ public sealed partial class WebviewController : JsObject
     /// <summary>
     /// getSecurityLevel
     /// </summary>
-    public global::HarmonyOS.ArkUI.SecurityLevel GetSecurityLevel()
+    public global::HarmonyOS.ArkUI.WebviewSecurityLevel GetSecurityLevel()
     {
-        return CallMethod<global::HarmonyOS.ArkUI.SecurityLevel>(_getSecurityLevel);
+        return CallMethod<global::HarmonyOS.ArkUI.WebviewSecurityLevel>(_getSecurityLevel);
     }
 
     /// <summary>

@@ -44,7 +44,7 @@ public static unsafe partial class PhotoAccessHelper
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -550,7 +550,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// <summary>
     /// addResource
     /// </summary>
-    public void AddResource(global::HarmonyOS.ArkUI.ResourceType type, string fileUri)
+    public void AddResource(global::HarmonyOS.ArkUI.PhotoAccessHelperResourceType type, string fileUri)
     {
         CallMethodVoid(_addResource, type, fileUri);
     }
@@ -558,7 +558,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// <summary>
     /// addResource
     /// </summary>
-    public void AddResource(global::HarmonyOS.ArkUI.ResourceType type, byte[] data)
+    public void AddResource(global::HarmonyOS.ArkUI.PhotoAccessHelperResourceType type, byte[] data)
     {
         CallMethodVoid(_addResource, type, data);
     }

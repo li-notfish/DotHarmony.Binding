@@ -266,6 +266,15 @@ internal static partial class NativeNodeApi
         IntPtr byte_length,
         out IntPtr data,
         out napi_value result);
+
+    [LibraryImport(NApiLib)]
+    internal static partial napi_status napi_create_typedarray(
+        napi_env env,
+        int type,
+        IntPtr length,
+        napi_value arraybuffer,
+        IntPtr byte_offset,
+        out napi_value result);
     [LibraryImport(NApiLib)]
     internal static partial napi_status napi_is_typedarray(
         napi_env env,
@@ -418,26 +427,42 @@ internal static partial class NativeNodeApi
 
     /// <summary>
     /// napi 调用失败时抛出异常。任何 napi_* 返回值都不允许静默忽略。
+    /// napi_pending_exception 时先取出并清除 JS 异常，把错误文本带进 NapiException——
+    /// 否则 JS 侧错误（如 param check 401）对调用方完全不可见。
     /// </summary>
     internal static void ThrowIfFailed(this napi_status status, [System.Runtime.CompilerServices.CallerMemberName] string op = "")
     {
-        if (status != napi_status.napi_ok)
-            throw new NapiException(status, op);
+        if (status == napi_status.napi_ok)
+            return;
+        if (status == napi_status.napi_pending_exception)
+        {
+            var env = NapiEnv.Current;
+            if (napi_get_and_clear_last_exception(env, out var jsError) == napi_status.napi_ok &&
+                jsError != IntPtr.Zero)
+            {
+                // JS 异常通常是 Error 对象：优先读 .message，失败再按字符串读
+                string? message = null;
+                try
+                {
+                    var msgVal = NodeApi.GetProperty(jsError, "message"u8);
+                    message = NativeValue.ToString(msgVal);
+                }
+                catch (NapiException) { }
+                if (string.IsNullOrEmpty(message))
+                {
+                    try { message = NativeValue.ToString(jsError); }
+                    catch (NapiException) { }
+                }
+                if (!string.IsNullOrEmpty(message))
+                    throw new NapiException(status, $"{op}: {message}");
+            }
+        }
+        throw new NapiException(status, op);
     }
 
     #endregion
 
     #region 类型定义
-
-    /// <summary>
-    /// Node-API 调用失败异常，携带 napi_status
-    /// </summary>
-    internal sealed class NapiException(napi_status status, string op)
-        : Exception($"NAPI call '{op}' failed with status {status} ({(int)status})")
-    {
-        public napi_status Status { get; } = status;
-        public string Operation { get; } = op;
-    }
 
     internal readonly struct napi_env : IEquatable<napi_env>
     {
@@ -511,31 +536,6 @@ internal static partial class NativeNodeApi
         napi_tsfn_blocking = 1
     }
 
-    internal enum napi_status
-    {
-        napi_ok = 0,
-        napi_invalid_arg = 1,
-        napi_object_expected = 2,
-        napi_string_expected = 3,
-        napi_name_expected = 4,
-        napi_function_expected = 5,
-        napi_number_expected = 6,
-        napi_boolean_expected = 7,
-        napi_array_expected = 8,
-        napi_generic_failure = 9,
-        napi_pending_exception = 10,
-        napi_cancelled = 11,
-        napi_escape_called_twice = 12,
-        napi_handle_scope_mismatch = 13,
-        napi_callback_scope_mismatch = 14,
-        napi_queue_full = 15,
-        napi_closing = 16,
-        napi_bigint_expected = 17,
-        napi_date_expected = 18,
-        napi_arraybuffer_expected = 19,
-        napi_detachable_arraybuffer_expected = 20,
-        napi_would_deadlock = 21
-    }
 
     internal enum napi_valuetype
     {
@@ -552,5 +552,33 @@ internal static partial class NativeNodeApi
     }
 
     #endregion
+
+
 }
+internal enum napi_status
+{
+    napi_ok = 0,
+    napi_invalid_arg = 1,
+    napi_object_expected = 2,
+    napi_string_expected = 3,
+    napi_name_expected = 4,
+    napi_function_expected = 5,
+    napi_number_expected = 6,
+    napi_boolean_expected = 7,
+    napi_array_expected = 8,
+    napi_generic_failure = 9,
+    napi_pending_exception = 10,
+    napi_cancelled = 11,
+    napi_escape_called_twice = 12,
+    napi_handle_scope_mismatch = 13,
+    napi_callback_scope_mismatch = 14,
+    napi_queue_full = 15,
+    napi_closing = 16,
+    napi_bigint_expected = 17,
+    napi_date_expected = 18,
+    napi_arraybuffer_expected = 19,
+    napi_detachable_arraybuffer_expected = 20,
+    napi_would_deadlock = 21
+}
+
 #endif

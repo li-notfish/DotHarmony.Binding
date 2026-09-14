@@ -43,7 +43,7 @@ public static unsafe partial class Taskpool
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -94,7 +94,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// execute
     /// </summary>
-    public static Task<IntPtr> ExecuteAsync(Task task, global::HarmonyOS.ArkUI.Priority? priority = null)
+    public static Task<IntPtr> ExecuteAsync(Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, priority);
     }
@@ -102,7 +102,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// execute
     /// </summary>
-    public static Task<IntPtr> ExecuteAsync(IntPtr task, global::HarmonyOS.ArkUI.Priority? priority = null)
+    public static Task<IntPtr> ExecuteAsync(IntPtr task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, priority);
     }
@@ -110,7 +110,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// execute
     /// </summary>
-    public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, global::HarmonyOS.ArkUI.Priority? priority = null)
+    public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), group, priority);
     }
@@ -118,7 +118,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// executeDelayed
     /// </summary>
-    public static Task<IntPtr> ExecuteDelayedAsync(double delayTime, Task task, global::HarmonyOS.ArkUI.Priority? priority = null)
+    public static Task<IntPtr> ExecuteDelayedAsync(double delayTime, Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDelayed, delayTime, task, priority);
     }
@@ -126,7 +126,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// executeDelayed
     /// </summary>
-    public static Task<IntPtr> ExecuteDelayedAsync(double delayTime, IntPtr task, global::HarmonyOS.ArkUI.Priority? priority = null)
+    public static Task<IntPtr> ExecuteDelayedAsync(double delayTime, IntPtr task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDelayed, delayTime, task, priority);
     }
@@ -134,7 +134,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// executePeriodically
     /// </summary>
-    public static void ExecutePeriodically(double period, Task task, global::HarmonyOS.ArkUI.Priority? priority = null)
+    public static void ExecutePeriodically(double period, Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         NodeApi.CallMethodVoid(Module, _executePeriodically, period, task, priority);
     }
@@ -142,7 +142,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// executePeriodically
     /// </summary>
-    public static void ExecutePeriodically(double period, IntPtr task, global::HarmonyOS.ArkUI.Priority? priority = null)
+    public static void ExecutePeriodically(double period, IntPtr task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         NodeApi.CallMethodVoid(Module, _executePeriodically, period, task, priority);
     }
@@ -206,7 +206,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// execute
     /// </summary>
-    public static Task<IntPtr> ExecuteAsync(Task task, IntPtr configs)
+    public static Task<IntPtr> ExecuteAsync(Task task, Configs configs)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, configs);
     }
@@ -214,7 +214,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// execute
     /// </summary>
-    public static Task<IntPtr> ExecuteAsync(IntPtr task, IntPtr configs)
+    public static Task<IntPtr> ExecuteAsync(IntPtr task, Configs configs)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, configs);
     }
@@ -222,7 +222,7 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// execute
     /// </summary>
-    public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, IntPtr configs)
+    public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, Configs configs)
     {
         return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), group, configs);
     }
@@ -450,6 +450,27 @@ public sealed partial class LongTask : JsObject
 }
 
 /// <summary>
+/// Configs（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record Configs(
+    global::HarmonyOS.ArkUI.TaskpoolPriority? Priority = null,
+    double? Timeout = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _priorityName => "priority"u8;
+    private static ReadOnlySpan<byte> _timeoutName => "timeout"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _priorityV = NativeValue.From(Priority);
+        if (_priorityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
+        var _timeoutV = NativeValue.From(Timeout);
+        if (_timeoutV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _timeoutName, _timeoutV);
+    }
+}
+
+/// <summary>
 /// Task 实例包装（@ohos 命名空间内嵌套类）。
 /// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
 /// </summary>
@@ -626,10 +647,10 @@ public sealed partial class SequenceRunner : JsObject
 
     private static ReadOnlySpan<byte> _SequenceRunner => "SequenceRunner"u8;
 
-    public SequenceRunner(global::HarmonyOS.ArkUI.Priority? priority = null)
+    public SequenceRunner(global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
         : this(NodeApi.CreateInstance(Taskpool.Module, _SequenceRunner, priority)) { }
 
-    public SequenceRunner(string name, global::HarmonyOS.ArkUI.Priority? priority = null)
+    public SequenceRunner(string name, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
         : this(NodeApi.CreateInstance(Taskpool.Module, _SequenceRunner, name, priority)) { }
     private static ReadOnlySpan<byte> _execute => "execute"u8;
     /// <summary>
@@ -661,7 +682,7 @@ public sealed partial class AsyncRunner : JsObject
     /// <summary>
     /// execute
     /// </summary>
-    public Task<IntPtr> ExecuteAsync(Task task, global::HarmonyOS.ArkUI.Priority? priority = null)
+    public Task<IntPtr> ExecuteAsync(Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return CallMethodAsync<IntPtr>(_execute, task, priority);
     }
@@ -691,7 +712,7 @@ public sealed partial class ThreadInfo : JsObject
     /// <summary>
     /// priority
     /// </summary>
-    public IntPtr Priority => GetPropertyRaw(_priority);
+    public global::HarmonyOS.ArkUI.TaskpoolPriority? Priority => (global::HarmonyOS.ArkUI.TaskpoolPriority?)(global::HarmonyOS.ArkUI.TaskpoolPriority)NativeValue.ToInt(GetPropertyRaw(_priority));
 
 }
 
@@ -714,7 +735,7 @@ public sealed partial class TaskpoolTaskInfo : JsObject
     /// <summary>
     /// state
     /// </summary>
-    public IntPtr State => GetPropertyRaw(_state);
+    public global::HarmonyOS.ArkUI.TaskpoolState State => (global::HarmonyOS.ArkUI.TaskpoolState)NativeValue.ToInt(GetPropertyRaw(_state));
 
     /// <summary>
     /// duration

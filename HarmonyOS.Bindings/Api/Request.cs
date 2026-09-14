@@ -44,7 +44,7 @@ public static unsafe partial class Request
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -356,7 +356,7 @@ public static unsafe partial class Request
     /// <summary>
     /// search
     /// </summary>
-    public static Task<string[]> SearchAsync(IntPtr filter)
+    public static Task<string[]> SearchAsync(RequestFilter filter)
     {
         return NodeApi.CallMethodAsync(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), filter);
     }
@@ -774,6 +774,42 @@ public sealed partial class UploadTask : JsObject
         }
     }
 
+}
+
+/// <summary>
+/// Filter（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record RequestFilter(
+    double? Before = null,
+    double? After = null,
+    global::HarmonyOS.ArkUI.RequestState? State = null,
+    global::HarmonyOS.ArkUI.RequestAction? Action = null,
+    global::HarmonyOS.ArkUI.Mode? Mode = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _beforeName => "before"u8;
+    private static ReadOnlySpan<byte> _afterName => "after"u8;
+    private static ReadOnlySpan<byte> _stateName => "state"u8;
+    private static ReadOnlySpan<byte> _actionName => "action"u8;
+    private static ReadOnlySpan<byte> _modeName => "mode"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _beforeV = NativeValue.From(Before);
+        if (_beforeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _beforeName, _beforeV);
+        var _afterV = NativeValue.From(After);
+        if (_afterV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _afterName, _afterV);
+        var _stateV = NativeValue.From(State);
+        if (_stateV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _stateName, _stateV);
+        var _actionV = NativeValue.From(Action);
+        if (_actionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _actionName, _actionV);
+        var _modeV = NativeValue.From(Mode);
+        if (_modeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _modeName, _modeV);
+    }
 }
 
 /// <summary>

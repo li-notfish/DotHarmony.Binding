@@ -97,6 +97,55 @@ internal static class NativeValue
     public static IntPtr From(Enum? value) => value == null ? IntPtr.Zero : From(Convert.ToInt32(value));
 
     /// <summary>
+    /// 将字节数组封送为新的 JS Uint8Array（拷贝语义）。asset 等 BYTES 参数要求 Uint8Array
+    /// （而非 From(byte[]) 的 ArrayBuffer），两者并存。
+    /// </summary>
+    public static IntPtr FromUint8Array(byte[] value)
+    {
+        if (value == null) return IntPtr.Zero;
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_create_arraybuffer(env, (IntPtr)value.Length, out var data, out var buffer).ThrowIfFailed();
+        if (value.Length > 0)
+            Marshal.Copy(value, 0, data, value.Length);
+        // napi_typedarray_type.napi_uint8_array = 1
+        NativeNodeApi.napi_create_typedarray(env, 1, (IntPtr)value.Length, buffer, IntPtr.Zero, out var result).ThrowIfFailed();
+        return result;
+    }
+
+    /// <summary>
+    /// 从 JS Map/对象取数值键的值：普通对象命名属性优先（不存在的命名属性返回 undefined 不抛），
+    /// 回退 Map.get；无值返回 IntPtr.Zero。配合 FromMap 消费 asset 查询结果。
+    /// </summary>
+    public static IntPtr GetMapped(IntPtr obj, double key)
+    {
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_named_property(env, obj, Encoding.UTF8.GetBytes(key.ToString("0")), out var byProp).ThrowIfFailed();
+        NativeNodeApi.napi_typeof(env, byProp, out var byPropType).ThrowIfFailed();
+        if (byPropType != NativeNodeApi.napi_valuetype.napi_undefined)
+            return byProp;
+        NativeNodeApi.napi_get_named_property(env, obj, Encoding.UTF8.GetBytes("get"), out var getFn).ThrowIfFailed();
+        NativeNodeApi.napi_call_function(env, obj, getFn, 1, [From(key)], out var byGet).ThrowIfFailed();
+        NativeNodeApi.napi_typeof(env, byGet, out var byGetType).ThrowIfFailed();
+        return byGetType == NativeNodeApi.napi_valuetype.napi_undefined ? IntPtr.Zero : byGet;
+    }
+
+    /// <summary>
+    /// 将 (数值键, napi 值) 对构造为真正的 JS Map（global→Map 构造器→new→set 逐项写入）。
+    /// asset.AssetMap = Map<Tag, Value>——普通 JS 对象不被接受（实测 "Expect Map type."）。
+    /// </summary>
+    public static IntPtr FromMap(params (double Key, IntPtr Value)[] entries)
+    {
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_global(env, out var global).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, global, Encoding.UTF8.GetBytes("Map"), out var mapCtor).ThrowIfFailed();
+        NativeNodeApi.napi_new_instance(env, mapCtor, 0, ReadOnlySpan<IntPtr>.Empty, out var map).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, map, Encoding.UTF8.GetBytes("set"), out var setFn).ThrowIfFailed();
+        foreach (var (key, value) in entries)
+            NativeNodeApi.napi_call_function(env, map, setFn, 2, [From(key), value], out _).ThrowIfFailed();
+        return map;
+    }
+
+    /// <summary>
     /// 将字节数组封送为新的 JS ArrayBuffer（拷贝语义：后续修改 C# 数组不影响 JS 侧）
     /// </summary>
     public static IntPtr From(byte[] value)
@@ -106,6 +155,22 @@ internal static class NativeValue
         NativeNodeApi.napi_create_arraybuffer(env, (IntPtr)value.Length, out var data, out var result).ThrowIfFailed();
         if (value.Length > 0)
             Marshal.Copy(value, 0, data, value.Length);
+        return result;
+    }
+
+    /// <summary>
+    /// 将字符串数组封送为新的 JS Array<string>（napi_create_array_with_length + 逐元素 set；
+    /// 生成器对 Array<string> 参数发射 string[] 签名——此前无封送实现，调用即 NotSupportedException）
+    /// </summary>
+    public static IntPtr From(string[] value)
+    {
+        if (value == null) return IntPtr.Zero;
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_create_array_with_length(env, value.Length, out var result).ThrowIfFailed();
+        for (uint i = 0; i < value.Length; i++)
+        {
+            NativeNodeApi.napi_set_element(env, result, i, From(value[i] ?? string.Empty)).ThrowIfFailed();
+        }
         return result;
     }
 
@@ -146,6 +211,7 @@ internal static class NativeValue
         Enum e => From(e),
         JsBigInt bi => From(bi),
         byte[] buf => From(buf),
+        string[] strs => From(strs),
         JsObject j => From(j),
         Delegate d => From(d),
         _ => FromRecord(value)

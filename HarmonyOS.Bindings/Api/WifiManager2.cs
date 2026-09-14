@@ -44,7 +44,7 @@ public static unsafe partial class WifiManager2
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -155,31 +155,31 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// getScanResults
     /// </summary>
-    public static Task<IntPtr[]> GetScanResultsAsync()
+    public static Task<WifiManager2WifiScanInfo[]> GetScanResultsAsync()
     {
-        return NodeApi.CallMethodAsync(Module, _getScanResults, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        return NodeApi.CallMethodAsync(Module, _getScanResults, h => ValueConverter.ConvertArray(h, static e => new WifiManager2WifiScanInfo(e)));
     }
 
     /// <summary>
     /// getScanResultsSync
     /// </summary>
-    public static IntPtr[] GetScanResultsSync()
+    public static WifiManager2WifiScanInfo[] GetScanResultsSync()
     {
-        return NodeApi.CallMethod(Module, _getScanResultsSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        return NodeApi.CallMethod(Module, _getScanResultsSync, h => ValueConverter.ConvertArray(h, static e => new WifiManager2WifiScanInfo(e)));
     }
 
     /// <summary>
     /// getScanInfoList
     /// </summary>
-    public static IntPtr[] GetScanInfoList()
+    public static WifiManager2WifiScanInfo[] GetScanInfoList()
     {
-        return NodeApi.CallMethod(Module, _getScanInfoList, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        return NodeApi.CallMethod(Module, _getScanInfoList, h => ValueConverter.ConvertArray(h, static e => new WifiManager2WifiScanInfo(e)));
     }
 
     /// <summary>
     /// addDeviceConfig
     /// </summary>
-    public static Task<double> AddDeviceConfigAsync(IntPtr config)
+    public static Task<double> AddDeviceConfigAsync(WifiManager2WifiDeviceConfig config)
     {
         return NodeApi.CallMethodAsync<double>(Module, _addDeviceConfig, config);
     }
@@ -187,7 +187,7 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// addCandidateConfig
     /// </summary>
-    public static Task<double> AddCandidateConfigAsync(IntPtr config)
+    public static Task<double> AddCandidateConfigAsync(WifiManager2WifiDeviceConfig config)
     {
         return NodeApi.CallMethodAsync<double>(Module, _addCandidateConfig, config);
     }
@@ -203,9 +203,9 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// getCandidateConfigs
     /// </summary>
-    public static IntPtr[] GetCandidateConfigs()
+    public static WifiManager2WifiDeviceConfig[] GetCandidateConfigs()
     {
-        return NodeApi.CallMethod(Module, _getCandidateConfigs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        return NodeApi.CallMethod(Module, _getCandidateConfigs, h => ValueConverter.ConvertArray(h, static e => new WifiManager2WifiDeviceConfig(e)));
     }
 
     /// <summary>
@@ -259,25 +259,25 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// getLinkedInfo
     /// </summary>
-    public static Task<IntPtr> GetLinkedInfoAsync()
+    public static Task<WifiManager2WifiLinkedInfo> GetLinkedInfoAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getLinkedInfo);
+        return NodeApi.CallMethodAsync(Module, _getLinkedInfo, static h => new WifiManager2WifiLinkedInfo(h));
     }
 
     /// <summary>
     /// getMultiLinkedInfo
     /// </summary>
-    public static IntPtr[] GetMultiLinkedInfo()
+    public static WifiManager2WifiLinkedInfo[] GetMultiLinkedInfo()
     {
-        return NodeApi.CallMethod(Module, _getMultiLinkedInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        return NodeApi.CallMethod(Module, _getMultiLinkedInfo, h => ValueConverter.ConvertArray(h, static e => new WifiManager2WifiLinkedInfo(e)));
     }
 
     /// <summary>
     /// getLinkedInfoSync
     /// </summary>
-    public static IntPtr GetLinkedInfoSync()
+    public static WifiManager2WifiLinkedInfo GetLinkedInfoSync()
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getLinkedInfoSync);
+        return NodeApi.CallMethod(Module, _getLinkedInfoSync, static h => new WifiManager2WifiLinkedInfo(h));
     }
 
     /// <summary>
@@ -331,9 +331,9 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// getDeviceConfigs
     /// </summary>
-    public static IntPtr[] GetDeviceConfigs()
+    public static WifiManager2WifiDeviceConfig[] GetDeviceConfigs()
     {
-        return NodeApi.CallMethod(Module, _getDeviceConfigs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        return NodeApi.CallMethod(Module, _getDeviceConfigs, h => ValueConverter.ConvertArray(h, static e => new WifiManager2WifiDeviceConfig(e)));
     }
 
     /// <summary>
@@ -371,39 +371,39 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// getP2pLinkedInfo
     /// </summary>
-    public static Task<IntPtr> GetP2pLinkedInfoAsync()
+    public static Task<WifiManager2WifiP2pLinkedInfo> GetP2pLinkedInfoAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getP2pLinkedInfo);
+        return NodeApi.CallMethodAsync(Module, _getP2pLinkedInfo, static h => new WifiManager2WifiP2pLinkedInfo(h));
     }
 
     /// <summary>
     /// getCurrentGroup
     /// </summary>
-    public static Task<IntPtr> GetCurrentGroupAsync()
+    public static Task<WifiManager2WifiP2pGroupInfo> GetCurrentGroupAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentGroup);
+        return NodeApi.CallMethodAsync(Module, _getCurrentGroup, static h => new WifiManager2WifiP2pGroupInfo(h));
     }
 
     /// <summary>
     /// getP2pPeerDevices
     /// </summary>
-    public static Task<IntPtr[]> GetP2pPeerDevicesAsync()
+    public static Task<WifiManager2WifiP2pDevice[]> GetP2pPeerDevicesAsync()
     {
-        return NodeApi.CallMethodAsync(Module, _getP2pPeerDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        return NodeApi.CallMethodAsync(Module, _getP2pPeerDevices, h => ValueConverter.ConvertArray(h, static e => new WifiManager2WifiP2pDevice(e)));
     }
 
     /// <summary>
     /// getP2pLocalDevice
     /// </summary>
-    public static Task<IntPtr> GetP2pLocalDeviceAsync()
+    public static Task<WifiManager2WifiP2pDevice> GetP2pLocalDeviceAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getP2pLocalDevice);
+        return NodeApi.CallMethodAsync(Module, _getP2pLocalDevice, static h => new WifiManager2WifiP2pDevice(h));
     }
 
     /// <summary>
     /// createGroup
     /// </summary>
-    public static void CreateGroup(IntPtr config)
+    public static void CreateGroup(WifiManager2WifiP2PConfig config)
     {
         NodeApi.CallMethodVoid(Module, _createGroup, config);
     }
@@ -419,7 +419,7 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// p2pConnect
     /// </summary>
-    public static void P2pConnect(IntPtr config)
+    public static void P2pConnect(WifiManager2WifiP2PConfig config)
     {
         NodeApi.CallMethodVoid(Module, _p2pConnect, config);
     }
@@ -503,17 +503,17 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<IntPtr> callback)
+    public static void On(string type, System.Action<WifiManager2WifiP2pLinkedInfo> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback(new WifiManager2WifiP2pLinkedInfo(args[0])),
             js => NodeApi.CallMethodVoid(Module, _on, type, js));
     }
 
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action<IntPtr> callback)
+    public static void Off(string type, System.Action<WifiManager2WifiP2pLinkedInfo> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
     }
@@ -521,17 +521,35 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<IntPtr[]> callback)
+    public static void On(string type, System.Action<WifiManager2WifiP2pDevice> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<IntPtr>(e))),
+            args => callback(new WifiManager2WifiP2pDevice(args[0])),
             js => NodeApi.CallMethodVoid(Module, _on, type, js));
     }
 
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action<IntPtr[]> callback)
+    public static void Off(string type, System.Action<WifiManager2WifiP2pDevice> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
+    }
+
+    /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public static void On(string type, System.Action<WifiManager2WifiP2pDevice[]> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(ValueConverter.ConvertArray(args[0], static e => new WifiManager2WifiP2pDevice(e))),
+            js => NodeApi.CallMethodVoid(Module, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public static void Off(string type, System.Action<WifiManager2WifiP2pDevice[]> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
     }
@@ -659,12 +677,12 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// 监听 p2pConnectionChange 事件（对应 on/off）
     /// </summary>
-    public static event System.Action<IntPtr> P2pConnectionChange
+    public static event System.Action<WifiManager2WifiP2pLinkedInfo> P2pConnectionChange
     {
         add
         {
             _eventListeners.Add(("p2pConnectionChange", value),
-                args => value(args[0]),
+                args => value(new WifiManager2WifiP2pLinkedInfo(args[0])),
                 js => NodeApi.CallMethodVoid(Module, _on, "p2pConnectionChange", js));
         }
         remove
@@ -676,12 +694,12 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// 监听 p2pDeviceChange 事件（对应 on/off）
     /// </summary>
-    public static event System.Action<IntPtr> P2pDeviceChange
+    public static event System.Action<WifiManager2WifiP2pDevice> P2pDeviceChange
     {
         add
         {
             _eventListeners.Add(("p2pDeviceChange", value),
-                args => value(args[0]),
+                args => value(new WifiManager2WifiP2pDevice(args[0])),
                 js => NodeApi.CallMethodVoid(Module, _on, "p2pDeviceChange", js));
         }
         remove
@@ -693,12 +711,12 @@ public static unsafe partial class WifiManager2
     /// <summary>
     /// 监听 p2pPeerDeviceChange 事件（对应 on/off）
     /// </summary>
-    public static event System.Action<IntPtr[]> P2pPeerDeviceChange
+    public static event System.Action<WifiManager2WifiP2pDevice[]> P2pPeerDeviceChange
     {
         add
         {
             _eventListeners.Add(("p2pPeerDeviceChange", value),
-                args => value(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<IntPtr>(e))),
+                args => value(ValueConverter.ConvertArray(args[0], static e => new WifiManager2WifiP2pDevice(e))),
                 js => NodeApi.CallMethodVoid(Module, _on, "p2pPeerDeviceChange", js));
         }
         remove
@@ -744,6 +762,174 @@ public static unsafe partial class WifiManager2
 }
 
 /// <summary>
+/// WifiScanInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiManager2WifiScanInfo : JsObject
+{
+    public WifiManager2WifiScanInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _ssid => "ssid"u8;
+    private static ReadOnlySpan<byte> _bssid => "bssid"u8;
+    private static ReadOnlySpan<byte> _bssidType => "bssidType"u8;
+    private static ReadOnlySpan<byte> _capabilities => "capabilities"u8;
+    private static ReadOnlySpan<byte> _securityType => "securityType"u8;
+    private static ReadOnlySpan<byte> _rssi => "rssi"u8;
+    private static ReadOnlySpan<byte> _band => "band"u8;
+    private static ReadOnlySpan<byte> _frequency => "frequency"u8;
+    private static ReadOnlySpan<byte> _channelWidth => "channelWidth"u8;
+    private static ReadOnlySpan<byte> _centerFrequency0 => "centerFrequency0"u8;
+    private static ReadOnlySpan<byte> _centerFrequency1 => "centerFrequency1"u8;
+    private static ReadOnlySpan<byte> _infoElems => "infoElems"u8;
+    private static ReadOnlySpan<byte> _timestamp => "timestamp"u8;
+    private static ReadOnlySpan<byte> _supportedWifiCategory => "supportedWifiCategory"u8;
+    private static ReadOnlySpan<byte> _isHiLinkNetwork => "isHiLinkNetwork"u8;
+    /// <summary>
+    /// ssid
+    /// </summary>
+    public string Ssid => NativeValue.ToString(GetPropertyRaw(_ssid)) ?? string.Empty;
+
+    /// <summary>
+    /// bssid
+    /// </summary>
+    public string Bssid => NativeValue.ToString(GetPropertyRaw(_bssid)) ?? string.Empty;
+
+    /// <summary>
+    /// bssidType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DeviceAddressType BssidType => (global::HarmonyOS.ArkUI.DeviceAddressType)NativeValue.ToInt(GetPropertyRaw(_bssidType));
+
+    /// <summary>
+    /// capabilities
+    /// </summary>
+    public string Capabilities => NativeValue.ToString(GetPropertyRaw(_capabilities)) ?? string.Empty;
+
+    /// <summary>
+    /// securityType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiManager2WifiSecurityType SecurityType => (global::HarmonyOS.ArkUI.WifiManager2WifiSecurityType)NativeValue.ToInt(GetPropertyRaw(_securityType));
+
+    /// <summary>
+    /// rssi
+    /// </summary>
+    public double Rssi => NativeValue.ToDouble(GetPropertyRaw(_rssi));
+
+    /// <summary>
+    /// band
+    /// </summary>
+    public double Band => NativeValue.ToDouble(GetPropertyRaw(_band));
+
+    /// <summary>
+    /// frequency
+    /// </summary>
+    public double Frequency => NativeValue.ToDouble(GetPropertyRaw(_frequency));
+
+    /// <summary>
+    /// channelWidth
+    /// </summary>
+    public double ChannelWidth => NativeValue.ToDouble(GetPropertyRaw(_channelWidth));
+
+    /// <summary>
+    /// centerFrequency0
+    /// </summary>
+    public double CenterFrequency0 => NativeValue.ToDouble(GetPropertyRaw(_centerFrequency0));
+
+    /// <summary>
+    /// centerFrequency1
+    /// </summary>
+    public double CenterFrequency1 => NativeValue.ToDouble(GetPropertyRaw(_centerFrequency1));
+
+    /// <summary>
+    /// infoElems
+    /// </summary>
+    public WifiInfoElem[] InfoElems => ValueConverter.ConvertArray(GetPropertyRaw(_infoElems), static e => new WifiInfoElem(e));
+
+    /// <summary>
+    /// timestamp
+    /// </summary>
+    public double Timestamp => NativeValue.ToDouble(GetPropertyRaw(_timestamp));
+
+    /// <summary>
+    /// supportedWifiCategory
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiCategory SupportedWifiCategory => (global::HarmonyOS.ArkUI.WifiCategory)NativeValue.ToInt(GetPropertyRaw(_supportedWifiCategory));
+
+    /// <summary>
+    /// isHiLinkNetwork
+    /// </summary>
+    public bool IsHiLinkNetwork => NativeValue.ToBool(GetPropertyRaw(_isHiLinkNetwork));
+
+}
+
+/// <summary>
+/// WifiDeviceConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiManager2WifiDeviceConfig : JsObject
+{
+    public WifiManager2WifiDeviceConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _ssid => "ssid"u8;
+    private static ReadOnlySpan<byte> _bssid => "bssid"u8;
+    private static ReadOnlySpan<byte> _bssidType => "bssidType"u8;
+    private static ReadOnlySpan<byte> _preSharedKey => "preSharedKey"u8;
+    private static ReadOnlySpan<byte> _isHiddenSsid => "isHiddenSsid"u8;
+    private static ReadOnlySpan<byte> _securityType => "securityType"u8;
+    private static ReadOnlySpan<byte> _netId => "netId"u8;
+    private static ReadOnlySpan<byte> _eapConfig => "eapConfig"u8;
+    private static ReadOnlySpan<byte> _wapiConfig => "wapiConfig"u8;
+    private static ReadOnlySpan<byte> _showNoInternetDialog => "showNoInternetDialog"u8;
+    /// <summary>
+    /// ssid
+    /// </summary>
+    public string Ssid => NativeValue.ToString(GetPropertyRaw(_ssid)) ?? string.Empty;
+
+    /// <summary>
+    /// bssid
+    /// </summary>
+    public string? Bssid => (string?)NativeValue.ToString(GetPropertyRaw(_bssid)) ?? string.Empty;
+
+    /// <summary>
+    /// bssidType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DeviceAddressType? BssidType => (global::HarmonyOS.ArkUI.DeviceAddressType?)(global::HarmonyOS.ArkUI.DeviceAddressType)NativeValue.ToInt(GetPropertyRaw(_bssidType));
+
+    /// <summary>
+    /// preSharedKey
+    /// </summary>
+    public string PreSharedKey => NativeValue.ToString(GetPropertyRaw(_preSharedKey)) ?? string.Empty;
+
+    /// <summary>
+    /// isHiddenSsid
+    /// </summary>
+    public bool? IsHiddenSsid => (bool?)NativeValue.ToBool(GetPropertyRaw(_isHiddenSsid));
+
+    /// <summary>
+    /// securityType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiManager2WifiSecurityType SecurityType => (global::HarmonyOS.ArkUI.WifiManager2WifiSecurityType)NativeValue.ToInt(GetPropertyRaw(_securityType));
+
+    /// <summary>
+    /// netId
+    /// </summary>
+    public double? NetId => (double?)NativeValue.ToDouble(GetPropertyRaw(_netId));
+
+    /// <summary>
+    /// eapConfig
+    /// </summary>
+    public WifiEapConfig? EapConfig => GetPropertyRaw(_eapConfig) == IntPtr.Zero ? null : new WifiEapConfig(GetPropertyRaw(_eapConfig));
+
+    /// <summary>
+    /// wapiConfig
+    /// </summary>
+    public WifiWapiConfig? WapiConfig => GetPropertyRaw(_wapiConfig) == IntPtr.Zero ? null : new WifiWapiConfig(GetPropertyRaw(_wapiConfig));
+
+    /// <summary>
+    /// showNoInternetDialog
+    /// </summary>
+    public bool? ShowNoInternetDialog => (bool?)NativeValue.ToBool(GetPropertyRaw(_showNoInternetDialog));
+
+}
+
+/// <summary>
 /// ConnectSettings（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
 public sealed record ConnectSettings(
@@ -772,6 +958,135 @@ public sealed record ConnectSettings(
         if (_addNetworkToSystemV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _addNetworkToSystemName, _addNetworkToSystemV);
     }
+}
+
+/// <summary>
+/// WifiLinkedInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiManager2WifiLinkedInfo : JsObject
+{
+    public WifiManager2WifiLinkedInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _ssid => "ssid"u8;
+    private static ReadOnlySpan<byte> _bssid => "bssid"u8;
+    private static ReadOnlySpan<byte> _rssi => "rssi"u8;
+    private static ReadOnlySpan<byte> _band => "band"u8;
+    private static ReadOnlySpan<byte> _linkSpeed => "linkSpeed"u8;
+    private static ReadOnlySpan<byte> _rxLinkSpeed => "rxLinkSpeed"u8;
+    private static ReadOnlySpan<byte> _maxSupportedTxLinkSpeed => "maxSupportedTxLinkSpeed"u8;
+    private static ReadOnlySpan<byte> _maxSupportedRxLinkSpeed => "maxSupportedRxLinkSpeed"u8;
+    private static ReadOnlySpan<byte> _frequency => "frequency"u8;
+    private static ReadOnlySpan<byte> _isHidden => "isHidden"u8;
+    private static ReadOnlySpan<byte> _isRestricted => "isRestricted"u8;
+    private static ReadOnlySpan<byte> _macType => "macType"u8;
+    private static ReadOnlySpan<byte> _macAddress => "macAddress"u8;
+    private static ReadOnlySpan<byte> _ipAddress => "ipAddress"u8;
+    private static ReadOnlySpan<byte> _connState => "connState"u8;
+    private static ReadOnlySpan<byte> _channelWidth => "channelWidth"u8;
+    private static ReadOnlySpan<byte> _wifiStandard => "wifiStandard"u8;
+    private static ReadOnlySpan<byte> _supportedWifiCategory => "supportedWifiCategory"u8;
+    private static ReadOnlySpan<byte> _isHiLinkNetwork => "isHiLinkNetwork"u8;
+    private static ReadOnlySpan<byte> _wifiLinkType => "wifiLinkType"u8;
+    /// <summary>
+    /// ssid
+    /// </summary>
+    public string Ssid => NativeValue.ToString(GetPropertyRaw(_ssid)) ?? string.Empty;
+
+    /// <summary>
+    /// bssid
+    /// </summary>
+    public string Bssid => NativeValue.ToString(GetPropertyRaw(_bssid)) ?? string.Empty;
+
+    /// <summary>
+    /// rssi
+    /// </summary>
+    public double Rssi => NativeValue.ToDouble(GetPropertyRaw(_rssi));
+
+    /// <summary>
+    /// band
+    /// </summary>
+    public double Band => NativeValue.ToDouble(GetPropertyRaw(_band));
+
+    /// <summary>
+    /// linkSpeed
+    /// </summary>
+    public double LinkSpeed => NativeValue.ToDouble(GetPropertyRaw(_linkSpeed));
+
+    /// <summary>
+    /// rxLinkSpeed
+    /// </summary>
+    public double RxLinkSpeed => NativeValue.ToDouble(GetPropertyRaw(_rxLinkSpeed));
+
+    /// <summary>
+    /// maxSupportedTxLinkSpeed
+    /// </summary>
+    public double MaxSupportedTxLinkSpeed => NativeValue.ToDouble(GetPropertyRaw(_maxSupportedTxLinkSpeed));
+
+    /// <summary>
+    /// maxSupportedRxLinkSpeed
+    /// </summary>
+    public double MaxSupportedRxLinkSpeed => NativeValue.ToDouble(GetPropertyRaw(_maxSupportedRxLinkSpeed));
+
+    /// <summary>
+    /// frequency
+    /// </summary>
+    public double Frequency => NativeValue.ToDouble(GetPropertyRaw(_frequency));
+
+    /// <summary>
+    /// isHidden
+    /// </summary>
+    public bool IsHidden => NativeValue.ToBool(GetPropertyRaw(_isHidden));
+
+    /// <summary>
+    /// isRestricted
+    /// </summary>
+    public bool IsRestricted => NativeValue.ToBool(GetPropertyRaw(_isRestricted));
+
+    /// <summary>
+    /// macType
+    /// </summary>
+    public double MacType => NativeValue.ToDouble(GetPropertyRaw(_macType));
+
+    /// <summary>
+    /// macAddress
+    /// </summary>
+    public string MacAddress => NativeValue.ToString(GetPropertyRaw(_macAddress)) ?? string.Empty;
+
+    /// <summary>
+    /// ipAddress
+    /// </summary>
+    public double IPAddress => NativeValue.ToDouble(GetPropertyRaw(_ipAddress));
+
+    /// <summary>
+    /// connState
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiManager2ConnState ConnState => (global::HarmonyOS.ArkUI.WifiManager2ConnState)NativeValue.ToInt(GetPropertyRaw(_connState));
+
+    /// <summary>
+    /// channelWidth
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiChannelWidth ChannelWidth => (global::HarmonyOS.ArkUI.WifiChannelWidth)NativeValue.ToInt(GetPropertyRaw(_channelWidth));
+
+    /// <summary>
+    /// wifiStandard
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiStandard WifiStandard => (global::HarmonyOS.ArkUI.WifiStandard)NativeValue.ToInt(GetPropertyRaw(_wifiStandard));
+
+    /// <summary>
+    /// supportedWifiCategory
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiCategory SupportedWifiCategory => (global::HarmonyOS.ArkUI.WifiCategory)NativeValue.ToInt(GetPropertyRaw(_supportedWifiCategory));
+
+    /// <summary>
+    /// isHiLinkNetwork
+    /// </summary>
+    public bool IsHiLinkNetwork => NativeValue.ToBool(GetPropertyRaw(_isHiLinkNetwork));
+
+    /// <summary>
+    /// wifiLinkType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiLinkType? WifiLinkType => (global::HarmonyOS.ArkUI.WifiLinkType?)(global::HarmonyOS.ArkUI.WifiLinkType)NativeValue.ToInt(GetPropertyRaw(_wifiLinkType));
+
 }
 
 /// <summary>
@@ -885,5 +1200,333 @@ public sealed partial class Ipv6Info : JsObject
     /// secondDNS
     /// </summary>
     public string SecondDns => NativeValue.ToString(GetPropertyRaw(_secondDNS)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// WifiP2pLinkedInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiManager2WifiP2pLinkedInfo : JsObject
+{
+    public WifiManager2WifiP2pLinkedInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _connectState => "connectState"u8;
+    private static ReadOnlySpan<byte> _isGroupOwner => "isGroupOwner"u8;
+    private static ReadOnlySpan<byte> _groupOwnerAddr => "groupOwnerAddr"u8;
+    /// <summary>
+    /// connectState
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiManager2P2pConnectState ConnectState => (global::HarmonyOS.ArkUI.WifiManager2P2pConnectState)NativeValue.ToInt(GetPropertyRaw(_connectState));
+
+    /// <summary>
+    /// isGroupOwner
+    /// </summary>
+    public bool IsGroupOwner => NativeValue.ToBool(GetPropertyRaw(_isGroupOwner));
+
+    /// <summary>
+    /// groupOwnerAddr
+    /// </summary>
+    public string GroupOwnerAddr => NativeValue.ToString(GetPropertyRaw(_groupOwnerAddr)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// WifiP2pGroupInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiManager2WifiP2pGroupInfo : JsObject
+{
+    public WifiManager2WifiP2pGroupInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _isP2pGo => "isP2pGo"u8;
+    private static ReadOnlySpan<byte> _ownerInfo => "ownerInfo"u8;
+    private static ReadOnlySpan<byte> _passphrase => "passphrase"u8;
+    private static ReadOnlySpan<byte> _interface => "interface"u8;
+    private static ReadOnlySpan<byte> _groupName => "groupName"u8;
+    private static ReadOnlySpan<byte> _networkId => "networkId"u8;
+    private static ReadOnlySpan<byte> _frequency => "frequency"u8;
+    private static ReadOnlySpan<byte> _clientDevices => "clientDevices"u8;
+    private static ReadOnlySpan<byte> _goIpAddress => "goIpAddress"u8;
+    /// <summary>
+    /// isP2pGo
+    /// </summary>
+    public bool IsP2pGo => NativeValue.ToBool(GetPropertyRaw(_isP2pGo));
+
+    /// <summary>
+    /// ownerInfo
+    /// </summary>
+    public WifiManager2WifiP2pDevice OwnerInfo => new WifiManager2WifiP2pDevice(GetPropertyRaw(_ownerInfo));
+
+    /// <summary>
+    /// passphrase
+    /// </summary>
+    public string Passphrase => NativeValue.ToString(GetPropertyRaw(_passphrase)) ?? string.Empty;
+
+    /// <summary>
+    /// interface
+    /// </summary>
+    public string Interface => NativeValue.ToString(GetPropertyRaw(_interface)) ?? string.Empty;
+
+    /// <summary>
+    /// groupName
+    /// </summary>
+    public string GroupName => NativeValue.ToString(GetPropertyRaw(_groupName)) ?? string.Empty;
+
+    /// <summary>
+    /// networkId
+    /// </summary>
+    public double NetworkId => NativeValue.ToDouble(GetPropertyRaw(_networkId));
+
+    /// <summary>
+    /// frequency
+    /// </summary>
+    public double Frequency => NativeValue.ToDouble(GetPropertyRaw(_frequency));
+
+    /// <summary>
+    /// clientDevices
+    /// </summary>
+    public WifiManager2WifiP2pDevice[] ClientDevices => ValueConverter.ConvertArray(GetPropertyRaw(_clientDevices), static e => new WifiManager2WifiP2pDevice(e));
+
+    /// <summary>
+    /// goIpAddress
+    /// </summary>
+    public string GoIPAddress => NativeValue.ToString(GetPropertyRaw(_goIpAddress)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// WifiP2pDevice 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiManager2WifiP2pDevice : JsObject
+{
+    public WifiManager2WifiP2pDevice(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _deviceName => "deviceName"u8;
+    private static ReadOnlySpan<byte> _deviceAddress => "deviceAddress"u8;
+    private static ReadOnlySpan<byte> _deviceAddressType => "deviceAddressType"u8;
+    private static ReadOnlySpan<byte> _primaryDeviceType => "primaryDeviceType"u8;
+    private static ReadOnlySpan<byte> _deviceStatus => "deviceStatus"u8;
+    private static ReadOnlySpan<byte> _groupCapabilities => "groupCapabilities"u8;
+    /// <summary>
+    /// deviceName
+    /// </summary>
+    public string DeviceName => NativeValue.ToString(GetPropertyRaw(_deviceName)) ?? string.Empty;
+
+    /// <summary>
+    /// deviceAddress
+    /// </summary>
+    public string DeviceAddress => NativeValue.ToString(GetPropertyRaw(_deviceAddress)) ?? string.Empty;
+
+    /// <summary>
+    /// deviceAddressType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.DeviceAddressType? DeviceAddressType => (global::HarmonyOS.ArkUI.DeviceAddressType?)(global::HarmonyOS.ArkUI.DeviceAddressType)NativeValue.ToInt(GetPropertyRaw(_deviceAddressType));
+
+    /// <summary>
+    /// primaryDeviceType
+    /// </summary>
+    public string PrimaryDeviceType => NativeValue.ToString(GetPropertyRaw(_primaryDeviceType)) ?? string.Empty;
+
+    /// <summary>
+    /// deviceStatus
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiManager2P2pDeviceStatus DeviceStatus => (global::HarmonyOS.ArkUI.WifiManager2P2pDeviceStatus)NativeValue.ToInt(GetPropertyRaw(_deviceStatus));
+
+    /// <summary>
+    /// groupCapabilities
+    /// </summary>
+    public double GroupCapabilities => NativeValue.ToDouble(GetPropertyRaw(_groupCapabilities));
+
+}
+
+/// <summary>
+/// WifiP2PConfig（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record WifiManager2WifiP2PConfig(
+    string DeviceAddress,
+    global::HarmonyOS.ArkUI.DeviceAddressType? DeviceAddressType,
+    double NetId,
+    string Passphrase,
+    string GroupName,
+    global::HarmonyOS.ArkUI.WifiManager2GroupOwnerBand GoBand,
+    double? GoFreq = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _deviceAddressName => "deviceAddress"u8;
+    private static ReadOnlySpan<byte> _deviceAddressTypeName => "deviceAddressType"u8;
+    private static ReadOnlySpan<byte> _netIdName => "netId"u8;
+    private static ReadOnlySpan<byte> _passphraseName => "passphrase"u8;
+    private static ReadOnlySpan<byte> _groupNameName => "groupName"u8;
+    private static ReadOnlySpan<byte> _goBandName => "goBand"u8;
+    private static ReadOnlySpan<byte> _goFreqName => "goFreq"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _deviceAddressV = NativeValue.From(DeviceAddress);
+        if (_deviceAddressV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddressName, _deviceAddressV);
+        var _deviceAddressTypeV = NativeValue.From(DeviceAddressType);
+        if (_deviceAddressTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddressTypeName, _deviceAddressTypeV);
+        var _netIdV = NativeValue.From(NetId);
+        if (_netIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _netIdName, _netIdV);
+        var _passphraseV = NativeValue.From(Passphrase);
+        if (_passphraseV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _passphraseName, _passphraseV);
+        var _groupNameV = NativeValue.From(GroupName);
+        if (_groupNameV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _groupNameName, _groupNameV);
+        var _goBandV = NativeValue.From(GoBand);
+        if (_goBandV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _goBandName, _goBandV);
+        var _goFreqV = NativeValue.From(GoFreq);
+        if (_goFreqV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _goFreqName, _goFreqV);
+    }
+}
+
+/// <summary>
+/// WifiInfoElem 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiInfoElem : JsObject
+{
+    public WifiInfoElem(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _eid => "eid"u8;
+    private static ReadOnlySpan<byte> _content => "content"u8;
+    /// <summary>
+    /// eid
+    /// </summary>
+    public double Eid => NativeValue.ToDouble(GetPropertyRaw(_eid));
+
+    /// <summary>
+    /// content
+    /// </summary>
+    public byte[] Content => ValueConverter.ConvertArray(GetPropertyRaw(_content), static e => ValueConverter.Convert<byte>(e));
+
+}
+
+/// <summary>
+/// WifiEapConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiEapConfig : JsObject
+{
+    public WifiEapConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _eapMethod => "eapMethod"u8;
+    private static ReadOnlySpan<byte> _phase2Method => "phase2Method"u8;
+    private static ReadOnlySpan<byte> _identity => "identity"u8;
+    private static ReadOnlySpan<byte> _anonymousIdentity => "anonymousIdentity"u8;
+    private static ReadOnlySpan<byte> _password => "password"u8;
+    private static ReadOnlySpan<byte> _caCertAlias => "caCertAlias"u8;
+    private static ReadOnlySpan<byte> _caPath => "caPath"u8;
+    private static ReadOnlySpan<byte> _clientCertAlias => "clientCertAlias"u8;
+    private static ReadOnlySpan<byte> _certEntry => "certEntry"u8;
+    private static ReadOnlySpan<byte> _certPassword => "certPassword"u8;
+    private static ReadOnlySpan<byte> _altSubjectMatch => "altSubjectMatch"u8;
+    private static ReadOnlySpan<byte> _domainSuffixMatch => "domainSuffixMatch"u8;
+    private static ReadOnlySpan<byte> _realm => "realm"u8;
+    private static ReadOnlySpan<byte> _plmn => "plmn"u8;
+    private static ReadOnlySpan<byte> _eapSubId => "eapSubId"u8;
+    /// <summary>
+    /// eapMethod
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiManager2EapMethod EapMethod => (global::HarmonyOS.ArkUI.WifiManager2EapMethod)NativeValue.ToInt(GetPropertyRaw(_eapMethod));
+
+    /// <summary>
+    /// phase2Method
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WifiManager2Phase2Method Phase2Method => (global::HarmonyOS.ArkUI.WifiManager2Phase2Method)NativeValue.ToInt(GetPropertyRaw(_phase2Method));
+
+    /// <summary>
+    /// identity
+    /// </summary>
+    public string Identity => NativeValue.ToString(GetPropertyRaw(_identity)) ?? string.Empty;
+
+    /// <summary>
+    /// anonymousIdentity
+    /// </summary>
+    public string AnonymousIdentity => NativeValue.ToString(GetPropertyRaw(_anonymousIdentity)) ?? string.Empty;
+
+    /// <summary>
+    /// password
+    /// </summary>
+    public string Password => NativeValue.ToString(GetPropertyRaw(_password)) ?? string.Empty;
+
+    /// <summary>
+    /// caCertAlias
+    /// </summary>
+    public string CaCertAlias => NativeValue.ToString(GetPropertyRaw(_caCertAlias)) ?? string.Empty;
+
+    /// <summary>
+    /// caPath
+    /// </summary>
+    public string CaPath => NativeValue.ToString(GetPropertyRaw(_caPath)) ?? string.Empty;
+
+    /// <summary>
+    /// clientCertAlias
+    /// </summary>
+    public string ClientCertAlias => NativeValue.ToString(GetPropertyRaw(_clientCertAlias)) ?? string.Empty;
+
+    /// <summary>
+    /// certEntry
+    /// </summary>
+    public byte[] CertEntry => ValueConverter.ConvertArray(GetPropertyRaw(_certEntry), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// certPassword
+    /// </summary>
+    public string CertPassword => NativeValue.ToString(GetPropertyRaw(_certPassword)) ?? string.Empty;
+
+    /// <summary>
+    /// altSubjectMatch
+    /// </summary>
+    public string AltSubjectMatch => NativeValue.ToString(GetPropertyRaw(_altSubjectMatch)) ?? string.Empty;
+
+    /// <summary>
+    /// domainSuffixMatch
+    /// </summary>
+    public string DomainSuffixMatch => NativeValue.ToString(GetPropertyRaw(_domainSuffixMatch)) ?? string.Empty;
+
+    /// <summary>
+    /// realm
+    /// </summary>
+    public string Realm => NativeValue.ToString(GetPropertyRaw(_realm)) ?? string.Empty;
+
+    /// <summary>
+    /// plmn
+    /// </summary>
+    public string Plmn => NativeValue.ToString(GetPropertyRaw(_plmn)) ?? string.Empty;
+
+    /// <summary>
+    /// eapSubId
+    /// </summary>
+    public double EapSubId => NativeValue.ToDouble(GetPropertyRaw(_eapSubId));
+
+}
+
+/// <summary>
+/// WifiWapiConfig 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class WifiWapiConfig : JsObject
+{
+    public WifiWapiConfig(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _wapiPskType => "wapiPskType"u8;
+    private static ReadOnlySpan<byte> _wapiAsCert => "wapiAsCert"u8;
+    private static ReadOnlySpan<byte> _wapiUserCert => "wapiUserCert"u8;
+    /// <summary>
+    /// wapiPskType
+    /// </summary>
+    public global::HarmonyOS.ArkUI.WapiPskType WapiPskType => (global::HarmonyOS.ArkUI.WapiPskType)NativeValue.ToInt(GetPropertyRaw(_wapiPskType));
+
+    /// <summary>
+    /// wapiAsCert
+    /// </summary>
+    public string WapiAsCert => NativeValue.ToString(GetPropertyRaw(_wapiAsCert)) ?? string.Empty;
+
+    /// <summary>
+    /// wapiUserCert
+    /// </summary>
+    public string WapiUserCert => NativeValue.ToString(GetPropertyRaw(_wapiUserCert)) ?? string.Empty;
 
 }

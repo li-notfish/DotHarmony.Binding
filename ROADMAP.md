@@ -249,9 +249,81 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 1. `ohosImports.ets` 自动登记 ✅（已实现）；但**每个被用到的模块是否需要权限**（位置/相机/蓝牙等）需要生成器顺带产出 `module.json5` 的 `requestPermissions` 清单，否则运行时才爆
 2. 全量产物先以"生成但不进编译"姿态评审（恢复 `Compile Remove` 灰度策略），按模块逐个转正
 
-### 2.4 Essentials 平台实现（可选，价值高）
+### 2.4 Essentials 平台实现（✅ 首批已完成，2026-09-13）
 
-`Microsoft.Maui.Essentials` 的 `IDeviceInfo/IDisplay/IClipboard` 等接口做鸿蒙实现，让 MAUI 生态的标准 API 直接可用（M1 中已出现与 Essentials 的 DeviceInfo 撞名——说明生态对接是真实需求）。
+`Microsoft.Maui.Essentials` 的接口做鸿蒙实现，让 MAUI 生态的标准 API 直接可用。
+
+**接线原理**：MAUI 10 的 Essentials 静态入口（`DeviceInfo.Current` / `DeviceDisplay.MainDisplayInfo` /
+`AppInfo.Name` / `Clipboard.SetTextAsync`…）在 netstandard 产物中缺省实现全部 throw，但每个静态类留有
+internal `SetCurrent`/`SetDefault` 注入点。`HarmonyEssentials.Install()`（`MauiHarmonyHost.Run` 自动调用）
+经 `[DynamicDependency]` 收根 + `CreateDelegate` 缓存强类型委托完成注入——与手势反射桥同款 AOT 安全模式，
+MAUI 生态代码因此零改造可用。
+
+**首批四个服务**（底层模块均已转正编译）：
+
+| Essentials 接口 | 底层模块 | 说明 |
+|---|---|---|
+| `IDeviceInfo` | `@ohos.deviceInfo`（同步属性） | Model=productModel / Manufacturer=manufacture / Name=marketName；Version 从 OsFullName 尾段解析（OpenHarmony-7.0.0.105），失败回退 SdkApiVersion；DeviceType 以 emu/simulator 启发式判虚拟机 |
+| `IDeviceDisplay` | `@ohos.display` 的 `getDefaultDisplaySync` | DisplayInfo 语义对齐 Android（Width/Height px，Density=DPI/160）；Rotation 0~3 映射；MainDisplayInfoChanged 经模块级 `Change` 事件转发。**同步 getter 不允许 await promise**（JS 线程内联续体，阻塞即死锁） |
+| `IAppInfo` | `@ohos.bundle.bundleManager`（`getBundleInfoForSelfSync`） | PackageName=BundleInfo.Name；Name=AppInfo.Label；Version 回退版本码。**本项促使 bundleManager 从灰度转正**（移除 Compile Remove 即过编译——当年灰度原因无存证） |
+| `IClipboard` | `@ohos.pasteboard` SystemPasteboard | HasText/SetTextAsync 走同步通道即时生效；GetTextAsync 走 promise。ClipboardContentChanged 声明但不触发（生成器未为 SystemPasteboard 发射 onRemoteUpdate 访问器，留待补接）。**读权限完整闭环（2026-09-13 实测）**：API 26 起 `READ_PASTEBOARD` 为 user_grant，被拒时系统返回空 PasteData 壳而非抛错——读前 `getSelfPermissionStatus` 主动查状态，未授权经宿主导出的 `globalThis.abilityContext` 发 `requestPermissionsFromUser` 弹窗后重试（宿主模板 EntryAbility.ets 已导出该上下文）；授权后回环 `hasText=True text=hello-essentials`；同步 `HasText` 回退最近已知状态、远端 update 事件使其失效；**每次读重查授权状态**（用户改系统设置后下次读即生效，弹窗每会话至多一次）。ClipboardContentChanged 经 SystemPasteboard.Update 接线（2026-09-13） |
+
+**独立示例**：`samples/dotnet/EssentialsApp`——四服务单独验证应用（DeviceInfo/DeviceDisplay/AppInfo 信息栏 + 剪贴板回环按钮），`dotnet build -t:HarmonyRun` 一键部署；HelloApp（Controls 示例）不再混入 Essentials 内容。
+
+**IPreferences（✅ 2026-09-13 第五个服务）**：@ohos.data.preferences，值用「类型标签:载荷」
+字符串编码规避 OHOS number 对 long/DateTime.ToBinary 的 2^53 精度丢失；getSync/putSync 经
+NodeApi 直调（生成包装的 ValueType 签名被 distributedData 同名枚举污染——跨模块同名别名
+解析是生成器剩余债）；跨重启持久化实测（计数器延续）。适配指南见 **[ESSENTIALS.md](ESSENTIALS.md)**。
+
+**IBattery（✅ 2026-09-13 第六个服务）**：@ohos.batteryInfo 纯同步属性 + @ohos.power.getPowerMode()
+（省电模式）；ChargeLevel 从 batterySOC(0-100) 折算。变化事件走 usual.event.BATTERY_CHANGED /
+POWER_SAVE_MODE_CHANGED commonEvent 订阅（IDictionary 路径造 subscribeInfo、
+NodeApi.CreateCallbackFunction 做回调），回调内重读属性+去重缓存（MAUI 同款语义）。
+模拟器实测：`level=100% · state=Discharging · source=Battery · saver=Off`（模拟器
+chargingStatus=0 → 按 Discharging 处理，贴近 MAUI 语义）。
+
+**剩余清单（立项待做）**：ISecureStorage（@ohos.data.preferences 已转正，事务性 API 在自定义
+entry 写入路径）、IMainThread（借 napi 线程检查）、IConnectivity（net.connection
+灰度需转正）、传感器（Sensor 已可实测——2.9 有事件回路沉淀）等
+按价值逐项接入；电池事件的模拟器触发验证（需改电量通道）。
+
+**IVibration（✅ 2026-09-13 第七个服务）**：@ohos.vibrator，Vibrate 走现代 startVibration
+（{type:'time', duration:ms} + {usage:'unknown'}，非 Api 9 起废弃的 vibrate(duration)），
+Cancel 走 stopVibration() 同步重载；时长钳制 [0,5s]、默认 500ms 对齐 MAUI。
+VIBRATE 为 system_grant，宿主模板 module.json5 已声明。**本批按用户指示未构建未部署**——
+真机/模拟器触摸验证留待下次构建。
+
+**收尾批次（✅ 2026-09-13 第八/九个服务 + 生成器修复）**：
+- **IConnectivity**：@ohos.net.connection 出灰度，HasDefaultNetSync + getNetCapabilitiesSync
+  （NET_CAPABILITY_INTERNET=12/VALIDATED=16 → Internet）+ bearerTypes 映射（全网络并集）；
+  事件走 createNetConnection 默认监听 + netAvailable/netLost/netConnectionChange（回调内重读+去重）
+- **AppInfo 补缺**：RequestedTheme 经 ability 上下文 → getApplicationContext().getColorMode()
+  （COLOR_MODE_DARK=1）；ShowSettingsUI 走通 startAbility({uri:'ohos.settings'})——
+  want/startAbility 通道就位（ILauncher 最简待做）
+- **KeepScreenOn**：@ohos.window 出灰度，window.GetLastWindowAsync(abilityContext) →
+  setWindowKeepScreenOn；**促使生成器修复 WindowRect 撞名**（takenTypeNames 改名后的候选名
+  不复查——window.Rect→WindowRect 撞 dialogRequest.WindowRect，改为加计数后缀避让，
+  产物 WindowRect2；regen 验证仅 Window.cs 变化）
+- **IMainThread**：SetCustomImplementation 双委托；JS 线程 == UI 线程 == Install 线程，
+  IsMainThread 捕获比对，BeginInvokeOnMainThread 直接内联（TSFN 仅 native→.NET 方向，无反向投递）
+
+**最终批次（✅ 2026-09-13 Essentials 16 服务全量收口）**：
+- **IFileSystem**：目录经 ability 上下文 filesDir/cacheDir，包内文件经 resourceManager.getRawFileContent
+  （file.fs 灰度本接口不需要）
+- **ILauncher**（canOpenLink + startAbility({uri}) + fileuri.getUriFromPath）/ **IBrowser**（{uri}
+  拉起系统浏览器）/ **IPhoneDialer**（tel: + sim.getSimStateSync）/ **IEmail**（mailto: URI 编码）
+  —— 全走 want 通道
+- **IShare**：文本走 ohos.want.action.sendData；文件分享需跨应用 URI 授权通道（ability.params.stream），
+  唯一留白
+- **ISecureStorage**：@ohos.security.asset，AssetMap 数字 Tag 键经 IDictionary 字符串键构造，
+  BYTES 值要求 Uint8Array（Runtime 补 FromUint8Array = napi_create_arraybuffer +
+  napi_create_typedarray，非 ArrayBuffer）
+- **前两批未构建代码的编译缺口全数补齐**（IVibration.IsSupported / IEmail.IsComposeSupported /
+  NetworkAccess.Local / EmailMessage.Cc/Bcc——均为成员名出入，75/75 测试绿）
+
+**剩余清单（立项待做）**：IShare 文件分享（需跨应用 URI 授权）、传感器族/定位/媒体选择
+（Sensor 已可实测——2.9 有事件回路沉淀）等按价值逐项接入；电池/网络/SecureStorage 事件的
+模拟器触发验证。
 
 ---
 

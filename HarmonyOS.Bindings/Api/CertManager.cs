@@ -44,7 +44,7 @@ public static unsafe partial class CertManager
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -90,9 +90,9 @@ public static unsafe partial class CertManager
     /// <summary>
     /// installPrivateCertificate
     /// </summary>
-    public static Task<IntPtr> InstallPrivateCertificateAsync(byte[] keystore, string keystorePwd, string certAlias)
+    public static Task<CMResult> InstallPrivateCertificateAsync(byte[] keystore, string keystorePwd, string certAlias)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _installPrivateCertificate, keystore, keystorePwd, certAlias);
+        return NodeApi.CallMethodAsync(Module, _installPrivateCertificate, static h => new CMResult(h), keystore, keystorePwd, certAlias);
     }
 
     /// <summary>
@@ -106,9 +106,9 @@ public static unsafe partial class CertManager
     /// <summary>
     /// getPrivateCertificate
     /// </summary>
-    public static Task<IntPtr> GetPrivateCertificateAsync(string keyUri)
+    public static Task<CMResult> GetPrivateCertificateAsync(string keyUri)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getPrivateCertificate, keyUri);
+        return NodeApi.CallMethodAsync(Module, _getPrivateCertificate, static h => new CMResult(h), keyUri);
     }
 
     /// <summary>
@@ -130,17 +130,17 @@ public static unsafe partial class CertManager
     /// <summary>
     /// finish
     /// </summary>
-    public static Task<IntPtr> FinishAsync(byte[] handle)
+    public static Task<CMResult> FinishAsync(byte[] handle)
     {
-        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _finish, null, handle);
+        return NodeApi.CallMethodAsyncCallback(Module, _finish, static h => new CMResult(h), handle);
     }
 
     /// <summary>
     /// finish
     /// </summary>
-    public static Task<IntPtr> FinishAsync(byte[] handle, byte[] signature)
+    public static Task<CMResult> FinishAsync(byte[] handle, byte[] signature)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _finish, handle, signature);
+        return NodeApi.CallMethodAsync(Module, _finish, static h => new CMResult(h), handle, signature);
     }
 
     /// <summary>
@@ -154,9 +154,9 @@ public static unsafe partial class CertManager
     /// <summary>
     /// getPublicCertificate
     /// </summary>
-    public static Task<IntPtr> GetPublicCertificateAsync(string keyUri)
+    public static Task<CMResult> GetPublicCertificateAsync(string keyUri)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getPublicCertificate, keyUri);
+        return NodeApi.CallMethodAsync(Module, _getPublicCertificate, static h => new CMResult(h), keyUri);
     }
 
     /// <summary>
@@ -170,31 +170,31 @@ public static unsafe partial class CertManager
     /// <summary>
     /// getAllUserTrustedCertificates
     /// </summary>
-    public static Task<IntPtr> GetAllUserTrustedCertificatesAsync()
+    public static Task<CMResult> GetAllUserTrustedCertificatesAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getAllUserTrustedCertificates);
+        return NodeApi.CallMethodAsync(Module, _getAllUserTrustedCertificates, static h => new CMResult(h));
     }
 
     /// <summary>
     /// getUserTrustedCertificate
     /// </summary>
-    public static Task<IntPtr> GetUserTrustedCertificateAsync(string certUri)
+    public static Task<CMResult> GetUserTrustedCertificateAsync(string certUri)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getUserTrustedCertificate, certUri);
+        return NodeApi.CallMethodAsync(Module, _getUserTrustedCertificate, static h => new CMResult(h), certUri);
     }
 
     /// <summary>
     /// getPrivateCertificates
     /// </summary>
-    public static Task<IntPtr> GetPrivateCertificatesAsync()
+    public static Task<CMResult> GetPrivateCertificatesAsync()
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getPrivateCertificates);
+        return NodeApi.CallMethodAsync(Module, _getPrivateCertificates, static h => new CMResult(h));
     }
 
     /// <summary>
     /// getCertificateStorePath
     /// </summary>
-    public static string GetCertificateStorePath(IntPtr property)
+    public static string GetCertificateStorePath(CertStoreProperty property)
     {
         return NodeApi.CallMethod<string>(Module, _getCertificateStorePath, property);
     }
@@ -202,25 +202,25 @@ public static unsafe partial class CertManager
     /// <summary>
     /// installUserTrustedCertificateSync
     /// </summary>
-    public static IntPtr InstallUserTrustedCertificateSync(byte[] cert, global::HarmonyOS.ArkUI.CertScope certScope)
+    public static CMResult InstallUserTrustedCertificateSync(byte[] cert, global::HarmonyOS.ArkUI.CertScope certScope)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _installUserTrustedCertificateSync, cert, certScope);
+        return NodeApi.CallMethod(Module, _installUserTrustedCertificateSync, static h => new CMResult(h), cert, certScope);
     }
 
     /// <summary>
     /// installPrivateCertificate
     /// </summary>
-    public static Task<IntPtr> InstallPrivateCertificateAsync(byte[] keystore, string keystorePwd, string certAlias, global::HarmonyOS.ArkUI.AuthStorageLevel level)
+    public static Task<CMResult> InstallPrivateCertificateAsync(byte[] keystore, string keystorePwd, string certAlias, global::HarmonyOS.ArkUI.AuthStorageLevel level)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _installPrivateCertificate, keystore, keystorePwd, certAlias, level);
+        return NodeApi.CallMethodAsync(Module, _installPrivateCertificate, static h => new CMResult(h), keystore, keystorePwd, certAlias, level);
     }
 
     /// <summary>
     /// getAllUserTrustedCertificates
     /// </summary>
-    public static Task<IntPtr> GetAllUserTrustedCertificatesAsync(global::HarmonyOS.ArkUI.CertScope scope)
+    public static Task<CMResult> GetAllUserTrustedCertificatesAsync(global::HarmonyOS.ArkUI.CertScope scope)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getAllUserTrustedCertificates, scope);
+        return NodeApi.CallMethodAsync(Module, _getAllUserTrustedCertificates, static h => new CMResult(h), scope);
     }
 
     /// <summary>
@@ -234,25 +234,25 @@ public static unsafe partial class CertManager
     /// <summary>
     /// getUkeyCertificate
     /// </summary>
-    public static Task<IntPtr> GetUkeyCertificateAsync(string keyUri, UkeyInfo ukeyInfo)
+    public static Task<CMResult> GetUkeyCertificateAsync(string keyUri, UkeyInfo ukeyInfo)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getUkeyCertificate, keyUri, ukeyInfo);
+        return NodeApi.CallMethodAsync(Module, _getUkeyCertificate, static h => new CMResult(h), keyUri, ukeyInfo);
     }
 
     /// <summary>
     /// installUserTrustedCertificate
     /// </summary>
-    public static Task<IntPtr> InstallUserTrustedCertificateAsync(CertManagerCertBlob certificate)
+    public static Task<CMResult> InstallUserTrustedCertificateAsync(CertManagerCertBlob certificate)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _installUserTrustedCertificate, certificate);
+        return NodeApi.CallMethodAsync(Module, _installUserTrustedCertificate, static h => new CMResult(h), certificate);
     }
 
     /// <summary>
     /// getUkeyCertificateList
     /// </summary>
-    public static Task<IntPtr> GetUkeyCertificateListAsync(string ukeyProvider, UkeyInfo ukeyInfo)
+    public static Task<CMResult> GetUkeyCertificateListAsync(string ukeyProvider, UkeyInfo ukeyInfo)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getUkeyCertificateList, ukeyProvider, ukeyInfo);
+        return NodeApi.CallMethodAsync(Module, _getUkeyCertificateList, static h => new CMResult(h), ukeyProvider, ukeyInfo);
     }
 
     /// <summary>
@@ -262,6 +262,69 @@ public static unsafe partial class CertManager
     {
         return NodeApi.CallMethodAsyncVoid(Module, _importUkeyCertificate, keyUri, cert, ukeyInfo);
     }
+
+}
+
+/// <summary>
+/// CMResult 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CMResult : JsObject
+{
+    public CMResult(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _certList => "certList"u8;
+    private static ReadOnlySpan<byte> _certInfo => "certInfo"u8;
+    private static ReadOnlySpan<byte> _credentialList => "credentialList"u8;
+    private static ReadOnlySpan<byte> _credential => "credential"u8;
+    private static ReadOnlySpan<byte> _appUidList => "appUidList"u8;
+    private static ReadOnlySpan<byte> _uri => "uri"u8;
+    private static ReadOnlySpan<byte> _outData => "outData"u8;
+    private static ReadOnlySpan<byte> _credentialDetailList => "credentialDetailList"u8;
+    private static ReadOnlySpan<byte> _uriList => "uriList"u8;
+    /// <summary>
+    /// certList
+    /// </summary>
+    public CertAbstract[] CertList => ValueConverter.ConvertArray(GetPropertyRaw(_certList), static e => new CertAbstract(e));
+
+    /// <summary>
+    /// certInfo
+    /// </summary>
+    public CertInfo? CertInfo => GetPropertyRaw(_certInfo) == IntPtr.Zero ? null : new CertInfo(GetPropertyRaw(_certInfo));
+
+    /// <summary>
+    /// credentialList
+    /// </summary>
+    public CredentialAbstract[] CredentialList => ValueConverter.ConvertArray(GetPropertyRaw(_credentialList), static e => new CredentialAbstract(e));
+
+    /// <summary>
+    /// credential
+    /// </summary>
+    public CertManagerCredential? Credential => GetPropertyRaw(_credential) == IntPtr.Zero ? null : new CertManagerCredential(GetPropertyRaw(_credential));
+
+    /// <summary>
+    /// appUidList
+    /// </summary>
+    public string[] AppUidList => ValueConverter.ConvertArray(GetPropertyRaw(_appUidList), static e => ValueConverter.Convert<string>(e));
+
+    /// <summary>
+    /// uri
+    /// </summary>
+    public string? Uri => (string?)NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
+
+    /// <summary>
+    /// outData
+    /// </summary>
+    public byte[] OutData => ValueConverter.ConvertArray(GetPropertyRaw(_outData), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// credentialDetailList
+    /// </summary>
+    public CertManagerCredential[] CredentialDetailList => ValueConverter.ConvertArray(GetPropertyRaw(_credentialDetailList), static e => new CertManagerCredential(e));
+
+    /// <summary>
+    /// uriList
+    /// </summary>
+    public string[] UriList => ValueConverter.ConvertArray(GetPropertyRaw(_uriList), static e => ValueConverter.Convert<string>(e));
 
 }
 
@@ -307,6 +370,32 @@ public sealed record CMSignatureSpec(
 }
 
 /// <summary>
+/// CertStoreProperty（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record CertStoreProperty(
+    global::HarmonyOS.ArkUI.CertManagerCertType CertType,
+    global::HarmonyOS.ArkUI.CertScope? CertScope = null,
+    global::HarmonyOS.ArkUI.CertAlgorithm? CertAlg = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _certTypeName => "certType"u8;
+    private static ReadOnlySpan<byte> _certScopeName => "certScope"u8;
+    private static ReadOnlySpan<byte> _certAlgName => "certAlg"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _certTypeV = NativeValue.From(CertType);
+        if (_certTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _certTypeName, _certTypeV);
+        var _certScopeV = NativeValue.From(CertScope);
+        if (_certScopeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _certScopeName, _certScopeV);
+        var _certAlgV = NativeValue.From(CertAlg);
+        if (_certAlgV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _certAlgName, _certAlgV);
+    }
+}
+
+/// <summary>
 /// UkeyInfo（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
 public sealed record UkeyInfo(
@@ -346,4 +435,184 @@ public sealed record CertManagerCertBlob(
         if (_certScopeV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _certScopeName, _certScopeV);
     }
+}
+
+/// <summary>
+/// CertAbstract 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CertAbstract : JsObject
+{
+    public CertAbstract(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _uri => "uri"u8;
+    private static ReadOnlySpan<byte> _certAlias => "certAlias"u8;
+    private static ReadOnlySpan<byte> _state => "state"u8;
+    private static ReadOnlySpan<byte> _subjectName => "subjectName"u8;
+    /// <summary>
+    /// uri
+    /// </summary>
+    public string Uri => NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
+
+    /// <summary>
+    /// certAlias
+    /// </summary>
+    public string CertAlias => NativeValue.ToString(GetPropertyRaw(_certAlias)) ?? string.Empty;
+
+    /// <summary>
+    /// state
+    /// </summary>
+    public bool State => NativeValue.ToBool(GetPropertyRaw(_state));
+
+    /// <summary>
+    /// subjectName
+    /// </summary>
+    public string SubjectName => NativeValue.ToString(GetPropertyRaw(_subjectName)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// CertInfo 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CertInfo : JsObject
+{
+    public CertInfo(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _uri => "uri"u8;
+    private static ReadOnlySpan<byte> _certAlias => "certAlias"u8;
+    private static ReadOnlySpan<byte> _state => "state"u8;
+    private static ReadOnlySpan<byte> _issuerName => "issuerName"u8;
+    private static ReadOnlySpan<byte> _subjectName => "subjectName"u8;
+    private static ReadOnlySpan<byte> _serial => "serial"u8;
+    private static ReadOnlySpan<byte> _notBefore => "notBefore"u8;
+    private static ReadOnlySpan<byte> _notAfter => "notAfter"u8;
+    private static ReadOnlySpan<byte> _fingerprintSha256 => "fingerprintSha256"u8;
+    private static ReadOnlySpan<byte> _cert => "cert"u8;
+    /// <summary>
+    /// uri
+    /// </summary>
+    public string Uri => NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
+
+    /// <summary>
+    /// certAlias
+    /// </summary>
+    public string CertAlias => NativeValue.ToString(GetPropertyRaw(_certAlias)) ?? string.Empty;
+
+    /// <summary>
+    /// state
+    /// </summary>
+    public bool State => NativeValue.ToBool(GetPropertyRaw(_state));
+
+    /// <summary>
+    /// issuerName
+    /// </summary>
+    public string IssuerName => NativeValue.ToString(GetPropertyRaw(_issuerName)) ?? string.Empty;
+
+    /// <summary>
+    /// subjectName
+    /// </summary>
+    public string SubjectName => NativeValue.ToString(GetPropertyRaw(_subjectName)) ?? string.Empty;
+
+    /// <summary>
+    /// serial
+    /// </summary>
+    public string Serial => NativeValue.ToString(GetPropertyRaw(_serial)) ?? string.Empty;
+
+    /// <summary>
+    /// notBefore
+    /// </summary>
+    public string NotBefore => NativeValue.ToString(GetPropertyRaw(_notBefore)) ?? string.Empty;
+
+    /// <summary>
+    /// notAfter
+    /// </summary>
+    public string NotAfter => NativeValue.ToString(GetPropertyRaw(_notAfter)) ?? string.Empty;
+
+    /// <summary>
+    /// fingerprintSha256
+    /// </summary>
+    public string FingerprintSha256 => NativeValue.ToString(GetPropertyRaw(_fingerprintSha256)) ?? string.Empty;
+
+    /// <summary>
+    /// cert
+    /// </summary>
+    public byte[] Cert => ValueConverter.ConvertArray(GetPropertyRaw(_cert), static e => ValueConverter.Convert<byte>(e));
+
+}
+
+/// <summary>
+/// CredentialAbstract 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CredentialAbstract : JsObject
+{
+    public CredentialAbstract(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _alias => "alias"u8;
+    private static ReadOnlySpan<byte> _keyUri => "keyUri"u8;
+    /// <summary>
+    /// type
+    /// </summary>
+    public string Type => NativeValue.ToString(GetPropertyRaw(_type)) ?? string.Empty;
+
+    /// <summary>
+    /// alias
+    /// </summary>
+    public string Alias => NativeValue.ToString(GetPropertyRaw(_alias)) ?? string.Empty;
+
+    /// <summary>
+    /// keyUri
+    /// </summary>
+    public string KeyUri => NativeValue.ToString(GetPropertyRaw(_keyUri)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// Credential 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class CertManagerCredential : JsObject
+{
+    public CertManagerCredential(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _type => "type"u8;
+    private static ReadOnlySpan<byte> _alias => "alias"u8;
+    private static ReadOnlySpan<byte> _keyUri => "keyUri"u8;
+    private static ReadOnlySpan<byte> _certNum => "certNum"u8;
+    private static ReadOnlySpan<byte> _keyNum => "keyNum"u8;
+    private static ReadOnlySpan<byte> _credentialData => "credentialData"u8;
+    private static ReadOnlySpan<byte> _certPurpose => "certPurpose"u8;
+    /// <summary>
+    /// type
+    /// </summary>
+    public string Type => NativeValue.ToString(GetPropertyRaw(_type)) ?? string.Empty;
+
+    /// <summary>
+    /// alias
+    /// </summary>
+    public string Alias => NativeValue.ToString(GetPropertyRaw(_alias)) ?? string.Empty;
+
+    /// <summary>
+    /// keyUri
+    /// </summary>
+    public string KeyUri => NativeValue.ToString(GetPropertyRaw(_keyUri)) ?? string.Empty;
+
+    /// <summary>
+    /// certNum
+    /// </summary>
+    public double CertNum => NativeValue.ToDouble(GetPropertyRaw(_certNum));
+
+    /// <summary>
+    /// keyNum
+    /// </summary>
+    public double KeyNum => NativeValue.ToDouble(GetPropertyRaw(_keyNum));
+
+    /// <summary>
+    /// credentialData
+    /// </summary>
+    public byte[] CredentialData => ValueConverter.ConvertArray(GetPropertyRaw(_credentialData), static e => ValueConverter.Convert<byte>(e));
+
+    /// <summary>
+    /// certPurpose
+    /// </summary>
+    public global::HarmonyOS.ArkUI.CertificatePurpose? CertPurpose => (global::HarmonyOS.ArkUI.CertificatePurpose?)(global::HarmonyOS.ArkUI.CertificatePurpose)NativeValue.ToInt(GetPropertyRaw(_certPurpose));
+
 }

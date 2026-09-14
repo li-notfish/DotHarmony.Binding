@@ -43,7 +43,7 @@ public static unsafe partial class VideoProcessingEngine
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -108,7 +108,7 @@ public sealed partial class ImageProcessor : JsObject
     /// <summary>
     /// enhanceDetail
     /// </summary>
-    public Task<IntPtr> EnhanceDetailAsync(IntPtr sourceImage, double width, double height, global::HarmonyOS.ArkUI.QualityLevel? level = null)
+    public Task<IntPtr> EnhanceDetailAsync(IntPtr sourceImage, double width, double height, global::HarmonyOS.ArkUI.VideoProcessingEngineQualityLevel? level = null)
     {
         return CallMethodAsync<IntPtr>(_enhanceDetail, sourceImage, width, height, level);
     }
@@ -116,7 +116,7 @@ public sealed partial class ImageProcessor : JsObject
     /// <summary>
     /// enhanceDetailSync
     /// </summary>
-    public IntPtr EnhanceDetailSync(IntPtr sourceImage, double width, double height, global::HarmonyOS.ArkUI.QualityLevel? level = null)
+    public IntPtr EnhanceDetailSync(IntPtr sourceImage, double width, double height, global::HarmonyOS.ArkUI.VideoProcessingEngineQualityLevel? level = null)
     {
         return CallMethod<IntPtr>(_enhanceDetailSync, sourceImage, width, height, level);
     }
@@ -124,7 +124,7 @@ public sealed partial class ImageProcessor : JsObject
     /// <summary>
     /// enhanceDetail
     /// </summary>
-    public Task<IntPtr> EnhanceDetailAsync(IntPtr sourceImage, double scale, global::HarmonyOS.ArkUI.QualityLevel? level = null)
+    public Task<IntPtr> EnhanceDetailAsync(IntPtr sourceImage, double scale, global::HarmonyOS.ArkUI.VideoProcessingEngineQualityLevel? level = null)
     {
         return CallMethodAsync<IntPtr>(_enhanceDetail, sourceImage, scale, level);
     }
@@ -132,7 +132,7 @@ public sealed partial class ImageProcessor : JsObject
     /// <summary>
     /// enhanceDetailSync
     /// </summary>
-    public IntPtr EnhanceDetailSync(IntPtr sourceImage, double scale, global::HarmonyOS.ArkUI.QualityLevel? level = null)
+    public IntPtr EnhanceDetailSync(IntPtr sourceImage, double scale, global::HarmonyOS.ArkUI.VideoProcessingEngineQualityLevel? level = null)
     {
         return CallMethod<IntPtr>(_enhanceDetailSync, sourceImage, scale, level);
     }

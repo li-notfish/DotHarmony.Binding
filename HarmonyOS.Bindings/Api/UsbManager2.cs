@@ -43,7 +43,7 @@ public static unsafe partial class UsbManager2
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -102,7 +102,7 @@ public static unsafe partial class UsbManager2
     /// <summary>
     /// connectDevice
     /// </summary>
-    public static IntPtr ConnectDevice(UsbManager2USBDevice device)
+    public static IntPtr ConnectDevice(IntPtr device)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _connectDevice, device);
     }
@@ -134,7 +134,7 @@ public static unsafe partial class UsbManager2
     /// <summary>
     /// claimInterface
     /// </summary>
-    public static double ClaimInterface(UsbManager2USBDevicePipe pipe, UsbManager2USBInterface iface, bool? force = null)
+    public static double ClaimInterface(UsbManager2USBDevicePipe pipe, IntPtr iface, bool? force = null)
     {
         return NodeApi.CallMethod<double>(Module, _claimInterface, pipe, iface, force);
     }
@@ -142,7 +142,7 @@ public static unsafe partial class UsbManager2
     /// <summary>
     /// releaseInterface
     /// </summary>
-    public static double ReleaseInterface(UsbManager2USBDevicePipe pipe, UsbManager2USBInterface iface)
+    public static double ReleaseInterface(UsbManager2USBDevicePipe pipe, IntPtr iface)
     {
         return NodeApi.CallMethod<double>(Module, _releaseInterface, pipe, iface);
     }
@@ -150,7 +150,7 @@ public static unsafe partial class UsbManager2
     /// <summary>
     /// setConfiguration
     /// </summary>
-    public static double SetConfiguration(UsbManager2USBDevicePipe pipe, IntPtr config)
+    public static double SetConfiguration(UsbManager2USBDevicePipe pipe, USBConfiguration config)
     {
         return NodeApi.CallMethod<double>(Module, _setConfiguration, pipe, config);
     }
@@ -158,7 +158,7 @@ public static unsafe partial class UsbManager2
     /// <summary>
     /// setInterface
     /// </summary>
-    public static double SetInterface(UsbManager2USBDevicePipe pipe, UsbManager2USBInterface iface)
+    public static double SetInterface(UsbManager2USBDevicePipe pipe, IntPtr iface)
     {
         return NodeApi.CallMethod<double>(Module, _setInterface, pipe, iface);
     }
@@ -182,7 +182,7 @@ public static unsafe partial class UsbManager2
     /// <summary>
     /// controlTransfer
     /// </summary>
-    public static Task<double> ControlTransferAsync(UsbManager2USBDevicePipe pipe, IntPtr controlparam, double? timeout = null)
+    public static Task<double> ControlTransferAsync(UsbManager2USBDevicePipe pipe, UsbManager2USBControlParams controlparam, double? timeout = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _controlTransfer, pipe, controlparam, timeout);
     }
@@ -198,7 +198,7 @@ public static unsafe partial class UsbManager2
     /// <summary>
     /// bulkTransfer
     /// </summary>
-    public static Task<double> BulkTransferAsync(UsbManager2USBDevicePipe pipe, IntPtr endpoint, byte[] buffer, double? timeout = null)
+    public static Task<double> BulkTransferAsync(UsbManager2USBDevicePipe pipe, UsbManager2USBEndpoint endpoint, byte[] buffer, double? timeout = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _bulkTransfer, pipe, endpoint, buffer, timeout);
     }
@@ -286,82 +286,6 @@ public static unsafe partial class UsbManager2
 }
 
 /// <summary>
-/// USBDevice（@ohos 命名空间内嵌套纯数据接口，入参对象）。
-/// </summary>
-public sealed record UsbManager2USBDevice(
-    double BusNum,
-    double DevAddress,
-    string Serial,
-    string Name,
-    string ManufacturerName,
-    string ProductName,
-    string Version,
-    double VendorId,
-    double ProductId,
-    double Clazz,
-    double SubClass,
-    double Protocol,
-    IntPtr[] Configs
-) : INapiRecord
-{
-    private static ReadOnlySpan<byte> _busNumName => "busNum"u8;
-    private static ReadOnlySpan<byte> _devAddressName => "devAddress"u8;
-    private static ReadOnlySpan<byte> _serialName => "serial"u8;
-    private static ReadOnlySpan<byte> _nameName => "name"u8;
-    private static ReadOnlySpan<byte> _manufacturerNameName => "manufacturerName"u8;
-    private static ReadOnlySpan<byte> _productNameName => "productName"u8;
-    private static ReadOnlySpan<byte> _versionName => "version"u8;
-    private static ReadOnlySpan<byte> _vendorIdName => "vendorId"u8;
-    private static ReadOnlySpan<byte> _productIdName => "productId"u8;
-    private static ReadOnlySpan<byte> _clazzName => "clazz"u8;
-    private static ReadOnlySpan<byte> _subClassName => "subClass"u8;
-    private static ReadOnlySpan<byte> _protocolName => "protocol"u8;
-    private static ReadOnlySpan<byte> _configsName => "configs"u8;
-    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
-    {
-        var _busNumV = NativeValue.From(BusNum);
-        if (_busNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _busNumName, _busNumV);
-        var _devAddressV = NativeValue.From(DevAddress);
-        if (_devAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _devAddressName, _devAddressV);
-        var _serialV = NativeValue.From(Serial);
-        if (_serialV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serialName, _serialV);
-        var _nameV = NativeValue.From(Name);
-        if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
-        var _manufacturerNameV = NativeValue.From(ManufacturerName);
-        if (_manufacturerNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerNameName, _manufacturerNameV);
-        var _productNameV = NativeValue.From(ProductName);
-        if (_productNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _productNameName, _productNameV);
-        var _versionV = NativeValue.From(Version);
-        if (_versionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _versionName, _versionV);
-        var _vendorIdV = NativeValue.From(VendorId);
-        if (_vendorIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _vendorIdName, _vendorIdV);
-        var _productIdV = NativeValue.From(ProductId);
-        if (_productIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _productIdName, _productIdV);
-        var _clazzV = NativeValue.From(Clazz);
-        if (_clazzV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _clazzName, _clazzV);
-        var _subClassV = NativeValue.From(SubClass);
-        if (_subClassV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _subClassName, _subClassV);
-        var _protocolV = NativeValue.From(Protocol);
-        if (_protocolV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _protocolName, _protocolV);
-        var _configsV = NativeValue.From(Configs);
-        if (_configsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _configsName, _configsV);
-    }
-}
-
-/// <summary>
 /// USBDevicePipe（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
 public sealed record UsbManager2USBDevicePipe(
@@ -383,48 +307,89 @@ public sealed record UsbManager2USBDevicePipe(
 }
 
 /// <summary>
-/// USBInterface（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// USBConfiguration（@ohos 命名空间内嵌套纯数据接口，入参对象）。
 /// </summary>
-public sealed record UsbManager2USBInterface(
+public sealed record USBConfiguration(
     double Id,
-    double Protocol,
-    double Clazz,
-    double SubClass,
-    double AlternateSetting,
+    double Attributes,
+    double MaxPower,
     string Name,
-    IntPtr[] Endpoints
+    bool IsRemoteWakeup,
+    bool IsSelfPowered,
+    IntPtr[] Interfaces
 ) : INapiRecord
 {
     private static ReadOnlySpan<byte> _idName => "id"u8;
-    private static ReadOnlySpan<byte> _protocolName => "protocol"u8;
-    private static ReadOnlySpan<byte> _clazzName => "clazz"u8;
-    private static ReadOnlySpan<byte> _subClassName => "subClass"u8;
-    private static ReadOnlySpan<byte> _alternateSettingName => "alternateSetting"u8;
+    private static ReadOnlySpan<byte> _attributesName => "attributes"u8;
+    private static ReadOnlySpan<byte> _maxPowerName => "maxPower"u8;
     private static ReadOnlySpan<byte> _nameName => "name"u8;
-    private static ReadOnlySpan<byte> _endpointsName => "endpoints"u8;
+    private static ReadOnlySpan<byte> _isRemoteWakeupName => "isRemoteWakeup"u8;
+    private static ReadOnlySpan<byte> _isSelfPoweredName => "isSelfPowered"u8;
+    private static ReadOnlySpan<byte> _interfacesName => "interfaces"u8;
     void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
     {
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
-        var _protocolV = NativeValue.From(Protocol);
-        if (_protocolV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _protocolName, _protocolV);
-        var _clazzV = NativeValue.From(Clazz);
-        if (_clazzV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _clazzName, _clazzV);
-        var _subClassV = NativeValue.From(SubClass);
-        if (_subClassV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _subClassName, _subClassV);
-        var _alternateSettingV = NativeValue.From(AlternateSetting);
-        if (_alternateSettingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _alternateSettingName, _alternateSettingV);
+        var _attributesV = NativeValue.From(Attributes);
+        if (_attributesV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _attributesName, _attributesV);
+        var _maxPowerV = NativeValue.From(MaxPower);
+        if (_maxPowerV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxPowerName, _maxPowerV);
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
-        var _endpointsV = NativeValue.From(Endpoints);
-        if (_endpointsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _endpointsName, _endpointsV);
+        var _isRemoteWakeupV = NativeValue.From(IsRemoteWakeup);
+        if (_isRemoteWakeupV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _isRemoteWakeupName, _isRemoteWakeupV);
+        var _isSelfPoweredV = NativeValue.From(IsSelfPowered);
+        if (_isSelfPoweredV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _isSelfPoweredName, _isSelfPoweredV);
+        var _interfacesV = NativeValue.From(Interfaces);
+        if (_interfacesV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _interfacesName, _interfacesV);
+    }
+}
+
+/// <summary>
+/// USBControlParams（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record UsbManager2USBControlParams(
+    double Index,
+    global::HarmonyOS.ArkUI.UsbManager2USBControlRequestType ReqType,
+    global::HarmonyOS.ArkUI.UsbManager2USBRequestTargetType Target,
+    double Value,
+    double Request,
+    byte[] Data
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _indexName => "index"u8;
+    private static ReadOnlySpan<byte> _reqTypeName => "reqType"u8;
+    private static ReadOnlySpan<byte> _targetName => "target"u8;
+    private static ReadOnlySpan<byte> _valueName => "value"u8;
+    private static ReadOnlySpan<byte> _requestName => "request"u8;
+    private static ReadOnlySpan<byte> _dataName => "data"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _indexV = NativeValue.From(Index);
+        if (_indexV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _indexName, _indexV);
+        var _reqTypeV = NativeValue.From(ReqType);
+        if (_reqTypeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _reqTypeName, _reqTypeV);
+        var _targetV = NativeValue.From(Target);
+        if (_targetV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _targetName, _targetV);
+        var _valueV = NativeValue.From(Value);
+        if (_valueV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
+        var _requestV = NativeValue.From(Request);
+        if (_requestV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _requestName, _requestV);
+        var _dataV = NativeValue.From(Data);
+        if (_dataV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
     }
 }
 
@@ -466,6 +431,57 @@ public sealed record USBDeviceRequestParams(
         var _dataV = NativeValue.From(Data);
         if (_dataV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
+    }
+}
+
+/// <summary>
+/// USBEndpoint（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record UsbManager2USBEndpoint(
+    double Address,
+    double Attributes,
+    double Interval,
+    double MaxPacketSize,
+    global::HarmonyOS.ArkUI.UsbManager2USBRequestDirection Direction,
+    double Number,
+    double Type,
+    double InterfaceId
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _addressName => "address"u8;
+    private static ReadOnlySpan<byte> _attributesName => "attributes"u8;
+    private static ReadOnlySpan<byte> _intervalName => "interval"u8;
+    private static ReadOnlySpan<byte> _maxPacketSizeName => "maxPacketSize"u8;
+    private static ReadOnlySpan<byte> _directionName => "direction"u8;
+    private static ReadOnlySpan<byte> _numberName => "number"u8;
+    private static ReadOnlySpan<byte> _typeName => "type"u8;
+    private static ReadOnlySpan<byte> _interfaceIdName => "interfaceId"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _addressV = NativeValue.From(Address);
+        if (_addressV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
+        var _attributesV = NativeValue.From(Attributes);
+        if (_attributesV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _attributesName, _attributesV);
+        var _intervalV = NativeValue.From(Interval);
+        if (_intervalV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
+        var _maxPacketSizeV = NativeValue.From(MaxPacketSize);
+        if (_maxPacketSizeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _maxPacketSizeName, _maxPacketSizeV);
+        var _directionV = NativeValue.From(Direction);
+        if (_directionV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _directionName, _directionV);
+        var _numberV = NativeValue.From(Number);
+        if (_numberV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _numberName, _numberV);
+        var _typeV = NativeValue.From(Type);
+        if (_typeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
+        var _interfaceIdV = NativeValue.From(InterfaceId);
+        if (_interfaceIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _interfaceIdName, _interfaceIdV);
     }
 }
 

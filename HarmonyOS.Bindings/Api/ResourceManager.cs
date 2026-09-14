@@ -43,7 +43,7 @@ public static unsafe partial class ResourceManager
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -1166,12 +1166,12 @@ public sealed partial class ResourceManagerDeviceCapability : JsObject
     /// <summary>
     /// screenDensity
     /// </summary>
-    public IntPtr ScreenDensity => GetPropertyRaw(_screenDensity);
+    public global::HarmonyOS.ArkUI.ResourceManagerScreenDensity ScreenDensity => (global::HarmonyOS.ArkUI.ResourceManagerScreenDensity)NativeValue.ToInt(GetPropertyRaw(_screenDensity));
 
     /// <summary>
     /// deviceType
     /// </summary>
-    public IntPtr DeviceType => GetPropertyRaw(_deviceType);
+    public global::HarmonyOS.ArkUI.ResourceManagerDeviceType DeviceType => (global::HarmonyOS.ArkUI.ResourceManagerDeviceType)NativeValue.ToInt(GetPropertyRaw(_deviceType));
 
 }
 
@@ -1192,7 +1192,7 @@ public sealed partial class ResourceManagerConfiguration : JsObject
     /// <summary>
     /// direction
     /// </summary>
-    public IntPtr Direction => GetPropertyRaw(_direction);
+    public global::HarmonyOS.ArkUI.ResourceManagerDirection Direction => (global::HarmonyOS.ArkUI.ResourceManagerDirection)NativeValue.ToInt(GetPropertyRaw(_direction));
 
     /// <summary>
     /// locale
@@ -1202,17 +1202,17 @@ public sealed partial class ResourceManagerConfiguration : JsObject
     /// <summary>
     /// deviceType
     /// </summary>
-    public IntPtr DeviceType => GetPropertyRaw(_deviceType);
+    public global::HarmonyOS.ArkUI.ResourceManagerDeviceType DeviceType => (global::HarmonyOS.ArkUI.ResourceManagerDeviceType)NativeValue.ToInt(GetPropertyRaw(_deviceType));
 
     /// <summary>
     /// screenDensity
     /// </summary>
-    public IntPtr ScreenDensity => GetPropertyRaw(_screenDensity);
+    public global::HarmonyOS.ArkUI.ResourceManagerScreenDensity ScreenDensity => (global::HarmonyOS.ArkUI.ResourceManagerScreenDensity)NativeValue.ToInt(GetPropertyRaw(_screenDensity));
 
     /// <summary>
     /// colorMode
     /// </summary>
-    public IntPtr ColorMode => GetPropertyRaw(_colorMode);
+    public global::HarmonyOS.ArkUI.ResourceManagerColorMode ColorMode => (global::HarmonyOS.ArkUI.ResourceManagerColorMode)NativeValue.ToInt(GetPropertyRaw(_colorMode));
 
     /// <summary>
     /// mcc

@@ -44,7 +44,7 @@ public static unsafe partial class ApplicationManager
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -385,7 +385,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// addAllowedDistributeAbilityConnBundles
     /// </summary>
-    public static void AddAllowedDistributeAbilityConnBundles(IntPtr admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.ServiceType serviceType, double accountId)
+    public static void AddAllowedDistributeAbilityConnBundles(IntPtr admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.ApplicationManagerServiceType serviceType, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedDistributeAbilityConnBundles, admin, appIdentifiers, serviceType, accountId);
     }
@@ -393,7 +393,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// removeAllowedDistributeAbilityConnBundles
     /// </summary>
-    public static void RemoveAllowedDistributeAbilityConnBundles(IntPtr admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.ServiceType serviceType, double accountId)
+    public static void RemoveAllowedDistributeAbilityConnBundles(IntPtr admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.ApplicationManagerServiceType serviceType, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedDistributeAbilityConnBundles, admin, appIdentifiers, serviceType, accountId);
     }
@@ -401,7 +401,7 @@ public static unsafe partial class ApplicationManager
     /// <summary>
     /// getAllowedDistributeAbilityConnBundles
     /// </summary>
-    public static string[] GetAllowedDistributeAbilityConnBundles(IntPtr admin, global::HarmonyOS.ArkUI.ServiceType serviceType, double accountId)
+    public static string[] GetAllowedDistributeAbilityConnBundles(IntPtr admin, global::HarmonyOS.ArkUI.ApplicationManagerServiceType serviceType, double accountId)
     {
         return NodeApi.CallMethod(Module, _getAllowedDistributeAbilityConnBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, serviceType, accountId);
     }

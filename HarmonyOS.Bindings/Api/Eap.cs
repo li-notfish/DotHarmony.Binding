@@ -44,7 +44,7 @@ public static unsafe partial class Eap
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -100,7 +100,7 @@ public static unsafe partial class Eap
     /// <summary>
     /// startEthEap
     /// </summary>
-    public static void StartEthEap(double netId, IntPtr profile)
+    public static void StartEthEap(double netId, EthEapProfile profile)
     {
         NodeApi.CallMethodVoid(Module, _startEthEap, netId, profile);
     }
@@ -138,5 +138,91 @@ public sealed record EapData(
         var _bufferLenV = NativeValue.From(BufferLen);
         if (_bufferLenV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _bufferLenName, _bufferLenV);
+    }
+}
+
+/// <summary>
+/// EthEapProfile（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record EthEapProfile(
+    global::HarmonyOS.ArkUI.EapEapMethod EapMethod,
+    global::HarmonyOS.ArkUI.EapPhase2Method Phase2Method,
+    string Identity,
+    string AnonymousIdentity,
+    string Password,
+    string CaCertAliases,
+    string CaPath,
+    string ClientCertAliases,
+    byte[] CertEntry,
+    string CertPassword,
+    string AltSubjectMatch,
+    string DomainSuffixMatch,
+    string Realm,
+    string Plmn,
+    double EapSubId
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _eapMethodName => "eapMethod"u8;
+    private static ReadOnlySpan<byte> _phase2MethodName => "phase2Method"u8;
+    private static ReadOnlySpan<byte> _identityName => "identity"u8;
+    private static ReadOnlySpan<byte> _anonymousIdentityName => "anonymousIdentity"u8;
+    private static ReadOnlySpan<byte> _passwordName => "password"u8;
+    private static ReadOnlySpan<byte> _caCertAliasesName => "caCertAliases"u8;
+    private static ReadOnlySpan<byte> _caPathName => "caPath"u8;
+    private static ReadOnlySpan<byte> _clientCertAliasesName => "clientCertAliases"u8;
+    private static ReadOnlySpan<byte> _certEntryName => "certEntry"u8;
+    private static ReadOnlySpan<byte> _certPasswordName => "certPassword"u8;
+    private static ReadOnlySpan<byte> _altSubjectMatchName => "altSubjectMatch"u8;
+    private static ReadOnlySpan<byte> _domainSuffixMatchName => "domainSuffixMatch"u8;
+    private static ReadOnlySpan<byte> _realmName => "realm"u8;
+    private static ReadOnlySpan<byte> _plmnName => "plmn"u8;
+    private static ReadOnlySpan<byte> _eapSubIdName => "eapSubId"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _eapMethodV = NativeValue.From(EapMethod);
+        if (_eapMethodV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _eapMethodName, _eapMethodV);
+        var _phase2MethodV = NativeValue.From(Phase2Method);
+        if (_phase2MethodV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _phase2MethodName, _phase2MethodV);
+        var _identityV = NativeValue.From(Identity);
+        if (_identityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _identityName, _identityV);
+        var _anonymousIdentityV = NativeValue.From(AnonymousIdentity);
+        if (_anonymousIdentityV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _anonymousIdentityName, _anonymousIdentityV);
+        var _passwordV = NativeValue.From(Password);
+        if (_passwordV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
+        var _caCertAliasesV = NativeValue.From(CaCertAliases);
+        if (_caCertAliasesV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _caCertAliasesName, _caCertAliasesV);
+        var _caPathV = NativeValue.From(CaPath);
+        if (_caPathV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _caPathName, _caPathV);
+        var _clientCertAliasesV = NativeValue.From(ClientCertAliases);
+        if (_clientCertAliasesV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _clientCertAliasesName, _clientCertAliasesV);
+        var _certEntryV = NativeValue.From(CertEntry);
+        if (_certEntryV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _certEntryName, _certEntryV);
+        var _certPasswordV = NativeValue.From(CertPassword);
+        if (_certPasswordV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _certPasswordName, _certPasswordV);
+        var _altSubjectMatchV = NativeValue.From(AltSubjectMatch);
+        if (_altSubjectMatchV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _altSubjectMatchName, _altSubjectMatchV);
+        var _domainSuffixMatchV = NativeValue.From(DomainSuffixMatch);
+        if (_domainSuffixMatchV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _domainSuffixMatchName, _domainSuffixMatchV);
+        var _realmV = NativeValue.From(Realm);
+        if (_realmV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _realmName, _realmV);
+        var _plmnV = NativeValue.From(Plmn);
+        if (_plmnV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _plmnName, _plmnV);
+        var _eapSubIdV = NativeValue.From(EapSubId);
+        if (_eapSubIdV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _eapSubIdName, _eapSubIdV);
     }
 }

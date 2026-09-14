@@ -44,7 +44,7 @@ public static unsafe partial class Bluetooth
                     fixed (byte* p = utf8)
                     {
                         var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == NativeNodeApi.napi_status.napi_ok && module != IntPtr.Zero)
+                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
                         {
                             _moduleRef = new NapiReference(module);
                             break;
@@ -101,17 +101,17 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// getState
     /// </summary>
-    public static global::HarmonyOS.ArkUI.BluetoothState GetState()
+    public static global::HarmonyOS.ArkUI.BluetoothBluetoothState GetState()
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothState>(Module, _getState);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothBluetoothState>(Module, _getState);
     }
 
     /// <summary>
     /// getBtConnectionState
     /// </summary>
-    public static global::HarmonyOS.ArkUI.ProfileConnectionState GetBtConnectionState()
+    public static global::HarmonyOS.ArkUI.BluetoothProfileConnectionState GetBtConnectionState()
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.ProfileConnectionState>(Module, _getBtConnectionState);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothProfileConnectionState>(Module, _getBtConnectionState);
     }
 
     /// <summary>
@@ -133,9 +133,9 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// getRemoteDeviceClass
     /// </summary>
-    public static IntPtr GetRemoteDeviceClass(string deviceId)
+    public static BluetoothDeviceClass GetRemoteDeviceClass(string deviceId)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getRemoteDeviceClass, deviceId);
+        return NodeApi.CallMethod(Module, _getRemoteDeviceClass, static h => new BluetoothDeviceClass(h), deviceId);
     }
 
     /// <summary>
@@ -173,9 +173,9 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// getProfileConnState
     /// </summary>
-    public static global::HarmonyOS.ArkUI.ProfileConnectionState GetProfileConnState(global::HarmonyOS.ArkUI.ProfileId profileId)
+    public static global::HarmonyOS.ArkUI.BluetoothProfileConnectionState GetProfileConnState(global::HarmonyOS.ArkUI.BluetoothProfileId profileId)
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.ProfileConnectionState>(Module, _getProfileConnState, profileId);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothProfileConnectionState>(Module, _getProfileConnState, profileId);
     }
 
     /// <summary>
@@ -197,7 +197,7 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// setBluetoothScanMode
     /// </summary>
-    public static bool SetBluetoothScanMode(global::HarmonyOS.ArkUI.ScanMode mode, double duration)
+    public static bool SetBluetoothScanMode(global::HarmonyOS.ArkUI.BluetoothScanMode mode, double duration)
     {
         return NodeApi.CallMethod<bool>(Module, _setBluetoothScanMode, mode, duration);
     }
@@ -205,9 +205,9 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// getBluetoothScanMode
     /// </summary>
-    public static global::HarmonyOS.ArkUI.ScanMode GetBluetoothScanMode()
+    public static global::HarmonyOS.ArkUI.BluetoothScanMode GetBluetoothScanMode()
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.ScanMode>(Module, _getBluetoothScanMode);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothScanMode>(Module, _getBluetoothScanMode);
     }
 
     /// <summary>
@@ -309,7 +309,7 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// getProfile
     /// </summary>
-    public static BluetoothA2dpSourceProfile GetProfile(global::HarmonyOS.ArkUI.ProfileId profileId)
+    public static BluetoothA2dpSourceProfile GetProfile(global::HarmonyOS.ArkUI.BluetoothProfileId profileId)
     {
         return NodeApi.CallMethod(Module, _getProfile, static h => new BluetoothA2dpSourceProfile(h), profileId);
     }
@@ -341,7 +341,7 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// startBLEScan
     /// </summary>
-    public static void StartBleScan(BluetoothScanFilter[] filters, IntPtr? options = null)
+    public static void StartBleScan(BluetoothScanFilter[] filters, BluetoothScanOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _startBLEScan, filters, options);
     }
@@ -385,17 +385,17 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<IntPtr> callback)
+    public static void On(string type, System.Action<BluetoothBondStateParam> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback(new BluetoothBondStateParam(args[0])),
             js => NodeApi.CallMethodVoid(Module, _on, type, js));
     }
 
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action<IntPtr> callback)
+    public static void Off(string type, System.Action<BluetoothBondStateParam> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
     }
@@ -421,17 +421,17 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public static void On(string type, System.Action<global::HarmonyOS.ArkUI.BluetoothState> callback)
+    public static void On(string type, System.Action<global::HarmonyOS.ArkUI.BluetoothBluetoothState> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback((global::HarmonyOS.ArkUI.BluetoothBluetoothState)NativeValue.ToInt(args[0])),
             js => NodeApi.CallMethodVoid(Module, _on, type, js));
     }
 
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public static void Off(string type, System.Action<global::HarmonyOS.ArkUI.BluetoothState> callback)
+    public static void Off(string type, System.Action<global::HarmonyOS.ArkUI.BluetoothBluetoothState> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js));
     }
@@ -492,12 +492,12 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// 监听 bondStateChange 事件（对应 on/off）
     /// </summary>
-    public static event System.Action<IntPtr> BondStateChange
+    public static event System.Action<BluetoothBondStateParam> BondStateChange
     {
         add
         {
             _eventListeners.Add(("bondStateChange", value),
-                args => value(args[0]),
+                args => value(new BluetoothBondStateParam(args[0])),
                 js => NodeApi.CallMethodVoid(Module, _on, "bondStateChange", js));
         }
         remove
@@ -526,12 +526,12 @@ public static unsafe partial class Bluetooth
     /// <summary>
     /// 监听 stateChange 事件（对应 on/off）
     /// </summary>
-    public static event System.Action<global::HarmonyOS.ArkUI.BluetoothState> StateChange
+    public static event System.Action<global::HarmonyOS.ArkUI.BluetoothBluetoothState> StateChange
     {
         add
         {
             _eventListeners.Add(("stateChange", value),
-                args => value(args[0]),
+                args => value((global::HarmonyOS.ArkUI.BluetoothBluetoothState)NativeValue.ToInt(args[0])),
                 js => NodeApi.CallMethodVoid(Module, _on, "stateChange", js));
         }
         remove
@@ -573,6 +573,33 @@ public static unsafe partial class Bluetooth
             _eventListeners.Remove(("BLEDeviceFind", value), js => NodeApi.CallMethodVoid(Module, _off, "BLEDeviceFind", js));
         }
     }
+
+}
+
+/// <summary>
+/// DeviceClass 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class BluetoothDeviceClass : JsObject
+{
+    public BluetoothDeviceClass(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _majorClass => "majorClass"u8;
+    private static ReadOnlySpan<byte> _majorMinorClass => "majorMinorClass"u8;
+    private static ReadOnlySpan<byte> _classOfDevice => "classOfDevice"u8;
+    /// <summary>
+    /// majorClass
+    /// </summary>
+    public global::HarmonyOS.ArkUI.BluetoothMajorClass MajorClass => (global::HarmonyOS.ArkUI.BluetoothMajorClass)NativeValue.ToInt(GetPropertyRaw(_majorClass));
+
+    /// <summary>
+    /// majorMinorClass
+    /// </summary>
+    public global::HarmonyOS.ArkUI.BluetoothMajorMinorClass MajorMinorClass => (global::HarmonyOS.ArkUI.BluetoothMajorMinorClass)NativeValue.ToInt(GetPropertyRaw(_majorMinorClass));
+
+    /// <summary>
+    /// classOfDevice
+    /// </summary>
+    public double ClassOfDevice => NativeValue.ToDouble(GetPropertyRaw(_classOfDevice));
 
 }
 
@@ -627,9 +654,9 @@ public sealed partial class BluetoothA2dpSourceProfile : JsObject
     /// <summary>
     /// getDeviceState
     /// </summary>
-    public global::HarmonyOS.ArkUI.ProfileConnectionState GetDeviceState(string device)
+    public global::HarmonyOS.ArkUI.BluetoothProfileConnectionState GetDeviceState(string device)
     {
-        return CallMethod<global::HarmonyOS.ArkUI.ProfileConnectionState>(_getDeviceState, device);
+        return CallMethod<global::HarmonyOS.ArkUI.BluetoothProfileConnectionState>(_getDeviceState, device);
     }
 
     /// <summary>
@@ -667,9 +694,9 @@ public sealed partial class BluetoothA2dpSourceProfile : JsObject
     /// <summary>
     /// getPlayingState
     /// </summary>
-    public global::HarmonyOS.ArkUI.PlayingState GetPlayingState(string device)
+    public global::HarmonyOS.ArkUI.BluetoothPlayingState GetPlayingState(string device)
     {
-        return CallMethod<global::HarmonyOS.ArkUI.PlayingState>(_getPlayingState, device);
+        return CallMethod<global::HarmonyOS.ArkUI.BluetoothPlayingState>(_getPlayingState, device);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -677,10 +704,10 @@ public sealed partial class BluetoothA2dpSourceProfile : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<IntPtr> callback)
+    public void On(string type, System.Action<BluetoothStateChangeParam> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback(new BluetoothStateChangeParam(args[0])),
             js => NodeApi.CallMethodVoid(Handle, _on, type, js));
     }
 
@@ -695,7 +722,7 @@ public sealed partial class BluetoothA2dpSourceProfile : JsObject
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<IntPtr> callback)
+    public void Off(string type, System.Action<BluetoothStateChangeParam> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
     }
@@ -703,12 +730,12 @@ public sealed partial class BluetoothA2dpSourceProfile : JsObject
     /// <summary>
     /// 监听 connectionStateChange 事件（对应 on/off）
     /// </summary>
-    public event System.Action<IntPtr> ConnectionStateChange
+    public event System.Action<BluetoothStateChangeParam> ConnectionStateChange
     {
         add
         {
             _eventListeners.Add(("connectionStateChange", value),
-                args => value(args[0]),
+                args => value(new BluetoothStateChangeParam(args[0])),
                 js => NodeApi.CallMethodVoid(Handle, _on, "connectionStateChange", js));
         }
         remove
@@ -892,17 +919,17 @@ public sealed partial class BluetoothGattServer : JsObject
     /// <summary>
     /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
     /// </summary>
-    public void On(string type, System.Action<IntPtr> callback)
+    public void On(string type, System.Action<BLEConnectChangedState> callback)
     {
         _eventListeners.Add((type, callback),
-            args => callback(args[0]),
+            args => callback(new BLEConnectChangedState(args[0])),
             js => NodeApi.CallMethodVoid(Handle, _on, type, js));
     }
 
     /// <summary>
     /// off(type, callback)：解除订阅（按 handler 匹配）
     /// </summary>
-    public void Off(string type, System.Action<IntPtr> callback)
+    public void Off(string type, System.Action<BLEConnectChangedState> callback)
     {
         _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
     }
@@ -978,12 +1005,12 @@ public sealed partial class BluetoothGattServer : JsObject
     /// <summary>
     /// 监听 connectStateChange 事件（对应 on/off）
     /// </summary>
-    public event System.Action<IntPtr> ConnectStateChange
+    public event System.Action<BLEConnectChangedState> ConnectStateChange
     {
         add
         {
             _eventListeners.Add(("connectStateChange", value),
-                args => value(args[0]),
+                args => value(new BLEConnectChangedState(args[0])),
                 js => NodeApi.CallMethodVoid(Handle, _on, "connectStateChange", js));
         }
         remove
@@ -1156,6 +1183,24 @@ public sealed partial class BluetoothGattClientDevice : JsObject
     }
 
     /// <summary>
+    /// on(type, callback) 的类型化重载（回调经共享跳板进入 C#，任意参数类型自动转换）
+    /// </summary>
+    public void On(string type, System.Action<BLEConnectChangedState> callback)
+    {
+        _eventListeners.Add((type, callback),
+            args => callback(new BLEConnectChangedState(args[0])),
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js));
+    }
+
+    /// <summary>
+    /// off(type, callback)：解除订阅（按 handler 匹配）
+    /// </summary>
+    public void Off(string type, System.Action<BLEConnectChangedState> callback)
+    {
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js));
+    }
+
+    /// <summary>
     /// 监听 BLECharacteristicChange 事件（对应 on/off）
     /// </summary>
     public event System.Action<IntPtr> BleCharacteristicChange
@@ -1175,12 +1220,12 @@ public sealed partial class BluetoothGattClientDevice : JsObject
     /// <summary>
     /// 监听 BLEConnectionStateChange 事件（对应 on/off）
     /// </summary>
-    public event System.Action<IntPtr> BleConnectionStateChange
+    public event System.Action<BLEConnectChangedState> BleConnectionStateChange
     {
         add
         {
             _eventListeners.Add(("BLEConnectionStateChange", value),
-                args => value(args[0]),
+                args => value(new BLEConnectChangedState(args[0])),
                 js => NodeApi.CallMethodVoid(Handle, _on, "BLEConnectionStateChange", js));
         }
         remove
@@ -1215,6 +1260,53 @@ public sealed record BluetoothScanFilter(
         if (_serviceUuidV != IntPtr.Zero)
             NativeNodeApi.napi_set_named_property(env, obj, _serviceUuidName, _serviceUuidV);
     }
+}
+
+/// <summary>
+/// ScanOptions（@ohos 命名空间内嵌套纯数据接口，入参对象）。
+/// </summary>
+public sealed record BluetoothScanOptions(
+    double? Interval = null,
+    global::HarmonyOS.ArkUI.BluetoothScanDuty? DutyMode = null,
+    global::HarmonyOS.ArkUI.BluetoothMatchMode? MatchMode = null
+) : INapiRecord
+{
+    private static ReadOnlySpan<byte> _intervalName => "interval"u8;
+    private static ReadOnlySpan<byte> _dutyModeName => "dutyMode"u8;
+    private static ReadOnlySpan<byte> _matchModeName => "matchMode"u8;
+    void INapiRecord.WriteTo(NativeNodeApi.napi_env env, NativeNodeApi.napi_value obj)
+    {
+        var _intervalV = NativeValue.From(Interval);
+        if (_intervalV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
+        var _dutyModeV = NativeValue.From(DutyMode);
+        if (_dutyModeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _dutyModeName, _dutyModeV);
+        var _matchModeV = NativeValue.From(MatchMode);
+        if (_matchModeV != IntPtr.Zero)
+            NativeNodeApi.napi_set_named_property(env, obj, _matchModeName, _matchModeV);
+    }
+}
+
+/// <summary>
+/// BondStateParam 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class BluetoothBondStateParam : JsObject
+{
+    public BluetoothBondStateParam(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
+    private static ReadOnlySpan<byte> _state => "state"u8;
+    /// <summary>
+    /// deviceId
+    /// </summary>
+    public string DeviceId => NativeValue.ToString(GetPropertyRaw(_deviceId)) ?? string.Empty;
+
+    /// <summary>
+    /// state
+    /// </summary>
+    public global::HarmonyOS.ArkUI.BluetoothBondState State => (global::HarmonyOS.ArkUI.BluetoothBondState)NativeValue.ToInt(GetPropertyRaw(_state));
+
 }
 
 /// <summary>
@@ -1262,6 +1354,27 @@ public sealed partial class BluetoothScanResult : JsObject
     /// data
     /// </summary>
     public byte[] Data => ValueConverter.ConvertArray(GetPropertyRaw(_data), static e => ValueConverter.Convert<byte>(e));
+
+}
+
+/// <summary>
+/// StateChangeParam 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class BluetoothStateChangeParam : JsObject
+{
+    public BluetoothStateChangeParam(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
+    private static ReadOnlySpan<byte> _state => "state"u8;
+    /// <summary>
+    /// deviceId
+    /// </summary>
+    public string DeviceId => NativeValue.ToString(GetPropertyRaw(_deviceId)) ?? string.Empty;
+
+    /// <summary>
+    /// state
+    /// </summary>
+    public global::HarmonyOS.ArkUI.BluetoothProfileConnectionState State => (global::HarmonyOS.ArkUI.BluetoothProfileConnectionState)NativeValue.ToInt(GetPropertyRaw(_state));
 
 }
 
@@ -1466,6 +1579,27 @@ public sealed partial class DescriptorWriteReq : JsObject
     /// serviceUuid
     /// </summary>
     public string ServiceUuid => NativeValue.ToString(GetPropertyRaw(_serviceUuid)) ?? string.Empty;
+
+}
+
+/// <summary>
+/// BLEConnectChangedState 实例包装（@ohos 命名空间内嵌套接口）。
+/// 由 JsObject 持有 napi 强引用；Dispose 仅释放引用，JS 对象由 ArkTS GC 管理。
+/// </summary>
+public sealed partial class BLEConnectChangedState : JsObject
+{
+    public BLEConnectChangedState(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _deviceId => "deviceId"u8;
+    private static ReadOnlySpan<byte> _state => "state"u8;
+    /// <summary>
+    /// deviceId
+    /// </summary>
+    public string DeviceId => NativeValue.ToString(GetPropertyRaw(_deviceId)) ?? string.Empty;
+
+    /// <summary>
+    /// state
+    /// </summary>
+    public global::HarmonyOS.ArkUI.BluetoothProfileConnectionState State => (global::HarmonyOS.ArkUI.BluetoothProfileConnectionState)NativeValue.ToInt(GetPropertyRaw(_state));
 
 }
 

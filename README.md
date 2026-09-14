@@ -8,6 +8,7 @@
 距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 **上手**：从零创建鸿蒙 MAUI 应用 / 给已有 MAUI 应用加鸿蒙平台，见 **[GETTING_STARTED.md](GETTING_STARTED.md)**。
+**平台服务**：适配一个新的 Essentials 服务（注入点取证/五步流程/坑表），见 **[ESSENTIALS.md](ESSENTIALS.md)**。
 **风险预案**：C 原生节点 API 退出假设下的 ArkTS 引擎迁移计划见 **[MIGRATION_ARKTS_ENGINE.md](MIGRATION_ARKTS_ENGINE.md)**。
 
 ## 这是什么
@@ -100,7 +101,7 @@ bash scripts/deploy-hap.sh
 | `OHOS_SDK_BASE` | OpenHarmony SDK 根目录（含 `26.0.0/toolchains`） | → `OHSDK_HOME` → `D:\Harmony\OpenHarmony\Sdk` → DevEco 内置 sdk |
 | `DEVECO_HOME` | DevEco Studio 安装目录 | → `D:\Program Files\Huawei\DevEco Studio` → C 盘同名 |
 | `LOCAL` | `true` 时 remote-build 在本地 WSL 构建 | 否则走 SSH 远程 |
-| `DEMO_APP` | libapp.so 打包哪个 demo 工程（`HelloApp`=控件 demo / `ApiDemo`=API 绑定 demo） | `HelloApp` |
+| `DEMO_APP` | libapp.so 打包哪个 demo 工程（`HelloApp`=控件 demo / `ApiDemo`=API 绑定 demo / `EssentialsApp`=Essentials 验证） | `HelloApp` |
 | `REMOTE` / `BUILD` | SSH 别名 / 构建目录 | `wsl_auzrelinux` / `/tmp/arktsbinding` |
 | `HOST_DIR` | 宿主目录覆盖（三脚本通用；targets 生成模式自动指向 `obj/harmony/host`） | `samples/HarmonyHost` |
 
@@ -153,6 +154,7 @@ src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/Content
 samples/HarmonyHost/         鸿蒙宿主模板（ArkTS + C shim + CMake + ohosImports.ets 模块登记；targets 按应用 stage 到 obj/harmony/host）
 samples/dotnet/HelloApp/     M1 控件 demo（XAML + NativeAOT → libapp.so）
 samples/dotnet/ApiDemo/      M2 API 绑定 demo（模块验证/Promise→Task/TSFN；DEMO_APP=ApiDemo 切换）
+samples/dotnet/EssentialsApp/ M2.4 Essentials 验证（16 服务全量：信息栏 + 剪贴板授权回环 + Preferences 持久化 + Battery/Vibration/Connectivity + SecureStorage 回环 + Browser/Share/Email）
                              两者的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
                              对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
                              由 src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets 提供
@@ -178,7 +180,7 @@ tests/                       jest（解析器/生成器 76 用例）
 
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
 - M1 尾巴（完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~、~~Grid/AbsoluteLayout（MAUI 托管布局）~~、~~布局遗留修复（Grid 对齐/ZIndex/Auto 重排）+ 返回动画 + NavigationPage 标题栏 + .NET 10 / C# 14 优化批次~~；剩真机验证
-- M2（除 Essentials 外全部完成）：~~TSFN 异步层~~、~~codeGenerator 修复~~、~~@ohos.* 全量生成（438 模块/375 转正）~~、~~Promise→Task/AsyncCallback/.NET 事件/ArrayBuffer/Map~~、~~端到端模拟器验证~~、~~零分配调用路径~~；2.4 Essentials 平台实现未启动
+- M2 全部完成（**Essentials 16 服务全量**：DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage/MainThread）：~~TSFN 异步层~~、~~codeGenerator 修复~~、~~@ohos.* 全量生成（438 模块/375 转正）~~、~~Promise→Task/AsyncCallback/.NET 事件/ArrayBuffer/Map~~、~~端到端模拟器验证~~、~~零分配调用路径~~、~~2.4 Essentials 首批（含剪贴板 user_grant 授权闭环 + Preferences 跨重启持久化 + Battery commonEvent 事件 + Vibration + Connectivity/KeepScreenOn/MainThread，2026-09-13）~~
 - M3：NuGet 打包、单项目体验、CI
 
 ## 致谢 / Acknowledgements
