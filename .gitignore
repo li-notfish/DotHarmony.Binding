@@ -55,11 +55,15 @@ samples/HarmonyHostEngine/entry/build/
 samples/HarmonyHostEngine/entry/.cxx/
 samples/HarmonyHostEngine/.hvigor/
 
-# libapp.so 为远程 NativeAOT 构建产物（scripts/remote-build.sh 生成）
-samples/HarmonyHost/entry/libs/*/libapp.so
+# libapp.so 为 NativeAOT 构建产物（remote-build/WSL 生成），任意目录一律不追踪
+libapp.so
+
+# 宿主模板 oh_modules（hvigor 依赖安装产物）
 samples/HarmonyHost/oh_modules/
-samples/HarmonyHostEngine/entry/libs/*/libapp.so
 samples/HarmonyHostEngine/oh_modules/
+
+# ZCode 会话计划文件（本地工作记录，不入库）
+.zcode/plans/
 
 # Visual Studio
 .vs/
