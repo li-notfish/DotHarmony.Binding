@@ -62,7 +62,8 @@ export struct DynamicNode {
         .onClick(() => this.bridge.emitClick(this.node.id))
         .onAreaChange((_oldArea: Area, newArea: Area) => this.bridge.emitArea(this.node.id, newArea))
     } else if (this.node.type === 'Entry') {
-      Entry({ placeholder: this.node.attrs.placeholder ?? '', text: this.node.attrs.text ?? '' })
+      // ArkUI 文本输入组件为 TextInput（Entry 是 @Entry 页面装饰器，不能当组件用）
+      TextInput({ placeholder: this.node.attrs.placeholder ?? '', text: this.node.attrs.text ?? '' })
         .fontSize(this.node.attrs.fontSize ?? 14)
         .width(this.node.attrs.width ?? 'auto')
         .height(this.node.attrs.height ?? 'auto')

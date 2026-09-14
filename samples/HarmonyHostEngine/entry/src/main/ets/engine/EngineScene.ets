@@ -26,6 +26,20 @@ export class EngineScene {
   private rootDirty: boolean = false;
 
   /**
+   * 标脏并沿 parents 链向上传播到全部祖先。
+   * rebuild 对未脏节点早退（含其子树）——脏后代若不把祖先一并标脏，
+   * 会落在未脏父下而永远不被 rebuild（rev 不前进，ForEach key 不变，UI 不更新）。
+   */
+  private markDirty(id: number): void {
+    this.dirty.add(id);
+    let p = this.parents.get(id);
+    while (p !== undefined) {
+      this.dirty.add(p);
+      p = this.parents.get(p);
+    }
+  }
+
+  /**
    * 应用一批指令（C# Flush 一次 napi 调用下发）。
    * 未知 id 的操作（节点已删除/未创建）静默忽略——删除级联与乱序指令的容错。
    */
@@ -40,7 +54,7 @@ export class EngineScene {
           rec.id = id;
           rec.type = c.type;
           this.records.set(id, rec);
-          this.dirty.add(id);
+          this.markDirty(id);
           break;
         }
         case 'setAttrs': {
@@ -51,7 +65,7 @@ export class EngineScene {
             const pair: ESObject = pairs[j];
             rec.attrs.set(pair[0] as string, pair[1]);
           }
-          this.dirty.add(id);
+          this.markDirty(id);
           break;
         }
         case 'setChildren': {
@@ -71,7 +85,7 @@ export class EngineScene {
             }
           }
           rec.children = next;
-          this.dirty.add(id);
+          this.markDirty(id);
           break;
         }
         case 'setEvents': {
@@ -196,8 +210,8 @@ export class EngineScene {
     this.cache.delete(id);
     this.parents.delete(id);
     if (parent !== undefined) {
-      // 父节点渲染缓存的子表可能残留已删实例，标脏强制其子表重建
-      this.dirty.add(parent);
+      // 父节点渲染缓存的子表可能残留已删实例，标脏强制其子表重建（向上传播保证可达）
+      this.markDirty(parent);
     }
   }
 }
