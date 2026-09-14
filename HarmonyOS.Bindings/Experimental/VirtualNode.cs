@@ -7,8 +7,9 @@ namespace HarmonyOS.Bindings.Experimental;
 /// ArkTS 引擎实验层的虚拟节点：公开方法面是 <c>ArkUINodeBase</c> 的子集
 /// （MIGRATION_ARKTS_ENGINE.md §2.1 接口不变量的实验验证），差异仅在
 /// "同步原生写入/回读" 换成 "指令入队 / 影子量测快照"。
-/// 所有写操作只翻译为 <see cref="ArkTsCommand"/> 入队，经 <see cref="ArkTsEngine.Flush"/>
-/// 批量冲刷——本类不触碰任何 napi/C API，可离线单测。
+/// 所有写操作只翻译为 <see cref="ArkTsCommand"/> 入队，冲刷经布局 pass 边界钩子
+/// <see cref="ArkTsEngine.Flush"/> 或引擎 16ms tick 自动冲刷批量执行——本类不触碰任何
+/// napi/C API，可离线单测。
 /// </summary>
 public class VirtualNode : IDisposable
 {
@@ -55,13 +56,21 @@ public class VirtualNode : IDisposable
     public VirtualNode SetBackgroundColor(uint argb)
         => SetAttr("backgroundColor", ToHex((byte)(argb >> 24), (byte)(argb >> 16), (byte)(argb >> 8), (byte)argb));
 
-    // —— Text / Button 专属 ——
+    // —— Text / Button / Entry 专属 ——
     public VirtualNode SetText(string text) => SetAttr("text", text);
     public VirtualNode SetFontSize(float vp) => SetAttr("fontSize", vp);
     public VirtualNode SetFontColor(byte a, byte r, byte g, byte b) => SetAttr("fontColor", ToHex(a, r, g, b));
     public VirtualNode SetFontColor(uint argb)
         => SetAttr("fontColor", ToHex((byte)(argb >> 24), (byte)(argb >> 16), (byte)(argb >> 8), (byte)argb));
     public VirtualNode SetLabel(string label) => SetAttr("label", label);
+
+    // —— Entry 专属 ——
+    /// <summary>输入框占位文本（引擎侧 Entry 的 placeholder）</summary>
+    public VirtualNode SetPlaceholder(string placeholder) => SetAttr("placeholder", placeholder);
+
+    // —— Image 专属 ——
+    /// <summary>图片来源（引擎侧 Image 的 src；沙箱路径或网络 URL 字符串）</summary>
+    public VirtualNode SetImageSource(string src) => SetAttr("src", src);
 
     /// <summary>通用属性写入：属性名与值语义由引擎映射表（DynamicNode/mapping）解释</summary>
     public VirtualNode SetAttr(string name, object value)

@@ -6,7 +6,7 @@ namespace HarmonyOS.Bindings.Experimental;
 /// </summary>
 public readonly struct ArkTsEventArgs
 {
-    /// <summary>事件种类：'click'（点击）或 'area'（量测回流）</summary>
+    /// <summary>事件种类：'click'（点击）、'area'（量测回流）或 'textChange'（Entry 文本变更）</summary>
     public string Kind { get; init; }
 
     /// <summary>仅 area：节点宽度（px）</summary>
@@ -18,8 +18,13 @@ public readonly struct ArkTsEventArgs
     /// <summary>仅 area：屏幕密度（px/vp），引擎随量测直接下发</summary>
     public double Density { get; init; }
 
+    /// <summary>仅 textChange：Entry 变更后的文本值</summary>
+    public string? Text { get; init; }
+
     public override string ToString()
-        => Kind == "area" ? $"area {WidthPx:0}x{HeightPx:0}px @{Density:0.00}" : Kind;
+        => Kind == "area" ? $"area {WidthPx:0}x{HeightPx:0}px @{Density:0.00}"
+         : Kind == "textChange" ? $"textChange \"{Text}\""
+         : Kind;
 }
 
 /// <summary>量测影子快照：MeasuredSize 的引擎版读取源（替代同步 P/Invoke）</summary>

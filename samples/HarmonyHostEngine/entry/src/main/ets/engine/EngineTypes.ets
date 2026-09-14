@@ -1,5 +1,5 @@
-// ArkTS 引擎实验层：渲染模型（MIGRATION_ARKTS_ENGINE.md §2.3 的 MVP 子集）
-// 实验范围：Stack/Text/Button 三类节点；属性映射表见 DynamicNode（引擎仅有的"映射知识"）。
+// ArkTS 引擎实验层：渲染模型（MIGRATION_ARKTS_ENGINE.md §2.3）
+// P2 完整版：Image/Entry/Scroll 六类节点；增量 diff（RenderNode.rev 按节点批号）。
 
 /**
  * 节点属性集。C# 侧经 setAttrs 指令以 [name, value] 对下发，
@@ -8,7 +8,7 @@
 export class NodeAttrs {
   width?: Length;
   height?: Length;
-  /** 预留：托管布局的绝对定位（实验版存储但不应用，P2 与托管布局收敛时启用） */
+  /** 绝对定位（vp），映射 .position({x,y})——P2 起应用 */
   x?: number;
   y?: number;
   backgroundColor?: ResourceColor;
@@ -17,11 +17,16 @@ export class NodeAttrs {
   fontSize?: number;
   fontColor?: ResourceColor;
   label?: string;
+  /** 仅 Image：图片来源（沙箱路径/网络 URL） */
+  src?: string;
+  /** 仅 Entry：占位文本 */
+  placeholder?: string;
 }
 
 /**
- * 渲染快照节点。每次 applyCommands 全量重建，rev（引擎批号）参与 ForEach key，
- * 强制整树刷新——MVP 策略，增量 diff 留给 P2 完整版。
+ * 渲染快照节点。rev 是"该节点最近一次变更时的引擎批号"（不再是全树批号）：
+ * 增量 diff 下只有被指令改动的节点 rev 前进，参与 ForEach key
+ * （`${id}:${rev}`），未变更子树的组件由 ArkUI 按 key 复用——P2 增量渲染。
  */
 export class RenderNode {
   id: number = 0;

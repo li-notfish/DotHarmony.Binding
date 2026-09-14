@@ -22,6 +22,9 @@ public static class ArkTsEngine
 {
     private const string Tag = "ArkTsEngine";
 
+    /// <summary>自动冲刷周期（ms，§2.1"布局 pass 边界或 16ms 定时冲刷"的兜底项）</summary>
+    internal const int AutoFlushIntervalMs = 16;
+
     private static readonly List<ArkTsCommand> _queue = new();
     private static readonly Dictionary<int, VirtualNode> _nodes = new();
     private static readonly Dictionary<int, (double W, double H, double Density)> _measures = new();
@@ -71,6 +74,8 @@ public static class ArkTsEngine
     /// <summary>
     /// 冲刷指令队列：队列非空且桥已挂接时，把全部指令封送为 JS 对象数组，
     /// 经单次 napi 调用交给引擎 applyCommands。桥未挂接时保留队列（引导期积压语义）。
+    /// 布局 pass 边界钩子：宿主层可在 arrange 收尾调用本方法；tick 自动冲刷（P2）之外
+    /// 的显式批量边界。
     /// </summary>
     public static void Flush()
     {
@@ -165,6 +170,10 @@ public static class ArkTsEngine
             _onEventHandle = handle;
             NodeApi.CallMethodVoid(bridgeValue, "init", new object?[] { jsFunc });
 
+            // 16ms 定时冲刷兜底：引擎侧 setInterval 发 'tick' 回流，C# 在 napi 回调线程内
+            // 冲刷积压指令（同帧属性写合并为单次 napi）。显式 Flush 仍是布局 pass 边界钩子。
+            NodeApi.CallMethodVoid(bridgeValue, "enableAutoFlush", new object?[] { AutoFlushIntervalMs });
+
             int pending = _queue.Count;
             Flush();
             HiLog.Info(Tag, $"bridge attached, dispatched {pending} pending commands");
@@ -184,10 +193,19 @@ public static class ArkTsEngine
         try
         {
             if (args.Length < 2 || args[0] == IntPtr.Zero) return;
-            int id = NativeValue.ToInt(args[0]);
             string kind = NativeValue.ToString(args[1]) ?? "";
 
+            // 'tick'（id=-1 哨兵）：引擎侧 16ms 定时回流，冲刷积压指令后即返回
+            if (kind == "tick")
+            {
+                if (_queue.Count > 0) Flush();
+                return;
+            }
+
+            int id = NativeValue.ToInt(args[0]);
+
             double w = 0, h = 0, density = 0;
+            string? text = null;
             if (kind == "area" && args.Length > 2 && args[2] != IntPtr.Zero)
             {
                 w = ReadPayloadDouble(args[2], "width");
@@ -196,7 +214,11 @@ public static class ArkTsEngine
                 _measures[id] = (w, h, density);
                 HiLog.Debug(Tag, $"measure id={id}: {w:0}x{h:0}px @{density:0.00}");
             }
-            GetNode(id)?.DispatchEvent(new ArkTsEventArgs { Kind = kind, WidthPx = w, HeightPx = h, Density = density });
+            else if (kind == "textChange" && args.Length > 2 && args[2] != IntPtr.Zero)
+            {
+                text = ReadPayloadString(args[2], "value");
+            }
+            GetNode(id)?.DispatchEvent(new ArkTsEventArgs { Kind = kind, WidthPx = w, HeightPx = h, Density = density, Text = text });
         }
         catch (Exception ex)
         {
@@ -212,9 +234,17 @@ public static class ArkTsEngine
         NativeNodeApi.napi_typeof(env, value, out var type).ThrowIfFailed();
         return type == NativeNodeApi.napi_valuetype.napi_number ? NativeValue.ToDouble(value) : 0;
     }
+
+    private static string ReadPayloadString(IntPtr payload, string name)
+    {
+        var env = NapiEnv.Current;
+        NativeNodeApi.napi_get_named_property(env, payload, System.Text.Encoding.UTF8.GetBytes(name), out var value).ThrowIfFailed();
+        NativeNodeApi.napi_typeof(env, value, out var type).ThrowIfFailed();
+        return type == NativeNodeApi.napi_valuetype.napi_string ? NativeValue.ToString(value) ?? "" : "";
+    }
 #endif
 
-    /// <summary>指令出口默认实现：入队 + 显式 Flush（实验版批次策略；布局 pass 钩子属 P2 完整版）</summary>
+    /// <summary>指令出口默认实现：入队 + 冲刷（批次边界：布局 pass 钩子 Flush / 引擎 16ms tick 自动冲刷）</summary>
     private sealed class QueueSink : IArkTsCommandSink
     {
         internal static readonly QueueSink Instance = new();
