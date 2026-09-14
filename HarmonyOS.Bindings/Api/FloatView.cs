@@ -94,7 +94,7 @@ public static unsafe partial class FloatView
     /// </summary>
     public static Task BindAsync(FloatViewController floatViewController, IntPtr floatingBallController, IntPtr floatingBallParams)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _bind, floatViewController, floatingBallController, floatingBallParams);
+        return NodeApi.CallMethodAsyncVoid(Module, _bind, NapiArg.Of(floatViewController), floatingBallController, floatingBallParams);
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public static unsafe partial class FloatView
     /// </summary>
     public static Task UnbindAsync(FloatViewController floatViewController, IntPtr floatingBallController)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unbind, floatViewController, floatingBallController);
+        return NodeApi.CallMethodAsyncVoid(Module, _unbind, NapiArg.Of(floatViewController), floatingBallController);
     }
 
     /// <summary>
@@ -142,7 +142,7 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public Task SetUiContextAsync(string path, IntPtr? storage = null)
     {
-        return CallMethodAsyncVoid(_setUIContext, path, storage);
+        return CallMethodAsyncVoid(_setUIContext, path, NapiArg.Of(storage));
     }
 
     /// <summary>
@@ -150,7 +150,7 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public Task SetUiContextByNameAsync(string name, IntPtr? storage = null)
     {
-        return CallMethodAsyncVoid(_setUIContextByName, name, storage);
+        return CallMethodAsyncVoid(_setUIContextByName, name, NapiArg.Of(storage));
     }
 
     /// <summary>
@@ -198,7 +198,7 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public Task RestoreMainWindowAsync(IntPtr? wantParameters = null)
     {
-        return CallMethodAsyncVoid(_restoreMainWindow, wantParameters);
+        return CallMethodAsyncVoid(_restoreMainWindow, NapiArg.Of(wantParameters));
     }
 
     /// <summary>
@@ -222,7 +222,7 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public void OffStateChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offStateChange, callback);
+        CallMethodVoid(_offStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -238,7 +238,7 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public void OffRectChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offRectChange, callback);
+        CallMethodVoid(_offRectChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -254,7 +254,7 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public void OffLimitsChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offLimitsChange, callback);
+        CallMethodVoid(_offLimitsChange, NapiArg.Of(callback));
     }
 
 }

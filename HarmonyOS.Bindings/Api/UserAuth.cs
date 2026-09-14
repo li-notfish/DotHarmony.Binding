@@ -123,7 +123,7 @@ public static unsafe partial class UserAuth
     /// </summary>
     public static IntPtr GetAuthInstance(byte[] challenge, global::HarmonyOS.ArkUI.UserAuthType authType, global::HarmonyOS.ArkUI.AuthTrustLevel authTrustLevel)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getAuthInstance, challenge, authType, authTrustLevel);
+        return NodeApi.CallMethod<IntPtr>(Module, _getAuthInstance, NapiArg.Of(challenge), authType, authTrustLevel);
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public static unsafe partial class UserAuth
     /// </summary>
     public static UserAuthInstance GetUserAuthInstance(AuthParam authParam, IntPtr widgetParam)
     {
-        return NodeApi.CallMethod(Module, _getUserAuthInstance, static h => new UserAuthInstance(h), authParam, widgetParam);
+        return NodeApi.CallMethod(Module, _getUserAuthInstance, static h => new UserAuthInstance(h), NapiArg.Of(authParam), widgetParam);
     }
 
 }
@@ -382,7 +382,7 @@ public sealed partial class UserAuthObject : JsObject
     /// </summary>
     public byte[] Auth(byte[] challenge, global::HarmonyOS.ArkUI.UserAuthType authType, global::HarmonyOS.ArkUI.AuthTrustLevel authTrustLevel, IntPtr callback)
     {
-        return CallMethod(_auth, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), challenge, authType, authTrustLevel, callback);
+        return CallMethod(_auth, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(challenge), authType, authTrustLevel, callback);
     }
 
     /// <summary>
@@ -390,7 +390,7 @@ public sealed partial class UserAuthObject : JsObject
     /// </summary>
     public double CancelAuth(byte[] contextID)
     {
-        return CallMethod<double>(_cancelAuth, contextID);
+        return CallMethod<double>(_cancelAuth, NapiArg.Of(contextID));
     }
 
 }
@@ -408,7 +408,7 @@ public sealed partial class IAuthCallback : JsObject
     /// </summary>
     public void OnResult(UserAuthResult result)
     {
-        CallMethodVoid(_onResult, result);
+        CallMethodVoid(_onResult, NapiArg.Of(result));
     }
 
 }

@@ -90,7 +90,7 @@ public static unsafe partial class EffectKit
     /// </summary>
     public static Task<ColorPicker> CreateColorPickerAsync(IntPtr source, double[] region)
     {
-        return NodeApi.CallMethodAsync(Module, _createColorPicker, static h => new ColorPicker(h), source, region);
+        return NodeApi.CallMethodAsync(Module, _createColorPicker, static h => new ColorPicker(h), source, NapiArg.Of(region));
     }
 
 }
@@ -154,7 +154,7 @@ public sealed partial class Filter : JsObject
     /// </summary>
     public Filter SetColorMatrix(double[] colorMatrix)
     {
-        return CallMethod(_setColorMatrix, static h => new Filter(h), colorMatrix);
+        return CallMethod(_setColorMatrix, static h => new Filter(h), NapiArg.Of(colorMatrix));
     }
 
     /// <summary>

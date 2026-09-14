@@ -87,7 +87,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static Task<X509Cert> CreateX509CertAsync(EncodingBlob inStream)
     {
-        return NodeApi.CallMethodAsync(Module, _createX509Cert, static h => new X509Cert(h), inStream);
+        return NodeApi.CallMethodAsync(Module, _createX509Cert, static h => new X509Cert(h), NapiArg.Of(inStream));
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static Task<CertExtension> CreateCertExtensionAsync(EncodingBlob inStream)
     {
-        return NodeApi.CallMethodAsync(Module, _createCertExtension, static h => new CertExtension(h), inStream);
+        return NodeApi.CallMethodAsync(Module, _createCertExtension, static h => new CertExtension(h), NapiArg.Of(inStream));
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static Task<X509Crl> CreateX509CrlAsync(EncodingBlob inStream)
     {
-        return NodeApi.CallMethodAsync(Module, _createX509Crl, static h => new X509Crl(h), inStream);
+        return NodeApi.CallMethodAsync(Module, _createX509Crl, static h => new X509Crl(h), NapiArg.Of(inStream));
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static CertCRLCollection CreateCertCrlCollection(X509Cert[] certs, X509CRL[]? crls = null)
     {
-        return NodeApi.CallMethod(Module, _createCertCRLCollection, static h => new CertCRLCollection(h), certs, crls);
+        return NodeApi.CallMethod(Module, _createCertCRLCollection, static h => new CertCRLCollection(h), NapiArg.Of(certs), NapiArg.Of(crls));
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static Task<X509CertChain> CreateX509CertChainAsync(EncodingBlob inStream)
     {
-        return NodeApi.CallMethodAsync(Module, _createX509CertChain, static h => new X509CertChain(h), inStream);
+        return NodeApi.CallMethodAsync(Module, _createX509CertChain, static h => new X509CertChain(h), NapiArg.Of(inStream));
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static X509CertChain CreateX509CertChain(X509Cert[] certs)
     {
-        return NodeApi.CallMethod(Module, _createX509CertChain, static h => new X509CertChain(h), certs);
+        return NodeApi.CallMethod(Module, _createX509CertChain, static h => new X509CertChain(h), NapiArg.Of(certs));
     }
 
     /// <summary>
@@ -151,7 +151,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static IntPtr ParsePkcs12(byte[] data, Pkcs12ParsingConfig config)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _parsePkcs12, data, config);
+        return NodeApi.CallMethod<IntPtr>(Module, _parsePkcs12, NapiArg.Of(data), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static Task<IntPtr> ParsePkcs12Async(byte[] data, string password)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _parsePkcs12, data, password);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _parsePkcs12, NapiArg.Of(data), password);
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static Task<X509TrustAnchor[]> CreateTrustAnchorsWithKeyStoreAsync(byte[] keystore, string pwd)
     {
-        return NodeApi.CallMethodAsync(Module, _createTrustAnchorsWithKeyStore, h => ValueConverter.ConvertArray(h, static e => new X509TrustAnchor(e)), keystore, pwd);
+        return NodeApi.CallMethodAsync(Module, _createTrustAnchorsWithKeyStore, h => ValueConverter.ConvertArray(h, static e => new X509TrustAnchor(e)), NapiArg.Of(keystore), pwd);
     }
 
     /// <summary>
@@ -183,7 +183,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static Task<X500DistinguishedName> CreateX500DistinguishedNameAsync(byte[] nameDer)
     {
-        return NodeApi.CallMethodAsync(Module, _createX500DistinguishedName, static h => new X500DistinguishedName(h), nameDer);
+        return NodeApi.CallMethodAsync(Module, _createX500DistinguishedName, static h => new X500DistinguishedName(h), NapiArg.Of(nameDer));
     }
 
     /// <summary>
@@ -207,7 +207,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static string GenerateCsr(PrivateKeyInfo keyInfo, IntPtr config)
     {
-        return NodeApi.CallMethod<string>(Module, _generateCsr, keyInfo, config);
+        return NodeApi.CallMethod<string>(Module, _generateCsr, NapiArg.Of(keyInfo), config);
     }
 
     /// <summary>
@@ -215,7 +215,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static byte[] CreatePkcs12Sync(IntPtr data, Pkcs12CreationConfig config)
     {
-        return NodeApi.CallMethod(Module, _createPkcs12Sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), data, config);
+        return NodeApi.CallMethod(Module, _createPkcs12Sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), data, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -223,7 +223,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static Task<byte[]> CreatePkcs12Async(IntPtr data, Pkcs12CreationConfig config)
     {
-        return NodeApi.CallMethodAsync(Module, _createPkcs12, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), data, config);
+        return NodeApi.CallMethodAsync(Module, _createPkcs12, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), data, NapiArg.Of(config));
     }
 
 }
@@ -559,7 +559,7 @@ public sealed partial class CertExtension : JsObject
     /// </summary>
     public DataBlob GetEntry(global::HarmonyOS.ArkUI.ExtensionEntryType valueType, DataBlob oid)
     {
-        return CallMethod(_getEntry, static h => new DataBlob(h), valueType, oid);
+        return CallMethod(_getEntry, static h => new DataBlob(h), valueType, NapiArg.Of(oid));
     }
 
     /// <summary>
@@ -608,7 +608,7 @@ public sealed partial class X509Crl : JsObject
     /// </summary>
     public bool IsRevoked(X509Cert cert)
     {
-        return CallMethod<bool>(_isRevoked, cert);
+        return CallMethod<bool>(_isRevoked, NapiArg.Of(cert));
     }
 
     /// <summary>
@@ -680,7 +680,7 @@ public sealed partial class X509Crl : JsObject
     /// </summary>
     public X509CrlEntry GetRevokedCertWithCert(X509Cert cert)
     {
-        return CallMethod(_getRevokedCertWithCert, static h => new X509CrlEntry(h), cert);
+        return CallMethod(_getRevokedCertWithCert, static h => new X509CrlEntry(h), NapiArg.Of(cert));
     }
 
     /// <summary>
@@ -753,7 +753,7 @@ public sealed partial class CertChainValidator : JsObject
     /// </summary>
     public Task ValidateAsync(CertChainData certChain)
     {
-        return CallMethodAsyncVoid(_validate, certChain);
+        return CallMethodAsyncVoid(_validate, NapiArg.Of(certChain));
     }
 
     /// <summary>
@@ -761,7 +761,7 @@ public sealed partial class CertChainValidator : JsObject
     /// </summary>
     public Task<IntPtr> ValidateCertAsync(X509Cert cert, IntPtr @params)
     {
-        return CallMethodAsync<IntPtr>(_validateCert, cert, @params);
+        return CallMethodAsync<IntPtr>(_validateCert, NapiArg.Of(cert), @params);
     }
 
 }
@@ -827,7 +827,7 @@ public sealed partial class X509CRL : JsObject
     /// </summary>
     public bool IsRevoked(X509Cert cert)
     {
-        return CallMethod<bool>(_isRevoked, cert);
+        return CallMethod<bool>(_isRevoked, NapiArg.Of(cert));
     }
 
     /// <summary>
@@ -899,7 +899,7 @@ public sealed partial class X509CRL : JsObject
     /// </summary>
     public X509CRLEntry GetRevokedCert(JsBigInt serialNumber)
     {
-        return CallMethod(_getRevokedCert, static h => new X509CRLEntry(h), serialNumber);
+        return CallMethod(_getRevokedCert, static h => new X509CRLEntry(h), NapiArg.Of(serialNumber));
     }
 
     /// <summary>
@@ -907,7 +907,7 @@ public sealed partial class X509CRL : JsObject
     /// </summary>
     public X509CRLEntry GetRevokedCertWithCert(X509Cert cert)
     {
-        return CallMethod(_getRevokedCertWithCert, static h => new X509CRLEntry(h), cert);
+        return CallMethod(_getRevokedCertWithCert, static h => new X509CRLEntry(h), NapiArg.Of(cert));
     }
 
     /// <summary>
@@ -1221,7 +1221,7 @@ public sealed partial class CmsGenerator : JsObject
     /// </summary>
     public void AddSigner(X509Cert cert, PrivateKeyInfo keyInfo, CmsSignerConfig config)
     {
-        CallMethodVoid(_addSigner, cert, keyInfo, config);
+        CallMethodVoid(_addSigner, NapiArg.Of(cert), NapiArg.Of(keyInfo), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -1229,7 +1229,7 @@ public sealed partial class CmsGenerator : JsObject
     /// </summary>
     public void AddCert(X509Cert cert)
     {
-        CallMethodVoid(_addCert, cert);
+        CallMethodVoid(_addCert, NapiArg.Of(cert));
     }
 
     /// <summary>
@@ -1245,7 +1245,7 @@ public sealed partial class CmsGenerator : JsObject
     /// </summary>
     public Task AddRecipientInfoAsync(CmsRecipientInfo recipientInfo)
     {
-        return CallMethodAsyncVoid(_addRecipientInfo, recipientInfo);
+        return CallMethodAsyncVoid(_addRecipientInfo, NapiArg.Of(recipientInfo));
     }
 
     /// <summary>
@@ -1253,7 +1253,7 @@ public sealed partial class CmsGenerator : JsObject
     /// </summary>
     public IntPtr DoFinal(byte[] data, CmsGeneratorOptions? options = null)
     {
-        return CallMethod<IntPtr>(_doFinal, data, options);
+        return CallMethod<IntPtr>(_doFinal, NapiArg.Of(data), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1261,7 +1261,7 @@ public sealed partial class CmsGenerator : JsObject
     /// </summary>
     public byte[] DoFinalSync(byte[] data, CmsGeneratorOptions? options = null)
     {
-        return CallMethod(_doFinalSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), data, options);
+        return CallMethod(_doFinalSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(data), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1292,7 +1292,7 @@ public sealed partial class CmsParser : JsObject
     /// </summary>
     public Task SetRawDataAsync(byte[] data, global::HarmonyOS.ArkUI.CmsFormat cmsFormat)
     {
-        return CallMethodAsyncVoid(_setRawData, data, cmsFormat);
+        return CallMethodAsyncVoid(_setRawData, NapiArg.Of(data), cmsFormat);
     }
 
     /// <summary>
@@ -1332,7 +1332,7 @@ public sealed partial class CmsParser : JsObject
     /// </summary>
     public Task<byte[]> DecryptEnvelopedDataAsync(CmsEnvelopedDecryptionConfig config)
     {
-        return CallMethodAsync(_decryptEnvelopedData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), config);
+        return CallMethodAsync(_decryptEnvelopedData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(config));
     }
 
 }

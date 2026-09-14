@@ -154,7 +154,7 @@ public sealed partial class TypeDescriptor : JsObject
     /// </summary>
     public bool Equals(TypeDescriptor typeDescriptor)
     {
-        return CallMethod<bool>(_equals, typeDescriptor);
+        return CallMethod<bool>(_equals, NapiArg.Of(typeDescriptor));
     }
 
 }

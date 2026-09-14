@@ -102,7 +102,7 @@ public static unsafe partial class WantAgent2
     /// </summary>
     public static void Trigger(IntPtr agent, IntPtr triggerInfo, IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _trigger, agent, triggerInfo, callback);
+        NodeApi.CallMethodVoid(Module, _trigger, agent, triggerInfo, NapiArg.Of(callback));
     }
 
     /// <summary>

@@ -101,7 +101,7 @@ public static unsafe partial class NearlinkAdvertising
     /// </summary>
     public static void OffAdvertisingStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offAdvertisingStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offAdvertisingStateChange, NapiArg.Of(callback));
     }
 
 }

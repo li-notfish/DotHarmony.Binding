@@ -126,7 +126,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void RegisterHidDevice(HidDeviceSdp sdp, HidDeviceQos inQos, HidDeviceQos outQos, IntPtr callback)
     {
-        CallMethodVoid(_registerHidDevice, sdp, inQos, outQos, callback);
+        CallMethodVoid(_registerHidDevice, NapiArg.Of(sdp), NapiArg.Of(inQos), NapiArg.Of(outQos), callback);
     }
 
     /// <summary>
@@ -158,7 +158,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void SendReport(double id, byte[] reportData)
     {
-        CallMethodVoid(_sendReport, id, reportData);
+        CallMethodVoid(_sendReport, id, NapiArg.Of(reportData));
     }
 
     /// <summary>
@@ -166,7 +166,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void ReplyReport(global::HarmonyOS.ArkUI.ReportType type, double id, byte[] reportData)
     {
-        CallMethodVoid(_replyReport, type, id, reportData);
+        CallMethodVoid(_replyReport, type, id, NapiArg.Of(reportData));
     }
 
     /// <summary>
@@ -190,7 +190,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffGetReport(IntPtr? callback = null)
     {
-        CallMethodVoid(_offGetReport, callback);
+        CallMethodVoid(_offGetReport, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -206,7 +206,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffSetReport(IntPtr? callback = null)
     {
-        CallMethodVoid(_offSetReport, callback);
+        CallMethodVoid(_offSetReport, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -222,7 +222,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffInterruptDataReceived(IntPtr? callback = null)
     {
-        CallMethodVoid(_offInterruptDataReceived, callback);
+        CallMethodVoid(_offInterruptDataReceived, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -238,7 +238,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffSetProtocol(IntPtr? callback = null)
     {
-        CallMethodVoid(_offSetProtocol, callback);
+        CallMethodVoid(_offSetProtocol, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -254,7 +254,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffVirtualCableUnplug(IntPtr? callback = null)
     {
-        CallMethodVoid(_offVirtualCableUnplug, callback);
+        CallMethodVoid(_offVirtualCableUnplug, NapiArg.Of(callback));
     }
 
 }

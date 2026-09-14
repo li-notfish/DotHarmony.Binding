@@ -93,7 +93,7 @@ public static unsafe partial class I18n
     /// </summary>
     public static string GetDisplayCountry(string country, string locale, bool? sentenceCase = null)
     {
-        return NodeApi.CallMethod<string>(Module, _getDisplayCountry, country, locale, sentenceCase);
+        return NodeApi.CallMethod<string>(Module, _getDisplayCountry, country, locale, NapiArg.Of(sentenceCase));
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public static unsafe partial class I18n
     /// </summary>
     public static string GetDisplayLanguage(string language, string locale, bool? sentenceCase = null)
     {
-        return NodeApi.CallMethod<string>(Module, _getDisplayLanguage, language, locale, sentenceCase);
+        return NodeApi.CallMethod<string>(Module, _getDisplayLanguage, language, locale, NapiArg.Of(sentenceCase));
     }
 
     /// <summary>
@@ -181,7 +181,7 @@ public static unsafe partial class I18n
     /// </summary>
     public static bool AddPreferredLanguage(string language, double? index = null)
     {
-        return NodeApi.CallMethod<bool>(Module, _addPreferredLanguage, language, index);
+        return NodeApi.CallMethod<bool>(Module, _addPreferredLanguage, language, NapiArg.Of(index));
     }
 
     /// <summary>
@@ -221,7 +221,7 @@ public static unsafe partial class I18n
     /// </summary>
     public static SimpleDateTimeFormat GetSimpleDateTimeFormatByPattern(string pattern, IntPtr? locale = null)
     {
-        return NodeApi.CallMethod(Module, _getSimpleDateTimeFormatByPattern, static h => new SimpleDateTimeFormat(h), pattern, locale);
+        return NodeApi.CallMethod(Module, _getSimpleDateTimeFormatByPattern, static h => new SimpleDateTimeFormat(h), pattern, NapiArg.Of(locale));
     }
 
     /// <summary>
@@ -229,7 +229,7 @@ public static unsafe partial class I18n
     /// </summary>
     public static SimpleDateTimeFormat GetSimpleDateTimeFormatBySkeleton(string skeleton, IntPtr? locale = null)
     {
-        return NodeApi.CallMethod(Module, _getSimpleDateTimeFormatBySkeleton, static h => new SimpleDateTimeFormat(h), skeleton, locale);
+        return NodeApi.CallMethod(Module, _getSimpleDateTimeFormatBySkeleton, static h => new SimpleDateTimeFormat(h), skeleton, NapiArg.Of(locale));
     }
 
     /// <summary>
@@ -237,7 +237,7 @@ public static unsafe partial class I18n
     /// </summary>
     public static SimpleNumberFormat GetSimpleNumberFormatBySkeleton(string skeleton, IntPtr? locale = null)
     {
-        return NodeApi.CallMethod(Module, _getSimpleNumberFormatBySkeleton, static h => new SimpleNumberFormat(h), skeleton, locale);
+        return NodeApi.CallMethod(Module, _getSimpleNumberFormatBySkeleton, static h => new SimpleNumberFormat(h), skeleton, NapiArg.Of(locale));
     }
 
     /// <summary>
@@ -245,7 +245,7 @@ public static unsafe partial class I18n
     /// </summary>
     public static ChineseCalendar GetChineseCalendar(IntPtr? locale = null)
     {
-        return NodeApi.CallMethod(Module, _getChineseCalendar, static h => new ChineseCalendar(h), locale);
+        return NodeApi.CallMethod(Module, _getChineseCalendar, static h => new ChineseCalendar(h), NapiArg.Of(locale));
     }
 
 }
@@ -292,7 +292,7 @@ public sealed partial class I18nCalendar : JsObject
     /// </summary>
     public void Set(double year, double month, double date, double? hour = null, double? minute = null, double? second = null)
     {
-        CallMethodVoid(_set, year, month, date, hour, minute, second);
+        CallMethodVoid(_set, year, month, date, NapiArg.Of(hour), NapiArg.Of(minute), NapiArg.Of(second));
     }
 
     /// <summary>
@@ -364,7 +364,7 @@ public sealed partial class I18nCalendar : JsObject
     /// </summary>
     public bool IsWeekend(IntPtr? date = null)
     {
-        return CallMethod<bool>(_isWeekend, date);
+        return CallMethod<bool>(_isWeekend, NapiArg.Of(date));
     }
 
     /// <summary>
@@ -438,7 +438,7 @@ public sealed partial class BreakIterator : JsObject
     /// </summary>
     public double Next(double? index = null)
     {
-        return CallMethod<double>(_next, index);
+        return CallMethod<double>(_next, NapiArg.Of(index));
     }
 
     /// <summary>
@@ -552,7 +552,7 @@ public sealed partial class TimeZone : JsObject
     /// </summary>
     public string GetDisplayName(string? locale = null, bool? isDST = null)
     {
-        return CallMethod<string>(_getDisplayName, locale, isDST);
+        return CallMethod<string>(_getDisplayName, locale, NapiArg.Of(isDST));
     }
 
     /// <summary>
@@ -568,7 +568,7 @@ public sealed partial class TimeZone : JsObject
     /// </summary>
     public double GetOffset(double? date = null)
     {
-        return CallMethod<double>(_getOffset, date);
+        return CallMethod<double>(_getOffset, NapiArg.Of(date));
     }
 
     /// <summary>
@@ -725,7 +725,7 @@ public sealed partial class ChineseCalendar : JsObject
     /// </summary>
     public void Set(double year, double month, double date, double? hour = null, double? minute = null, double? second = null)
     {
-        CallMethodVoid(_set, year, month, date, hour, minute, second);
+        CallMethodVoid(_set, year, month, date, NapiArg.Of(hour), NapiArg.Of(minute), NapiArg.Of(second));
     }
 
     /// <summary>
@@ -797,7 +797,7 @@ public sealed partial class ChineseCalendar : JsObject
     /// </summary>
     public bool IsWeekend(IntPtr? date = null)
     {
-        return CallMethod<bool>(_isWeekend, date);
+        return CallMethod<bool>(_isWeekend, NapiArg.Of(date));
     }
 
     /// <summary>
@@ -829,7 +829,7 @@ public sealed partial class ChineseCalendar : JsObject
     /// </summary>
     public void SetChineseCalendarTime(ChineseCalendarTime chineseCalendarTime)
     {
-        CallMethodVoid(_setChineseCalendarTime, chineseCalendarTime);
+        CallMethodVoid(_setChineseCalendarTime, NapiArg.Of(chineseCalendarTime));
     }
 
     /// <summary>
@@ -853,7 +853,7 @@ public sealed partial class PhoneNumberFormat : JsObject
     private static ReadOnlySpan<byte> _PhoneNumberFormat => "PhoneNumberFormat"u8;
 
     public PhoneNumberFormat(string country, PhoneNumberFormatOptions? options = null)
-        : this(NodeApi.CreateInstance(I18n.Module, _PhoneNumberFormat, country, options)) { }
+        : this(NodeApi.CreateInstance(I18n.Module, _PhoneNumberFormat, country, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _isValidNumber => "isValidNumber"u8;
     private static ReadOnlySpan<byte> _format => "format"u8;
     private static ReadOnlySpan<byte> _getLocationName => "getLocationName"u8;
@@ -899,7 +899,7 @@ public sealed partial class HolidayManager : JsObject
     /// </summary>
     public bool IsHoliday(IntPtr? date = null)
     {
-        return CallMethod<bool>(_isHoliday, date);
+        return CallMethod<bool>(_isHoliday, NapiArg.Of(date));
     }
 
     /// <summary>
@@ -907,7 +907,7 @@ public sealed partial class HolidayManager : JsObject
     /// </summary>
     public IntPtr[] GetHolidayInfoItemArray(double? year = null)
     {
-        return CallMethod(_getHolidayInfoItemArray, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), year);
+        return CallMethod(_getHolidayInfoItemArray, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(year));
     }
 
 }
@@ -946,7 +946,7 @@ public sealed partial class StyledNumberFormat : JsObject
     private static ReadOnlySpan<byte> _StyledNumberFormat => "StyledNumberFormat"u8;
 
     public StyledNumberFormat(SimpleNumberFormat numberFormat, IntPtr? options = null)
-        : this(NodeApi.CreateInstance(I18n.Module, _StyledNumberFormat, numberFormat, options)) { }
+        : this(NodeApi.CreateInstance(I18n.Module, _StyledNumberFormat, NapiArg.Of(numberFormat), NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _format => "format"u8;
     /// <summary>
     /// format
@@ -969,7 +969,7 @@ public sealed partial class StyledDateTimeFormat : JsObject
     private static ReadOnlySpan<byte> _StyledDateTimeFormat => "StyledDateTimeFormat"u8;
 
     public StyledDateTimeFormat(SimpleDateTimeFormat dateTimeFormat, IntPtr? options = null)
-        : this(NodeApi.CreateInstance(I18n.Module, _StyledDateTimeFormat, dateTimeFormat, options)) { }
+        : this(NodeApi.CreateInstance(I18n.Module, _StyledDateTimeFormat, NapiArg.Of(dateTimeFormat), NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _format => "format"u8;
     /// <summary>
     /// format
@@ -992,7 +992,7 @@ public sealed partial class AdvancedMeasureFormat : JsObject
     private static ReadOnlySpan<byte> _AdvancedMeasureFormat => "AdvancedMeasureFormat"u8;
 
     public AdvancedMeasureFormat(IntPtr numberFormat, AdvancedMeasureFormatOptions? options = null)
-        : this(NodeApi.CreateInstance(I18n.Module, _AdvancedMeasureFormat, numberFormat, options)) { }
+        : this(NodeApi.CreateInstance(I18n.Module, _AdvancedMeasureFormat, numberFormat, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _format => "format"u8;
     /// <summary>
     /// format
@@ -1015,7 +1015,7 @@ public sealed partial class SymbolDateTimeFormat : JsObject
     private static ReadOnlySpan<byte> _SymbolDateTimeFormat => "SymbolDateTimeFormat"u8;
 
     public SymbolDateTimeFormat(IntPtr? locale = null, SymbolDateTimeFormatOptions? options = null)
-        : this(NodeApi.CreateInstance(I18n.Module, _SymbolDateTimeFormat, locale, options)) { }
+        : this(NodeApi.CreateInstance(I18n.Module, _SymbolDateTimeFormat, NapiArg.Of(locale), NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _format => "format"u8;
     private static ReadOnlySpan<byte> _formatRange => "formatRange"u8;
     private static ReadOnlySpan<byte> _formatRangeToParts => "formatRangeToParts"u8;
@@ -1027,7 +1027,7 @@ public sealed partial class SymbolDateTimeFormat : JsObject
     /// </summary>
     public string Format(double? date = null)
     {
-        return CallMethod<string>(_format, date);
+        return CallMethod<string>(_format, NapiArg.Of(date));
     }
 
     /// <summary>
@@ -1051,7 +1051,7 @@ public sealed partial class SymbolDateTimeFormat : JsObject
     /// </summary>
     public IntPtr[] FormatToParts(double? date = null)
     {
-        return CallMethod(_formatToParts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), date);
+        return CallMethod(_formatToParts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(date));
     }
 
     /// <summary>
@@ -1083,7 +1083,7 @@ public sealed partial class SymbolNumberFormat : JsObject
     private static ReadOnlySpan<byte> _SymbolNumberFormat => "SymbolNumberFormat"u8;
 
     public SymbolNumberFormat(IntPtr? locale = null, SymbolNumberFormatOptions? options = null)
-        : this(NodeApi.CreateInstance(I18n.Module, _SymbolNumberFormat, locale, options)) { }
+        : this(NodeApi.CreateInstance(I18n.Module, _SymbolNumberFormat, NapiArg.Of(locale), NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _format => "format"u8;
     private static ReadOnlySpan<byte> _formatRange => "formatRange"u8;
     private static ReadOnlySpan<byte> _formatToParts => "formatToParts"u8;
@@ -1111,7 +1111,7 @@ public sealed partial class SymbolNumberFormat : JsObject
     /// </summary>
     public IntPtr[] FormatToParts(double? value = null)
     {
-        return CallMethod(_formatToParts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), value);
+        return CallMethod(_formatToParts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(value));
     }
 
     /// <summary>
@@ -1151,7 +1151,7 @@ public sealed partial class ISO8601DateTimeFormat : JsObject
     private static ReadOnlySpan<byte> _ISO8601DateTimeFormat => "ISO8601DateTimeFormat"u8;
 
     public ISO8601DateTimeFormat(ISO8601DateTimeFormatOptions? options = null)
-        : this(NodeApi.CreateInstance(I18n.Module, _ISO8601DateTimeFormat, options)) { }
+        : this(NodeApi.CreateInstance(I18n.Module, _ISO8601DateTimeFormat, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _format => "format"u8;
     /// <summary>
     /// format
@@ -1176,7 +1176,7 @@ public sealed partial class ZoneRules : JsObject
     /// </summary>
     public ZoneOffsetTransition NextTransition(double? date = null)
     {
-        return CallMethod(_nextTransition, static h => new ZoneOffsetTransition(h), date);
+        return CallMethod(_nextTransition, static h => new ZoneOffsetTransition(h), NapiArg.Of(date));
     }
 
 }

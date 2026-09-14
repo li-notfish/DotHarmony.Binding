@@ -169,7 +169,7 @@ public static unsafe partial class Accessibility
     /// </summary>
     public static Task SendEventAsync(EventInfo @event)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendEvent, @event);
+        return NodeApi.CallMethodAsyncVoid(Module, _sendEvent, NapiArg.Of(@event));
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ public static unsafe partial class Accessibility
     /// </summary>
     public static Task SendAccessibilityEventAsync(EventInfo @event)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendAccessibilityEvent, @event);
+        return NodeApi.CallMethodAsyncVoid(Module, _sendAccessibilityEvent, NapiArg.Of(@event));
     }
 
     /// <summary>
@@ -225,7 +225,7 @@ public static unsafe partial class Accessibility
     /// </summary>
     public static void OffAnimationReduceStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offAnimationReduceStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offAnimationReduceStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -257,7 +257,7 @@ public static unsafe partial class Accessibility
     /// </summary>
     public static void OffFlashReminderStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offFlashReminderStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offFlashReminderStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -289,7 +289,7 @@ public static unsafe partial class Accessibility
     /// </summary>
     public static void OffAudioMonoStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offAudioMonoStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offAudioMonoStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -329,7 +329,7 @@ public static unsafe partial class Accessibility
     /// </summary>
     public static void OffSeniorModeStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offSeniorModeStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offSeniorModeStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -345,7 +345,7 @@ public static unsafe partial class Accessibility
     /// </summary>
     public static void OffSeniorModeStateChangeForSelf(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offSeniorModeStateChangeForSelf, callback);
+        NodeApi.CallMethodVoid(Module, _offSeniorModeStateChangeForSelf, NapiArg.Of(callback));
     }
 
     /// <summary>

@@ -79,7 +79,7 @@ public static unsafe partial class Hichecker
     /// </summary>
     public static void AddRule(JsBigInt rule)
     {
-        NodeApi.CallMethodVoid(Module, _addRule, rule);
+        NodeApi.CallMethodVoid(Module, _addRule, NapiArg.Of(rule));
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public static unsafe partial class Hichecker
     /// </summary>
     public static void RemoveRule(JsBigInt rule)
     {
-        NodeApi.CallMethodVoid(Module, _removeRule, rule);
+        NodeApi.CallMethodVoid(Module, _removeRule, NapiArg.Of(rule));
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public static unsafe partial class Hichecker
     /// </summary>
     public static bool Contains(JsBigInt rule)
     {
-        return NodeApi.CallMethod<bool>(Module, _contains, rule);
+        return NodeApi.CallMethod<bool>(Module, _contains, NapiArg.Of(rule));
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public static unsafe partial class Hichecker
     /// </summary>
     public static void AddCheckRule(JsBigInt rule)
     {
-        NodeApi.CallMethodVoid(Module, _addCheckRule, rule);
+        NodeApi.CallMethodVoid(Module, _addCheckRule, NapiArg.Of(rule));
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public static unsafe partial class Hichecker
     /// </summary>
     public static void RemoveCheckRule(JsBigInt rule)
     {
-        NodeApi.CallMethodVoid(Module, _removeCheckRule, rule);
+        NodeApi.CallMethodVoid(Module, _removeCheckRule, NapiArg.Of(rule));
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public static unsafe partial class Hichecker
     /// </summary>
     public static bool ContainsCheckRule(JsBigInt rule)
     {
-        return NodeApi.CallMethod<bool>(Module, _containsCheckRule, rule);
+        return NodeApi.CallMethod<bool>(Module, _containsCheckRule, NapiArg.Of(rule));
     }
 
 }

@@ -266,7 +266,7 @@ public static unsafe partial class Hidebug
     /// </summary>
     public static void GetServiceDump(double serviceid, double fd, string[] args)
     {
-        NodeApi.CallMethodVoid(Module, _getServiceDump, serviceid, fd, args);
+        NodeApi.CallMethodVoid(Module, _getServiceDump, serviceid, fd, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -338,7 +338,7 @@ public static unsafe partial class Hidebug
     /// </summary>
     public static IntPtr GetAppNativeMemInfoWithCache(bool? forceRefresh = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getAppNativeMemInfoWithCache, forceRefresh);
+        return NodeApi.CallMethod<IntPtr>(Module, _getAppNativeMemInfoWithCache, NapiArg.Of(forceRefresh));
     }
 
     /// <summary>
@@ -506,7 +506,7 @@ public static unsafe partial class Hidebug
     /// </summary>
     public static string StartAppTraceCapture(double[] tags, global::HarmonyOS.ArkUI.TraceFlag flag, double limitSize)
     {
-        return NodeApi.CallMethod<string>(Module, _startAppTraceCapture, tags, flag, limitSize);
+        return NodeApi.CallMethod<string>(Module, _startAppTraceCapture, NapiArg.Of(tags), flag, limitSize);
     }
 
     /// <summary>
@@ -522,7 +522,7 @@ public static unsafe partial class Hidebug
     /// </summary>
     public static Task<string> RequestTraceAsync(RequestTraceConfig config)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _requestTrace, config);
+        return NodeApi.CallMethodAsync<string>(Module, _requestTrace, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -578,7 +578,7 @@ public static unsafe partial class Hidebug
     /// </summary>
     public static Task<GraphicsMemorySummary> GetGraphicsMemorySummaryAsync(double? interval = null)
     {
-        return NodeApi.CallMethodAsync(Module, _getGraphicsMemorySummary, static h => new GraphicsMemorySummary(h), interval);
+        return NodeApi.CallMethodAsync(Module, _getGraphicsMemorySummary, static h => new GraphicsMemorySummary(h), NapiArg.Of(interval));
     }
 
     /// <summary>
@@ -594,7 +594,7 @@ public static unsafe partial class Hidebug
     /// </summary>
     public static Task<string> DumpJsRawHeapDataAsync(bool? needGC = null)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _dumpJsRawHeapData, needGC);
+        return NodeApi.CallMethodAsync<string>(Module, _dumpJsRawHeapData, NapiArg.Of(needGC));
     }
 
     /// <summary>
@@ -618,7 +618,7 @@ public static unsafe partial class Hidebug
     /// </summary>
     public static void EnableGwpAsanGrayscale(GwpAsanOptions? options = null, double? duration = null)
     {
-        NodeApi.CallMethodVoid(Module, _enableGwpAsanGrayscale, options, duration);
+        NodeApi.CallMethodVoid(Module, _enableGwpAsanGrayscale, NapiArg.Of(options), NapiArg.Of(duration));
     }
 
     /// <summary>

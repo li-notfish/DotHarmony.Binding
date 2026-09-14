@@ -129,7 +129,7 @@ public sealed partial class AudioHapticManager : JsObject
     /// </summary>
     public Task<AudioHapticPlayer> CreatePlayerAsync(double id, AudioHapticPlayerOptions? options = null)
     {
-        return CallMethodAsync(_createPlayer, static h => new AudioHapticPlayer(h), id, options);
+        return CallMethodAsync(_createPlayer, static h => new AudioHapticPlayer(h), id, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public sealed partial class AudioHapticManager : JsObject
     /// </summary>
     public Task<double> RegisterSourceFromFdAsync(AudioHapticFileDescriptor audioFd, AudioHapticFileDescriptor hapticFd)
     {
-        return CallMethodAsync<double>(_registerSourceFromFd, audioFd, hapticFd);
+        return CallMethodAsync<double>(_registerSourceFromFd, NapiArg.Of(audioFd), NapiArg.Of(hapticFd));
     }
 
 }

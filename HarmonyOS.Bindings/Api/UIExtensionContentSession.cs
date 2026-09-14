@@ -80,7 +80,7 @@ public static unsafe partial class UIExtensionContentSession
     /// </summary>
     public static void LoadContent(string path, IntPtr? storage = null)
     {
-        NodeApi.CallMethodVoid(Module, _loadContent, path, storage);
+        NodeApi.CallMethodVoid(Module, _loadContent, path, NapiArg.Of(storage));
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public static unsafe partial class UIExtensionContentSession
     /// </summary>
     public static void LoadContentByName(string name, IntPtr? storage = null)
     {
-        NodeApi.CallMethodVoid(Module, _loadContentByName, name, storage);
+        NodeApi.CallMethodVoid(Module, _loadContentByName, name, NapiArg.Of(storage));
     }
 
     /// <summary>
@@ -184,7 +184,7 @@ public sealed partial class UIExtensionContentSessionObject : JsObject
     /// </summary>
     public void LoadContent(string path, IntPtr? storage = null)
     {
-        CallMethodVoid(_loadContent, path, storage);
+        CallMethodVoid(_loadContent, path, NapiArg.Of(storage));
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public sealed partial class UIExtensionContentSessionObject : JsObject
     /// </summary>
     public void LoadContentByName(string name, IntPtr? storage = null)
     {
-        CallMethodVoid(_loadContentByName, name, storage);
+        CallMethodVoid(_loadContentByName, name, NapiArg.Of(storage));
     }
 
     /// <summary>

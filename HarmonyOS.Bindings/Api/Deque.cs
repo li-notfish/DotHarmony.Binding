@@ -136,7 +136,7 @@ public static unsafe partial class Deque
     /// </summary>
     public static void ForEach(IntPtr callbackFn, IntPtr? thisArg = null)
     {
-        NodeApi.CallMethodVoid(Module, _forEach, callbackFn, thisArg);
+        NodeApi.CallMethodVoid(Module, _forEach, callbackFn, NapiArg.Of(thisArg));
     }
 
 }

@@ -75,7 +75,7 @@ public static unsafe partial class LocationManager
     /// </summary>
     public static void SetLocationPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.LocationPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _setLocationPolicy, admin, policy);
+        NodeApi.CallMethodVoid(Module, _setLocationPolicy, NapiArg.Of(admin), policy);
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public static unsafe partial class LocationManager
     /// </summary>
     public static global::HarmonyOS.ArkUI.LocationPolicy GetLocationPolicy(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.LocationPolicy>(Module, _getLocationPolicy, admin);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.LocationPolicy>(Module, _getLocationPolicy, NapiArg.Of(admin));
     }
 
 }

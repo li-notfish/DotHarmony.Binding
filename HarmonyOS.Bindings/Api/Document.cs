@@ -74,7 +74,7 @@ public static unsafe partial class Document
     /// </summary>
     public static Task<string> ChooseAsync(string[]? types = null)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _choose, types);
+        return NodeApi.CallMethodAsync<string>(Module, _choose, NapiArg.Of(types));
     }
 
     /// <summary>

@@ -264,7 +264,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task CopyAsync(string srcUri, string destUri, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copy, srcUri, destUri, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _copy, srcUri, destUri, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -280,7 +280,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task CopyDirAsync(string src, string dest, double? mode = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copyDir, src, dest, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _copyDir, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -296,7 +296,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static void CopyDirSync(string src, string dest, double? mode = null)
     {
-        NodeApi.CallMethodVoid(Module, _copyDirSync, src, dest, mode);
+        NodeApi.CallMethodVoid(Module, _copyDirSync, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -304,7 +304,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task CopyFileAsync(string src, string dest, double? mode = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -320,7 +320,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static void CopyFileSync(string src, string dest, double? mode = null)
     {
-        NodeApi.CallMethodVoid(Module, _copyFileSync, src, dest, mode);
+        NodeApi.CallMethodVoid(Module, _copyFileSync, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -344,7 +344,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<IntPtr> CreateRandomAccessFileAsync(string file, double? mode = null, RandomAccessFileOptions? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file, mode, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createRandomAccessFile, file, NapiArg.Of(mode), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -368,7 +368,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static IntPtr CreateRandomAccessFileSync(string file, double? mode = null, RandomAccessFileOptions? options = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createRandomAccessFileSync, file, mode, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _createRandomAccessFileSync, file, NapiArg.Of(mode), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -376,7 +376,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static IntPtr CreateReadStream(string path, ReadStreamOptions? options = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createReadStream, path, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _createReadStream, path, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -384,7 +384,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static IntPtr CreateWriteStream(string path, WriteStreamOptions? options = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createWriteStream, path, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _createWriteStream, path, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -392,7 +392,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static IntPtr CreateWatcher(string path, double events, WatchEventListener listener)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createWatcher, path, events, listener);
+        return NodeApi.CallMethod<IntPtr>(Module, _createWatcher, path, events, NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -456,7 +456,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<string[]> ListFileAsync(string path, ListFileOptions? options = null)
     {
-        return NodeApi.CallMethodAsync(Module, _listFile, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
+        return NodeApi.CallMethodAsync(Module, _listFile, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -472,7 +472,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static string[] ListFileSync(string path, ListFileOptions? options = null)
     {
-        return NodeApi.CallMethod(Module, _listFileSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
+        return NodeApi.CallMethod(Module, _listFileSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -480,7 +480,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<string[]> ListFileExtAsync(string path, ListFileExtOptions? options = null)
     {
-        return NodeApi.CallMethodAsync(Module, _listFileExt, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
+        return NodeApi.CallMethodAsync(Module, _listFileExt, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -488,7 +488,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static string[] ListFileExtSync(string path, ListFileExtOptions? options = null)
     {
-        return NodeApi.CallMethod(Module, _listFileExtSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, options);
+        return NodeApi.CallMethod(Module, _listFileExtSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), path, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -584,7 +584,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task MoveDirAsync(string src, string dest, double? mode = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _moveDir, src, dest, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _moveDir, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -600,7 +600,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static void MoveDirSync(string src, string dest, double? mode = null)
     {
-        NodeApi.CallMethodVoid(Module, _moveDirSync, src, dest, mode);
+        NodeApi.CallMethodVoid(Module, _moveDirSync, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -608,7 +608,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task MoveFileAsync(string src, string dest, double? mode = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _moveFile, src, dest, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _moveFile, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -624,7 +624,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static void MoveFileSync(string src, string dest, double? mode = null)
     {
-        NodeApi.CallMethodVoid(Module, _moveFileSync, src, dest, mode);
+        NodeApi.CallMethodVoid(Module, _moveFileSync, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -632,7 +632,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<IntPtr> OpenAsync(string path, double? mode = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _open, path, mode);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _open, path, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -648,7 +648,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static IntPtr OpenSync(string path, double? mode = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _openSync, path, mode);
+        return NodeApi.CallMethod<IntPtr>(Module, _openSync, path, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -656,7 +656,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<double> ReadAsync(double fd, byte[] buffer, ReadOptions? options = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _read, fd, buffer, options);
+        return NodeApi.CallMethodAsync<double>(Module, _read, fd, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -664,7 +664,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<double> ReadAsync(double fd, byte[] buffer)
     {
-        return NodeApi.CallMethodAsyncCallback<double>(Module, _read, null, fd, buffer);
+        return NodeApi.CallMethodAsyncCallback<double>(Module, _read, null, fd, NapiArg.Of(buffer));
     }
 
     /// <summary>
@@ -672,7 +672,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static double ReadSync(double fd, byte[] buffer, ReadOptions? options = null)
     {
-        return NodeApi.CallMethod<double>(Module, _readSync, fd, buffer, options);
+        return NodeApi.CallMethod<double>(Module, _readSync, fd, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -680,7 +680,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<IntPtr> ReadLinesAsync(string filePath, FsOptions? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _readLines, filePath, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _readLines, filePath, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -696,7 +696,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static IntPtr ReadLinesSync(string filePath, FsOptions? options = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _readLinesSync, filePath, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _readLinesSync, filePath, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -704,7 +704,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<string> ReadTextAsync(string filePath, ReadTextOptions? options = null)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _readText, filePath, options);
+        return NodeApi.CallMethodAsync<string>(Module, _readText, filePath, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -720,7 +720,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static string ReadTextSync(string filePath, ReadTextOptions? options = null)
     {
-        return NodeApi.CallMethod<string>(Module, _readTextSync, filePath, options);
+        return NodeApi.CallMethod<string>(Module, _readTextSync, filePath, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -792,7 +792,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task TruncateAsync(string file, double? len = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _truncate, file, len);
+        return NodeApi.CallMethodAsyncVoid(Module, _truncate, file, NapiArg.Of(len));
     }
 
     /// <summary>
@@ -808,7 +808,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static void TruncateSync(string file, double? len = null)
     {
-        NodeApi.CallMethodVoid(Module, _truncateSync, file, len);
+        NodeApi.CallMethodVoid(Module, _truncateSync, file, NapiArg.Of(len));
     }
 
     /// <summary>
@@ -840,7 +840,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<double> WriteAsync(double fd, byte[] buffer, WriteOptions? options = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _write, fd, buffer, options);
+        return NodeApi.CallMethodAsync<double>(Module, _write, fd, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -848,7 +848,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<double> WriteAsync(double fd, byte[] buffer)
     {
-        return NodeApi.CallMethodAsyncCallback<double>(Module, _write, null, fd, buffer);
+        return NodeApi.CallMethodAsyncCallback<double>(Module, _write, null, fd, NapiArg.Of(buffer));
     }
 
     /// <summary>
@@ -856,7 +856,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static double WriteSync(double fd, byte[] buffer, WriteOptions? options = null)
     {
-        return NodeApi.CallMethod<double>(Module, _writeSync, fd, buffer, options);
+        return NodeApi.CallMethod<double>(Module, _writeSync, fd, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -864,7 +864,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task ConnectDfsAsync(string networkId, DfsListeners listeners)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _connectDfs, networkId, listeners);
+        return NodeApi.CallMethodAsyncVoid(Module, _connectDfs, networkId, NapiArg.Of(listeners));
     }
 
     /// <summary>
@@ -978,7 +978,7 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public Task<double> WriteAsync(byte[] buffer, WriteOptions? options = null)
     {
-        return CallMethodAsync<double>(_write, buffer, options);
+        return CallMethodAsync<double>(_write, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -986,7 +986,7 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public Task<double> WriteAsync(byte[] buffer)
     {
-        return CallMethodAsyncCallback<double>(_write, null, buffer);
+        return CallMethodAsyncCallback<double>(_write, null, NapiArg.Of(buffer));
     }
 
     /// <summary>
@@ -994,7 +994,7 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public double WriteSync(byte[] buffer, WriteOptions? options = null)
     {
-        return CallMethod<double>(_writeSync, buffer, options);
+        return CallMethod<double>(_writeSync, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1002,7 +1002,7 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public Task<double> ReadAsync(byte[] buffer, ReadOptions? options = null)
     {
-        return CallMethodAsync<double>(_read, buffer, options);
+        return CallMethodAsync<double>(_read, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1010,7 +1010,7 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public Task<double> ReadAsync(byte[] buffer)
     {
-        return CallMethodAsyncCallback<double>(_read, null, buffer);
+        return CallMethodAsyncCallback<double>(_read, null, NapiArg.Of(buffer));
     }
 
     /// <summary>
@@ -1018,7 +1018,7 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public double ReadSync(byte[] buffer, ReadOptions? options = null)
     {
-        return CallMethod<double>(_readSync, buffer, options);
+        return CallMethod<double>(_readSync, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1185,7 +1185,7 @@ public sealed partial class FsFile : JsObject
     /// </summary>
     public Task LockAsync(bool? exclusive = null)
     {
-        return CallMethodAsyncVoid(_lock, exclusive);
+        return CallMethodAsyncVoid(_lock, NapiArg.Of(exclusive));
     }
 
     /// <summary>
@@ -1201,7 +1201,7 @@ public sealed partial class FsFile : JsObject
     /// </summary>
     public void TryLock(bool? exclusive = null)
     {
-        CallMethodVoid(_tryLock, exclusive);
+        CallMethodVoid(_tryLock, NapiArg.Of(exclusive));
     }
 
     /// <summary>

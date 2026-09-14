@@ -194,6 +194,19 @@ internal static class NativeValue
     }
 
     /// <summary>
+    /// union struct 参数零装箱转换（NapiArg：基元按标签直取值域，引用类型走 object 分派）
+    /// </summary>
+    public static IntPtr From(NapiArg arg) => arg.Kind switch
+    {
+        NapiArg.Tag.Null => IntPtr.Zero,
+        NapiArg.Tag.Number => From(arg.Number),
+        NapiArg.Tag.Int => From(arg.Integer),
+        NapiArg.Tag.Bool => From(arg.Integer != 0),
+        NapiArg.Tag.Native => (IntPtr)arg.Integer,
+        _ => From(arg.RefValue),
+    };
+
+    /// <summary>
     /// 自动将任意 C# 对象转换为 napi_value
     /// </summary>
     public static IntPtr From(object? value) => value switch

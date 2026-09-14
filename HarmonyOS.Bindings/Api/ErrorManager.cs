@@ -109,7 +109,7 @@ public static unsafe partial class ErrorManager
     /// </summary>
     public static void Off(string type, IntPtr? observer = null)
     {
-        NodeApi.CallMethodVoid(Module, _off, type, observer);
+        NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(observer));
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public static unsafe partial class ErrorManager
     /// </summary>
     public static IntPtr SetDefaultErrorHandler(IntPtr? defaultHandler = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _setDefaultErrorHandler, defaultHandler);
+        return NodeApi.CallMethod<IntPtr>(Module, _setDefaultErrorHandler, NapiArg.Of(defaultHandler));
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public static unsafe partial class ErrorManager
     /// </summary>
     public static IntPtr SetDefaultResourceUsageObserver(IntPtr? defaultObserver = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _setDefaultResourceUsageObserver, defaultObserver);
+        return NodeApi.CallMethod<IntPtr>(Module, _setDefaultResourceUsageObserver, NapiArg.Of(defaultObserver));
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public static unsafe partial class ErrorManager
     /// </summary>
     public static IntPtr SetDefaultFreezeObserver(IntPtr? defaultObserver = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _setDefaultFreezeObserver, defaultObserver);
+        return NodeApi.CallMethod<IntPtr>(Module, _setDefaultFreezeObserver, NapiArg.Of(defaultObserver));
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();
@@ -179,7 +179,7 @@ public static unsafe partial class ErrorManager
     /// </summary>
     public static void Off(string type, System.Action callback, IntPtr? observer = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, observer));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(observer)));
     }
 
     /// <summary>

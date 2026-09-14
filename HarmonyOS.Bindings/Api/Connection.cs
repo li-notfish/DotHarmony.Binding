@@ -102,7 +102,7 @@ public static unsafe partial class Connection
     /// </summary>
     public static IntPtr GetProfileConnectionState(IntPtr? profileId = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getProfileConnectionState, profileId);
+        return NodeApi.CallMethod<IntPtr>(Module, _getProfileConnectionState, NapiArg.Of(profileId));
     }
 
     /// <summary>
@@ -134,7 +134,7 @@ public static unsafe partial class Connection
     /// </summary>
     public static string GetRemoteDeviceName(string deviceId, bool? alias = null)
     {
-        return NodeApi.CallMethod<string>(Module, _getRemoteDeviceName, deviceId, alias);
+        return NodeApi.CallMethod<string>(Module, _getRemoteDeviceName, deviceId, NapiArg.Of(alias));
     }
 
     /// <summary>
@@ -326,7 +326,7 @@ public static unsafe partial class Connection
     /// </summary>
     public static void OffScanModeChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offScanModeChange, callback);
+        NodeApi.CallMethodVoid(Module, _offScanModeChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -342,7 +342,7 @@ public static unsafe partial class Connection
     /// </summary>
     public static void OffAclStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offAclStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offAclStateChange, NapiArg.Of(callback));
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();

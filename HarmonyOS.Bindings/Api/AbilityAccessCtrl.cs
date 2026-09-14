@@ -133,7 +133,7 @@ public sealed partial class AtManager : JsObject
     /// </summary>
     public Task<IntPtr> RequestPermissionsFromUserAsync(IntPtr context, string[] permissionList)
     {
-        return CallMethodAsync<IntPtr>(_requestPermissionsFromUser, context, permissionList);
+        return CallMethodAsync<IntPtr>(_requestPermissionsFromUser, context, NapiArg.Of(permissionList));
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public sealed partial class AtManager : JsObject
     /// </summary>
     public void On(string type, string[] permissionList, IntPtr callback)
     {
-        CallMethodVoid(_on, type, permissionList, callback);
+        CallMethodVoid(_on, type, NapiArg.Of(permissionList), callback);
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public sealed partial class AtManager : JsObject
     /// </summary>
     public void Off(string type, string[] permissionList, IntPtr callback)
     {
-        CallMethodVoid(_off, type, permissionList, callback);
+        CallMethodVoid(_off, type, NapiArg.Of(permissionList), callback);
     }
 
     /// <summary>
@@ -157,7 +157,7 @@ public sealed partial class AtManager : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.GrantStatus[]> RequestPermissionOnSettingAsync(IntPtr context, string[] permissionList)
     {
-        return CallMethodAsync(_requestPermissionOnSetting, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.GrantStatus>(e)), context, permissionList);
+        return CallMethodAsync(_requestPermissionOnSetting, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.GrantStatus>(e)), context, NapiArg.Of(permissionList));
     }
 
     /// <summary>
@@ -193,7 +193,7 @@ public sealed partial class AtManager : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(new PermissionStateChangeInfo(args[0])),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, permissionList));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(permissionList)));
     }
 
     /// <summary>
@@ -209,7 +209,7 @@ public sealed partial class AtManager : JsObject
     /// </summary>
     public void Off(string type, System.Action<PermissionStateChangeInfo> callback, string[] permissionList)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, permissionList));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, NapiArg.Of(permissionList)));
     }
 
     /// <summary>

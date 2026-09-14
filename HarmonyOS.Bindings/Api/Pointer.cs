@@ -146,7 +146,7 @@ public static unsafe partial class Pointer
     /// </summary>
     public static Task SetCustomCursorAsync(double windowId, IntPtr pixelMap, double? focusX = null, double? focusY = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setCustomCursor, windowId, pixelMap, focusX, focusY);
+        return NodeApi.CallMethodAsyncVoid(Module, _setCustomCursor, windowId, pixelMap, NapiArg.Of(focusX), NapiArg.Of(focusY));
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ public static unsafe partial class Pointer
     /// </summary>
     public static void SetCustomCursorSync(double windowId, IntPtr pixelMap, double? focusX = null, double? focusY = null)
     {
-        NodeApi.CallMethodVoid(Module, _setCustomCursorSync, windowId, pixelMap, focusX, focusY);
+        NodeApi.CallMethodVoid(Module, _setCustomCursorSync, windowId, pixelMap, NapiArg.Of(focusX), NapiArg.Of(focusY));
     }
 
     /// <summary>
@@ -162,7 +162,7 @@ public static unsafe partial class Pointer
     /// </summary>
     public static Task SetCustomCursorAsync(double windowId, IntPtr cursor, CursorConfig config)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setCustomCursor, windowId, cursor, config);
+        return NodeApi.CallMethodAsyncVoid(Module, _setCustomCursor, windowId, cursor, NapiArg.Of(config));
     }
 
 }

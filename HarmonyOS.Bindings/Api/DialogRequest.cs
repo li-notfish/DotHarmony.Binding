@@ -74,7 +74,7 @@ public static unsafe partial class DialogRequest
     /// </summary>
     public static RequestInfo GetRequestInfo(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        return NodeApi.CallMethod(Module, _getRequestInfo, static h => new RequestInfo(h), want);
+        return NodeApi.CallMethod(Module, _getRequestInfo, static h => new RequestInfo(h), NapiArg.Of(want));
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public static unsafe partial class DialogRequest
     /// </summary>
     public static RequestCallback GetRequestCallback(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        return NodeApi.CallMethod(Module, _getRequestCallback, static h => new RequestCallback(h), want);
+        return NodeApi.CallMethod(Module, _getRequestCallback, static h => new RequestCallback(h), NapiArg.Of(want));
     }
 
 }

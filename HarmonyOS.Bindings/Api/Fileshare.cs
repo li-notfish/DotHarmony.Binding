@@ -78,7 +78,7 @@ public static unsafe partial class Fileshare
     /// </summary>
     public static Task PersistPermissionAsync(PolicyInfo[] policies)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _persistPermission, policies);
+        return NodeApi.CallMethodAsyncVoid(Module, _persistPermission, NapiArg.Of(policies));
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public static unsafe partial class Fileshare
     /// </summary>
     public static Task RevokePermissionAsync(PolicyInfo[] policies)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _revokePermission, policies);
+        return NodeApi.CallMethodAsyncVoid(Module, _revokePermission, NapiArg.Of(policies));
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ public static unsafe partial class Fileshare
     /// </summary>
     public static Task ActivatePermissionAsync(PolicyInfo[] policies)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _activatePermission, policies);
+        return NodeApi.CallMethodAsyncVoid(Module, _activatePermission, NapiArg.Of(policies));
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public static unsafe partial class Fileshare
     /// </summary>
     public static Task DeactivatePermissionAsync(PolicyInfo[] policies)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deactivatePermission, policies);
+        return NodeApi.CallMethodAsyncVoid(Module, _deactivatePermission, NapiArg.Of(policies));
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ public static unsafe partial class Fileshare
     /// </summary>
     public static Task<bool[]> CheckPersistentPermissionAsync(PolicyInfo[] policies)
     {
-        return NodeApi.CallMethodAsync(Module, _checkPersistentPermission, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<bool>(e)), policies);
+        return NodeApi.CallMethodAsync(Module, _checkPersistentPermission, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<bool>(e)), NapiArg.Of(policies));
     }
 
 }

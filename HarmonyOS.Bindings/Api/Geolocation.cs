@@ -85,7 +85,7 @@ public static unsafe partial class Geolocation
     /// </summary>
     public static void On(string type, GeolocationLocationRequest request, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, request, callback);
+        NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), callback);
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public static unsafe partial class Geolocation
     /// </summary>
     public static void On(string type, GeolocationCachedGnssLocationsRequest request, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, request, callback);
+        NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), callback);
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public static unsafe partial class Geolocation
     /// </summary>
     public static void On(string type, GeolocationGeofenceRequest request, IntPtr want)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, request, want);
+        NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), want);
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public static unsafe partial class Geolocation
     /// </summary>
     public static void Off(string type, GeolocationGeofenceRequest request, IntPtr want)
     {
-        NodeApi.CallMethodVoid(Module, _off, type, request, want);
+        NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(request), want);
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public static unsafe partial class Geolocation
     /// </summary>
     public static Task<GeolocationLocation> GetCurrentLocationAsync(GeolocationCurrentLocationRequest request)
     {
-        return NodeApi.CallMethodAsync(Module, _getCurrentLocation, static h => new GeolocationLocation(h), request);
+        return NodeApi.CallMethodAsync(Module, _getCurrentLocation, static h => new GeolocationLocation(h), NapiArg.Of(request));
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ public static unsafe partial class Geolocation
     /// </summary>
     public static Task<GeolocationGeoAddress[]> GetAddressesFromLocationAsync(GeolocationReverseGeoCodeRequest request)
     {
-        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocation, h => ValueConverter.ConvertArray(h, static e => new GeolocationGeoAddress(e)), request);
+        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocation, h => ValueConverter.ConvertArray(h, static e => new GeolocationGeoAddress(e)), NapiArg.Of(request));
     }
 
     /// <summary>
@@ -181,7 +181,7 @@ public static unsafe partial class Geolocation
     /// </summary>
     public static Task<GeolocationGeoAddress[]> GetAddressesFromLocationNameAsync(GeolocationGeoCodeRequest request)
     {
-        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocationName, h => ValueConverter.ConvertArray(h, static e => new GeolocationGeoAddress(e)), request);
+        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocationName, h => ValueConverter.ConvertArray(h, static e => new GeolocationGeoAddress(e)), NapiArg.Of(request));
     }
 
     /// <summary>
@@ -213,7 +213,7 @@ public static unsafe partial class Geolocation
     /// </summary>
     public static Task<bool> SendCommandAsync(GeolocationLocationCommand command)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _sendCommand, command);
+        return NodeApi.CallMethodAsync<bool>(Module, _sendCommand, NapiArg.Of(command));
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();
@@ -225,7 +225,7 @@ public static unsafe partial class Geolocation
     {
         _eventListeners.Add((type, callback),
             args => callback(new GeolocationLocation(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, request));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(request)));
     }
 
     /// <summary>
@@ -269,7 +269,7 @@ public static unsafe partial class Geolocation
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => new GeolocationLocation(e))),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, request));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(request)));
     }
 
     /// <summary>
@@ -323,7 +323,7 @@ public static unsafe partial class Geolocation
     {
         _eventListeners.Add((type, callback),
             args => callback(),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, request, want));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(request), want));
     }
 
     /// <summary>
@@ -331,7 +331,7 @@ public static unsafe partial class Geolocation
     /// </summary>
     public static void Off(string type, System.Action callback, GeolocationGeofenceRequest request, IntPtr want)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, request, want));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(request), want));
     }
 
     /// <summary>

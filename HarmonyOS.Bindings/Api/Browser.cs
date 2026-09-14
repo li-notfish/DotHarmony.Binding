@@ -79,7 +79,7 @@ public static unsafe partial class Browser
     /// </summary>
     public static void SetPolicySync(global::HarmonyOS.Bindings.Api.WantObject admin, string appId, string policyName, string policyValue)
     {
-        NodeApi.CallMethodVoid(Module, _setPolicySync, admin, appId, policyName, policyValue);
+        NodeApi.CallMethodVoid(Module, _setPolicySync, NapiArg.Of(admin), appId, policyName, policyValue);
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public static unsafe partial class Browser
     /// </summary>
     public static string GetPoliciesSync(global::HarmonyOS.Bindings.Api.WantObject admin, string appId)
     {
-        return NodeApi.CallMethod<string>(Module, _getPoliciesSync, admin, appId);
+        return NodeApi.CallMethod<string>(Module, _getPoliciesSync, NapiArg.Of(admin), appId);
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public static unsafe partial class Browser
     /// </summary>
     public static void SetManagedBrowserPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, string policyName, string policyValue)
     {
-        NodeApi.CallMethodVoid(Module, _setManagedBrowserPolicy, admin, bundleName, policyName, policyValue);
+        NodeApi.CallMethodVoid(Module, _setManagedBrowserPolicy, NapiArg.Of(admin), bundleName, policyName, policyValue);
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public static unsafe partial class Browser
     /// </summary>
     public static byte[] GetManagedBrowserPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName)
     {
-        return NodeApi.CallMethod(Module, _getManagedBrowserPolicy, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), admin, bundleName);
+        return NodeApi.CallMethod(Module, _getManagedBrowserPolicy, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(admin), bundleName);
     }
 
     /// <summary>

@@ -116,7 +116,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static NetConnectionObject CreateNetConnection(NetSpecifier? netSpecifier = null, double? timeout = null)
     {
-        return NodeApi.CallMethod(Module, _createNetConnection, static h => new NetConnectionObject(h), netSpecifier, timeout);
+        return NodeApi.CallMethod(Module, _createNetConnection, static h => new NetConnectionObject(h), NapiArg.Of(netSpecifier), NapiArg.Of(timeout));
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task<IntPtr> GetConnectionPropertiesAsync(NetHandle netHandle)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getConnectionProperties, netHandle);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getConnectionProperties, NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static IntPtr GetConnectionPropertiesSync(NetHandle netHandle)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getConnectionPropertiesSync, netHandle);
+        return NodeApi.CallMethod<IntPtr>(Module, _getConnectionPropertiesSync, NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task<NetCapabilities> GetNetCapabilitiesAsync(NetHandle netHandle)
     {
-        return NodeApi.CallMethodAsync(Module, _getNetCapabilities, static h => new NetCapabilities(h), netHandle);
+        return NodeApi.CallMethodAsync(Module, _getNetCapabilities, static h => new NetCapabilities(h), NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -180,7 +180,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static NetCapabilities GetNetCapabilitiesSync(NetHandle netHandle)
     {
-        return NodeApi.CallMethod(Module, _getNetCapabilitiesSync, static h => new NetCapabilities(h), netHandle);
+        return NodeApi.CallMethod(Module, _getNetCapabilitiesSync, static h => new NetCapabilities(h), NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -188,7 +188,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task SetNetExtAttributeAsync(NetHandle netHandle, string netExtAttribute)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setNetExtAttribute, netHandle, netExtAttribute);
+        return NodeApi.CallMethodAsyncVoid(Module, _setNetExtAttribute, NapiArg.Of(netHandle), netExtAttribute);
     }
 
     /// <summary>
@@ -196,7 +196,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static void SetNetExtAttributeSync(NetHandle netHandle, string netExtAttribute)
     {
-        NodeApi.CallMethodVoid(Module, _setNetExtAttributeSync, netHandle, netExtAttribute);
+        NodeApi.CallMethodVoid(Module, _setNetExtAttributeSync, NapiArg.Of(netHandle), netExtAttribute);
     }
 
     /// <summary>
@@ -204,7 +204,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task<string> GetNetExtAttributeAsync(NetHandle netHandle)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _getNetExtAttribute, netHandle);
+        return NodeApi.CallMethodAsync<string>(Module, _getNetExtAttribute, NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -212,7 +212,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static string GetNetExtAttributeSync(NetHandle netHandle)
     {
-        return NodeApi.CallMethod<string>(Module, _getNetExtAttributeSync, netHandle);
+        return NodeApi.CallMethod<string>(Module, _getNetExtAttributeSync, NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -252,7 +252,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task ReportNetConnectedAsync(NetHandle netHandle)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _reportNetConnected, netHandle);
+        return NodeApi.CallMethodAsyncVoid(Module, _reportNetConnected, NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -260,7 +260,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task ReportNetDisconnectedAsync(NetHandle netHandle)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _reportNetDisconnected, netHandle);
+        return NodeApi.CallMethodAsyncVoid(Module, _reportNetDisconnected, NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -276,7 +276,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task<NetAddress[]> GetAddressesByNameWithOptionsAsync(string host, QueryOptions? option = null)
     {
-        return NodeApi.CallMethodAsync(Module, _getAddressesByNameWithOptions, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host, option);
+        return NodeApi.CallMethodAsync(Module, _getAddressesByNameWithOptions, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host, NapiArg.Of(option));
     }
 
     /// <summary>
@@ -300,7 +300,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task SetAppNetAsync(NetHandle netHandle)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setAppNet, netHandle);
+        return NodeApi.CallMethodAsyncVoid(Module, _setAppNet, NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -316,7 +316,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static void SetAppHttpProxy(HttpProxy httpProxy)
     {
-        NodeApi.CallMethodVoid(Module, _setAppHttpProxy, httpProxy);
+        NodeApi.CallMethodVoid(Module, _setAppHttpProxy, NapiArg.Of(httpProxy));
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task AddCustomDnsRuleAsync(string host, string[] ip)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _addCustomDnsRule, host, ip);
+        return NodeApi.CallMethodAsyncVoid(Module, _addCustomDnsRule, host, NapiArg.Of(ip));
     }
 
     /// <summary>
@@ -396,7 +396,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task<double> GetConnectOwnerUidAsync(global::HarmonyOS.ArkUI.NetConnectionProtocolType protocol, NetAddress local, NetAddress remote)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _getConnectOwnerUid, protocol, local, remote);
+        return NodeApi.CallMethodAsync<double>(Module, _getConnectOwnerUid, protocol, NapiArg.Of(local), NapiArg.Of(remote));
     }
 
     /// <summary>
@@ -404,7 +404,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static double GetConnectOwnerUidSync(global::HarmonyOS.ArkUI.NetConnectionProtocolType protocol, NetAddress local, NetAddress remote)
     {
-        return NodeApi.CallMethod<double>(Module, _getConnectOwnerUidSync, protocol, local, remote);
+        return NodeApi.CallMethod<double>(Module, _getConnectOwnerUidSync, protocol, NapiArg.Of(local), NapiArg.Of(remote));
     }
 
     /// <summary>
@@ -444,7 +444,7 @@ public static unsafe partial class NetConnection
     /// </summary>
     public static Task<TraceRouteInfo[]> QueryTraceRouteAsync(string destination, TraceRouteOptions? option = null)
     {
-        return NodeApi.CallMethodAsync(Module, _queryTraceRoute, h => ValueConverter.ConvertArray(h, static e => new TraceRouteInfo(e)), destination, option);
+        return NodeApi.CallMethodAsync(Module, _queryTraceRoute, h => ValueConverter.ConvertArray(h, static e => new TraceRouteInfo(e)), destination, NapiArg.Of(option));
     }
 
     /// <summary>
@@ -708,7 +708,7 @@ public sealed partial class NetHandle : JsObject
     /// </summary>
     public Task<NetAddress[]> GetAddressesByNameWithOptionsAsync(string host, QueryOptions? option = null)
     {
-        return CallMethodAsync(_getAddressesByNameWithOptions, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host, option);
+        return CallMethodAsync(_getAddressesByNameWithOptions, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host, NapiArg.Of(option));
     }
 
     /// <summary>

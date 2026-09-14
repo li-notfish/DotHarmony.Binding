@@ -278,7 +278,7 @@ public static unsafe partial class UIAbility
     /// </summary>
     public static string[] OnDump(string[] @params)
     {
-        return NodeApi.CallMethod(Module, _onDump, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), @params);
+        return NodeApi.CallMethod(Module, _onDump, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -409,7 +409,7 @@ public sealed partial class UIAbilityObject : JsObject
     /// </summary>
     public void OnCreate(global::HarmonyOS.Bindings.Api.WantObject want, IntPtr launchParam)
     {
-        CallMethodVoid(_onCreate, want, launchParam);
+        CallMethodVoid(_onCreate, NapiArg.Of(want), launchParam);
     }
 
     /// <summary>
@@ -513,7 +513,7 @@ public sealed partial class UIAbilityObject : JsObject
     /// </summary>
     public void OnNewWant(global::HarmonyOS.Bindings.Api.WantObject want, IntPtr launchParam)
     {
-        CallMethodVoid(_onNewWant, want, launchParam);
+        CallMethodVoid(_onNewWant, NapiArg.Of(want), launchParam);
     }
 
     /// <summary>
@@ -521,7 +521,7 @@ public sealed partial class UIAbilityObject : JsObject
     /// </summary>
     public string[] OnDump(string[] @params)
     {
-        return CallMethod(_onDump, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), @params);
+        return CallMethod(_onDump, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(@params));
     }
 
     /// <summary>

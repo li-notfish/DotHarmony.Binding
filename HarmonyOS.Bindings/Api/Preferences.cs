@@ -98,7 +98,7 @@ public static unsafe partial class Preferences
     /// </summary>
     public static Task<PreferencesObject> GetPreferencesAsync(IntPtr context, PreferencesOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _getPreferences, static h => new PreferencesObject(h), context, options);
+        return NodeApi.CallMethodAsync(Module, _getPreferences, static h => new PreferencesObject(h), context, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ public static unsafe partial class Preferences
     /// </summary>
     public static PreferencesObject GetPreferencesSync(IntPtr context, PreferencesOptions options)
     {
-        return NodeApi.CallMethod(Module, _getPreferencesSync, static h => new PreferencesObject(h), context, options);
+        return NodeApi.CallMethod(Module, _getPreferencesSync, static h => new PreferencesObject(h), context, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ public static unsafe partial class Preferences
     /// </summary>
     public static Task DeletePreferencesAsync(IntPtr context, PreferencesOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, context, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, context, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public static unsafe partial class Preferences
     /// </summary>
     public static Task RemovePreferencesFromCacheAsync(IntPtr context, PreferencesOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, context, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, context, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -162,7 +162,7 @@ public static unsafe partial class Preferences
     /// </summary>
     public static void RemovePreferencesFromCacheSync(IntPtr context, PreferencesOptions options)
     {
-        NodeApi.CallMethodVoid(Module, _removePreferencesFromCacheSync, context, options);
+        NodeApi.CallMethodVoid(Module, _removePreferencesFromCacheSync, context, NapiArg.Of(options));
     }
 
 }
@@ -315,7 +315,7 @@ public sealed partial class PreferencesObject : JsObject
     /// </summary>
     public void On(string type, string[] keys, IntPtr callback)
     {
-        CallMethodVoid(_on, type, keys, callback);
+        CallMethodVoid(_on, type, NapiArg.Of(keys), callback);
     }
 
     /// <summary>
@@ -331,7 +331,7 @@ public sealed partial class PreferencesObject : JsObject
     /// </summary>
     public void Off(string type, string[] keys, IntPtr callback)
     {
-        CallMethodVoid(_off, type, keys, callback);
+        CallMethodVoid(_off, type, NapiArg.Of(keys), callback);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -353,7 +353,7 @@ public sealed partial class PreferencesObject : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, keys));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(keys)));
     }
 
     /// <summary>
@@ -377,7 +377,7 @@ public sealed partial class PreferencesObject : JsObject
     /// </summary>
     public void Off(string type, System.Action<IntPtr> callback, string[] keys)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, keys));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, NapiArg.Of(keys)));
     }
 
     /// <summary>

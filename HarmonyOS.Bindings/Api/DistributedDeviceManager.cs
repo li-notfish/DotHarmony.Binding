@@ -83,7 +83,7 @@ public static unsafe partial class DistributedDeviceManager
     /// </summary>
     public static void ReleaseDeviceManager(DeviceManagerObject deviceManager)
     {
-        NodeApi.CallMethodVoid(Module, _releaseDeviceManager, deviceManager);
+        NodeApi.CallMethodVoid(Module, _releaseDeviceManager, NapiArg.Of(deviceManager));
     }
 
 }
@@ -178,7 +178,7 @@ public sealed partial class DeviceManagerObject : JsObject
     /// </summary>
     public void StartDiscovering(IntPtr discoverParam, IntPtr? filterOptions = null)
     {
-        CallMethodVoid(_startDiscovering, discoverParam, filterOptions);
+        CallMethodVoid(_startDiscovering, discoverParam, NapiArg.Of(filterOptions));
     }
 
     /// <summary>

@@ -100,7 +100,7 @@ public static unsafe partial class SettingsLite
     /// </summary>
     public static void IsDoubleClickAppForSelf(ClickCallback callback)
     {
-        NodeApi.CallMethodVoid(Module, _isDoubleClickAppForSelf, callback);
+        NodeApi.CallMethodVoid(Module, _isDoubleClickAppForSelf, NapiArg.Of(callback));
     }
 
 }

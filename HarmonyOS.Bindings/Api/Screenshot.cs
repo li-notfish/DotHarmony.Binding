@@ -75,7 +75,7 @@ public static unsafe partial class Screenshot
     /// </summary>
     public static Task<IntPtr> CaptureAsync(CaptureOption? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _capture, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _capture, NapiArg.Of(options));
     }
 
     /// <summary>

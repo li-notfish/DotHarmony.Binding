@@ -279,7 +279,7 @@ public sealed partial class DataObject : JsObject
     /// </summary>
     public Task SetAssetsAsync(string assetsKey, string[] uris)
     {
-        return CallMethodAsyncVoid(_setAssets, assetsKey, uris);
+        return CallMethodAsyncVoid(_setAssets, assetsKey, NapiArg.Of(uris));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();

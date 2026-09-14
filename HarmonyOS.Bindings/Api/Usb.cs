@@ -93,7 +93,7 @@ public static unsafe partial class Usb
     /// </summary>
     public static IntPtr ConnectDevice(UsbUSBDevice device)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _connectDevice, device);
+        return NodeApi.CallMethod<IntPtr>(Module, _connectDevice, NapiArg.Of(device));
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public static unsafe partial class Usb
     /// </summary>
     public static double ClaimInterface(USBDevicePipe pipe, USBInterface iface, bool? force = null)
     {
-        return NodeApi.CallMethod<double>(Module, _claimInterface, pipe, iface, force);
+        return NodeApi.CallMethod<double>(Module, _claimInterface, NapiArg.Of(pipe), NapiArg.Of(iface), NapiArg.Of(force));
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public static unsafe partial class Usb
     /// </summary>
     public static double ReleaseInterface(USBDevicePipe pipe, USBInterface iface)
     {
-        return NodeApi.CallMethod<double>(Module, _releaseInterface, pipe, iface);
+        return NodeApi.CallMethod<double>(Module, _releaseInterface, NapiArg.Of(pipe), NapiArg.Of(iface));
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public static unsafe partial class Usb
     /// </summary>
     public static double SetConfiguration(USBDevicePipe pipe, USBConfig config)
     {
-        return NodeApi.CallMethod<double>(Module, _setConfiguration, pipe, config);
+        return NodeApi.CallMethod<double>(Module, _setConfiguration, NapiArg.Of(pipe), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public static unsafe partial class Usb
     /// </summary>
     public static double SetInterface(USBDevicePipe pipe, USBInterface iface)
     {
-        return NodeApi.CallMethod<double>(Module, _setInterface, pipe, iface);
+        return NodeApi.CallMethod<double>(Module, _setInterface, NapiArg.Of(pipe), NapiArg.Of(iface));
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public static unsafe partial class Usb
     /// </summary>
     public static byte[] GetRawDescriptor(USBDevicePipe pipe)
     {
-        return NodeApi.CallMethod(Module, _getRawDescriptor, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), pipe);
+        return NodeApi.CallMethod(Module, _getRawDescriptor, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(pipe));
     }
 
     /// <summary>
@@ -157,7 +157,7 @@ public static unsafe partial class Usb
     /// </summary>
     public static double GetFileDescriptor(USBDevicePipe pipe)
     {
-        return NodeApi.CallMethod<double>(Module, _getFileDescriptor, pipe);
+        return NodeApi.CallMethod<double>(Module, _getFileDescriptor, NapiArg.Of(pipe));
     }
 
     /// <summary>
@@ -165,7 +165,7 @@ public static unsafe partial class Usb
     /// </summary>
     public static Task<double> ControlTransferAsync(USBDevicePipe pipe, USBControlParams controlparam, double? timeout = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _controlTransfer, pipe, controlparam, timeout);
+        return NodeApi.CallMethodAsync<double>(Module, _controlTransfer, NapiArg.Of(pipe), NapiArg.Of(controlparam), NapiArg.Of(timeout));
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ public static unsafe partial class Usb
     /// </summary>
     public static Task<double> BulkTransferAsync(USBDevicePipe pipe, USBEndpoint endpoint, byte[] buffer, double? timeout = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _bulkTransfer, pipe, endpoint, buffer, timeout);
+        return NodeApi.CallMethodAsync<double>(Module, _bulkTransfer, NapiArg.Of(pipe), NapiArg.Of(endpoint), NapiArg.Of(buffer), NapiArg.Of(timeout));
     }
 
     /// <summary>
@@ -181,7 +181,7 @@ public static unsafe partial class Usb
     /// </summary>
     public static double ClosePipe(USBDevicePipe pipe)
     {
-        return NodeApi.CallMethod<double>(Module, _closePipe, pipe);
+        return NodeApi.CallMethod<double>(Module, _closePipe, NapiArg.Of(pipe));
     }
 
 }

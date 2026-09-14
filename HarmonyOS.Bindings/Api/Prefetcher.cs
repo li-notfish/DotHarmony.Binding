@@ -116,7 +116,7 @@ public sealed partial class BasicPrefetcher : JsObject
     private static ReadOnlySpan<byte> _BasicPrefetcher => "BasicPrefetcher"u8;
 
     public BasicPrefetcher(IDataSourcePrefetching? dataSource = null)
-        : this(NodeApi.CreateInstance(Prefetcher.Module, _BasicPrefetcher, dataSource)) { }
+        : this(NodeApi.CreateInstance(Prefetcher.Module, _BasicPrefetcher, NapiArg.Of(dataSource))) { }
     private static ReadOnlySpan<byte> _setDataSource => "setDataSource"u8;
     private static ReadOnlySpan<byte> _visibleAreaChanged => "visibleAreaChanged"u8;
     /// <summary>
@@ -124,7 +124,7 @@ public sealed partial class BasicPrefetcher : JsObject
     /// </summary>
     public void SetDataSource(IDataSourcePrefetching dataSource)
     {
-        CallMethodVoid(_setDataSource, dataSource);
+        CallMethodVoid(_setDataSource, NapiArg.Of(dataSource));
     }
 
     /// <summary>

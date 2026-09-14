@@ -147,7 +147,7 @@ public static unsafe partial class FeatureAbility
     /// </summary>
     public static double ConnectAbility(global::HarmonyOS.Bindings.Api.WantObject request, IntPtr options)
     {
-        return NodeApi.CallMethod<double>(Module, _connectAbility, request, options);
+        return NodeApi.CallMethod<double>(Module, _connectAbility, NapiArg.Of(request), options);
     }
 
     /// <summary>

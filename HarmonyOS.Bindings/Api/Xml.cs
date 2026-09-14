@@ -192,7 +192,7 @@ public sealed partial class XmlSerializer : JsObject
     private static ReadOnlySpan<byte> _XmlSerializer => "XmlSerializer"u8;
 
     public XmlSerializer(byte[] buffer, string? encoding = null)
-        : this(NodeApi.CreateInstance(Xml.Module, _XmlSerializer, buffer, encoding)) { }
+        : this(NodeApi.CreateInstance(Xml.Module, _XmlSerializer, NapiArg.Of(buffer), encoding)) { }
     private static ReadOnlySpan<byte> _setAttributes => "setAttributes"u8;
     private static ReadOnlySpan<byte> _addEmptyElement => "addEmptyElement"u8;
     private static ReadOnlySpan<byte> _setDeclaration => "setDeclaration"u8;
@@ -296,7 +296,7 @@ public sealed partial class XmlPullParser : JsObject
     private static ReadOnlySpan<byte> _XmlPullParser => "XmlPullParser"u8;
 
     public XmlPullParser(byte[] buffer, string? encoding = null)
-        : this(NodeApi.CreateInstance(Xml.Module, _XmlPullParser, buffer, encoding)) { }
+        : this(NodeApi.CreateInstance(Xml.Module, _XmlPullParser, NapiArg.Of(buffer), encoding)) { }
     private static ReadOnlySpan<byte> _parse => "parse"u8;
     private static ReadOnlySpan<byte> _parseXml => "parseXml"u8;
     /// <summary>
@@ -335,7 +335,7 @@ public sealed partial class XmlSAXParser : JsObject
     /// </summary>
     public void Parse(XmlSAXHandler xmlSAXHandler)
     {
-        CallMethodVoid(_parse, xmlSAXHandler);
+        CallMethodVoid(_parse, NapiArg.Of(xmlSAXHandler));
     }
 
 }
@@ -373,7 +373,7 @@ public sealed partial class XmlSAXHandler : JsObject
     /// </summary>
     public void StartElement(string elementName, string namespaceURI, string qName, JsMap<string, string> attributes)
     {
-        CallMethodVoid(_startElement, elementName, namespaceURI, qName, attributes);
+        CallMethodVoid(_startElement, elementName, namespaceURI, qName, NapiArg.Of(attributes));
     }
 
     /// <summary>

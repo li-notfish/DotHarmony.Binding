@@ -122,7 +122,7 @@ public static unsafe partial class Media
     /// </summary>
     public static MediaSource CreateMediaSourceWithFd(AVFileDescriptor fdSrc)
     {
-        return NodeApi.CallMethod(Module, _createMediaSourceWithFd, static h => new MediaSource(h), fdSrc);
+        return NodeApi.CallMethod(Module, _createMediaSourceWithFd, static h => new MediaSource(h), NapiArg.Of(fdSrc));
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public static unsafe partial class Media
     /// </summary>
     public static MediaSource CreateMediaSourceWithUrl(string url, IntPtr? headers = null)
     {
-        return NodeApi.CallMethod(Module, _createMediaSourceWithUrl, static h => new MediaSource(h), url, headers);
+        return NodeApi.CallMethod(Module, _createMediaSourceWithUrl, static h => new MediaSource(h), url, NapiArg.Of(headers));
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public static unsafe partial class Media
     /// </summary>
     public static MediaSource CreateMediaSourceWithStreamData(MediaStream[] streams)
     {
-        return NodeApi.CallMethod(Module, _createMediaSourceWithStreamData, static h => new MediaSource(h), streams);
+        return NodeApi.CallMethod(Module, _createMediaSourceWithStreamData, static h => new MediaSource(h), NapiArg.Of(streams));
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ public static unsafe partial class Media
     /// </summary>
     public static Task<AVAdsController> CreateAVAdsControllerAsync(AVPlayer player)
     {
-        return NodeApi.CallMethodAsync(Module, _createAVAdsController, static h => new AVAdsController(h), player);
+        return NodeApi.CallMethodAsync(Module, _createAVAdsController, static h => new AVAdsController(h), NapiArg.Of(player));
     }
 
     /// <summary>
@@ -489,7 +489,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SetMediaSourceAsync(MediaSource src, PlaybackStrategy? strategy = null)
     {
-        return CallMethodAsyncVoid(_setMediaSource, src, strategy);
+        return CallMethodAsyncVoid(_setMediaSource, NapiArg.Of(src), NapiArg.Of(strategy));
     }
 
     /// <summary>
@@ -505,7 +505,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SetTrackSelectionFilterAsync(TrackSelectionFilter filter)
     {
-        return CallMethodAsyncVoid(_setTrackSelectionFilter, filter);
+        return CallMethodAsyncVoid(_setTrackSelectionFilter, NapiArg.Of(filter));
     }
 
     /// <summary>
@@ -513,7 +513,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task AddSubtitleFromFdAsync(double fd, double? offset = null, double? length = null)
     {
-        return CallMethodAsyncVoid(_addSubtitleFromFd, fd, offset, length);
+        return CallMethodAsyncVoid(_addSubtitleFromFd, fd, NapiArg.Of(offset), NapiArg.Of(length));
     }
 
     /// <summary>
@@ -577,7 +577,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SetPlaybackStrategyAsync(PlaybackStrategy strategy)
     {
-        return CallMethodAsyncVoid(_setPlaybackStrategy, strategy);
+        return CallMethodAsyncVoid(_setPlaybackStrategy, NapiArg.Of(strategy));
     }
 
     /// <summary>
@@ -665,7 +665,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task<string> AddPlaybackMediaSourceAsync(MediaSource src, string? id = null)
     {
-        return CallMethodAsync<string>(_addPlaybackMediaSource, src, id);
+        return CallMethodAsync<string>(_addPlaybackMediaSource, NapiArg.Of(src), id);
     }
 
     /// <summary>
@@ -769,7 +769,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void On(string type, double[] payloadTypes, IntPtr callback)
     {
-        CallMethodVoid(_on, type, payloadTypes, callback);
+        CallMethodVoid(_on, type, NapiArg.Of(payloadTypes), callback);
     }
 
     /// <summary>
@@ -777,7 +777,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void Off(string type, double[] payloadTypes, IntPtr callback)
     {
-        CallMethodVoid(_off, type, payloadTypes, callback);
+        CallMethodVoid(_off, type, NapiArg.Of(payloadTypes), callback);
     }
 
     /// <summary>
@@ -793,7 +793,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void OffMetricsEvent(IntPtr? callback = null)
     {
-        CallMethodVoid(_offMetricsEvent, callback);
+        CallMethodVoid(_offMetricsEvent, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -809,7 +809,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void OffPlaybackContentChanged(IntPtr? callback = null)
     {
-        CallMethodVoid(_offPlaybackContentChanged, callback);
+        CallMethodVoid(_offPlaybackContentChanged, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -825,7 +825,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void OffTimedMetaData(IntPtr? callback = null)
     {
-        CallMethodVoid(_offTimedMetaData, callback);
+        CallMethodVoid(_offTimedMetaData, NapiArg.Of(callback));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -971,7 +971,7 @@ public sealed partial class AVPlayer : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, payloadTypes));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(payloadTypes)));
     }
 
     /// <summary>
@@ -979,7 +979,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void Off(string type, System.Action callback, double[]? payloadTypes = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, payloadTypes));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, NapiArg.Of(payloadTypes)));
     }
 
     /// <summary>
@@ -1435,7 +1435,7 @@ public sealed partial class AVRecorder : JsObject
     /// </summary>
     public Task<double> AddWatermarkAsync(IntPtr watermark, WatermarkConfiguration config)
     {
-        return CallMethodAsync<double>(_addWatermark, watermark, config);
+        return CallMethodAsync<double>(_addWatermark, watermark, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -2029,7 +2029,7 @@ public sealed partial class AudioRecorder : JsObject
     /// </summary>
     public void Prepare(AudioRecorderConfig config)
     {
-        CallMethodVoid(_prepare, config);
+        CallMethodVoid(_prepare, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -2368,7 +2368,7 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public Task<string> AddAdsMediaSourceAsync(MediaSource src, double start)
     {
-        return CallMethodAsync<string>(_addAdsMediaSource, src, start);
+        return CallMethodAsync<string>(_addAdsMediaSource, NapiArg.Of(src), start);
     }
 
     /// <summary>
@@ -2440,7 +2440,7 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsEventListenerLoadingError(IntPtr? callback = null)
     {
-        CallMethodVoid(_offAdsEventListenerLoadingError, callback);
+        CallMethodVoid(_offAdsEventListenerLoadingError, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -2448,7 +2448,7 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsListenerAdsStarted(IntPtr? callback = null)
     {
-        CallMethodVoid(_offAdsListenerAdsStarted, callback);
+        CallMethodVoid(_offAdsListenerAdsStarted, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -2456,7 +2456,7 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsListenerAdsSkipped(IntPtr? callback = null)
     {
-        CallMethodVoid(_offAdsListenerAdsSkipped, callback);
+        CallMethodVoid(_offAdsListenerAdsSkipped, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -2464,7 +2464,7 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsListenerAdsCompleted(IntPtr? callback = null)
     {
-        CallMethodVoid(_offAdsListenerAdsCompleted, callback);
+        CallMethodVoid(_offAdsListenerAdsCompleted, NapiArg.Of(callback));
     }
 
 }
@@ -2797,7 +2797,7 @@ public sealed partial class AVScreenCaptureRecorder : JsObject
     /// </summary>
     public Task InitAsync(AVScreenCaptureRecordConfig config)
     {
-        return CallMethodAsyncVoid(_init, config);
+        return CallMethodAsyncVoid(_init, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -2837,7 +2837,7 @@ public sealed partial class AVScreenCaptureRecorder : JsObject
     /// </summary>
     public Task SkipPrivacyModeAsync(double[] windowIDs)
     {
-        return CallMethodAsyncVoid(_skipPrivacyMode, windowIDs);
+        return CallMethodAsyncVoid(_skipPrivacyMode, NapiArg.Of(windowIDs));
     }
 
     /// <summary>
@@ -2853,7 +2853,7 @@ public sealed partial class AVScreenCaptureRecorder : JsObject
     /// </summary>
     public Task ExcludePickerWindowsAsync(double[] excludedWindows)
     {
-        return CallMethodAsyncVoid(_excludePickerWindows, excludedWindows);
+        return CallMethodAsyncVoid(_excludePickerWindows, NapiArg.Of(excludedWindows));
     }
 
     /// <summary>
@@ -2885,7 +2885,7 @@ public sealed partial class AVScreenCaptureRecorder : JsObject
     /// </summary>
     public Task<double> AddWatermarkAsync(IntPtr watermark, WatermarkConfiguration config)
     {
-        return CallMethodAsync<double>(_addWatermark, watermark, config);
+        return CallMethodAsync<double>(_addWatermark, watermark, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -3027,7 +3027,7 @@ public sealed partial class AVTranscoder : JsObject
     /// </summary>
     public Task PrepareAsync(AVTranscoderConfig config)
     {
-        return CallMethodAsyncVoid(_prepare, config);
+        return CallMethodAsyncVoid(_prepare, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -3091,7 +3091,7 @@ public sealed partial class AVTranscoder : JsObject
     /// </summary>
     public Task<double> AddWatermarkAsync(IntPtr watermark, WatermarkConfiguration config)
     {
-        return CallMethodAsync<double>(_addWatermark, watermark, config);
+        return CallMethodAsync<double>(_addWatermark, watermark, NapiArg.Of(config));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -3251,7 +3251,7 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public void SetUrlSource(string url, IntPtr? headers = null)
     {
-        CallMethodVoid(_setUrlSource, url, headers);
+        CallMethodVoid(_setUrlSource, url, NapiArg.Of(headers));
     }
 
     /// <summary>
@@ -3259,7 +3259,7 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public Task<IntPtr> FetchFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param)
     {
-        return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, options, param);
+        return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, options, NapiArg.Of(param));
     }
 
     /// <summary>
@@ -3267,7 +3267,7 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public Task<IntPtr> FetchFrameByTimeWithTimeoutAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param, double timeoutMs)
     {
-        return CallMethodAsync<IntPtr>(_fetchFrameByTimeWithTimeout, timeUs, options, param, timeoutMs);
+        return CallMethodAsync<IntPtr>(_fetchFrameByTimeWithTimeout, timeUs, options, NapiArg.Of(param), timeoutMs);
     }
 
     /// <summary>
@@ -3275,7 +3275,7 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public void FetchFramesByTimes(double[] timesUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryOption, PixelMapParams param, IntPtr callback)
     {
-        CallMethodVoid(_fetchFramesByTimes, timesUs, queryOption, param, callback);
+        CallMethodVoid(_fetchFramesByTimes, NapiArg.Of(timesUs), queryOption, NapiArg.Of(param), callback);
     }
 
     /// <summary>
@@ -3283,7 +3283,7 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public void FetchFramesByTimesWithTimeout(double[] timesUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryOption, PixelMapParams param, double timeoutMs, IntPtr callback)
     {
-        CallMethodVoid(_fetchFramesByTimesWithTimeout, timesUs, queryOption, param, timeoutMs, callback);
+        CallMethodVoid(_fetchFramesByTimesWithTimeout, NapiArg.Of(timesUs), queryOption, NapiArg.Of(param), timeoutMs, callback);
     }
 
     /// <summary>
@@ -3325,7 +3325,7 @@ public sealed partial class AVImageGenerator : JsObject
     /// </summary>
     public Task<IntPtr> FetchFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param)
     {
-        return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, options, param);
+        return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, options, NapiArg.Of(param));
     }
 
     /// <summary>
@@ -3333,7 +3333,7 @@ public sealed partial class AVImageGenerator : JsObject
     /// </summary>
     public Task<IntPtr> FetchScaledFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryMode, OutputSize? outputSize = null)
     {
-        return CallMethodAsync<IntPtr>(_fetchScaledFrameByTime, timeUs, queryMode, outputSize);
+        return CallMethodAsync<IntPtr>(_fetchScaledFrameByTime, timeUs, queryMode, NapiArg.Of(outputSize));
     }
 
     /// <summary>
@@ -3389,7 +3389,7 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public string AddAVDownloadTask(MediaSource source)
     {
-        return CallMethod<string>(_addAVDownloadTask, source);
+        return CallMethod<string>(_addAVDownloadTask, NapiArg.Of(source));
     }
 
     /// <summary>
@@ -3469,7 +3469,7 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void OffStatusChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offStatusChange, callback);
+        CallMethodVoid(_offStatusChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -3477,7 +3477,7 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void OffProgressChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offProgressChange, callback);
+        CallMethodVoid(_offProgressChange, NapiArg.Of(callback));
     }
 
     /// <summary>

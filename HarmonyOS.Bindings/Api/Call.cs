@@ -88,7 +88,7 @@ public static unsafe partial class Call
     /// </summary>
     public static Task<bool> DialAsync(string phoneNumber, DialOptions options)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _dial, phoneNumber, options);
+        return NodeApi.CallMethodAsync<bool>(Module, _dial, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public static unsafe partial class Call
     /// </summary>
     public static Task MakeCallAsync(string phoneNumber, MakeCallOptions? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _makeCall, phoneNumber, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _makeCall, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public static unsafe partial class Call
     /// </summary>
     public static Task<string> MakeCallWithTokenAsync(string phoneNumber, MakeCallOptions? options = null)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _makeCallWithToken, phoneNumber, options);
+        return NodeApi.CallMethodAsync<string>(Module, _makeCallWithToken, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -176,7 +176,7 @@ public static unsafe partial class Call
     /// </summary>
     public static Task<bool> IsEmergencyPhoneNumberAsync(string phoneNumber, EmergencyNumberOptions options)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _isEmergencyPhoneNumber, phoneNumber, options);
+        return NodeApi.CallMethodAsync<bool>(Module, _isEmergencyPhoneNumber, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public static unsafe partial class Call
     /// </summary>
     public static Task<string> FormatPhoneNumberAsync(string phoneNumber, NumberFormatOptions options)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _formatPhoneNumber, phoneNumber, options);
+        return NodeApi.CallMethodAsync<string>(Module, _formatPhoneNumber, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>

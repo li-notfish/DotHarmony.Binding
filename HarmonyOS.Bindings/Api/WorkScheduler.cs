@@ -78,7 +78,7 @@ public static unsafe partial class WorkScheduler
     /// </summary>
     public static void StartWork(WorkInfo work)
     {
-        NodeApi.CallMethodVoid(Module, _startWork, work);
+        NodeApi.CallMethodVoid(Module, _startWork, NapiArg.Of(work));
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public static unsafe partial class WorkScheduler
     /// </summary>
     public static void StopWork(WorkInfo work, bool? needCancel = null)
     {
-        NodeApi.CallMethodVoid(Module, _stopWork, work, needCancel);
+        NodeApi.CallMethodVoid(Module, _stopWork, NapiArg.Of(work), NapiArg.Of(needCancel));
     }
 
     /// <summary>

@@ -96,7 +96,7 @@ public static unsafe partial class Asset
     /// </summary>
     public static Task<BatchResult> BatchAddAsync(IntPtr[] attributesArray)
     {
-        return NodeApi.CallMethodAsync(Module, _batchAdd, static h => new BatchResult(h), attributesArray);
+        return NodeApi.CallMethodAsync(Module, _batchAdd, static h => new BatchResult(h), NapiArg.Of(attributesArray));
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public static unsafe partial class Asset
     /// </summary>
     public static Task BatchRemoveAsync(IntPtr[] assetsToBeRemoved)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _batchRemove, assetsToBeRemoved);
+        return NodeApi.CallMethodAsyncVoid(Module, _batchRemove, NapiArg.Of(assetsToBeRemoved));
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public static unsafe partial class Asset
     /// </summary>
     public static Task<BatchResult> BatchUpdateAsync(IntPtr[] sourceAttributes, IntPtr[] destAttributes)
     {
-        return NodeApi.CallMethodAsync(Module, _batchUpdate, static h => new BatchResult(h), sourceAttributes, destAttributes);
+        return NodeApi.CallMethodAsync(Module, _batchUpdate, static h => new BatchResult(h), NapiArg.Of(sourceAttributes), NapiArg.Of(destAttributes));
     }
 
     /// <summary>

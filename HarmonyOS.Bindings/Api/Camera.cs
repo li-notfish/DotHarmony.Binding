@@ -179,7 +179,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public PreviewOutput CreatePreviewOutput(Profile profile, string surfaceId)
     {
-        return CallMethod(_createPreviewOutput, static h => new PreviewOutput(h), profile, surfaceId);
+        return CallMethod(_createPreviewOutput, static h => new PreviewOutput(h), NapiArg.Of(profile), surfaceId);
     }
 
     /// <summary>
@@ -195,7 +195,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public PhotoOutput CreatePhotoOutput(Profile profile, string surfaceId)
     {
-        return CallMethod(_createPhotoOutput, static h => new PhotoOutput(h), profile, surfaceId);
+        return CallMethod(_createPhotoOutput, static h => new PhotoOutput(h), NapiArg.Of(profile), surfaceId);
     }
 
     /// <summary>
@@ -203,7 +203,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public PhotoOutput CreatePhotoOutput(Profile? profile = null)
     {
-        return CallMethod(_createPhotoOutput, static h => new PhotoOutput(h), profile);
+        return CallMethod(_createPhotoOutput, static h => new PhotoOutput(h), NapiArg.Of(profile));
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public VideoOutput CreateVideoOutput(VideoProfile profile, string surfaceId)
     {
-        return CallMethod(_createVideoOutput, static h => new VideoOutput(h), profile, surfaceId);
+        return CallMethod(_createVideoOutput, static h => new VideoOutput(h), NapiArg.Of(profile), surfaceId);
     }
 
     /// <summary>
@@ -227,7 +227,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public MetadataOutput CreateMetadataOutput(global::HarmonyOS.ArkUI.MetadataObjectType[] metadataObjectTypes)
     {
-        return CallMethod(_createMetadataOutput, static h => new MetadataOutput(h), metadataObjectTypes);
+        return CallMethod(_createMetadataOutput, static h => new MetadataOutput(h), NapiArg.Of(metadataObjectTypes));
     }
 
     /// <summary>
@@ -267,7 +267,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public PreviewOutput CreateDeferredPreviewOutput(Profile profile)
     {
-        return CallMethod(_createDeferredPreviewOutput, static h => new PreviewOutput(h), profile);
+        return CallMethod(_createDeferredPreviewOutput, static h => new PreviewOutput(h), NapiArg.Of(profile));
     }
 
     /// <summary>
@@ -331,7 +331,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public IntPtr[] GetCameraConcurrentInfos(IntPtr[] cameras)
     {
-        return CallMethod(_getCameraConcurrentInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), cameras);
+        return CallMethod(_getCameraConcurrentInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(cameras));
     }
 
     /// <summary>
@@ -339,7 +339,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public IntPtr[] GetCameraDevices(global::HarmonyOS.ArkUI.CameraPosition position, global::HarmonyOS.ArkUI.CameraType[] types, global::HarmonyOS.ArkUI.ConnectionType connectType)
     {
-        return CallMethod(_getCameraDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), position, types, connectType);
+        return CallMethod(_getCameraDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), position, NapiArg.Of(types), connectType);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -957,7 +957,7 @@ public sealed partial class PreviewOutput : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.ImageRotation GetPreviewRotation(double? displayRotation = null)
     {
-        return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getPreviewRotation, displayRotation);
+        return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getPreviewRotation, NapiArg.Of(displayRotation));
     }
 
     /// <summary>
@@ -965,7 +965,7 @@ public sealed partial class PreviewOutput : JsObject
     /// </summary>
     public void SetPreviewRotation(global::HarmonyOS.ArkUI.ImageRotation previewRotation, bool? isDisplayLocked = null)
     {
-        CallMethodVoid(_setPreviewRotation, previewRotation, isDisplayLocked);
+        CallMethodVoid(_setPreviewRotation, previewRotation, NapiArg.Of(isDisplayLocked));
     }
 
     /// <summary>
@@ -1164,7 +1164,7 @@ public sealed partial class PhotoOutput : JsObject
     /// </summary>
     public Task CaptureAsync(PhotoCaptureSetting setting)
     {
-        return CallMethodAsyncVoid(_capture, setting);
+        return CallMethodAsyncVoid(_capture, NapiArg.Of(setting));
     }
 
     /// <summary>
@@ -1212,7 +1212,7 @@ public sealed partial class PhotoOutput : JsObject
     /// </summary>
     public void OffCapturePhotoAvailable(IntPtr? callback = null)
     {
-        CallMethodVoid(_offCapturePhotoAvailable, callback);
+        CallMethodVoid(_offCapturePhotoAvailable, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -1276,7 +1276,7 @@ public sealed partial class PhotoOutput : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.ImageRotation GetPhotoRotation(double? deviceDegree = null)
     {
-        return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getPhotoRotation, deviceDegree);
+        return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getPhotoRotation, NapiArg.Of(deviceDegree));
     }
 
     /// <summary>
@@ -1709,7 +1709,7 @@ public sealed partial class VideoOutput : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.ImageRotation GetVideoRotation(double? deviceDegree = null)
     {
-        return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getVideoRotation, deviceDegree);
+        return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getVideoRotation, NapiArg.Of(deviceDegree));
     }
 
     /// <summary>
@@ -1890,7 +1890,7 @@ public sealed partial class MetadataOutput : JsObject
     /// </summary>
     public void AddMetadataObjectTypes(global::HarmonyOS.ArkUI.MetadataObjectType[] types)
     {
-        CallMethodVoid(_addMetadataObjectTypes, types);
+        CallMethodVoid(_addMetadataObjectTypes, NapiArg.Of(types));
     }
 
     /// <summary>
@@ -1898,7 +1898,7 @@ public sealed partial class MetadataOutput : JsObject
     /// </summary>
     public void RemoveMetadataObjectTypes(global::HarmonyOS.ArkUI.MetadataObjectType[] types)
     {
-        CallMethodVoid(_removeMetadataObjectTypes, types);
+        CallMethodVoid(_removeMetadataObjectTypes, NapiArg.Of(types));
     }
 
     /// <summary>
@@ -1930,7 +1930,7 @@ public sealed partial class MetadataOutput : JsObject
     /// </summary>
     public void LockMetadataObjectTracking(CameraPoint point)
     {
-        CallMethodVoid(_lockMetadataObjectTracking, point);
+        CallMethodVoid(_lockMetadataObjectTracking, NapiArg.Of(point));
     }
 
     /// <summary>
@@ -2086,7 +2086,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public void AddInput(CameraInput cameraInput)
     {
-        CallMethodVoid(_addInput, cameraInput);
+        CallMethodVoid(_addInput, NapiArg.Of(cameraInput));
     }
 
     /// <summary>
@@ -2094,7 +2094,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public void RemoveInput(CameraInput cameraInput)
     {
-        CallMethodVoid(_removeInput, cameraInput);
+        CallMethodVoid(_removeInput, NapiArg.Of(cameraInput));
     }
 
     /// <summary>
@@ -2102,7 +2102,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public void AddOutput(CameraOutput cameraOutput)
     {
-        CallMethodVoid(_addOutput, cameraOutput);
+        CallMethodVoid(_addOutput, NapiArg.Of(cameraOutput));
     }
 
     /// <summary>
@@ -2110,7 +2110,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public void RemoveOutput(CameraOutput cameraOutput)
     {
-        CallMethodVoid(_removeOutput, cameraOutput);
+        CallMethodVoid(_removeOutput, NapiArg.Of(cameraOutput));
     }
 
     /// <summary>
@@ -2206,7 +2206,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public void SetMeteringPoint(CameraPoint point)
     {
-        CallMethodVoid(_setMeteringPoint, point);
+        CallMethodVoid(_setMeteringPoint, NapiArg.Of(point));
     }
 
     /// <summary>
@@ -2262,7 +2262,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public void SetFocusPoint(CameraPoint point)
     {
-        CallMethodVoid(_setFocusPoint, point);
+        CallMethodVoid(_setFocusPoint, NapiArg.Of(point));
     }
 
     /// <summary>

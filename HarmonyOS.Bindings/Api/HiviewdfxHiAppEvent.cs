@@ -213,7 +213,7 @@ public static unsafe partial class HiviewdfxHiAppEvent
     /// </summary>
     public static void Configure(HiviewdfxHiAppEventConfigOption config)
     {
-        NodeApi.CallMethodVoid(Module, _configure, config);
+        NodeApi.CallMethodVoid(Module, _configure, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -325,7 +325,7 @@ public static unsafe partial class HiviewdfxHiAppEvent
     /// </summary>
     public static Task ConfigEventPolicyAsync(EventPolicy policy)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _configEventPolicy, policy);
+        return NodeApi.CallMethodAsyncVoid(Module, _configEventPolicy, NapiArg.Of(policy));
     }
 
 }

@@ -136,7 +136,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static double ClaimInterface(UsbManager2USBDevicePipe pipe, IntPtr iface, bool? force = null)
     {
-        return NodeApi.CallMethod<double>(Module, _claimInterface, pipe, iface, force);
+        return NodeApi.CallMethod<double>(Module, _claimInterface, NapiArg.Of(pipe), iface, NapiArg.Of(force));
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static double ReleaseInterface(UsbManager2USBDevicePipe pipe, IntPtr iface)
     {
-        return NodeApi.CallMethod<double>(Module, _releaseInterface, pipe, iface);
+        return NodeApi.CallMethod<double>(Module, _releaseInterface, NapiArg.Of(pipe), iface);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static double SetConfiguration(UsbManager2USBDevicePipe pipe, USBConfiguration config)
     {
-        return NodeApi.CallMethod<double>(Module, _setConfiguration, pipe, config);
+        return NodeApi.CallMethod<double>(Module, _setConfiguration, NapiArg.Of(pipe), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -160,7 +160,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static double SetInterface(UsbManager2USBDevicePipe pipe, IntPtr iface)
     {
-        return NodeApi.CallMethod<double>(Module, _setInterface, pipe, iface);
+        return NodeApi.CallMethod<double>(Module, _setInterface, NapiArg.Of(pipe), iface);
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static byte[] GetRawDescriptor(UsbManager2USBDevicePipe pipe)
     {
-        return NodeApi.CallMethod(Module, _getRawDescriptor, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), pipe);
+        return NodeApi.CallMethod(Module, _getRawDescriptor, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(pipe));
     }
 
     /// <summary>
@@ -176,7 +176,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static double GetFileDescriptor(UsbManager2USBDevicePipe pipe)
     {
-        return NodeApi.CallMethod<double>(Module, _getFileDescriptor, pipe);
+        return NodeApi.CallMethod<double>(Module, _getFileDescriptor, NapiArg.Of(pipe));
     }
 
     /// <summary>
@@ -184,7 +184,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static Task<double> ControlTransferAsync(UsbManager2USBDevicePipe pipe, UsbManager2USBControlParams controlparam, double? timeout = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _controlTransfer, pipe, controlparam, timeout);
+        return NodeApi.CallMethodAsync<double>(Module, _controlTransfer, NapiArg.Of(pipe), NapiArg.Of(controlparam), NapiArg.Of(timeout));
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static Task<double> UsbControlTransferAsync(UsbManager2USBDevicePipe pipe, USBDeviceRequestParams requestparam, double? timeout = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _usbControlTransfer, pipe, requestparam, timeout);
+        return NodeApi.CallMethodAsync<double>(Module, _usbControlTransfer, NapiArg.Of(pipe), NapiArg.Of(requestparam), NapiArg.Of(timeout));
     }
 
     /// <summary>
@@ -200,7 +200,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static Task<double> BulkTransferAsync(UsbManager2USBDevicePipe pipe, UsbManager2USBEndpoint endpoint, byte[] buffer, double? timeout = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _bulkTransfer, pipe, endpoint, buffer, timeout);
+        return NodeApi.CallMethodAsync<double>(Module, _bulkTransfer, NapiArg.Of(pipe), NapiArg.Of(endpoint), NapiArg.Of(buffer), NapiArg.Of(timeout));
     }
 
     /// <summary>
@@ -208,7 +208,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static bool ResetUsbDevice(UsbManager2USBDevicePipe pipe)
     {
-        return NodeApi.CallMethod<bool>(Module, _resetUsbDevice, pipe);
+        return NodeApi.CallMethod<bool>(Module, _resetUsbDevice, NapiArg.Of(pipe));
     }
 
     /// <summary>
@@ -216,7 +216,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static double ClosePipe(UsbManager2USBDevicePipe pipe)
     {
-        return NodeApi.CallMethod<double>(Module, _closePipe, pipe);
+        return NodeApi.CallMethod<double>(Module, _closePipe, NapiArg.Of(pipe));
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static bool HasAccessoryRight(USBAccessory accessory)
     {
-        return NodeApi.CallMethod<bool>(Module, _hasAccessoryRight, accessory);
+        return NodeApi.CallMethod<bool>(Module, _hasAccessoryRight, NapiArg.Of(accessory));
     }
 
     /// <summary>
@@ -232,7 +232,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static Task<bool> RequestAccessoryRightAsync(USBAccessory accessory)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _requestAccessoryRight, accessory);
+        return NodeApi.CallMethodAsync<bool>(Module, _requestAccessoryRight, NapiArg.Of(accessory));
     }
 
     /// <summary>
@@ -240,7 +240,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static void CancelAccessoryRight(USBAccessory accessory)
     {
-        NodeApi.CallMethodVoid(Module, _cancelAccessoryRight, accessory);
+        NodeApi.CallMethodVoid(Module, _cancelAccessoryRight, NapiArg.Of(accessory));
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static USBAccessoryHandle OpenAccessory(USBAccessory accessory)
     {
-        return NodeApi.CallMethod(Module, _openAccessory, static h => new USBAccessoryHandle(h), accessory);
+        return NodeApi.CallMethod(Module, _openAccessory, static h => new USBAccessoryHandle(h), NapiArg.Of(accessory));
     }
 
     /// <summary>
@@ -264,7 +264,7 @@ public static unsafe partial class UsbManager2
     /// </summary>
     public static void CloseAccessory(USBAccessoryHandle accessoryHandle)
     {
-        NodeApi.CallMethodVoid(Module, _closeAccessory, accessoryHandle);
+        NodeApi.CallMethodVoid(Module, _closeAccessory, NapiArg.Of(accessoryHandle));
     }
 
     /// <summary>

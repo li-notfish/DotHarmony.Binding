@@ -81,7 +81,7 @@ public static unsafe partial class ColorSpaceManager
     /// </summary>
     public static ColorSpaceManagerObject Create(ColorSpacePrimaries primaries, double gamma)
     {
-        return NodeApi.CallMethod(Module, _create, static h => new ColorSpaceManagerObject(h), primaries, gamma);
+        return NodeApi.CallMethod(Module, _create, static h => new ColorSpaceManagerObject(h), NapiArg.Of(primaries), gamma);
     }
 
 }

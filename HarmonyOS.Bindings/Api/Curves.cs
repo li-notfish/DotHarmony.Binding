@@ -108,7 +108,7 @@ public static unsafe partial class Curves
     /// </summary>
     public static ICurve CustomCurve(System.Func<double, double> interpolate)
     {
-        return NodeApi.CallMethod(Module, _customCurve, static h => new ICurve(h), interpolate);
+        return NodeApi.CallMethod(Module, _customCurve, static h => new ICurve(h), NapiArg.Of(interpolate));
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ public static unsafe partial class Curves
     /// </summary>
     public static ICurve SpringMotion(double? response = null, double? dampingFraction = null, double? overlapDuration = null)
     {
-        return NodeApi.CallMethod(Module, _springMotion, static h => new ICurve(h), response, dampingFraction, overlapDuration);
+        return NodeApi.CallMethod(Module, _springMotion, static h => new ICurve(h), NapiArg.Of(response), NapiArg.Of(dampingFraction), NapiArg.Of(overlapDuration));
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public static unsafe partial class Curves
     /// </summary>
     public static ICurve ResponsiveSpringMotion(double? response = null, double? dampingFraction = null, double? overlapDuration = null)
     {
-        return NodeApi.CallMethod(Module, _responsiveSpringMotion, static h => new ICurve(h), response, dampingFraction, overlapDuration);
+        return NodeApi.CallMethod(Module, _responsiveSpringMotion, static h => new ICurve(h), NapiArg.Of(response), NapiArg.Of(dampingFraction), NapiArg.Of(overlapDuration));
     }
 
     /// <summary>

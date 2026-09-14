@@ -76,7 +76,7 @@ public static unsafe partial class VpnExtension
     /// </summary>
     public static Task StartVpnExtensionAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startVpnExtensionAbility, want);
+        return NodeApi.CallMethodAsyncVoid(Module, _startVpnExtensionAbility, NapiArg.Of(want));
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public static unsafe partial class VpnExtension
     /// </summary>
     public static Task StopVpnExtensionAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopVpnExtensionAbility, want);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopVpnExtensionAbility, NapiArg.Of(want));
     }
 
     /// <summary>
@@ -189,7 +189,7 @@ public sealed partial class VpnObserver : JsObject
     /// </summary>
     public void OffAuthorizationResult(IntPtr? callback = null)
     {
-        CallMethodVoid(_offAuthorizationResult, callback);
+        CallMethodVoid(_offAuthorizationResult, NapiArg.Of(callback));
     }
 
 }

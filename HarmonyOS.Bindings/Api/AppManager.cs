@@ -89,7 +89,7 @@ public static unsafe partial class AppManager
     /// </summary>
     public static double On(string type, IntPtr observer, string[] bundleNameList)
     {
-        return NodeApi.CallMethod<double>(Module, _on, type, observer, bundleNameList);
+        return NodeApi.CallMethod<double>(Module, _on, type, observer, NapiArg.Of(bundleNameList));
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public static unsafe partial class AppManager
     /// </summary>
     public static Task KillProcessesByBundleNameAsync(string bundleName, bool clearPageStack, double? appIndex = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _killProcessesByBundleName, bundleName, clearPageStack, appIndex);
+        return NodeApi.CallMethodAsyncVoid(Module, _killProcessesByBundleName, bundleName, clearPageStack, NapiArg.Of(appIndex));
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ public static unsafe partial class AppManager
     /// </summary>
     public static Task<bool> IsAppRunningAsync(string bundleName, double? appCloneIndex = null)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _isAppRunning, bundleName, appCloneIndex);
+        return NodeApi.CallMethodAsync<bool>(Module, _isAppRunning, bundleName, NapiArg.Of(appCloneIndex));
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();
@@ -175,7 +175,7 @@ public static unsafe partial class AppManager
     {
         _eventListeners.Add((type, callback),
             args => callback(),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, observer, bundleNameList));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, observer, NapiArg.Of(bundleNameList)));
     }
 
     /// <summary>

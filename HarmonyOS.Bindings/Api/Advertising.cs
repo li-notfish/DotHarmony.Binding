@@ -77,7 +77,7 @@ public static unsafe partial class Advertising
     /// </summary>
     public static void ShowAd(IntPtr ad, AdDisplayOptions options, IntPtr? context = null)
     {
-        NodeApi.CallMethodVoid(Module, _showAd, ad, options, context);
+        NodeApi.CallMethodVoid(Module, _showAd, ad, NapiArg.Of(options), NapiArg.Of(context));
     }
 
     /// <summary>
@@ -85,7 +85,7 @@ public static unsafe partial class Advertising
     /// </summary>
     public static Task<string> GetAdRequestBodyAsync(AdRequestParams[] adParams, AdOptions adOptions)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _getAdRequestBody, adParams, adOptions);
+        return NodeApi.CallMethodAsync<string>(Module, _getAdRequestBody, NapiArg.Of(adParams), NapiArg.Of(adOptions));
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ public static unsafe partial class Advertising
     /// </summary>
     public static void ParseAdResponse(string adResponse, MultiSlotsAdLoadListener listener, IntPtr context)
     {
-        NodeApi.CallMethodVoid(Module, _parseAdResponse, adResponse, listener, context);
+        NodeApi.CallMethodVoid(Module, _parseAdResponse, adResponse, NapiArg.Of(listener), context);
     }
 
     /// <summary>
@@ -252,7 +252,7 @@ public sealed partial class MultiSlotsAdLoadListener : JsObject
     /// </summary>
     public void OnAdLoadSuccess(JsMap<string, IntPtr[]> adsMap)
     {
-        CallMethodVoid(_onAdLoadSuccess, adsMap);
+        CallMethodVoid(_onAdLoadSuccess, NapiArg.Of(adsMap));
     }
 
 }
@@ -273,7 +273,7 @@ public sealed partial class AdLoader : JsObject
     /// </summary>
     public void LoadAd(AdRequestParams adParam, AdOptions adOptions, AdLoadListener listener)
     {
-        CallMethodVoid(_loadAd, adParam, adOptions, listener);
+        CallMethodVoid(_loadAd, NapiArg.Of(adParam), NapiArg.Of(adOptions), NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -281,7 +281,7 @@ public sealed partial class AdLoader : JsObject
     /// </summary>
     public void LoadAdWithMultiSlots(AdRequestParams[] adParams, AdOptions adOptions, MultiSlotsAdLoadListener listener)
     {
-        CallMethodVoid(_loadAdWithMultiSlots, adParams, adOptions, listener);
+        CallMethodVoid(_loadAdWithMultiSlots, NapiArg.Of(adParams), NapiArg.Of(adOptions), NapiArg.Of(listener));
     }
 
 }
@@ -308,7 +308,7 @@ public sealed partial class AdLoadListener : JsObject
     /// </summary>
     public void OnAdLoadSuccess(IntPtr[] ads)
     {
-        CallMethodVoid(_onAdLoadSuccess, ads);
+        CallMethodVoid(_onAdLoadSuccess, NapiArg.Of(ads));
     }
 
 }

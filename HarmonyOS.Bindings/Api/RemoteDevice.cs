@@ -96,7 +96,7 @@ public static unsafe partial class RemoteDevice
     /// </summary>
     public static void OffPairingStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offPairingStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offPairingStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public static unsafe partial class RemoteDevice
     /// </summary>
     public static void OffConnectionStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offConnectionStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offConnectionStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public static unsafe partial class RemoteDevice
     /// </summary>
     public static void OffAcbStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offAcbStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offAcbStateChange, NapiArg.Of(callback));
     }
 
 }

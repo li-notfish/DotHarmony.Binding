@@ -402,7 +402,7 @@ public sealed partial class AppAccountManager : JsObject
     /// </summary>
     public void On(string type, string[] owners, IntPtr callback)
     {
-        CallMethodVoid(_on, type, owners, callback);
+        CallMethodVoid(_on, type, NapiArg.Of(owners), callback);
     }
 
     /// <summary>
@@ -586,7 +586,7 @@ public sealed partial class AppAccountManager : JsObject
     /// </summary>
     public Task<bool> CheckAccountLabelsAsync(string name, string owner, string[] labels)
     {
-        return CallMethodAsync<bool>(_checkAccountLabels, name, owner, labels);
+        return CallMethodAsync<bool>(_checkAccountLabels, name, owner, NapiArg.Of(labels));
     }
 
     /// <summary>
@@ -646,7 +646,7 @@ public sealed partial class AppAccountManager : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => new AppAccountInfo(e))),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, owners));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(owners)));
     }
 
     /// <summary>

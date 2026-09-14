@@ -94,7 +94,7 @@ public static unsafe partial class SkillManager
     /// </summary>
     public static Task<IntPtr> GetSkillInfoAsync(string bundleName, string moduleName, string skillName, double flags, double? userId = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getSkillInfo, bundleName, moduleName, skillName, flags, userId);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getSkillInfo, bundleName, moduleName, skillName, flags, NapiArg.Of(userId));
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public static unsafe partial class SkillManager
     /// </summary>
     public static Task<IntPtr[]> GetSkillInfosAsync(string bundleName, double flags, double? userId = null)
     {
-        return NodeApi.CallMethodAsync(Module, _getSkillInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), bundleName, flags, userId);
+        return NodeApi.CallMethodAsync(Module, _getSkillInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), bundleName, flags, NapiArg.Of(userId));
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ public static unsafe partial class SkillManager
     /// </summary>
     public static Task<IntPtr[]> GetAllSkillInfosAsync(double flags, double? userId = null)
     {
-        return NodeApi.CallMethodAsync(Module, _getAllSkillInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), flags, userId);
+        return NodeApi.CallMethodAsync(Module, _getAllSkillInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), flags, NapiArg.Of(userId));
     }
 
 }

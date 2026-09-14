@@ -76,7 +76,7 @@ public static unsafe partial class Font
     /// </summary>
     public static void RegisterFont(FontOptions options)
     {
-        NodeApi.CallMethodVoid(Module, _registerFont, options);
+        NodeApi.CallMethodVoid(Module, _registerFont, NapiArg.Of(options));
     }
 
     /// <summary>

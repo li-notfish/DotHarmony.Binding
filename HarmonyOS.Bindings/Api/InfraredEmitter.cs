@@ -84,7 +84,7 @@ public static unsafe partial class InfraredEmitter
     /// </summary>
     public static void TransmitInfrared(double infraredFrequency, double[] pattern)
     {
-        NodeApi.CallMethodVoid(Module, _transmitInfrared, infraredFrequency, pattern);
+        NodeApi.CallMethodVoid(Module, _transmitInfrared, infraredFrequency, NapiArg.Of(pattern));
     }
 
     /// <summary>

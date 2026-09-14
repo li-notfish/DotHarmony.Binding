@@ -75,7 +75,7 @@ public static unsafe partial class Rdb
     /// </summary>
     public static Task<RdbStore> GetRdbStoreAsync(IntPtr context, StoreConfig config, double version)
     {
-        return NodeApi.CallMethodAsync(Module, _getRdbStore, static h => new RdbStore(h), context, config, version);
+        return NodeApi.CallMethodAsync(Module, _getRdbStore, static h => new RdbStore(h), context, NapiArg.Of(config), version);
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public Task<double> BatchInsertAsync(string table, IntPtr[] values)
     {
-        return CallMethodAsync<double>(_batchInsert, table, values);
+        return CallMethodAsync<double>(_batchInsert, table, NapiArg.Of(values));
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public Task<double> UpdateAsync(IntPtr values, RdbPredicates predicates)
     {
-        return CallMethodAsync<double>(_update, values, predicates);
+        return CallMethodAsync<double>(_update, values, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public Task<double> DeleteAsync(RdbPredicates predicates)
     {
-        return CallMethodAsync<double>(_delete, predicates);
+        return CallMethodAsync<double>(_delete, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public Task<IntPtr> QueryAsync(RdbPredicates predicates, string[] columns)
     {
-        return CallMethodAsync<IntPtr>(_query, predicates, columns);
+        return CallMethodAsync<IntPtr>(_query, NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public Task<IntPtr> QuerySqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[] bindArgs)
     {
-        return CallMethodAsync<IntPtr>(_querySql, sql, bindArgs);
+        return CallMethodAsync<IntPtr>(_querySql, sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public Task ExecuteSqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[] bindArgs)
     {
-        return CallMethodAsyncVoid(_executeSql, sql, bindArgs);
+        return CallMethodAsyncVoid(_executeSql, sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -195,7 +195,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public Task SetDistributedTablesAsync(string[] tables)
     {
-        return CallMethodAsyncVoid(_setDistributedTables, tables);
+        return CallMethodAsyncVoid(_setDistributedTables, NapiArg.Of(tables));
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public Task<object[]> SyncAsync(global::HarmonyOS.ArkUI.RdbSyncMode mode, RdbPredicates predicates)
     {
-        return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), mode, predicates);
+        return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), mode, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -340,7 +340,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates InDevices(string[] devices)
     {
-        return CallMethod(_inDevices, static h => new RdbPredicates(h), devices);
+        return CallMethod(_inDevices, static h => new RdbPredicates(h), NapiArg.Of(devices));
     }
 
     /// <summary>
@@ -548,7 +548,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates GroupBy(string[] fields)
     {
-        return CallMethod(_groupBy, static h => new RdbPredicates(h), fields);
+        return CallMethod(_groupBy, static h => new RdbPredicates(h), NapiArg.Of(fields));
     }
 
     /// <summary>
@@ -564,7 +564,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates In(string field, global::HarmonyOS.ArkUI.ValueType[] value)
     {
-        return CallMethod(_in, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_in, static h => new RdbPredicates(h), field, NapiArg.Of(value));
     }
 
     /// <summary>
@@ -572,7 +572,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates NotIn(string field, global::HarmonyOS.ArkUI.ValueType[] value)
     {
-        return CallMethod(_notIn, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_notIn, static h => new RdbPredicates(h), field, NapiArg.Of(value));
     }
 
 }

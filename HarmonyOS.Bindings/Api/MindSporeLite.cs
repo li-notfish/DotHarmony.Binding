@@ -79,7 +79,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static Task<Model> LoadModelFromFileAsync(string model, IntPtr? context = null)
     {
-        return NodeApi.CallMethodAsync(Module, _loadModelFromFile, static h => new Model(h), model, context);
+        return NodeApi.CallMethodAsync(Module, _loadModelFromFile, static h => new Model(h), model, NapiArg.Of(context));
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static Task<Model> LoadModelFromBufferAsync(byte[] model, IntPtr? context = null)
     {
-        return NodeApi.CallMethodAsync(Module, _loadModelFromBuffer, static h => new Model(h), model, context);
+        return NodeApi.CallMethodAsync(Module, _loadModelFromBuffer, static h => new Model(h), NapiArg.Of(model), NapiArg.Of(context));
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static void LoadModelFromBuffer(byte[] model, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _loadModelFromBuffer, model, callback);
+        NodeApi.CallMethodVoid(Module, _loadModelFromBuffer, NapiArg.Of(model), callback);
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static void LoadModelFromBuffer(byte[] model, IntPtr context, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _loadModelFromBuffer, model, context, callback);
+        NodeApi.CallMethodVoid(Module, _loadModelFromBuffer, NapiArg.Of(model), context, callback);
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static Task<Model> LoadModelFromFdAsync(double model, IntPtr? context = null)
     {
-        return NodeApi.CallMethodAsync(Module, _loadModelFromFd, static h => new Model(h), model, context);
+        return NodeApi.CallMethodAsync(Module, _loadModelFromFd, static h => new Model(h), model, NapiArg.Of(context));
     }
 
     /// <summary>
@@ -151,7 +151,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static Task<Model> LoadTrainModelFromFileAsync(string model, TrainCfg? trainCfg = null, IntPtr? context = null)
     {
-        return NodeApi.CallMethodAsync(Module, _loadTrainModelFromFile, static h => new Model(h), model, trainCfg, context);
+        return NodeApi.CallMethodAsync(Module, _loadTrainModelFromFile, static h => new Model(h), model, NapiArg.Of(trainCfg), NapiArg.Of(context));
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static Task<Model> LoadTrainModelFromBufferAsync(byte[] model, TrainCfg? trainCfg = null, IntPtr? context = null)
     {
-        return NodeApi.CallMethodAsync(Module, _loadTrainModelFromBuffer, static h => new Model(h), model, trainCfg, context);
+        return NodeApi.CallMethodAsync(Module, _loadTrainModelFromBuffer, static h => new Model(h), NapiArg.Of(model), NapiArg.Of(trainCfg), NapiArg.Of(context));
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static Task<Model> LoadTrainModelFromFdAsync(double model, TrainCfg? trainCfg = null, IntPtr? context = null)
     {
-        return NodeApi.CallMethodAsync(Module, _loadTrainModelFromFd, static h => new Model(h), model, trainCfg, context);
+        return NodeApi.CallMethodAsync(Module, _loadTrainModelFromFd, static h => new Model(h), model, NapiArg.Of(trainCfg), NapiArg.Of(context));
     }
 
     /// <summary>
@@ -221,7 +221,7 @@ public sealed partial class Model : JsObject
     /// </summary>
     public void Predict(MSTensor[] inputs, IntPtr callback)
     {
-        CallMethodVoid(_predict, inputs, callback);
+        CallMethodVoid(_predict, NapiArg.Of(inputs), callback);
     }
 
     /// <summary>
@@ -229,7 +229,7 @@ public sealed partial class Model : JsObject
     /// </summary>
     public Task<MSTensor[]> PredictAsync(MSTensor[] inputs)
     {
-        return CallMethodAsync(_predict, h => ValueConverter.ConvertArray(h, static e => new MSTensor(e)), inputs);
+        return CallMethodAsync(_predict, h => ValueConverter.ConvertArray(h, static e => new MSTensor(e)), NapiArg.Of(inputs));
     }
 
     /// <summary>
@@ -237,7 +237,7 @@ public sealed partial class Model : JsObject
     /// </summary>
     public bool Resize(MSTensor[] inputs, double[][] dims)
     {
-        return CallMethod<bool>(_resize, inputs, dims);
+        return CallMethod<bool>(_resize, NapiArg.Of(inputs), NapiArg.Of(dims));
     }
 
     /// <summary>
@@ -245,7 +245,7 @@ public sealed partial class Model : JsObject
     /// </summary>
     public bool RunStep(MSTensor[] inputs)
     {
-        return CallMethod<bool>(_runStep, inputs);
+        return CallMethod<bool>(_runStep, NapiArg.Of(inputs));
     }
 
     /// <summary>
@@ -261,7 +261,7 @@ public sealed partial class Model : JsObject
     /// </summary>
     public bool UpdateWeights(MSTensor[] weights)
     {
-        return CallMethod<bool>(_updateWeights, weights);
+        return CallMethod<bool>(_updateWeights, NapiArg.Of(weights));
     }
 
     /// <summary>
@@ -277,7 +277,7 @@ public sealed partial class Model : JsObject
     /// </summary>
     public bool ExportModel(string modelFile, global::HarmonyOS.ArkUI.QuantizationType? quantizationType = null, bool? exportInferenceOnly = null, string[]? outputTensorName = null)
     {
-        return CallMethod<bool>(_exportModel, modelFile, quantizationType, exportInferenceOnly, outputTensorName);
+        return CallMethod<bool>(_exportModel, modelFile, quantizationType, NapiArg.Of(exportInferenceOnly), NapiArg.Of(outputTensorName));
     }
 
     /// <summary>
@@ -285,7 +285,7 @@ public sealed partial class Model : JsObject
     /// </summary>
     public bool ExportWeightsCollaborateWithMicro(string weightFile, bool? isInference = null, bool? enableFp16 = null, string[]? changeableWeightsName = null)
     {
-        return CallMethod<bool>(_exportWeightsCollaborateWithMicro, weightFile, isInference, enableFp16, changeableWeightsName);
+        return CallMethod<bool>(_exportWeightsCollaborateWithMicro, weightFile, NapiArg.Of(isInference), NapiArg.Of(enableFp16), NapiArg.Of(changeableWeightsName));
     }
 
 }
@@ -405,7 +405,7 @@ public sealed partial class MSTensor : JsObject
     /// </summary>
     public void SetData(byte[] inputArray)
     {
-        CallMethodVoid(_setData, inputArray);
+        CallMethodVoid(_setData, NapiArg.Of(inputArray));
     }
 
 }

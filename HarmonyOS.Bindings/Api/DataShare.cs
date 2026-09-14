@@ -99,7 +99,7 @@ public sealed partial class DataProxyHandle : JsObject
     /// </summary>
     public DataProxyResult[] On(string @event, string[] uris, DataProxyConfig config, IntPtr callback)
     {
-        return CallMethod(_on, h => ValueConverter.ConvertArray(h, static e => new DataProxyResult(e)), @event, uris, config, callback);
+        return CallMethod(_on, h => ValueConverter.ConvertArray(h, static e => new DataProxyResult(e)), @event, NapiArg.Of(uris), NapiArg.Of(config), callback);
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public sealed partial class DataProxyHandle : JsObject
     /// </summary>
     public DataProxyResult[] Off(string @event, string[] uris, DataProxyConfig config, IntPtr callback)
     {
-        return CallMethod(_off, h => ValueConverter.ConvertArray(h, static e => new DataProxyResult(e)), @event, uris, config, callback);
+        return CallMethod(_off, h => ValueConverter.ConvertArray(h, static e => new DataProxyResult(e)), @event, NapiArg.Of(uris), NapiArg.Of(config), callback);
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public sealed partial class DataProxyHandle : JsObject
     /// </summary>
     public Task<DataProxyResult[]> PublishAsync(IntPtr[] data, DataProxyConfig config)
     {
-        return CallMethodAsync(_publish, h => ValueConverter.ConvertArray(h, static e => new DataProxyResult(e)), data, config);
+        return CallMethodAsync(_publish, h => ValueConverter.ConvertArray(h, static e => new DataProxyResult(e)), NapiArg.Of(data), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public sealed partial class DataProxyHandle : JsObject
     /// </summary>
     public Task<DataProxyResult[]> DeleteAsync(string[] uris, DataProxyConfig config)
     {
-        return CallMethodAsync(_delete, h => ValueConverter.ConvertArray(h, static e => new DataProxyResult(e)), uris, config);
+        return CallMethodAsync(_delete, h => ValueConverter.ConvertArray(h, static e => new DataProxyResult(e)), NapiArg.Of(uris), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public sealed partial class DataProxyHandle : JsObject
     /// </summary>
     public Task<DataProxyResult[]> DeleteMyPublishedDataAsync(DataProxyConfig config)
     {
-        return CallMethodAsync(_deleteMyPublishedData, h => ValueConverter.ConvertArray(h, static e => new DataProxyResult(e)), config);
+        return CallMethodAsync(_deleteMyPublishedData, h => ValueConverter.ConvertArray(h, static e => new DataProxyResult(e)), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public sealed partial class DataProxyHandle : JsObject
     /// </summary>
     public Task<IntPtr[]> GetAsync(string[] uris, DataProxyConfig config)
     {
-        return CallMethodAsync(_get, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), uris, config);
+        return CallMethodAsync(_get, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(uris), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public sealed partial class DataProxyHandle : JsObject
     /// </summary>
     public Task PutValueAsync(string uri, double key, IntPtr value, DataProxyConfig config)
     {
-        return CallMethodAsyncVoid(_putValue, uri, key, value, config);
+        return CallMethodAsyncVoid(_putValue, uri, key, value, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public sealed partial class DataProxyHandle : JsObject
     /// </summary>
     public Task RemoveValueAsync(string uri, double key, DataProxyConfig config)
     {
-        return CallMethodAsyncVoid(_removeValue, uri, key, config);
+        return CallMethodAsyncVoid(_removeValue, uri, key, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ public sealed partial class DataProxyHandle : JsObject
     /// </summary>
     public Task<IntPtr[]> GetValuesAsync(string uri, DataProxyConfig config)
     {
-        return CallMethodAsync(_getValues, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), uri, config);
+        return CallMethodAsync(_getValues, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), uri, NapiArg.Of(config));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -175,7 +175,7 @@ public sealed partial class DataProxyHandle : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<IntPtr>(e))),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, uris, config));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(uris), NapiArg.Of(config)));
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public sealed partial class DataProxyHandle : JsObject
     /// </summary>
     public void Off(string type, System.Action<IntPtr[]> callback, string[] uris, DataProxyConfig config)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, uris, config));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, NapiArg.Of(uris), NapiArg.Of(config)));
     }
 
     /// <summary>

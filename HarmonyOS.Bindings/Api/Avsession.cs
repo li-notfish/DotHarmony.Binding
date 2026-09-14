@@ -148,7 +148,7 @@ public static unsafe partial class Avsession
     /// </summary>
     public static void OffSessionCreate(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offSessionCreate, callback);
+        NodeApi.CallMethodVoid(Module, _offSessionCreate, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ public static unsafe partial class Avsession
     /// </summary>
     public static void OffSessionDestroy(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offSessionDestroy, callback);
+        NodeApi.CallMethodVoid(Module, _offSessionDestroy, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public static unsafe partial class Avsession
     /// </summary>
     public static void OffTopSessionChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offTopSessionChange, callback);
+        NodeApi.CallMethodVoid(Module, _offTopSessionChange, NapiArg.Of(callback));
     }
 
 }
@@ -267,7 +267,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public Task SetAVCallStateAsync(AVCallState state)
     {
-        return CallMethodAsyncVoid(_setAVCallState, state);
+        return CallMethodAsyncVoid(_setAVCallState, NapiArg.Of(state));
     }
 
     /// <summary>
@@ -291,7 +291,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public Task SetAVQueueItemsAsync(IntPtr[] items)
     {
-        return CallMethodAsyncVoid(_setAVQueueItems, items);
+        return CallMethodAsyncVoid(_setAVQueueItems, NapiArg.Of(items));
     }
 
     /// <summary>
@@ -315,7 +315,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public Task SetSupportedPlaySpeedsAsync(double[] speeds)
     {
-        return CallMethodAsyncVoid(_setSupportedPlaySpeeds, speeds);
+        return CallMethodAsyncVoid(_setSupportedPlaySpeeds, NapiArg.Of(speeds));
     }
 
     /// <summary>
@@ -323,7 +323,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public Task SetSupportedLoopModesAsync(global::HarmonyOS.ArkUI.LoopMode[] loopModes)
     {
-        return CallMethodAsyncVoid(_setSupportedLoopModes, loopModes);
+        return CallMethodAsyncVoid(_setSupportedLoopModes, NapiArg.Of(loopModes));
     }
 
     /// <summary>
@@ -363,7 +363,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffDesktopLyricVisibilityChanged(IntPtr? callback = null)
     {
-        CallMethodVoid(_offDesktopLyricVisibilityChanged, callback);
+        CallMethodVoid(_offDesktopLyricVisibilityChanged, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -371,7 +371,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public Task SetDesktopLyricStateAsync(DesktopLyricState state)
     {
-        return CallMethodAsyncVoid(_setDesktopLyricState, state);
+        return CallMethodAsyncVoid(_setDesktopLyricState, NapiArg.Of(state));
     }
 
     /// <summary>
@@ -395,7 +395,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffDesktopLyricStateChanged(IntPtr? callback = null)
     {
-        CallMethodVoid(_offDesktopLyricStateChanged, callback);
+        CallMethodVoid(_offDesktopLyricStateChanged, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -411,7 +411,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public Task SetMediaCenterControlTypeAsync(IntPtr[] type)
     {
-        return CallMethodAsyncVoid(_setMediaCenterControlType, type);
+        return CallMethodAsyncVoid(_setMediaCenterControlType, NapiArg.Of(type));
     }
 
     /// <summary>
@@ -515,7 +515,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffPlay(IntPtr? callback = null)
     {
-        CallMethodVoid(_offPlay, callback);
+        CallMethodVoid(_offPlay, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -523,7 +523,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffPlayNext(IntPtr? callback = null)
     {
-        CallMethodVoid(_offPlayNext, callback);
+        CallMethodVoid(_offPlayNext, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -531,7 +531,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffPlayPrevious(IntPtr? callback = null)
     {
-        CallMethodVoid(_offPlayPrevious, callback);
+        CallMethodVoid(_offPlayPrevious, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -539,7 +539,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffFastForward(IntPtr? callback = null)
     {
-        CallMethodVoid(_offFastForward, callback);
+        CallMethodVoid(_offFastForward, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -547,7 +547,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffRewind(IntPtr? callback = null)
     {
-        CallMethodVoid(_offRewind, callback);
+        CallMethodVoid(_offRewind, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -1269,7 +1269,7 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public Task SendAVKeyEventAsync(global::HarmonyOS.Bindings.Api.KeyEventKeyEvent @event)
     {
-        return CallMethodAsyncVoid(_sendAVKeyEvent, @event);
+        return CallMethodAsyncVoid(_sendAVKeyEvent, NapiArg.Of(@event));
     }
 
     /// <summary>
@@ -1381,7 +1381,7 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffDesktopLyricEnabled(IntPtr? callback = null)
     {
-        CallMethodVoid(_offDesktopLyricEnabled, callback);
+        CallMethodVoid(_offDesktopLyricEnabled, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -1413,7 +1413,7 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffDesktopLyricVisibilityChanged(IntPtr? callback = null)
     {
-        CallMethodVoid(_offDesktopLyricVisibilityChanged, callback);
+        CallMethodVoid(_offDesktopLyricVisibilityChanged, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -1421,7 +1421,7 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public Task SetDesktopLyricStateAsync(DesktopLyricState state)
     {
-        return CallMethodAsyncVoid(_setDesktopLyricState, state);
+        return CallMethodAsyncVoid(_setDesktopLyricState, NapiArg.Of(state));
     }
 
     /// <summary>
@@ -1445,7 +1445,7 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffDesktopLyricStateChanged(IntPtr? callback = null)
     {
-        CallMethodVoid(_offDesktopLyricStateChanged, callback);
+        CallMethodVoid(_offDesktopLyricStateChanged, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -1469,7 +1469,7 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffMediaCenterControlTypeChanged(IntPtr? callback = null)
     {
-        CallMethodVoid(_offMediaCenterControlTypeChanged, callback);
+        CallMethodVoid(_offMediaCenterControlTypeChanged, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -1477,7 +1477,7 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void On(string type, object[] filter, IntPtr callback)
     {
-        CallMethodVoid(_on, type, filter, callback);
+        CallMethodVoid(_on, type, NapiArg.Of(filter), callback);
     }
 
     /// <summary>
@@ -1517,7 +1517,7 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffSupportedPlaySpeedsChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offSupportedPlaySpeedsChange, callback);
+        CallMethodVoid(_offSupportedPlaySpeedsChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -1533,7 +1533,7 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffSupportedLoopModesChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offSupportedLoopModesChange, callback);
+        CallMethodVoid(_offSupportedLoopModesChange, NapiArg.Of(callback));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -1545,7 +1545,7 @@ public sealed partial class AVSessionController : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, filter));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(filter)));
     }
 
     /// <summary>
@@ -1571,7 +1571,7 @@ public sealed partial class AVSessionController : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, filter));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(filter)));
     }
 
     /// <summary>
@@ -1589,7 +1589,7 @@ public sealed partial class AVSessionController : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(new AVCallState(args[0])),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, filter));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(filter)));
     }
 
     /// <summary>
@@ -1921,7 +1921,7 @@ public sealed partial class AVCastPickerHelper : JsObject
     /// </summary>
     public Task SelectAsync(IntPtr? options = null)
     {
-        return CallMethodAsyncVoid(_select, options);
+        return CallMethodAsyncVoid(_select, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -2117,7 +2117,7 @@ public sealed partial class AVCastController : JsObject
     /// </summary>
     public Task ProcessMediaKeyResponseAsync(string assetId, byte[] response)
     {
-        return CallMethodAsyncVoid(_processMediaKeyResponse, assetId, response);
+        return CallMethodAsyncVoid(_processMediaKeyResponse, assetId, NapiArg.Of(response));
     }
 
     /// <summary>
@@ -2141,7 +2141,7 @@ public sealed partial class AVCastController : JsObject
     /// </summary>
     public void On(string type, object[] filter, IntPtr callback)
     {
-        CallMethodVoid(_on, type, filter, callback);
+        CallMethodVoid(_on, type, NapiArg.Of(filter), callback);
     }
 
     /// <summary>
@@ -2177,7 +2177,7 @@ public sealed partial class AVCastController : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, filter));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(filter)));
     }
 
     /// <summary>

@@ -370,7 +370,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void Back(IntPtr? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _back, options);
+        NodeApi.CallMethodVoid(Module, _back, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -378,7 +378,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void Back(double index, IntPtr? @params = null)
     {
-        NodeApi.CallMethodVoid(Module, _back, index, @params);
+        NodeApi.CallMethodVoid(Module, _back, index, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -578,7 +578,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task OpenCustomDialogAsync(IntPtr dialogContent, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openCustomDialog, dialogContent, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _openCustomDialog, dialogContent, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -586,7 +586,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task OpenCustomDialogWithControllerAsync(IntPtr dialogContent, IntPtr controller, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openCustomDialogWithController, dialogContent, controller, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _openCustomDialogWithController, dialogContent, controller, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -618,7 +618,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task<double> PresentCustomDialogAsync(IntPtr builder, IntPtr? controller = null, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _presentCustomDialog, builder, controller, options);
+        return NodeApi.CallMethodAsync<double>(Module, _presentCustomDialog, builder, NapiArg.Of(controller), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -650,7 +650,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task OpenPopupAsync(IntPtr content, IntPtr target, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openPopup, content, target, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _openPopup, content, target, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -658,7 +658,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task UpdatePopupAsync(IntPtr content, IntPtr options, bool? partialUpdate = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updatePopup, content, options, partialUpdate);
+        return NodeApi.CallMethodAsyncVoid(Module, _updatePopup, content, options, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
@@ -674,7 +674,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task OpenMenuAsync(IntPtr content, IntPtr target, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openMenu, content, target, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _openMenu, content, target, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -682,7 +682,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task UpdateMenuAsync(IntPtr content, IntPtr options, bool? partialUpdate = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateMenu, content, options, partialUpdate);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateMenu, content, options, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
@@ -706,7 +706,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void Off(string type, IntPtr options, IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _off, type, options, callback);
+        NodeApi.CallMethodVoid(Module, _off, type, options, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -722,7 +722,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void Off(string type, IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _off, type, callback);
+        NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -738,7 +738,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void Off(string type, double navigationUniqueId, IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _off, type, navigationUniqueId, callback);
+        NodeApi.CallMethodVoid(Module, _off, type, navigationUniqueId, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -754,7 +754,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void RemoveGlobalGestureListener(IntPtr type, IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _removeGlobalGestureListener, type, callback);
+        NodeApi.CallMethodVoid(Module, _removeGlobalGestureListener, type, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -770,7 +770,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void OffSwiperContentUpdate(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offSwiperContentUpdate, callback);
+        NodeApi.CallMethodVoid(Module, _offSwiperContentUpdate, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -786,7 +786,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void OffSwiperContentUpdate(IntPtr config, IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offSwiperContentUpdate, config, callback);
+        NodeApi.CallMethodVoid(Module, _offSwiperContentUpdate, config, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -802,7 +802,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void OffRouterPageSizeChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offRouterPageSizeChange, callback);
+        NodeApi.CallMethodVoid(Module, _offRouterPageSizeChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -818,7 +818,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void OffNavDestinationSizeChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offNavDestinationSizeChange, callback);
+        NodeApi.CallMethodVoid(Module, _offNavDestinationSizeChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -834,7 +834,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void OffNavDestinationSizeChangeByUniqueId(double navigationUniqueId, IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offNavDestinationSizeChangeByUniqueId, navigationUniqueId, callback);
+        NodeApi.CallMethodVoid(Module, _offNavDestinationSizeChangeByUniqueId, navigationUniqueId, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -850,7 +850,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void AddComponentContent(IntPtr content, double? index = null)
     {
-        NodeApi.CallMethodVoid(Module, _addComponentContent, content, index);
+        NodeApi.CallMethodVoid(Module, _addComponentContent, content, NapiArg.Of(index));
     }
 
     /// <summary>
@@ -858,7 +858,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void AddComponentContentWithOrder(IntPtr content, IntPtr? levelOrder = null)
     {
-        NodeApi.CallMethodVoid(Module, _addComponentContentWithOrder, content, levelOrder);
+        NodeApi.CallMethodVoid(Module, _addComponentContentWithOrder, content, NapiArg.Of(levelOrder));
     }
 
     /// <summary>
@@ -906,7 +906,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task OpenOrderOverlayAsync(IntPtr content, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openOrderOverlay, content, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _openOrderOverlay, content, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1090,7 +1090,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static IntPtr[] GetParagraphs(IntPtr styledString, IntPtr? options = null)
     {
-        return NodeApi.CallMethod(Module, _getParagraphs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), styledString, options);
+        return NodeApi.CallMethod(Module, _getParagraphs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), styledString, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1114,7 +1114,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void Activate(bool isActive, bool? autoInactive = null)
     {
-        NodeApi.CallMethodVoid(Module, _activate, isActive, autoInactive);
+        NodeApi.CallMethodVoid(Module, _activate, isActive, NapiArg.Of(autoInactive));
     }
 
     /// <summary>
@@ -1162,7 +1162,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void SetCustomCursor(IntPtr value, double? focusX = null, double? focusY = null)
     {
-        NodeApi.CallMethodVoid(Module, _setCustomCursor, value, focusX, focusY);
+        NodeApi.CallMethodVoid(Module, _setCustomCursor, value, NapiArg.Of(focusX), NapiArg.Of(focusY));
     }
 
     /// <summary>
@@ -1194,7 +1194,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void Get(string id, IntPtr callback, IntPtr? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _get, id, callback, options);
+        NodeApi.CallMethodVoid(Module, _get, id, callback, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1202,7 +1202,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task<IntPtr> GetAsync(string id, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _get, id, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _get, id, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1210,7 +1210,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void CreateFromBuilder(IntPtr builder, IntPtr callback, double? delay = null, bool? checkImageStatus = null, IntPtr? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _createFromBuilder, builder, callback, delay, checkImageStatus, options);
+        NodeApi.CallMethodVoid(Module, _createFromBuilder, builder, callback, NapiArg.Of(delay), NapiArg.Of(checkImageStatus), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1218,7 +1218,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task<IntPtr> CreateFromBuilderAsync(IntPtr builder, double? delay = null, bool? checkImageStatus = null, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createFromBuilder, builder, delay, checkImageStatus, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createFromBuilder, builder, NapiArg.Of(delay), NapiArg.Of(checkImageStatus), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1226,7 +1226,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static IntPtr GetSync(string id, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getSync, id, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _getSync, id, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1234,7 +1234,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task<IntPtr> GetWithUniqueIdAsync(double uniqueId, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getWithUniqueId, uniqueId, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getWithUniqueId, uniqueId, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1242,7 +1242,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static IntPtr GetSyncWithUniqueId(double uniqueId, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getSyncWithUniqueId, uniqueId, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _getSyncWithUniqueId, uniqueId, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1250,7 +1250,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task<IntPtr> CreateFromComponentAsync(IntPtr content, double? delay = null, bool? checkImageStatus = null, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createFromComponent, content, delay, checkImageStatus, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createFromComponent, content, NapiArg.Of(delay), NapiArg.Of(checkImageStatus), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1386,7 +1386,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static string GetFilteredInspectorTree(string[]? filters = null)
     {
-        return NodeApi.CallMethod<string>(Module, _getFilteredInspectorTree, filters);
+        return NodeApi.CallMethod<string>(Module, _getFilteredInspectorTree, NapiArg.Of(filters));
     }
 
     /// <summary>
@@ -1394,7 +1394,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static string GetFilteredInspectorTreeById(string id, double depth, string[]? filters = null)
     {
-        return NodeApi.CallMethod<string>(Module, _getFilteredInspectorTreeById, id, depth, filters);
+        return NodeApi.CallMethod<string>(Module, _getFilteredInspectorTreeById, id, depth, NapiArg.Of(filters));
     }
 
     /// <summary>
@@ -1610,7 +1610,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void KeyframeAnimateTo(IntPtr param, IntPtr[] keyframes)
     {
-        NodeApi.CallMethodVoid(Module, _keyframeAnimateTo, param, keyframes);
+        NodeApi.CallMethodVoid(Module, _keyframeAnimateTo, param, NapiArg.Of(keyframes));
     }
 
     /// <summary>
@@ -1810,7 +1810,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openBindSheet, bindSheetContent, sheetOptions, targetId);
+        return NodeApi.CallMethodAsyncVoid(Module, _openBindSheet, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
     }
 
     /// <summary>
@@ -1818,7 +1818,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateBindSheet, bindSheetContent, sheetOptions, partialUpdate);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateBindSheet, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
@@ -2018,7 +2018,7 @@ public static unsafe partial class UIContext
     /// </summary>
     public static void DisableMenuItems(IntPtr[] items)
     {
-        NodeApi.CallMethodVoid(Module, _disableMenuItems, items);
+        NodeApi.CallMethodVoid(Module, _disableMenuItems, NapiArg.Of(items));
     }
 
 }
@@ -2234,7 +2234,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public string GetFilteredInspectorTree(string[]? filters = null)
     {
-        return CallMethod<string>(_getFilteredInspectorTree, filters);
+        return CallMethod<string>(_getFilteredInspectorTree, NapiArg.Of(filters));
     }
 
     /// <summary>
@@ -2242,7 +2242,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public string GetFilteredInspectorTreeById(string id, double depth, string[]? filters = null)
     {
-        return CallMethod<string>(_getFilteredInspectorTreeById, id, depth, filters);
+        return CallMethod<string>(_getFilteredInspectorTreeById, id, depth, NapiArg.Of(filters));
     }
 
     /// <summary>
@@ -2314,7 +2314,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public global::HarmonyOS.Bindings.Api.AnimatorResult CreateAnimator(global::HarmonyOS.Bindings.Api.AnimatorOptions options)
     {
-        return CallMethod(_createAnimator, static h => new global::HarmonyOS.Bindings.Api.AnimatorResult(h), options);
+        return CallMethod(_createAnimator, static h => new global::HarmonyOS.Bindings.Api.AnimatorResult(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -2426,7 +2426,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public bool DispatchKeyEvent(double node, global::HarmonyOS.Bindings.Api.KeyEventKeyEvent @event)
     {
-        return CallMethod<bool>(_dispatchKeyEvent, node, @event);
+        return CallMethod<bool>(_dispatchKeyEvent, node, NapiArg.Of(@event));
     }
 
     /// <summary>
@@ -2458,7 +2458,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public void KeyframeAnimateTo(IntPtr param, IntPtr[] keyframes)
     {
-        CallMethodVoid(_keyframeAnimateTo, param, keyframes);
+        CallMethodVoid(_keyframeAnimateTo, param, NapiArg.Of(keyframes));
     }
 
     /// <summary>
@@ -2658,7 +2658,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null)
     {
-        return CallMethodAsyncVoid(_openBindSheet, bindSheetContent, sheetOptions, targetId);
+        return CallMethodAsyncVoid(_openBindSheet, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
     }
 
     /// <summary>
@@ -2666,7 +2666,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null)
     {
-        return CallMethodAsyncVoid(_updateBindSheet, bindSheetContent, sheetOptions, partialUpdate);
+        return CallMethodAsyncVoid(_updateBindSheet, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
@@ -2682,7 +2682,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public void PostFrameCallback(FrameCallback frameCallback)
     {
-        CallMethodVoid(_postFrameCallback, frameCallback);
+        CallMethodVoid(_postFrameCallback, NapiArg.Of(frameCallback));
     }
 
     /// <summary>
@@ -2690,7 +2690,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public void PostDelayedFrameCallback(FrameCallback frameCallback, double delayTime)
     {
-        CallMethodVoid(_postDelayedFrameCallback, frameCallback, delayTime);
+        CallMethodVoid(_postDelayedFrameCallback, NapiArg.Of(frameCallback), delayTime);
     }
 
     /// <summary>
@@ -3235,7 +3235,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public string GetFilteredInspectorTree(string[]? filters = null)
     {
-        return CallMethod<string>(_getFilteredInspectorTree, filters);
+        return CallMethod<string>(_getFilteredInspectorTree, NapiArg.Of(filters));
     }
 
     /// <summary>
@@ -3243,7 +3243,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public string GetFilteredInspectorTreeById(string id, double depth, string[]? filters = null)
     {
-        return CallMethod<string>(_getFilteredInspectorTreeById, id, depth, filters);
+        return CallMethod<string>(_getFilteredInspectorTreeById, id, depth, NapiArg.Of(filters));
     }
 
     /// <summary>
@@ -3315,7 +3315,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public global::HarmonyOS.Bindings.Api.AnimatorResult CreateAnimator(global::HarmonyOS.Bindings.Api.AnimatorOptions options)
     {
-        return CallMethod(_createAnimator, static h => new global::HarmonyOS.Bindings.Api.AnimatorResult(h), options);
+        return CallMethod(_createAnimator, static h => new global::HarmonyOS.Bindings.Api.AnimatorResult(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -3427,7 +3427,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public bool DispatchKeyEvent(double node, global::HarmonyOS.Bindings.Api.KeyEventKeyEvent @event)
     {
-        return CallMethod<bool>(_dispatchKeyEvent, node, @event);
+        return CallMethod<bool>(_dispatchKeyEvent, node, NapiArg.Of(@event));
     }
 
     /// <summary>
@@ -3459,7 +3459,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public void KeyframeAnimateTo(IntPtr param, IntPtr[] keyframes)
     {
-        CallMethodVoid(_keyframeAnimateTo, param, keyframes);
+        CallMethodVoid(_keyframeAnimateTo, param, NapiArg.Of(keyframes));
     }
 
     /// <summary>
@@ -3659,7 +3659,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null)
     {
-        return CallMethodAsyncVoid(_openBindSheet, bindSheetContent, sheetOptions, targetId);
+        return CallMethodAsyncVoid(_openBindSheet, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
     }
 
     /// <summary>
@@ -3667,7 +3667,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null)
     {
-        return CallMethodAsyncVoid(_updateBindSheet, bindSheetContent, sheetOptions, partialUpdate);
+        return CallMethodAsyncVoid(_updateBindSheet, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
@@ -3683,7 +3683,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public void PostFrameCallback(FrameCallback frameCallback)
     {
-        CallMethodVoid(_postFrameCallback, frameCallback);
+        CallMethodVoid(_postFrameCallback, NapiArg.Of(frameCallback));
     }
 
     /// <summary>
@@ -3691,7 +3691,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public void PostDelayedFrameCallback(FrameCallback frameCallback, double delayTime)
     {
-        CallMethodVoid(_postDelayedFrameCallback, frameCallback, delayTime);
+        CallMethodVoid(_postDelayedFrameCallback, NapiArg.Of(frameCallback), delayTime);
     }
 
     /// <summary>
@@ -3942,7 +3942,7 @@ public sealed partial class RouterObject : JsObject
     /// </summary>
     public void Back(IntPtr? options = null)
     {
-        CallMethodVoid(_back, options);
+        CallMethodVoid(_back, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -3950,7 +3950,7 @@ public sealed partial class RouterObject : JsObject
     /// </summary>
     public void Back(double index, IntPtr? @params = null)
     {
-        CallMethodVoid(_back, index, @params);
+        CallMethodVoid(_back, index, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -4137,7 +4137,7 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task OpenCustomDialogAsync(IntPtr dialogContent, IntPtr? options = null)
     {
-        return CallMethodAsyncVoid(_openCustomDialog, dialogContent, options);
+        return CallMethodAsyncVoid(_openCustomDialog, dialogContent, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -4145,7 +4145,7 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task OpenCustomDialogWithControllerAsync(IntPtr dialogContent, IntPtr controller, IntPtr? options = null)
     {
-        return CallMethodAsyncVoid(_openCustomDialogWithController, dialogContent, controller, options);
+        return CallMethodAsyncVoid(_openCustomDialogWithController, dialogContent, controller, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -4177,7 +4177,7 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task<double> PresentCustomDialogAsync(IntPtr builder, IntPtr? controller = null, IntPtr? options = null)
     {
-        return CallMethodAsync<double>(_presentCustomDialog, builder, controller, options);
+        return CallMethodAsync<double>(_presentCustomDialog, builder, NapiArg.Of(controller), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -4209,7 +4209,7 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task OpenPopupAsync(IntPtr content, TargetInfo target, IntPtr? options = null)
     {
-        return CallMethodAsyncVoid(_openPopup, content, target, options);
+        return CallMethodAsyncVoid(_openPopup, content, NapiArg.Of(target), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -4217,7 +4217,7 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task UpdatePopupAsync(IntPtr content, IntPtr options, bool? partialUpdate = null)
     {
-        return CallMethodAsyncVoid(_updatePopup, content, options, partialUpdate);
+        return CallMethodAsyncVoid(_updatePopup, content, options, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
@@ -4233,7 +4233,7 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task OpenMenuAsync(IntPtr content, TargetInfo target, IntPtr? options = null)
     {
-        return CallMethodAsyncVoid(_openMenu, content, target, options);
+        return CallMethodAsyncVoid(_openMenu, content, NapiArg.Of(target), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -4241,7 +4241,7 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task UpdateMenuAsync(IntPtr content, IntPtr options, bool? partialUpdate = null)
     {
-        return CallMethodAsyncVoid(_updateMenu, content, options, partialUpdate);
+        return CallMethodAsyncVoid(_updateMenu, content, options, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
@@ -4344,7 +4344,7 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void AddGlobalGestureListener(global::HarmonyOS.ArkUI.GestureListenerType type, GestureObserverConfigs option, IntPtr callback)
     {
-        CallMethodVoid(_addGlobalGestureListener, type, option, callback);
+        CallMethodVoid(_addGlobalGestureListener, type, NapiArg.Of(option), callback);
     }
 
     /// <summary>
@@ -4352,7 +4352,7 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void RemoveGlobalGestureListener(global::HarmonyOS.ArkUI.GestureListenerType type, IntPtr? callback = null)
     {
-        CallMethodVoid(_removeGlobalGestureListener, type, callback);
+        CallMethodVoid(_removeGlobalGestureListener, type, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -4368,7 +4368,7 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void OffSwiperContentUpdate(IntPtr? callback = null)
     {
-        CallMethodVoid(_offSwiperContentUpdate, callback);
+        CallMethodVoid(_offSwiperContentUpdate, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -4384,7 +4384,7 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void OffSwiperContentUpdate(IntPtr config, IntPtr? callback = null)
     {
-        CallMethodVoid(_offSwiperContentUpdate, config, callback);
+        CallMethodVoid(_offSwiperContentUpdate, config, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -4400,7 +4400,7 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void OffRouterPageSizeChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offRouterPageSizeChange, callback);
+        CallMethodVoid(_offRouterPageSizeChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -4416,7 +4416,7 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void OffNavDestinationSizeChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offNavDestinationSizeChange, callback);
+        CallMethodVoid(_offNavDestinationSizeChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -4432,7 +4432,7 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void OffNavDestinationSizeChangeByUniqueId(double navigationUniqueId, IntPtr? callback = null)
     {
-        CallMethodVoid(_offNavDestinationSizeChangeByUniqueId, navigationUniqueId, callback);
+        CallMethodVoid(_offNavDestinationSizeChangeByUniqueId, navigationUniqueId, NapiArg.Of(callback));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -5016,7 +5016,7 @@ public sealed partial class OverlayManager : JsObject
     /// </summary>
     public void AddComponentContent(IntPtr content, double? index = null)
     {
-        CallMethodVoid(_addComponentContent, content, index);
+        CallMethodVoid(_addComponentContent, content, NapiArg.Of(index));
     }
 
     /// <summary>
@@ -5024,7 +5024,7 @@ public sealed partial class OverlayManager : JsObject
     /// </summary>
     public void AddComponentContentWithOrder(IntPtr content, global::HarmonyOS.Bindings.Api.LevelOrder? levelOrder = null)
     {
-        CallMethodVoid(_addComponentContentWithOrder, content, levelOrder);
+        CallMethodVoid(_addComponentContentWithOrder, content, NapiArg.Of(levelOrder));
     }
 
     /// <summary>
@@ -5072,7 +5072,7 @@ public sealed partial class OverlayManager : JsObject
     /// </summary>
     public Task OpenOrderOverlayAsync(IntPtr content, IntPtr? options = null)
     {
-        return CallMethodAsyncVoid(_openOrderOverlay, content, options);
+        return CallMethodAsyncVoid(_openOrderOverlay, content, NapiArg.Of(options));
     }
 
 }
@@ -5200,7 +5200,7 @@ public sealed partial class MeasureUtils : JsObject
     /// </summary>
     public double MeasureText(global::HarmonyOS.Bindings.Api.MeasureOptions options)
     {
-        return CallMethod<double>(_measureText, options);
+        return CallMethod<double>(_measureText, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -5208,7 +5208,7 @@ public sealed partial class MeasureUtils : JsObject
     /// </summary>
     public IntPtr MeasureTextSize(global::HarmonyOS.Bindings.Api.MeasureOptions options)
     {
-        return CallMethod<IntPtr>(_measureTextSize, options);
+        return CallMethod<IntPtr>(_measureTextSize, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -5216,7 +5216,7 @@ public sealed partial class MeasureUtils : JsObject
     /// </summary>
     public IntPtr[] GetParagraphs(IntPtr styledString, IntPtr? options = null)
     {
-        return CallMethod(_getParagraphs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), styledString, options);
+        return CallMethod(_getParagraphs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), styledString, NapiArg.Of(options));
     }
 
 }
@@ -5255,7 +5255,7 @@ public sealed partial class FocusController : JsObject
     /// </summary>
     public void Activate(bool isActive, bool? autoInactive = null)
     {
-        CallMethodVoid(_activate, isActive, autoInactive);
+        CallMethodVoid(_activate, isActive, NapiArg.Of(autoInactive));
     }
 
     /// <summary>
@@ -5315,7 +5315,7 @@ public sealed partial class CursorController : JsObject
     /// </summary>
     public void SetCustomCursor(IntPtr value, double? focusX = null, double? focusY = null)
     {
-        CallMethodVoid(_setCustomCursor, value, focusX, focusY);
+        CallMethodVoid(_setCustomCursor, value, NapiArg.Of(focusX), NapiArg.Of(focusY));
     }
 
 }
@@ -5357,7 +5357,7 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public Task<IntPtr> GetAsync(string id, IntPtr? options = null)
     {
-        return CallMethodAsync<IntPtr>(_get, id, options);
+        return CallMethodAsync<IntPtr>(_get, id, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -5365,7 +5365,7 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public Task<IntPtr> CreateFromBuilderAsync(IntPtr builder, double? delay = null, bool? checkImageStatus = null, IntPtr? options = null)
     {
-        return CallMethodAsync<IntPtr>(_createFromBuilder, builder, delay, checkImageStatus, options);
+        return CallMethodAsync<IntPtr>(_createFromBuilder, builder, NapiArg.Of(delay), NapiArg.Of(checkImageStatus), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -5373,7 +5373,7 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public IntPtr GetSync(string id, IntPtr? options = null)
     {
-        return CallMethod<IntPtr>(_getSync, id, options);
+        return CallMethod<IntPtr>(_getSync, id, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -5381,7 +5381,7 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public Task<IntPtr> GetWithUniqueIdAsync(double uniqueId, IntPtr? options = null)
     {
-        return CallMethodAsync<IntPtr>(_getWithUniqueId, uniqueId, options);
+        return CallMethodAsync<IntPtr>(_getWithUniqueId, uniqueId, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -5389,7 +5389,7 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public IntPtr GetSyncWithUniqueId(double uniqueId, IntPtr? options = null)
     {
-        return CallMethod<IntPtr>(_getSyncWithUniqueId, uniqueId, options);
+        return CallMethod<IntPtr>(_getSyncWithUniqueId, uniqueId, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -5397,7 +5397,7 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public Task<IntPtr> CreateFromComponentAsync(IntPtr content, double? delay = null, bool? checkImageStatus = null, IntPtr? options = null)
     {
-        return CallMethodAsync<IntPtr>(_createFromComponent, content, delay, checkImageStatus, options);
+        return CallMethodAsync<IntPtr>(_createFromComponent, content, NapiArg.Of(delay), NapiArg.Of(checkImageStatus), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -5495,7 +5495,7 @@ public sealed partial class TextMenuController : JsObject
     /// </summary>
     public void DisableMenuItems(IntPtr[] items)
     {
-        CallMethodVoid(_disableMenuItems, items);
+        CallMethodVoid(_disableMenuItems, NapiArg.Of(items));
     }
 
 }

@@ -137,7 +137,7 @@ public static unsafe partial class Router
     /// </summary>
     public static void Back(IntPtr? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _back, options);
+        NodeApi.CallMethodVoid(Module, _back, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -145,7 +145,7 @@ public static unsafe partial class Router
     /// </summary>
     public static void Back(double index, IntPtr? @params = null)
     {
-        NodeApi.CallMethodVoid(Module, _back, index, @params);
+        NodeApi.CallMethodVoid(Module, _back, index, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -193,7 +193,7 @@ public static unsafe partial class Router
     /// </summary>
     public static void EnableAlertBeforeBackPage(EnableAlertOptions options)
     {
-        NodeApi.CallMethodVoid(Module, _enableAlertBeforeBackPage, options);
+        NodeApi.CallMethodVoid(Module, _enableAlertBeforeBackPage, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -201,7 +201,7 @@ public static unsafe partial class Router
     /// </summary>
     public static void ShowAlertBeforeBackPage(EnableAlertOptions options)
     {
-        NodeApi.CallMethodVoid(Module, _showAlertBeforeBackPage, options);
+        NodeApi.CallMethodVoid(Module, _showAlertBeforeBackPage, NapiArg.Of(options));
     }
 
     /// <summary>

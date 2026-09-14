@@ -79,10 +79,10 @@ public sealed partial class MessageOption : JsObject
     private static ReadOnlySpan<byte> _MessageOption => "MessageOption"u8;
 
     public MessageOption(double? syncFlags = null, double? waitTime = null)
-        : this(NodeApi.CreateInstance(Rpc.Module, _MessageOption, syncFlags, waitTime)) { }
+        : this(NodeApi.CreateInstance(Rpc.Module, _MessageOption, NapiArg.Of(syncFlags), NapiArg.Of(waitTime))) { }
 
     public MessageOption(bool? async = null)
-        : this(NodeApi.CreateInstance(Rpc.Module, _MessageOption, async)) { }
+        : this(NodeApi.CreateInstance(Rpc.Module, _MessageOption, NapiArg.Of(async))) { }
     private static ReadOnlySpan<byte> _TF_SYNC => "TF_SYNC"u8;
     private static ReadOnlySpan<byte> _TF_ASYNC => "TF_ASYNC"u8;
     private static ReadOnlySpan<byte> _TF_ACCEPT_FDS => "TF_ACCEPT_FDS"u8;
@@ -213,7 +213,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public bool SendRequest(double code, MessageParcel data, MessageParcel reply, MessageOption options)
     {
-        return CallMethod<bool>(_sendRequest, code, data, reply, options);
+        return CallMethod<bool>(_sendRequest, code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -221,7 +221,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public Task<RpcRequestResult> SendMessageRequestAsync(double code, MessageSequence data, MessageSequence reply, MessageOption options)
     {
-        return CallMethodAsync(_sendMessageRequest, static h => new RpcRequestResult(h), code, data, reply, options);
+        return CallMethodAsync(_sendMessageRequest, static h => new RpcRequestResult(h), code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -229,7 +229,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public Task<SendRequestResult> SendRequestAsync(double code, MessageParcel data, MessageParcel reply, MessageOption options)
     {
-        return CallMethodAsyncCallback(_sendRequest, static h => new SendRequestResult(h), code, data, reply, options);
+        return CallMethodAsyncCallback(_sendRequest, static h => new SendRequestResult(h), code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -237,7 +237,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public bool AddDeathRecipient(DeathRecipient recipient, double flags)
     {
-        return CallMethod<bool>(_addDeathRecipient, recipient, flags);
+        return CallMethod<bool>(_addDeathRecipient, NapiArg.Of(recipient), flags);
     }
 
     /// <summary>
@@ -245,7 +245,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public void RegisterDeathRecipient(DeathRecipient recipient, double flags)
     {
-        CallMethodVoid(_registerDeathRecipient, recipient, flags);
+        CallMethodVoid(_registerDeathRecipient, NapiArg.Of(recipient), flags);
     }
 
     /// <summary>
@@ -253,7 +253,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public bool RemoveDeathRecipient(DeathRecipient recipient, double flags)
     {
-        return CallMethod<bool>(_removeDeathRecipient, recipient, flags);
+        return CallMethod<bool>(_removeDeathRecipient, NapiArg.Of(recipient), flags);
     }
 
     /// <summary>
@@ -261,7 +261,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public void UnregisterDeathRecipient(DeathRecipient recipient, double flags)
     {
-        CallMethodVoid(_unregisterDeathRecipient, recipient, flags);
+        CallMethodVoid(_unregisterDeathRecipient, NapiArg.Of(recipient), flags);
     }
 
     /// <summary>
@@ -293,7 +293,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public bool OnRemoteMessageRequest(double code, MessageSequence data, MessageSequence reply, MessageOption options)
     {
-        return CallMethod<bool>(_onRemoteMessageRequest, code, data, reply, options);
+        return CallMethod<bool>(_onRemoteMessageRequest, code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -301,7 +301,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public bool OnRemoteMessageRequest(double code, MessageSequence data, MessageSequence reply, MessageOption options, CallingInfo? callingInfo = null)
     {
-        return CallMethod<bool>(_onRemoteMessageRequest, code, data, reply, options, callingInfo);
+        return CallMethod<bool>(_onRemoteMessageRequest, code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options), NapiArg.Of(callingInfo));
     }
 
     /// <summary>
@@ -309,7 +309,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public bool OnRemoteRequest(double code, MessageParcel data, MessageParcel reply, MessageOption options)
     {
-        return CallMethod<bool>(_onRemoteRequest, code, data, reply, options);
+        return CallMethod<bool>(_onRemoteRequest, code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -333,7 +333,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public void AttachLocalInterface(IRemoteBroker localInterface, string descriptor)
     {
-        CallMethodVoid(_attachLocalInterface, localInterface, descriptor);
+        CallMethodVoid(_attachLocalInterface, NapiArg.Of(localInterface), descriptor);
     }
 
     /// <summary>
@@ -341,7 +341,7 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public void ModifyLocalInterface(IRemoteBroker localInterface, string descriptor)
     {
-        CallMethodVoid(_modifyLocalInterface, localInterface, descriptor);
+        CallMethodVoid(_modifyLocalInterface, NapiArg.Of(localInterface), descriptor);
     }
 
 }
@@ -462,7 +462,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteRemoteObject(IRemoteObject @object)
     {
-        return CallMethod<bool>(_writeRemoteObject, @object);
+        return CallMethod<bool>(_writeRemoteObject, NapiArg.Of(@object));
     }
 
     /// <summary>
@@ -662,7 +662,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteSequenceable(Sequenceable val)
     {
-        return CallMethod<bool>(_writeSequenceable, val);
+        return CallMethod<bool>(_writeSequenceable, NapiArg.Of(val));
     }
 
     /// <summary>
@@ -670,7 +670,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteByteArray(double[] byteArray)
     {
-        return CallMethod<bool>(_writeByteArray, byteArray);
+        return CallMethod<bool>(_writeByteArray, NapiArg.Of(byteArray));
     }
 
     /// <summary>
@@ -678,7 +678,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteShortArray(double[] shortArray)
     {
-        return CallMethod<bool>(_writeShortArray, shortArray);
+        return CallMethod<bool>(_writeShortArray, NapiArg.Of(shortArray));
     }
 
     /// <summary>
@@ -686,7 +686,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteIntArray(double[] intArray)
     {
-        return CallMethod<bool>(_writeIntArray, intArray);
+        return CallMethod<bool>(_writeIntArray, NapiArg.Of(intArray));
     }
 
     /// <summary>
@@ -694,7 +694,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteLongArray(double[] longArray)
     {
-        return CallMethod<bool>(_writeLongArray, longArray);
+        return CallMethod<bool>(_writeLongArray, NapiArg.Of(longArray));
     }
 
     /// <summary>
@@ -702,7 +702,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteFloatArray(double[] floatArray)
     {
-        return CallMethod<bool>(_writeFloatArray, floatArray);
+        return CallMethod<bool>(_writeFloatArray, NapiArg.Of(floatArray));
     }
 
     /// <summary>
@@ -710,7 +710,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteDoubleArray(double[] doubleArray)
     {
-        return CallMethod<bool>(_writeDoubleArray, doubleArray);
+        return CallMethod<bool>(_writeDoubleArray, NapiArg.Of(doubleArray));
     }
 
     /// <summary>
@@ -718,7 +718,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteBooleanArray(bool[] booleanArray)
     {
-        return CallMethod<bool>(_writeBooleanArray, booleanArray);
+        return CallMethod<bool>(_writeBooleanArray, NapiArg.Of(booleanArray));
     }
 
     /// <summary>
@@ -726,7 +726,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteCharArray(double[] charArray)
     {
-        return CallMethod<bool>(_writeCharArray, charArray);
+        return CallMethod<bool>(_writeCharArray, NapiArg.Of(charArray));
     }
 
     /// <summary>
@@ -734,7 +734,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteStringArray(string[] stringArray)
     {
-        return CallMethod<bool>(_writeStringArray, stringArray);
+        return CallMethod<bool>(_writeStringArray, NapiArg.Of(stringArray));
     }
 
     /// <summary>
@@ -742,7 +742,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteSequenceableArray(Sequenceable[] sequenceableArray)
     {
-        return CallMethod<bool>(_writeSequenceableArray, sequenceableArray);
+        return CallMethod<bool>(_writeSequenceableArray, NapiArg.Of(sequenceableArray));
     }
 
     /// <summary>
@@ -750,7 +750,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteRemoteObjectArray(IRemoteObject[] objectArray)
     {
-        return CallMethod<bool>(_writeRemoteObjectArray, objectArray);
+        return CallMethod<bool>(_writeRemoteObjectArray, NapiArg.Of(objectArray));
     }
 
     /// <summary>
@@ -830,7 +830,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool ReadSequenceable(Sequenceable dataIn)
     {
-        return CallMethod<bool>(_readSequenceable, dataIn);
+        return CallMethod<bool>(_readSequenceable, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -838,7 +838,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadByteArray(double[] dataIn)
     {
-        CallMethodVoid(_readByteArray, dataIn);
+        CallMethodVoid(_readByteArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -854,7 +854,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadShortArray(double[] dataIn)
     {
-        CallMethodVoid(_readShortArray, dataIn);
+        CallMethodVoid(_readShortArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -870,7 +870,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadIntArray(double[] dataIn)
     {
-        CallMethodVoid(_readIntArray, dataIn);
+        CallMethodVoid(_readIntArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -886,7 +886,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadLongArray(double[] dataIn)
     {
-        CallMethodVoid(_readLongArray, dataIn);
+        CallMethodVoid(_readLongArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -902,7 +902,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadFloatArray(double[] dataIn)
     {
-        CallMethodVoid(_readFloatArray, dataIn);
+        CallMethodVoid(_readFloatArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -918,7 +918,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadDoubleArray(double[] dataIn)
     {
-        CallMethodVoid(_readDoubleArray, dataIn);
+        CallMethodVoid(_readDoubleArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -934,7 +934,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadBooleanArray(bool[] dataIn)
     {
-        CallMethodVoid(_readBooleanArray, dataIn);
+        CallMethodVoid(_readBooleanArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -950,7 +950,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadCharArray(double[] dataIn)
     {
-        CallMethodVoid(_readCharArray, dataIn);
+        CallMethodVoid(_readCharArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -966,7 +966,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadStringArray(string[] dataIn)
     {
-        CallMethodVoid(_readStringArray, dataIn);
+        CallMethodVoid(_readStringArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -982,7 +982,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadSequenceableArray(Sequenceable[] sequenceableArray)
     {
-        CallMethodVoid(_readSequenceableArray, sequenceableArray);
+        CallMethodVoid(_readSequenceableArray, NapiArg.Of(sequenceableArray));
     }
 
     /// <summary>
@@ -990,7 +990,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public void ReadRemoteObjectArray(IRemoteObject[] objects)
     {
-        CallMethodVoid(_readRemoteObjectArray, objects);
+        CallMethodVoid(_readRemoteObjectArray, NapiArg.Of(objects));
     }
 
     /// <summary>
@@ -1046,7 +1046,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteAshmem(Ashmem ashmem)
     {
-        return CallMethod<bool>(_writeAshmem, ashmem);
+        return CallMethod<bool>(_writeAshmem, NapiArg.Of(ashmem));
     }
 
     /// <summary>
@@ -1070,7 +1070,7 @@ public sealed partial class MessageParcel : JsObject
     /// </summary>
     public bool WriteRawData(double[] rawData, double size)
     {
-        return CallMethod<bool>(_writeRawData, rawData, size);
+        return CallMethod<bool>(_writeRawData, NapiArg.Of(rawData), size);
     }
 
     /// <summary>
@@ -1218,7 +1218,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteRemoteObject(IRemoteObject obj)
     {
-        CallMethodVoid(_writeRemoteObject, obj);
+        CallMethodVoid(_writeRemoteObject, NapiArg.Of(obj));
     }
 
     /// <summary>
@@ -1418,7 +1418,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteParcelable(Parcelable val)
     {
-        CallMethodVoid(_writeParcelable, val);
+        CallMethodVoid(_writeParcelable, NapiArg.Of(val));
     }
 
     /// <summary>
@@ -1426,7 +1426,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteByteArray(double[] byteArray)
     {
-        CallMethodVoid(_writeByteArray, byteArray);
+        CallMethodVoid(_writeByteArray, NapiArg.Of(byteArray));
     }
 
     /// <summary>
@@ -1434,7 +1434,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteShortArray(double[] shortArray)
     {
-        CallMethodVoid(_writeShortArray, shortArray);
+        CallMethodVoid(_writeShortArray, NapiArg.Of(shortArray));
     }
 
     /// <summary>
@@ -1442,7 +1442,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteIntArray(double[] intArray)
     {
-        CallMethodVoid(_writeIntArray, intArray);
+        CallMethodVoid(_writeIntArray, NapiArg.Of(intArray));
     }
 
     /// <summary>
@@ -1450,7 +1450,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteLongArray(double[] longArray)
     {
-        CallMethodVoid(_writeLongArray, longArray);
+        CallMethodVoid(_writeLongArray, NapiArg.Of(longArray));
     }
 
     /// <summary>
@@ -1458,7 +1458,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteFloatArray(double[] floatArray)
     {
-        CallMethodVoid(_writeFloatArray, floatArray);
+        CallMethodVoid(_writeFloatArray, NapiArg.Of(floatArray));
     }
 
     /// <summary>
@@ -1466,7 +1466,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteDoubleArray(double[] doubleArray)
     {
-        CallMethodVoid(_writeDoubleArray, doubleArray);
+        CallMethodVoid(_writeDoubleArray, NapiArg.Of(doubleArray));
     }
 
     /// <summary>
@@ -1474,7 +1474,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteBooleanArray(bool[] booleanArray)
     {
-        CallMethodVoid(_writeBooleanArray, booleanArray);
+        CallMethodVoid(_writeBooleanArray, NapiArg.Of(booleanArray));
     }
 
     /// <summary>
@@ -1482,7 +1482,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteCharArray(double[] charArray)
     {
-        CallMethodVoid(_writeCharArray, charArray);
+        CallMethodVoid(_writeCharArray, NapiArg.Of(charArray));
     }
 
     /// <summary>
@@ -1490,7 +1490,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteStringArray(string[] stringArray)
     {
-        CallMethodVoid(_writeStringArray, stringArray);
+        CallMethodVoid(_writeStringArray, NapiArg.Of(stringArray));
     }
 
     /// <summary>
@@ -1498,7 +1498,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteParcelableArray(Parcelable[] parcelableArray)
     {
-        CallMethodVoid(_writeParcelableArray, parcelableArray);
+        CallMethodVoid(_writeParcelableArray, NapiArg.Of(parcelableArray));
     }
 
     /// <summary>
@@ -1506,7 +1506,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteRemoteObjectArray(IRemoteObject[] objectArray)
     {
-        CallMethodVoid(_writeRemoteObjectArray, objectArray);
+        CallMethodVoid(_writeRemoteObjectArray, NapiArg.Of(objectArray));
     }
 
     /// <summary>
@@ -1586,7 +1586,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadParcelable(Parcelable dataIn)
     {
-        CallMethodVoid(_readParcelable, dataIn);
+        CallMethodVoid(_readParcelable, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -1594,7 +1594,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadByteArray(double[] dataIn)
     {
-        CallMethodVoid(_readByteArray, dataIn);
+        CallMethodVoid(_readByteArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -1610,7 +1610,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadShortArray(double[] dataIn)
     {
-        CallMethodVoid(_readShortArray, dataIn);
+        CallMethodVoid(_readShortArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -1626,7 +1626,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadIntArray(double[] dataIn)
     {
-        CallMethodVoid(_readIntArray, dataIn);
+        CallMethodVoid(_readIntArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -1642,7 +1642,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadLongArray(double[] dataIn)
     {
-        CallMethodVoid(_readLongArray, dataIn);
+        CallMethodVoid(_readLongArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -1658,7 +1658,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadFloatArray(double[] dataIn)
     {
-        CallMethodVoid(_readFloatArray, dataIn);
+        CallMethodVoid(_readFloatArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -1674,7 +1674,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadDoubleArray(double[] dataIn)
     {
-        CallMethodVoid(_readDoubleArray, dataIn);
+        CallMethodVoid(_readDoubleArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -1690,7 +1690,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadBooleanArray(bool[] dataIn)
     {
-        CallMethodVoid(_readBooleanArray, dataIn);
+        CallMethodVoid(_readBooleanArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -1706,7 +1706,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadCharArray(double[] dataIn)
     {
-        CallMethodVoid(_readCharArray, dataIn);
+        CallMethodVoid(_readCharArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -1722,7 +1722,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadStringArray(string[] dataIn)
     {
-        CallMethodVoid(_readStringArray, dataIn);
+        CallMethodVoid(_readStringArray, NapiArg.Of(dataIn));
     }
 
     /// <summary>
@@ -1738,7 +1738,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadParcelableArray(Parcelable[] parcelableArray)
     {
-        CallMethodVoid(_readParcelableArray, parcelableArray);
+        CallMethodVoid(_readParcelableArray, NapiArg.Of(parcelableArray));
     }
 
     /// <summary>
@@ -1746,7 +1746,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void ReadRemoteObjectArray(IRemoteObject[] objects)
     {
-        CallMethodVoid(_readRemoteObjectArray, objects);
+        CallMethodVoid(_readRemoteObjectArray, NapiArg.Of(objects));
     }
 
     /// <summary>
@@ -1802,7 +1802,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteAshmem(Ashmem ashmem)
     {
-        CallMethodVoid(_writeAshmem, ashmem);
+        CallMethodVoid(_writeAshmem, NapiArg.Of(ashmem));
     }
 
     /// <summary>
@@ -1826,7 +1826,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteRawData(double[] rawData, double size)
     {
-        CallMethodVoid(_writeRawData, rawData, size);
+        CallMethodVoid(_writeRawData, NapiArg.Of(rawData), size);
     }
 
     /// <summary>
@@ -1834,7 +1834,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteRawDataBuffer(byte[] rawData, double size)
     {
-        CallMethodVoid(_writeRawDataBuffer, rawData, size);
+        CallMethodVoid(_writeRawDataBuffer, NapiArg.Of(rawData), size);
     }
 
     /// <summary>
@@ -1858,7 +1858,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteArrayBuffer(byte[] buf, global::HarmonyOS.ArkUI.TypeCode typeCode)
     {
-        CallMethodVoid(_writeArrayBuffer, buf, typeCode);
+        CallMethodVoid(_writeArrayBuffer, NapiArg.Of(buf), typeCode);
     }
 
     /// <summary>
@@ -2006,7 +2006,7 @@ public sealed partial class IRemoteObject : JsObject
     /// </summary>
     public bool SendRequest(double code, MessageParcel data, MessageParcel reply, MessageOption options)
     {
-        return CallMethod<bool>(_sendRequest, code, data, reply, options);
+        return CallMethod<bool>(_sendRequest, code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -2014,7 +2014,7 @@ public sealed partial class IRemoteObject : JsObject
     /// </summary>
     public Task<RpcRequestResult> SendMessageRequestAsync(double code, MessageSequence data, MessageSequence reply, MessageOption options)
     {
-        return CallMethodAsync(_sendMessageRequest, static h => new RpcRequestResult(h), code, data, reply, options);
+        return CallMethodAsync(_sendMessageRequest, static h => new RpcRequestResult(h), code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -2022,7 +2022,7 @@ public sealed partial class IRemoteObject : JsObject
     /// </summary>
     public Task<SendRequestResult> SendRequestAsync(double code, MessageParcel data, MessageParcel reply, MessageOption options)
     {
-        return CallMethodAsyncCallback(_sendRequest, static h => new SendRequestResult(h), code, data, reply, options);
+        return CallMethodAsyncCallback(_sendRequest, static h => new SendRequestResult(h), code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -2030,7 +2030,7 @@ public sealed partial class IRemoteObject : JsObject
     /// </summary>
     public bool AddDeathRecipient(DeathRecipient recipient, double flags)
     {
-        return CallMethod<bool>(_addDeathRecipient, recipient, flags);
+        return CallMethod<bool>(_addDeathRecipient, NapiArg.Of(recipient), flags);
     }
 
     /// <summary>
@@ -2038,7 +2038,7 @@ public sealed partial class IRemoteObject : JsObject
     /// </summary>
     public void RegisterDeathRecipient(DeathRecipient recipient, double flags)
     {
-        CallMethodVoid(_registerDeathRecipient, recipient, flags);
+        CallMethodVoid(_registerDeathRecipient, NapiArg.Of(recipient), flags);
     }
 
     /// <summary>
@@ -2046,7 +2046,7 @@ public sealed partial class IRemoteObject : JsObject
     /// </summary>
     public bool RemoveDeathRecipient(DeathRecipient recipient, double flags)
     {
-        return CallMethod<bool>(_removeDeathRecipient, recipient, flags);
+        return CallMethod<bool>(_removeDeathRecipient, NapiArg.Of(recipient), flags);
     }
 
     /// <summary>
@@ -2054,7 +2054,7 @@ public sealed partial class IRemoteObject : JsObject
     /// </summary>
     public void UnregisterDeathRecipient(DeathRecipient recipient, double flags)
     {
-        CallMethodVoid(_unregisterDeathRecipient, recipient, flags);
+        CallMethodVoid(_unregisterDeathRecipient, NapiArg.Of(recipient), flags);
     }
 
     /// <summary>
@@ -2097,7 +2097,7 @@ public sealed partial class Sequenceable : JsObject
     /// </summary>
     public bool Marshalling(MessageParcel dataOut)
     {
-        return CallMethod<bool>(_marshalling, dataOut);
+        return CallMethod<bool>(_marshalling, NapiArg.Of(dataOut));
     }
 
     /// <summary>
@@ -2105,7 +2105,7 @@ public sealed partial class Sequenceable : JsObject
     /// </summary>
     public bool Unmarshalling(MessageParcel dataIn)
     {
-        return CallMethod<bool>(_unmarshalling, dataIn);
+        return CallMethod<bool>(_unmarshalling, NapiArg.Of(dataIn));
     }
 
 }
@@ -2182,7 +2182,7 @@ public sealed partial class Ashmem : JsObject
     /// </summary>
     public Ashmem CreateAshmemFromExisting(Ashmem ashmem)
     {
-        return CallMethod(_createAshmemFromExisting, static h => new Ashmem(h), ashmem);
+        return CallMethod(_createAshmemFromExisting, static h => new Ashmem(h), NapiArg.Of(ashmem));
     }
 
     /// <summary>
@@ -2190,7 +2190,7 @@ public sealed partial class Ashmem : JsObject
     /// </summary>
     public Ashmem Create(Ashmem ashmem)
     {
-        return CallMethod(_create, static h => new Ashmem(h), ashmem);
+        return CallMethod(_create, static h => new Ashmem(h), NapiArg.Of(ashmem));
     }
 
     /// <summary>
@@ -2286,7 +2286,7 @@ public sealed partial class Ashmem : JsObject
     /// </summary>
     public bool WriteToAshmem(double[] buf, double size, double offset)
     {
-        return CallMethod<bool>(_writeToAshmem, buf, size, offset);
+        return CallMethod<bool>(_writeToAshmem, NapiArg.Of(buf), size, offset);
     }
 
     /// <summary>
@@ -2294,7 +2294,7 @@ public sealed partial class Ashmem : JsObject
     /// </summary>
     public void WriteAshmem(double[] buf, double size, double offset)
     {
-        CallMethodVoid(_writeAshmem, buf, size, offset);
+        CallMethodVoid(_writeAshmem, NapiArg.Of(buf), size, offset);
     }
 
     /// <summary>
@@ -2302,7 +2302,7 @@ public sealed partial class Ashmem : JsObject
     /// </summary>
     public void WriteDataToAshmem(byte[] buf, double size, double offset)
     {
-        CallMethodVoid(_writeDataToAshmem, buf, size, offset);
+        CallMethodVoid(_writeDataToAshmem, NapiArg.Of(buf), size, offset);
     }
 
     /// <summary>
@@ -2345,7 +2345,7 @@ public sealed partial class Parcelable : JsObject
     /// </summary>
     public bool Marshalling(MessageSequence dataOut)
     {
-        return CallMethod<bool>(_marshalling, dataOut);
+        return CallMethod<bool>(_marshalling, NapiArg.Of(dataOut));
     }
 
     /// <summary>
@@ -2353,7 +2353,7 @@ public sealed partial class Parcelable : JsObject
     /// </summary>
     public bool Unmarshalling(MessageSequence dataIn)
     {
-        return CallMethod<bool>(_unmarshalling, dataIn);
+        return CallMethod<bool>(_unmarshalling, NapiArg.Of(dataIn));
     }
 
 }

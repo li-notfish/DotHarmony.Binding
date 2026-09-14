@@ -99,7 +99,7 @@ public static unsafe partial class FormExtensionAbility
     /// </summary>
     public static void OnUpdateForm(string formId, IntPtr? wantParams = null)
     {
-        NodeApi.CallMethodVoid(Module, _onUpdateForm, formId, wantParams);
+        NodeApi.CallMethodVoid(Module, _onUpdateForm, formId, NapiArg.Of(wantParams));
     }
 
     /// <summary>

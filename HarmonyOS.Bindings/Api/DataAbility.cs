@@ -73,7 +73,7 @@ public static unsafe partial class DataAbility
     /// </summary>
     public static IntPtr CreateRdbPredicates(string name, DataAbilityPredicates dataAbilityPredicates)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createRdbPredicates, name, dataAbilityPredicates);
+        return NodeApi.CallMethod<IntPtr>(Module, _createRdbPredicates, name, NapiArg.Of(dataAbilityPredicates));
     }
 
 }
@@ -310,7 +310,7 @@ public sealed partial class DataAbilityPredicates : JsObject
     /// </summary>
     public DataAbilityPredicates GroupBy(string[] fields)
     {
-        return CallMethod(_groupBy, static h => new DataAbilityPredicates(h), fields);
+        return CallMethod(_groupBy, static h => new DataAbilityPredicates(h), NapiArg.Of(fields));
     }
 
     /// <summary>
@@ -326,7 +326,7 @@ public sealed partial class DataAbilityPredicates : JsObject
     /// </summary>
     public DataAbilityPredicates In(string field, IntPtr[] value)
     {
-        return CallMethod(_in, static h => new DataAbilityPredicates(h), field, value);
+        return CallMethod(_in, static h => new DataAbilityPredicates(h), field, NapiArg.Of(value));
     }
 
     /// <summary>
@@ -334,7 +334,7 @@ public sealed partial class DataAbilityPredicates : JsObject
     /// </summary>
     public DataAbilityPredicates NotIn(string field, IntPtr[] value)
     {
-        return CallMethod(_notIn, static h => new DataAbilityPredicates(h), field, value);
+        return CallMethod(_notIn, static h => new DataAbilityPredicates(h), field, NapiArg.Of(value));
     }
 
 }

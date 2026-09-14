@@ -129,7 +129,7 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// </summary>
     public void AddEventListener(string type, EventListener listener)
     {
-        CallMethodVoid(_addEventListener, type, listener);
+        CallMethodVoid(_addEventListener, type, NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// </summary>
     public bool DispatchEvent(WorkerEvent @event)
     {
-        return CallMethod<bool>(_dispatchEvent, @event);
+        return CallMethod<bool>(_dispatchEvent, NapiArg.Of(@event));
     }
 
     /// <summary>
@@ -145,7 +145,7 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// </summary>
     public void RemoveEventListener(string type, EventListener? callback = null)
     {
-        CallMethodVoid(_removeEventListener, type, callback);
+        CallMethodVoid(_removeEventListener, type, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -169,7 +169,7 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessage(IntPtr messageObject, IntPtr[] transfer)
     {
-        CallMethodVoid(_postMessage, messageObject, transfer);
+        CallMethodVoid(_postMessage, messageObject, NapiArg.Of(transfer));
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessage(IntPtr messageObject, PostMessageOptions? options = null)
     {
-        CallMethodVoid(_postMessage, messageObject, options);
+        CallMethodVoid(_postMessage, messageObject, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -185,7 +185,7 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessage(IntPtr messageObject, byte[][] transfer)
     {
-        CallMethodVoid(_postMessage, messageObject, transfer);
+        CallMethodVoid(_postMessage, messageObject, NapiArg.Of(transfer));
     }
 
 }
@@ -241,7 +241,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void AddEventListener(string type, WorkerEventListener listener)
     {
-        CallMethodVoid(_addEventListener, type, listener);
+        CallMethodVoid(_addEventListener, type, NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -249,7 +249,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public bool DispatchEvent(WorkerEvent @event)
     {
-        return CallMethod<bool>(_dispatchEvent, @event);
+        return CallMethod<bool>(_dispatchEvent, NapiArg.Of(@event));
     }
 
     /// <summary>
@@ -257,7 +257,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void RemoveEventListener(string type, WorkerEventListener? callback = null)
     {
-        CallMethodVoid(_removeEventListener, type, callback);
+        CallMethodVoid(_removeEventListener, type, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -281,7 +281,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessage(IntPtr messageObject, byte[][] transfer)
     {
-        CallMethodVoid(_postMessage, messageObject, transfer);
+        CallMethodVoid(_postMessage, messageObject, NapiArg.Of(transfer));
     }
 
     /// <summary>
@@ -289,7 +289,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessage(IntPtr messageObject, PostMessageOptions? options = null)
     {
-        CallMethodVoid(_postMessage, messageObject, options);
+        CallMethodVoid(_postMessage, messageObject, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -297,7 +297,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessageWithSharedSendable(IntPtr message, byte[][]? transfer = null)
     {
-        CallMethodVoid(_postMessageWithSharedSendable, message, transfer);
+        CallMethodVoid(_postMessageWithSharedSendable, message, NapiArg.Of(transfer));
     }
 
     /// <summary>
@@ -305,7 +305,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public IntPtr CallGlobalCallObjectMethod(string instanceName, string methodName, double timeout, IntPtr[] args)
     {
-        return CallMethod<IntPtr>(_callGlobalCallObjectMethod, instanceName, methodName, timeout, args);
+        return CallMethod<IntPtr>(_callGlobalCallObjectMethod, instanceName, methodName, timeout, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -313,7 +313,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessageAtFront(IntPtr message, global::HarmonyOS.ArkUI.WorkerPriority priority, byte[][]? transfer = null)
     {
-        CallMethodVoid(_postMessageAtFront, message, priority, transfer);
+        CallMethodVoid(_postMessageAtFront, message, priority, NapiArg.Of(transfer));
     }
 
 }
@@ -329,7 +329,7 @@ public sealed partial class ThreadWorker : JsObject
     private static ReadOnlySpan<byte> _ThreadWorker => "ThreadWorker"u8;
 
     public ThreadWorker(string scriptURL, WorkerOptions? options = null)
-        : this(NodeApi.CreateInstance(Worker.Module, _ThreadWorker, scriptURL, options)) { }
+        : this(NodeApi.CreateInstance(Worker.Module, _ThreadWorker, scriptURL, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _onexit => "onexit"u8;
     private static ReadOnlySpan<byte> _onerror => "onerror"u8;
     private static ReadOnlySpan<byte> _onAllErrors => "onAllErrors"u8;
@@ -377,7 +377,7 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void PostMessage(IntPtr message, byte[][] transfer)
     {
-        CallMethodVoid(_postMessage, message, transfer);
+        CallMethodVoid(_postMessage, message, NapiArg.Of(transfer));
     }
 
     /// <summary>
@@ -385,7 +385,7 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void PostMessage(IntPtr message, PostMessageOptions? options = null)
     {
-        CallMethodVoid(_postMessage, message, options);
+        CallMethodVoid(_postMessage, message, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -393,7 +393,7 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void PostMessageWithSharedSendable(IntPtr message, byte[][]? transfer = null)
     {
-        CallMethodVoid(_postMessageWithSharedSendable, message, transfer);
+        CallMethodVoid(_postMessageWithSharedSendable, message, NapiArg.Of(transfer));
     }
 
     /// <summary>
@@ -401,7 +401,7 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void On(string type, WorkerEventListener listener)
     {
-        CallMethodVoid(_on, type, listener);
+        CallMethodVoid(_on, type, NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -409,7 +409,7 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void Once(string type, WorkerEventListener listener)
     {
-        CallMethodVoid(_once, type, listener);
+        CallMethodVoid(_once, type, NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -417,7 +417,7 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void Off(string type, WorkerEventListener? listener = null)
     {
-        CallMethodVoid(_off, type, listener);
+        CallMethodVoid(_off, type, NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -433,7 +433,7 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void AddEventListener(string type, WorkerEventListener listener)
     {
-        CallMethodVoid(_addEventListener, type, listener);
+        CallMethodVoid(_addEventListener, type, NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -441,7 +441,7 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public bool DispatchEvent(WorkerEvent @event)
     {
-        return CallMethod<bool>(_dispatchEvent, @event);
+        return CallMethod<bool>(_dispatchEvent, NapiArg.Of(@event));
     }
 
     /// <summary>
@@ -449,7 +449,7 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void RemoveEventListener(string type, WorkerEventListener? callback = null)
     {
-        CallMethodVoid(_removeEventListener, type, callback);
+        CallMethodVoid(_removeEventListener, type, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -485,7 +485,7 @@ public sealed partial class ThreadWorker : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, listener));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(listener)));
     }
 
     /// <summary>
@@ -495,7 +495,7 @@ public sealed partial class ThreadWorker : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(),
-            js => NodeApi.CallMethodVoid(Handle, _once, type, js, listener));
+            js => NodeApi.CallMethodVoid(Handle, _once, type, js, NapiArg.Of(listener)));
     }
 
     /// <summary>
@@ -511,7 +511,7 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void Off(string type, System.Action callback, WorkerEventListener? listener = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, listener));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, NapiArg.Of(listener)));
     }
 
 }
@@ -527,7 +527,7 @@ public sealed partial class WorkerObject : JsObject
     private static ReadOnlySpan<byte> _Worker => "Worker"u8;
 
     public WorkerObject(string scriptURL, WorkerOptions? options = null)
-        : this(NodeApi.CreateInstance(Worker.Module, _Worker, scriptURL, options)) { }
+        : this(NodeApi.CreateInstance(Worker.Module, _Worker, scriptURL, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _onexit => "onexit"u8;
     private static ReadOnlySpan<byte> _onerror => "onerror"u8;
     private static ReadOnlySpan<byte> _onmessage => "onmessage"u8;
@@ -562,7 +562,7 @@ public sealed partial class WorkerObject : JsObject
     /// </summary>
     public void PostMessage(IntPtr message, byte[][] transfer)
     {
-        CallMethodVoid(_postMessage, message, transfer);
+        CallMethodVoid(_postMessage, message, NapiArg.Of(transfer));
     }
 
     /// <summary>
@@ -570,7 +570,7 @@ public sealed partial class WorkerObject : JsObject
     /// </summary>
     public void PostMessage(IntPtr message, PostMessageOptions? options = null)
     {
-        CallMethodVoid(_postMessage, message, options);
+        CallMethodVoid(_postMessage, message, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -578,7 +578,7 @@ public sealed partial class WorkerObject : JsObject
     /// </summary>
     public void On(string type, EventListener listener)
     {
-        CallMethodVoid(_on, type, listener);
+        CallMethodVoid(_on, type, NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -586,7 +586,7 @@ public sealed partial class WorkerObject : JsObject
     /// </summary>
     public void Once(string type, EventListener listener)
     {
-        CallMethodVoid(_once, type, listener);
+        CallMethodVoid(_once, type, NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -594,7 +594,7 @@ public sealed partial class WorkerObject : JsObject
     /// </summary>
     public void Off(string type, EventListener? listener = null)
     {
-        CallMethodVoid(_off, type, listener);
+        CallMethodVoid(_off, type, NapiArg.Of(listener));
     }
 
     /// <summary>
@@ -614,7 +614,7 @@ public sealed partial class WorkerObject : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, listener));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(listener)));
     }
 
     /// <summary>
@@ -624,7 +624,7 @@ public sealed partial class WorkerObject : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(),
-            js => NodeApi.CallMethodVoid(Handle, _once, type, js, listener));
+            js => NodeApi.CallMethodVoid(Handle, _once, type, js, NapiArg.Of(listener)));
     }
 
     /// <summary>
@@ -640,7 +640,7 @@ public sealed partial class WorkerObject : JsObject
     /// </summary>
     public void Off(string type, System.Action callback, EventListener? listener = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, listener));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, NapiArg.Of(listener)));
     }
 
 }

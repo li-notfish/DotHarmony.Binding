@@ -82,7 +82,7 @@ public static unsafe partial class HiTraceChain
     /// </summary>
     public static IntPtr Begin(string name, double? flags = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _begin, name, flags);
+        return NodeApi.CallMethod<IntPtr>(Module, _begin, name, NapiArg.Of(flags));
     }
 
     /// <summary>

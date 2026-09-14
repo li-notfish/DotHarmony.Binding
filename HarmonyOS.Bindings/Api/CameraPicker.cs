@@ -73,7 +73,7 @@ public static unsafe partial class CameraPicker
     /// </summary>
     public static Task<PickerResult> PickAsync(IntPtr context, global::HarmonyOS.ArkUI.PickerMediaType[] mediaTypes, PickerProfile pickerProfile)
     {
-        return NodeApi.CallMethodAsync(Module, _pick, static h => new PickerResult(h), context, mediaTypes, pickerProfile);
+        return NodeApi.CallMethodAsync(Module, _pick, static h => new PickerResult(h), context, NapiArg.Of(mediaTypes), NapiArg.Of(pickerProfile));
     }
 
 }

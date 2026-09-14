@@ -77,7 +77,7 @@ public static unsafe partial class Scan
     /// </summary>
     public static Task StartScanAsync(ScanFilters[] filters, ScanScanOptions? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startScan, filters, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _startScan, NapiArg.Of(filters), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public static unsafe partial class Scan
     /// </summary>
     public static void OffDeviceFound(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offDeviceFound, callback);
+        NodeApi.CallMethodVoid(Module, _offDeviceFound, NapiArg.Of(callback));
     }
 
 }

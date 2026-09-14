@@ -158,7 +158,7 @@ public sealed partial class FloatingBallController : JsObject
     /// </summary>
     public void OffDestroy(IntPtr? callback = null)
     {
-        CallMethodVoid(_offDestroy, callback);
+        CallMethodVoid(_offDestroy, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -174,7 +174,7 @@ public sealed partial class FloatingBallController : JsObject
     /// </summary>
     public Task RestoreMainWindowAsync(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        return CallMethodAsyncVoid(_restoreMainWindow, want);
+        return CallMethodAsyncVoid(_restoreMainWindow, NapiArg.Of(want));
     }
 
     /// <summary>

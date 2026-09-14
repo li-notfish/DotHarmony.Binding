@@ -130,7 +130,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task AccessAsync(string path, double? mode = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _access, path, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _access, path, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static void AccessSync(string path, double? mode = null)
     {
-        NodeApi.CallMethodVoid(Module, _accessSync, path, mode);
+        NodeApi.CallMethodVoid(Module, _accessSync, path, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task CopyFileAsync(string src, string dest, double? mode = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -186,7 +186,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static void CopyFileSync(string src, string dest, double? mode = null)
     {
-        NodeApi.CallMethodVoid(Module, _copyFileSync, src, dest, mode);
+        NodeApi.CallMethodVoid(Module, _copyFileSync, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -242,7 +242,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task FtruncateAsync(double fd, double? len = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _ftruncate, fd, len);
+        return NodeApi.CallMethodAsyncVoid(Module, _ftruncate, fd, NapiArg.Of(len));
     }
 
     /// <summary>
@@ -258,7 +258,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static void FtruncateSync(double fd, double? len = null)
     {
-        NodeApi.CallMethodVoid(Module, _ftruncateSync, fd, len);
+        NodeApi.CallMethodVoid(Module, _ftruncateSync, fd, NapiArg.Of(len));
     }
 
     /// <summary>
@@ -402,7 +402,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task MkdirAsync(string path, double? mode = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mkdir, path, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _mkdir, path, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -418,7 +418,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static void MkdirSync(string path, double? mode = null)
     {
-        NodeApi.CallMethodVoid(Module, _mkdirSync, path, mode);
+        NodeApi.CallMethodVoid(Module, _mkdirSync, path, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -442,7 +442,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task<double> OpenAsync(string path, double? flags = null, double? mode = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _open, path, flags, mode);
+        return NodeApi.CallMethodAsync<double>(Module, _open, path, NapiArg.Of(flags), NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -466,7 +466,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static double OpenSync(string path, double? flags = null, double? mode = null)
     {
-        return NodeApi.CallMethod<double>(Module, _openSync, path, flags, mode);
+        return NodeApi.CallMethod<double>(Module, _openSync, path, NapiArg.Of(flags), NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -490,7 +490,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task<string> ReadTextAsync(string filePath, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _readText, filePath, options);
+        return NodeApi.CallMethodAsync<string>(Module, _readText, filePath, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -498,7 +498,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static string ReadTextSync(string filePath, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<string>(Module, _readTextSync, filePath, options);
+        return NodeApi.CallMethod<string>(Module, _readTextSync, filePath, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -506,7 +506,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task<IntPtr> ReadAsync(double fd, byte[] buffer, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _read, fd, buffer, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _read, fd, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -514,7 +514,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task<ReadOut> ReadAsync(double fd, byte[] buffer)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _read, static h => new ReadOut(h), fd, buffer);
+        return NodeApi.CallMethodAsyncCallback(Module, _read, static h => new ReadOut(h), fd, NapiArg.Of(buffer));
     }
 
     /// <summary>
@@ -522,7 +522,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static double ReadSync(double fd, byte[] buffer, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<double>(Module, _readSync, fd, buffer, options);
+        return NodeApi.CallMethod<double>(Module, _readSync, fd, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -594,7 +594,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task TruncateAsync(string path, double? len = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _truncate, path, len);
+        return NodeApi.CallMethodAsyncVoid(Module, _truncate, path, NapiArg.Of(len));
     }
 
     /// <summary>
@@ -610,7 +610,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static void TruncateSync(string path, double? len = null)
     {
-        NodeApi.CallMethodVoid(Module, _truncateSync, path, len);
+        NodeApi.CallMethodVoid(Module, _truncateSync, path, NapiArg.Of(len));
     }
 
     /// <summary>
@@ -634,7 +634,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task<double> WriteAsync(double fd, byte[] buffer, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _write, fd, buffer, options);
+        return NodeApi.CallMethodAsync<double>(Module, _write, fd, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -642,7 +642,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task<double> WriteAsync(double fd, byte[] buffer)
     {
-        return NodeApi.CallMethodAsyncCallback<double>(Module, _write, null, fd, buffer);
+        return NodeApi.CallMethodAsyncCallback<double>(Module, _write, null, fd, NapiArg.Of(buffer));
     }
 
     /// <summary>
@@ -650,7 +650,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static double WriteSync(double fd, byte[] buffer, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<double>(Module, _writeSync, fd, buffer, options);
+        return NodeApi.CallMethod<double>(Module, _writeSync, fd, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
     /// <summary>

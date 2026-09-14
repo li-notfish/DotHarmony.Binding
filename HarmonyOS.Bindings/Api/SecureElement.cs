@@ -299,7 +299,7 @@ public sealed partial class SecureElementSession : JsObject
     /// </summary>
     public Task<Channel> OpenBasicChannelAsync(double[] aid)
     {
-        return CallMethodAsync(_openBasicChannel, static h => new Channel(h), aid);
+        return CallMethodAsync(_openBasicChannel, static h => new Channel(h), NapiArg.Of(aid));
     }
 
     /// <summary>
@@ -307,7 +307,7 @@ public sealed partial class SecureElementSession : JsObject
     /// </summary>
     public Task<Channel> OpenBasicChannelAsync(double[] aid, double p2)
     {
-        return CallMethodAsync(_openBasicChannel, static h => new Channel(h), aid, p2);
+        return CallMethodAsync(_openBasicChannel, static h => new Channel(h), NapiArg.Of(aid), p2);
     }
 
     /// <summary>
@@ -315,7 +315,7 @@ public sealed partial class SecureElementSession : JsObject
     /// </summary>
     public Task<Channel> OpenLogicalChannelAsync(double[] aid)
     {
-        return CallMethodAsync(_openLogicalChannel, static h => new Channel(h), aid);
+        return CallMethodAsync(_openLogicalChannel, static h => new Channel(h), NapiArg.Of(aid));
     }
 
     /// <summary>
@@ -323,7 +323,7 @@ public sealed partial class SecureElementSession : JsObject
     /// </summary>
     public Task<Channel> OpenLogicalChannelAsync(double[] aid, double p2)
     {
-        return CallMethodAsync(_openLogicalChannel, static h => new Channel(h), aid, p2);
+        return CallMethodAsync(_openLogicalChannel, static h => new Channel(h), NapiArg.Of(aid), p2);
     }
 
 }
@@ -386,7 +386,7 @@ public sealed partial class Channel : JsObject
     /// </summary>
     public Task<double[]> TransmitAsync(double[] command)
     {
-        return CallMethodAsync(_transmit, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), command);
+        return CallMethodAsync(_transmit, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(command));
     }
 
 }

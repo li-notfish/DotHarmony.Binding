@@ -157,7 +157,7 @@ public static unsafe partial class InputMethod
     /// </summary>
     public static Task<bool> SwitchCurrentInputMethodSubtypeAsync(global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject target)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _switchCurrentInputMethodSubtype, target);
+        return NodeApi.CallMethodAsync<bool>(Module, _switchCurrentInputMethodSubtype, NapiArg.Of(target));
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ public static unsafe partial class InputMethod
     /// </summary>
     public static Task<bool> SwitchCurrentInputMethodAndSubtypeAsync(IntPtr inputMethodProperty, global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject inputMethodSubtype)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _switchCurrentInputMethodAndSubtype, inputMethodProperty, inputMethodSubtype);
+        return NodeApi.CallMethodAsync<bool>(Module, _switchCurrentInputMethodAndSubtype, inputMethodProperty, NapiArg.Of(inputMethodSubtype));
     }
 
     /// <summary>
@@ -197,7 +197,7 @@ public static unsafe partial class InputMethod
     /// </summary>
     public static void OffAttachmentDidFail(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offAttachmentDidFail, callback);
+        NodeApi.CallMethodVoid(Module, _offAttachmentDidFail, NapiArg.Of(callback));
     }
 
 }
@@ -394,7 +394,7 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task AttachAsync(bool showKeyboard, TextConfig textConfig)
     {
-        return CallMethodAsyncVoid(_attach, showKeyboard, textConfig);
+        return CallMethodAsyncVoid(_attach, showKeyboard, NapiArg.Of(textConfig));
     }
 
     /// <summary>
@@ -402,7 +402,7 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task AttachAsync(bool showKeyboard, TextConfig textConfig, global::HarmonyOS.ArkUI.RequestKeyboardReason requestKeyboardReason)
     {
-        return CallMethodAsyncVoid(_attach, showKeyboard, textConfig, requestKeyboardReason);
+        return CallMethodAsyncVoid(_attach, showKeyboard, NapiArg.Of(textConfig), requestKeyboardReason);
     }
 
     /// <summary>
@@ -410,7 +410,7 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task AttachWithUiContextAsync(global::HarmonyOS.Bindings.Api.UIContextObject uiContext, TextConfig textConfig, AttachOptions? attachOptions = null)
     {
-        return CallMethodAsyncVoid(_attachWithUIContext, uiContext, textConfig, attachOptions);
+        return CallMethodAsyncVoid(_attachWithUIContext, NapiArg.Of(uiContext), NapiArg.Of(textConfig), NapiArg.Of(attachOptions));
     }
 
     /// <summary>
@@ -466,7 +466,7 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task UpdateCursorAsync(CursorInfo cursorInfo)
     {
-        return CallMethodAsyncVoid(_updateCursor, cursorInfo);
+        return CallMethodAsyncVoid(_updateCursor, NapiArg.Of(cursorInfo));
     }
 
     /// <summary>
@@ -482,7 +482,7 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task UpdateAttributeAsync(InputAttribute attribute)
     {
-        return CallMethodAsyncVoid(_updateAttribute, attribute);
+        return CallMethodAsyncVoid(_updateAttribute, NapiArg.Of(attribute));
     }
 
     /// <summary>
@@ -522,7 +522,7 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task SendMessageAsync(string msgId, byte[]? msgParam = null)
     {
-        return CallMethodAsyncVoid(_sendMessage, msgId, msgParam);
+        return CallMethodAsyncVoid(_sendMessage, msgId, NapiArg.Of(msgParam));
     }
 
     /// <summary>
@@ -530,7 +530,7 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public void RecvMessage(MessageHandler? msgHandler = null)
     {
-        CallMethodVoid(_recvMessage, msgHandler);
+        CallMethodVoid(_recvMessage, NapiArg.Of(msgHandler));
     }
 
     /// <summary>
@@ -1047,7 +1047,7 @@ public sealed partial class MessageHandler : JsObject
     /// </summary>
     public void OnMessage(string msgId, byte[]? msgParam = null)
     {
-        CallMethodVoid(_onMessage, msgId, msgParam);
+        CallMethodVoid(_onMessage, msgId, NapiArg.Of(msgParam));
     }
 
     /// <summary>

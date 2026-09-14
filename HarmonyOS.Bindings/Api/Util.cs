@@ -84,7 +84,7 @@ public static unsafe partial class Util
     /// </summary>
     public static string Printf(string format, IntPtr[] args)
     {
-        return NodeApi.CallMethod<string>(Module, _printf, format, args);
+        return NodeApi.CallMethod<string>(Module, _printf, format, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static unsafe partial class Util
     /// </summary>
     public static string Format(string format, IntPtr[] args)
     {
-        return NodeApi.CallMethod<string>(Module, _format, format, args);
+        return NodeApi.CallMethod<string>(Module, _format, format, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public static unsafe partial class Util
     /// </summary>
     public static IntPtr Promisify(System.Action<IntPtr, IntPtr> original)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _promisify, original);
+        return NodeApi.CallMethod<IntPtr>(Module, _promisify, NapiArg.Of(original));
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ public static unsafe partial class Util
     /// </summary>
     public static IntPtr PromiseWrapper(System.Action<IntPtr, IntPtr> original)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _promiseWrapper, original);
+        return NodeApi.CallMethod<IntPtr>(Module, _promiseWrapper, NapiArg.Of(original));
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public static unsafe partial class Util
     /// </summary>
     public static string GenerateRandomUuid(bool? entropyCache = null)
     {
-        return NodeApi.CallMethod<string>(Module, _generateRandomUUID, entropyCache);
+        return NodeApi.CallMethod<string>(Module, _generateRandomUUID, NapiArg.Of(entropyCache));
     }
 
     /// <summary>
@@ -148,7 +148,7 @@ public static unsafe partial class Util
     /// </summary>
     public static byte[] GenerateRandomBinaryUuid(bool? entropyCache = null)
     {
-        return NodeApi.CallMethod(Module, _generateRandomBinaryUUID, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), entropyCache);
+        return NodeApi.CallMethod(Module, _generateRandomBinaryUUID, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(entropyCache));
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public sealed partial class TextDecoder : JsObject
         : this(NodeApi.CreateInstance(Util.Module, _TextDecoder)) { }
 
     public TextDecoder(string? encoding = null, IntPtr? options = null)
-        : this(NodeApi.CreateInstance(Util.Module, _TextDecoder, encoding, options)) { }
+        : this(NodeApi.CreateInstance(Util.Module, _TextDecoder, encoding, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _encoding => "encoding"u8;
     private static ReadOnlySpan<byte> _fatal => "fatal"u8;
     private static ReadOnlySpan<byte> _ignoreBOM => "ignoreBOM"u8;
@@ -214,7 +214,7 @@ public sealed partial class TextDecoder : JsObject
     /// </summary>
     public TextDecoder Create(string? encoding = null, TextDecoderOptions? options = null)
     {
-        return CallMethod(_create, static h => new TextDecoder(h), encoding, options);
+        return CallMethod(_create, static h => new TextDecoder(h), encoding, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -222,7 +222,7 @@ public sealed partial class TextDecoder : JsObject
     /// </summary>
     public string Decode(byte[] input, IntPtr? options = null)
     {
-        return CallMethod<string>(_decode, input, options);
+        return CallMethod<string>(_decode, NapiArg.Of(input), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -230,7 +230,7 @@ public sealed partial class TextDecoder : JsObject
     /// </summary>
     public string DecodeWithStream(byte[] input, DecodeWithStreamOptions? options = null)
     {
-        return CallMethod<string>(_decodeWithStream, input, options);
+        return CallMethod<string>(_decodeWithStream, NapiArg.Of(input), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -238,7 +238,7 @@ public sealed partial class TextDecoder : JsObject
     /// </summary>
     public string DecodeToString(byte[] input, DecodeToStringOptions? options = null)
     {
-        return CallMethod<string>(_decodeToString, input, options);
+        return CallMethod<string>(_decodeToString, NapiArg.Of(input), NapiArg.Of(options));
     }
 
 }
@@ -292,7 +292,7 @@ public sealed partial class TextEncoder : JsObject
     /// </summary>
     public IntPtr EncodeInto(string input, byte[] dest)
     {
-        return CallMethod<IntPtr>(_encodeInto, input, dest);
+        return CallMethod<IntPtr>(_encodeInto, input, NapiArg.Of(dest));
     }
 
     /// <summary>
@@ -300,7 +300,7 @@ public sealed partial class TextEncoder : JsObject
     /// </summary>
     public EncodeIntoUint8ArrayInfo EncodeIntoUint8Array(string input, byte[] dest)
     {
-        return CallMethod(_encodeIntoUint8Array, static h => new EncodeIntoUint8ArrayInfo(h), input, dest);
+        return CallMethod(_encodeIntoUint8Array, static h => new EncodeIntoUint8ArrayInfo(h), input, NapiArg.Of(dest));
     }
 
 }
@@ -355,7 +355,7 @@ public sealed partial class RationalNumber : JsObject
     /// </summary>
     public double CompareTo(RationalNumber another)
     {
-        return CallMethod<double>(_compareTo, another);
+        return CallMethod<double>(_compareTo, NapiArg.Of(another));
     }
 
     /// <summary>
@@ -363,7 +363,7 @@ public sealed partial class RationalNumber : JsObject
     /// </summary>
     public double Compare(RationalNumber another)
     {
-        return CallMethod<double>(_compare, another);
+        return CallMethod<double>(_compare, NapiArg.Of(another));
     }
 
     /// <summary>
@@ -480,7 +480,7 @@ public sealed partial class Scope : JsObject
     /// </summary>
     public Scope Intersect(Scope range)
     {
-        return CallMethod(_intersect, static h => new Scope(h), range);
+        return CallMethod(_intersect, static h => new Scope(h), NapiArg.Of(range));
     }
 
     /// <summary>
@@ -520,7 +520,7 @@ public sealed partial class Scope : JsObject
     /// </summary>
     public Scope Expand(Scope range)
     {
-        return CallMethod(_expand, static h => new Scope(h), range);
+        return CallMethod(_expand, static h => new Scope(h), NapiArg.Of(range));
     }
 
     /// <summary>
@@ -544,7 +544,7 @@ public sealed partial class Scope : JsObject
     /// </summary>
     public bool Contains(Scope range)
     {
-        return CallMethod<bool>(_contains, range);
+        return CallMethod<bool>(_contains, NapiArg.Of(range));
     }
 
     /// <summary>
@@ -589,7 +589,7 @@ public sealed partial class ScopeHelper : JsObject
     /// </summary>
     public ScopeHelper Intersect(ScopeHelper range)
     {
-        return CallMethod(_intersect, static h => new ScopeHelper(h), range);
+        return CallMethod(_intersect, static h => new ScopeHelper(h), NapiArg.Of(range));
     }
 
     /// <summary>
@@ -629,7 +629,7 @@ public sealed partial class ScopeHelper : JsObject
     /// </summary>
     public ScopeHelper Expand(ScopeHelper range)
     {
-        return CallMethod(_expand, static h => new ScopeHelper(h), range);
+        return CallMethod(_expand, static h => new ScopeHelper(h), NapiArg.Of(range));
     }
 
     /// <summary>
@@ -653,7 +653,7 @@ public sealed partial class ScopeHelper : JsObject
     /// </summary>
     public bool Contains(ScopeHelper range)
     {
-        return CallMethod<bool>(_contains, range);
+        return CallMethod<bool>(_contains, NapiArg.Of(range));
     }
 
     /// <summary>
@@ -689,7 +689,7 @@ public sealed partial class Base64 : JsObject
     /// </summary>
     public byte[] EncodeSync(byte[] src)
     {
-        return CallMethod(_encodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), src);
+        return CallMethod(_encodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src));
     }
 
     /// <summary>
@@ -697,7 +697,7 @@ public sealed partial class Base64 : JsObject
     /// </summary>
     public string EncodeToStringSync(byte[] src)
     {
-        return CallMethod<string>(_encodeToStringSync, src);
+        return CallMethod<string>(_encodeToStringSync, NapiArg.Of(src));
     }
 
     /// <summary>
@@ -705,7 +705,7 @@ public sealed partial class Base64 : JsObject
     /// </summary>
     public byte[] DecodeSync(byte[] src)
     {
-        return CallMethod(_decodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), src);
+        return CallMethod(_decodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src));
     }
 
     /// <summary>
@@ -713,7 +713,7 @@ public sealed partial class Base64 : JsObject
     /// </summary>
     public Task<byte[]> EncodeAsync(byte[] src)
     {
-        return CallMethodAsync(_encode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), src);
+        return CallMethodAsync(_encode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src));
     }
 
     /// <summary>
@@ -721,7 +721,7 @@ public sealed partial class Base64 : JsObject
     /// </summary>
     public Task<string> EncodeToStringAsync(byte[] src)
     {
-        return CallMethodAsync<string>(_encodeToString, src);
+        return CallMethodAsync<string>(_encodeToString, NapiArg.Of(src));
     }
 
     /// <summary>
@@ -729,7 +729,7 @@ public sealed partial class Base64 : JsObject
     /// </summary>
     public Task<byte[]> DecodeAsync(byte[] src)
     {
-        return CallMethodAsync(_decode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), src);
+        return CallMethodAsync(_decode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src));
     }
 
 }
@@ -757,7 +757,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public byte[] EncodeSync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethod(_encodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), src, options);
+        return CallMethod(_encodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), options);
     }
 
     /// <summary>
@@ -765,7 +765,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public string EncodeToStringSync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethod<string>(_encodeToStringSync, src, options);
+        return CallMethod<string>(_encodeToStringSync, NapiArg.Of(src), options);
     }
 
     /// <summary>
@@ -773,7 +773,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public byte[] DecodeSync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethod(_decodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), src, options);
+        return CallMethod(_decodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), options);
     }
 
     /// <summary>
@@ -781,7 +781,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public Task<byte[]> EncodeAsync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethodAsync(_encode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), src, options);
+        return CallMethodAsync(_encode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), options);
     }
 
     /// <summary>
@@ -789,7 +789,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public Task<string> EncodeToStringAsync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethodAsync<string>(_encodeToString, src, options);
+        return CallMethodAsync<string>(_encodeToString, NapiArg.Of(src), options);
     }
 
     /// <summary>
@@ -797,7 +797,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public Task<byte[]> DecodeAsync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethodAsync(_decode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), src, options);
+        return CallMethodAsync(_decode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), options);
     }
 
 }

@@ -245,7 +245,7 @@ public partial class ModuleVerifyPage : ContentPage
         try
         {
             byte[] payload = [0x01, 0x02, 0x03, 0xF0, 0x0F, 0x7F, 0x80, 0xFF];
-            var echoed = await NodeApi.CallMethodAsync<byte[]>(NodeApi.GetGlobal(), "echoArrayBuffer", payload);
+            var echoed = await NodeApi.CallMethodAsync<byte[]>(NodeApi.GetGlobal(), "echoArrayBuffer", NapiArg.Of(payload));
             bool ok = echoed.AsSpan().SequenceEqual(payload);
             ShowResult("ArrayBuffer", ok
                 ? $"byte[{payload.Length}] round-trip OK: {Convert.ToHexString(echoed)}"

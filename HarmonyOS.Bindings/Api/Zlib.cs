@@ -84,7 +84,7 @@ public static unsafe partial class Zlib
     /// </summary>
     public static Task ZipFileAsync(string inFile, string outFile, ZlibOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _zipFile, inFile, outFile, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _zipFile, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static unsafe partial class Zlib
     /// </summary>
     public static Task UnzipFileAsync(string inFile, string outFile, ZlibOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unzipFile, inFile, outFile, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _unzipFile, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public static unsafe partial class Zlib
     /// </summary>
     public static Task CompressFileAsync(string inFile, string outFile, ZlibOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _compressFile, inFile, outFile, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _compressFile, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public static unsafe partial class Zlib
     /// </summary>
     public static Task CompressFilesAsync(string[] inFiles, string outFile, ZlibOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _compressFiles, inFiles, outFile, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _compressFiles, NapiArg.Of(inFiles), outFile, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public static unsafe partial class Zlib
     /// </summary>
     public static Task DecompressFileAsync(string inFile, string outFile, ZlibOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _decompressFile, inFile, outFile, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _decompressFile, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -245,7 +245,7 @@ public sealed partial class Checksum : JsObject
     /// </summary>
     public Task<double> Adler32Async(double adler, byte[] buf)
     {
-        return CallMethodAsync<double>(_adler32, adler, buf);
+        return CallMethodAsync<double>(_adler32, adler, NapiArg.Of(buf));
     }
 
     /// <summary>
@@ -261,7 +261,7 @@ public sealed partial class Checksum : JsObject
     /// </summary>
     public Task<double> Crc32Async(double crc, byte[] buf)
     {
-        return CallMethodAsync<double>(_crc32, crc, buf);
+        return CallMethodAsync<double>(_crc32, crc, NapiArg.Of(buf));
     }
 
     /// <summary>
@@ -277,7 +277,7 @@ public sealed partial class Checksum : JsObject
     /// </summary>
     public Task<double> Crc64Async(double crc, byte[] buf)
     {
-        return CallMethodAsync<double>(_crc64, crc, buf);
+        return CallMethodAsync<double>(_crc64, crc, NapiArg.Of(buf));
     }
 
     /// <summary>
@@ -377,7 +377,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<ZipOutputInfo> CompressAsync(byte[] dest, byte[] source, double? sourceLen = null)
     {
-        return CallMethodAsync(_compress, static h => new ZipOutputInfo(h), dest, source, sourceLen);
+        return CallMethodAsync(_compress, static h => new ZipOutputInfo(h), NapiArg.Of(dest), NapiArg.Of(source), NapiArg.Of(sourceLen));
     }
 
     /// <summary>
@@ -385,7 +385,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<ZipOutputInfo> Compress2Async(byte[] dest, byte[] source, global::HarmonyOS.ArkUI.CompressLevel level, double? sourceLen = null)
     {
-        return CallMethodAsync(_compress2, static h => new ZipOutputInfo(h), dest, source, level, sourceLen);
+        return CallMethodAsync(_compress2, static h => new ZipOutputInfo(h), NapiArg.Of(dest), NapiArg.Of(source), level, NapiArg.Of(sourceLen));
     }
 
     /// <summary>
@@ -401,7 +401,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<ZipOutputInfo> UncompressAsync(byte[] dest, byte[] source, double? sourceLen = null)
     {
-        return CallMethodAsync(_uncompress, static h => new ZipOutputInfo(h), dest, source, sourceLen);
+        return CallMethodAsync(_uncompress, static h => new ZipOutputInfo(h), NapiArg.Of(dest), NapiArg.Of(source), NapiArg.Of(sourceLen));
     }
 
     /// <summary>
@@ -409,7 +409,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<DecompressionOutputInfo> Uncompress2Async(byte[] dest, byte[] source, double? sourceLen = null)
     {
-        return CallMethodAsync(_uncompress2, static h => new DecompressionOutputInfo(h), dest, source, sourceLen);
+        return CallMethodAsync(_uncompress2, static h => new DecompressionOutputInfo(h), NapiArg.Of(dest), NapiArg.Of(source), NapiArg.Of(sourceLen));
     }
 
     /// <summary>
@@ -417,7 +417,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateValidateAsync(ZStream strm, double check)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateValidate, strm, check);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateValidate, NapiArg.Of(strm), check);
     }
 
     /// <summary>
@@ -425,7 +425,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateSyncPointAsync(ZStream strm)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateSyncPoint, strm);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateSyncPoint, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -433,7 +433,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateSyncAsync(ZStream strm)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateSync, strm);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateSync, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -441,7 +441,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateSetDictionaryAsync(ZStream strm, byte[] dictionary)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateSetDictionary, strm, dictionary);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateSetDictionary, NapiArg.Of(strm), NapiArg.Of(dictionary));
     }
 
     /// <summary>
@@ -449,7 +449,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateResetKeepAsync(ZStream strm)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateResetKeep, strm);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateResetKeep, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -457,7 +457,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateReset2Async(ZStream strm, double windowBits)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateReset2, strm, windowBits);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateReset2, NapiArg.Of(strm), windowBits);
     }
 
     /// <summary>
@@ -465,7 +465,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateResetAsync(ZStream strm)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateReset, strm);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateReset, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -473,7 +473,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflatePrimeAsync(ZStream strm, double bits, double value)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflatePrime, strm, bits, value);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflatePrime, NapiArg.Of(strm), bits, value);
     }
 
     /// <summary>
@@ -481,7 +481,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<double> InflateMarkAsync(ZStream strm)
     {
-        return CallMethodAsync<double>(_inflateMark, strm);
+        return CallMethodAsync<double>(_inflateMark, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -489,7 +489,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateInit2Async(ZStream strm, double windowBits)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateInit2, strm, windowBits);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateInit2, NapiArg.Of(strm), windowBits);
     }
 
     /// <summary>
@@ -497,7 +497,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateInitAsync(ZStream strm)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateInit, strm);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateInit, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -505,7 +505,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateGetHeaderAsync(ZStream strm, GzHeader header)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateGetHeader, strm, header);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateGetHeader, NapiArg.Of(strm), NapiArg.Of(header));
     }
 
     /// <summary>
@@ -513,7 +513,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<DictionaryOutputInfo> InflateGetDictionaryAsync(ZStream strm, byte[] dictionary)
     {
-        return CallMethodAsync(_inflateGetDictionary, static h => new DictionaryOutputInfo(h), strm, dictionary);
+        return CallMethodAsync(_inflateGetDictionary, static h => new DictionaryOutputInfo(h), NapiArg.Of(strm), NapiArg.Of(dictionary));
     }
 
     /// <summary>
@@ -521,7 +521,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateEndAsync(ZStream strm)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateEnd, strm);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateEnd, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -529,7 +529,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateCopyAsync(Zip source)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateCopy, source);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateCopy, NapiArg.Of(source));
     }
 
     /// <summary>
@@ -537,7 +537,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<double> InflateCodesUsedAsync(ZStream strm)
     {
-        return CallMethodAsync<double>(_inflateCodesUsed, strm);
+        return CallMethodAsync<double>(_inflateCodesUsed, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -545,7 +545,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateBackInitAsync(ZStream strm, double windowBits, byte[] window)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateBackInit, strm, windowBits, window);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateBackInit, NapiArg.Of(strm), windowBits, NapiArg.Of(window));
     }
 
     /// <summary>
@@ -553,7 +553,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateBackEndAsync(ZStream strm)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateBackEnd, strm);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateBackEnd, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -561,7 +561,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateBackAsync(ZStream strm, IntPtr backIn, IntPtr inDesc, IntPtr backOut, IntPtr outDesc)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateBack, strm, backIn, inDesc, backOut, outDesc);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateBack, NapiArg.Of(strm), backIn, inDesc, backOut, outDesc);
     }
 
     /// <summary>
@@ -569,7 +569,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateAsync(ZStream strm, global::HarmonyOS.ArkUI.CompressFlushMode flush)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflate, strm, flush);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflate, NapiArg.Of(strm), flush);
     }
 
     /// <summary>
@@ -577,7 +577,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateInitAsync(ZStream strm, global::HarmonyOS.ArkUI.CompressLevel level)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateInit, strm, level);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateInit, NapiArg.Of(strm), level);
     }
 
     /// <summary>
@@ -585,7 +585,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateInit2Async(ZStream strm, global::HarmonyOS.ArkUI.CompressLevel level, global::HarmonyOS.ArkUI.CompressMethod method, double windowBits, global::HarmonyOS.ArkUI.MemLevel memLevel, global::HarmonyOS.ArkUI.CompressStrategy strategy)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateInit2, strm, level, method, windowBits, memLevel, strategy);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateInit2, NapiArg.Of(strm), level, method, windowBits, memLevel, strategy);
     }
 
     /// <summary>
@@ -593,7 +593,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateAsync(ZStream strm, global::HarmonyOS.ArkUI.CompressFlushMode flush)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflate, strm, flush);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflate, NapiArg.Of(strm), flush);
     }
 
     /// <summary>
@@ -601,7 +601,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateEndAsync(ZStream strm)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateEnd, strm);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateEnd, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -609,7 +609,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<double> DeflateBoundAsync(ZStream strm, double sourceLength)
     {
-        return CallMethodAsync<double>(_deflateBound, strm, sourceLength);
+        return CallMethodAsync<double>(_deflateBound, NapiArg.Of(strm), sourceLength);
     }
 
     /// <summary>
@@ -617,7 +617,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateSetHeaderAsync(ZStream strm, GzHeader head)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateSetHeader, strm, head);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateSetHeader, NapiArg.Of(strm), NapiArg.Of(head));
     }
 
     /// <summary>
@@ -625,7 +625,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateCopyAsync(Zip source)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateCopy, source);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateCopy, NapiArg.Of(source));
     }
 
     /// <summary>
@@ -633,7 +633,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateSetDictionaryAsync(ZStream strm, byte[] dictionary)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateSetDictionary, strm, dictionary);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateSetDictionary, NapiArg.Of(strm), NapiArg.Of(dictionary));
     }
 
     /// <summary>
@@ -641,7 +641,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<DictionaryOutputInfo> DeflateGetDictionaryAsync(ZStream strm, byte[] dictionary)
     {
-        return CallMethodAsync(_deflateGetDictionary, static h => new DictionaryOutputInfo(h), strm, dictionary);
+        return CallMethodAsync(_deflateGetDictionary, static h => new DictionaryOutputInfo(h), NapiArg.Of(strm), NapiArg.Of(dictionary));
     }
 
     /// <summary>
@@ -649,7 +649,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateTuneAsync(ZStream strm, double goodLength, double maxLazy, double niceLength, double maxChain)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateTune, strm, goodLength, maxLazy, niceLength, maxChain);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateTune, NapiArg.Of(strm), goodLength, maxLazy, niceLength, maxChain);
     }
 
     /// <summary>
@@ -657,7 +657,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateResetAsync(ZStream strm)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateReset, strm);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateReset, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -665,7 +665,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateResetKeepAsync(ZStream strm)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateResetKeep, strm);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateResetKeep, NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -673,7 +673,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<DeflatePendingOutputInfo> DeflatePendingAsync(ZStream strm)
     {
-        return CallMethodAsync(_deflatePending, static h => new DeflatePendingOutputInfo(h), strm);
+        return CallMethodAsync(_deflatePending, static h => new DeflatePendingOutputInfo(h), NapiArg.Of(strm));
     }
 
     /// <summary>
@@ -681,7 +681,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateParamsAsync(ZStream strm, global::HarmonyOS.ArkUI.CompressLevel level, global::HarmonyOS.ArkUI.CompressStrategy strategy)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateParams, strm, level, strategy);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateParams, NapiArg.Of(strm), level, strategy);
     }
 
     /// <summary>
@@ -689,7 +689,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflatePrimeAsync(ZStream strm, double bits, double value)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflatePrime, strm, bits, value);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflatePrime, NapiArg.Of(strm), bits, value);
     }
 
 }
@@ -812,7 +812,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<double> GzfwriteAsync(byte[] buf, double size, double nitems)
     {
-        return CallMethodAsync<double>(_gzfwrite, buf, size, nitems);
+        return CallMethodAsync<double>(_gzfwrite, NapiArg.Of(buf), size, nitems);
     }
 
     /// <summary>
@@ -820,7 +820,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<double> GzfreadAsync(byte[] buf, double size, double nitems)
     {
-        return CallMethodAsync<double>(_gzfread, buf, size, nitems);
+        return CallMethodAsync<double>(_gzfread, NapiArg.Of(buf), size, nitems);
     }
 
     /// <summary>
@@ -844,7 +844,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<double> GzwriteAsync(byte[] buf, double len)
     {
-        return CallMethodAsync<double>(_gzwrite, buf, len);
+        return CallMethodAsync<double>(_gzwrite, NapiArg.Of(buf), len);
     }
 
     /// <summary>
@@ -892,7 +892,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<double> GzreadAsync(byte[] buf)
     {
-        return CallMethodAsync<double>(_gzread, buf);
+        return CallMethodAsync<double>(_gzread, NapiArg.Of(buf));
     }
 
     /// <summary>
@@ -932,7 +932,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<string> GzgetsAsync(byte[] buf)
     {
-        return CallMethodAsync<string>(_gzgets, buf);
+        return CallMethodAsync<string>(_gzgets, NapiArg.Of(buf));
     }
 
 }

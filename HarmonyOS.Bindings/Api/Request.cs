@@ -358,7 +358,7 @@ public static unsafe partial class Request
     /// </summary>
     public static Task<string[]> SearchAsync(RequestFilter filter)
     {
-        return NodeApi.CallMethodAsync(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), filter);
+        return NodeApi.CallMethodAsync(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(filter));
     }
 
     /// <summary>
@@ -374,7 +374,7 @@ public static unsafe partial class Request
     /// </summary>
     public static Task AttachGroupAsync(string gid, string[] tids)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _attachGroup, gid, tids);
+        return NodeApi.CallMethodAsyncVoid(Module, _attachGroup, gid, NapiArg.Of(tids));
     }
 
     /// <summary>

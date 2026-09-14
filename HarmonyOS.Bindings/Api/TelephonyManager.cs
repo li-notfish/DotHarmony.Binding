@@ -87,7 +87,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static void SetSimDisabled(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
-        NodeApi.CallMethodVoid(Module, _setSimDisabled, admin, slotId);
+        NodeApi.CallMethodVoid(Module, _setSimDisabled, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static void SetSimEnabled(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
-        NodeApi.CallMethodVoid(Module, _setSimEnabled, admin, slotId);
+        NodeApi.CallMethodVoid(Module, _setSimEnabled, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static bool IsSimDisabled(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
-        return NodeApi.CallMethod<bool>(Module, _isSimDisabled, admin, slotId);
+        return NodeApi.CallMethod<bool>(Module, _isSimDisabled, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static void AddOutgoingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy, string[] numbers)
     {
-        NodeApi.CallMethodVoid(Module, _addOutgoingCallPolicyNumbers, admin, policy, numbers);
+        NodeApi.CallMethodVoid(Module, _addOutgoingCallPolicyNumbers, NapiArg.Of(admin), policy, NapiArg.Of(numbers));
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static void RemoveOutgoingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy, string[] numbers)
     {
-        NodeApi.CallMethodVoid(Module, _removeOutgoingCallPolicyNumbers, admin, policy, numbers);
+        NodeApi.CallMethodVoid(Module, _removeOutgoingCallPolicyNumbers, NapiArg.Of(admin), policy, NapiArg.Of(numbers));
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static string[] GetOutgoingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy)
     {
-        return NodeApi.CallMethod(Module, _getOutgoingCallPolicyNumbers, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, policy);
+        return NodeApi.CallMethod(Module, _getOutgoingCallPolicyNumbers, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), policy);
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static void AddIncomingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy, string[] numbers)
     {
-        NodeApi.CallMethodVoid(Module, _addIncomingCallPolicyNumbers, admin, policy, numbers);
+        NodeApi.CallMethodVoid(Module, _addIncomingCallPolicyNumbers, NapiArg.Of(admin), policy, NapiArg.Of(numbers));
     }
 
     /// <summary>
@@ -143,7 +143,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static void RemoveIncomingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy, string[] numbers)
     {
-        NodeApi.CallMethodVoid(Module, _removeIncomingCallPolicyNumbers, admin, policy, numbers);
+        NodeApi.CallMethodVoid(Module, _removeIncomingCallPolicyNumbers, NapiArg.Of(admin), policy, NapiArg.Of(numbers));
     }
 
     /// <summary>
@@ -151,7 +151,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static string[] GetIncomingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy)
     {
-        return NodeApi.CallMethod(Module, _getIncomingCallPolicyNumbers, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, policy);
+        return NodeApi.CallMethod(Module, _getIncomingCallPolicyNumbers, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), policy);
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static void HangupCalling(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        NodeApi.CallMethodVoid(Module, _hangupCalling, admin);
+        NodeApi.CallMethodVoid(Module, _hangupCalling, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static void ActiveSim(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
-        NodeApi.CallMethodVoid(Module, _activeSim, admin, slotId);
+        NodeApi.CallMethodVoid(Module, _activeSim, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
@@ -175,7 +175,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static void DeactiveSim(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
-        NodeApi.CallMethodVoid(Module, _deactiveSim, admin, slotId);
+        NodeApi.CallMethodVoid(Module, _deactiveSim, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
@@ -183,7 +183,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static void SetDefaultData(global::HarmonyOS.Bindings.Api.WantObject admin, double slotId)
     {
-        NodeApi.CallMethodVoid(Module, _setDefaultData, admin, slotId);
+        NodeApi.CallMethodVoid(Module, _setDefaultData, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public static unsafe partial class TelephonyManager
     /// </summary>
     public static double GetDefaultData(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod<double>(Module, _getDefaultData, admin);
+        return NodeApi.CallMethod<double>(Module, _getDefaultData, NapiArg.Of(admin));
     }
 
 }

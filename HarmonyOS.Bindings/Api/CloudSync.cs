@@ -385,7 +385,7 @@ public sealed partial class CloudFileCache : JsObject
     /// </summary>
     public Task<double> StartBatchAsync(string[] uris, global::HarmonyOS.ArkUI.DownloadFileType? fileType = null)
     {
-        return CallMethodAsync<double>(_startBatch, uris, fileType);
+        return CallMethodAsync<double>(_startBatch, NapiArg.Of(uris), fileType);
     }
 
     /// <summary>
@@ -393,7 +393,7 @@ public sealed partial class CloudFileCache : JsObject
     /// </summary>
     public Task StopAsync(string uri, bool? needClean = null)
     {
-        return CallMethodAsyncVoid(_stop, uri, needClean);
+        return CallMethodAsyncVoid(_stop, uri, NapiArg.Of(needClean));
     }
 
     /// <summary>
@@ -409,7 +409,7 @@ public sealed partial class CloudFileCache : JsObject
     /// </summary>
     public Task StopBatchAsync(double downloadId, bool? needClean = null)
     {
-        return CallMethodAsyncVoid(_stopBatch, downloadId, needClean);
+        return CallMethodAsyncVoid(_stopBatch, downloadId, NapiArg.Of(needClean));
     }
 
     /// <summary>

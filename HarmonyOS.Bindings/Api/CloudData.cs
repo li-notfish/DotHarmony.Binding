@@ -75,7 +75,7 @@ public static unsafe partial class CloudData
     /// </summary>
     public static Task SetCloudStrategyAsync(global::HarmonyOS.ArkUI.StrategyType strategy, IntPtr[]? param = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setCloudStrategy, strategy, param);
+        return NodeApi.CallMethodAsyncVoid(Module, _setCloudStrategy, strategy, NapiArg.Of(param));
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public static unsafe partial class CloudData
     /// </summary>
     public static void OffAutoSyncTrigger(IntPtr? observer = null)
     {
-        NodeApi.CallMethodVoid(Module, _offAutoSyncTrigger, observer);
+        NodeApi.CallMethodVoid(Module, _offAutoSyncTrigger, NapiArg.Of(observer));
     }
 
 }

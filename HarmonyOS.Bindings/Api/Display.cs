@@ -159,7 +159,7 @@ public static unsafe partial class Display
     /// </summary>
     public static void OnChangeWithAttribute(string[] displayAttributeOption, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _onChangeWithAttribute, displayAttributeOption, callback);
+        NodeApi.CallMethodVoid(Module, _onChangeWithAttribute, NapiArg.Of(displayAttributeOption), callback);
     }
 
     /// <summary>
@@ -199,7 +199,7 @@ public static unsafe partial class Display
     /// </summary>
     public static bool IsCaptured(string[] bundleNameList)
     {
-        return NodeApi.CallMethod<bool>(Module, _isCaptured, bundleNameList);
+        return NodeApi.CallMethod<bool>(Module, _isCaptured, NapiArg.Of(bundleNameList));
     }
 
     /// <summary>
@@ -223,7 +223,7 @@ public static unsafe partial class Display
     /// </summary>
     public static Task<double> CreateVirtualScreenAsync(VirtualScreenConfig config)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _createVirtualScreen, config);
+        return NodeApi.CallMethodAsync<double>(Module, _createVirtualScreen, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -255,7 +255,7 @@ public static unsafe partial class Display
     /// </summary>
     public static Position ConvertRelativeToGlobalCoordinate(RelativePosition relativePosition)
     {
-        return NodeApi.CallMethod(Module, _convertRelativeToGlobalCoordinate, static h => new Position(h), relativePosition);
+        return NodeApi.CallMethod(Module, _convertRelativeToGlobalCoordinate, static h => new Position(h), NapiArg.Of(relativePosition));
     }
 
     /// <summary>
@@ -263,7 +263,7 @@ public static unsafe partial class Display
     /// </summary>
     public static RelativePosition ConvertGlobalToRelativeCoordinate(Position position, double? displayId = null)
     {
-        return NodeApi.CallMethod(Module, _convertGlobalToRelativeCoordinate, static h => new RelativePosition(h), position, displayId);
+        return NodeApi.CallMethod(Module, _convertGlobalToRelativeCoordinate, static h => new RelativePosition(h), NapiArg.Of(position), NapiArg.Of(displayId));
     }
 
     /// <summary>

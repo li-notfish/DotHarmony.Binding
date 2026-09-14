@@ -83,7 +83,7 @@ public static unsafe partial class HuksExternalCrypto
     /// </summary>
     public static Task RegisterProviderAsync(string providerName, HuksExternalCryptoParam[] @params)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _registerProvider, providerName, @params);
+        return NodeApi.CallMethodAsyncVoid(Module, _registerProvider, providerName, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public static unsafe partial class HuksExternalCrypto
     /// </summary>
     public static Task UnregisterProviderAsync(string providerName, HuksExternalCryptoParam[]? @params = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unregisterProvider, providerName, @params);
+        return NodeApi.CallMethodAsyncVoid(Module, _unregisterProvider, providerName, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public static unsafe partial class HuksExternalCrypto
     /// </summary>
     public static Task<global::HarmonyOS.ArkUI.HuksExternalPinAuthState> GetUkeyPinAuthStateAsync(string resourceId, HuksExternalCryptoParam[]? @params = null)
     {
-        return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.HuksExternalPinAuthState>(Module, _getUkeyPinAuthState, resourceId, @params);
+        return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.HuksExternalPinAuthState>(Module, _getUkeyPinAuthState, resourceId, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public static unsafe partial class HuksExternalCrypto
     /// </summary>
     public static Task<HuksExternalCryptoParam[]> GetPropertyAsync(string resourceId, string propertyId, HuksExternalCryptoParam[]? @params = null)
     {
-        return NodeApi.CallMethodAsync(Module, _getProperty, h => ValueConverter.ConvertArray(h, static e => new HuksExternalCryptoParam(e)), resourceId, propertyId, @params);
+        return NodeApi.CallMethodAsync(Module, _getProperty, h => ValueConverter.ConvertArray(h, static e => new HuksExternalCryptoParam(e)), resourceId, propertyId, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public static unsafe partial class HuksExternalCrypto
     /// </summary>
     public static Task SetPropertyAsync(string resourceId, string propertyId, HuksExternalCryptoParam[]? @params = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setProperty, resourceId, propertyId, @params);
+        return NodeApi.CallMethodAsyncVoid(Module, _setProperty, resourceId, propertyId, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public static unsafe partial class HuksExternalCrypto
     /// </summary>
     public static Task<string> GetResourceIdAsync(string providerName, HuksExternalCryptoParam[] @params)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _getResourceId, providerName, @params);
+        return NodeApi.CallMethodAsync<string>(Module, _getResourceId, providerName, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public static unsafe partial class HuksExternalCrypto
     /// </summary>
     public static Task OpenResourceAsync(string resourceId, HuksExternalCryptoParam[]? @params = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openResource, resourceId, @params);
+        return NodeApi.CallMethodAsyncVoid(Module, _openResource, resourceId, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public static unsafe partial class HuksExternalCrypto
     /// </summary>
     public static Task CloseResourceAsync(string resourceId, HuksExternalCryptoParam[]? @params = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _closeResource, resourceId, @params);
+        return NodeApi.CallMethodAsyncVoid(Module, _closeResource, resourceId, NapiArg.Of(@params));
     }
 
     /// <summary>

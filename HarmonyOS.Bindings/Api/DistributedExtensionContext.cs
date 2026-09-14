@@ -101,7 +101,7 @@ public sealed partial class DistributedExtensionContextObject : JsObject
     /// </summary>
     public double ConnectServiceExtensionAbility(global::HarmonyOS.Bindings.Api.WantObject want, IntPtr options)
     {
-        return CallMethod<double>(_connectServiceExtensionAbility, want, options);
+        return CallMethod<double>(_connectServiceExtensionAbility, NapiArg.Of(want), options);
     }
 
     /// <summary>

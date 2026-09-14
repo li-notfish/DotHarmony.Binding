@@ -133,7 +133,7 @@ public static unsafe partial class Ble
     /// </summary>
     public static void StartBleScan(IntPtr[] filters, ScanOptions? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _startBLEScan, filters, options);
+        NodeApi.CallMethodVoid(Module, _startBLEScan, NapiArg.Of(filters), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public static unsafe partial class Ble
     /// </summary>
     public static void StartAdvertising(AdvertiseSetting setting, IntPtr advData, IntPtr? advResponse = null)
     {
-        NodeApi.CallMethodVoid(Module, _startAdvertising, setting, advData, advResponse);
+        NodeApi.CallMethodVoid(Module, _startAdvertising, NapiArg.Of(setting), advData, NapiArg.Of(advResponse));
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ public static unsafe partial class Ble
     /// </summary>
     public static Task EnableAdvertisingAsync(AdvertisingEnableParams advertisingEnableParams)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _enableAdvertising, advertisingEnableParams);
+        return NodeApi.CallMethodAsyncVoid(Module, _enableAdvertising, NapiArg.Of(advertisingEnableParams));
     }
 
     /// <summary>
@@ -181,7 +181,7 @@ public static unsafe partial class Ble
     /// </summary>
     public static Task DisableAdvertisingAsync(AdvertisingDisableParams advertisingDisableParams)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disableAdvertising, advertisingDisableParams);
+        return NodeApi.CallMethodAsyncVoid(Module, _disableAdvertising, NapiArg.Of(advertisingDisableParams));
     }
 
     /// <summary>
@@ -367,7 +367,7 @@ public sealed partial class GattServer : JsObject
     /// </summary>
     public void Connect(string deviceId, bool? autoConnect = null)
     {
-        CallMethodVoid(_connect, deviceId, autoConnect);
+        CallMethodVoid(_connect, deviceId, NapiArg.Of(autoConnect));
     }
 
     /// <summary>
@@ -383,7 +383,7 @@ public sealed partial class GattServer : JsObject
     /// </summary>
     public Task NotifyCharacteristicChangedAsync(string deviceId, NotifyCharacteristic notifyCharacteristic)
     {
-        return CallMethodAsyncVoid(_notifyCharacteristicChanged, deviceId, notifyCharacteristic);
+        return CallMethodAsyncVoid(_notifyCharacteristicChanged, deviceId, NapiArg.Of(notifyCharacteristic));
     }
 
     /// <summary>
@@ -391,7 +391,7 @@ public sealed partial class GattServer : JsObject
     /// </summary>
     public void SendResponse(ServerResponse serverResponse)
     {
-        CallMethodVoid(_sendResponse, serverResponse);
+        CallMethodVoid(_sendResponse, NapiArg.Of(serverResponse));
     }
 
     /// <summary>
@@ -415,7 +415,7 @@ public sealed partial class GattServer : JsObject
     /// </summary>
     public Task SetPhyAsync(string deviceId, PhyValue phyValue)
     {
-        return CallMethodAsyncVoid(_setPhy, deviceId, phyValue);
+        return CallMethodAsyncVoid(_setPhy, deviceId, NapiArg.Of(phyValue));
     }
 
     /// <summary>
@@ -447,7 +447,7 @@ public sealed partial class GattServer : JsObject
     /// </summary>
     public void OffBlePhyUpdate(IntPtr? callback = null)
     {
-        CallMethodVoid(_offBlePhyUpdate, callback);
+        CallMethodVoid(_offBlePhyUpdate, NapiArg.Of(callback));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -754,7 +754,7 @@ public sealed partial class GattClientDevice : JsObject
     /// </summary>
     public Task<BLEDescriptor> ReadDescriptorValueAsync(BLEDescriptor descriptor)
     {
-        return CallMethodAsync(_readDescriptorValue, static h => new BLEDescriptor(h), descriptor);
+        return CallMethodAsync(_readDescriptorValue, static h => new BLEDescriptor(h), NapiArg.Of(descriptor));
     }
 
     /// <summary>
@@ -770,7 +770,7 @@ public sealed partial class GattClientDevice : JsObject
     /// </summary>
     public Task WriteDescriptorValueAsync(BLEDescriptor descriptor)
     {
-        return CallMethodAsyncVoid(_writeDescriptorValue, descriptor);
+        return CallMethodAsyncVoid(_writeDescriptorValue, NapiArg.Of(descriptor));
     }
 
     /// <summary>
@@ -842,7 +842,7 @@ public sealed partial class GattClientDevice : JsObject
     /// </summary>
     public Task SetPhyAsync(PhyValue phyValue)
     {
-        return CallMethodAsyncVoid(_setPhy, phyValue);
+        return CallMethodAsyncVoid(_setPhy, NapiArg.Of(phyValue));
     }
 
     /// <summary>
@@ -874,7 +874,7 @@ public sealed partial class GattClientDevice : JsObject
     /// </summary>
     public void OffBlePhyUpdate(IntPtr? callback = null)
     {
-        CallMethodVoid(_offBlePhyUpdate, callback);
+        CallMethodVoid(_offBlePhyUpdate, NapiArg.Of(callback));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -1027,7 +1027,7 @@ public sealed partial class BleScanner : JsObject
     /// </summary>
     public Task StartScanAsync(IntPtr[] filters, ScanOptions? options = null)
     {
-        return CallMethodAsyncVoid(_startScan, filters, options);
+        return CallMethodAsyncVoid(_startScan, NapiArg.Of(filters), NapiArg.Of(options));
     }
 
     /// <summary>

@@ -88,7 +88,7 @@ public static unsafe partial class Socket
     /// </summary>
     public static Task<double> SppListenAsync(string name, SppOptions options)
     {
-        return NodeApi.CallMethodAsyncCallback<double>(Module, _sppListen, null, name, options);
+        return NodeApi.CallMethodAsyncCallback<double>(Module, _sppListen, null, name, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public static unsafe partial class Socket
     /// </summary>
     public static Task<double> SppConnectAsync(string deviceId, SppOptions options)
     {
-        return NodeApi.CallMethodAsyncCallback<double>(Module, _sppConnect, null, deviceId, options);
+        return NodeApi.CallMethodAsyncCallback<double>(Module, _sppConnect, null, deviceId, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public static unsafe partial class Socket
     /// </summary>
     public static void SppWrite(double clientSocket, byte[] data)
     {
-        NodeApi.CallMethodVoid(Module, _sppWrite, clientSocket, data);
+        NodeApi.CallMethodVoid(Module, _sppWrite, clientSocket, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public static unsafe partial class Socket
     /// </summary>
     public static Task SppWriteAsync(double clientSocket, byte[] data)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sppWriteAsync, clientSocket, data);
+        return NodeApi.CallMethodAsyncVoid(Module, _sppWriteAsync, clientSocket, NapiArg.Of(data));
     }
 
     /// <summary>

@@ -375,7 +375,7 @@ public sealed partial class InputMethodAbility : JsObject
     /// </summary>
     public Task<PanelObject> CreatePanelAsync(IntPtr ctx, InputMethodEnginePanelInfo info)
     {
-        return CallMethodAsync(_createPanel, static h => new PanelObject(h), ctx, info);
+        return CallMethodAsync(_createPanel, static h => new PanelObject(h), ctx, NapiArg.Of(info));
     }
 
     /// <summary>
@@ -383,7 +383,7 @@ public sealed partial class InputMethodAbility : JsObject
     /// </summary>
     public Task DestroyPanelAsync(PanelObject panel)
     {
-        return CallMethodAsyncVoid(_destroyPanel, panel);
+        return CallMethodAsyncVoid(_destroyPanel, NapiArg.Of(panel));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -1142,7 +1142,7 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public Task SelectByRangeAsync(InputMethodEngineRange range)
     {
-        return CallMethodAsyncVoid(_selectByRange, range);
+        return CallMethodAsyncVoid(_selectByRange, NapiArg.Of(range));
     }
 
     /// <summary>
@@ -1150,7 +1150,7 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public void SelectByRangeSync(InputMethodEngineRange range)
     {
-        CallMethodVoid(_selectByRangeSync, range);
+        CallMethodVoid(_selectByRangeSync, NapiArg.Of(range));
     }
 
     /// <summary>
@@ -1158,7 +1158,7 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public Task SelectByMovementAsync(InputMethodEngineMovement movement)
     {
-        return CallMethodAsyncVoid(_selectByMovement, movement);
+        return CallMethodAsyncVoid(_selectByMovement, NapiArg.Of(movement));
     }
 
     /// <summary>
@@ -1166,7 +1166,7 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public void SelectByMovementSync(InputMethodEngineMovement movement)
     {
-        CallMethodVoid(_selectByMovementSync, movement);
+        CallMethodVoid(_selectByMovementSync, NapiArg.Of(movement));
     }
 
     /// <summary>
@@ -1214,7 +1214,7 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public Task SetPreviewTextAsync(string text, InputMethodEngineRange range)
     {
-        return CallMethodAsyncVoid(_setPreviewText, text, range);
+        return CallMethodAsyncVoid(_setPreviewText, text, NapiArg.Of(range));
     }
 
     /// <summary>
@@ -1222,7 +1222,7 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public void SetPreviewTextSync(string text, InputMethodEngineRange range)
     {
-        CallMethodVoid(_setPreviewTextSync, text, range);
+        CallMethodVoid(_setPreviewTextSync, text, NapiArg.Of(range));
     }
 
     /// <summary>
@@ -1246,7 +1246,7 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public Task SendMessageAsync(string msgId, byte[]? msgParam = null)
     {
-        return CallMethodAsyncVoid(_sendMessage, msgId, msgParam);
+        return CallMethodAsyncVoid(_sendMessage, msgId, NapiArg.Of(msgParam));
     }
 
     /// <summary>
@@ -1254,7 +1254,7 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public void RecvMessage(InputMethodEngineMessageHandler? msgHandler = null)
     {
-        CallMethodVoid(_recvMessage, msgHandler);
+        CallMethodVoid(_recvMessage, NapiArg.Of(msgHandler));
     }
 
     /// <summary>
@@ -1502,7 +1502,7 @@ public sealed partial class PanelObject : JsObject
     /// </summary>
     public void UpdateRegion(IntPtr[] inputRegion)
     {
-        CallMethodVoid(_updateRegion, inputRegion);
+        CallMethodVoid(_updateRegion, NapiArg.Of(inputRegion));
     }
 
     /// <summary>
@@ -1526,7 +1526,7 @@ public sealed partial class PanelObject : JsObject
     /// </summary>
     public void SetImmersiveEffect(ImmersiveEffect effect)
     {
-        CallMethodVoid(_setImmersiveEffect, effect);
+        CallMethodVoid(_setImmersiveEffect, NapiArg.Of(effect));
     }
 
     /// <summary>
@@ -1777,7 +1777,7 @@ public sealed partial class InputMethodEngineMessageHandler : JsObject
     /// </summary>
     public void OnMessage(string msgId, byte[]? msgParam = null)
     {
-        CallMethodVoid(_onMessage, msgId, msgParam);
+        CallMethodVoid(_onMessage, msgId, NapiArg.Of(msgParam));
     }
 
     /// <summary>

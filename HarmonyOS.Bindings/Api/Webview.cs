@@ -418,7 +418,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void LoadUrl(string url, WebHeader[]? headers = null)
     {
-        CallMethodVoid(_loadUrl, url, headers);
+        CallMethodVoid(_loadUrl, url, NapiArg.Of(headers));
     }
 
     /// <summary>
@@ -522,7 +522,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public WebMessagePort[] CreateWebMessagePorts(bool? isExtentionType = null)
     {
-        return CallMethod(_createWebMessagePorts, h => ValueConverter.ConvertArray(h, static e => new WebMessagePort(e)), isExtentionType);
+        return CallMethod(_createWebMessagePorts, h => ValueConverter.ConvertArray(h, static e => new WebMessagePort(e)), NapiArg.Of(isExtentionType));
     }
 
     /// <summary>
@@ -530,7 +530,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PostMessage(string name, WebMessagePort[] ports, string uri)
     {
-        CallMethodVoid(_postMessage, name, ports, uri);
+        CallMethodVoid(_postMessage, name, NapiArg.Of(ports), uri);
     }
 
     /// <summary>
@@ -546,7 +546,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void RegisterJavaScriptProxy(IntPtr jsObject, string name, string[] methodList, string[]? asyncMethodList = null, string? permission = null)
     {
-        CallMethodVoid(_registerJavaScriptProxy, jsObject, name, methodList, asyncMethodList, permission);
+        CallMethodVoid(_registerJavaScriptProxy, jsObject, name, NapiArg.Of(methodList), NapiArg.Of(asyncMethodList), permission);
     }
 
     /// <summary>
@@ -618,7 +618,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public Task<PdfData> CreatePdfAsync(PdfConfiguration configuration)
     {
-        return CallMethodAsync(_createPdf, static h => new PdfData(h), configuration);
+        return CallMethodAsync(_createPdf, static h => new PdfData(h), NapiArg.Of(configuration));
     }
 
     /// <summary>
@@ -706,7 +706,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void ScrollTo(double x, double y, double? duration = null)
     {
-        CallMethodVoid(_scrollTo, x, y, duration);
+        CallMethodVoid(_scrollTo, x, y, NapiArg.Of(duration));
     }
 
     /// <summary>
@@ -714,7 +714,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void ScrollBy(double deltaX, double deltaY, double? duration = null)
     {
-        CallMethodVoid(_scrollBy, deltaX, deltaY, duration);
+        CallMethodVoid(_scrollBy, deltaX, deltaY, NapiArg.Of(duration));
     }
 
     /// <summary>
@@ -738,7 +738,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void RestoreWebState(byte[] state)
     {
-        CallMethodVoid(_restoreWebState, state);
+        CallMethodVoid(_restoreWebState, NapiArg.Of(state));
     }
 
     /// <summary>
@@ -746,7 +746,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void CustomizeSchemes(WebCustomScheme[] schemes)
     {
-        CallMethodVoid(_customizeSchemes, schemes);
+        CallMethodVoid(_customizeSchemes, NapiArg.Of(schemes));
     }
 
     /// <summary>
@@ -754,7 +754,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void CustomizeSchemes(WebCustomScheme[] schemes, bool lazyInitWebEngine)
     {
-        CallMethodVoid(_customizeSchemes, schemes, lazyInitWebEngine);
+        CallMethodVoid(_customizeSchemes, NapiArg.Of(schemes), lazyInitWebEngine);
     }
 
     /// <summary>
@@ -778,7 +778,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PrefetchPage(string url, WebHeader[]? additionalHeaders = null)
     {
-        CallMethodVoid(_prefetchPage, url, additionalHeaders);
+        CallMethodVoid(_prefetchPage, url, NapiArg.Of(additionalHeaders));
     }
 
     /// <summary>
@@ -786,7 +786,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PrefetchPage(string url, WebHeader[]? additionalHeaders = null, PrefetchOptions? prefetchOptions = null)
     {
-        CallMethodVoid(_prefetchPage, url, additionalHeaders, prefetchOptions);
+        CallMethodVoid(_prefetchPage, url, NapiArg.Of(additionalHeaders), NapiArg.Of(prefetchOptions));
     }
 
     /// <summary>
@@ -826,7 +826,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetDownloadDelegate(WebDownloadDelegate @delegate)
     {
-        CallMethodVoid(_setDownloadDelegate, @delegate);
+        CallMethodVoid(_setDownloadDelegate, NapiArg.Of(@delegate));
     }
 
     /// <summary>
@@ -842,7 +842,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PostUrl(string url, byte[] postData)
     {
-        CallMethodVoid(_postUrl, url, postData);
+        CallMethodVoid(_postUrl, url, NapiArg.Of(postData));
     }
 
     /// <summary>
@@ -994,7 +994,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetWebSchemeHandler(string scheme, WebSchemeHandler handler)
     {
-        CallMethodVoid(_setWebSchemeHandler, scheme, handler);
+        CallMethodVoid(_setWebSchemeHandler, scheme, NapiArg.Of(handler));
     }
 
     /// <summary>
@@ -1010,7 +1010,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetServiceWorkerWebSchemeHandler(string scheme, WebSchemeHandler handler)
     {
-        CallMethodVoid(_setServiceWorkerWebSchemeHandler, scheme, handler);
+        CallMethodVoid(_setServiceWorkerWebSchemeHandler, scheme, NapiArg.Of(handler));
     }
 
     /// <summary>
@@ -1042,7 +1042,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void AddIntelligentTrackingPreventionBypassingList(string[] hostList)
     {
-        CallMethodVoid(_addIntelligentTrackingPreventionBypassingList, hostList);
+        CallMethodVoid(_addIntelligentTrackingPreventionBypassingList, NapiArg.Of(hostList));
     }
 
     /// <summary>
@@ -1050,7 +1050,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void RemoveIntelligentTrackingPreventionBypassingList(string[] hostList)
     {
-        CallMethodVoid(_removeIntelligentTrackingPreventionBypassingList, hostList);
+        CallMethodVoid(_removeIntelligentTrackingPreventionBypassingList, NapiArg.Of(hostList));
     }
 
     /// <summary>
@@ -1098,7 +1098,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PrefetchResource(WebviewRequestInfo request, WebHeader[]? additionalHeaders = null, string? cacheKey = null, double? cacheValidTime = null)
     {
-        CallMethodVoid(_prefetchResource, request, additionalHeaders, cacheKey, cacheValidTime);
+        CallMethodVoid(_prefetchResource, NapiArg.Of(request), NapiArg.Of(additionalHeaders), cacheKey, NapiArg.Of(cacheValidTime));
     }
 
     /// <summary>
@@ -1106,7 +1106,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void ClearPrefetchedResource(string[] cacheKeyList)
     {
-        CallMethodVoid(_clearPrefetchedResource, cacheKeyList);
+        CallMethodVoid(_clearPrefetchedResource, NapiArg.Of(cacheKeyList));
     }
 
     /// <summary>
@@ -1170,7 +1170,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void InjectOfflineResources(IntPtr[] resourceMaps)
     {
-        CallMethodVoid(_injectOfflineResources, resourceMaps);
+        CallMethodVoid(_injectOfflineResources, NapiArg.Of(resourceMaps));
     }
 
     /// <summary>
@@ -1226,7 +1226,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetPathAllowingUniversalAccess(string[] pathList)
     {
-        CallMethodVoid(_setPathAllowingUniversalAccess, pathList);
+        CallMethodVoid(_setPathAllowingUniversalAccess, NapiArg.Of(pathList));
     }
 
     /// <summary>
@@ -1242,7 +1242,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void EnableBackForwardCache(BackForwardCacheSupportedFeatures features)
     {
-        CallMethodVoid(_enableBackForwardCache, features);
+        CallMethodVoid(_enableBackForwardCache, NapiArg.Of(features));
     }
 
     /// <summary>
@@ -1250,7 +1250,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetBackForwardCacheOptions(BackForwardCacheOptions options)
     {
-        CallMethodVoid(_setBackForwardCacheOptions, options);
+        CallMethodVoid(_setBackForwardCacheOptions, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1298,7 +1298,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetUserAgentForHosts(string userAgent, string[] hosts)
     {
-        CallMethodVoid(_setUserAgentForHosts, userAgent, hosts);
+        CallMethodVoid(_setUserAgentForHosts, userAgent, NapiArg.Of(hosts));
     }
 
     /// <summary>
@@ -1322,7 +1322,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetUserAgentMetadata(string userAgent, UserAgentMetadata metaData)
     {
-        CallMethodVoid(_setUserAgentMetadata, userAgent, metaData);
+        CallMethodVoid(_setUserAgentMetadata, userAgent, NapiArg.Of(metaData));
     }
 
     /// <summary>
@@ -1418,7 +1418,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void ClearBlanklessLoadingCache(string[]? keys = null)
     {
-        CallMethodVoid(_clearBlanklessLoadingCache, keys);
+        CallMethodVoid(_clearBlanklessLoadingCache, NapiArg.Of(keys));
     }
 
     /// <summary>
@@ -1546,7 +1546,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void EnableAdvancedSecurityMode(SecurityParams securityParams)
     {
-        CallMethodVoid(_enableAdvancedSecurityMode, securityParams);
+        CallMethodVoid(_enableAdvancedSecurityMode, NapiArg.Of(securityParams));
     }
 
     /// <summary>
@@ -1927,7 +1927,7 @@ public sealed partial class WebMessagePort : JsObject
     /// </summary>
     public void OnMessageEvent(System.Action<IntPtr> callback)
     {
-        CallMethodVoid(_onMessageEvent, callback);
+        CallMethodVoid(_onMessageEvent, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -1935,7 +1935,7 @@ public sealed partial class WebMessagePort : JsObject
     /// </summary>
     public void PostMessageEventExt(WebMessageExt message)
     {
-        CallMethodVoid(_postMessageEventExt, message);
+        CallMethodVoid(_postMessageEventExt, NapiArg.Of(message));
     }
 
     /// <summary>
@@ -1943,7 +1943,7 @@ public sealed partial class WebMessagePort : JsObject
     /// </summary>
     public void OnMessageEventExt(System.Action<WebMessageExt> callback)
     {
-        CallMethodVoid(_onMessageEventExt, callback);
+        CallMethodVoid(_onMessageEventExt, NapiArg.Of(callback));
     }
 
 }
@@ -2247,7 +2247,7 @@ public sealed partial class WebSchemeHandler : JsObject
     /// </summary>
     public void OnRequestStart(System.Func<WebSchemeHandlerRequest, WebResourceHandler, bool> callback)
     {
-        CallMethodVoid(_onRequestStart, callback);
+        CallMethodVoid(_onRequestStart, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -2340,7 +2340,7 @@ public sealed partial class UserAgentMetadata : JsObject
     /// </summary>
     public void SetBrandVersionList(UserAgentBrandVersion[] brandVersionList)
     {
-        CallMethodVoid(_setBrandVersionList, brandVersionList);
+        CallMethodVoid(_setBrandVersionList, NapiArg.Of(brandVersionList));
     }
 
     /// <summary>
@@ -2388,7 +2388,7 @@ public sealed partial class UserAgentMetadata : JsObject
     /// </summary>
     public void SetFormFactors(global::HarmonyOS.ArkUI.UserAgentFormFactor[] formFactors)
     {
-        CallMethodVoid(_setFormFactors, formFactors);
+        CallMethodVoid(_setFormFactors, NapiArg.Of(formFactors));
     }
 
     /// <summary>
@@ -2689,7 +2689,7 @@ public sealed partial class WebMessageExt : JsObject
     /// </summary>
     public void SetArrayBuffer(byte[] message)
     {
-        CallMethodVoid(_setArrayBuffer, message);
+        CallMethodVoid(_setArrayBuffer, NapiArg.Of(message));
     }
 
     /// <summary>
@@ -2816,7 +2816,7 @@ public sealed partial class WebResourceHandler : JsObject
     /// </summary>
     public void DidReceiveResponse(WebSchemeHandlerResponse response)
     {
-        CallMethodVoid(_didReceiveResponse, response);
+        CallMethodVoid(_didReceiveResponse, NapiArg.Of(response));
     }
 
     /// <summary>
@@ -2824,7 +2824,7 @@ public sealed partial class WebResourceHandler : JsObject
     /// </summary>
     public void DidReceiveResponseBody(byte[] data)
     {
-        CallMethodVoid(_didReceiveResponseBody, data);
+        CallMethodVoid(_didReceiveResponseBody, NapiArg.Of(data));
     }
 
     /// <summary>

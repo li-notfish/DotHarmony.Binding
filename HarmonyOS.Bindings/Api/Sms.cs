@@ -79,7 +79,7 @@ public static unsafe partial class Sms
     /// </summary>
     public static Task<ShortMessage> CreateMessageAsync(double[] pdu, string specification)
     {
-        return NodeApi.CallMethodAsync(Module, _createMessage, static h => new ShortMessage(h), pdu, specification);
+        return NodeApi.CallMethodAsync(Module, _createMessage, static h => new ShortMessage(h), NapiArg.Of(pdu), specification);
     }
 
     /// <summary>

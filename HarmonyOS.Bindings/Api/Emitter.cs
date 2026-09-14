@@ -77,7 +77,7 @@ public static unsafe partial class Emitter
     /// </summary>
     public static void On(InnerEvent @event, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, @event, callback);
+        NodeApi.CallMethodVoid(Module, _on, NapiArg.Of(@event), callback);
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ public static unsafe partial class Emitter
     /// </summary>
     public static void Once(InnerEvent @event, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _once, @event, callback);
+        NodeApi.CallMethodVoid(Module, _once, NapiArg.Of(@event), callback);
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public static unsafe partial class Emitter
     /// </summary>
     public static void Emit(InnerEvent @event, IntPtr? data = null)
     {
-        NodeApi.CallMethodVoid(Module, _emit, @event, data);
+        NodeApi.CallMethodVoid(Module, _emit, NapiArg.Of(@event), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public static unsafe partial class Emitter
     /// </summary>
     public static void Emit(string eventId, IntPtr? data = null)
     {
-        NodeApi.CallMethodVoid(Module, _emit, eventId, data);
+        NodeApi.CallMethodVoid(Module, _emit, eventId, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -157,7 +157,7 @@ public static unsafe partial class Emitter
     /// </summary>
     public static void Emit(string eventId, EmitterOptions options, IntPtr? data = null)
     {
-        NodeApi.CallMethodVoid(Module, _emit, eventId, options, data);
+        NodeApi.CallMethodVoid(Module, _emit, eventId, NapiArg.Of(options), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -298,7 +298,7 @@ public sealed partial class EmitterObject : JsObject
     /// </summary>
     public void Emit(string eventId, IntPtr? data = null)
     {
-        CallMethodVoid(_emit, eventId, data);
+        CallMethodVoid(_emit, eventId, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -306,7 +306,7 @@ public sealed partial class EmitterObject : JsObject
     /// </summary>
     public void Emit(string eventId, EmitterOptions options, IntPtr? data = null)
     {
-        CallMethodVoid(_emit, eventId, options, data);
+        CallMethodVoid(_emit, eventId, NapiArg.Of(options), NapiArg.Of(data));
     }
 
     /// <summary>

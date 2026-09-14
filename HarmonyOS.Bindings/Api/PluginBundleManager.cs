@@ -76,7 +76,7 @@ public static unsafe partial class PluginBundleManager
     /// </summary>
     public static Task InstallLocalPluginAsync(string[] pluginFilePaths)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _installLocalPlugin, pluginFilePaths);
+        return NodeApi.CallMethodAsyncVoid(Module, _installLocalPlugin, NapiArg.Of(pluginFilePaths));
     }
 
     /// <summary>

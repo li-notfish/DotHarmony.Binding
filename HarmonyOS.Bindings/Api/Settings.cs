@@ -738,7 +738,7 @@ public static unsafe partial class Settings
     /// </summary>
     public static void OpenAppDetailSettingsPage(IntPtr context, string bundleName, double? appIndex = null)
     {
-        NodeApi.CallMethodVoid(Module, _openAppDetailSettingsPage, context, bundleName, appIndex);
+        NodeApi.CallMethodVoid(Module, _openAppDetailSettingsPage, context, bundleName, NapiArg.Of(appIndex));
     }
 
     /// <summary>

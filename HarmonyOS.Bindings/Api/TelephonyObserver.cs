@@ -89,7 +89,7 @@ public static unsafe partial class TelephonyObserver
     /// </summary>
     public static void On(string type, TelephonyObserverObserverOptions options, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, options, callback);
+        NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(options), callback);
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public static unsafe partial class TelephonyObserver
     /// </summary>
     public static void On(string type, IntPtr callback, TelephonyObserverObserverOptions? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
+        NodeApi.CallMethodVoid(Module, _on, type, callback, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public static unsafe partial class TelephonyObserver
     /// </summary>
     public static void OnCCallStateChange(IntPtr callback, TelephonyObserverObserverOptions? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _onCCallStateChange, callback, options);
+        NodeApi.CallMethodVoid(Module, _onCCallStateChange, callback, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public static unsafe partial class TelephonyObserver
     /// </summary>
     public static void OffCCallStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offCCallStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offCCallStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public static unsafe partial class TelephonyObserver
     /// </summary>
     public static void OnCommunicationStateChange(IntPtr callback, TelephonyObserverObserverOptions? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _onCommunicationStateChange, callback, options);
+        NodeApi.CallMethodVoid(Module, _onCommunicationStateChange, callback, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public static unsafe partial class TelephonyObserver
     /// </summary>
     public static void OffCommunicationStateChange(IntPtr callback, TelephonyObserverObserverOptions? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _offCommunicationStateChange, callback, options);
+        NodeApi.CallMethodVoid(Module, _offCommunicationStateChange, callback, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ public static unsafe partial class TelephonyObserver
     /// </summary>
     public static void OffGetSimActiveState(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offGetSimActiveState, callback);
+        NodeApi.CallMethodVoid(Module, _offGetSimActiveState, NapiArg.Of(callback));
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();
@@ -175,7 +175,7 @@ public static unsafe partial class TelephonyObserver
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public static unsafe partial class TelephonyObserver
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<IntPtr>(e))),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -239,7 +239,7 @@ public static unsafe partial class TelephonyObserver
     {
         _eventListeners.Add((type, callback),
             args => callback((global::HarmonyOS.ArkUI.DataFlowType)NativeValue.ToInt(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -257,7 +257,7 @@ public static unsafe partial class TelephonyObserver
     {
         _eventListeners.Add((type, callback),
             args => callback((global::HarmonyOS.ArkUI.TelCallState)NativeValue.ToInt(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>

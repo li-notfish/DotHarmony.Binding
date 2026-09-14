@@ -128,7 +128,7 @@ public static unsafe partial class Pasteboard
     /// </summary>
     public static PasteData CreateWantData(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        return NodeApi.CallMethod(Module, _createWantData, static h => new PasteData(h), want);
+        return NodeApi.CallMethod(Module, _createWantData, static h => new PasteData(h), NapiArg.Of(want));
     }
 
     /// <summary>
@@ -176,7 +176,7 @@ public static unsafe partial class Pasteboard
     /// </summary>
     public static PasteDataRecord CreateWantRecord(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        return NodeApi.CallMethod(Module, _createWantRecord, static h => new PasteDataRecord(h), want);
+        return NodeApi.CallMethod(Module, _createWantRecord, static h => new PasteDataRecord(h), NapiArg.Of(want));
     }
 
     /// <summary>
@@ -259,7 +259,7 @@ public sealed partial class PasteData : JsObject
     /// </summary>
     public void AddWantRecord(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        CallMethodVoid(_addWantRecord, want);
+        CallMethodVoid(_addWantRecord, NapiArg.Of(want));
     }
 
     /// <summary>
@@ -267,7 +267,7 @@ public sealed partial class PasteData : JsObject
     /// </summary>
     public void AddRecord(PasteDataRecord record)
     {
-        CallMethodVoid(_addRecord, record);
+        CallMethodVoid(_addRecord, NapiArg.Of(record));
     }
 
     /// <summary>
@@ -435,7 +435,7 @@ public sealed partial class PasteData : JsObject
     /// </summary>
     public bool ReplaceRecordAt(double index, PasteDataRecord record)
     {
-        return CallMethod<bool>(_replaceRecordAt, index, record);
+        return CallMethod<bool>(_replaceRecordAt, index, NapiArg.Of(record));
     }
 
     /// <summary>
@@ -443,7 +443,7 @@ public sealed partial class PasteData : JsObject
     /// </summary>
     public void ReplaceRecord(double index, PasteDataRecord record)
     {
-        CallMethodVoid(_replaceRecord, index, record);
+        CallMethodVoid(_replaceRecord, index, NapiArg.Of(record));
     }
 
     /// <summary>
@@ -547,7 +547,7 @@ public sealed partial class PasteDataRecord : JsObject
     /// </summary>
     public string[] GetValidTypes(string[] types)
     {
-        return CallMethod(_getValidTypes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), types);
+        return CallMethod(_getValidTypes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(types));
     }
 
     /// <summary>
@@ -626,7 +626,7 @@ public sealed partial class SystemPasteboard : JsObject
     /// </summary>
     public void OffRemoteUpdate(IntPtr? callback = null)
     {
-        CallMethodVoid(_offRemoteUpdate, callback);
+        CallMethodVoid(_offRemoteUpdate, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -738,7 +738,7 @@ public sealed partial class SystemPasteboard : JsObject
     /// </summary>
     public Task SetPasteDataAsync(PasteData data)
     {
-        return CallMethodAsyncVoid(_setPasteData, data);
+        return CallMethodAsyncVoid(_setPasteData, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -746,7 +746,7 @@ public sealed partial class SystemPasteboard : JsObject
     /// </summary>
     public Task SetDataAsync(PasteData data)
     {
-        return CallMethodAsyncVoid(_setData, data);
+        return CallMethodAsyncVoid(_setData, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -754,7 +754,7 @@ public sealed partial class SystemPasteboard : JsObject
     /// </summary>
     public void SetDataSync(PasteData data)
     {
-        CallMethodVoid(_setDataSync, data);
+        CallMethodVoid(_setDataSync, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -810,7 +810,7 @@ public sealed partial class SystemPasteboard : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.Pattern[]> DetectPatternsAsync(global::HarmonyOS.ArkUI.Pattern[] patterns)
     {
-        return CallMethodAsync(_detectPatterns, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Pattern>(e)), patterns);
+        return CallMethodAsync(_detectPatterns, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Pattern>(e)), NapiArg.Of(patterns));
     }
 
     /// <summary>

@@ -140,7 +140,7 @@ public static unsafe partial class UsbManagerSerial
     /// </summary>
     public static void SetAttribute(double portId, SerialAttribute attribute)
     {
-        NodeApi.CallMethodVoid(Module, _setAttribute, portId, attribute);
+        NodeApi.CallMethodVoid(Module, _setAttribute, portId, NapiArg.Of(attribute));
     }
 
     /// <summary>
@@ -148,7 +148,7 @@ public static unsafe partial class UsbManagerSerial
     /// </summary>
     public static Task<double> ReadAsync(double portId, byte[] buffer, double? timeout = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _read, portId, buffer, timeout);
+        return NodeApi.CallMethodAsync<double>(Module, _read, portId, NapiArg.Of(buffer), NapiArg.Of(timeout));
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ public static unsafe partial class UsbManagerSerial
     /// </summary>
     public static double ReadSync(double portId, byte[] buffer, double? timeout = null)
     {
-        return NodeApi.CallMethod<double>(Module, _readSync, portId, buffer, timeout);
+        return NodeApi.CallMethod<double>(Module, _readSync, portId, NapiArg.Of(buffer), NapiArg.Of(timeout));
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public static unsafe partial class UsbManagerSerial
     /// </summary>
     public static Task<double> WriteAsync(double portId, byte[] buffer, double? timeout = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _write, portId, buffer, timeout);
+        return NodeApi.CallMethodAsync<double>(Module, _write, portId, NapiArg.Of(buffer), NapiArg.Of(timeout));
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ public static unsafe partial class UsbManagerSerial
     /// </summary>
     public static double WriteSync(double portId, byte[] buffer, double? timeout = null)
     {
-        return NodeApi.CallMethod<double>(Module, _writeSync, portId, buffer, timeout);
+        return NodeApi.CallMethod<double>(Module, _writeSync, portId, NapiArg.Of(buffer), NapiArg.Of(timeout));
     }
 
 }

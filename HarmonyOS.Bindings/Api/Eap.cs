@@ -94,7 +94,7 @@ public static unsafe partial class Eap
     /// </summary>
     public static void ReplyCustomEapData(global::HarmonyOS.ArkUI.CustomResult result, EapData data)
     {
-        NodeApi.CallMethodVoid(Module, _replyCustomEapData, result, data);
+        NodeApi.CallMethodVoid(Module, _replyCustomEapData, result, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public static unsafe partial class Eap
     /// </summary>
     public static void StartEthEap(double netId, EthEapProfile profile)
     {
-        NodeApi.CallMethodVoid(Module, _startEthEap, netId, profile);
+        NodeApi.CallMethodVoid(Module, _startEthEap, netId, NapiArg.Of(profile));
     }
 
     /// <summary>

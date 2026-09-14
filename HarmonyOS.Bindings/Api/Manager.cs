@@ -119,7 +119,7 @@ public static unsafe partial class Manager
     /// </summary>
     public static void OffStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offStateChange, NapiArg.Of(callback));
     }
 
 }

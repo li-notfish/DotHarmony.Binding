@@ -78,7 +78,7 @@ public static unsafe partial class NetworkSecurity
     /// </summary>
     public static Task<double> CertVerificationAsync(NetworkSecurityCertBlob cert, NetworkSecurityCertBlob? caCert = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _certVerification, cert, caCert);
+        return NodeApi.CallMethodAsync<double>(Module, _certVerification, NapiArg.Of(cert), NapiArg.Of(caCert));
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public static unsafe partial class NetworkSecurity
     /// </summary>
     public static double CertVerificationSync(NetworkSecurityCertBlob cert, NetworkSecurityCertBlob? caCert = null)
     {
-        return NodeApi.CallMethod<double>(Module, _certVerificationSync, cert, caCert);
+        return NodeApi.CallMethod<double>(Module, _certVerificationSync, NapiArg.Of(cert), NapiArg.Of(caCert));
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ public static unsafe partial class NetworkSecurity
     /// </summary>
     public static Task<NetworkSecurityCertBlob[]> VerifyCertChainAsync(NetworkSecurityCertBlob[] cert, NetworkSecurityCertBlob? caCert = null, string? hostname = null)
     {
-        return NodeApi.CallMethodAsync(Module, _verifyCertChain, h => ValueConverter.ConvertArray(h, static e => new NetworkSecurityCertBlob(e)), cert, caCert, hostname);
+        return NodeApi.CallMethodAsync(Module, _verifyCertChain, h => ValueConverter.ConvertArray(h, static e => new NetworkSecurityCertBlob(e)), NapiArg.Of(cert), NapiArg.Of(caCert), hostname);
     }
 
     /// <summary>

@@ -91,7 +91,7 @@ public static unsafe partial class Print
     /// </summary>
     public static Task<PrintTask> PrintAsync(string[] files)
     {
-        return NodeApi.CallMethodAsync(Module, _print, static h => new PrintTask(h), files);
+        return NodeApi.CallMethodAsync(Module, _print, static h => new PrintTask(h), NapiArg.Of(files));
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public static unsafe partial class Print
     /// </summary>
     public static Task<PrintTask> PrintAsync(string[] files, IntPtr context)
     {
-        return NodeApi.CallMethodAsync(Module, _print, static h => new PrintTask(h), files, context);
+        return NodeApi.CallMethodAsync(Module, _print, static h => new PrintTask(h), NapiArg.Of(files), context);
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public static unsafe partial class Print
     /// </summary>
     public static Task<PrintTask> PrintAsync(string jobName, PrintDocumentAdapter printAdapter, PrintAttributes printAttributes, IntPtr context)
     {
-        return NodeApi.CallMethodAsync(Module, _print, static h => new PrintTask(h), jobName, printAdapter, printAttributes, context);
+        return NodeApi.CallMethodAsync(Module, _print, static h => new PrintTask(h), jobName, NapiArg.Of(printAdapter), NapiArg.Of(printAttributes), context);
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public static unsafe partial class Print
     /// </summary>
     public static Task StartPrintAsync(PrintJobData job)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startPrint, job);
+        return NodeApi.CallMethodAsyncVoid(Module, _startPrint, NapiArg.Of(job));
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public static unsafe partial class Print
     /// </summary>
     public static Task StartDiscoverPrinterAsync(string[] extensionList)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startDiscoverPrinter, extensionList);
+        return NodeApi.CallMethodAsyncVoid(Module, _startDiscoverPrinter, NapiArg.Of(extensionList));
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ public static unsafe partial class Print
     /// </summary>
     public static Task AddPrinterToDiscoveryAsync(PrinterInformation printerInformation)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _addPrinterToDiscovery, printerInformation);
+        return NodeApi.CallMethodAsyncVoid(Module, _addPrinterToDiscovery, NapiArg.Of(printerInformation));
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public static unsafe partial class Print
     /// </summary>
     public static Task UpdatePrinterInDiscoveryAsync(PrinterInformation printerInformation)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updatePrinterInDiscovery, printerInformation);
+        return NodeApi.CallMethodAsyncVoid(Module, _updatePrinterInDiscovery, NapiArg.Of(printerInformation));
     }
 
     /// <summary>
@@ -195,7 +195,7 @@ public static unsafe partial class Print
     /// </summary>
     public static Task UpdatePrinterInformationAsync(PrinterInformation printerInformation)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updatePrinterInformation, printerInformation);
+        return NodeApi.CallMethodAsyncVoid(Module, _updatePrinterInformation, NapiArg.Of(printerInformation));
     }
 
     /// <summary>
@@ -235,7 +235,7 @@ public static unsafe partial class Print
     /// </summary>
     public static void UnregisterWatermarkCallback(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _unregisterWatermarkCallback, callback);
+        NodeApi.CallMethodVoid(Module, _unregisterWatermarkCallback, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -430,7 +430,7 @@ public sealed partial class PrintDocumentAdapter : JsObject
     /// </summary>
     public void OnStartLayoutWrite(string jobId, PrintAttributes oldAttrs, PrintAttributes newAttrs, double fd, System.Action<string, global::HarmonyOS.ArkUI.PrintFileCreationState> writeResultCallback)
     {
-        CallMethodVoid(_onStartLayoutWrite, jobId, oldAttrs, newAttrs, fd, writeResultCallback);
+        CallMethodVoid(_onStartLayoutWrite, jobId, NapiArg.Of(oldAttrs), NapiArg.Of(newAttrs), fd, NapiArg.Of(writeResultCallback));
     }
 
     /// <summary>

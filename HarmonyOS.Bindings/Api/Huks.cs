@@ -104,7 +104,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksResult> GenerateKeyAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _generateKey, static h => new HuksResult(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _generateKey, static h => new HuksResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task GenerateKeyItemAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _generateKeyItem, keyAlias, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _generateKeyItem, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksResult> DeleteKeyAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _deleteKey, static h => new HuksResult(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _deleteKey, static h => new HuksResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task DeleteKeyItemAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deleteKeyItem, keyAlias, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _deleteKeyItem, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksResult> ImportKeyAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _importKey, static h => new HuksResult(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _importKey, static h => new HuksResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task ImportKeyItemAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _importKeyItem, keyAlias, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _importKeyItem, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task ImportWrappedKeyItemAsync(string keyAlias, string wrappingKeyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _importWrappedKeyItem, keyAlias, wrappingKeyAlias, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _importWrappedKeyItem, keyAlias, wrappingKeyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -160,7 +160,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksResult> ExportKeyAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _exportKey, static h => new HuksResult(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _exportKey, static h => new HuksResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> ExportKeyItemAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _exportKeyItem, static h => new HuksReturnResult(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _exportKeyItem, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -176,7 +176,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksResult> GetKeyPropertiesAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _getKeyProperties, static h => new HuksResult(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _getKeyProperties, static h => new HuksResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -184,7 +184,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> GetKeyItemPropertiesAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _getKeyItemProperties, static h => new HuksReturnResult(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _getKeyItemProperties, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<bool> IsKeyExistAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _isKeyExist, keyAlias, options);
+        return NodeApi.CallMethodAsync<bool>(Module, _isKeyExist, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -200,7 +200,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<bool> IsKeyItemExistAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _isKeyItemExist, keyAlias, options);
+        return NodeApi.CallMethodAsync<bool>(Module, _isKeyItemExist, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -208,7 +208,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<bool> HasKeyItemAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _hasKeyItem, keyAlias, options);
+        return NodeApi.CallMethodAsync<bool>(Module, _hasKeyItem, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -216,7 +216,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksHandle> InitAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _init, static h => new HuksHandle(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _init, static h => new HuksHandle(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksSessionHandle> InitSessionAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _initSession, static h => new HuksSessionHandle(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _initSession, static h => new HuksSessionHandle(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -232,7 +232,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksResult> UpdateAsync(double handle, byte[] token, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _update, static h => new HuksResult(h), handle, token, options);
+        return NodeApi.CallMethodAsync(Module, _update, static h => new HuksResult(h), handle, NapiArg.Of(token), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -240,7 +240,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> UpdateSessionAsync(double handle, HuksOptions options)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _updateSession, static h => new HuksReturnResult(h), handle, options);
+        return NodeApi.CallMethodAsyncCallback(Module, _updateSession, static h => new HuksReturnResult(h), handle, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -248,7 +248,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> UpdateSessionAsync(double handle, HuksOptions options, byte[] token)
     {
-        return NodeApi.CallMethodAsync(Module, _updateSession, static h => new HuksReturnResult(h), handle, options, token);
+        return NodeApi.CallMethodAsync(Module, _updateSession, static h => new HuksReturnResult(h), handle, NapiArg.Of(options), NapiArg.Of(token));
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksResult> FinishAsync(double handle, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _finish, static h => new HuksResult(h), handle, options);
+        return NodeApi.CallMethodAsync(Module, _finish, static h => new HuksResult(h), handle, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -264,7 +264,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> FinishSessionAsync(double handle, HuksOptions options)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _finishSession, static h => new HuksReturnResult(h), handle, options);
+        return NodeApi.CallMethodAsyncCallback(Module, _finishSession, static h => new HuksReturnResult(h), handle, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -272,7 +272,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> FinishSessionAsync(double handle, HuksOptions options, byte[] token)
     {
-        return NodeApi.CallMethodAsync(Module, _finishSession, static h => new HuksReturnResult(h), handle, options, token);
+        return NodeApi.CallMethodAsync(Module, _finishSession, static h => new HuksReturnResult(h), handle, NapiArg.Of(options), NapiArg.Of(token));
     }
 
     /// <summary>
@@ -280,7 +280,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksResult> AbortAsync(double handle, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _abort, static h => new HuksResult(h), handle, options);
+        return NodeApi.CallMethodAsync(Module, _abort, static h => new HuksResult(h), handle, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -288,7 +288,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task AbortSessionAsync(double handle, HuksOptions options)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _abortSession, handle, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _abortSession, handle, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -296,7 +296,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> AttestKeyItemAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _attestKeyItem, static h => new HuksReturnResult(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _attestKeyItem, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -304,7 +304,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> AnonAttestKeyItemAsync(string keyAlias, HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _anonAttestKeyItem, static h => new HuksReturnResult(h), keyAlias, options);
+        return NodeApi.CallMethodAsync(Module, _anonAttestKeyItem, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -312,7 +312,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> AnonAttestKeyItemOfflineAsync(string keyAlias, HuksParam[] @params)
     {
-        return NodeApi.CallMethodAsync(Module, _anonAttestKeyItemOffline, static h => new HuksReturnResult(h), keyAlias, @params);
+        return NodeApi.CallMethodAsync(Module, _anonAttestKeyItemOffline, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -320,7 +320,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static string GetSdkVersion(HuksOptions options)
     {
-        return NodeApi.CallMethod<string>(Module, _getSdkVersion, options);
+        return NodeApi.CallMethod<string>(Module, _getSdkVersion, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -328,7 +328,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksListAliasesReturnResult> ListAliasesAsync(HuksOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _listAliases, static h => new HuksListAliasesReturnResult(h), options);
+        return NodeApi.CallMethodAsync(Module, _listAliases, static h => new HuksListAliasesReturnResult(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -336,7 +336,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> WrapKeyItemAsync(string keyAlias, HuksOptions @params)
     {
-        return NodeApi.CallMethodAsync(Module, _wrapKeyItem, static h => new HuksReturnResult(h), keyAlias, @params);
+        return NodeApi.CallMethodAsync(Module, _wrapKeyItem, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -344,7 +344,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> UnwrapKeyItemAsync(string keyAlias, HuksOptions @params, byte[] wrappedKey)
     {
-        return NodeApi.CallMethodAsync(Module, _unwrapKeyItem, static h => new HuksReturnResult(h), keyAlias, @params, wrappedKey);
+        return NodeApi.CallMethodAsync(Module, _unwrapKeyItem, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(@params), NapiArg.Of(wrappedKey));
     }
 
     /// <summary>
@@ -352,7 +352,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> EncapsulateAsync(string keyAlias, HuksParam[] @params, string? sharedKeyAlias = null, HuksParam[]? sharedKeyParams = null)
     {
-        return NodeApi.CallMethodAsync(Module, _encapsulate, static h => new HuksReturnResult(h), keyAlias, @params, sharedKeyAlias, sharedKeyParams);
+        return NodeApi.CallMethodAsync(Module, _encapsulate, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(@params), sharedKeyAlias, NapiArg.Of(sharedKeyParams));
     }
 
     /// <summary>
@@ -360,7 +360,7 @@ public static unsafe partial class Huks
     /// </summary>
     public static Task<HuksReturnResult> DecapsulateAsync(string keyAlias, HuksParam[] @params, byte[] encapData, string? sharedKeyAlias = null, HuksParam[]? sharedKeyParams = null)
     {
-        return NodeApi.CallMethodAsync(Module, _decapsulate, static h => new HuksReturnResult(h), keyAlias, @params, encapData, sharedKeyAlias, sharedKeyParams);
+        return NodeApi.CallMethodAsync(Module, _decapsulate, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(@params), NapiArg.Of(encapData), sharedKeyAlias, NapiArg.Of(sharedKeyParams));
     }
 
 }

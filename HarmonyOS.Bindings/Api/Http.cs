@@ -83,7 +83,7 @@ public static unsafe partial class Http
     /// </summary>
     public static HttpResponseCache CreateHttpResponseCache(double? cacheSize = null)
     {
-        return NodeApi.CallMethod(Module, _createHttpResponseCache, static h => new HttpResponseCache(h), cacheSize);
+        return NodeApi.CallMethod(Module, _createHttpResponseCache, static h => new HttpResponseCache(h), NapiArg.Of(cacheSize));
     }
 
 }
@@ -124,7 +124,7 @@ public sealed partial class HttpRequest : JsObject
     /// </summary>
     public IntPtr RequestSync(string url, IntPtr? options = null)
     {
-        return CallMethod<IntPtr>(_requestSync, url, options);
+        return CallMethod<IntPtr>(_requestSync, url, NapiArg.Of(options));
     }
 
     /// <summary>

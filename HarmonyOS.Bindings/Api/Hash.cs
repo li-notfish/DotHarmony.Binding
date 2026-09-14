@@ -109,7 +109,7 @@ public sealed partial class HashStream : JsObject
     /// </summary>
     public void Update(byte[] data)
     {
-        CallMethodVoid(_update, data);
+        CallMethodVoid(_update, NapiArg.Of(data));
     }
 
 }

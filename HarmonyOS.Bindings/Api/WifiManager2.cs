@@ -181,7 +181,7 @@ public static unsafe partial class WifiManager2
     /// </summary>
     public static Task<double> AddDeviceConfigAsync(WifiManager2WifiDeviceConfig config)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _addDeviceConfig, config);
+        return NodeApi.CallMethodAsync<double>(Module, _addDeviceConfig, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -189,7 +189,7 @@ public static unsafe partial class WifiManager2
     /// </summary>
     public static Task<double> AddCandidateConfigAsync(WifiManager2WifiDeviceConfig config)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _addCandidateConfig, config);
+        return NodeApi.CallMethodAsync<double>(Module, _addCandidateConfig, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -221,7 +221,7 @@ public static unsafe partial class WifiManager2
     /// </summary>
     public static Task ConnectToCandidateConfigAsync(ConnectSettings settings)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _connectToCandidateConfig, settings);
+        return NodeApi.CallMethodAsyncVoid(Module, _connectToCandidateConfig, NapiArg.Of(settings));
     }
 
     /// <summary>
@@ -405,7 +405,7 @@ public static unsafe partial class WifiManager2
     /// </summary>
     public static void CreateGroup(WifiManager2WifiP2PConfig config)
     {
-        NodeApi.CallMethodVoid(Module, _createGroup, config);
+        NodeApi.CallMethodVoid(Module, _createGroup, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -421,7 +421,7 @@ public static unsafe partial class WifiManager2
     /// </summary>
     public static void P2pConnect(WifiManager2WifiP2PConfig config)
     {
-        NodeApi.CallMethodVoid(Module, _p2pConnect, config);
+        NodeApi.CallMethodVoid(Module, _p2pConnect, NapiArg.Of(config));
     }
 
     /// <summary>

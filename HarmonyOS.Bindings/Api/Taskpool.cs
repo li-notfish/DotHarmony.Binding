@@ -80,7 +80,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr> ExecuteAsync(IntPtr func, IntPtr[] args)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, func, args);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, func, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr> ExecuteAsync(Task<IntPtr> func, IntPtr args)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, func, args);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, NapiArg.Of(func), args);
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr> ExecuteAsync(Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, priority);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, NapiArg.Of(task), priority);
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), group, priority);
+        return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(group), priority);
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr> ExecuteDelayedAsync(double delayTime, Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDelayed, delayTime, task, priority);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDelayed, delayTime, NapiArg.Of(task), priority);
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static void ExecutePeriodically(double period, Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        NodeApi.CallMethodVoid(Module, _executePeriodically, period, task, priority);
+        NodeApi.CallMethodVoid(Module, _executePeriodically, period, NapiArg.Of(task), priority);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static void Cancel(Task task)
     {
-        NodeApi.CallMethodVoid(Module, _cancel, task);
+        NodeApi.CallMethodVoid(Module, _cancel, NapiArg.Of(task));
     }
 
     /// <summary>
@@ -160,7 +160,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static void Cancel(TaskGroup group)
     {
-        NodeApi.CallMethodVoid(Module, _cancel, group);
+        NodeApi.CallMethodVoid(Module, _cancel, NapiArg.Of(group));
     }
 
     /// <summary>
@@ -184,7 +184,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static void TerminateTask(LongTask longTask)
     {
-        NodeApi.CallMethodVoid(Module, _terminateTask, longTask);
+        NodeApi.CallMethodVoid(Module, _terminateTask, NapiArg.Of(longTask));
     }
 
     /// <summary>
@@ -208,7 +208,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr> ExecuteAsync(Task task, Configs configs)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, configs);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, NapiArg.Of(task), NapiArg.Of(configs));
     }
 
     /// <summary>
@@ -216,7 +216,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr> ExecuteAsync(IntPtr task, Configs configs)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, configs);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, NapiArg.Of(configs));
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, Configs configs)
     {
-        return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), group, configs);
+        return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(group), NapiArg.Of(configs));
     }
 
 }
@@ -256,7 +256,7 @@ public sealed partial class TaskGroup : JsObject
     /// </summary>
     public void AddTask(IntPtr func, IntPtr[] args)
     {
-        CallMethodVoid(_addTask, func, args);
+        CallMethodVoid(_addTask, func, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -264,7 +264,7 @@ public sealed partial class TaskGroup : JsObject
     /// </summary>
     public void AddTask(Task task)
     {
-        CallMethodVoid(_addTask, task);
+        CallMethodVoid(_addTask, NapiArg.Of(task));
     }
 
 }
@@ -364,7 +364,7 @@ public sealed partial class LongTask : JsObject
     /// </summary>
     public void SendData(IntPtr[] args)
     {
-        CallMethodVoid(_sendData, args);
+        CallMethodVoid(_sendData, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public sealed partial class LongTask : JsObject
     /// </summary>
     public void SetTransferList(byte[][]? transfer = null)
     {
-        CallMethodVoid(_setTransferList, transfer);
+        CallMethodVoid(_setTransferList, NapiArg.Of(transfer));
     }
 
     /// <summary>
@@ -380,7 +380,7 @@ public sealed partial class LongTask : JsObject
     /// </summary>
     public void SetCloneList(IntPtr[] cloneList)
     {
-        CallMethodVoid(_setCloneList, cloneList);
+        CallMethodVoid(_setCloneList, NapiArg.Of(cloneList));
     }
 
     /// <summary>
@@ -388,7 +388,7 @@ public sealed partial class LongTask : JsObject
     /// </summary>
     public void OnReceiveData(IntPtr? callback = null)
     {
-        CallMethodVoid(_onReceiveData, callback);
+        CallMethodVoid(_onReceiveData, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -396,7 +396,7 @@ public sealed partial class LongTask : JsObject
     /// </summary>
     public void AddDependency(Task[] tasks)
     {
-        CallMethodVoid(_addDependency, tasks);
+        CallMethodVoid(_addDependency, NapiArg.Of(tasks));
     }
 
     /// <summary>
@@ -404,7 +404,7 @@ public sealed partial class LongTask : JsObject
     /// </summary>
     public void RemoveDependency(Task[] tasks)
     {
-        CallMethodVoid(_removeDependency, tasks);
+        CallMethodVoid(_removeDependency, NapiArg.Of(tasks));
     }
 
     /// <summary>
@@ -481,10 +481,10 @@ public sealed partial class TaskpoolTask : JsObject
     private static ReadOnlySpan<byte> _Task => "Task"u8;
 
     public TaskpoolTask(IntPtr func, IntPtr[] args)
-        : this(NodeApi.CreateInstance(Taskpool.Module, _Task, func, args)) { }
+        : this(NodeApi.CreateInstance(Taskpool.Module, _Task, func, NapiArg.Of(args))) { }
 
     public TaskpoolTask(string name, IntPtr func, IntPtr[] args)
-        : this(NodeApi.CreateInstance(Taskpool.Module, _Task, name, func, args)) { }
+        : this(NodeApi.CreateInstance(Taskpool.Module, _Task, name, func, NapiArg.Of(args))) { }
     private static ReadOnlySpan<byte> _function => "function"u8;
     private static ReadOnlySpan<byte> _arguments => "arguments"u8;
     private static ReadOnlySpan<byte> _name => "name"u8;
@@ -552,7 +552,7 @@ public sealed partial class TaskpoolTask : JsObject
     /// </summary>
     public void SendData(IntPtr[] args)
     {
-        CallMethodVoid(_sendData, args);
+        CallMethodVoid(_sendData, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -560,7 +560,7 @@ public sealed partial class TaskpoolTask : JsObject
     /// </summary>
     public void SetTransferList(byte[][]? transfer = null)
     {
-        CallMethodVoid(_setTransferList, transfer);
+        CallMethodVoid(_setTransferList, NapiArg.Of(transfer));
     }
 
     /// <summary>
@@ -568,7 +568,7 @@ public sealed partial class TaskpoolTask : JsObject
     /// </summary>
     public void SetCloneList(IntPtr[] cloneList)
     {
-        CallMethodVoid(_setCloneList, cloneList);
+        CallMethodVoid(_setCloneList, NapiArg.Of(cloneList));
     }
 
     /// <summary>
@@ -576,7 +576,7 @@ public sealed partial class TaskpoolTask : JsObject
     /// </summary>
     public void OnReceiveData(IntPtr? callback = null)
     {
-        CallMethodVoid(_onReceiveData, callback);
+        CallMethodVoid(_onReceiveData, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -584,7 +584,7 @@ public sealed partial class TaskpoolTask : JsObject
     /// </summary>
     public void AddDependency(Task[] tasks)
     {
-        CallMethodVoid(_addDependency, tasks);
+        CallMethodVoid(_addDependency, NapiArg.Of(tasks));
     }
 
     /// <summary>
@@ -592,7 +592,7 @@ public sealed partial class TaskpoolTask : JsObject
     /// </summary>
     public void RemoveDependency(Task[] tasks)
     {
-        CallMethodVoid(_removeDependency, tasks);
+        CallMethodVoid(_removeDependency, NapiArg.Of(tasks));
     }
 
     /// <summary>
@@ -658,7 +658,7 @@ public sealed partial class SequenceRunner : JsObject
     /// </summary>
     public Task<IntPtr> ExecuteAsync(Task task)
     {
-        return CallMethodAsync<IntPtr>(_execute, task);
+        return CallMethodAsync<IntPtr>(_execute, NapiArg.Of(task));
     }
 
 }
@@ -674,17 +674,17 @@ public sealed partial class AsyncRunner : JsObject
     private static ReadOnlySpan<byte> _AsyncRunner => "AsyncRunner"u8;
 
     public AsyncRunner(double runningCapacity, double? waitingCapacity = null)
-        : this(NodeApi.CreateInstance(Taskpool.Module, _AsyncRunner, runningCapacity, waitingCapacity)) { }
+        : this(NodeApi.CreateInstance(Taskpool.Module, _AsyncRunner, runningCapacity, NapiArg.Of(waitingCapacity))) { }
 
     public AsyncRunner(string name, double runningCapacity, double? waitingCapacity = null)
-        : this(NodeApi.CreateInstance(Taskpool.Module, _AsyncRunner, name, runningCapacity, waitingCapacity)) { }
+        : this(NodeApi.CreateInstance(Taskpool.Module, _AsyncRunner, name, runningCapacity, NapiArg.Of(waitingCapacity))) { }
     private static ReadOnlySpan<byte> _execute => "execute"u8;
     /// <summary>
     /// execute
     /// </summary>
     public Task<IntPtr> ExecuteAsync(Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        return CallMethodAsync<IntPtr>(_execute, task, priority);
+        return CallMethodAsync<IntPtr>(_execute, NapiArg.Of(task), priority);
     }
 
 }

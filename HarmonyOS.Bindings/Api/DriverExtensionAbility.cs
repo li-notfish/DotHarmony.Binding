@@ -109,7 +109,7 @@ public static unsafe partial class DriverExtensionAbility
     /// </summary>
     public static string[] OnDump(string[] @params)
     {
-        return NodeApi.CallMethod(Module, _onDump, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), @params);
+        return NodeApi.CallMethod(Module, _onDump, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(@params));
     }
 
 }

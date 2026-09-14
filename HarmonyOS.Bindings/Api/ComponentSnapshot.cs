@@ -75,7 +75,7 @@ public static unsafe partial class ComponentSnapshot
     /// </summary>
     public static Task<IntPtr> GetAsync(string id, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _get, id, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _get, id, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public static unsafe partial class ComponentSnapshot
     /// </summary>
     public static Task<IntPtr> CreateFromBuilderAsync(IntPtr builder, double? delay = null, bool? checkImageStatus = null, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createFromBuilder, builder, delay, checkImageStatus, options);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createFromBuilder, builder, NapiArg.Of(delay), NapiArg.Of(checkImageStatus), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public static unsafe partial class ComponentSnapshot
     /// </summary>
     public static IntPtr GetSync(string id, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getSync, id, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _getSync, id, NapiArg.Of(options));
     }
 
 }

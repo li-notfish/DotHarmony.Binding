@@ -113,7 +113,7 @@ public static unsafe partial class NetSocket
     /// </summary>
     public static TLSSocket ConstructTlsSocketInstance(TCPSocket tcpSocket)
     {
-        return NodeApi.CallMethod(Module, _constructTLSSocketInstance, static h => new TLSSocket(h), tcpSocket);
+        return NodeApi.CallMethod(Module, _constructTLSSocketInstance, static h => new TLSSocket(h), NapiArg.Of(tcpSocket));
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public sealed partial class UDPSocket : JsObject
     /// </summary>
     public Task BindAsync(global::HarmonyOS.Bindings.Api.NetAddress address)
     {
-        return CallMethodAsyncVoid(_bind, address);
+        return CallMethodAsyncVoid(_bind, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public sealed partial class UDPSocket : JsObject
     /// </summary>
     public Task SetExtraOptionsAsync(UDPExtraOptions options)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, options);
+        return CallMethodAsyncVoid(_setExtraOptions, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -382,7 +382,7 @@ public sealed partial class MulticastSocket : JsObject
     /// </summary>
     public Task BindAsync(global::HarmonyOS.Bindings.Api.NetAddress address)
     {
-        return CallMethodAsyncVoid(_bind, address);
+        return CallMethodAsyncVoid(_bind, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -422,7 +422,7 @@ public sealed partial class MulticastSocket : JsObject
     /// </summary>
     public Task SetExtraOptionsAsync(UDPExtraOptions options)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, options);
+        return CallMethodAsyncVoid(_setExtraOptions, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -454,7 +454,7 @@ public sealed partial class MulticastSocket : JsObject
     /// </summary>
     public Task AddMembershipAsync(global::HarmonyOS.Bindings.Api.NetAddress multicastAddress)
     {
-        return CallMethodAsyncVoid(_addMembership, multicastAddress);
+        return CallMethodAsyncVoid(_addMembership, NapiArg.Of(multicastAddress));
     }
 
     /// <summary>
@@ -462,7 +462,7 @@ public sealed partial class MulticastSocket : JsObject
     /// </summary>
     public Task DropMembershipAsync(global::HarmonyOS.Bindings.Api.NetAddress multicastAddress)
     {
-        return CallMethodAsyncVoid(_dropMembership, multicastAddress);
+        return CallMethodAsyncVoid(_dropMembership, NapiArg.Of(multicastAddress));
     }
 
     /// <summary>
@@ -644,7 +644,7 @@ public sealed partial class TCPSocket : JsObject
     /// </summary>
     public Task BindAsync(global::HarmonyOS.Bindings.Api.NetAddress address)
     {
-        return CallMethodAsyncVoid(_bind, address);
+        return CallMethodAsyncVoid(_bind, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -660,7 +660,7 @@ public sealed partial class TCPSocket : JsObject
     /// </summary>
     public Task SendAsync(TCPSendOptions options)
     {
-        return CallMethodAsyncVoid(_send, options);
+        return CallMethodAsyncVoid(_send, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -871,7 +871,7 @@ public sealed partial class TLSSocket : JsObject
     /// </summary>
     public Task BindAsync(global::HarmonyOS.Bindings.Api.NetAddress address)
     {
-        return CallMethodAsyncVoid(_bind, address);
+        return CallMethodAsyncVoid(_bind, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -1130,7 +1130,7 @@ public sealed partial class TCPSocketServer : JsObject
     /// </summary>
     public Task ListenAsync(global::HarmonyOS.Bindings.Api.NetAddress address)
     {
-        return CallMethodAsyncVoid(_listen, address);
+        return CallMethodAsyncVoid(_listen, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -1473,7 +1473,7 @@ public sealed partial class LocalSocket : JsObject
     /// </summary>
     public Task BindAsync(LocalAddress address)
     {
-        return CallMethodAsyncVoid(_bind, address);
+        return CallMethodAsyncVoid(_bind, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -1481,7 +1481,7 @@ public sealed partial class LocalSocket : JsObject
     /// </summary>
     public Task ConnectAsync(LocalConnectOptions options)
     {
-        return CallMethodAsyncVoid(_connect, options);
+        return CallMethodAsyncVoid(_connect, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1489,7 +1489,7 @@ public sealed partial class LocalSocket : JsObject
     /// </summary>
     public Task SendAsync(LocalSendOptions options)
     {
-        return CallMethodAsyncVoid(_send, options);
+        return CallMethodAsyncVoid(_send, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1521,7 +1521,7 @@ public sealed partial class LocalSocket : JsObject
     /// </summary>
     public Task SetExtraOptionsAsync(ExtraOptionsBase options)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, options);
+        return CallMethodAsyncVoid(_setExtraOptions, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1693,7 +1693,7 @@ public sealed partial class LocalSocketServer : JsObject
     /// </summary>
     public Task ListenAsync(LocalAddress address)
     {
-        return CallMethodAsyncVoid(_listen, address);
+        return CallMethodAsyncVoid(_listen, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -1709,7 +1709,7 @@ public sealed partial class LocalSocketServer : JsObject
     /// </summary>
     public Task SetExtraOptionsAsync(ExtraOptionsBase options)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, options);
+        return CallMethodAsyncVoid(_setExtraOptions, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1914,7 +1914,7 @@ public sealed partial class LocalSocketConnection : JsObject
     /// </summary>
     public Task SendAsync(LocalSendOptions options)
     {
-        return CallMethodAsyncVoid(_send, options);
+        return CallMethodAsyncVoid(_send, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -2081,7 +2081,7 @@ public sealed partial class TCPSocketConnection : JsObject
     /// </summary>
     public Task SendAsync(TCPSendOptions options)
     {
-        return CallMethodAsyncVoid(_send, options);
+        return CallMethodAsyncVoid(_send, NapiArg.Of(options));
     }
 
     /// <summary>

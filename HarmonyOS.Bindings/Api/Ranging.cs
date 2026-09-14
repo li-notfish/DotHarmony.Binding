@@ -97,7 +97,7 @@ public static unsafe partial class Ranging
     /// </summary>
     public static void StartRanging(RangingParams @params, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _startRanging, @params, callback);
+        NodeApi.CallMethodVoid(Module, _startRanging, NapiArg.Of(@params), callback);
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public static unsafe partial class Ranging
     /// </summary>
     public static void StopRanging(IntPtr callback, RangingParams? @params = null)
     {
-        NodeApi.CallMethodVoid(Module, _stopRanging, callback, @params);
+        NodeApi.CallMethodVoid(Module, _stopRanging, callback, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public static unsafe partial class Ranging
     /// </summary>
     public static void OffRangingStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offRangingStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offRangingStateChange, NapiArg.Of(callback));
     }
 
 }

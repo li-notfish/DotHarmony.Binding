@@ -87,7 +87,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static void Debug(double domain, string tag, string format, object[] args)
     {
-        NodeApi.CallMethodVoid(Module, _debug, domain, tag, format, args);
+        NodeApi.CallMethodVoid(Module, _debug, domain, tag, format, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static void Info(double domain, string tag, string format, object[] args)
     {
-        NodeApi.CallMethodVoid(Module, _info, domain, tag, format, args);
+        NodeApi.CallMethodVoid(Module, _info, domain, tag, format, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static void Warn(double domain, string tag, string format, object[] args)
     {
-        NodeApi.CallMethodVoid(Module, _warn, domain, tag, format, args);
+        NodeApi.CallMethodVoid(Module, _warn, domain, tag, format, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static void Error(double domain, string tag, string format, object[] args)
     {
-        NodeApi.CallMethodVoid(Module, _error, domain, tag, format, args);
+        NodeApi.CallMethodVoid(Module, _error, domain, tag, format, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static void Fatal(double domain, string tag, string format, object[] args)
     {
-        NodeApi.CallMethodVoid(Module, _fatal, domain, tag, format, args);
+        NodeApi.CallMethodVoid(Module, _fatal, domain, tag, format, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static global::HarmonyOS.ArkUI.OutputType SetOutputTypeByDomainId(global::HarmonyOS.ArkUI.OutputType type, double[] domainIDs, bool isExclude)
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.OutputType>(Module, _setOutputTypeByDomainID, type, domainIDs, isExclude);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.OutputType>(Module, _setOutputTypeByDomainID, type, NapiArg.Of(domainIDs), isExclude);
     }
 
     /// <summary>

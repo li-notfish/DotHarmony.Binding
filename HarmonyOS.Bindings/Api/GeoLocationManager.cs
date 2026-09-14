@@ -107,7 +107,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static void On(string type, LocationRequest request, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, request, callback);
+        NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), callback);
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static void OnLocationChange(LocationRequest request, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _onLocationChange, request, callback);
+        NodeApi.CallMethodVoid(Module, _onLocationChange, NapiArg.Of(request), callback);
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static void OffLocationChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offLocationChange, callback);
+        NodeApi.CallMethodVoid(Module, _offLocationChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static void On(string type, CachedGnssLocationsRequest request, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, request, callback);
+        NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), callback);
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static void On(string type, GeofenceRequest request, IntPtr want)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, request, want);
+        NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), want);
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static void Off(string type, GeofenceRequest request, IntPtr want)
     {
-        NodeApi.CallMethodVoid(Module, _off, type, request, want);
+        NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(request), want);
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static Task<IntPtr> GetCurrentLocationAsync(CurrentLocationRequest request)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentLocation, request);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentLocation, NapiArg.Of(request));
     }
 
     /// <summary>
@@ -203,7 +203,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static Task<GeoAddress[]> GetAddressesFromLocationAsync(ReverseGeoCodeRequest request)
     {
-        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocation, h => ValueConverter.ConvertArray(h, static e => new GeoAddress(e)), request);
+        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocation, h => ValueConverter.ConvertArray(h, static e => new GeoAddress(e)), NapiArg.Of(request));
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static Task<GeoAddress[]> GetAddressesFromLocationNameAsync(GeoCodeRequest request)
     {
-        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocationName, h => ValueConverter.ConvertArray(h, static e => new GeoAddress(e)), request);
+        return NodeApi.CallMethodAsync(Module, _getAddressesFromLocationName, h => ValueConverter.ConvertArray(h, static e => new GeoAddress(e)), NapiArg.Of(request));
     }
 
     /// <summary>
@@ -243,7 +243,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static Task SendCommandAsync(LocationCommand command)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendCommand, command);
+        return NodeApi.CallMethodAsyncVoid(Module, _sendCommand, NapiArg.Of(command));
     }
 
     /// <summary>
@@ -331,7 +331,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static Task RemoveBeaconFenceAsync(BeaconFence? beaconFence = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeBeaconFence, beaconFence);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeBeaconFence, NapiArg.Of(beaconFence));
     }
 
     /// <summary>
@@ -347,7 +347,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static Task<bool> IsWlanBssidMatchedAsync(string[] wlanBssidArray, double rssiThreshold, bool needStartScan)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _isWlanBssidMatched, wlanBssidArray, rssiThreshold, needStartScan);
+        return NodeApi.CallMethodAsync<bool>(Module, _isWlanBssidMatched, NapiArg.Of(wlanBssidArray), rssiThreshold, needStartScan);
     }
 
     /// <summary>
@@ -379,7 +379,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static Task<MatchingWlanInfo[]> FindMatchingWlanAsync(string[] wlanBssidArray, double rssiThreshold, bool needStartScan)
     {
-        return NodeApi.CallMethodAsync(Module, _findMatchingWlan, h => ValueConverter.ConvertArray(h, static e => new MatchingWlanInfo(e)), wlanBssidArray, rssiThreshold, needStartScan);
+        return NodeApi.CallMethodAsync(Module, _findMatchingWlan, h => ValueConverter.ConvertArray(h, static e => new MatchingWlanInfo(e)), NapiArg.Of(wlanBssidArray), rssiThreshold, needStartScan);
     }
 
     /// <summary>
@@ -387,7 +387,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static Task<DistrictInfo> GetCurrentDistrictAsync(DistrictRequestParams? @params = null)
     {
-        return NodeApi.CallMethodAsync(Module, _getCurrentDistrict, static h => new DistrictInfo(h), @params);
+        return NodeApi.CallMethodAsync(Module, _getCurrentDistrict, static h => new DistrictInfo(h), NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -395,7 +395,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static void StartBluetoothSearch(BluetoothSearchRequestParams request, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _startBluetoothSearch, request, callback);
+        NodeApi.CallMethodVoid(Module, _startBluetoothSearch, NapiArg.Of(request), callback);
     }
 
     /// <summary>
@@ -403,7 +403,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static void StopBluetoothSearch(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _stopBluetoothSearch, callback);
+        NodeApi.CallMethodVoid(Module, _stopBluetoothSearch, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -423,7 +423,7 @@ public static unsafe partial class GeoLocationManager
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, request));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(request)));
     }
 
     /// <summary>
@@ -485,7 +485,7 @@ public static unsafe partial class GeoLocationManager
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<IntPtr>(e))),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, request));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(request)));
     }
 
     /// <summary>
@@ -539,7 +539,7 @@ public static unsafe partial class GeoLocationManager
     {
         _eventListeners.Add((type, callback),
             args => callback(),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, request, want));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(request), want));
     }
 
     /// <summary>
@@ -547,7 +547,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static void Off(string type, System.Action callback, GeofenceRequest request, IntPtr want)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, request, want));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(request), want));
     }
 
     /// <summary>

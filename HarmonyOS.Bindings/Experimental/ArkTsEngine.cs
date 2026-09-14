@@ -168,11 +168,11 @@ public static class ArkTsEngine
             // 把回流回调交给引擎（GCHandle 由进程生命周期持有）
             var (jsFunc, handle) = NodeApi.CreateCallbackFunction((Action<IntPtr[]>)OnEventFromJs);
             _onEventHandle = handle;
-            NodeApi.CallMethodVoid(bridgeValue, "init", new object?[] { jsFunc });
+            NodeApi.CallMethodVoid(bridgeValue, "init", NapiArg.Of(jsFunc));
 
             // 16ms 定时冲刷兜底：引擎侧 setInterval 发 'tick' 回流，C# 在 napi 回调线程内
             // 冲刷积压指令（同帧属性写合并为单次 napi）。显式 Flush 仍是布局 pass 边界钩子。
-            NodeApi.CallMethodVoid(bridgeValue, "enableAutoFlush", new object?[] { AutoFlushIntervalMs });
+            NodeApi.CallMethodVoid(bridgeValue, "enableAutoFlush", NapiArg.Of(AutoFlushIntervalMs));
 
             int pending = _queue.Count;
             Flush();

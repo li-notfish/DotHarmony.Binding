@@ -110,7 +110,7 @@ public static unsafe partial class DistributedData
     /// </summary>
     public static Task<KVManager> CreateKvManagerAsync(KVManagerConfig config)
     {
-        return NodeApi.CallMethodAsync(Module, _createKVManager, static h => new KVManager(h), config);
+        return NodeApi.CallMethodAsync(Module, _createKVManager, static h => new KVManager(h), NapiArg.Of(config));
     }
 
 }
@@ -133,7 +133,7 @@ public sealed partial class KVManager : JsObject
     /// </summary>
     public Task<IntPtr> GetKvStoreAsync(string storeId, Options options)
     {
-        return CallMethodAsync<IntPtr>(_getKVStore, storeId, options);
+        return CallMethodAsync<IntPtr>(_getKVStore, storeId, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public sealed partial class KVManager : JsObject
     /// </summary>
     public Task CloseKvStoreAsync(string appId, string storeId, KVStore kvStore)
     {
-        return CallMethodAsyncVoid(_closeKVStore, appId, storeId, kvStore);
+        return CallMethodAsyncVoid(_closeKVStore, appId, storeId, NapiArg.Of(kvStore));
     }
 
     /// <summary>
@@ -351,7 +351,7 @@ public sealed partial class FieldNode : JsObject
     /// </summary>
     public bool AppendChild(FieldNode child)
     {
-        return CallMethod<bool>(_appendChild, child);
+        return CallMethod<bool>(_appendChild, NapiArg.Of(child));
     }
 
 }
@@ -463,7 +463,7 @@ public sealed partial class Query : JsObject
     /// </summary>
     public Query InNumber(string field, double[] valueList)
     {
-        return CallMethod(_inNumber, static h => new Query(h), field, valueList);
+        return CallMethod(_inNumber, static h => new Query(h), field, NapiArg.Of(valueList));
     }
 
     /// <summary>
@@ -471,7 +471,7 @@ public sealed partial class Query : JsObject
     /// </summary>
     public Query InString(string field, string[] valueList)
     {
-        return CallMethod(_inString, static h => new Query(h), field, valueList);
+        return CallMethod(_inString, static h => new Query(h), field, NapiArg.Of(valueList));
     }
 
     /// <summary>
@@ -479,7 +479,7 @@ public sealed partial class Query : JsObject
     /// </summary>
     public Query NotInNumber(string field, double[] valueList)
     {
-        return CallMethod(_notInNumber, static h => new Query(h), field, valueList);
+        return CallMethod(_notInNumber, static h => new Query(h), field, NapiArg.Of(valueList));
     }
 
     /// <summary>
@@ -487,7 +487,7 @@ public sealed partial class Query : JsObject
     /// </summary>
     public Query NotInString(string field, string[] valueList)
     {
-        return CallMethod(_notInString, static h => new Query(h), field, valueList);
+        return CallMethod(_notInString, static h => new Query(h), field, NapiArg.Of(valueList));
     }
 
     /// <summary>
@@ -678,7 +678,7 @@ public sealed partial class KVStore : JsObject
     /// </summary>
     public Task PutAsync(string key, byte[] value)
     {
-        return CallMethodAsyncVoid(_put, key, value);
+        return CallMethodAsyncVoid(_put, key, NapiArg.Of(value));
     }
 
     /// <summary>
@@ -718,7 +718,7 @@ public sealed partial class KVStore : JsObject
     /// </summary>
     public Task PutBatchAsync(Entry[] entries)
     {
-        return CallMethodAsyncVoid(_putBatch, entries);
+        return CallMethodAsyncVoid(_putBatch, NapiArg.Of(entries));
     }
 
     /// <summary>
@@ -726,7 +726,7 @@ public sealed partial class KVStore : JsObject
     /// </summary>
     public Task DeleteBatchAsync(string[] keys)
     {
-        return CallMethodAsyncVoid(_deleteBatch, keys);
+        return CallMethodAsyncVoid(_deleteBatch, NapiArg.Of(keys));
     }
 
     /// <summary>
@@ -766,7 +766,7 @@ public sealed partial class KVStore : JsObject
     /// </summary>
     public Task SetSyncRangeAsync(string[] localLabels, string[] remoteSupportLabels)
     {
-        return CallMethodAsyncVoid(_setSyncRange, localLabels, remoteSupportLabels);
+        return CallMethodAsyncVoid(_setSyncRange, NapiArg.Of(localLabels), NapiArg.Of(remoteSupportLabels));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();

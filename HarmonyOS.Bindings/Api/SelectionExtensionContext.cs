@@ -91,7 +91,7 @@ public sealed partial class SelectionExtensionContextObject : JsObject
     /// </summary>
     public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        return CallMethodAsyncVoid(_startAbility, want);
+        return CallMethodAsyncVoid(_startAbility, NapiArg.Of(want));
     }
 
 }

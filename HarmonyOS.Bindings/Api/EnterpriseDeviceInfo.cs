@@ -74,7 +74,7 @@ public static unsafe partial class EnterpriseDeviceInfo
     /// </summary>
     public static string GetDeviceInfo(global::HarmonyOS.Bindings.Api.WantObject admin, string label)
     {
-        return NodeApi.CallMethod<string>(Module, _getDeviceInfo, admin, label);
+        return NodeApi.CallMethod<string>(Module, _getDeviceInfo, NapiArg.Of(admin), label);
     }
 
 }

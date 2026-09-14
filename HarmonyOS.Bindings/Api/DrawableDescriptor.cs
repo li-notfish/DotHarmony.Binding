@@ -305,7 +305,7 @@ public sealed partial class LayeredDrawableDescriptor : JsObject
     private static ReadOnlySpan<byte> _LayeredDrawableDescriptor => "LayeredDrawableDescriptor"u8;
 
     public LayeredDrawableDescriptor(DrawableDescriptorObject? foreground = null, DrawableDescriptorObject? background = null, DrawableDescriptorObject? mask = null)
-        : this(NodeApi.CreateInstance(DrawableDescriptor.Module, _LayeredDrawableDescriptor, foreground, background, mask)) { }
+        : this(NodeApi.CreateInstance(DrawableDescriptor.Module, _LayeredDrawableDescriptor, NapiArg.Of(foreground), NapiArg.Of(background), NapiArg.Of(mask))) { }
     private static ReadOnlySpan<byte> _getPixelMap => "getPixelMap"u8;
     private static ReadOnlySpan<byte> _loadSync => "loadSync"u8;
     private static ReadOnlySpan<byte> _load => "load"u8;
@@ -483,7 +483,7 @@ public sealed partial class AnimatedDrawableDescriptor : JsObject
     private static ReadOnlySpan<byte> _AnimatedDrawableDescriptor => "AnimatedDrawableDescriptor"u8;
 
     public AnimatedDrawableDescriptor(IntPtr[] pixelMaps, DrawableDescriptorAnimationOptions? options = null)
-        : this(NodeApi.CreateInstance(DrawableDescriptor.Module, _AnimatedDrawableDescriptor, pixelMaps, options)) { }
+        : this(NodeApi.CreateInstance(DrawableDescriptor.Module, _AnimatedDrawableDescriptor, NapiArg.Of(pixelMaps), NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _getPixelMap => "getPixelMap"u8;
     private static ReadOnlySpan<byte> _loadSync => "loadSync"u8;
     private static ReadOnlySpan<byte> _load => "load"u8;

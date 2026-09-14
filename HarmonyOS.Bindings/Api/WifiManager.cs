@@ -83,7 +83,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static bool IsWifiActiveSync(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod<bool>(Module, _isWifiActiveSync, admin);
+        return NodeApi.CallMethod<bool>(Module, _isWifiActiveSync, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static void SetWifiProfileSync(global::HarmonyOS.Bindings.Api.WantObject admin, WifiProfile profile)
     {
-        NodeApi.CallMethodVoid(Module, _setWifiProfileSync, admin, profile);
+        NodeApi.CallMethodVoid(Module, _setWifiProfileSync, NapiArg.Of(admin), NapiArg.Of(profile));
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static void AddDisallowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin, WifiAccessInfo[] list)
     {
-        NodeApi.CallMethodVoid(Module, _addDisallowedWifiList, admin, list);
+        NodeApi.CallMethodVoid(Module, _addDisallowedWifiList, NapiArg.Of(admin), NapiArg.Of(list));
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static void RemoveDisallowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin, WifiAccessInfo[] list)
     {
-        NodeApi.CallMethodVoid(Module, _removeDisallowedWifiList, admin, list);
+        NodeApi.CallMethodVoid(Module, _removeDisallowedWifiList, NapiArg.Of(admin), NapiArg.Of(list));
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static WifiAccessInfo[] GetDisallowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getDisallowedWifiList, h => ValueConverter.ConvertArray(h, static e => new WifiAccessInfo(e)), admin);
+        return NodeApi.CallMethod(Module, _getDisallowedWifiList, h => ValueConverter.ConvertArray(h, static e => new WifiAccessInfo(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static void AddAllowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin, WifiAccessInfo[] list)
     {
-        NodeApi.CallMethodVoid(Module, _addAllowedWifiList, admin, list);
+        NodeApi.CallMethodVoid(Module, _addAllowedWifiList, NapiArg.Of(admin), NapiArg.Of(list));
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static void RemoveAllowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin, WifiAccessInfo[] list)
     {
-        NodeApi.CallMethodVoid(Module, _removeAllowedWifiList, admin, list);
+        NodeApi.CallMethodVoid(Module, _removeAllowedWifiList, NapiArg.Of(admin), NapiArg.Of(list));
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static WifiAccessInfo[] GetAllowedWifiList(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getAllowedWifiList, h => ValueConverter.ConvertArray(h, static e => new WifiAccessInfo(e)), admin);
+        return NodeApi.CallMethod(Module, _getAllowedWifiList, h => ValueConverter.ConvertArray(h, static e => new WifiAccessInfo(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static void TurnOnWifi(global::HarmonyOS.Bindings.Api.WantObject admin, bool isForce)
     {
-        NodeApi.CallMethodVoid(Module, _turnOnWifi, admin, isForce);
+        NodeApi.CallMethodVoid(Module, _turnOnWifi, NapiArg.Of(admin), isForce);
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static void TurnOffWifi(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        NodeApi.CallMethodVoid(Module, _turnOffWifi, admin);
+        NodeApi.CallMethodVoid(Module, _turnOffWifi, NapiArg.Of(admin));
     }
 
 }

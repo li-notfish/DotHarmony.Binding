@@ -273,7 +273,7 @@ public sealed partial class ConnectionObject : JsObject
     /// </summary>
     public void SendData(byte[] data)
     {
-        CallMethodVoid(_sendData, data);
+        CallMethodVoid(_sendData, NapiArg.Of(data));
     }
 
     /// <summary>

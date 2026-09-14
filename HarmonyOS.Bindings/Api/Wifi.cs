@@ -119,7 +119,7 @@ public static unsafe partial class Wifi
     /// </summary>
     public static Task<bool> AddUntrustedConfigAsync(WifiDeviceConfig config)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _addUntrustedConfig, config);
+        return NodeApi.CallMethodAsync<bool>(Module, _addUntrustedConfig, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public static unsafe partial class Wifi
     /// </summary>
     public static Task<bool> RemoveUntrustedConfigAsync(WifiDeviceConfig config)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _removeUntrustedConfig, config);
+        return NodeApi.CallMethodAsync<bool>(Module, _removeUntrustedConfig, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -207,7 +207,7 @@ public static unsafe partial class Wifi
     /// </summary>
     public static bool CreateGroup(WifiP2PConfig config)
     {
-        return NodeApi.CallMethod<bool>(Module, _createGroup, config);
+        return NodeApi.CallMethod<bool>(Module, _createGroup, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -223,7 +223,7 @@ public static unsafe partial class Wifi
     /// </summary>
     public static bool P2pConnect(WifiP2PConfig config)
     {
-        return NodeApi.CallMethod<bool>(Module, _p2pConnect, config);
+        return NodeApi.CallMethod<bool>(Module, _p2pConnect, NapiArg.Of(config));
     }
 
     /// <summary>

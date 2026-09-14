@@ -87,7 +87,7 @@ public static unsafe partial class PartnerAgent
     /// </summary>
     public static Task BindDeviceAsync(IntPtr deviceAddress, DeviceCapability deviceCapability, BusinessCapability businessCapability, string partnerAgentExtensionAbilityName)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _bindDevice, deviceAddress, deviceCapability, businessCapability, partnerAgentExtensionAbilityName);
+        return NodeApi.CallMethodAsyncVoid(Module, _bindDevice, deviceAddress, NapiArg.Of(deviceCapability), NapiArg.Of(businessCapability), partnerAgentExtensionAbilityName);
     }
 
     /// <summary>

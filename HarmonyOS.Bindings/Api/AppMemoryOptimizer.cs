@@ -74,7 +74,7 @@ public static unsafe partial class AppMemoryOptimizer
     /// </summary>
     public static Task EvictFilePagesAsync(string[] fileNames)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _evictFilePages, fileNames);
+        return NodeApi.CallMethodAsyncVoid(Module, _evictFilePages, NapiArg.Of(fileNames));
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public static unsafe partial class AppMemoryOptimizer
     /// </summary>
     public static Task EvictModuleFilePagesAsync(string[] moduleNames)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _evictModuleFilePages, moduleNames);
+        return NodeApi.CallMethodAsyncVoid(Module, _evictModuleFilePages, NapiArg.Of(moduleNames));
     }
 
 }

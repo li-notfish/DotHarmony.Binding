@@ -179,7 +179,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryMainTabs(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryMainTabs, callback);
+        CallMethodVoid(_offQueryMainTabs, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -195,7 +195,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryMediaTabContent(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryMediaTabContent, callback);
+        CallMethodVoid(_offQueryMediaTabContent, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryMediaEntity(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryMediaEntity, callback);
+        CallMethodVoid(_offQueryMediaEntity, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -227,7 +227,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryCompilation(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryCompilation, callback);
+        CallMethodVoid(_offQueryCompilation, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -243,7 +243,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryPlaylist(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryPlaylist, callback);
+        CallMethodVoid(_offQueryPlaylist, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -259,7 +259,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryCurrentSingle(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryCurrentSingle, callback);
+        CallMethodVoid(_offQueryCurrentSingle, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -275,7 +275,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryCompilationByKeyword(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryCompilationByKeyword, callback);
+        CallMethodVoid(_offQueryCompilationByKeyword, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -291,7 +291,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryMediaEntityByKeyword(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryMediaEntityByKeyword, callback);
+        CallMethodVoid(_offQueryMediaEntityByKeyword, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -307,7 +307,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryRecommendMediaEntityList(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryRecommendMediaEntityList, callback);
+        CallMethodVoid(_offQueryRecommendMediaEntityList, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -323,7 +323,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryHotWords(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryHotWords, callback);
+        CallMethodVoid(_offQueryHotWords, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -339,7 +339,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQuerySearchHistory(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQuerySearchHistory, callback);
+        CallMethodVoid(_offQuerySearchHistory, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -355,7 +355,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffClearSearchHistory(IntPtr? callback = null)
     {
-        CallMethodVoid(_offClearSearchHistory, callback);
+        CallMethodVoid(_offClearSearchHistory, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -371,7 +371,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffLogin(IntPtr? callback = null)
     {
-        CallMethodVoid(_offLogin, callback);
+        CallMethodVoid(_offLogin, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -387,7 +387,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffRequestDialogInfo(IntPtr? callback = null)
     {
-        CallMethodVoid(_offRequestDialogInfo, callback);
+        CallMethodVoid(_offRequestDialogInfo, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -403,7 +403,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffHandleMemberPurchase(IntPtr? callback = null)
     {
-        CallMethodVoid(_offHandleMemberPurchase, callback);
+        CallMethodVoid(_offHandleMemberPurchase, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -419,7 +419,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryMemberPurchase(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryMemberPurchase, callback);
+        CallMethodVoid(_offQueryMemberPurchase, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -435,7 +435,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryCustomContent(IntPtr? callback = null)
     {
-        CallMethodVoid(_offQueryCustomContent, callback);
+        CallMethodVoid(_offQueryCustomContent, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -451,7 +451,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffDownloadMediaEntity(IntPtr? callback = null)
     {
-        CallMethodVoid(_offDownloadMediaEntity, callback);
+        CallMethodVoid(_offDownloadMediaEntity, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -467,7 +467,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffSettingsChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offSettingsChange, callback);
+        CallMethodVoid(_offSettingsChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -483,7 +483,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffProblemAndAdvice(IntPtr? callback = null)
     {
-        CallMethodVoid(_offProblemAndAdvice, callback);
+        CallMethodVoid(_offProblemAndAdvice, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -499,7 +499,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffPlayForSearch(IntPtr? callback = null)
     {
-        CallMethodVoid(_offPlayForSearch, callback);
+        CallMethodVoid(_offPlayForSearch, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -515,7 +515,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffExecuteAction(IntPtr? callback = null)
     {
-        CallMethodVoid(_offExecuteAction, callback);
+        CallMethodVoid(_offExecuteAction, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -531,7 +531,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffPlayMediaEntity(IntPtr? callback = null)
     {
-        CallMethodVoid(_offPlayMediaEntity, callback);
+        CallMethodVoid(_offPlayMediaEntity, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -547,7 +547,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffFavoriteMediaEntity(IntPtr? callback = null)
     {
-        CallMethodVoid(_offFavoriteMediaEntity, callback);
+        CallMethodVoid(_offFavoriteMediaEntity, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -555,7 +555,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public Task SetUserInfoAsync(AvMusicTemplateUserInfo userInfo)
     {
-        return CallMethodAsyncVoid(_setUserInfo, userInfo);
+        return CallMethodAsyncVoid(_setUserInfo, NapiArg.Of(userInfo));
     }
 
     /// <summary>
@@ -579,7 +579,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public Task SetMediaEntitiesAsync(MediaEntity[] entities)
     {
-        return CallMethodAsyncVoid(_setMediaEntities, entities);
+        return CallMethodAsyncVoid(_setMediaEntities, NapiArg.Of(entities));
     }
 
     /// <summary>
@@ -603,7 +603,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public Task SetDownloadMediaEntityStatusAsync(MediaEntity single)
     {
-        return CallMethodAsyncVoid(_setDownloadMediaEntityStatus, single);
+        return CallMethodAsyncVoid(_setDownloadMediaEntityStatus, NapiArg.Of(single));
     }
 
     /// <summary>
@@ -619,7 +619,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public Task SetSettingsAsync(SettingItem[] settingItems)
     {
-        return CallMethodAsyncVoid(_setSettings, settingItems);
+        return CallMethodAsyncVoid(_setSettings, NapiArg.Of(settingItems));
     }
 
     /// <summary>

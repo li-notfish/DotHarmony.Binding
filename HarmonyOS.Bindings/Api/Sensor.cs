@@ -98,7 +98,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void On(IntPtr type, IntPtr callback, SensorOptions? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, callback, options);
+        NodeApi.CallMethodVoid(Module, _on, type, callback, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -122,7 +122,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(IntPtr type, SensorInfoParam sensorInfoParam, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _off, type, sensorInfoParam, callback);
+        NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(sensorInfoParam), callback);
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static SensorObject[] GetSingleSensorByDeviceSync(global::HarmonyOS.ArkUI.SensorId type, double? deviceId = null)
     {
-        return NodeApi.CallMethod(Module, _getSingleSensorByDeviceSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)), type, deviceId);
+        return NodeApi.CallMethod(Module, _getSingleSensorByDeviceSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)), type, NapiArg.Of(deviceId));
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static SensorObject[] GetSensorListByDeviceSync(double? deviceId = null)
     {
-        return NodeApi.CallMethod(Module, _getSensorListByDeviceSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)), deviceId);
+        return NodeApi.CallMethod(Module, _getSensorListByDeviceSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)), NapiArg.Of(deviceId));
     }
 
     /// <summary>
@@ -178,7 +178,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<GeomagneticResponse> GetGeomagneticFieldAsync(LocationOptions locationOptions, double timeMillis)
     {
-        return NodeApi.CallMethodAsync(Module, _getGeomagneticField, static h => new GeomagneticResponse(h), locationOptions, timeMillis);
+        return NodeApi.CallMethodAsync(Module, _getGeomagneticField, static h => new GeomagneticResponse(h), NapiArg.Of(locationOptions), timeMillis);
     }
 
     /// <summary>
@@ -186,7 +186,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<GeomagneticResponse> GetGeomagneticInfoAsync(LocationOptions locationOptions, double timeMillis)
     {
-        return NodeApi.CallMethodAsync(Module, _getGeomagneticInfo, static h => new GeomagneticResponse(h), locationOptions, timeMillis);
+        return NodeApi.CallMethodAsync(Module, _getGeomagneticInfo, static h => new GeomagneticResponse(h), NapiArg.Of(locationOptions), timeMillis);
     }
 
     /// <summary>
@@ -210,7 +210,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double> GetGeomagneticDipAsync(double[] inclinationMatrix)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _getGeomagneticDip, inclinationMatrix);
+        return NodeApi.CallMethodAsync<double>(Module, _getGeomagneticDip, NapiArg.Of(inclinationMatrix));
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double> GetInclinationAsync(double[] inclinationMatrix)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _getInclination, inclinationMatrix);
+        return NodeApi.CallMethodAsync<double>(Module, _getInclination, NapiArg.Of(inclinationMatrix));
     }
 
     /// <summary>
@@ -226,7 +226,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double[]> GetAngleModifyAsync(double[] currentRotationMatrix, double[] preRotationMatrix)
     {
-        return NodeApi.CallMethodAsync(Module, _getAngleModify, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), currentRotationMatrix, preRotationMatrix);
+        return NodeApi.CallMethodAsync(Module, _getAngleModify, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(currentRotationMatrix), NapiArg.Of(preRotationMatrix));
     }
 
     /// <summary>
@@ -234,7 +234,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double[]> GetAngleVariationAsync(double[] currentRotationMatrix, double[] preRotationMatrix)
     {
-        return NodeApi.CallMethodAsync(Module, _getAngleVariation, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), currentRotationMatrix, preRotationMatrix);
+        return NodeApi.CallMethodAsync(Module, _getAngleVariation, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(currentRotationMatrix), NapiArg.Of(preRotationMatrix));
     }
 
     /// <summary>
@@ -242,7 +242,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double[]> CreateRotationMatrixAsync(double[] rotationVector)
     {
-        return NodeApi.CallMethodAsync(Module, _createRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationVector);
+        return NodeApi.CallMethodAsync(Module, _createRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationVector));
     }
 
     /// <summary>
@@ -250,7 +250,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double[]> GetRotationMatrixAsync(double[] rotationVector)
     {
-        return NodeApi.CallMethodAsync(Module, _getRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationVector);
+        return NodeApi.CallMethodAsync(Module, _getRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationVector));
     }
 
     /// <summary>
@@ -258,7 +258,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double[]> TransformCoordinateSystemAsync(double[] inRotationVector, CoordinatesOptions coordinates)
     {
-        return NodeApi.CallMethodAsync(Module, _transformCoordinateSystem, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), inRotationVector, coordinates);
+        return NodeApi.CallMethodAsync(Module, _transformCoordinateSystem, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(inRotationVector), NapiArg.Of(coordinates));
     }
 
     /// <summary>
@@ -266,7 +266,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double[]> TransformRotationMatrixAsync(double[] inRotationVector, CoordinatesOptions coordinates)
     {
-        return NodeApi.CallMethodAsync(Module, _transformRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), inRotationVector, coordinates);
+        return NodeApi.CallMethodAsync(Module, _transformRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(inRotationVector), NapiArg.Of(coordinates));
     }
 
     /// <summary>
@@ -274,7 +274,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double[]> CreateQuaternionAsync(double[] rotationVector)
     {
-        return NodeApi.CallMethodAsync(Module, _createQuaternion, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationVector);
+        return NodeApi.CallMethodAsync(Module, _createQuaternion, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationVector));
     }
 
     /// <summary>
@@ -282,7 +282,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double[]> GetQuaternionAsync(double[] rotationVector)
     {
-        return NodeApi.CallMethodAsync(Module, _getQuaternion, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationVector);
+        return NodeApi.CallMethodAsync(Module, _getQuaternion, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationVector));
     }
 
     /// <summary>
@@ -290,7 +290,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double[]> GetDirectionAsync(double[] rotationMatrix)
     {
-        return NodeApi.CallMethodAsync(Module, _getDirection, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationMatrix);
+        return NodeApi.CallMethodAsync(Module, _getDirection, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationMatrix));
     }
 
     /// <summary>
@@ -298,7 +298,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<double[]> GetOrientationAsync(double[] rotationMatrix)
     {
-        return NodeApi.CallMethodAsync(Module, _getOrientation, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), rotationMatrix);
+        return NodeApi.CallMethodAsync(Module, _getOrientation, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationMatrix));
     }
 
     /// <summary>
@@ -306,7 +306,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<RotationMatrixResponse> CreateRotationMatrixAsync(double[] gravity, double[] geomagnetic)
     {
-        return NodeApi.CallMethodAsync(Module, _createRotationMatrix, static h => new RotationMatrixResponse(h), gravity, geomagnetic);
+        return NodeApi.CallMethodAsync(Module, _createRotationMatrix, static h => new RotationMatrixResponse(h), NapiArg.Of(gravity), NapiArg.Of(geomagnetic));
     }
 
     /// <summary>
@@ -314,7 +314,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<RotationMatrixResponse> GetRotationMatrixAsync(double[] gravity, double[] geomagnetic)
     {
-        return NodeApi.CallMethodAsync(Module, _getRotationMatrix, static h => new RotationMatrixResponse(h), gravity, geomagnetic);
+        return NodeApi.CallMethodAsync(Module, _getRotationMatrix, static h => new RotationMatrixResponse(h), NapiArg.Of(gravity), NapiArg.Of(geomagnetic));
     }
 
     /// <summary>
@@ -342,7 +342,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new AccelerometerResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -352,7 +352,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new AccelerometerUncalibratedResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -362,7 +362,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new LightResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new AmbientTemperatureResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -382,7 +382,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new BarometerResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -392,7 +392,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new GravityResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -402,7 +402,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new GyroscopeResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -412,7 +412,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new GyroscopeUncalibratedResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -422,7 +422,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new HallResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -432,7 +432,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new HeartRateResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -442,7 +442,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new HumidityResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -452,7 +452,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new LinearAccelerometerResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -462,7 +462,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new MagneticFieldResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -472,7 +472,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new MagneticFieldUncalibratedResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -482,7 +482,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new OrientationResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -492,7 +492,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new PedometerResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -502,7 +502,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new PedometerDetectionResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -512,7 +512,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new ProximityResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -522,7 +522,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new RotationVectorResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -532,7 +532,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new SignificantMotionResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -542,7 +542,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new WearDetectionResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -552,7 +552,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new FusionPressureResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -786,7 +786,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<AccelerometerResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -802,7 +802,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<AccelerometerUncalibratedResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -818,7 +818,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<LightResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -834,7 +834,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<AmbientTemperatureResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -850,7 +850,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<BarometerResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -866,7 +866,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<GravityResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -882,7 +882,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<GyroscopeResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -898,7 +898,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<GyroscopeUncalibratedResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -914,7 +914,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<HallResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -930,7 +930,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<HeartRateResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -946,7 +946,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<HumidityResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -962,7 +962,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<LinearAccelerometerResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -978,7 +978,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<MagneticFieldResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -994,7 +994,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<MagneticFieldUncalibratedResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -1010,7 +1010,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<OrientationResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -1026,7 +1026,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<PedometerResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -1042,7 +1042,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<PedometerDetectionResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -1058,7 +1058,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<ProximityResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -1074,7 +1074,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<RotationVectorResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -1090,7 +1090,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<SignificantMotionResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -1106,7 +1106,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<FusionPressureResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -1114,7 +1114,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static void Off(global::HarmonyOS.ArkUI.SensorId type, System.Action<WearDetectionResponse> callback, SensorInfoParam? sensorInfoParam = null)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, sensorInfoParam));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(sensorInfoParam)));
     }
 
     /// <summary>
@@ -1124,7 +1124,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new AccelerometerResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1134,7 +1134,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new AccelerometerUncalibratedResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1144,7 +1144,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new LightResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1154,7 +1154,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new AmbientTemperatureResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1164,7 +1164,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new BarometerResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1174,7 +1174,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new GravityResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1184,7 +1184,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new GyroscopeResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1194,7 +1194,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new GyroscopeUncalibratedResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1204,7 +1204,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new HallResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1214,7 +1214,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new HeartRateResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1224,7 +1224,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new HumidityResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1234,7 +1234,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new LinearAccelerometerResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1244,7 +1244,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new MagneticFieldResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1254,7 +1254,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new MagneticFieldUncalibratedResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1264,7 +1264,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new OrientationResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1274,7 +1274,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new PedometerResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1284,7 +1284,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new PedometerDetectionResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1294,7 +1294,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new ProximityResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1304,7 +1304,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new RotationVectorResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1314,7 +1314,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new SignificantMotionResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -1324,7 +1324,7 @@ public static unsafe partial class Sensor
     {
         _eventListeners.Add((type, callback),
             args => callback(new WearDetectionResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>

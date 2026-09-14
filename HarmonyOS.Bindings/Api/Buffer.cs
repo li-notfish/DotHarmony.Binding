@@ -82,7 +82,7 @@ public static unsafe partial class Buffer
     /// </summary>
     public static BufferObject Alloc(double size, string? fill = null, IntPtr? encoding = null)
     {
-        return NodeApi.CallMethod(Module, _alloc, static h => new BufferObject(h), size, fill, encoding);
+        return NodeApi.CallMethod(Module, _alloc, static h => new BufferObject(h), size, fill, NapiArg.Of(encoding));
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ public static unsafe partial class Buffer
     /// </summary>
     public static double ByteLength(string @string, IntPtr? encoding = null)
     {
-        return NodeApi.CallMethod<double>(Module, _byteLength, @string, encoding);
+        return NodeApi.CallMethod<double>(Module, _byteLength, @string, NapiArg.Of(encoding));
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public static unsafe partial class Buffer
     /// </summary>
     public static BufferObject Concat(BufferObject[] list, double? totalLength = null)
     {
-        return NodeApi.CallMethod(Module, _concat, static h => new BufferObject(h), list, totalLength);
+        return NodeApi.CallMethod(Module, _concat, static h => new BufferObject(h), NapiArg.Of(list), NapiArg.Of(totalLength));
     }
 
     /// <summary>
@@ -122,7 +122,7 @@ public static unsafe partial class Buffer
     /// </summary>
     public static BufferObject From(double[] array)
     {
-        return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), array);
+        return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), NapiArg.Of(array));
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ public static unsafe partial class Buffer
     /// </summary>
     public static BufferObject From(byte[] arrayBuffer, double? byteOffset = null, double? length = null)
     {
-        return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), arrayBuffer, byteOffset, length);
+        return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), NapiArg.Of(arrayBuffer), NapiArg.Of(byteOffset), NapiArg.Of(length));
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public static unsafe partial class Buffer
     /// </summary>
     public static BufferObject From(BufferObject buffer)
     {
-        return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), buffer);
+        return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), NapiArg.Of(buffer));
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ public static unsafe partial class Buffer
     /// </summary>
     public static BufferObject From(IntPtr @string, IntPtr? encoding = null)
     {
-        return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), @string, encoding);
+        return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), @string, NapiArg.Of(encoding));
     }
 
     /// <summary>
@@ -178,7 +178,7 @@ public static unsafe partial class Buffer
     /// </summary>
     public static IntPtr Compare(BufferObject buf1, BufferObject buf2)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _compare, buf1, buf2);
+        return NodeApi.CallMethod<IntPtr>(Module, _compare, NapiArg.Of(buf1), NapiArg.Of(buf2));
     }
 
     /// <summary>
@@ -186,7 +186,7 @@ public static unsafe partial class Buffer
     /// </summary>
     public static BufferObject Transcode(BufferObject source, string fromEnc, string toEnc)
     {
-        return NodeApi.CallMethod(Module, _transcode, static h => new BufferObject(h), source, fromEnc, toEnc);
+        return NodeApi.CallMethod(Module, _transcode, static h => new BufferObject(h), NapiArg.Of(source), fromEnc, toEnc);
     }
 
 }
@@ -282,7 +282,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public BufferObject Fill(string value, double? offset = null, double? end = null, IntPtr? encoding = null)
     {
-        return CallMethod(_fill, static h => new BufferObject(h), value, offset, end, encoding);
+        return CallMethod(_fill, static h => new BufferObject(h), value, NapiArg.Of(offset), NapiArg.Of(end), NapiArg.Of(encoding));
     }
 
     /// <summary>
@@ -290,7 +290,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public IntPtr Compare(BufferObject target, double? targetStart = null, double? targetEnd = null, double? sourceStart = null, double? sourceEnd = null)
     {
-        return CallMethod<IntPtr>(_compare, target, targetStart, targetEnd, sourceStart, sourceEnd);
+        return CallMethod<IntPtr>(_compare, NapiArg.Of(target), NapiArg.Of(targetStart), NapiArg.Of(targetEnd), NapiArg.Of(sourceStart), NapiArg.Of(sourceEnd));
     }
 
     /// <summary>
@@ -298,7 +298,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double Copy(BufferObject target, double? targetStart = null, double? sourceStart = null, double? sourceEnd = null)
     {
-        return CallMethod<double>(_copy, target, targetStart, sourceStart, sourceEnd);
+        return CallMethod<double>(_copy, NapiArg.Of(target), NapiArg.Of(targetStart), NapiArg.Of(sourceStart), NapiArg.Of(sourceEnd));
     }
 
     /// <summary>
@@ -306,7 +306,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public bool Equals(byte[] otherBuffer)
     {
-        return CallMethod<bool>(_equals, otherBuffer);
+        return CallMethod<bool>(_equals, NapiArg.Of(otherBuffer));
     }
 
     /// <summary>
@@ -314,7 +314,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public bool Includes(string value, double? byteOffset = null, IntPtr? encoding = null)
     {
-        return CallMethod<bool>(_includes, value, byteOffset, encoding);
+        return CallMethod<bool>(_includes, value, NapiArg.Of(byteOffset), NapiArg.Of(encoding));
     }
 
     /// <summary>
@@ -322,7 +322,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double IndexOf(string value, double? byteOffset = null, IntPtr? encoding = null)
     {
-        return CallMethod<double>(_indexOf, value, byteOffset, encoding);
+        return CallMethod<double>(_indexOf, value, NapiArg.Of(byteOffset), NapiArg.Of(encoding));
     }
 
     /// <summary>
@@ -354,7 +354,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double LastIndexOf(string value, double? byteOffset = null, IntPtr? encoding = null)
     {
-        return CallMethod<double>(_lastIndexOf, value, byteOffset, encoding);
+        return CallMethod<double>(_lastIndexOf, value, NapiArg.Of(byteOffset), NapiArg.Of(encoding));
     }
 
     /// <summary>
@@ -362,7 +362,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public JsBigInt ReadBigInt64Be(double? offset = null)
     {
-        return CallMethod<JsBigInt>(_readBigInt64BE, offset);
+        return CallMethod<JsBigInt>(_readBigInt64BE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -370,7 +370,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public JsBigInt ReadBigInt64Le(double? offset = null)
     {
-        return CallMethod<JsBigInt>(_readBigInt64LE, offset);
+        return CallMethod<JsBigInt>(_readBigInt64LE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -378,7 +378,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public JsBigInt ReadBigUInt64Be(double? offset = null)
     {
-        return CallMethod<JsBigInt>(_readBigUInt64BE, offset);
+        return CallMethod<JsBigInt>(_readBigUInt64BE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -386,7 +386,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public JsBigInt ReadBigUInt64Le(double? offset = null)
     {
-        return CallMethod<JsBigInt>(_readBigUInt64LE, offset);
+        return CallMethod<JsBigInt>(_readBigUInt64LE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -394,7 +394,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadDoubleBe(double? offset = null)
     {
-        return CallMethod<double>(_readDoubleBE, offset);
+        return CallMethod<double>(_readDoubleBE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -402,7 +402,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadDoubleLe(double? offset = null)
     {
-        return CallMethod<double>(_readDoubleLE, offset);
+        return CallMethod<double>(_readDoubleLE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -410,7 +410,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadFloatBe(double? offset = null)
     {
-        return CallMethod<double>(_readFloatBE, offset);
+        return CallMethod<double>(_readFloatBE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -418,7 +418,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadFloatLe(double? offset = null)
     {
-        return CallMethod<double>(_readFloatLE, offset);
+        return CallMethod<double>(_readFloatLE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -426,7 +426,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadInt8(double? offset = null)
     {
-        return CallMethod<double>(_readInt8, offset);
+        return CallMethod<double>(_readInt8, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -434,7 +434,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadInt16Be(double? offset = null)
     {
-        return CallMethod<double>(_readInt16BE, offset);
+        return CallMethod<double>(_readInt16BE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -442,7 +442,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadInt16Le(double? offset = null)
     {
-        return CallMethod<double>(_readInt16LE, offset);
+        return CallMethod<double>(_readInt16LE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -450,7 +450,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadInt32Be(double? offset = null)
     {
-        return CallMethod<double>(_readInt32BE, offset);
+        return CallMethod<double>(_readInt32BE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -458,7 +458,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadInt32Le(double? offset = null)
     {
-        return CallMethod<double>(_readInt32LE, offset);
+        return CallMethod<double>(_readInt32LE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -482,7 +482,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadUInt8(double? offset = null)
     {
-        return CallMethod<double>(_readUInt8, offset);
+        return CallMethod<double>(_readUInt8, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -490,7 +490,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadUInt16Be(double? offset = null)
     {
-        return CallMethod<double>(_readUInt16BE, offset);
+        return CallMethod<double>(_readUInt16BE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -498,7 +498,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadUInt16Le(double? offset = null)
     {
-        return CallMethod<double>(_readUInt16LE, offset);
+        return CallMethod<double>(_readUInt16LE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -506,7 +506,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadUInt32Be(double? offset = null)
     {
-        return CallMethod<double>(_readUInt32BE, offset);
+        return CallMethod<double>(_readUInt32BE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -514,7 +514,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double ReadUInt32Le(double? offset = null)
     {
-        return CallMethod<double>(_readUInt32LE, offset);
+        return CallMethod<double>(_readUInt32LE, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -538,7 +538,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public BufferObject Subarray(double? start = null, double? end = null)
     {
-        return CallMethod(_subarray, static h => new BufferObject(h), start, end);
+        return CallMethod(_subarray, static h => new BufferObject(h), NapiArg.Of(start), NapiArg.Of(end));
     }
 
     /// <summary>
@@ -578,7 +578,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public string ToString(string? encoding = null, double? start = null, double? end = null)
     {
-        return CallMethod<string>(_toString, encoding, start, end);
+        return CallMethod<string>(_toString, encoding, NapiArg.Of(start), NapiArg.Of(end));
     }
 
     /// <summary>
@@ -586,7 +586,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double Write(string str, double? offset = null, double? length = null, string? encoding = null)
     {
-        return CallMethod<double>(_write, str, offset, length, encoding);
+        return CallMethod<double>(_write, str, NapiArg.Of(offset), NapiArg.Of(length), encoding);
     }
 
     /// <summary>
@@ -594,7 +594,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteBigInt64Be(JsBigInt value, double? offset = null)
     {
-        return CallMethod<double>(_writeBigInt64BE, value, offset);
+        return CallMethod<double>(_writeBigInt64BE, NapiArg.Of(value), NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -602,7 +602,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteBigInt64Le(JsBigInt value, double? offset = null)
     {
-        return CallMethod<double>(_writeBigInt64LE, value, offset);
+        return CallMethod<double>(_writeBigInt64LE, NapiArg.Of(value), NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -610,7 +610,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteBigUInt64Be(JsBigInt value, double? offset = null)
     {
-        return CallMethod<double>(_writeBigUInt64BE, value, offset);
+        return CallMethod<double>(_writeBigUInt64BE, NapiArg.Of(value), NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -618,7 +618,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteBigUInt64Le(JsBigInt value, double? offset = null)
     {
-        return CallMethod<double>(_writeBigUInt64LE, value, offset);
+        return CallMethod<double>(_writeBigUInt64LE, NapiArg.Of(value), NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -626,7 +626,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteDoubleBe(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeDoubleBE, value, offset);
+        return CallMethod<double>(_writeDoubleBE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -634,7 +634,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteDoubleLe(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeDoubleLE, value, offset);
+        return CallMethod<double>(_writeDoubleLE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -642,7 +642,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteFloatBe(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeFloatBE, value, offset);
+        return CallMethod<double>(_writeFloatBE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -650,7 +650,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteFloatLe(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeFloatLE, value, offset);
+        return CallMethod<double>(_writeFloatLE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -658,7 +658,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteInt8(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeInt8, value, offset);
+        return CallMethod<double>(_writeInt8, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -666,7 +666,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteInt16Be(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeInt16BE, value, offset);
+        return CallMethod<double>(_writeInt16BE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -674,7 +674,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteInt16Le(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeInt16LE, value, offset);
+        return CallMethod<double>(_writeInt16LE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -682,7 +682,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteInt32Be(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeInt32BE, value, offset);
+        return CallMethod<double>(_writeInt32BE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -690,7 +690,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteInt32Le(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeInt32LE, value, offset);
+        return CallMethod<double>(_writeInt32LE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -714,7 +714,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteUInt8(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeUInt8, value, offset);
+        return CallMethod<double>(_writeUInt8, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -722,7 +722,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteUInt16Be(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeUInt16BE, value, offset);
+        return CallMethod<double>(_writeUInt16BE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -730,7 +730,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteUInt16Le(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeUInt16LE, value, offset);
+        return CallMethod<double>(_writeUInt16LE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -738,7 +738,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteUInt32Be(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeUInt32BE, value, offset);
+        return CallMethod<double>(_writeUInt32BE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -746,7 +746,7 @@ public sealed partial class BufferObject : JsObject
     /// </summary>
     public double WriteUInt32Le(double value, double? offset = null)
     {
-        return CallMethod<double>(_writeUInt32LE, value, offset);
+        return CallMethod<double>(_writeUInt32LE, value, NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -778,7 +778,7 @@ public sealed partial class Blob : JsObject
     private static ReadOnlySpan<byte> _Blob => "Blob"u8;
 
     public Blob(string[] sources, IntPtr? options = null)
-        : this(NodeApi.CreateInstance(Buffer.Module, _Blob, sources, options)) { }
+        : this(NodeApi.CreateInstance(Buffer.Module, _Blob, NapiArg.Of(sources), NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _arrayBuffer => "arrayBuffer"u8;
     private static ReadOnlySpan<byte> _slice => "slice"u8;
     private static ReadOnlySpan<byte> _text => "text"u8;
@@ -795,7 +795,7 @@ public sealed partial class Blob : JsObject
     /// </summary>
     public Blob Slice(double? start = null, double? end = null, string? type = null)
     {
-        return CallMethod(_slice, static h => new Blob(h), start, end, type);
+        return CallMethod(_slice, static h => new Blob(h), NapiArg.Of(start), NapiArg.Of(end), type);
     }
 
     /// <summary>

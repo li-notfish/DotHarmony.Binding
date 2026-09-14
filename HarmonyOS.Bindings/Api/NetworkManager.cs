@@ -96,7 +96,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static string[] GetAllNetworkInterfacesSync(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getAllNetworkInterfacesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin);
+        return NodeApi.CallMethod(Module, _getAllNetworkInterfacesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static string GetIPAddressSync(global::HarmonyOS.Bindings.Api.WantObject admin, string networkInterface)
     {
-        return NodeApi.CallMethod<string>(Module, _getIpAddressSync, admin, networkInterface);
+        return NodeApi.CallMethod<string>(Module, _getIpAddressSync, NapiArg.Of(admin), networkInterface);
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static string GetMacSync(global::HarmonyOS.Bindings.Api.WantObject admin, string networkInterface)
     {
-        return NodeApi.CallMethod<string>(Module, _getMacSync, admin, networkInterface);
+        return NodeApi.CallMethod<string>(Module, _getMacSync, NapiArg.Of(admin), networkInterface);
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static bool IsNetworkInterfaceDisabledSync(global::HarmonyOS.Bindings.Api.WantObject admin, string networkInterface)
     {
-        return NodeApi.CallMethod<bool>(Module, _isNetworkInterfaceDisabledSync, admin, networkInterface);
+        return NodeApi.CallMethod<bool>(Module, _isNetworkInterfaceDisabledSync, NapiArg.Of(admin), networkInterface);
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void SetNetworkInterfaceDisabledSync(global::HarmonyOS.Bindings.Api.WantObject admin, string networkInterface, bool isDisabled)
     {
-        NodeApi.CallMethodVoid(Module, _setNetworkInterfaceDisabledSync, admin, networkInterface, isDisabled);
+        NodeApi.CallMethodVoid(Module, _setNetworkInterfaceDisabledSync, NapiArg.Of(admin), networkInterface, isDisabled);
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void SetGlobalProxySync(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr httpProxy)
     {
-        NodeApi.CallMethodVoid(Module, _setGlobalProxySync, admin, httpProxy);
+        NodeApi.CallMethodVoid(Module, _setGlobalProxySync, NapiArg.Of(admin), httpProxy);
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void SetGlobalProxyForAccount(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr httpProxy, double accountId)
     {
-        NodeApi.CallMethodVoid(Module, _setGlobalProxyForAccount, admin, httpProxy, accountId);
+        NodeApi.CallMethodVoid(Module, _setGlobalProxyForAccount, NapiArg.Of(admin), httpProxy, accountId);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static IntPtr GetGlobalProxySync(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getGlobalProxySync, admin);
+        return NodeApi.CallMethod<IntPtr>(Module, _getGlobalProxySync, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -160,7 +160,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static IntPtr GetGlobalProxyForAccount(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getGlobalProxyForAccount, admin, accountId);
+        return NodeApi.CallMethod<IntPtr>(Module, _getGlobalProxyForAccount, NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void AddFirewallRule(global::HarmonyOS.Bindings.Api.WantObject admin, FirewallRule firewallRule)
     {
-        NodeApi.CallMethodVoid(Module, _addFirewallRule, admin, firewallRule);
+        NodeApi.CallMethodVoid(Module, _addFirewallRule, NapiArg.Of(admin), NapiArg.Of(firewallRule));
     }
 
     /// <summary>
@@ -176,7 +176,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void RemoveFirewallRule(global::HarmonyOS.Bindings.Api.WantObject admin, FirewallRule? firewallRule = null)
     {
-        NodeApi.CallMethodVoid(Module, _removeFirewallRule, admin, firewallRule);
+        NodeApi.CallMethodVoid(Module, _removeFirewallRule, NapiArg.Of(admin), NapiArg.Of(firewallRule));
     }
 
     /// <summary>
@@ -184,7 +184,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static FirewallRule[] GetFirewallRules(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getFirewallRules, h => ValueConverter.ConvertArray(h, static e => new FirewallRule(e)), admin);
+        return NodeApi.CallMethod(Module, _getFirewallRules, h => ValueConverter.ConvertArray(h, static e => new FirewallRule(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void AddDomainFilterRule(global::HarmonyOS.Bindings.Api.WantObject admin, DomainFilterRule domainFilterRule)
     {
-        NodeApi.CallMethodVoid(Module, _addDomainFilterRule, admin, domainFilterRule);
+        NodeApi.CallMethodVoid(Module, _addDomainFilterRule, NapiArg.Of(admin), NapiArg.Of(domainFilterRule));
     }
 
     /// <summary>
@@ -200,7 +200,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void RemoveDomainFilterRule(global::HarmonyOS.Bindings.Api.WantObject admin, DomainFilterRule? domainFilterRule = null)
     {
-        NodeApi.CallMethodVoid(Module, _removeDomainFilterRule, admin, domainFilterRule);
+        NodeApi.CallMethodVoid(Module, _removeDomainFilterRule, NapiArg.Of(admin), NapiArg.Of(domainFilterRule));
     }
 
     /// <summary>
@@ -208,7 +208,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static DomainFilterRule[] GetDomainFilterRules(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getDomainFilterRules, h => ValueConverter.ConvertArray(h, static e => new DomainFilterRule(e)), admin);
+        return NodeApi.CallMethod(Module, _getDomainFilterRules, h => ValueConverter.ConvertArray(h, static e => new DomainFilterRule(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -216,7 +216,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void AddApn(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr apnInfo)
     {
-        NodeApi.CallMethodVoid(Module, _addApn, admin, apnInfo);
+        NodeApi.CallMethodVoid(Module, _addApn, NapiArg.Of(admin), apnInfo);
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void DeleteApn(global::HarmonyOS.Bindings.Api.WantObject admin, string apnId)
     {
-        NodeApi.CallMethodVoid(Module, _deleteApn, admin, apnId);
+        NodeApi.CallMethodVoid(Module, _deleteApn, NapiArg.Of(admin), apnId);
     }
 
     /// <summary>
@@ -232,7 +232,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void UpdateApn(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr apnInfo, string apnId)
     {
-        NodeApi.CallMethodVoid(Module, _updateApn, admin, apnInfo, apnId);
+        NodeApi.CallMethodVoid(Module, _updateApn, NapiArg.Of(admin), apnInfo, apnId);
     }
 
     /// <summary>
@@ -240,7 +240,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void SetPreferredApn(global::HarmonyOS.Bindings.Api.WantObject admin, string apnId)
     {
-        NodeApi.CallMethodVoid(Module, _setPreferredApn, admin, apnId);
+        NodeApi.CallMethodVoid(Module, _setPreferredApn, NapiArg.Of(admin), apnId);
     }
 
     /// <summary>
@@ -248,7 +248,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static string[] QueryApn(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr apnInfo)
     {
-        return NodeApi.CallMethod(Module, _queryApn, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, apnInfo);
+        return NodeApi.CallMethod(Module, _queryApn, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), apnInfo);
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static IntPtr QueryApn(global::HarmonyOS.Bindings.Api.WantObject admin, string apnId)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _queryApn, admin, apnId);
+        return NodeApi.CallMethod<IntPtr>(Module, _queryApn, NapiArg.Of(admin), apnId);
     }
 
     /// <summary>
@@ -264,7 +264,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void TurnOnMobileData(global::HarmonyOS.Bindings.Api.WantObject admin, bool isForce)
     {
-        NodeApi.CallMethodVoid(Module, _turnOnMobileData, admin, isForce);
+        NodeApi.CallMethodVoid(Module, _turnOnMobileData, NapiArg.Of(admin), isForce);
     }
 
     /// <summary>
@@ -272,7 +272,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void TurnOffMobileData(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        NodeApi.CallMethodVoid(Module, _turnOffMobileData, admin);
+        NodeApi.CallMethodVoid(Module, _turnOffMobileData, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -280,7 +280,7 @@ public static unsafe partial class NetworkManager
     /// </summary>
     public static void SetEthernetConfig(global::HarmonyOS.Bindings.Api.WantObject admin, string networkInterface, InterfaceConfig config)
     {
-        NodeApi.CallMethodVoid(Module, _setEthernetConfig, admin, networkInterface, config);
+        NodeApi.CallMethodVoid(Module, _setEthernetConfig, NapiArg.Of(admin), networkInterface, NapiArg.Of(config));
     }
 
 }

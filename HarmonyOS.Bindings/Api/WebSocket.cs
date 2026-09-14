@@ -137,7 +137,7 @@ public sealed partial class WebSocketObject : JsObject
     /// </summary>
     public Task<bool> CloseAsync(WebSocketCloseOptions options)
     {
-        return CallMethodAsync<bool>(_close, options);
+        return CallMethodAsync<bool>(_close, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -396,7 +396,7 @@ public sealed partial class WebSocketServer : JsObject
     /// </summary>
     public Task<bool> StartAsync(WebSocketServerConfig config)
     {
-        return CallMethodAsync<bool>(_start, config);
+        return CallMethodAsync<bool>(_start, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -420,7 +420,7 @@ public sealed partial class WebSocketServer : JsObject
     /// </summary>
     public Task<bool> SendAsync(string data, WebSocketConnection connection)
     {
-        return CallMethodAsync<bool>(_send, data, connection);
+        return CallMethodAsync<bool>(_send, data, NapiArg.Of(connection));
     }
 
     /// <summary>
@@ -428,7 +428,7 @@ public sealed partial class WebSocketServer : JsObject
     /// </summary>
     public Task<bool> CloseAsync(WebSocketConnection connection, IntPtr? options = null)
     {
-        return CallMethodAsync<bool>(_close, connection, options);
+        return CallMethodAsync<bool>(_close, NapiArg.Of(connection), NapiArg.Of(options));
     }
 
     /// <summary>

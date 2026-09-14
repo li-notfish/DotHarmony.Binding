@@ -151,7 +151,7 @@ public static unsafe partial class FormProvider
     /// </summary>
     public static void OpenFormManager(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        NodeApi.CallMethodVoid(Module, _openFormManager, want);
+        NodeApi.CallMethodVoid(Module, _openFormManager, NapiArg.Of(want));
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public static unsafe partial class FormProvider
     /// </summary>
     public static void OpenFormEditAbility(string abilityName, string formId, bool? isMainPage = null)
     {
-        NodeApi.CallMethodVoid(Module, _openFormEditAbility, abilityName, formId, isMainPage);
+        NodeApi.CallMethodVoid(Module, _openFormEditAbility, abilityName, formId, NapiArg.Of(isMainPage));
     }
 
     /// <summary>
@@ -207,7 +207,7 @@ public static unsafe partial class FormProvider
     /// </summary>
     public static void CloseFormEditAbility(bool? isMainPage = null)
     {
-        NodeApi.CallMethodVoid(Module, _closeFormEditAbility, isMainPage);
+        NodeApi.CallMethodVoid(Module, _closeFormEditAbility, NapiArg.Of(isMainPage));
     }
 
 }

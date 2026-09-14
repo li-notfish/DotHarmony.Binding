@@ -191,7 +191,7 @@ public static unsafe partial class ReminderAgentManager
     /// </summary>
     public static Task UnsubscribeReminderStateAsync(IntPtr? callback = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unsubscribeReminderState, callback);
+        return NodeApi.CallMethodAsyncVoid(Module, _unsubscribeReminderState, NapiArg.Of(callback));
     }
 
 }

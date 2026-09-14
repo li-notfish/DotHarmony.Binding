@@ -97,7 +97,7 @@ public static unsafe partial class Audio
     /// </summary>
     public static Task<AudioCapturer> CreateAudioCapturerAsync(AudioCapturerOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _createAudioCapturer, static h => new AudioCapturer(h), options);
+        return NodeApi.CallMethodAsync(Module, _createAudioCapturer, static h => new AudioCapturer(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public static unsafe partial class Audio
     /// </summary>
     public static Task<AudioRenderer> CreateAudioRendererAsync(AudioRendererOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _createAudioRenderer, static h => new AudioRenderer(h), options);
+        return NodeApi.CallMethodAsync(Module, _createAudioRenderer, static h => new AudioRenderer(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -318,7 +318,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public void On(string type, AudioInterrupt interrupt, IntPtr callback)
     {
-        CallMethodVoid(_on, type, interrupt, callback);
+        CallMethodVoid(_on, type, NapiArg.Of(interrupt), callback);
     }
 
     /// <summary>
@@ -326,7 +326,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public void Off(string type, AudioInterrupt interrupt, IntPtr callback)
     {
-        CallMethodVoid(_off, type, interrupt, callback);
+        CallMethodVoid(_off, type, NapiArg.Of(interrupt), callback);
     }
 
     /// <summary>
@@ -446,7 +446,7 @@ public sealed partial class AudioManager : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(new InterruptAction(args[0])),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, interrupt));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(interrupt)));
     }
 
     /// <summary>
@@ -454,7 +454,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public void Off(string type, System.Action<InterruptAction> callback, AudioInterrupt interrupt)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, interrupt));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, NapiArg.Of(interrupt)));
     }
 
     /// <summary>
@@ -773,7 +773,7 @@ public sealed partial class AudioCapturer : JsObject
     /// </summary>
     public void SetIndependentAudioSessionStrategy(AudioSessionStrategy strategy, double behavior)
     {
-        CallMethodVoid(_setIndependentAudioSessionStrategy, strategy, behavior);
+        CallMethodVoid(_setIndependentAudioSessionStrategy, NapiArg.Of(strategy), behavior);
     }
 
     /// <summary>
@@ -1183,7 +1183,7 @@ public sealed partial class AudioRenderer : JsObject
     /// </summary>
     public Task<double> WriteAsync(byte[] buffer)
     {
-        return CallMethodAsync<double>(_write, buffer);
+        return CallMethodAsync<double>(_write, NapiArg.Of(buffer));
     }
 
     /// <summary>
@@ -1503,7 +1503,7 @@ public sealed partial class AudioRenderer : JsObject
     /// </summary>
     public void SetIndependentAudioSessionStrategy(AudioSessionStrategy strategy, double behavior)
     {
-        CallMethodVoid(_setIndependentAudioSessionStrategy, strategy, behavior);
+        CallMethodVoid(_setIndependentAudioSessionStrategy, NapiArg.Of(strategy), behavior);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -2462,7 +2462,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsRecordingAvailable(AudioCapturerInfo capturerInfo)
     {
-        return CallMethod<bool>(_isRecordingAvailable, capturerInfo);
+        return CallMethod<bool>(_isRecordingAvailable, NapiArg.Of(capturerInfo));
     }
 
     /// <summary>
@@ -2478,7 +2478,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsFastPlaybackSupported(AudioStreamInfo streamInfo, global::HarmonyOS.ArkUI.StreamUsage usage)
     {
-        return CallMethod<bool>(_isFastPlaybackSupported, streamInfo, usage);
+        return CallMethod<bool>(_isFastPlaybackSupported, NapiArg.Of(streamInfo), usage);
     }
 
     /// <summary>
@@ -2486,7 +2486,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsOffloadPlaybackSupported(AudioStreamInfo streamInfo, global::HarmonyOS.ArkUI.StreamUsage usage)
     {
-        return CallMethod<bool>(_isOffloadPlaybackSupported, streamInfo, usage);
+        return CallMethod<bool>(_isOffloadPlaybackSupported, NapiArg.Of(streamInfo), usage);
     }
 
     /// <summary>
@@ -2494,7 +2494,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsDirectPlaybackSupported(AudioStreamInfo streamInfo, global::HarmonyOS.ArkUI.StreamUsage usage)
     {
-        return CallMethod<bool>(_isDirectPlaybackSupported, streamInfo, usage);
+        return CallMethod<bool>(_isDirectPlaybackSupported, NapiArg.Of(streamInfo), usage);
     }
 
     /// <summary>
@@ -2502,7 +2502,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsFastRecordingSupported(AudioStreamInfo streamInfo, global::HarmonyOS.ArkUI.SourceType source)
     {
-        return CallMethod<bool>(_isFastRecordingSupported, streamInfo, source);
+        return CallMethod<bool>(_isFastRecordingSupported, NapiArg.Of(streamInfo), source);
     }
 
     /// <summary>
@@ -2510,7 +2510,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsMultichannelPlaybackSupported(AudioStreamInfo streamInfo, global::HarmonyOS.ArkUI.StreamUsage usage)
     {
-        return CallMethod<bool>(_isMultichannelPlaybackSupported, streamInfo, usage);
+        return CallMethod<bool>(_isMultichannelPlaybackSupported, NapiArg.Of(streamInfo), usage);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -2675,7 +2675,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public Task<IntPtr> GetPreferOutputDeviceForRendererInfoAsync(AudioRendererInfo rendererInfo)
     {
-        return CallMethodAsync<IntPtr>(_getPreferOutputDeviceForRendererInfo, rendererInfo);
+        return CallMethodAsync<IntPtr>(_getPreferOutputDeviceForRendererInfo, NapiArg.Of(rendererInfo));
     }
 
     /// <summary>
@@ -2683,7 +2683,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public IntPtr GetPreferredOutputDeviceForRendererInfoSync(AudioRendererInfo rendererInfo)
     {
-        return CallMethod<IntPtr>(_getPreferredOutputDeviceForRendererInfoSync, rendererInfo);
+        return CallMethod<IntPtr>(_getPreferredOutputDeviceForRendererInfoSync, NapiArg.Of(rendererInfo));
     }
 
     /// <summary>
@@ -2691,7 +2691,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public void On(string type, AudioRendererInfo rendererInfo, IntPtr callback)
     {
-        CallMethodVoid(_on, type, rendererInfo, callback);
+        CallMethodVoid(_on, type, NapiArg.Of(rendererInfo), callback);
     }
 
     /// <summary>
@@ -2699,7 +2699,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public Task<IntPtr> GetPreferredInputDeviceForCapturerInfoAsync(AudioCapturerInfo capturerInfo)
     {
-        return CallMethodAsync<IntPtr>(_getPreferredInputDeviceForCapturerInfo, capturerInfo);
+        return CallMethodAsync<IntPtr>(_getPreferredInputDeviceForCapturerInfo, NapiArg.Of(capturerInfo));
     }
 
     /// <summary>
@@ -2707,7 +2707,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public void On(string type, AudioCapturerInfo capturerInfo, IntPtr callback)
     {
-        CallMethodVoid(_on, type, capturerInfo, callback);
+        CallMethodVoid(_on, type, NapiArg.Of(capturerInfo), callback);
     }
 
     /// <summary>
@@ -2715,7 +2715,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public IntPtr GetPreferredInputDeviceForCapturerInfoSync(AudioCapturerInfo capturerInfo)
     {
-        return CallMethod<IntPtr>(_getPreferredInputDeviceForCapturerInfoSync, capturerInfo);
+        return CallMethod<IntPtr>(_getPreferredInputDeviceForCapturerInfoSync, NapiArg.Of(capturerInfo));
     }
 
     /// <summary>
@@ -2787,7 +2787,7 @@ public sealed partial class AudioRoutingManager : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, rendererInfo));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(rendererInfo)));
     }
 
     /// <summary>
@@ -2797,7 +2797,7 @@ public sealed partial class AudioRoutingManager : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, capturerInfo));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, NapiArg.Of(capturerInfo)));
     }
 
     /// <summary>
@@ -2928,7 +2928,7 @@ public sealed partial class AudioSessionManager : JsObject
     /// </summary>
     public Task ActivateAudioSessionAsync(AudioSessionStrategy strategy)
     {
-        return CallMethodAsyncVoid(_activateAudioSession, strategy);
+        return CallMethodAsyncVoid(_activateAudioSession, NapiArg.Of(strategy));
     }
 
     /// <summary>
@@ -3366,7 +3366,7 @@ public sealed partial class AudioDeviceEnhanceManager : JsObject
     /// </summary>
     public Task SelectOutputDeviceForAudioRendererAsync(AudioRenderer renderer, IntPtr outputDevice)
     {
-        return CallMethodAsyncVoid(_selectOutputDeviceForAudioRenderer, renderer, outputDevice);
+        return CallMethodAsyncVoid(_selectOutputDeviceForAudioRenderer, NapiArg.Of(renderer), outputDevice);
     }
 
     /// <summary>
@@ -3374,7 +3374,7 @@ public sealed partial class AudioDeviceEnhanceManager : JsObject
     /// </summary>
     public Task SelectInputDeviceForAudioCapturerAsync(AudioCapturer capturer, IntPtr inputDevice)
     {
-        return CallMethodAsyncVoid(_selectInputDeviceForAudioCapturer, capturer, inputDevice);
+        return CallMethodAsyncVoid(_selectInputDeviceForAudioCapturer, NapiArg.Of(capturer), inputDevice);
     }
 
 }
@@ -3404,7 +3404,7 @@ public sealed partial class AudioDebuggingManager : JsObject
     /// </summary>
     public void PrintRendererInfo(AudioRenderer renderer, double fd)
     {
-        CallMethodVoid(_printRendererInfo, renderer, fd);
+        CallMethodVoid(_printRendererInfo, NapiArg.Of(renderer), fd);
     }
 
     /// <summary>
@@ -3412,7 +3412,7 @@ public sealed partial class AudioDebuggingManager : JsObject
     /// </summary>
     public void PrintCapturerInfo(AudioCapturer capturer, double fd)
     {
-        CallMethodVoid(_printCapturerInfo, capturer, fd);
+        CallMethodVoid(_printCapturerInfo, NapiArg.Of(capturer), fd);
     }
 
     /// <summary>
@@ -3420,7 +3420,7 @@ public sealed partial class AudioDebuggingManager : JsObject
     /// </summary>
     public void PrintLoopbackInfo(AudioLoopback loopback, double fd)
     {
-        CallMethodVoid(_printLoopbackInfo, loopback, fd);
+        CallMethodVoid(_printLoopbackInfo, NapiArg.Of(loopback), fd);
     }
 
     /// <summary>
@@ -3428,7 +3428,7 @@ public sealed partial class AudioDebuggingManager : JsObject
     /// </summary>
     public void PrintSessionInfo(AudioSessionManager session, double fd)
     {
-        CallMethodVoid(_printSessionInfo, session, fd);
+        CallMethodVoid(_printSessionInfo, NapiArg.Of(session), fd);
     }
 
 }
@@ -3446,7 +3446,7 @@ public sealed partial class AudioRecordingManager : JsObject
     /// </summary>
     public Task EnableSystemRecordControllerAsync(bool show, SystemRecordControllerConfig config)
     {
-        return CallMethodAsyncVoid(_enableSystemRecordController, show, config);
+        return CallMethodAsyncVoid(_enableSystemRecordController, show, NapiArg.Of(config));
     }
 
 }

@@ -91,7 +91,7 @@ public static unsafe partial class Vcard
     /// </summary>
     public static Task<string> ExportVCardAsync(IntPtr context, IntPtr predicates, VCardBuilderOptions options)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _exportVCard, context, predicates, options);
+        return NodeApi.CallMethodAsync<string>(Module, _exportVCard, context, predicates, NapiArg.Of(options));
     }
 
     /// <summary>

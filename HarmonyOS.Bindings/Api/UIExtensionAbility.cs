@@ -155,7 +155,7 @@ public sealed partial class UIExtensionAbilityObject : JsObject
     /// </summary>
     public void OnSessionCreate(global::HarmonyOS.Bindings.Api.WantObject want, global::HarmonyOS.Bindings.Api.UIExtensionContentSessionObject session)
     {
-        CallMethodVoid(_onSessionCreate, want, session);
+        CallMethodVoid(_onSessionCreate, NapiArg.Of(want), NapiArg.Of(session));
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ public sealed partial class UIExtensionAbilityObject : JsObject
     /// </summary>
     public void OnSessionDestroy(global::HarmonyOS.Bindings.Api.UIExtensionContentSessionObject session)
     {
-        CallMethodVoid(_onSessionDestroy, session);
+        CallMethodVoid(_onSessionDestroy, NapiArg.Of(session));
     }
 
     /// <summary>

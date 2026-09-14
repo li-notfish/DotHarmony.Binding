@@ -123,7 +123,7 @@ public static unsafe partial class ResourcescheduleBackgroundTaskManager
     /// </summary>
     public static Task<IntPtr> StartBackgroundRunningAsync(IntPtr context, string[] bgModes, IntPtr wantAgent)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _startBackgroundRunning, context, bgModes, wantAgent);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _startBackgroundRunning, context, NapiArg.Of(bgModes), wantAgent);
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public static unsafe partial class ResourcescheduleBackgroundTaskManager
     /// </summary>
     public static Task<IntPtr> StartBackgroundRunningAsync(IntPtr context, ContinuousTaskRequest request)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _startBackgroundRunning, context, request);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _startBackgroundRunning, context, NapiArg.Of(request));
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public static unsafe partial class ResourcescheduleBackgroundTaskManager
     /// </summary>
     public static Task<IntPtr> UpdateBackgroundRunningAsync(IntPtr context, string[] bgModes)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _updateBackgroundRunning, context, bgModes);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _updateBackgroundRunning, context, NapiArg.Of(bgModes));
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public static unsafe partial class ResourcescheduleBackgroundTaskManager
     /// </summary>
     public static Task<IntPtr> UpdateBackgroundRunningAsync(IntPtr context, ContinuousTaskRequest request)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _updateBackgroundRunning, context, request);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _updateBackgroundRunning, context, NapiArg.Of(request));
     }
 
     /// <summary>

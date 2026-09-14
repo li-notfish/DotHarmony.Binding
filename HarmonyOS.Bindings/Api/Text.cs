@@ -170,7 +170,7 @@ public sealed partial class ParagraphBuilder : JsObject
     private static ReadOnlySpan<byte> _ParagraphBuilder => "ParagraphBuilder"u8;
 
     public ParagraphBuilder(IntPtr paragraphStyle, FontCollection fontCollection)
-        : this(NodeApi.CreateInstance(Text.Module, _ParagraphBuilder, paragraphStyle, fontCollection)) { }
+        : this(NodeApi.CreateInstance(Text.Module, _ParagraphBuilder, paragraphStyle, NapiArg.Of(fontCollection))) { }
     private static ReadOnlySpan<byte> _pushStyle => "pushStyle"u8;
     private static ReadOnlySpan<byte> _popStyle => "popStyle"u8;
     private static ReadOnlySpan<byte> _addText => "addText"u8;
@@ -207,7 +207,7 @@ public sealed partial class ParagraphBuilder : JsObject
     /// </summary>
     public void AddPlaceholder(PlaceholderSpan placeholderSpan)
     {
-        CallMethodVoid(_addPlaceholder, placeholderSpan);
+        CallMethodVoid(_addPlaceholder, NapiArg.Of(placeholderSpan));
     }
 
     /// <summary>
@@ -321,7 +321,7 @@ public sealed partial class Paragraph : JsObject
     /// </summary>
     public IntPtr LayoutWithConstraints(TextRectSize size)
     {
-        return CallMethod<IntPtr>(_layoutWithConstraints, size);
+        return CallMethod<IntPtr>(_layoutWithConstraints, NapiArg.Of(size));
     }
 
     /// <summary>
@@ -425,7 +425,7 @@ public sealed partial class Paragraph : JsObject
     /// </summary>
     public IntPtr[] GetRectsForRange(Range range, global::HarmonyOS.ArkUI.RectWidthStyle widthStyle, global::HarmonyOS.ArkUI.RectHeightStyle heightStyle)
     {
-        return CallMethod(_getRectsForRange, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), range, widthStyle, heightStyle);
+        return CallMethod(_getRectsForRange, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(range), widthStyle, heightStyle);
     }
 
     /// <summary>
@@ -537,7 +537,7 @@ public sealed partial class Paragraph : JsObject
     /// </summary>
     public Range[] GetCharacterRangeForGlyphRange(Range glyphRange, IntPtr encoding)
     {
-        return CallMethod(_getCharacterRangeForGlyphRange, h => ValueConverter.ConvertArray(h, static e => new Range(e)), glyphRange, encoding);
+        return CallMethod(_getCharacterRangeForGlyphRange, h => ValueConverter.ConvertArray(h, static e => new Range(e)), NapiArg.Of(glyphRange), encoding);
     }
 
     /// <summary>
@@ -545,7 +545,7 @@ public sealed partial class Paragraph : JsObject
     /// </summary>
     public Range[] GetGlyphRangeForCharacterRange(Range characterRange, IntPtr encoding)
     {
-        return CallMethod(_getGlyphRangeForCharacterRange, h => ValueConverter.ConvertArray(h, static e => new Range(e)), characterRange, encoding);
+        return CallMethod(_getGlyphRangeForCharacterRange, h => ValueConverter.ConvertArray(h, static e => new Range(e)), NapiArg.Of(characterRange), encoding);
     }
 
     /// <summary>
@@ -679,7 +679,7 @@ public sealed partial class FontCollection : JsObject
     /// </summary>
     public void LoadFontSyncWithCheck(string name, string path, double? index = null)
     {
-        CallMethodVoid(_loadFontSyncWithCheck, name, path, index);
+        CallMethodVoid(_loadFontSyncWithCheck, name, path, NapiArg.Of(index));
     }
 
     /// <summary>
@@ -687,7 +687,7 @@ public sealed partial class FontCollection : JsObject
     /// </summary>
     public Task LoadFontWithCheckAsync(string name, string path, double? index = null)
     {
-        return CallMethodAsyncVoid(_loadFontWithCheck, name, path, index);
+        return CallMethodAsyncVoid(_loadFontWithCheck, name, path, NapiArg.Of(index));
     }
 
     /// <summary>
@@ -945,7 +945,7 @@ public sealed partial class Run : JsObject
     /// </summary>
     public double[] GetGlyphs(Range range)
     {
-        return CallMethod(_getGlyphs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), range);
+        return CallMethod(_getGlyphs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(range));
     }
 
     /// <summary>
@@ -961,7 +961,7 @@ public sealed partial class Run : JsObject
     /// </summary>
     public IntPtr[] GetPositions(Range range)
     {
-        return CallMethod(_getPositions, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), range);
+        return CallMethod(_getPositions, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(range));
     }
 
     /// <summary>
@@ -993,7 +993,7 @@ public sealed partial class Run : JsObject
     /// </summary>
     public double[] GetStringIndices(Range? range = null)
     {
-        return CallMethod(_getStringIndices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), range);
+        return CallMethod(_getStringIndices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(range));
     }
 
     /// <summary>
@@ -1033,7 +1033,7 @@ public sealed partial class Run : JsObject
     /// </summary>
     public IntPtr[] GetAdvances(Range range)
     {
-        return CallMethod(_getAdvances, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), range);
+        return CallMethod(_getAdvances, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(range));
     }
 
     /// <summary>

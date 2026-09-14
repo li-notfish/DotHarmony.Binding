@@ -113,7 +113,7 @@ public static unsafe partial class Matrix4
     /// </summary>
     public static Matrix4Transit Combine(Matrix4Transit options)
     {
-        return NodeApi.CallMethod(Module, _combine, static h => new Matrix4Transit(h), options);
+        return NodeApi.CallMethod(Module, _combine, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public static unsafe partial class Matrix4
     /// </summary>
     public static Matrix4Transit Translate(TranslateOption options)
     {
-        return NodeApi.CallMethod(Module, _translate, static h => new Matrix4Transit(h), options);
+        return NodeApi.CallMethod(Module, _translate, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public static unsafe partial class Matrix4
     /// </summary>
     public static Matrix4Transit Scale(ScaleOption options)
     {
-        return NodeApi.CallMethod(Module, _scale, static h => new Matrix4Transit(h), options);
+        return NodeApi.CallMethod(Module, _scale, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public static unsafe partial class Matrix4
     /// </summary>
     public static Matrix4Transit Rotate(RotateOption options)
     {
-        return NodeApi.CallMethod(Module, _rotate, static h => new Matrix4Transit(h), options);
+        return NodeApi.CallMethod(Module, _rotate, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ public sealed partial class Matrix4Transit : JsObject
     /// </summary>
     public Matrix4Transit Combine(Matrix4Transit options)
     {
-        return CallMethod(_combine, static h => new Matrix4Transit(h), options);
+        return CallMethod(_combine, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -195,7 +195,7 @@ public sealed partial class Matrix4Transit : JsObject
     /// </summary>
     public Matrix4Transit Translate(TranslateOption options)
     {
-        return CallMethod(_translate, static h => new Matrix4Transit(h), options);
+        return CallMethod(_translate, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -203,7 +203,7 @@ public sealed partial class Matrix4Transit : JsObject
     /// </summary>
     public Matrix4Transit Scale(ScaleOption options)
     {
-        return CallMethod(_scale, static h => new Matrix4Transit(h), options);
+        return CallMethod(_scale, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -219,7 +219,7 @@ public sealed partial class Matrix4Transit : JsObject
     /// </summary>
     public Matrix4Transit Rotate(RotateOption options)
     {
-        return CallMethod(_rotate, static h => new Matrix4Transit(h), options);
+        return CallMethod(_rotate, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -235,7 +235,7 @@ public sealed partial class Matrix4Transit : JsObject
     /// </summary>
     public Matrix4Transit SetPolyToPoly(PolyToPolyOptions options)
     {
-        return CallMethod(_setPolyToPoly, static h => new Matrix4Transit(h), options);
+        return CallMethod(_setPolyToPoly, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
 }

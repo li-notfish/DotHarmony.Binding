@@ -83,7 +83,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static void SetValue(global::HarmonyOS.Bindings.Api.WantObject admin, string item, string value)
     {
-        NodeApi.CallMethodVoid(Module, _setValue, admin, item, value);
+        NodeApi.CallMethodVoid(Module, _setValue, NapiArg.Of(admin), item, value);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static string GetValue(global::HarmonyOS.Bindings.Api.WantObject admin, string item)
     {
-        return NodeApi.CallMethod<string>(Module, _getValue, admin, item);
+        return NodeApi.CallMethod<string>(Module, _getValue, NapiArg.Of(admin), item);
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static Task SetHomeWallpaperAsync(global::HarmonyOS.Bindings.Api.WantObject admin, double fd)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setHomeWallpaper, admin, fd);
+        return NodeApi.CallMethodAsyncVoid(Module, _setHomeWallpaper, NapiArg.Of(admin), fd);
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static Task SetUnlockWallpaperAsync(global::HarmonyOS.Bindings.Api.WantObject admin, double fd)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setUnlockWallpaper, admin, fd);
+        return NodeApi.CallMethodAsyncVoid(Module, _setUnlockWallpaper, NapiArg.Of(admin), fd);
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static void AddHiddenSettingsMenu(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.SettingsMenu[] menusToHidden)
     {
-        NodeApi.CallMethodVoid(Module, _addHiddenSettingsMenu, admin, menusToHidden);
+        NodeApi.CallMethodVoid(Module, _addHiddenSettingsMenu, NapiArg.Of(admin), NapiArg.Of(menusToHidden));
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static void RemoveHiddenSettingsMenu(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.SettingsMenu[] menusToHidden)
     {
-        NodeApi.CallMethodVoid(Module, _removeHiddenSettingsMenu, admin, menusToHidden);
+        NodeApi.CallMethodVoid(Module, _removeHiddenSettingsMenu, NapiArg.Of(admin), NapiArg.Of(menusToHidden));
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static global::HarmonyOS.ArkUI.SettingsMenu[] GetHiddenSettingsMenu(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getHiddenSettingsMenu, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.SettingsMenu>(e)), admin);
+        return NodeApi.CallMethod(Module, _getHiddenSettingsMenu, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.SettingsMenu>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static void SetValueForAccount(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.SettingsItem item, double accountId, string value)
     {
-        NodeApi.CallMethodVoid(Module, _setValueForAccount, admin, item, accountId, value);
+        NodeApi.CallMethodVoid(Module, _setValueForAccount, NapiArg.Of(admin), item, accountId, value);
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static string GetValueForAccount(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.SettingsItem item, double accountId)
     {
-        return NodeApi.CallMethod<string>(Module, _getValueForAccount, admin, item, accountId);
+        return NodeApi.CallMethod<string>(Module, _getValueForAccount, NapiArg.Of(admin), item, accountId);
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static void SetSwitchStatus(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.SwitchKey key, global::HarmonyOS.ArkUI.SwitchStatus status)
     {
-        NodeApi.CallMethodVoid(Module, _setSwitchStatus, admin, key, status);
+        NodeApi.CallMethodVoid(Module, _setSwitchStatus, NapiArg.Of(admin), key, status);
     }
 
 }

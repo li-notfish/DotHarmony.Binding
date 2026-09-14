@@ -338,7 +338,7 @@ public sealed partial class AnimatorResult : JsObject
     /// </summary>
     public void Update(AnimatorOptions options)
     {
-        CallMethodVoid(_update, options);
+        CallMethodVoid(_update, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -346,7 +346,7 @@ public sealed partial class AnimatorResult : JsObject
     /// </summary>
     public void Reset(AnimatorOptions options)
     {
-        CallMethodVoid(_reset, options);
+        CallMethodVoid(_reset, NapiArg.Of(options));
     }
 
     /// <summary>

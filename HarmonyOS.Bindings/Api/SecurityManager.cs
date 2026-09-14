@@ -99,7 +99,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static string GetSecurityStatus(global::HarmonyOS.Bindings.Api.WantObject admin, string item)
     {
-        return NodeApi.CallMethod<string>(Module, _getSecurityStatus, admin, item);
+        return NodeApi.CallMethod<string>(Module, _getSecurityStatus, NapiArg.Of(admin), item);
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static Task<string> InstallUserCertificateAsync(global::HarmonyOS.Bindings.Api.WantObject admin, CertBlob certificate)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _installUserCertificate, admin, certificate);
+        return NodeApi.CallMethodAsync<string>(Module, _installUserCertificate, NapiArg.Of(admin), NapiArg.Of(certificate));
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static string InstallUserCertificate(global::HarmonyOS.Bindings.Api.WantObject admin, CertBlob certificate, double accountId)
     {
-        return NodeApi.CallMethod<string>(Module, _installUserCertificate, admin, certificate, accountId);
+        return NodeApi.CallMethod<string>(Module, _installUserCertificate, NapiArg.Of(admin), NapiArg.Of(certificate), accountId);
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static Task UninstallUserCertificateAsync(global::HarmonyOS.Bindings.Api.WantObject admin, string certUri)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _uninstallUserCertificate, admin, certUri);
+        return NodeApi.CallMethodAsyncVoid(Module, _uninstallUserCertificate, NapiArg.Of(admin), certUri);
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static string[] GetUserCertificates(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
-        return NodeApi.CallMethod(Module, _getUserCertificates, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, accountId);
+        return NodeApi.CallMethod(Module, _getUserCertificates, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetPasswordPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, PasswordPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _setPasswordPolicy, admin, policy);
+        NodeApi.CallMethodVoid(Module, _setPasswordPolicy, NapiArg.Of(admin), NapiArg.Of(policy));
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static PasswordPolicy GetPasswordPolicy(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getPasswordPolicy, static h => new PasswordPolicy(h), admin);
+        return NodeApi.CallMethod(Module, _getPasswordPolicy, static h => new PasswordPolicy(h), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetAppClipboardPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, double tokenId, global::HarmonyOS.ArkUI.ClipboardPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _setAppClipboardPolicy, admin, tokenId, policy);
+        NodeApi.CallMethodVoid(Module, _setAppClipboardPolicy, NapiArg.Of(admin), tokenId, policy);
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static string GetAppClipboardPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, double? tokenId = null)
     {
-        return NodeApi.CallMethod<string>(Module, _getAppClipboardPolicy, admin, tokenId);
+        return NodeApi.CallMethod<string>(Module, _getAppClipboardPolicy, NapiArg.Of(admin), NapiArg.Of(tokenId));
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetAppClipboardPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, double accountId, global::HarmonyOS.ArkUI.ClipboardPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _setAppClipboardPolicy, admin, bundleName, accountId, policy);
+        NodeApi.CallMethodVoid(Module, _setAppClipboardPolicy, NapiArg.Of(admin), bundleName, accountId, policy);
     }
 
     /// <summary>
@@ -179,7 +179,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static string GetAppClipboardPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, double accountId)
     {
-        return NodeApi.CallMethod<string>(Module, _getAppClipboardPolicy, admin, bundleName, accountId);
+        return NodeApi.CallMethod<string>(Module, _getAppClipboardPolicy, NapiArg.Of(admin), bundleName, accountId);
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetWatermarkImage(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, string source, double accountId)
     {
-        NodeApi.CallMethodVoid(Module, _setWatermarkImage, admin, bundleName, source, accountId);
+        NodeApi.CallMethodVoid(Module, _setWatermarkImage, NapiArg.Of(admin), bundleName, source, accountId);
     }
 
     /// <summary>
@@ -195,7 +195,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void CancelWatermarkImage(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, double accountId)
     {
-        NodeApi.CallMethodVoid(Module, _cancelWatermarkImage, admin, bundleName, accountId);
+        NodeApi.CallMethodVoid(Module, _cancelWatermarkImage, NapiArg.Of(admin), bundleName, accountId);
     }
 
     /// <summary>
@@ -203,7 +203,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetWatermarkImage(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, string source, double accountId, WatermarkProperties properties)
     {
-        NodeApi.CallMethodVoid(Module, _setWatermarkImage, admin, bundleName, source, accountId, properties);
+        NodeApi.CallMethodVoid(Module, _setWatermarkImage, NapiArg.Of(admin), bundleName, source, accountId, NapiArg.Of(properties));
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static string[] GetWatermarkImageApps(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
-        return NodeApi.CallMethod(Module, _getWatermarkImageApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, accountId);
+        return NodeApi.CallMethod(Module, _getWatermarkImageApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
@@ -219,7 +219,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetPermissionManagedState(global::HarmonyOS.Bindings.Api.WantObject admin, SecurityManagerApplicationInstance applicationInstance, string[] permissions, global::HarmonyOS.ArkUI.PermissionManagedState managedState)
     {
-        NodeApi.CallMethodVoid(Module, _setPermissionManagedState, admin, applicationInstance, permissions, managedState);
+        NodeApi.CallMethodVoid(Module, _setPermissionManagedState, NapiArg.Of(admin), NapiArg.Of(applicationInstance), NapiArg.Of(permissions), managedState);
     }
 
     /// <summary>
@@ -227,7 +227,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static global::HarmonyOS.ArkUI.PermissionManagedState GetPermissionManagedState(global::HarmonyOS.Bindings.Api.WantObject admin, SecurityManagerApplicationInstance applicationInstance, string permission)
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.PermissionManagedState>(Module, _getPermissionManagedState, admin, applicationInstance, permission);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.PermissionManagedState>(Module, _getPermissionManagedState, NapiArg.Of(admin), NapiArg.Of(applicationInstance), permission);
     }
 
     /// <summary>
@@ -235,7 +235,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetExternalSourceExtensionsPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr policy)
     {
-        NodeApi.CallMethodVoid(Module, _setExternalSourceExtensionsPolicy, admin, policy);
+        NodeApi.CallMethodVoid(Module, _setExternalSourceExtensionsPolicy, NapiArg.Of(admin), policy);
     }
 
     /// <summary>
@@ -243,7 +243,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static IntPtr GetExternalSourceExtensionsPolicy(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getExternalSourceExtensionsPolicy, admin);
+        return NodeApi.CallMethod<IntPtr>(Module, _getExternalSourceExtensionsPolicy, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -251,7 +251,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void InstallEnterpriseReSignatureCertificate(global::HarmonyOS.Bindings.Api.WantObject admin, string certificateAlias, double fd, double accountId)
     {
-        NodeApi.CallMethodVoid(Module, _installEnterpriseReSignatureCertificate, admin, certificateAlias, fd, accountId);
+        NodeApi.CallMethodVoid(Module, _installEnterpriseReSignatureCertificate, NapiArg.Of(admin), certificateAlias, fd, accountId);
     }
 
     /// <summary>
@@ -259,7 +259,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void UninstallEnterpriseReSignatureCertificate(global::HarmonyOS.Bindings.Api.WantObject admin, string certificateAlias, double accountId)
     {
-        NodeApi.CallMethodVoid(Module, _uninstallEnterpriseReSignatureCertificate, admin, certificateAlias, accountId);
+        NodeApi.CallMethodVoid(Module, _uninstallEnterpriseReSignatureCertificate, NapiArg.Of(admin), certificateAlias, accountId);
     }
 
     /// <summary>
@@ -267,7 +267,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetScreenWatermarkImage(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr pixelMap)
     {
-        NodeApi.CallMethodVoid(Module, _setScreenWatermarkImage, admin, pixelMap);
+        NodeApi.CallMethodVoid(Module, _setScreenWatermarkImage, NapiArg.Of(admin), pixelMap);
     }
 
     /// <summary>
@@ -275,7 +275,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void CancelScreenWatermarkImage(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        NodeApi.CallMethodVoid(Module, _cancelScreenWatermarkImage, admin);
+        NodeApi.CallMethodVoid(Module, _cancelScreenWatermarkImage, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -283,7 +283,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetDisallowedPermission(global::HarmonyOS.Bindings.Api.WantObject admin, string permission, bool disallow, double accountId)
     {
-        NodeApi.CallMethodVoid(Module, _setDisallowedPermission, admin, permission, disallow, accountId);
+        NodeApi.CallMethodVoid(Module, _setDisallowedPermission, NapiArg.Of(admin), permission, disallow, accountId);
     }
 
     /// <summary>
@@ -291,7 +291,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static string[] GetDisallowedPermissions(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
-        return NodeApi.CallMethod(Module, _getDisallowedPermissions, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, accountId);
+        return NodeApi.CallMethod(Module, _getDisallowedPermissions, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
@@ -299,7 +299,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void AddAllowedPermissionBundle(global::HarmonyOS.Bindings.Api.WantObject admin, string permission, IntPtr applicationInstance)
     {
-        NodeApi.CallMethodVoid(Module, _addAllowedPermissionBundle, admin, permission, applicationInstance);
+        NodeApi.CallMethodVoid(Module, _addAllowedPermissionBundle, NapiArg.Of(admin), permission, applicationInstance);
     }
 
     /// <summary>
@@ -307,7 +307,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void RemoveAllowedPermissionBundle(global::HarmonyOS.Bindings.Api.WantObject admin, string permission, IntPtr applicationInstance)
     {
-        NodeApi.CallMethodVoid(Module, _removeAllowedPermissionBundle, admin, permission, applicationInstance);
+        NodeApi.CallMethodVoid(Module, _removeAllowedPermissionBundle, NapiArg.Of(admin), permission, applicationInstance);
     }
 
     /// <summary>
@@ -315,7 +315,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static IntPtr[] GetAllowedPermissionBundles(global::HarmonyOS.Bindings.Api.WantObject admin, string permission, double accountId)
     {
-        return NodeApi.CallMethod(Module, _getAllowedPermissionBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), admin, permission, accountId);
+        return NodeApi.CallMethod(Module, _getAllowedPermissionBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(admin), permission, accountId);
     }
 
     /// <summary>
@@ -323,7 +323,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetScreenLockDisabledForAccount(global::HarmonyOS.Bindings.Api.WantObject admin, bool disable)
     {
-        NodeApi.CallMethodVoid(Module, _setScreenLockDisabledForAccount, admin, disable);
+        NodeApi.CallMethodVoid(Module, _setScreenLockDisabledForAccount, NapiArg.Of(admin), disable);
     }
 
     /// <summary>
@@ -331,7 +331,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static bool IsScreenLockDisabledForAccount(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod<bool>(Module, _isScreenLockDisabledForAccount, admin);
+        return NodeApi.CallMethod<bool>(Module, _isScreenLockDisabledForAccount, NapiArg.Of(admin));
     }
 
 }

@@ -73,7 +73,7 @@ public static unsafe partial class ChildProcess
     /// </summary>
     public static void OnStart(IntPtr? args = null)
     {
-        NodeApi.CallMethodVoid(Module, _onStart, args);
+        NodeApi.CallMethodVoid(Module, _onStart, NapiArg.Of(args));
     }
 
 }

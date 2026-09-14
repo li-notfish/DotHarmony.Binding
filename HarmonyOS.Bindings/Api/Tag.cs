@@ -172,7 +172,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetNfcATag(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNfcATag, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getNfcATag, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -180,7 +180,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetNfcA(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNfcA, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getNfcA, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -188,7 +188,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetNfcBTag(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNfcBTag, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getNfcBTag, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -196,7 +196,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetNfcB(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNfcB, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getNfcB, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -204,7 +204,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetNfcFTag(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNfcFTag, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getNfcFTag, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -212,7 +212,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetNfcF(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNfcF, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getNfcF, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -220,7 +220,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetNfcVTag(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNfcVTag, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getNfcVTag, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -228,7 +228,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetNfcV(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNfcV, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getNfcV, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -236,7 +236,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetIsoDep(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getIsoDep, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getIsoDep, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -244,7 +244,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetNdef(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNdef, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getNdef, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -252,7 +252,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetMifareClassic(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getMifareClassic, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getMifareClassic, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -260,7 +260,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetMifareUltralight(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getMifareUltralight, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getMifareUltralight, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -268,7 +268,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetNdefFormatable(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getNdefFormatable, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getNdefFormatable, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -276,7 +276,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr GetBarcodeTag(TagInfo tagInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getBarcodeTag, tagInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _getBarcodeTag, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
@@ -284,7 +284,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static TagInfo GetTagInfo(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        return NodeApi.CallMethod(Module, _getTagInfo, static h => new TagInfo(h), want);
+        return NodeApi.CallMethod(Module, _getTagInfo, static h => new TagInfo(h), NapiArg.Of(want));
     }
 
     /// <summary>
@@ -292,7 +292,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static Task<TagInfo> RegisterForegroundDispatchAsync(IntPtr elementName, double[] discTech)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _registerForegroundDispatch, static h => new TagInfo(h), elementName, discTech);
+        return NodeApi.CallMethodAsyncCallback(Module, _registerForegroundDispatch, static h => new TagInfo(h), elementName, NapiArg.Of(discTech));
     }
 
     /// <summary>
@@ -308,7 +308,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static void On(string type, IntPtr elementName, double[] discTech, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, elementName, discTech, callback);
+        NodeApi.CallMethodVoid(Module, _on, type, elementName, NapiArg.Of(discTech), callback);
     }
 
     /// <summary>
@@ -324,7 +324,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static void On(string type, IntPtr elementName, double[] discTech, IntPtr callback, double interval)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, elementName, discTech, callback, interval);
+        NodeApi.CallMethodVoid(Module, _on, type, elementName, NapiArg.Of(discTech), callback, interval);
     }
 
     /// <summary>
@@ -356,7 +356,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static NdefRecord MakeMimeRecord(string mimeType, double[] mimeData)
     {
-        return NodeApi.CallMethod(Module, _makeMimeRecord, static h => new NdefRecord(h), mimeType, mimeData);
+        return NodeApi.CallMethod(Module, _makeMimeRecord, static h => new NdefRecord(h), mimeType, NapiArg.Of(mimeData));
     }
 
     /// <summary>
@@ -364,7 +364,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static NdefRecord MakeExternalRecord(string domainName, string type, double[] externalData)
     {
-        return NodeApi.CallMethod(Module, _makeExternalRecord, static h => new NdefRecord(h), domainName, type, externalData);
+        return NodeApi.CallMethod(Module, _makeExternalRecord, static h => new NdefRecord(h), domainName, type, NapiArg.Of(externalData));
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr CreateNdefMessage(double[] data)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createNdefMessage, data);
+        return NodeApi.CallMethod<IntPtr>(Module, _createNdefMessage, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -380,7 +380,7 @@ public static unsafe partial class Tag
     /// </summary>
     public static IntPtr CreateNdefMessage(NdefRecord[] ndefRecords)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _createNdefMessage, ndefRecords);
+        return NodeApi.CallMethod<IntPtr>(Module, _createNdefMessage, NapiArg.Of(ndefRecords));
     }
 
     /// <summary>
@@ -405,7 +405,7 @@ public static unsafe partial class Tag
     {
         _eventListeners.Add((type, callback),
             args => callback(new TagInfo(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, elementName, discTech));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, elementName, NapiArg.Of(discTech)));
     }
 
     /// <summary>
@@ -431,7 +431,7 @@ public static unsafe partial class Tag
     {
         _eventListeners.Add((type, callback),
             args => callback(new TagInfo(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, elementName, discTech, interval));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, elementName, NapiArg.Of(discTech), interval));
     }
 
     /// <summary>

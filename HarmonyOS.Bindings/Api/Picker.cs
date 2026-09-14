@@ -87,7 +87,7 @@ public sealed partial class PickerPhotoViewPicker : JsObject
     /// </summary>
     public Task<PickerPhotoSelectResult> SelectAsync(PickerPhotoSelectOptions? option = null)
     {
-        return CallMethodAsync(_select, static h => new PickerPhotoSelectResult(h), option);
+        return CallMethodAsync(_select, static h => new PickerPhotoSelectResult(h), NapiArg.Of(option));
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public sealed partial class PickerPhotoViewPicker : JsObject
     /// </summary>
     public Task<string[]> SaveAsync(PhotoSaveOptions? option = null)
     {
-        return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+        return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(option));
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public sealed partial class DocumentViewPicker : JsObject
     /// </summary>
     public Task<string[]> SelectAsync(DocumentSelectOptions? option = null)
     {
-        return CallMethodAsync(_select, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+        return CallMethodAsync(_select, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(option));
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public sealed partial class DocumentViewPicker : JsObject
     /// </summary>
     public Task<string[]> SaveAsync(DocumentSaveOptions? option = null)
     {
-        return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+        return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(option));
     }
 
     /// <summary>
@@ -195,7 +195,7 @@ public sealed partial class AudioViewPicker : JsObject
     /// </summary>
     public Task<string[]> SelectAsync(AudioSelectOptions? option = null)
     {
-        return CallMethodAsync(_select, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+        return CallMethodAsync(_select, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(option));
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public sealed partial class AudioViewPicker : JsObject
     /// </summary>
     public Task<string[]> SaveAsync(AudioSaveOptions? option = null)
     {
-        return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), option);
+        return CallMethodAsync(_save, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(option));
     }
 
     /// <summary>

@@ -74,7 +74,7 @@ public static unsafe partial class IdentifySensitiveContent
     /// </summary>
     public static Task<MatchResult[]> ScanFileAsync(string filePath, PolicyObject[] identifyPolicies)
     {
-        return NodeApi.CallMethodAsync(Module, _scanFile, h => ValueConverter.ConvertArray(h, static e => new MatchResult(e)), filePath, identifyPolicies);
+        return NodeApi.CallMethodAsync(Module, _scanFile, h => ValueConverter.ConvertArray(h, static e => new MatchResult(e)), filePath, NapiArg.Of(identifyPolicies));
     }
 
 }

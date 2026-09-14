@@ -118,7 +118,7 @@ public static unsafe partial class HiAppEvent
     /// </summary>
     public static bool Configure(ConfigOption config)
     {
-        return NodeApi.CallMethod<bool>(Module, _configure, config);
+        return NodeApi.CallMethod<bool>(Module, _configure, NapiArg.Of(config));
     }
 
 }

@@ -167,7 +167,7 @@ public static unsafe partial class CacheDownload
     /// </summary>
     public static void OffDownloadSuccess(string url, IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offDownloadSuccess, url, callback);
+        NodeApi.CallMethodVoid(Module, _offDownloadSuccess, url, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -175,7 +175,7 @@ public static unsafe partial class CacheDownload
     /// </summary>
     public static void OffDownloadError(string url, IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offDownloadError, url, callback);
+        NodeApi.CallMethodVoid(Module, _offDownloadError, url, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -183,7 +183,7 @@ public static unsafe partial class CacheDownload
     /// </summary>
     public static void SetGlobalRetryOptions(RetryOptions? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _setGlobalRetryOptions, options);
+        NodeApi.CallMethodVoid(Module, _setGlobalRetryOptions, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public static unsafe partial class CacheDownload
     /// </summary>
     public static void SetGlobalTimeoutOptions(TimeoutOptions? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _setGlobalTimeoutOptions, options);
+        NodeApi.CallMethodVoid(Module, _setGlobalTimeoutOptions, NapiArg.Of(options));
     }
 
 }

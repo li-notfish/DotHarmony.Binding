@@ -84,7 +84,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static Task DisableAdminAsync(global::HarmonyOS.Bindings.Api.WantObject admin, double? userId = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disableAdmin, admin, userId);
+        return NodeApi.CallMethodAsyncVoid(Module, _disableAdmin, NapiArg.Of(admin), NapiArg.Of(userId));
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static bool IsByodAdmin(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod<bool>(Module, _isByodAdmin, admin);
+        return NodeApi.CallMethod<bool>(Module, _isByodAdmin, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static void SubscribeManagedEventSync(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.ManagedEvent[] managedEvents)
     {
-        NodeApi.CallMethodVoid(Module, _subscribeManagedEventSync, admin, managedEvents);
+        NodeApi.CallMethodVoid(Module, _subscribeManagedEventSync, NapiArg.Of(admin), NapiArg.Of(managedEvents));
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static void UnsubscribeManagedEventSync(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.ManagedEvent[] managedEvents)
     {
-        NodeApi.CallMethodVoid(Module, _unsubscribeManagedEventSync, admin, managedEvents);
+        NodeApi.CallMethodVoid(Module, _unsubscribeManagedEventSync, NapiArg.Of(admin), NapiArg.Of(managedEvents));
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static void SetDelegatedPolicies(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName, string[] policies)
     {
-        NodeApi.CallMethodVoid(Module, _setDelegatedPolicies, admin, bundleName, policies);
+        NodeApi.CallMethodVoid(Module, _setDelegatedPolicies, NapiArg.Of(admin), bundleName, NapiArg.Of(policies));
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static string[] GetDelegatedPolicies(global::HarmonyOS.Bindings.Api.WantObject admin, string bundleName)
     {
-        return NodeApi.CallMethod(Module, _getDelegatedPolicies, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, bundleName);
+        return NodeApi.CallMethod(Module, _getDelegatedPolicies, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), bundleName);
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static string[] GetDelegatedBundleNames(global::HarmonyOS.Bindings.Api.WantObject admin, string policy)
     {
-        return NodeApi.CallMethod(Module, _getDelegatedBundleNames, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin, policy);
+        return NodeApi.CallMethod(Module, _getDelegatedBundleNames, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), policy);
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static void StartAdminProvision(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.AdminType type, IntPtr context, IntPtr parameters)
     {
-        NodeApi.CallMethodVoid(Module, _startAdminProvision, admin, type, context, parameters);
+        NodeApi.CallMethodVoid(Module, _startAdminProvision, NapiArg.Of(admin), type, context, parameters);
     }
 
     /// <summary>
@@ -148,7 +148,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static Task EnableDeviceAdminAsync(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _enableDeviceAdmin, admin);
+        return NodeApi.CallMethodAsyncVoid(Module, _enableDeviceAdmin, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static Task DisableDeviceAdminAsync(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disableDeviceAdmin, admin);
+        return NodeApi.CallMethodAsyncVoid(Module, _disableDeviceAdmin, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static void EnableSelfDeviceAdmin(global::HarmonyOS.Bindings.Api.WantObject admin, string credential)
     {
-        NodeApi.CallMethodVoid(Module, _enableSelfDeviceAdmin, admin, credential);
+        NodeApi.CallMethodVoid(Module, _enableSelfDeviceAdmin, NapiArg.Of(admin), credential);
     }
 
 }

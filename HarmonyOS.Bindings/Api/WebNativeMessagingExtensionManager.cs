@@ -75,7 +75,7 @@ public static unsafe partial class WebNativeMessagingExtensionManager
     /// </summary>
     public static double ConnectNative(IntPtr context, global::HarmonyOS.Bindings.Api.WantObject want, WebExtensionConnectionCallback callback)
     {
-        return NodeApi.CallMethod<double>(Module, _connectNative, context, want, callback);
+        return NodeApi.CallMethod<double>(Module, _connectNative, context, NapiArg.Of(want), NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public sealed partial class WebExtensionConnectionCallback : JsObject
     /// </summary>
     public void OnConnect(ConnectionNativeInfo connection)
     {
-        CallMethodVoid(_onConnect, connection);
+        CallMethodVoid(_onConnect, NapiArg.Of(connection));
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public sealed partial class WebExtensionConnectionCallback : JsObject
     /// </summary>
     public void OnDisconnect(ConnectionNativeInfo connection)
     {
-        CallMethodVoid(_onDisconnect, connection);
+        CallMethodVoid(_onDisconnect, NapiArg.Of(connection));
     }
 
     /// <summary>

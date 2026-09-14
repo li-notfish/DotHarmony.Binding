@@ -101,7 +101,7 @@ public static unsafe partial class SelectionManager
     /// </summary>
     public static Task<SelectionManagerPanel> CreatePanelAsync(IntPtr ctx, global::HarmonyOS.Bindings.Api.SelectionPanelPanelInfo info)
     {
-        return NodeApi.CallMethodAsync(Module, _createPanel, static h => new SelectionManagerPanel(h), ctx, info);
+        return NodeApi.CallMethodAsync(Module, _createPanel, static h => new SelectionManagerPanel(h), ctx, NapiArg.Of(info));
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public static unsafe partial class SelectionManager
     /// </summary>
     public static Task DestroyPanelAsync(SelectionManagerPanel panel)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _destroyPanel, panel);
+        return NodeApi.CallMethodAsyncVoid(Module, _destroyPanel, NapiArg.Of(panel));
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();

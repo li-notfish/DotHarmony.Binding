@@ -91,7 +91,7 @@ public static unsafe partial class NotificationSubscriberExtensionAbility
     /// </summary>
     public static void OnCancelMessages(string[] hashCodes)
     {
-        NodeApi.CallMethodVoid(Module, _onCancelMessages, hashCodes);
+        NodeApi.CallMethodVoid(Module, _onCancelMessages, NapiArg.Of(hashCodes));
     }
 
 }

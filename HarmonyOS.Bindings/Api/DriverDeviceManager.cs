@@ -79,7 +79,7 @@ public static unsafe partial class DriverDeviceManager
     /// </summary>
     public static IntPtr[] QueryDevices(double? busType = null)
     {
-        return NodeApi.CallMethod(Module, _queryDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), busType);
+        return NodeApi.CallMethod(Module, _queryDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(busType));
     }
 
     /// <summary>

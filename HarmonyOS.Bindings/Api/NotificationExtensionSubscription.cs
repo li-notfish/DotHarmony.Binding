@@ -96,7 +96,7 @@ public static unsafe partial class NotificationExtensionSubscription
     /// </summary>
     public static Task SubscribeAsync(IntPtr[] info)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _subscribe, info);
+        return NodeApi.CallMethodAsyncVoid(Module, _subscribe, NapiArg.Of(info));
     }
 
     /// <summary>

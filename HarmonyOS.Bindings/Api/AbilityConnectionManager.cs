@@ -100,7 +100,7 @@ public static unsafe partial class AbilityConnectionManager
     /// </summary>
     public static double CreateAbilityConnectionSession(string serviceName, IntPtr context, PeerInfo peerInfo, IntPtr connectOptions)
     {
-        return NodeApi.CallMethod<double>(Module, _createAbilityConnectionSession, serviceName, context, peerInfo, connectOptions);
+        return NodeApi.CallMethod<double>(Module, _createAbilityConnectionSession, serviceName, context, NapiArg.Of(peerInfo), connectOptions);
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public static unsafe partial class AbilityConnectionManager
     /// </summary>
     public static Task SendDataAsync(double sessionId, byte[] data)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendData, sessionId, data);
+        return NodeApi.CallMethodAsyncVoid(Module, _sendData, sessionId, NapiArg.Of(data));
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();

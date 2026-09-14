@@ -188,7 +188,7 @@ public static unsafe partial class Window
     /// </summary>
     public static Task<WindowObject[]> GetWindowsByCoordinateAsync(double displayId, double? windowNumber = null, double? x = null, double? y = null)
     {
-        return NodeApi.CallMethodAsync(Module, _getWindowsByCoordinate, h => ValueConverter.ConvertArray(h, static e => new WindowObject(e)), displayId, windowNumber, x, y);
+        return NodeApi.CallMethodAsync(Module, _getWindowsByCoordinate, h => ValueConverter.ConvertArray(h, static e => new WindowObject(e)), displayId, NapiArg.Of(windowNumber), NapiArg.Of(x), NapiArg.Of(y));
     }
 
     /// <summary>
@@ -204,7 +204,7 @@ public static unsafe partial class Window
     /// </summary>
     public static Task<WindowLayoutInfo[]> GetAllWindowLayoutInfoAsync(double displayId, WindowInfoOptions? option = null)
     {
-        return NodeApi.CallMethodAsync(Module, _getAllWindowLayoutInfo, h => ValueConverter.ConvertArray(h, static e => new WindowLayoutInfo(e)), displayId, option);
+        return NodeApi.CallMethodAsync(Module, _getAllWindowLayoutInfo, h => ValueConverter.ConvertArray(h, static e => new WindowLayoutInfo(e)), displayId, NapiArg.Of(option));
     }
 
     /// <summary>
@@ -212,7 +212,7 @@ public static unsafe partial class Window
     /// </summary>
     public static Task<double> GetGlobalWindowModeAsync(double? displayId = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _getGlobalWindowMode, displayId);
+        return NodeApi.CallMethodAsync<double>(Module, _getGlobalWindowMode, NapiArg.Of(displayId));
     }
 
     /// <summary>
@@ -228,7 +228,7 @@ public static unsafe partial class Window
     /// </summary>
     public static void OffApplicationFocusStateChange(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offApplicationFocusStateChange, callback);
+        NodeApi.CallMethodVoid(Module, _offApplicationFocusStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -260,7 +260,7 @@ public static unsafe partial class Window
     /// </summary>
     public static Task<IntPtr[]> GetMainWindowSnapshotAsync(double[] windowId, WindowSnapshotConfiguration config)
     {
-        return NodeApi.CallMethodAsync(Module, _getMainWindowSnapshot, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), windowId, config);
+        return NodeApi.CallMethodAsync(Module, _getMainWindowSnapshot, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(windowId), NapiArg.Of(config));
     }
 
 }
@@ -441,7 +441,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task ShowWindowAsync(ShowWindowOptions options)
     {
-        return CallMethodAsyncVoid(_showWindow, options);
+        return CallMethodAsyncVoid(_showWindow, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -481,7 +481,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MoveWindowToAsync(double x, double y, MoveConfiguration? moveConfiguration = null)
     {
-        return CallMethodAsyncVoid(_moveWindowToAsync, x, y, moveConfiguration);
+        return CallMethodAsyncVoid(_moveWindowToAsync, x, y, NapiArg.Of(moveConfiguration));
     }
 
     /// <summary>
@@ -497,7 +497,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MoveWindowToGlobalAsync(double x, double y, MoveConfiguration? moveConfiguration = null)
     {
-        return CallMethodAsyncVoid(_moveWindowToGlobal, x, y, moveConfiguration);
+        return CallMethodAsyncVoid(_moveWindowToGlobal, x, y, NapiArg.Of(moveConfiguration));
     }
 
     /// <summary>
@@ -537,7 +537,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetRelativePositionToParentWindowEnabledAsync(bool enabled, global::HarmonyOS.ArkUI.WindowAnchor? anchor = null, double? offsetX = null, double? offsetY = null)
     {
-        return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, enabled, anchor, offsetX, offsetY);
+        return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, enabled, anchor, NapiArg.Of(offsetX), NapiArg.Of(offsetY));
     }
 
     /// <summary>
@@ -673,7 +673,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetSpecificSystemBarEnabledAsync(IntPtr name, bool enable, bool? enableAnimation = null)
     {
-        return CallMethodAsyncVoid(_setSpecificSystemBarEnabled, name, enable, enableAnimation);
+        return CallMethodAsyncVoid(_setSpecificSystemBarEnabled, name, enable, NapiArg.Of(enableAnimation));
     }
 
     /// <summary>
@@ -681,7 +681,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetSystemBarPropertiesAsync(SystemBarProperties systemBarProperties)
     {
-        return CallMethodAsyncVoid(_setSystemBarProperties, systemBarProperties);
+        return CallMethodAsyncVoid(_setSystemBarProperties, NapiArg.Of(systemBarProperties));
     }
 
     /// <summary>
@@ -689,7 +689,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetWindowSystemBarPropertiesAsync(SystemBarProperties systemBarProperties)
     {
-        return CallMethodAsyncVoid(_setWindowSystemBarProperties, systemBarProperties);
+        return CallMethodAsyncVoid(_setWindowSystemBarProperties, NapiArg.Of(systemBarProperties));
     }
 
     /// <summary>
@@ -1129,7 +1129,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetContentAspectRatioAsync(double ratio, bool? isPersistent = null, bool? needUpdateRect = null)
     {
-        return CallMethodAsyncVoid(_setContentAspectRatio, ratio, isPersistent, needUpdateRect);
+        return CallMethodAsyncVoid(_setContentAspectRatio, ratio, NapiArg.Of(isPersistent), NapiArg.Of(needUpdateRect));
     }
 
     /// <summary>
@@ -1169,7 +1169,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null, bool? acrossDisplay = null)
     {
-        return CallMethodAsyncVoid(_maximize, presentation, acrossDisplay);
+        return CallMethodAsyncVoid(_maximize, presentation, NapiArg.Of(acrossDisplay));
     }
 
     /// <summary>
@@ -1177,7 +1177,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MaximizeWithOptionsAsync(MaximizeOptions? maximizeOptions = null)
     {
-        return CallMethodAsyncVoid(_maximizeWithOptions, maximizeOptions);
+        return CallMethodAsyncVoid(_maximizeWithOptions, NapiArg.Of(maximizeOptions));
     }
 
     /// <summary>
@@ -1193,7 +1193,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetSupportedWindowModesAsync(IntPtr[] supportedWindowModes)
     {
-        return CallMethodAsyncVoid(_setSupportedWindowModes, supportedWindowModes);
+        return CallMethodAsyncVoid(_setSupportedWindowModes, NapiArg.Of(supportedWindowModes));
     }
 
     /// <summary>
@@ -1217,7 +1217,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task<WindowLimits> SetWindowLimitsAsync(WindowLimits windowLimits)
     {
-        return CallMethodAsync(_setWindowLimits, static h => new WindowLimits(h), windowLimits);
+        return CallMethodAsync(_setWindowLimits, static h => new WindowLimits(h), NapiArg.Of(windowLimits));
     }
 
     /// <summary>
@@ -1225,7 +1225,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task<WindowLimits> SetWindowLimitsAsync(WindowLimits windowLimits, bool isForcible)
     {
-        return CallMethodAsync(_setWindowLimits, static h => new WindowLimits(h), windowLimits, isForcible);
+        return CallMethodAsync(_setWindowLimits, static h => new WindowLimits(h), NapiArg.Of(windowLimits), isForcible);
     }
 
     /// <summary>
@@ -1249,7 +1249,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task RecoverAsync(WindowSnapshotAnimationConfig snapshotAnimationConfig)
     {
-        return CallMethodAsyncVoid(_recover, snapshotAnimationConfig);
+        return CallMethodAsyncVoid(_recover, NapiArg.Of(snapshotAnimationConfig));
     }
 
     /// <summary>
@@ -1265,7 +1265,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task RestoreMainWindowAsync(IntPtr? wantParameters = null)
     {
-        return CallMethodAsyncVoid(_restoreMainWindow, wantParameters);
+        return CallMethodAsyncVoid(_restoreMainWindow, NapiArg.Of(wantParameters));
     }
 
     /// <summary>
@@ -1353,7 +1353,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetTouchableAreasAsync(WindowRect2[] rects)
     {
-        return CallMethodAsyncVoid(_setTouchableAreas, rects);
+        return CallMethodAsyncVoid(_setTouchableAreas, NapiArg.Of(rects));
     }
 
     /// <summary>
@@ -1369,7 +1369,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public void SetWindowTitleButtonVisible(bool isMaximizeButtonVisible, bool isMinimizeButtonVisible, bool? isCloseButtonVisible = null)
     {
-        CallMethodVoid(_setWindowTitleButtonVisible, isMaximizeButtonVisible, isMinimizeButtonVisible, isCloseButtonVisible);
+        CallMethodVoid(_setWindowTitleButtonVisible, isMaximizeButtonVisible, isMinimizeButtonVisible, NapiArg.Of(isCloseButtonVisible));
     }
 
     /// <summary>
@@ -1425,7 +1425,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetWindowMaskAsync(double[][] windowMask)
     {
-        return CallMethodAsyncVoid(_setWindowMask, windowMask);
+        return CallMethodAsyncVoid(_setWindowMask, NapiArg.Of(windowMask));
     }
 
     /// <summary>
@@ -1433,7 +1433,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetWindowMaskWithAlphaAsync(byte[] windowMask, double maskWidth, double maskHeight)
     {
-        return CallMethodAsyncVoid(_setWindowMaskWithAlpha, windowMask, maskWidth, maskHeight);
+        return CallMethodAsyncVoid(_setWindowMaskWithAlpha, NapiArg.Of(windowMask), maskWidth, maskHeight);
     }
 
     /// <summary>
@@ -1513,7 +1513,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task<WindowObject> CreateSubWindowWithOptionsAsync(string name, SubWindowOptions options)
     {
-        return CallMethodAsync(_createSubWindowWithOptions, static h => new WindowObject(h), name, options);
+        return CallMethodAsync(_createSubWindowWithOptions, static h => new WindowObject(h), name, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1545,7 +1545,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetTitleAndDockHoverShownAsync(bool? isTitleHoverShown = null, bool? isDockHoverShown = null)
     {
-        return CallMethodAsyncVoid(_setTitleAndDockHoverShown, isTitleHoverShown, isDockHoverShown);
+        return CallMethodAsyncVoid(_setTitleAndDockHoverShown, NapiArg.Of(isTitleHoverShown), NapiArg.Of(isDockHoverShown));
     }
 
     /// <summary>
@@ -1617,7 +1617,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task<KeyFramePolicy> SetDragKeyFramePolicyAsync(KeyFramePolicy keyFramePolicy)
     {
-        return CallMethodAsync(_setDragKeyFramePolicy, static h => new KeyFramePolicy(h), keyFramePolicy);
+        return CallMethodAsync(_setDragKeyFramePolicy, static h => new KeyFramePolicy(h), NapiArg.Of(keyFramePolicy));
     }
 
     /// <summary>
@@ -1649,7 +1649,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public void OffWindowPostureModeChange(global::HarmonyOS.ArkUI.WindowPostureMode mode, IntPtr? callback = null)
     {
-        CallMethodVoid(_offWindowPostureModeChange, mode, callback);
+        CallMethodVoid(_offWindowPostureModeChange, mode, NapiArg.Of(callback));
     }
 
     /// <summary>

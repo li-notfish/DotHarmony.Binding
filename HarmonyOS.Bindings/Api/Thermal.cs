@@ -102,7 +102,7 @@ public static unsafe partial class Thermal
     /// </summary>
     public static void UnregisterThermalLevelCallback(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _unregisterThermalLevelCallback, callback);
+        NodeApi.CallMethodVoid(Module, _unregisterThermalLevelCallback, NapiArg.Of(callback));
     }
 
     /// <summary>

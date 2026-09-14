@@ -139,7 +139,7 @@ public static unsafe partial class ConnectedTag
     /// </summary>
     public static Task WriteAsync(double[] data)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _write, data);
+        return NodeApi.CallMethodAsyncVoid(Module, _write, NapiArg.Of(data));
     }
 
     /// <summary>

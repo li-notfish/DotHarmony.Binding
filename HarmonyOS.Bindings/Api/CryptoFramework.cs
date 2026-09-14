@@ -116,7 +116,7 @@ public static unsafe partial class CryptoFramework
     /// </summary>
     public static Mac CreateMac(MacSpec macSpec)
     {
-        return NodeApi.CallMethod(Module, _createMac, static h => new Mac(h), macSpec);
+        return NodeApi.CallMethod(Module, _createMac, static h => new Mac(h), NapiArg.Of(macSpec));
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public static unsafe partial class CryptoFramework
     /// </summary>
     public static AsyKeyGeneratorBySpec CreateAsyKeyGeneratorBySpec(AsyKeySpec asyKeySpec)
     {
-        return NodeApi.CallMethod(Module, _createAsyKeyGeneratorBySpec, static h => new AsyKeyGeneratorBySpec(h), asyKeySpec);
+        return NodeApi.CallMethod(Module, _createAsyKeyGeneratorBySpec, static h => new AsyKeyGeneratorBySpec(h), NapiArg.Of(asyKeySpec));
     }
 
     /// <summary>
@@ -223,7 +223,7 @@ public sealed partial class Random : JsObject
     /// </summary>
     public void SetSeed(CryptoFrameworkDataBlob seed)
     {
-        CallMethodVoid(_setSeed, seed);
+        CallMethodVoid(_setSeed, NapiArg.Of(seed));
     }
 
     /// <summary>
@@ -276,7 +276,7 @@ public sealed partial class AsyKeyGenerator : JsObject
     /// </summary>
     public Task<KeyPair> ConvertKeyAsync(CryptoFrameworkDataBlob pubKey, CryptoFrameworkDataBlob priKey)
     {
-        return CallMethodAsync(_convertKey, static h => new KeyPair(h), pubKey, priKey);
+        return CallMethodAsync(_convertKey, static h => new KeyPair(h), NapiArg.Of(pubKey), NapiArg.Of(priKey));
     }
 
     /// <summary>
@@ -284,7 +284,7 @@ public sealed partial class AsyKeyGenerator : JsObject
     /// </summary>
     public KeyPair ConvertKeySync(CryptoFrameworkDataBlob pubKey, CryptoFrameworkDataBlob priKey)
     {
-        return CallMethod(_convertKeySync, static h => new KeyPair(h), pubKey, priKey);
+        return CallMethod(_convertKeySync, static h => new KeyPair(h), NapiArg.Of(pubKey), NapiArg.Of(priKey));
     }
 
     /// <summary>
@@ -359,7 +359,7 @@ public sealed partial class SymKeyGenerator : JsObject
     /// </summary>
     public Task<SymKey> ConvertKeyAsync(CryptoFrameworkDataBlob key)
     {
-        return CallMethodAsync(_convertKey, static h => new SymKey(h), key);
+        return CallMethodAsync(_convertKey, static h => new SymKey(h), NapiArg.Of(key));
     }
 
     /// <summary>
@@ -367,7 +367,7 @@ public sealed partial class SymKeyGenerator : JsObject
     /// </summary>
     public SymKey ConvertKeySync(CryptoFrameworkDataBlob key)
     {
-        return CallMethod(_convertKeySync, static h => new SymKey(h), key);
+        return CallMethod(_convertKeySync, static h => new SymKey(h), NapiArg.Of(key));
     }
 
 }
@@ -397,7 +397,7 @@ public sealed partial class Mac : JsObject
     /// </summary>
     public Task InitAsync(SymKey key)
     {
-        return CallMethodAsyncVoid(_init, key);
+        return CallMethodAsyncVoid(_init, NapiArg.Of(key));
     }
 
     /// <summary>
@@ -405,7 +405,7 @@ public sealed partial class Mac : JsObject
     /// </summary>
     public void InitSync(SymKey key)
     {
-        CallMethodVoid(_initSync, key);
+        CallMethodVoid(_initSync, NapiArg.Of(key));
     }
 
     /// <summary>
@@ -413,7 +413,7 @@ public sealed partial class Mac : JsObject
     /// </summary>
     public Task UpdateAsync(CryptoFrameworkDataBlob input)
     {
-        return CallMethodAsyncVoid(_update, input);
+        return CallMethodAsyncVoid(_update, NapiArg.Of(input));
     }
 
     /// <summary>
@@ -421,7 +421,7 @@ public sealed partial class Mac : JsObject
     /// </summary>
     public void UpdateSync(CryptoFrameworkDataBlob input)
     {
-        CallMethodVoid(_updateSync, input);
+        CallMethodVoid(_updateSync, NapiArg.Of(input));
     }
 
     /// <summary>
@@ -489,7 +489,7 @@ public sealed partial class Md : JsObject
     /// </summary>
     public Task UpdateAsync(CryptoFrameworkDataBlob input)
     {
-        return CallMethodAsyncVoid(_update, input);
+        return CallMethodAsyncVoid(_update, NapiArg.Of(input));
     }
 
     /// <summary>
@@ -497,7 +497,7 @@ public sealed partial class Md : JsObject
     /// </summary>
     public void UpdateSync(CryptoFrameworkDataBlob input)
     {
-        CallMethodVoid(_updateSync, input);
+        CallMethodVoid(_updateSync, NapiArg.Of(input));
     }
 
     /// <summary>
@@ -552,7 +552,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public Task InitAsync(global::HarmonyOS.ArkUI.CryptoMode opMode, CryptoFrameworkKey key, ParamsSpec @params)
     {
-        return CallMethodAsyncVoid(_init, opMode, key, @params);
+        return CallMethodAsyncVoid(_init, opMode, NapiArg.Of(key), NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -560,7 +560,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public void InitSync(global::HarmonyOS.ArkUI.CryptoMode opMode, CryptoFrameworkKey key, ParamsSpec @params)
     {
-        CallMethodVoid(_initSync, opMode, key, @params);
+        CallMethodVoid(_initSync, opMode, NapiArg.Of(key), NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -568,7 +568,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public Task<CryptoFrameworkDataBlob> UpdateAsync(CryptoFrameworkDataBlob data)
     {
-        return CallMethodAsync(_update, static h => new CryptoFrameworkDataBlob(h), data);
+        return CallMethodAsync(_update, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -576,7 +576,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public CryptoFrameworkDataBlob UpdateSync(CryptoFrameworkDataBlob data)
     {
-        return CallMethod(_updateSync, static h => new CryptoFrameworkDataBlob(h), data);
+        return CallMethod(_updateSync, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -584,7 +584,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public Task<CryptoFrameworkDataBlob> DoFinalAsync(CryptoFrameworkDataBlob data)
     {
-        return CallMethodAsync(_doFinal, static h => new CryptoFrameworkDataBlob(h), data);
+        return CallMethodAsync(_doFinal, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -592,7 +592,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public CryptoFrameworkDataBlob DoFinalSync(CryptoFrameworkDataBlob data)
     {
-        return CallMethod(_doFinalSync, static h => new CryptoFrameworkDataBlob(h), data);
+        return CallMethod(_doFinalSync, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -600,7 +600,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public void SetCipherSpec(global::HarmonyOS.ArkUI.CipherSpecItem itemType, byte[] itemValue)
     {
-        CallMethodVoid(_setCipherSpec, itemType, itemValue);
+        CallMethodVoid(_setCipherSpec, itemType, NapiArg.Of(itemValue));
     }
 
     /// <summary>
@@ -639,7 +639,7 @@ public sealed partial class Sign : JsObject
     /// </summary>
     public Task InitAsync(PriKey priKey)
     {
-        return CallMethodAsyncVoid(_init, priKey);
+        return CallMethodAsyncVoid(_init, NapiArg.Of(priKey));
     }
 
     /// <summary>
@@ -647,7 +647,7 @@ public sealed partial class Sign : JsObject
     /// </summary>
     public void InitSync(PriKey priKey)
     {
-        CallMethodVoid(_initSync, priKey);
+        CallMethodVoid(_initSync, NapiArg.Of(priKey));
     }
 
     /// <summary>
@@ -655,7 +655,7 @@ public sealed partial class Sign : JsObject
     /// </summary>
     public Task UpdateAsync(CryptoFrameworkDataBlob data)
     {
-        return CallMethodAsyncVoid(_update, data);
+        return CallMethodAsyncVoid(_update, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -663,7 +663,7 @@ public sealed partial class Sign : JsObject
     /// </summary>
     public void UpdateSync(CryptoFrameworkDataBlob data)
     {
-        CallMethodVoid(_updateSync, data);
+        CallMethodVoid(_updateSync, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -671,7 +671,7 @@ public sealed partial class Sign : JsObject
     /// </summary>
     public Task<CryptoFrameworkDataBlob> SignAsync(CryptoFrameworkDataBlob data)
     {
-        return CallMethodAsync(_sign, static h => new CryptoFrameworkDataBlob(h), data);
+        return CallMethodAsync(_sign, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -679,7 +679,7 @@ public sealed partial class Sign : JsObject
     /// </summary>
     public CryptoFrameworkDataBlob SignSync(CryptoFrameworkDataBlob data)
     {
-        return CallMethod(_signSync, static h => new CryptoFrameworkDataBlob(h), data);
+        return CallMethod(_signSync, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -728,7 +728,7 @@ public sealed partial class Verify : JsObject
     /// </summary>
     public Task InitAsync(PubKey pubKey)
     {
-        return CallMethodAsyncVoid(_init, pubKey);
+        return CallMethodAsyncVoid(_init, NapiArg.Of(pubKey));
     }
 
     /// <summary>
@@ -736,7 +736,7 @@ public sealed partial class Verify : JsObject
     /// </summary>
     public void InitSync(PubKey pubKey)
     {
-        CallMethodVoid(_initSync, pubKey);
+        CallMethodVoid(_initSync, NapiArg.Of(pubKey));
     }
 
     /// <summary>
@@ -744,7 +744,7 @@ public sealed partial class Verify : JsObject
     /// </summary>
     public Task UpdateAsync(CryptoFrameworkDataBlob data)
     {
-        return CallMethodAsyncVoid(_update, data);
+        return CallMethodAsyncVoid(_update, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -752,7 +752,7 @@ public sealed partial class Verify : JsObject
     /// </summary>
     public void UpdateSync(CryptoFrameworkDataBlob data)
     {
-        CallMethodVoid(_updateSync, data);
+        CallMethodVoid(_updateSync, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -760,7 +760,7 @@ public sealed partial class Verify : JsObject
     /// </summary>
     public Task<bool> VerifyAsync(CryptoFrameworkDataBlob data, CryptoFrameworkDataBlob signatureData)
     {
-        return CallMethodAsync<bool>(_verify, data, signatureData);
+        return CallMethodAsync<bool>(_verify, NapiArg.Of(data), NapiArg.Of(signatureData));
     }
 
     /// <summary>
@@ -768,7 +768,7 @@ public sealed partial class Verify : JsObject
     /// </summary>
     public bool VerifySync(CryptoFrameworkDataBlob data, CryptoFrameworkDataBlob signatureData)
     {
-        return CallMethod<bool>(_verifySync, data, signatureData);
+        return CallMethod<bool>(_verifySync, NapiArg.Of(data), NapiArg.Of(signatureData));
     }
 
     /// <summary>
@@ -776,7 +776,7 @@ public sealed partial class Verify : JsObject
     /// </summary>
     public Task<CryptoFrameworkDataBlob> RecoverAsync(CryptoFrameworkDataBlob signatureData)
     {
-        return CallMethodAsync(_recover, static h => new CryptoFrameworkDataBlob(h), signatureData);
+        return CallMethodAsync(_recover, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(signatureData));
     }
 
     /// <summary>
@@ -784,7 +784,7 @@ public sealed partial class Verify : JsObject
     /// </summary>
     public CryptoFrameworkDataBlob RecoverSync(CryptoFrameworkDataBlob signatureData)
     {
-        return CallMethod(_recoverSync, static h => new CryptoFrameworkDataBlob(h), signatureData);
+        return CallMethod(_recoverSync, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(signatureData));
     }
 
     /// <summary>
@@ -825,7 +825,7 @@ public sealed partial class KeyAgreement : JsObject
     /// </summary>
     public Task<CryptoFrameworkDataBlob> GenerateSecretAsync(PriKey priKey, PubKey pubKey)
     {
-        return CallMethodAsync(_generateSecret, static h => new CryptoFrameworkDataBlob(h), priKey, pubKey);
+        return CallMethodAsync(_generateSecret, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(priKey), NapiArg.Of(pubKey));
     }
 
     /// <summary>
@@ -833,7 +833,7 @@ public sealed partial class KeyAgreement : JsObject
     /// </summary>
     public CryptoFrameworkDataBlob GenerateSecretSync(PriKey priKey, PubKey pubKey)
     {
-        return CallMethod(_generateSecretSync, static h => new CryptoFrameworkDataBlob(h), priKey, pubKey);
+        return CallMethod(_generateSecretSync, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(priKey), NapiArg.Of(pubKey));
     }
 
 }
@@ -948,7 +948,7 @@ public sealed partial class Kdf : JsObject
     /// </summary>
     public Task<CryptoFrameworkDataBlob> GenerateSecretAsync(KdfSpec @params)
     {
-        return CallMethodAsync(_generateSecret, static h => new CryptoFrameworkDataBlob(h), @params);
+        return CallMethodAsync(_generateSecret, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -956,7 +956,7 @@ public sealed partial class Kdf : JsObject
     /// </summary>
     public CryptoFrameworkDataBlob GenerateSecretSync(KdfSpec @params)
     {
-        return CallMethod(_generateSecretSync, static h => new CryptoFrameworkDataBlob(h), @params);
+        return CallMethod(_generateSecretSync, static h => new CryptoFrameworkDataBlob(h), NapiArg.Of(@params));
     }
 
 }
@@ -977,7 +977,7 @@ public sealed partial class Kem : JsObject
     /// </summary>
     public Task<KemEncapResult> EncapsulateAsync(PubKey pubKey, byte[] ikme)
     {
-        return CallMethodAsync(_encapsulate, static h => new KemEncapResult(h), pubKey, ikme);
+        return CallMethodAsync(_encapsulate, static h => new KemEncapResult(h), NapiArg.Of(pubKey), NapiArg.Of(ikme));
     }
 
     /// <summary>
@@ -985,7 +985,7 @@ public sealed partial class Kem : JsObject
     /// </summary>
     public KemEncapResult EncapsulateSync(PubKey pubKey, byte[] ikme)
     {
-        return CallMethod(_encapsulateSync, static h => new KemEncapResult(h), pubKey, ikme);
+        return CallMethod(_encapsulateSync, static h => new KemEncapResult(h), NapiArg.Of(pubKey), NapiArg.Of(ikme));
     }
 
     /// <summary>
@@ -993,7 +993,7 @@ public sealed partial class Kem : JsObject
     /// </summary>
     public Task<byte[]> DecapsulateAsync(PriKey priKey, byte[] wrappedKey)
     {
-        return CallMethodAsync(_decapsulate, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), priKey, wrappedKey);
+        return CallMethodAsync(_decapsulate, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(priKey), NapiArg.Of(wrappedKey));
     }
 
     /// <summary>
@@ -1001,7 +1001,7 @@ public sealed partial class Kem : JsObject
     /// </summary>
     public byte[] DecapsulateSync(PriKey priKey, byte[] wrappedKey)
     {
-        return CallMethod(_decapsulateSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), priKey, wrappedKey);
+        return CallMethod(_decapsulateSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(priKey), NapiArg.Of(wrappedKey));
     }
 
 }
@@ -1226,7 +1226,7 @@ public sealed partial class PriKey : JsObject
     /// </summary>
     public string GetEncodedPem(string format, KeyEncodingConfig config)
     {
-        return CallMethod<string>(_getEncodedPem, format, config);
+        return CallMethod<string>(_getEncodedPem, format, NapiArg.Of(config));
     }
 
     /// <summary>

@@ -828,7 +828,7 @@ export class ApiGenerator {
 
     private emitStaticMethod(lines: string[], m: EmitMember): void {
         const paramStr = m.params.map(p => this.formatParameter(p)).join(', ');
-        const paramNames = m.params.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
+        const paramNames = m.params.map(p => this.wrapArg(p, TypeMapper.escapeCSharpKeyword(p.name))).join(', ');
         const callArgs = paramNames ? `, ${paramNames}` : '';
 
         lines.push('    /// <summary>');
@@ -873,7 +873,7 @@ export class ApiGenerator {
                 if (generatedCtorSigs.has(ctorSig)) continue;
                 generatedCtorSigs.add(ctorSig);
                 const paramStr = mappedParams.map(p => this.formatParameter(p)).join(', ');
-                const paramNames = mappedParams.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
+                const paramNames = mappedParams.map(p => this.wrapArg(p, TypeMapper.escapeCSharpKeyword(p.name))).join(', ');
                 const ctorArgs = paramNames ? `, ${paramNames}` : '';
                 lines.push('');
                 lines.push(`    public ${spec.csharpName}(${paramStr})`);
@@ -933,7 +933,7 @@ export class ApiGenerator {
             const pascal = withAsyncSuffix(toPascalCase(m.name), retType);
             if (pascal === spec.csharpName) continue;
             const paramStr = mappedParams.map(p => this.formatParameter(p)).join(', ');
-            const paramNames = mappedParams.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
+            const paramNames = mappedParams.map(p => this.wrapArg(p, TypeMapper.escapeCSharpKeyword(p.name))).join(', ');
             const callArgs = paramNames ? `, ${paramNames}` : '';
 
             const sigKey = `${pascal}(${mappedParams.map(p => p.type).join(',')})`;
@@ -1147,6 +1147,22 @@ export class ApiGenerator {
         return `${param.type}${optionalMark} ${TypeMapper.escapeCSharpKeyword(param.name)}${defaultVal}`;
     }
 
+    /**
+     * 调用点参数包装（NapiArg 零装箱封送）：基元/string/IntPtr/枚举走 NapiArg 隐式转换
+     * （栈上字段赋值零分配）；其余类型（可空基元/数组/record/接口/泛型容器等无隐式转换）
+     * 经 NapiArg.Of 显式工厂入 Ref 路径。
+     */
+    private wrapArg(param: ParameterInfo, expr: string): string {
+        // formatParameter 对可选参数加 '?'（p.type 本身非空类型）——调用点实参类型是可空的
+        const nullable = param.optional || param.type.endsWith('?');
+        const t = param.type.replace(/\?$/, '');
+        if (t === 'string') return expr;
+        if (t === 'IntPtr') return nullable ? `NapiArg.Of(${expr})` : expr;
+        if (t.startsWith('global::HarmonyOS.ArkUI.') && !t.endsWith('[]')) return expr; // 枚举（Enum 隐式转换）——枚举数组走 Of
+        if (PRIMITIVE_TYPES.has(t) && !nullable) return expr;
+        return `NapiArg.Of(${expr})`;
+    }
+
     // ---------- 事件模型（类型化 On/Off/Once + .NET event） ----------
 
     private buildEventInfos(methods: MethodInfo[]): EventEmitInfo[] {
@@ -1298,7 +1314,7 @@ export class ApiGenerator {
             const extra = extraParams.length > 0
                 ? ', ' + extraParams.map(p => this.formatParameter(p)).join(', ') : '';
             const extraArgs = extraParams.length > 0
-                ? ', ' + extraParams.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ') : '';
+                ? ', ' + extraParams.map(p => this.wrapArg(p, TypeMapper.escapeCSharpKeyword(p.name))).join(', ') : '';
             const mod = instance ? '' : 'static ';
             const extraTypes = extraParams.map(p => p.type).join(',');
             const sigKey = `${fn}|${info.typeParamCs}|${action}|${extraTypes}`;

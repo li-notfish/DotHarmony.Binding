@@ -75,7 +75,7 @@ public static unsafe partial class Bytrace
     /// </summary>
     public static void StartTrace(string name, double taskId, double? expectedTime = null)
     {
-        NodeApi.CallMethodVoid(Module, _startTrace, name, taskId, expectedTime);
+        NodeApi.CallMethodVoid(Module, _startTrace, name, taskId, NapiArg.Of(expectedTime));
     }
 
     /// <summary>

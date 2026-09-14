@@ -196,7 +196,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr Text(string txt, IntPtr? pattern = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _text, txt, pattern);
+        return NodeApi.CallMethod<IntPtr>(Module, _text, txt, NapiArg.Of(pattern));
     }
 
     /// <summary>
@@ -228,7 +228,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr Clickable(bool? b = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _clickable, b);
+        return NodeApi.CallMethod<IntPtr>(Module, _clickable, NapiArg.Of(b));
     }
 
     /// <summary>
@@ -236,7 +236,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr Scrollable(bool? b = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _scrollable, b);
+        return NodeApi.CallMethod<IntPtr>(Module, _scrollable, NapiArg.Of(b));
     }
 
     /// <summary>
@@ -244,7 +244,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr Enabled(bool? b = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _enabled, b);
+        return NodeApi.CallMethod<IntPtr>(Module, _enabled, NapiArg.Of(b));
     }
 
     /// <summary>
@@ -252,7 +252,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr Focused(bool? b = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _focused, b);
+        return NodeApi.CallMethod<IntPtr>(Module, _focused, NapiArg.Of(b));
     }
 
     /// <summary>
@@ -260,7 +260,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr Selected(bool? b = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _selected, b);
+        return NodeApi.CallMethod<IntPtr>(Module, _selected, NapiArg.Of(b));
     }
 
     /// <summary>
@@ -516,7 +516,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr LongClickable(bool? b = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _longClickable, b);
+        return NodeApi.CallMethod<IntPtr>(Module, _longClickable, NapiArg.Of(b));
     }
 
     /// <summary>
@@ -524,7 +524,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr Checked(bool? b = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _checked, b);
+        return NodeApi.CallMethod<IntPtr>(Module, _checked, NapiArg.Of(b));
     }
 
     /// <summary>
@@ -532,7 +532,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr Checkable(bool? b = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _checkable, b);
+        return NodeApi.CallMethod<IntPtr>(Module, _checkable, NapiArg.Of(b));
     }
 
     /// <summary>
@@ -588,7 +588,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr Description(string val, IntPtr? pattern = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _description, val, pattern);
+        return NodeApi.CallMethod<IntPtr>(Module, _description, val, NapiArg.Of(pattern));
     }
 
     /// <summary>
@@ -612,7 +612,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr Hint(string val, IntPtr? pattern = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _hint, val, pattern);
+        return NodeApi.CallMethod<IntPtr>(Module, _hint, val, NapiArg.Of(pattern));
     }
 
     /// <summary>
@@ -620,7 +620,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static IntPtr OriginalText(string text, IntPtr? pattern = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _originalText, text, pattern);
+        return NodeApi.CallMethod<IntPtr>(Module, _originalText, text, NapiArg.Of(pattern));
     }
 
     /// <summary>
@@ -676,7 +676,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task ScrollToTopAsync(double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _scrollToTop, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _scrollToTop, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -684,7 +684,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task ScrollToBottomAsync(double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _scrollToBottom, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _scrollToBottom, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -748,7 +748,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task<IntPtr> ScrollSearchAsync(IntPtr on, bool? vertical = null, double? offset = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _scrollSearch, on, vertical, offset);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _scrollSearch, on, NapiArg.Of(vertical), NapiArg.Of(offset));
     }
 
     /// <summary>
@@ -796,7 +796,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task TriggerCombineKeysAsync(double key0, double key1, double? key2 = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _triggerCombineKeys, key0, key1, key2);
+        return NodeApi.CallMethodAsyncVoid(Module, _triggerCombineKeys, key0, key1, NapiArg.Of(key2));
     }
 
     /// <summary>
@@ -804,7 +804,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task TriggerCombineKeysAsync(double key0, double key1, double? key2 = null, double? displayId = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _triggerCombineKeys, key0, key1, key2, displayId);
+        return NodeApi.CallMethodAsyncVoid(Module, _triggerCombineKeys, key0, key1, NapiArg.Of(key2), NapiArg.Of(displayId));
     }
 
     /// <summary>
@@ -812,7 +812,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task SwipeAsync(double startx, double starty, double endx, double endy, double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _swipe, startx, starty, endx, endy, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _swipe, startx, starty, endx, endy, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -820,7 +820,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task DragAsync(double startx, double starty, double endx, double endy, double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _drag, startx, starty, endx, endy, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _drag, startx, starty, endx, endy, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -836,7 +836,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task ClickAtWithOptionsAsync(IntPtr point, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _clickAtWithOptions, point, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _clickAtWithOptions, point, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -852,7 +852,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task LongClickAtAsync(IntPtr point, double? duration = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _longClickAt, point, duration);
+        return NodeApi.CallMethodAsyncVoid(Module, _longClickAt, point, NapiArg.Of(duration));
     }
 
     /// <summary>
@@ -860,7 +860,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task LongClickAtWithOptionsAsync(IntPtr point, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _longClickAtWithOptions, point, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _longClickAtWithOptions, point, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -868,7 +868,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task SwipeBetweenAsync(IntPtr from, IntPtr to, double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _swipeBetween, from, to, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _swipeBetween, from, to, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -876,7 +876,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task SwipeBetweenWithOptionsAsync(IntPtr from, IntPtr to, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _swipeBetweenWithOptions, from, to, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _swipeBetweenWithOptions, from, to, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -884,7 +884,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task DragBetweenAsync(IntPtr from, IntPtr to, double? speed = null, double? duration = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _dragBetween, from, to, speed, duration);
+        return NodeApi.CallMethodAsyncVoid(Module, _dragBetween, from, to, NapiArg.Of(speed), NapiArg.Of(duration));
     }
 
     /// <summary>
@@ -892,7 +892,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task DragBetweenWithOptionsAsync(IntPtr from, IntPtr to, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _dragBetweenWithOptions, from, to, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _dragBetweenWithOptions, from, to, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -908,7 +908,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task<bool> DumpLayoutAsync(string savePath, double? displayId = null)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _dumpLayout, savePath, displayId);
+        return NodeApi.CallMethodAsync<bool>(Module, _dumpLayout, savePath, NapiArg.Of(displayId));
     }
 
     /// <summary>
@@ -1020,7 +1020,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task<bool> InjectMultiPointerActionAsync(IntPtr pointers, double? speed = null)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _injectMultiPointerAction, pointers, speed);
+        return NodeApi.CallMethodAsync<bool>(Module, _injectMultiPointerAction, pointers, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -1044,7 +1044,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task MouseClickAsync(IntPtr p, IntPtr btnId, double? key1 = null, double? key2 = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mouseClick, p, btnId, key1, key2);
+        return NodeApi.CallMethodAsyncVoid(Module, _mouseClick, p, btnId, NapiArg.Of(key1), NapiArg.Of(key2));
     }
 
     /// <summary>
@@ -1060,7 +1060,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task MouseScrollAsync(IntPtr p, bool down, double d, double? key1 = null, double? key2 = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mouseScroll, p, down, d, key1, key2);
+        return NodeApi.CallMethodAsyncVoid(Module, _mouseScroll, p, down, d, NapiArg.Of(key1), NapiArg.Of(key2));
     }
 
     /// <summary>
@@ -1068,7 +1068,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task MouseScrollAsync(IntPtr p, bool down, double d, double? key1 = null, double? key2 = null, double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mouseScroll, p, down, d, key1, key2, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _mouseScroll, p, down, d, NapiArg.Of(key1), NapiArg.Of(key2), NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -1076,7 +1076,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task<bool> ScreenCaptureAsync(string savePath, IntPtr? rect = null)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _screenCapture, savePath, rect);
+        return NodeApi.CallMethodAsync<bool>(Module, _screenCapture, savePath, NapiArg.Of(rect));
     }
 
     /// <summary>
@@ -1092,7 +1092,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task MouseDoubleClickAsync(IntPtr p, IntPtr btnId, double? key1 = null, double? key2 = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mouseDoubleClick, p, btnId, key1, key2);
+        return NodeApi.CallMethodAsyncVoid(Module, _mouseDoubleClick, p, btnId, NapiArg.Of(key1), NapiArg.Of(key2));
     }
 
     /// <summary>
@@ -1100,7 +1100,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task MouseLongClickAsync(IntPtr p, IntPtr btnId, double? key1 = null, double? key2 = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mouseLongClick, p, btnId, key1, key2);
+        return NodeApi.CallMethodAsyncVoid(Module, _mouseLongClick, p, btnId, NapiArg.Of(key1), NapiArg.Of(key2));
     }
 
     /// <summary>
@@ -1108,7 +1108,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task MouseLongClickAsync(IntPtr p, IntPtr btnId, double? key1 = null, double? key2 = null, double? duration = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mouseLongClick, p, btnId, key1, key2, duration);
+        return NodeApi.CallMethodAsyncVoid(Module, _mouseLongClick, p, btnId, NapiArg.Of(key1), NapiArg.Of(key2), NapiArg.Of(duration));
     }
 
     /// <summary>
@@ -1116,7 +1116,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task MouseMoveWithTrackAsync(IntPtr from, IntPtr to, double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mouseMoveWithTrack, from, to, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _mouseMoveWithTrack, from, to, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -1124,7 +1124,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task MouseDragAsync(IntPtr from, IntPtr to, double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mouseDrag, from, to, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _mouseDrag, from, to, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -1132,7 +1132,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task MouseDragAsync(IntPtr from, IntPtr to, double? speed = null, double? duration = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mouseDrag, from, to, speed, duration);
+        return NodeApi.CallMethodAsyncVoid(Module, _mouseDrag, from, to, NapiArg.Of(speed), NapiArg.Of(duration));
     }
 
     /// <summary>
@@ -1140,7 +1140,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task MouseDragWithOptionsAsync(IntPtr from, IntPtr to, IntPtr? touchOptions = null, IntPtr? keyOptions = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mouseDragWithOptions, from, to, touchOptions, keyOptions);
+        return NodeApi.CallMethodAsyncVoid(Module, _mouseDragWithOptions, from, to, NapiArg.Of(touchOptions), NapiArg.Of(keyOptions));
     }
 
     /// <summary>
@@ -1164,7 +1164,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task TouchPadMultiFingerSwipeAsync(double fingers, IntPtr direction, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _touchPadMultiFingerSwipe, fingers, direction, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _touchPadMultiFingerSwipe, fingers, direction, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1180,7 +1180,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task PenLongClickAsync(IntPtr point, double? pressure = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _penLongClick, point, pressure);
+        return NodeApi.CallMethodAsyncVoid(Module, _penLongClick, point, NapiArg.Of(pressure));
     }
 
     /// <summary>
@@ -1196,7 +1196,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task PenSwipeAsync(IntPtr startPoint, IntPtr endPoint, double? speed = null, double? pressure = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _penSwipe, startPoint, endPoint, speed, pressure);
+        return NodeApi.CallMethodAsyncVoid(Module, _penSwipe, startPoint, endPoint, NapiArg.Of(speed), NapiArg.Of(pressure));
     }
 
     /// <summary>
@@ -1204,7 +1204,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task InjectPenPointerActionAsync(IntPtr pointers, double? speed = null, double? pressure = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _injectPenPointerAction, pointers, speed, pressure);
+        return NodeApi.CallMethodAsyncVoid(Module, _injectPenPointerAction, pointers, NapiArg.Of(speed), NapiArg.Of(pressure));
     }
 
     /// <summary>
@@ -1212,7 +1212,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task TriggerPenKeyAsync(IntPtr key, IntPtr mode, IntPtr operation, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _triggerPenKey, key, mode, operation, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _triggerPenKey, key, mode, operation, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1220,7 +1220,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task CrownRotateAsync(double d, double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _crownRotate, d, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _crownRotate, d, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -1228,7 +1228,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task<bool> IsComponentPresentWhenLongClickAsync(IntPtr on, IntPtr point, double? duration = null)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _isComponentPresentWhenLongClick, on, point, duration);
+        return NodeApi.CallMethodAsync<bool>(Module, _isComponentPresentWhenLongClick, on, point, NapiArg.Of(duration));
     }
 
     /// <summary>
@@ -1236,7 +1236,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task<bool> IsComponentPresentWhenDragAsync(IntPtr on, IntPtr from, IntPtr to, double? speed = null, double? duration = null)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _isComponentPresentWhenDrag, on, from, to, speed, duration);
+        return NodeApi.CallMethodAsync<bool>(Module, _isComponentPresentWhenDrag, on, from, to, NapiArg.Of(speed), NapiArg.Of(duration));
     }
 
     /// <summary>
@@ -1244,7 +1244,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task<bool> IsComponentPresentWhenSwipeAsync(IntPtr on, IntPtr from, IntPtr to, double? speed = null)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _isComponentPresentWhenSwipe, on, from, to, speed);
+        return NodeApi.CallMethodAsync<bool>(Module, _isComponentPresentWhenSwipe, on, from, to, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -1252,7 +1252,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task TouchPadTwoFingersScrollAsync(IntPtr point, IntPtr direction, double d, double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _touchPadTwoFingersScroll, point, direction, d, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _touchPadTwoFingersScroll, point, direction, d, NapiArg.Of(speed));
     }
 
     /// <summary>
@@ -1260,7 +1260,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task KnuckleKnockAsync(IntPtr[] pointers, double times)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _knuckleKnock, pointers, times);
+        return NodeApi.CallMethodAsyncVoid(Module, _knuckleKnock, NapiArg.Of(pointers), times);
     }
 
     /// <summary>
@@ -1268,7 +1268,7 @@ public static unsafe partial class UiTest
     /// </summary>
     public static Task InjectKnucklePointerActionAsync(IntPtr pointers, double? speed = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _injectKnucklePointerAction, pointers, speed);
+        return NodeApi.CallMethodAsyncVoid(Module, _injectKnucklePointerAction, pointers, NapiArg.Of(speed));
     }
 
     /// <summary>

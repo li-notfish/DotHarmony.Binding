@@ -106,7 +106,7 @@ public static unsafe partial class Observer
     /// </summary>
     public static void On(string type, ObserverOptions options, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, options, callback);
+        NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(options), callback);
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public static unsafe partial class Observer
     /// </summary>
     public static void Off(string type, ObserverOptions options, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _off, type, options, callback);
+        NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(options), callback);
     }
 
     /// <summary>
@@ -186,7 +186,7 @@ public static unsafe partial class Observer
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -194,7 +194,7 @@ public static unsafe partial class Observer
     /// </summary>
     public static void Off(string type, System.Action<IntPtr> callback, ObserverOptions options)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, options));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -258,7 +258,7 @@ public static unsafe partial class Observer
     {
         _eventListeners.Add((type, callback),
             args => callback(new TabContentInfo(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>
@@ -266,7 +266,7 @@ public static unsafe partial class Observer
     /// </summary>
     public static void Off(string type, System.Action<TabContentInfo> callback, ObserverOptions options)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, options));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>

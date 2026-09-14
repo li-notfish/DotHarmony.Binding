@@ -175,7 +175,7 @@ public static unsafe partial class Data
     /// </summary>
     public static Task<double[]> QueryApnIdsAsync(ApnInfo apnInfo)
     {
-        return NodeApi.CallMethodAsync(Module, _queryApnIds, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), apnInfo);
+        return NodeApi.CallMethodAsync(Module, _queryApnIds, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(apnInfo));
     }
 
     /// <summary>

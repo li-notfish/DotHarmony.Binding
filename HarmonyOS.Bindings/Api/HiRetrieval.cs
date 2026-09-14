@@ -87,7 +87,7 @@ public static unsafe partial class HiRetrieval
     /// </summary>
     public static void Participate(HiRetrievalConfig config)
     {
-        NodeApi.CallMethodVoid(Module, _participate, config);
+        NodeApi.CallMethodVoid(Module, _participate, NapiArg.Of(config));
     }
 
     /// <summary>

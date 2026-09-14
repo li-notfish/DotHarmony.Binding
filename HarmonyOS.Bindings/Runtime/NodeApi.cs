@@ -71,7 +71,7 @@ public static class NodeApi
     /// <param name="componentName">组件名称</param>
     /// <param name="args">构造参数</param>
     /// <returns>组件的 napi_value 句柄</returns>
-    public static IntPtr CreateComponent(string componentName, params ReadOnlySpan<object?> args)
+    public static IntPtr CreateComponent(string componentName, params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var env = NapiEnv.Current;
@@ -102,7 +102,7 @@ public static class NodeApi
     /// <param name="jsObject">组件句柄</param>
     /// <param name="attributeName">属性名称</param>
     /// <param name="values">属性值（支持单值和多值）</param>
-    public static void SetAttribute(IntPtr jsObject, string attributeName, params ReadOnlySpan<object?> values)
+    public static void SetAttribute(IntPtr jsObject, string attributeName, params ReadOnlySpan<NapiArg> values)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
@@ -134,7 +134,7 @@ public static class NodeApi
     /// <summary>
     /// 设置组件属性（预编码属性名版本，避免重复 UTF8 编码）
     /// </summary>
-    public static void SetAttribute(IntPtr jsObject, byte[] attributeName, params ReadOnlySpan<object?> values)
+    public static void SetAttribute(IntPtr jsObject, byte[] attributeName, params ReadOnlySpan<NapiArg> values)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
@@ -289,11 +289,11 @@ public static class NodeApi
     /// 以 <paramref name="jsObject"/> 上名为 <paramref name="className"/> 的属性为构造函数创建实例
     /// （JS `new obj.ClassName(args)`，供生成器为带构造函数的嵌套类产出包装）。
     /// </summary>
-    public static IntPtr CreateInstance(IntPtr jsObject, ReadOnlySpan<byte> className, params ReadOnlySpan<object?> args)
+    public static IntPtr CreateInstance(IntPtr jsObject, ReadOnlySpan<byte> className, params ReadOnlySpan<NapiArg> args)
         => CreateInstance(jsObject, className.ToArray(), args);
 
     /// <summary>CreateInstance 的 byte[] 类名重载</summary>
-    public static IntPtr CreateInstance(IntPtr jsObject, byte[] className, params ReadOnlySpan<object?> args)
+    public static IntPtr CreateInstance(IntPtr jsObject, byte[] className, params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
@@ -374,7 +374,7 @@ public static class NodeApi
     /// <param name="methodName">方法名称</param>
     /// <param name="args">方法参数</param>
     /// <returns>方法返回值</returns>
-    public static T CallMethod<T>(IntPtr jsObject, string methodName, params ReadOnlySpan<object?> args)
+    public static T CallMethod<T>(IntPtr jsObject, string methodName, params ReadOnlySpan<NapiArg> args)
 #if HARMONYOS
         => CallMethod<T>(jsObject, Encoding.UTF8.GetBytes(methodName), args);
 #else
@@ -386,7 +386,7 @@ public static class NodeApi
     /// <summary>
     /// 调用组件方法（byte[] 方法名重载：生成器以 "name"u8 常量携带，免每次 UTF8 编码）
     /// </summary>
-    public static T CallMethod<T>(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<object?> args)
+    public static T CallMethod<T>(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
@@ -397,24 +397,24 @@ public static class NodeApi
     }
 
     /// <summary>调用组件方法（ReadOnlySpan&lt;byte&gt; 方法名重载：生成器 "name"u8 → ReadOnlySpan&lt;byte&gt;）</summary>
-    public static T CallMethod<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
+    public static T CallMethod<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<NapiArg> args)
         => CallMethod<T>(jsObject, methodName.ToArray(), args);
 
     /// <summary>
     /// 调用组件方法，返回值经调用点显式转换委托处理（数组/JsObject 包装类等复杂类型；
     /// 委托在生成调用点传入——AOT 安全，无反射、无注册表）。
     /// </summary>
-    public static TCall CallMethod<TCall>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<object?> args)
+    public static TCall CallMethod<TCall>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<NapiArg> args)
         => convert(InvokeMethod(jsObject, methodName.ToArray(), args));
 
     /// <summary>CallMethod 显式转换委托的 byte[] 方法名重载</summary>
-    public static TCall CallMethod<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<object?> args)
+    public static TCall CallMethod<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<NapiArg> args)
         => convert(InvokeMethod(jsObject, methodName, args));
 
     /// <summary>
     /// 调用组件方法（无返回值/void 返回：C# 泛型不支持 CallMethod&lt;void&gt;，void 调用走此重载）
     /// </summary>
-    public static void CallMethodVoid(IntPtr jsObject, string methodName, params ReadOnlySpan<object?> args)
+    public static void CallMethodVoid(IntPtr jsObject, string methodName, params ReadOnlySpan<NapiArg> args)
 #if HARMONYOS
         => CallMethodVoid(jsObject, Encoding.UTF8.GetBytes(methodName), args);
 #else
@@ -427,7 +427,7 @@ public static class NodeApi
     /// 调用组件方法并接为 Task&lt;T&gt;（Promise&lt;T&gt; 路线；ROADMAP 2.1 最小切片）。
     /// 返回值非 Promise 时同步转换；Promise 经 PromiseTaskBridge（JS 线程回调 + TCS）。
     /// </summary>
-    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, string methodName, params ReadOnlySpan<object?> args)
+    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, string methodName, params ReadOnlySpan<NapiArg> args)
 #if HARMONYOS
         => CallMethodAsync<T>(jsObject, Encoding.UTF8.GetBytes(methodName), args);
 #else
@@ -437,7 +437,7 @@ public static class NodeApi
 #endif
 
     /// <summary>调用组件方法并接为 Task（Promise&lt;void&gt; 路线）</summary>
-    public static Task CallMethodAsyncVoid(IntPtr jsObject, string methodName, params ReadOnlySpan<object?> args)
+    public static Task CallMethodAsyncVoid(IntPtr jsObject, string methodName, params ReadOnlySpan<NapiArg> args)
 #if HARMONYOS
         => CallMethodAsyncVoid(jsObject, Encoding.UTF8.GetBytes(methodName), args);
 #else
@@ -447,7 +447,7 @@ public static class NodeApi
 #endif
 
     /// <summary>调用组件方法并接为 Task&lt;T&gt;（byte[] 方法名重载，供生成器 u8 常量使用）</summary>
-    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<object?> args)
+    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
@@ -461,7 +461,7 @@ public static class NodeApi
     }
 
     /// <summary>调用组件方法并接为 Task（Promise&lt;void&gt; 路线；byte[] 方法名重载）</summary>
-    public static Task CallMethodAsyncVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<object?> args)
+    public static Task CallMethodAsyncVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
@@ -475,7 +475,7 @@ public static class NodeApi
     }
 
     /// <summary>调用组件方法（byte[] 方法名，void 返回）</summary>
-    public static void CallMethodVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<object?> args)
+    public static void CallMethodVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         _ = InvokeMethod(jsObject, methodName, args);
@@ -485,18 +485,18 @@ public static class NodeApi
     }
 
     /// <summary>调用组件方法（ReadOnlySpan&lt;byte&gt; 方法名，void 返回）</summary>
-    public static void CallMethodVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
+    public static void CallMethodVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<NapiArg> args)
         => CallMethodVoid(jsObject, methodName.ToArray(), args);
 
     /// <summary>调用组件方法并接为 Task&lt;T&gt;（ReadOnlySpan&lt;byte&gt; 方法名重载）</summary>
-    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
+    public static Task<T> CallMethodAsync<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<NapiArg> args)
         => CallMethodAsync<T>(jsObject, methodName.ToArray(), args);
 
     /// <summary>
     /// 调用组件方法并接为 Task&lt;T&gt;，Promise 结果经调用点显式转换委托处理
     /// （数组/JsObject 包装类等复杂类型；非 Promise 结果同样经该委托）。
     /// </summary>
-    public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<object?> args)
+    public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName.ToArray(), args);
@@ -510,7 +510,7 @@ public static class NodeApi
     }
 
     /// <summary>CallMethodAsync 显式转换委托的 byte[] 方法名重载</summary>
-    public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<object?> args)
+    public static Task<TCall> CallMethodAsync<TCall>(IntPtr jsObject, byte[] methodName, Func<IntPtr, TCall> convert, params ReadOnlySpan<NapiArg> args)
         => CallMethodAsync(jsObject, methodName.AsSpan(), convert, args);
 
     /// <summary>
@@ -519,14 +519,15 @@ public static class NodeApi
     /// （err 非 undefined/null 时抛 ArkTSException，读 BusinessError 的 code/message）。
     /// convert 为复杂结果类型（数组/JsObject 包装类）的显式转换委托；基元传 null。
     /// </summary>
-    public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, byte[] methodName, Func<IntPtr, T>? convert, params ReadOnlySpan<object?> args)
+    public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, byte[] methodName, Func<IntPtr, T>? convert, params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var (jsFunc, task) = CallbackTaskBridge.CreateCallback(convert);
-        // [args..., jsFunc]：object 为托管类型不可 stackalloc，此处单次分配可接受
-        var argv = new object?[args.Length + 1];
+        // [args..., jsFunc]：NapiArg 为 struct 可 stackalloc；jsFunc 走 Of 工厂入 Ref 路径
+        // NapiArg 含引用字段为托管类型不可 stackalloc——单次数组分配（零装箱收益在基元装箱）
+        var argv = new NapiArg[args.Length + 1];
         args.CopyTo(argv);
-        argv[args.Length] = jsFunc;
+        argv[args.Length] = NapiArg.Of(jsFunc);
         _ = InvokeMethod(jsObject, methodName, argv);
         return task;
 #else
@@ -535,23 +536,23 @@ public static class NodeApi
     }
 
     /// <summary>CallMethodAsyncCallback 的 Promise&lt;void&gt; 对应物（AsyncCallback&lt;void&gt;）</summary>
-    public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<object?> args)
+    public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<NapiArg> args)
         => CallMethodAsyncCallback<object>(jsObject, methodName, null, args);
 
     /// <summary>CallMethodAsyncCallback 的 ReadOnlySpan&lt;byte&gt; 方法名重载</summary>
-    public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, T>? convert, params ReadOnlySpan<object?> args)
+    public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, T>? convert, params ReadOnlySpan<NapiArg> args)
         => CallMethodAsyncCallback<T>(jsObject, methodName.ToArray(), convert, args);
 
     /// <summary>CallMethodAsyncCallbackVoid 的 ReadOnlySpan&lt;byte&gt; 方法名重载</summary>
-    public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
+    public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<NapiArg> args)
         => CallMethodAsyncCallbackVoid(jsObject, methodName.ToArray(), args);
 
     /// <summary>调用组件方法并接为 Task（ReadOnlySpan&lt;byte&gt; 方法名，void Promise 路线）</summary>
-    public static Task CallMethodAsyncVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<object?> args)
+    public static Task CallMethodAsyncVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<NapiArg> args)
         => CallMethodAsyncVoid(jsObject, methodName.ToArray(), args);
 
 #if HARMONYOS
-    private static IntPtr InvokeMethod(IntPtr jsObject, byte[] methodName, ReadOnlySpan<object?> args)
+    private static IntPtr InvokeMethod(IntPtr jsObject, byte[] methodName, ReadOnlySpan<NapiArg> args)
     {
         if (jsObject == IntPtr.Zero)
             throw new ArgumentNullException(nameof(jsObject));

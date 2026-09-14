@@ -202,7 +202,7 @@ public sealed partial class TouchController : JsObject
     /// </summary>
     public Task TouchDownAsync(TouchPoint touch)
     {
-        return CallMethodAsyncVoid(_touchDown, touch);
+        return CallMethodAsyncVoid(_touchDown, NapiArg.Of(touch));
     }
 
     /// <summary>
@@ -210,7 +210,7 @@ public sealed partial class TouchController : JsObject
     /// </summary>
     public Task TouchMoveAsync(TouchPoint touch)
     {
-        return CallMethodAsyncVoid(_touchMove, touch);
+        return CallMethodAsyncVoid(_touchMove, NapiArg.Of(touch));
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ public sealed partial class TouchController : JsObject
     /// </summary>
     public Task TouchUpAsync(TouchPoint touch)
     {
-        return CallMethodAsyncVoid(_touchUp, touch);
+        return CallMethodAsyncVoid(_touchUp, NapiArg.Of(touch));
     }
 
 }

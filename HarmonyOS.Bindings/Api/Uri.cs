@@ -202,7 +202,7 @@ public sealed partial class URI : JsObject
     /// </summary>
     public bool Equals(URI other)
     {
-        return CallMethod<bool>(_equals, other);
+        return CallMethod<bool>(_equals, NapiArg.Of(other));
     }
 
     /// <summary>
@@ -210,7 +210,7 @@ public sealed partial class URI : JsObject
     /// </summary>
     public bool EqualsTo(URI other)
     {
-        return CallMethod<bool>(_equalsTo, other);
+        return CallMethod<bool>(_equalsTo, NapiArg.Of(other));
     }
 
     /// <summary>

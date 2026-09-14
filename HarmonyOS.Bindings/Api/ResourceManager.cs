@@ -813,7 +813,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public global::HarmonyOS.Bindings.Api.DrawableDescriptorObject GetDrawableDescriptor(double resId, double? density = null, double? type = null)
     {
-        return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resId, density, type);
+        return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resId, NapiArg.Of(density), NapiArg.Of(type));
     }
 
     /// <summary>
@@ -821,7 +821,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public global::HarmonyOS.Bindings.Api.DrawableDescriptorObject GetDrawableDescriptorByName(string resName, double? density = null, double? type = null)
     {
-        return CallMethod(_getDrawableDescriptorByName, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resName, density, type);
+        return CallMethod(_getDrawableDescriptorByName, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resName, NapiArg.Of(density), NapiArg.Of(type));
     }
 
     /// <summary>
@@ -829,7 +829,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public global::HarmonyOS.Bindings.Api.DrawableDescriptorObject GetDrawableDescriptor(IntPtr resource, double? density = null, double? type = null)
     {
-        return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resource, density, type);
+        return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resource, NapiArg.Of(density), NapiArg.Of(type));
     }
 
     /// <summary>
@@ -973,7 +973,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public byte[] GetMediaContentSync(double resId, double? density = null)
     {
-        return CallMethod(_getMediaContentSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resId, density);
+        return CallMethod(_getMediaContentSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resId, NapiArg.Of(density));
     }
 
     /// <summary>
@@ -981,7 +981,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public byte[] GetMediaContentSync(IntPtr resource, double? density = null)
     {
-        return CallMethod(_getMediaContentSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resource, density);
+        return CallMethod(_getMediaContentSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resource, NapiArg.Of(density));
     }
 
     /// <summary>
@@ -989,7 +989,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public string GetMediaContentBase64Sync(double resId, double? density = null)
     {
-        return CallMethod<string>(_getMediaContentBase64Sync, resId, density);
+        return CallMethod<string>(_getMediaContentBase64Sync, resId, NapiArg.Of(density));
     }
 
     /// <summary>
@@ -997,7 +997,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public string GetMediaContentBase64Sync(IntPtr resource, double? density = null)
     {
-        return CallMethod<string>(_getMediaContentBase64Sync, resource, density);
+        return CallMethod<string>(_getMediaContentBase64Sync, resource, NapiArg.Of(density));
     }
 
     /// <summary>
@@ -1045,7 +1045,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public byte[] GetMediaByNameSync(string resName, double? density = null)
     {
-        return CallMethod(_getMediaByNameSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resName, density);
+        return CallMethod(_getMediaByNameSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resName, NapiArg.Of(density));
     }
 
     /// <summary>
@@ -1053,7 +1053,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public string GetMediaBase64ByNameSync(string resName, double? density = null)
     {
-        return CallMethod<string>(_getMediaBase64ByNameSync, resName, density);
+        return CallMethod<string>(_getMediaBase64ByNameSync, resName, NapiArg.Of(density));
     }
 
     /// <summary>
@@ -1085,7 +1085,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public string[] GetLocales(bool? includeSystem = null)
     {
-        return CallMethod(_getLocales, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), includeSystem);
+        return CallMethod(_getLocales, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(includeSystem));
     }
 
     /// <summary>
@@ -1125,7 +1125,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public ResourceManagerObject GetOverrideResourceManager(ResourceManagerConfiguration? configuration = null)
     {
-        return CallMethod(_getOverrideResourceManager, static h => new ResourceManagerObject(h), configuration);
+        return CallMethod(_getOverrideResourceManager, static h => new ResourceManagerObject(h), NapiArg.Of(configuration));
     }
 
     /// <summary>
@@ -1141,7 +1141,7 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public void UpdateOverrideConfiguration(ResourceManagerConfiguration configuration)
     {
-        CallMethodVoid(_updateOverrideConfiguration, configuration);
+        CallMethodVoid(_updateOverrideConfiguration, NapiArg.Of(configuration));
     }
 
     /// <summary>

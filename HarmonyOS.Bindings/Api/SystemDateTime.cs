@@ -97,7 +97,7 @@ public static unsafe partial class SystemDateTime
     /// </summary>
     public static double GetTime(bool? isNanoseconds = null)
     {
-        return NodeApi.CallMethod<double>(Module, _getTime, isNanoseconds);
+        return NodeApi.CallMethod<double>(Module, _getTime, NapiArg.Of(isNanoseconds));
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public static unsafe partial class SystemDateTime
     /// </summary>
     public static double GetUptime(global::HarmonyOS.ArkUI.TimeType timeType, bool? isNanoseconds = null)
     {
-        return NodeApi.CallMethod<double>(Module, _getUptime, timeType, isNanoseconds);
+        return NodeApi.CallMethod<double>(Module, _getUptime, timeType, NapiArg.Of(isNanoseconds));
     }
 
     /// <summary>

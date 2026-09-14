@@ -138,7 +138,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string> CreateAssetAsync(global::HarmonyOS.ArkUI.PhotoType photoType, string extension, CreateOptions options)
     {
-        return CallMethodAsync<string>(_createAsset, photoType, extension, options);
+        return CallMethodAsync<string>(_createAsset, photoType, extension, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -186,7 +186,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public void UnRegisterChange(string uri, IntPtr? callback = null)
     {
-        CallMethodVoid(_unRegisterChange, uri, callback);
+        CallMethodVoid(_unRegisterChange, uri, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -194,7 +194,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task CreateDeleteRequestAsync(string[] uriList)
     {
-        return CallMethodAsyncVoid(_createDeleteRequest, uriList);
+        return CallMethodAsyncVoid(_createDeleteRequest, NapiArg.Of(uriList));
     }
 
     /// <summary>
@@ -202,7 +202,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string[]> ShowAssetsCreationDialogAsync(string[] srcFileUris, PhotoCreationConfig[] photoCreationConfigs)
     {
-        return CallMethodAsync(_showAssetsCreationDialog, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), srcFileUris, photoCreationConfigs);
+        return CallMethodAsync(_showAssetsCreationDialog, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(srcFileUris), NapiArg.Of(photoCreationConfigs));
     }
 
     /// <summary>
@@ -210,7 +210,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string[]> ShowAssetsCreationDialogExAsync(string[] srcFileUris, CreationSetting[] creationSettings)
     {
-        return CallMethodAsync(_showAssetsCreationDialogEx, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), srcFileUris, creationSettings);
+        return CallMethodAsync(_showAssetsCreationDialogEx, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(srcFileUris), NapiArg.Of(creationSettings));
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string> ShowSingleAssetCreationDialogExAsync(string srcFileUri, CreationSetting creationSetting, bool isImageFullyDisplayed)
     {
-        return CallMethodAsync<string>(_showSingleAssetCreationDialogEx, srcFileUri, creationSetting, isImageFullyDisplayed);
+        return CallMethodAsync<string>(_showSingleAssetCreationDialogEx, srcFileUri, NapiArg.Of(creationSetting), isImageFullyDisplayed);
     }
 
     /// <summary>
@@ -226,7 +226,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string> CreateAssetWithShortTermPermissionAsync(PhotoCreationConfig photoCreationConfig)
     {
-        return CallMethodAsync<string>(_createAssetWithShortTermPermission, photoCreationConfig);
+        return CallMethodAsync<string>(_createAssetWithShortTermPermission, NapiArg.Of(photoCreationConfig));
     }
 
     /// <summary>
@@ -234,7 +234,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string> CreateAssetWithShortTermPermissionExAsync(CreationSetting creationSetting)
     {
-        return CallMethodAsync<string>(_createAssetWithShortTermPermissionEx, creationSetting);
+        return CallMethodAsync<string>(_createAssetWithShortTermPermissionEx, NapiArg.Of(creationSetting));
     }
 
     /// <summary>
@@ -242,7 +242,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string[]> RequestPhotoUrisReadPermissionAsync(string[] srcFileUris)
     {
-        return CallMethodAsync(_requestPhotoUrisReadPermission, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), srcFileUris);
+        return CallMethodAsync(_requestPhotoUrisReadPermission, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(srcFileUris));
     }
 
     /// <summary>
@@ -250,7 +250,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<RequestReadPermissionResult> RequestPhotoUrisReadPermissionExAsync(string[] srcFileUris)
     {
-        return CallMethodAsync(_requestPhotoUrisReadPermissionEx, static h => new RequestReadPermissionResult(h), srcFileUris);
+        return CallMethodAsync(_requestPhotoUrisReadPermissionEx, static h => new RequestReadPermissionResult(h), NapiArg.Of(srcFileUris));
     }
 
     /// <summary>
@@ -266,7 +266,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task ApplyChangesAsync(MediaChangeRequest mediaChangeRequest)
     {
-        return CallMethodAsyncVoid(_applyChanges, mediaChangeRequest);
+        return CallMethodAsyncVoid(_applyChanges, NapiArg.Of(mediaChangeRequest));
     }
 
     /// <summary>
@@ -290,7 +290,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public void OffMediaLibraryAvailability(IntPtr? callback = null)
     {
-        CallMethodVoid(_offMediaLibraryAvailability, callback);
+        CallMethodVoid(_offMediaLibraryAvailability, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -314,7 +314,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public void OnSinglePhotoAlbumChange(Album album, IntPtr callback)
     {
-        CallMethodVoid(_onSinglePhotoAlbumChange, album, callback);
+        CallMethodVoid(_onSinglePhotoAlbumChange, NapiArg.Of(album), callback);
     }
 
     /// <summary>
@@ -322,7 +322,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public void OffSinglePhotoAlbumChange(Album? album = null, IntPtr? callback = null)
     {
-        CallMethodVoid(_offSinglePhotoAlbumChange, album, callback);
+        CallMethodVoid(_offSinglePhotoAlbumChange, NapiArg.Of(album), NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -330,7 +330,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public void OnSinglePhotoChange(PhotoAsset asset, IntPtr callback)
     {
-        CallMethodVoid(_onSinglePhotoChange, asset, callback);
+        CallMethodVoid(_onSinglePhotoChange, NapiArg.Of(asset), callback);
     }
 
     /// <summary>
@@ -338,7 +338,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public void OffSinglePhotoChange(PhotoAsset? asset = null, IntPtr? callback = null)
     {
-        CallMethodVoid(_offSinglePhotoChange, asset, callback);
+        CallMethodVoid(_offSinglePhotoChange, NapiArg.Of(asset), NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -354,7 +354,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<RecentPhotoInfo> GetRecentPhotoInfoAsync(RecentPhotoOptions? options = null)
     {
-        return CallMethodAsync(_getRecentPhotoInfo, static h => new RecentPhotoInfo(h), options);
+        return CallMethodAsync(_getRecentPhotoInfo, static h => new RecentPhotoInfo(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -370,7 +370,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task SetAssetCompatibleCapabilityAsync(AssetCompatibleCapability capability)
     {
-        return CallMethodAsyncVoid(_setAssetCompatibleCapability, capability);
+        return CallMethodAsyncVoid(_setAssetCompatibleCapability, NapiArg.Of(capability));
     }
 
     /// <summary>
@@ -378,7 +378,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<JsMap<string, global::HarmonyOS.ArkUI.MediaAssetPermissionState>> CheckPhotoUrisReadPermissionAsync(string[] uris)
     {
-        return CallMethodAsync(_checkPhotoUrisReadPermission, h => new JsMap<string, global::HarmonyOS.ArkUI.MediaAssetPermissionState>(h), uris);
+        return CallMethodAsync(_checkPhotoUrisReadPermission, h => new JsMap<string, global::HarmonyOS.ArkUI.MediaAssetPermissionState>(h), NapiArg.Of(uris));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -456,7 +456,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     private static ReadOnlySpan<byte> _MediaAssetChangeRequest => "MediaAssetChangeRequest"u8;
 
     public MediaAssetChangeRequest(PhotoAsset asset)
-        : this(NodeApi.CreateInstance(PhotoAccessHelper.Module, _MediaAssetChangeRequest, asset)) { }
+        : this(NodeApi.CreateInstance(PhotoAccessHelper.Module, _MediaAssetChangeRequest, NapiArg.Of(asset))) { }
     private static ReadOnlySpan<byte> _comment => "comment"u8;
     private static ReadOnlySpan<byte> _createImageAssetRequest => "createImageAssetRequest"u8;
     private static ReadOnlySpan<byte> _createVideoAssetRequest => "createVideoAssetRequest"u8;
@@ -496,7 +496,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// </summary>
     public MediaAssetChangeRequest CreateAssetRequest(IntPtr context, global::HarmonyOS.ArkUI.PhotoType photoType, string extension, CreateOptions? options = null)
     {
-        return CallMethod(_createAssetRequest, static h => new MediaAssetChangeRequest(h), context, photoType, extension, options);
+        return CallMethod(_createAssetRequest, static h => new MediaAssetChangeRequest(h), context, photoType, extension, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -504,7 +504,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// </summary>
     public Task DeleteAssetsAsync(IntPtr context, PhotoAsset[] assets)
     {
-        return CallMethodAsyncVoid(_deleteAssets, context, assets);
+        return CallMethodAsyncVoid(_deleteAssets, context, NapiArg.Of(assets));
     }
 
     /// <summary>
@@ -512,7 +512,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// </summary>
     public Task DeleteAssetsAsync(IntPtr context, string[] uriList)
     {
-        return CallMethodAsyncVoid(_deleteAssets, context, uriList);
+        return CallMethodAsyncVoid(_deleteAssets, context, NapiArg.Of(uriList));
     }
 
     /// <summary>
@@ -560,7 +560,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// </summary>
     public void AddResource(global::HarmonyOS.ArkUI.PhotoAccessHelperResourceType type, byte[] data)
     {
-        CallMethodVoid(_addResource, type, data);
+        CallMethodVoid(_addResource, type, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -608,7 +608,7 @@ public sealed partial class MediaAssetsChangeRequest : JsObject
     private static ReadOnlySpan<byte> _MediaAssetsChangeRequest => "MediaAssetsChangeRequest"u8;
 
     public MediaAssetsChangeRequest(PhotoAsset[] assets)
-        : this(NodeApi.CreateInstance(PhotoAccessHelper.Module, _MediaAssetsChangeRequest, assets)) { }
+        : this(NodeApi.CreateInstance(PhotoAccessHelper.Module, _MediaAssetsChangeRequest, NapiArg.Of(assets))) { }
     private static ReadOnlySpan<byte> _setFavorite => "setFavorite"u8;
     /// <summary>
     /// setFavorite
@@ -631,7 +631,7 @@ public sealed partial class MediaAlbumChangeRequest : JsObject
     private static ReadOnlySpan<byte> _MediaAlbumChangeRequest => "MediaAlbumChangeRequest"u8;
 
     public MediaAlbumChangeRequest(Album album)
-        : this(NodeApi.CreateInstance(PhotoAccessHelper.Module, _MediaAlbumChangeRequest, album)) { }
+        : this(NodeApi.CreateInstance(PhotoAccessHelper.Module, _MediaAlbumChangeRequest, NapiArg.Of(album))) { }
     private static ReadOnlySpan<byte> _comment => "comment"u8;
     private static ReadOnlySpan<byte> _getAlbum => "getAlbum"u8;
     private static ReadOnlySpan<byte> _setAlbumName => "setAlbumName"u8;
@@ -663,7 +663,7 @@ public sealed partial class MediaAlbumChangeRequest : JsObject
     /// </summary>
     public void AddAssets(PhotoAsset[] assets)
     {
-        CallMethodVoid(_addAssets, assets);
+        CallMethodVoid(_addAssets, NapiArg.Of(assets));
     }
 
     /// <summary>
@@ -671,7 +671,7 @@ public sealed partial class MediaAlbumChangeRequest : JsObject
     /// </summary>
     public void RemoveAssets(PhotoAsset[] assets)
     {
-        CallMethodVoid(_removeAssets, assets);
+        CallMethodVoid(_removeAssets, NapiArg.Of(assets));
     }
 
 }
@@ -885,7 +885,7 @@ public sealed partial class Album : JsObject
     /// </summary>
     public Task AddAssetsAsync(PhotoAsset[] assets)
     {
-        return CallMethodAsyncVoid(_addAssets, assets);
+        return CallMethodAsyncVoid(_addAssets, NapiArg.Of(assets));
     }
 
     /// <summary>
@@ -893,7 +893,7 @@ public sealed partial class Album : JsObject
     /// </summary>
     public Task RemoveAssetsAsync(PhotoAsset[] assets)
     {
-        return CallMethodAsyncVoid(_removeAssets, assets);
+        return CallMethodAsyncVoid(_removeAssets, NapiArg.Of(assets));
     }
 
 }

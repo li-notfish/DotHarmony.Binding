@@ -76,7 +76,7 @@ public static unsafe partial class Intelligence
     /// </summary>
     public static Task<TextEmbedding> GetTextEmbeddingModelAsync(ModelConfig config)
     {
-        return NodeApi.CallMethodAsync(Module, _getTextEmbeddingModel, static h => new TextEmbedding(h), config);
+        return NodeApi.CallMethodAsync(Module, _getTextEmbeddingModel, static h => new TextEmbedding(h), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public static unsafe partial class Intelligence
     /// </summary>
     public static Task<ImageEmbedding> GetImageEmbeddingModelAsync(ModelConfig config)
     {
-        return NodeApi.CallMethodAsync(Module, _getImageEmbeddingModel, static h => new ImageEmbedding(h), config);
+        return NodeApi.CallMethodAsync(Module, _getImageEmbeddingModel, static h => new ImageEmbedding(h), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static unsafe partial class Intelligence
     /// </summary>
     public static Task<string[]> SplitTextAsync(string text, SplitConfig config)
     {
-        return NodeApi.CallMethodAsync(Module, _splitText, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), text, config);
+        return NodeApi.CallMethodAsync(Module, _splitText, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), text, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public sealed partial class TextEmbedding : JsObject
     /// </summary>
     public Task<double[][]> GetEmbeddingAsync(string[] batchTexts)
     {
-        return CallMethodAsync<double[][]>(_getEmbedding, batchTexts);
+        return CallMethodAsync<double[][]>(_getEmbedding, NapiArg.Of(batchTexts));
     }
 
 }

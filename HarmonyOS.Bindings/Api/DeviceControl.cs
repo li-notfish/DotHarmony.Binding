@@ -74,7 +74,7 @@ public static unsafe partial class DeviceControl
     /// </summary>
     public static void OperateDevice(global::HarmonyOS.Bindings.Api.WantObject admin, string operate, string? addition = null)
     {
-        NodeApi.CallMethodVoid(Module, _operateDevice, admin, operate, addition);
+        NodeApi.CallMethodVoid(Module, _operateDevice, NapiArg.Of(admin), operate, addition);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public static unsafe partial class DeviceControl
     /// </summary>
     public static void OperateDevice(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.Operation operation, string? addition = null)
     {
-        NodeApi.CallMethodVoid(Module, _operateDevice, admin, operation, addition);
+        NodeApi.CallMethodVoid(Module, _operateDevice, NapiArg.Of(admin), operation, addition);
     }
 
 }

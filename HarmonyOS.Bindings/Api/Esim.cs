@@ -83,7 +83,7 @@ public static unsafe partial class Esim
     /// </summary>
     public static Task<bool> AddProfileAsync(DownloadableProfile profile)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _addProfile, profile);
+        return NodeApi.CallMethodAsync<bool>(Module, _addProfile, NapiArg.Of(profile));
     }
 
 }

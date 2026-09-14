@@ -110,7 +110,7 @@ public static unsafe partial class ArcSwiper
     /// </summary>
     public static void FinishAnimation(IntPtr? handler = null)
     {
-        NodeApi.CallMethodVoid(Module, _finishAnimation, handler);
+        NodeApi.CallMethodVoid(Module, _finishAnimation, NapiArg.Of(handler));
     }
 
     /// <summary>
@@ -303,7 +303,7 @@ public sealed partial class ArcSwiperController : JsObject
     /// </summary>
     public void FinishAnimation(IntPtr? handler = null)
     {
-        CallMethodVoid(_finishAnimation, handler);
+        CallMethodVoid(_finishAnimation, NapiArg.Of(handler));
     }
 
 }

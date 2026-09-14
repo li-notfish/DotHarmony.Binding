@@ -92,7 +92,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task<CMResult> InstallPrivateCertificateAsync(byte[] keystore, string keystorePwd, string certAlias)
     {
-        return NodeApi.CallMethodAsync(Module, _installPrivateCertificate, static h => new CMResult(h), keystore, keystorePwd, certAlias);
+        return NodeApi.CallMethodAsync(Module, _installPrivateCertificate, static h => new CMResult(h), NapiArg.Of(keystore), keystorePwd, certAlias);
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task<CMHandle> InitAsync(string authUri, CMSignatureSpec spec)
     {
-        return NodeApi.CallMethodAsync(Module, _init, static h => new CMHandle(h), authUri, spec);
+        return NodeApi.CallMethodAsync(Module, _init, static h => new CMHandle(h), authUri, NapiArg.Of(spec));
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task UpdateAsync(byte[] handle, byte[] data)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _update, handle, data);
+        return NodeApi.CallMethodAsyncVoid(Module, _update, NapiArg.Of(handle), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task<CMResult> FinishAsync(byte[] handle)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _finish, static h => new CMResult(h), handle);
+        return NodeApi.CallMethodAsyncCallback(Module, _finish, static h => new CMResult(h), NapiArg.Of(handle));
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task<CMResult> FinishAsync(byte[] handle, byte[] signature)
     {
-        return NodeApi.CallMethodAsync(Module, _finish, static h => new CMResult(h), handle, signature);
+        return NodeApi.CallMethodAsync(Module, _finish, static h => new CMResult(h), NapiArg.Of(handle), NapiArg.Of(signature));
     }
 
     /// <summary>
@@ -148,7 +148,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task AbortAsync(byte[] handle)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _abort, handle);
+        return NodeApi.CallMethodAsyncVoid(Module, _abort, NapiArg.Of(handle));
     }
 
     /// <summary>
@@ -196,7 +196,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static string GetCertificateStorePath(CertStoreProperty property)
     {
-        return NodeApi.CallMethod<string>(Module, _getCertificateStorePath, property);
+        return NodeApi.CallMethod<string>(Module, _getCertificateStorePath, NapiArg.Of(property));
     }
 
     /// <summary>
@@ -204,7 +204,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static CMResult InstallUserTrustedCertificateSync(byte[] cert, global::HarmonyOS.ArkUI.CertScope certScope)
     {
-        return NodeApi.CallMethod(Module, _installUserTrustedCertificateSync, static h => new CMResult(h), cert, certScope);
+        return NodeApi.CallMethod(Module, _installUserTrustedCertificateSync, static h => new CMResult(h), NapiArg.Of(cert), certScope);
     }
 
     /// <summary>
@@ -212,7 +212,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task<CMResult> InstallPrivateCertificateAsync(byte[] keystore, string keystorePwd, string certAlias, global::HarmonyOS.ArkUI.AuthStorageLevel level)
     {
-        return NodeApi.CallMethodAsync(Module, _installPrivateCertificate, static h => new CMResult(h), keystore, keystorePwd, certAlias, level);
+        return NodeApi.CallMethodAsync(Module, _installPrivateCertificate, static h => new CMResult(h), NapiArg.Of(keystore), keystorePwd, certAlias, level);
     }
 
     /// <summary>
@@ -236,7 +236,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task<CMResult> GetUkeyCertificateAsync(string keyUri, UkeyInfo ukeyInfo)
     {
-        return NodeApi.CallMethodAsync(Module, _getUkeyCertificate, static h => new CMResult(h), keyUri, ukeyInfo);
+        return NodeApi.CallMethodAsync(Module, _getUkeyCertificate, static h => new CMResult(h), keyUri, NapiArg.Of(ukeyInfo));
     }
 
     /// <summary>
@@ -244,7 +244,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task<CMResult> InstallUserTrustedCertificateAsync(CertManagerCertBlob certificate)
     {
-        return NodeApi.CallMethodAsync(Module, _installUserTrustedCertificate, static h => new CMResult(h), certificate);
+        return NodeApi.CallMethodAsync(Module, _installUserTrustedCertificate, static h => new CMResult(h), NapiArg.Of(certificate));
     }
 
     /// <summary>
@@ -252,7 +252,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task<CMResult> GetUkeyCertificateListAsync(string ukeyProvider, UkeyInfo ukeyInfo)
     {
-        return NodeApi.CallMethodAsync(Module, _getUkeyCertificateList, static h => new CMResult(h), ukeyProvider, ukeyInfo);
+        return NodeApi.CallMethodAsync(Module, _getUkeyCertificateList, static h => new CMResult(h), ukeyProvider, NapiArg.Of(ukeyInfo));
     }
 
     /// <summary>
@@ -260,7 +260,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task ImportUkeyCertificateAsync(string keyUri, byte[] cert, UkeyInfo ukeyInfo)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _importUkeyCertificate, keyUri, cert, ukeyInfo);
+        return NodeApi.CallMethodAsyncVoid(Module, _importUkeyCertificate, keyUri, NapiArg.Of(cert), NapiArg.Of(ukeyInfo));
     }
 
 }

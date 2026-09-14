@@ -159,7 +159,7 @@ public static unsafe partial class BundleManager
     /// </summary>
     public static global::HarmonyOS.Bindings.Api.WantObject GetLaunchWantForBundleSync(string bundleName, double? userId = null)
     {
-        return NodeApi.CallMethod(Module, _getLaunchWantForBundleSync, static h => new global::HarmonyOS.Bindings.Api.WantObject(h), bundleName, userId);
+        return NodeApi.CallMethod(Module, _getLaunchWantForBundleSync, static h => new global::HarmonyOS.Bindings.Api.WantObject(h), bundleName, NapiArg.Of(userId));
     }
 
     /// <summary>

@@ -97,7 +97,7 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// </summary>
     public Task<IntPtr> GetKvStoreAsync(string storeId, DistributedKVStoreOptions options)
     {
-        return CallMethodAsync<IntPtr>(_getKVStore, storeId, options);
+        return CallMethodAsync<IntPtr>(_getKVStore, storeId, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// </summary>
     public Task CloseKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null)
     {
-        return CallMethodAsyncVoid(_closeKVStore, appId, storeId, kvConfig);
+        return CallMethodAsyncVoid(_closeKVStore, appId, storeId, NapiArg.Of(kvConfig));
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// </summary>
     public Task DeleteKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null)
     {
-        return CallMethodAsyncVoid(_deleteKVStore, appId, storeId, kvConfig);
+        return CallMethodAsyncVoid(_deleteKVStore, appId, storeId, NapiArg.Of(kvConfig));
     }
 
     /// <summary>
@@ -241,7 +241,7 @@ public sealed partial class DistributedKVStoreFieldNode : JsObject
     /// </summary>
     public bool AppendChild(DistributedKVStoreFieldNode child)
     {
-        return CallMethod<bool>(_appendChild, child);
+        return CallMethod<bool>(_appendChild, NapiArg.Of(child));
     }
 
 }
@@ -353,7 +353,7 @@ public sealed partial class DistributedKVStoreQuery : JsObject
     /// </summary>
     public DistributedKVStoreQuery InNumber(string field, double[] valueList)
     {
-        return CallMethod(_inNumber, static h => new DistributedKVStoreQuery(h), field, valueList);
+        return CallMethod(_inNumber, static h => new DistributedKVStoreQuery(h), field, NapiArg.Of(valueList));
     }
 
     /// <summary>
@@ -361,7 +361,7 @@ public sealed partial class DistributedKVStoreQuery : JsObject
     /// </summary>
     public DistributedKVStoreQuery InString(string field, string[] valueList)
     {
-        return CallMethod(_inString, static h => new DistributedKVStoreQuery(h), field, valueList);
+        return CallMethod(_inString, static h => new DistributedKVStoreQuery(h), field, NapiArg.Of(valueList));
     }
 
     /// <summary>
@@ -369,7 +369,7 @@ public sealed partial class DistributedKVStoreQuery : JsObject
     /// </summary>
     public DistributedKVStoreQuery NotInNumber(string field, double[] valueList)
     {
-        return CallMethod(_notInNumber, static h => new DistributedKVStoreQuery(h), field, valueList);
+        return CallMethod(_notInNumber, static h => new DistributedKVStoreQuery(h), field, NapiArg.Of(valueList));
     }
 
     /// <summary>
@@ -377,7 +377,7 @@ public sealed partial class DistributedKVStoreQuery : JsObject
     /// </summary>
     public DistributedKVStoreQuery NotInString(string field, string[] valueList)
     {
-        return CallMethod(_notInString, static h => new DistributedKVStoreQuery(h), field, valueList);
+        return CallMethod(_notInString, static h => new DistributedKVStoreQuery(h), field, NapiArg.Of(valueList));
     }
 
     /// <summary>

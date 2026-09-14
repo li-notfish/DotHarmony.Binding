@@ -96,7 +96,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<double> AddContactAsync(ContactObject contact)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _addContact, contact);
+        return NodeApi.CallMethodAsync<double>(Module, _addContact, NapiArg.Of(contact));
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<double> AddContactAsync(IntPtr context, ContactObject contact)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _addContact, context, contact);
+        return NodeApi.CallMethodAsync<double>(Module, _addContact, context, NapiArg.Of(contact));
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> SelectContactsAsync(ContactSelectionOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _selectContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), options);
+        return NodeApi.CallMethodAsync(Module, _selectContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject> QueryContactAsync(string key, Holder holder)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), key, holder);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), key, NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -176,7 +176,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject> QueryContactAsync(IntPtr context, string key, Holder holder)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), context, key, holder);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), context, key, NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -184,7 +184,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject> QueryContactAsync(string key, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), key, attrs);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), key, NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject> QueryContactAsync(IntPtr context, string key, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), context, key, attrs);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), context, key, NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -200,7 +200,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject> QueryContactAsync(string key, Holder holder, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsync(Module, _queryContact, static h => new ContactObject(h), key, holder, attrs);
+        return NodeApi.CallMethodAsync(Module, _queryContact, static h => new ContactObject(h), key, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -208,7 +208,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject> QueryContactAsync(IntPtr context, string key, Holder holder, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsync(Module, _queryContact, static h => new ContactObject(h), context, key, holder, attrs);
+        return NodeApi.CallMethodAsync(Module, _queryContact, static h => new ContactObject(h), context, key, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -232,7 +232,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsAsync(Holder holder)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), holder);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -240,7 +240,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsAsync(IntPtr context, Holder holder)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, holder);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -248,7 +248,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsAsync(ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), attrs);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsAsync(IntPtr context, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, attrs);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -264,7 +264,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsAsync(Holder holder, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsync(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), holder, attrs);
+        return NodeApi.CallMethodAsync(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -272,7 +272,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsAsync(IntPtr context, Holder holder, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsync(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, holder, attrs);
+        return NodeApi.CallMethodAsync(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -296,7 +296,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(string email, Holder holder)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), email, holder);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), email, NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -304,7 +304,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(IntPtr context, string email, Holder holder)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, email, holder);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, email, NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -312,7 +312,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(string email, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), email, attrs);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), email, NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -320,7 +320,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(IntPtr context, string email, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, email, attrs);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, email, NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -328,7 +328,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(string email, Holder holder, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsync(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), email, holder, attrs);
+        return NodeApi.CallMethodAsync(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), email, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -336,7 +336,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(IntPtr context, string email, Holder holder, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsync(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, email, holder, attrs);
+        return NodeApi.CallMethodAsync(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, email, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -360,7 +360,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(string phoneNumber, Holder holder)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), phoneNumber, holder);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), phoneNumber, NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -368,7 +368,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(IntPtr context, string phoneNumber, Holder holder)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, phoneNumber, holder);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, phoneNumber, NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -376,7 +376,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(string phoneNumber, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), phoneNumber, attrs);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), phoneNumber, NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -384,7 +384,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(IntPtr context, string phoneNumber, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, phoneNumber, attrs);
+        return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, phoneNumber, NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -392,7 +392,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(string phoneNumber, Holder holder, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsync(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), phoneNumber, holder, attrs);
+        return NodeApi.CallMethodAsync(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), phoneNumber, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -400,7 +400,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(IntPtr context, string phoneNumber, Holder holder, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsync(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, phoneNumber, holder, attrs);
+        return NodeApi.CallMethodAsync(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, phoneNumber, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -424,7 +424,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<Group[]> QueryGroupsAsync(Holder holder)
     {
-        return NodeApi.CallMethodAsync(Module, _queryGroups, h => ValueConverter.ConvertArray(h, static e => new Group(e)), holder);
+        return NodeApi.CallMethodAsync(Module, _queryGroups, h => ValueConverter.ConvertArray(h, static e => new Group(e)), NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -432,7 +432,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<Group[]> QueryGroupsAsync(IntPtr context, Holder holder)
     {
-        return NodeApi.CallMethodAsync(Module, _queryGroups, h => ValueConverter.ConvertArray(h, static e => new Group(e)), context, holder);
+        return NodeApi.CallMethodAsync(Module, _queryGroups, h => ValueConverter.ConvertArray(h, static e => new Group(e)), context, NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -472,7 +472,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<string> QueryKeyAsync(double id, Holder holder)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _queryKey, id, holder);
+        return NodeApi.CallMethodAsync<string>(Module, _queryKey, id, NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -480,7 +480,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<string> QueryKeyAsync(IntPtr context, double id, Holder holder)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _queryKey, context, id, holder);
+        return NodeApi.CallMethodAsync<string>(Module, _queryKey, context, id, NapiArg.Of(holder));
     }
 
     /// <summary>
@@ -504,7 +504,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject> QueryMyCardAsync(ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsync(Module, _queryMyCard, static h => new ContactObject(h), attrs);
+        return NodeApi.CallMethodAsync(Module, _queryMyCard, static h => new ContactObject(h), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -512,7 +512,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<ContactObject> QueryMyCardAsync(IntPtr context, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsync(Module, _queryMyCard, static h => new ContactObject(h), context, attrs);
+        return NodeApi.CallMethodAsync(Module, _queryMyCard, static h => new ContactObject(h), context, NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -520,7 +520,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task UpdateContactAsync(ContactObject contact)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _updateContact, contact);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _updateContact, NapiArg.Of(contact));
     }
 
     /// <summary>
@@ -528,7 +528,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task UpdateContactAsync(IntPtr context, ContactObject contact)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _updateContact, context, contact);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _updateContact, context, NapiArg.Of(contact));
     }
 
     /// <summary>
@@ -536,7 +536,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task UpdateContactAsync(ContactObject contact, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateContact, contact, attrs);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateContact, NapiArg.Of(contact), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -544,7 +544,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task UpdateContactAsync(IntPtr context, ContactObject contact, ContactAttributes attrs)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateContact, context, contact, attrs);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateContact, context, NapiArg.Of(contact), NapiArg.Of(attrs));
     }
 
     /// <summary>
@@ -584,7 +584,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<double> SaveToExistingContactViaUiAsync(IntPtr context, ContactObject contact)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _saveToExistingContactViaUI, context, contact);
+        return NodeApi.CallMethodAsync<double>(Module, _saveToExistingContactViaUI, context, NapiArg.Of(contact));
     }
 
     /// <summary>
@@ -592,7 +592,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<double> AddContactViaUiAsync(IntPtr context, ContactObject contact)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _addContactViaUI, context, contact);
+        return NodeApi.CallMethodAsync<double>(Module, _addContactViaUI, context, NapiArg.Of(contact));
     }
 
     /// <summary>
@@ -608,7 +608,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<double[]> AddContactsAsync(IntPtr context, ContactObject[] contacts)
     {
-        return NodeApi.CallMethodAsync(Module, _addContacts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, contacts);
+        return NodeApi.CallMethodAsync(Module, _addContacts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, NapiArg.Of(contacts));
     }
 
     /// <summary>
@@ -632,7 +632,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<double[]> SyncContactsAsync(IntPtr context, global::HarmonyOS.ArkUI.ContactSyncMode mode, ContactSyncProgress progress, ContactObject[] contacts)
     {
-        return NodeApi.CallMethodAsync(Module, _syncContacts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, mode, progress, contacts);
+        return NodeApi.CallMethodAsync(Module, _syncContacts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, mode, NapiArg.Of(progress), NapiArg.Of(contacts));
     }
 
     /// <summary>
@@ -648,7 +648,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<double[]> ImportContactsViaUiAsync(IntPtr context, ContactObject[] contacts)
     {
-        return NodeApi.CallMethodAsync(Module, _importContactsViaUI, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, contacts);
+        return NodeApi.CallMethodAsync(Module, _importContactsViaUI, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, NapiArg.Of(contacts));
     }
 
 }

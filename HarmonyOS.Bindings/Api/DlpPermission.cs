@@ -162,7 +162,7 @@ public static unsafe partial class DlpPermission
     /// </summary>
     public static Task SetRetentionStateAsync(string[] docUris)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setRetentionState, docUris);
+        return NodeApi.CallMethodAsyncVoid(Module, _setRetentionState, NapiArg.Of(docUris));
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ public static unsafe partial class DlpPermission
     /// </summary>
     public static Task CancelRetentionStateAsync(string[] docUris)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancelRetentionState, docUris);
+        return NodeApi.CallMethodAsyncVoid(Module, _cancelRetentionState, NapiArg.Of(docUris));
     }
 
     /// <summary>
@@ -202,7 +202,7 @@ public static unsafe partial class DlpPermission
     /// </summary>
     public static Task<IntPtr> StartDlpManagerForResultAsync(IntPtr context, global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _startDLPManagerForResult, context, want);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _startDLPManagerForResult, context, NapiArg.Of(want));
     }
 
     /// <summary>
@@ -242,7 +242,7 @@ public static unsafe partial class DlpPermission
     /// </summary>
     public static Task GenerateDlpFileForEnterpriseAsync(double plaintextFd, double dlpFd, IntPtr property, CustomProperty customProperty)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _generateDlpFileForEnterprise, plaintextFd, dlpFd, property, customProperty);
+        return NodeApi.CallMethodAsyncVoid(Module, _generateDlpFileForEnterprise, plaintextFd, dlpFd, property, NapiArg.Of(customProperty));
     }
 
     /// <summary>
@@ -266,7 +266,7 @@ public static unsafe partial class DlpPermission
     /// </summary>
     public static void SetEnterprisePolicy(EnterprisePolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _setEnterprisePolicy, policy);
+        NodeApi.CallMethodVoid(Module, _setEnterprisePolicy, NapiArg.Of(policy));
     }
 
     /// <summary>
@@ -274,7 +274,7 @@ public static unsafe partial class DlpPermission
     /// </summary>
     public static Task<string[]> QueryOpenedEnterpriseDlpFilesAsync(DlpFileQueryOptions? options = null)
     {
-        return NodeApi.CallMethodAsync(Module, _queryOpenedEnterpriseDlpFiles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), options);
+        return NodeApi.CallMethodAsync(Module, _queryOpenedEnterpriseDlpFiles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -282,7 +282,7 @@ public static unsafe partial class DlpPermission
     /// </summary>
     public static Task CloseOpenedEnterpriseDlpFilesAsync(DlpFileQueryOptions? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _closeOpenedEnterpriseDlpFiles, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _closeOpenedEnterpriseDlpFiles, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -290,7 +290,7 @@ public static unsafe partial class DlpPermission
     /// </summary>
     public static Task SetControlledAppListsAsync(string[] appLists, double? userId = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setControlledAppLists, appLists, userId);
+        return NodeApi.CallMethodAsyncVoid(Module, _setControlledAppLists, NapiArg.Of(appLists), NapiArg.Of(userId));
     }
 
     /// <summary>
@@ -489,7 +489,7 @@ public sealed partial class DlpConnManager : JsObject
     /// </summary>
     public double RegisterPlugin(DlpConnPlugin plugin)
     {
-        return CallMethod<double>(_registerPlugin, plugin);
+        return CallMethod<double>(_registerPlugin, NapiArg.Of(plugin));
     }
 
     /// <summary>

@@ -82,7 +82,7 @@ public static unsafe partial class RelationalStore
     /// </summary>
     public static Task<RelationalStoreRdbStore> GetRdbStoreAsync(IntPtr context, RelationalStoreStoreConfig config)
     {
-        return NodeApi.CallMethodAsync(Module, _getRdbStore, static h => new RelationalStoreRdbStore(h), context, config);
+        return NodeApi.CallMethodAsync(Module, _getRdbStore, static h => new RelationalStoreRdbStore(h), context, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public static unsafe partial class RelationalStore
     /// </summary>
     public static RelationalStoreRdbStore GetRdbStoreSync(IntPtr context, RelationalStoreStoreConfig config)
     {
-        return NodeApi.CallMethod(Module, _getRdbStoreSync, static h => new RelationalStoreRdbStore(h), context, config);
+        return NodeApi.CallMethod(Module, _getRdbStoreSync, static h => new RelationalStoreRdbStore(h), context, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ public static unsafe partial class RelationalStore
     /// </summary>
     public static Task DeleteRdbStoreAsync(IntPtr context, RelationalStoreStoreConfig config)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, context, config);
+        return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, context, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public static unsafe partial class RelationalStore
     /// </summary>
     public static IntPtr GetUpdateSqlInfo(RelationalStoreRdbPredicates predicates, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getUpdateSqlInfo, predicates, values, conflict);
+        return NodeApi.CallMethod<IntPtr>(Module, _getUpdateSqlInfo, NapiArg.Of(predicates), values, conflict);
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public static unsafe partial class RelationalStore
     /// </summary>
     public static IntPtr GetDeleteSqlInfo(RelationalStoreRdbPredicates predicates)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getDeleteSqlInfo, predicates);
+        return NodeApi.CallMethod<IntPtr>(Module, _getDeleteSqlInfo, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ public static unsafe partial class RelationalStore
     /// </summary>
     public static IntPtr GetQuerySqlInfo(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getQuerySqlInfo, predicates, columns);
+        return NodeApi.CallMethod<IntPtr>(Module, _getQuerySqlInfo, NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
 }
@@ -265,7 +265,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> BatchInsertAsync(string table, IntPtr[] values)
     {
-        return CallMethodAsync<double>(_batchInsert, table, values);
+        return CallMethodAsync<double>(_batchInsert, table, NapiArg.Of(values));
     }
 
     /// <summary>
@@ -273,7 +273,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public double BatchInsertSync(string table, IntPtr[] values)
     {
-        return CallMethod<double>(_batchInsertSync, table, values);
+        return CallMethod<double>(_batchInsertSync, table, NapiArg.Of(values));
     }
 
     /// <summary>
@@ -281,7 +281,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> BatchInsertWithConflictResolutionAsync(string table, IntPtr[] values, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethodAsync<double>(_batchInsertWithConflictResolution, table, values, conflict);
+        return CallMethodAsync<double>(_batchInsertWithConflictResolution, table, NapiArg.Of(values), conflict);
     }
 
     /// <summary>
@@ -289,7 +289,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public double BatchInsertWithConflictResolutionSync(string table, IntPtr[] values, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethod<double>(_batchInsertWithConflictResolutionSync, table, values, conflict);
+        return CallMethod<double>(_batchInsertWithConflictResolutionSync, table, NapiArg.Of(values), conflict);
     }
 
     /// <summary>
@@ -297,7 +297,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<Result> BatchInsertWithReturningAsync(string table, IntPtr[] values, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync(_batchInsertWithReturning, static h => new Result(h), table, values, config, conflict);
+        return CallMethodAsync(_batchInsertWithReturning, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), conflict);
     }
 
     /// <summary>
@@ -305,7 +305,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Result BatchInsertWithReturningSync(string table, IntPtr[] values, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod(_batchInsertWithReturningSync, static h => new Result(h), table, values, config, conflict);
+        return CallMethod(_batchInsertWithReturningSync, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), conflict);
     }
 
     /// <summary>
@@ -313,7 +313,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> UpdateAsync(IntPtr values, RelationalStoreRdbPredicates predicates)
     {
-        return CallMethodAsync<double>(_update, values, predicates);
+        return CallMethodAsync<double>(_update, values, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -321,7 +321,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> UpdateAsync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethodAsync<double>(_update, values, predicates, conflict);
+        return CallMethodAsync<double>(_update, values, NapiArg.Of(predicates), conflict);
     }
 
     /// <summary>
@@ -329,7 +329,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public double UpdateSync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod<double>(_updateSync, values, predicates, conflict);
+        return CallMethod<double>(_updateSync, values, NapiArg.Of(predicates), conflict);
     }
 
     /// <summary>
@@ -337,7 +337,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<Result> UpdateWithReturningAsync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync(_updateWithReturning, static h => new Result(h), values, predicates, config, conflict);
+        return CallMethodAsync(_updateWithReturning, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), conflict);
     }
 
     /// <summary>
@@ -345,7 +345,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Result UpdateWithReturningSync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod(_updateWithReturningSync, static h => new Result(h), values, predicates, config, conflict);
+        return CallMethod(_updateWithReturningSync, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), conflict);
     }
 
     /// <summary>
@@ -353,7 +353,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> DeleteAsync(RelationalStoreRdbPredicates predicates)
     {
-        return CallMethodAsync<double>(_delete, predicates);
+        return CallMethodAsync<double>(_delete, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -361,7 +361,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public double DeleteSync(RelationalStoreRdbPredicates predicates)
     {
-        return CallMethod<double>(_deleteSync, predicates);
+        return CallMethod<double>(_deleteSync, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -369,7 +369,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<Result> DeleteWithReturningAsync(RelationalStoreRdbPredicates predicates, ReturningConfig config)
     {
-        return CallMethodAsync(_deleteWithReturning, static h => new Result(h), predicates, config);
+        return CallMethodAsync(_deleteWithReturning, static h => new Result(h), NapiArg.Of(predicates), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -377,7 +377,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Result DeleteWithReturningSync(RelationalStoreRdbPredicates predicates, ReturningConfig config)
     {
-        return CallMethod(_deleteWithReturningSync, static h => new Result(h), predicates, config);
+        return CallMethod(_deleteWithReturningSync, static h => new Result(h), NapiArg.Of(predicates), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -385,7 +385,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<ResultSet> QueryAsync(RelationalStoreRdbPredicates predicates)
     {
-        return CallMethodAsyncCallback(_query, static h => new ResultSet(h), predicates);
+        return CallMethodAsyncCallback(_query, static h => new ResultSet(h), NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -393,7 +393,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<ResultSet> QueryAsync(RelationalStoreRdbPredicates predicates, string[] columns)
     {
-        return CallMethodAsync(_query, static h => new ResultSet(h), predicates, columns);
+        return CallMethodAsync(_query, static h => new ResultSet(h), NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -401,7 +401,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public ResultSet QuerySync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return CallMethod(_querySync, static h => new ResultSet(h), predicates, columns);
+        return CallMethod(_querySync, static h => new ResultSet(h), NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -417,7 +417,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<ResultSet> QuerySqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[] bindArgs)
     {
-        return CallMethodAsync(_querySql, static h => new ResultSet(h), sql, bindArgs);
+        return CallMethodAsync(_querySql, static h => new ResultSet(h), sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -425,7 +425,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public ResultSet QuerySqlSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
-        return CallMethod(_querySqlSync, static h => new ResultSet(h), sql, bindArgs);
+        return CallMethod(_querySqlSync, static h => new ResultSet(h), sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -433,7 +433,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<LiteResultSet> QueryWithoutRowCountAsync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return CallMethodAsync(_queryWithoutRowCount, static h => new LiteResultSet(h), predicates, columns);
+        return CallMethodAsync(_queryWithoutRowCount, static h => new LiteResultSet(h), NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -441,7 +441,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public LiteResultSet QueryWithoutRowCountSync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return CallMethod(_queryWithoutRowCountSync, static h => new LiteResultSet(h), predicates, columns);
+        return CallMethod(_queryWithoutRowCountSync, static h => new LiteResultSet(h), NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -449,7 +449,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<LiteResultSet> QuerySqlWithoutRowCountAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
-        return CallMethodAsync(_querySqlWithoutRowCount, static h => new LiteResultSet(h), sql, bindArgs);
+        return CallMethodAsync(_querySqlWithoutRowCount, static h => new LiteResultSet(h), sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -457,7 +457,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public LiteResultSet QuerySqlWithoutRowCountSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
-        return CallMethod(_querySqlWithoutRowCountSync, static h => new LiteResultSet(h), sql, bindArgs);
+        return CallMethod(_querySqlWithoutRowCountSync, static h => new LiteResultSet(h), sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -465,7 +465,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<ResultSet> QueryByStepAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
-        return CallMethodAsync(_queryByStep, static h => new ResultSet(h), sql, bindArgs);
+        return CallMethodAsync(_queryByStep, static h => new ResultSet(h), sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -473,7 +473,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<ResultSet> QueryByStepAsync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return CallMethodAsync(_queryByStep, static h => new ResultSet(h), predicates, columns);
+        return CallMethodAsync(_queryByStep, static h => new ResultSet(h), NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -481,7 +481,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<IntPtr> GetModifyTimeAsync(string table, string columnName, IntPtr[] primaryKeys)
     {
-        return CallMethodAsync<IntPtr>(_getModifyTime, table, columnName, primaryKeys);
+        return CallMethodAsync<IntPtr>(_getModifyTime, table, columnName, NapiArg.Of(primaryKeys));
     }
 
     /// <summary>
@@ -513,7 +513,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task ExecuteSqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[] bindArgs)
     {
-        return CallMethodAsyncVoid(_executeSql, sql, bindArgs);
+        return CallMethodAsyncVoid(_executeSql, sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -521,7 +521,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ValueType> ExecuteAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_execute, sql, args);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_execute, sql, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -529,7 +529,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ValueType> ExecuteAsync(string sql, double txId, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_execute, sql, txId, args);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_execute, sql, txId, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -537,7 +537,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.ValueType ExecuteSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_executeSync, sql, args);
+        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_executeSync, sql, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -609,7 +609,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task SetDistributedTablesAsync(string[] tables)
     {
-        return CallMethodAsyncVoid(_setDistributedTables, tables);
+        return CallMethodAsyncVoid(_setDistributedTables, NapiArg.Of(tables));
     }
 
     /// <summary>
@@ -617,7 +617,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task SetDistributedTablesAsync(string[] tables, global::HarmonyOS.ArkUI.DistributedType type)
     {
-        return CallMethodAsyncCallbackVoid(_setDistributedTables, tables, type);
+        return CallMethodAsyncCallbackVoid(_setDistributedTables, NapiArg.Of(tables), type);
     }
 
     /// <summary>
@@ -625,7 +625,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task SetDistributedTablesAsync(string[] tables, global::HarmonyOS.ArkUI.DistributedType type, DistributedConfig config)
     {
-        return CallMethodAsyncVoid(_setDistributedTables, tables, type, config);
+        return CallMethodAsyncVoid(_setDistributedTables, NapiArg.Of(tables), type, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -641,7 +641,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<object[]> SyncAsync(global::HarmonyOS.ArkUI.RelationalStoreSyncMode mode, RelationalStoreRdbPredicates predicates)
     {
-        return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), mode, predicates);
+        return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), mode, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -649,7 +649,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<SyncResult[]> SyncExAsync(global::HarmonyOS.ArkUI.RelationalStoreSyncMode mode, RelationalStoreRdbPredicates predicates)
     {
-        return CallMethodAsync(_syncEx, h => ValueConverter.ConvertArray(h, static e => new SyncResult(e)), mode, predicates);
+        return CallMethodAsync(_syncEx, h => ValueConverter.ConvertArray(h, static e => new SyncResult(e)), mode, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -665,7 +665,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task CloudSyncAsync(global::HarmonyOS.ArkUI.RelationalStoreSyncMode mode, string[] tables, IntPtr progress)
     {
-        return CallMethodAsyncVoid(_cloudSync, mode, tables, progress);
+        return CallMethodAsyncVoid(_cloudSync, mode, NapiArg.Of(tables), progress);
     }
 
     /// <summary>
@@ -673,7 +673,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task CloudSyncExAsync(CloudSyncConfig config, IntPtr progress)
     {
-        return CallMethodAsyncVoid(_cloudSyncEx, config, progress);
+        return CallMethodAsyncVoid(_cloudSyncEx, NapiArg.Of(config), progress);
     }
 
     /// <summary>
@@ -689,7 +689,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<ResultSet> RemoteQueryAsync(string device, string table, RelationalStoreRdbPredicates predicates, string[] columns)
     {
-        return CallMethodAsync(_remoteQuery, static h => new ResultSet(h), device, table, predicates, columns);
+        return CallMethodAsync(_remoteQuery, static h => new ResultSet(h), device, table, NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -761,7 +761,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> AttachAsync(string fullPath, string attachName, double? waitTime = null)
     {
-        return CallMethodAsync<double>(_attach, fullPath, attachName, waitTime);
+        return CallMethodAsync<double>(_attach, fullPath, attachName, NapiArg.Of(waitTime));
     }
 
     /// <summary>
@@ -769,7 +769,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> AttachAsync(IntPtr context, RelationalStoreStoreConfig config, string attachName, double? waitTime = null)
     {
-        return CallMethodAsync<double>(_attach, context, config, attachName, waitTime);
+        return CallMethodAsync<double>(_attach, context, NapiArg.Of(config), attachName, NapiArg.Of(waitTime));
     }
 
     /// <summary>
@@ -777,7 +777,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> DetachAsync(string attachName, double? waitTime = null)
     {
-        return CallMethodAsync<double>(_detach, attachName, waitTime);
+        return CallMethodAsync<double>(_detach, attachName, NapiArg.Of(waitTime));
     }
 
     /// <summary>
@@ -785,7 +785,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task LockRowAsync(RelationalStoreRdbPredicates predicates)
     {
-        return CallMethodAsyncVoid(_lockRow, predicates);
+        return CallMethodAsyncVoid(_lockRow, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -793,7 +793,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task UnlockRowAsync(RelationalStoreRdbPredicates predicates)
     {
-        return CallMethodAsyncVoid(_unlockRow, predicates);
+        return CallMethodAsyncVoid(_unlockRow, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -801,7 +801,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<ResultSet> QueryLockedRowAsync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return CallMethodAsync(_queryLockedRow, static h => new ResultSet(h), predicates, columns);
+        return CallMethodAsync(_queryLockedRow, static h => new ResultSet(h), NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -809,7 +809,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<Transaction> CreateTransactionAsync(TransactionOptions? options = null)
     {
-        return CallMethodAsync(_createTransaction, static h => new Transaction(h), options);
+        return CallMethodAsync(_createTransaction, static h => new Transaction(h), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -817,7 +817,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task RekeyAsync(CryptoParam? cryptoParam = null)
     {
-        return CallMethodAsyncVoid(_rekey, cryptoParam);
+        return CallMethodAsyncVoid(_rekey, NapiArg.Of(cryptoParam));
     }
 
     /// <summary>
@@ -833,7 +833,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task RekeyExAsync(CryptoParam cryptoParam)
     {
-        return CallMethodAsyncVoid(_rekeyEx, cryptoParam);
+        return CallMethodAsyncVoid(_rekeyEx, NapiArg.Of(cryptoParam));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -1207,7 +1207,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates InDevices(string[] devices)
     {
-        return CallMethod(_inDevices, static h => new RelationalStoreRdbPredicates(h), devices);
+        return CallMethod(_inDevices, static h => new RelationalStoreRdbPredicates(h), NapiArg.Of(devices));
     }
 
     /// <summary>
@@ -1415,7 +1415,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates GroupBy(string[] fields)
     {
-        return CallMethod(_groupBy, static h => new RelationalStoreRdbPredicates(h), fields);
+        return CallMethod(_groupBy, static h => new RelationalStoreRdbPredicates(h), NapiArg.Of(fields));
     }
 
     /// <summary>
@@ -1431,7 +1431,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates In(string field, global::HarmonyOS.ArkUI.ValueType[] value)
     {
-        return CallMethod(_in, static h => new RelationalStoreRdbPredicates(h), field, value);
+        return CallMethod(_in, static h => new RelationalStoreRdbPredicates(h), field, NapiArg.Of(value));
     }
 
     /// <summary>
@@ -1439,7 +1439,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates NotIn(string field, global::HarmonyOS.ArkUI.ValueType[] value)
     {
-        return CallMethod(_notIn, static h => new RelationalStoreRdbPredicates(h), field, value);
+        return CallMethod(_notIn, static h => new RelationalStoreRdbPredicates(h), field, NapiArg.Of(value));
     }
 
     /// <summary>
@@ -1463,7 +1463,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates Having(string conditions, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethod(_having, static h => new RelationalStoreRdbPredicates(h), conditions, args);
+        return CallMethod(_having, static h => new RelationalStoreRdbPredicates(h), conditions, NapiArg.Of(args));
     }
 
 }
@@ -1819,7 +1819,7 @@ public sealed partial class ResultSet : JsObject
     /// </summary>
     public Task<IntPtr[]> GetRowsAsync(double maxCount, double? position = null)
     {
-        return CallMethodAsync(_getRows, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), maxCount, position);
+        return CallMethodAsync(_getRows, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), maxCount, NapiArg.Of(position));
     }
 
     /// <summary>
@@ -1843,7 +1843,7 @@ public sealed partial class ResultSet : JsObject
     /// </summary>
     public Task<IntPtr> GetRowsDataAsync(double maxCount, double? position = null)
     {
-        return CallMethodAsync<IntPtr>(_getRowsData, maxCount, position);
+        return CallMethodAsync<IntPtr>(_getRowsData, maxCount, NapiArg.Of(position));
     }
 
     /// <summary>
@@ -2007,7 +2007,7 @@ public sealed partial class LiteResultSet : JsObject
     /// </summary>
     public Task<IntPtr[]> GetRowsAsync(double maxCount, double? position = null)
     {
-        return CallMethodAsync(_getRows, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), maxCount, position);
+        return CallMethodAsync(_getRows, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), maxCount, NapiArg.Of(position));
     }
 
     /// <summary>
@@ -2023,7 +2023,7 @@ public sealed partial class LiteResultSet : JsObject
     /// </summary>
     public Task<IntPtr> GetRowsDataAsync(double maxCount, double? position = null)
     {
-        return CallMethodAsync<IntPtr>(_getRowsData, maxCount, position);
+        return CallMethodAsync<IntPtr>(_getRowsData, maxCount, NapiArg.Of(position));
     }
 
     /// <summary>
@@ -2227,7 +2227,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<double> BatchInsertAsync(string table, IntPtr[] values)
     {
-        return CallMethodAsync<double>(_batchInsert, table, values);
+        return CallMethodAsync<double>(_batchInsert, table, NapiArg.Of(values));
     }
 
     /// <summary>
@@ -2235,7 +2235,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public double BatchInsertSync(string table, IntPtr[] values)
     {
-        return CallMethod<double>(_batchInsertSync, table, values);
+        return CallMethod<double>(_batchInsertSync, table, NapiArg.Of(values));
     }
 
     /// <summary>
@@ -2243,7 +2243,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public double BatchInsertWithConflictResolutionSync(string table, IntPtr[] values, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethod<double>(_batchInsertWithConflictResolutionSync, table, values, conflict);
+        return CallMethod<double>(_batchInsertWithConflictResolutionSync, table, NapiArg.Of(values), conflict);
     }
 
     /// <summary>
@@ -2251,7 +2251,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<double> BatchInsertWithConflictResolutionAsync(string table, IntPtr[] values, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethodAsync<double>(_batchInsertWithConflictResolution, table, values, conflict);
+        return CallMethodAsync<double>(_batchInsertWithConflictResolution, table, NapiArg.Of(values), conflict);
     }
 
     /// <summary>
@@ -2259,7 +2259,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<Result> BatchInsertWithReturningAsync(string table, IntPtr[] values, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync(_batchInsertWithReturning, static h => new Result(h), table, values, config, conflict);
+        return CallMethodAsync(_batchInsertWithReturning, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), conflict);
     }
 
     /// <summary>
@@ -2267,7 +2267,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Result BatchInsertWithReturningSync(string table, IntPtr[] values, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod(_batchInsertWithReturningSync, static h => new Result(h), table, values, config, conflict);
+        return CallMethod(_batchInsertWithReturningSync, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), conflict);
     }
 
     /// <summary>
@@ -2275,7 +2275,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<double> UpdateAsync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync<double>(_update, values, predicates, conflict);
+        return CallMethodAsync<double>(_update, values, NapiArg.Of(predicates), conflict);
     }
 
     /// <summary>
@@ -2283,7 +2283,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public double UpdateSync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod<double>(_updateSync, values, predicates, conflict);
+        return CallMethod<double>(_updateSync, values, NapiArg.Of(predicates), conflict);
     }
 
     /// <summary>
@@ -2291,7 +2291,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<Result> UpdateWithReturningAsync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync(_updateWithReturning, static h => new Result(h), values, predicates, config, conflict);
+        return CallMethodAsync(_updateWithReturning, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), conflict);
     }
 
     /// <summary>
@@ -2299,7 +2299,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Result UpdateWithReturningSync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod(_updateWithReturningSync, static h => new Result(h), values, predicates, config, conflict);
+        return CallMethod(_updateWithReturningSync, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), conflict);
     }
 
     /// <summary>
@@ -2307,7 +2307,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<double> DeleteAsync(RelationalStoreRdbPredicates predicates)
     {
-        return CallMethodAsync<double>(_delete, predicates);
+        return CallMethodAsync<double>(_delete, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -2315,7 +2315,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public double DeleteSync(RelationalStoreRdbPredicates predicates)
     {
-        return CallMethod<double>(_deleteSync, predicates);
+        return CallMethod<double>(_deleteSync, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -2323,7 +2323,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<Result> DeleteWithReturningAsync(RelationalStoreRdbPredicates predicates, ReturningConfig config)
     {
-        return CallMethodAsync(_deleteWithReturning, static h => new Result(h), predicates, config);
+        return CallMethodAsync(_deleteWithReturning, static h => new Result(h), NapiArg.Of(predicates), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -2331,7 +2331,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Result DeleteWithReturningSync(RelationalStoreRdbPredicates predicates, ReturningConfig config)
     {
-        return CallMethod(_deleteWithReturningSync, static h => new Result(h), predicates, config);
+        return CallMethod(_deleteWithReturningSync, static h => new Result(h), NapiArg.Of(predicates), NapiArg.Of(config));
     }
 
     /// <summary>
@@ -2339,7 +2339,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<ResultSet> QueryAsync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return CallMethodAsync(_query, static h => new ResultSet(h), predicates, columns);
+        return CallMethodAsync(_query, static h => new ResultSet(h), NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -2347,7 +2347,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public ResultSet QuerySync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return CallMethod(_querySync, static h => new ResultSet(h), predicates, columns);
+        return CallMethod(_querySync, static h => new ResultSet(h), NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -2355,7 +2355,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<ResultSet> QuerySqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethodAsync(_querySql, static h => new ResultSet(h), sql, args);
+        return CallMethodAsync(_querySql, static h => new ResultSet(h), sql, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -2363,7 +2363,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public ResultSet QuerySqlSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethod(_querySqlSync, static h => new ResultSet(h), sql, args);
+        return CallMethod(_querySqlSync, static h => new ResultSet(h), sql, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -2371,7 +2371,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<LiteResultSet> QueryWithoutRowCountAsync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return CallMethodAsync(_queryWithoutRowCount, static h => new LiteResultSet(h), predicates, columns);
+        return CallMethodAsync(_queryWithoutRowCount, static h => new LiteResultSet(h), NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -2379,7 +2379,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public LiteResultSet QueryWithoutRowCountSync(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
-        return CallMethod(_queryWithoutRowCountSync, static h => new LiteResultSet(h), predicates, columns);
+        return CallMethod(_queryWithoutRowCountSync, static h => new LiteResultSet(h), NapiArg.Of(predicates), NapiArg.Of(columns));
     }
 
     /// <summary>
@@ -2387,7 +2387,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<LiteResultSet> QuerySqlWithoutRowCountAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
-        return CallMethodAsync(_querySqlWithoutRowCount, static h => new LiteResultSet(h), sql, bindArgs);
+        return CallMethodAsync(_querySqlWithoutRowCount, static h => new LiteResultSet(h), sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -2395,7 +2395,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public LiteResultSet QuerySqlWithoutRowCountSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? bindArgs = null)
     {
-        return CallMethod(_querySqlWithoutRowCountSync, static h => new LiteResultSet(h), sql, bindArgs);
+        return CallMethod(_querySqlWithoutRowCountSync, static h => new LiteResultSet(h), sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -2403,7 +2403,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ValueType> ExecuteAsync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_execute, sql, args);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_execute, sql, NapiArg.Of(args));
     }
 
     /// <summary>
@@ -2411,7 +2411,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.ValueType ExecuteSync(string sql, global::HarmonyOS.ArkUI.ValueType[]? args = null)
     {
-        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_executeSync, sql, args);
+        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_executeSync, sql, NapiArg.Of(args));
     }
 
 }

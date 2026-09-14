@@ -247,7 +247,7 @@ public static unsafe partial class BluetoothManager
     /// </summary>
     public static Task<double> SppListenAsync(string name, BluetoothManagerSppOption option)
     {
-        return NodeApi.CallMethodAsyncCallback<double>(Module, _sppListen, null, name, option);
+        return NodeApi.CallMethodAsyncCallback<double>(Module, _sppListen, null, name, NapiArg.Of(option));
     }
 
     /// <summary>
@@ -263,7 +263,7 @@ public static unsafe partial class BluetoothManager
     /// </summary>
     public static Task<double> SppConnectAsync(string device, BluetoothManagerSppOption option)
     {
-        return NodeApi.CallMethodAsyncCallback<double>(Module, _sppConnect, null, device, option);
+        return NodeApi.CallMethodAsyncCallback<double>(Module, _sppConnect, null, device, NapiArg.Of(option));
     }
 
     /// <summary>
@@ -287,7 +287,7 @@ public static unsafe partial class BluetoothManager
     /// </summary>
     public static void SppWrite(double clientSocket, byte[] data)
     {
-        NodeApi.CallMethodVoid(Module, _sppWrite, clientSocket, data);
+        NodeApi.CallMethodVoid(Module, _sppWrite, clientSocket, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -343,7 +343,7 @@ public static unsafe partial class BluetoothManager
     /// </summary>
     public static void StartBleScan(BluetoothManagerScanFilter[] filters, BluetoothManagerScanOptions? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _startBLEScan, filters, options);
+        NodeApi.CallMethodVoid(Module, _startBLEScan, NapiArg.Of(filters), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -767,7 +767,7 @@ public sealed partial class BluetoothManagerGattServer : JsObject
     /// </summary>
     public void StartAdvertising(BluetoothManagerAdvertiseSetting setting, IntPtr advData, IntPtr? advResponse = null)
     {
-        CallMethodVoid(_startAdvertising, setting, advData, advResponse);
+        CallMethodVoid(_startAdvertising, NapiArg.Of(setting), advData, NapiArg.Of(advResponse));
     }
 
     /// <summary>
@@ -807,7 +807,7 @@ public sealed partial class BluetoothManagerGattServer : JsObject
     /// </summary>
     public void NotifyCharacteristicChanged(string deviceId, BluetoothManagerNotifyCharacteristic notifyCharacteristic)
     {
-        CallMethodVoid(_notifyCharacteristicChanged, deviceId, notifyCharacteristic);
+        CallMethodVoid(_notifyCharacteristicChanged, deviceId, NapiArg.Of(notifyCharacteristic));
     }
 
     /// <summary>
@@ -815,7 +815,7 @@ public sealed partial class BluetoothManagerGattServer : JsObject
     /// </summary>
     public void SendResponse(BluetoothManagerServerResponse serverResponse)
     {
-        CallMethodVoid(_sendResponse, serverResponse);
+        CallMethodVoid(_sendResponse, NapiArg.Of(serverResponse));
     }
 
     /// <summary>
@@ -1095,7 +1095,7 @@ public sealed partial class BluetoothManagerGattClientDevice : JsObject
     /// </summary>
     public Task<BluetoothManagerBLEDescriptor> ReadDescriptorValueAsync(BluetoothManagerBLEDescriptor descriptor)
     {
-        return CallMethodAsync(_readDescriptorValue, static h => new BluetoothManagerBLEDescriptor(h), descriptor);
+        return CallMethodAsync(_readDescriptorValue, static h => new BluetoothManagerBLEDescriptor(h), NapiArg.Of(descriptor));
     }
 
     /// <summary>
@@ -1111,7 +1111,7 @@ public sealed partial class BluetoothManagerGattClientDevice : JsObject
     /// </summary>
     public void WriteDescriptorValue(BluetoothManagerBLEDescriptor descriptor)
     {
-        CallMethodVoid(_writeDescriptorValue, descriptor);
+        CallMethodVoid(_writeDescriptorValue, NapiArg.Of(descriptor));
     }
 
     /// <summary>

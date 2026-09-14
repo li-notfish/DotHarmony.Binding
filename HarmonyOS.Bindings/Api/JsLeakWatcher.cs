@@ -109,7 +109,7 @@ public static unsafe partial class JsLeakWatcher
     /// </summary>
     public static void EnableLeakWatcher(bool isEnabled, string[] configs, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _enableLeakWatcher, isEnabled, configs, callback);
+        NodeApi.CallMethodVoid(Module, _enableLeakWatcher, isEnabled, NapiArg.Of(configs), callback);
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public static unsafe partial class JsLeakWatcher
     /// </summary>
     public static void EnableLeakWatcher(bool isEnabled, LeakWatcherConfig configs, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _enableLeakWatcher, isEnabled, configs, callback);
+        NodeApi.CallMethodVoid(Module, _enableLeakWatcher, isEnabled, NapiArg.Of(configs), callback);
     }
 
 }

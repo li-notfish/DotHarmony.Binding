@@ -80,7 +80,7 @@ public static unsafe partial class UnifiedDataChannel
     /// </summary>
     public static Task<string> InsertDataAsync(UnifiedDataChannelOptions options, UnifiedData data)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _insertData, options, data);
+        return NodeApi.CallMethodAsync<string>(Module, _insertData, NapiArg.Of(options), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public static unsafe partial class UnifiedDataChannel
     /// </summary>
     public static Task UpdateDataAsync(UnifiedDataChannelOptions options, UnifiedData data)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateData, options, data);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateData, NapiArg.Of(options), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public static unsafe partial class UnifiedDataChannel
     /// </summary>
     public static Task<UnifiedData[]> QueryDataAsync(UnifiedDataChannelOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _queryData, h => ValueConverter.ConvertArray(h, static e => new UnifiedData(e)), options);
+        return NodeApi.CallMethodAsync(Module, _queryData, h => ValueConverter.ConvertArray(h, static e => new UnifiedData(e)), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public static unsafe partial class UnifiedDataChannel
     /// </summary>
     public static Task<UnifiedData[]> DeleteDataAsync(UnifiedDataChannelOptions options)
     {
-        return NodeApi.CallMethodAsync(Module, _deleteData, h => ValueConverter.ConvertArray(h, static e => new UnifiedData(e)), options);
+        return NodeApi.CallMethodAsync(Module, _deleteData, h => ValueConverter.ConvertArray(h, static e => new UnifiedData(e)), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public static unsafe partial class UnifiedDataChannel
     /// </summary>
     public static void ConvertRecordsToEntries(UnifiedData data)
     {
-        NodeApi.CallMethodVoid(Module, _convertRecordsToEntries, data);
+        NodeApi.CallMethodVoid(Module, _convertRecordsToEntries, NapiArg.Of(data));
     }
 
 }
@@ -170,7 +170,7 @@ public sealed partial class UnifiedData : JsObject
     private static ReadOnlySpan<byte> _UnifiedData => "UnifiedData"u8;
 
     public UnifiedData(UnifiedRecord record)
-        : this(NodeApi.CreateInstance(UnifiedDataChannel.Module, _UnifiedData, record)) { }
+        : this(NodeApi.CreateInstance(UnifiedDataChannel.Module, _UnifiedData, NapiArg.Of(record))) { }
 
     public UnifiedData()
         : this(NodeApi.CreateInstance(UnifiedDataChannel.Module, _UnifiedData)) { }
@@ -183,7 +183,7 @@ public sealed partial class UnifiedData : JsObject
     /// </summary>
     public void AddRecord(UnifiedRecord record)
     {
-        CallMethodVoid(_addRecord, record);
+        CallMethodVoid(_addRecord, NapiArg.Of(record));
     }
 
     /// <summary>

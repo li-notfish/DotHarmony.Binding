@@ -140,7 +140,7 @@ public static unsafe partial class SelectionContainer
     /// </summary>
     public static IntPtr BindSelectionMenu(IntPtr spanType, IntPtr content, IntPtr responseType, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _bindSelectionMenu, spanType, content, responseType, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _bindSelectionMenu, spanType, content, responseType, NapiArg.Of(options));
     }
 
     /// <summary>

@@ -143,7 +143,7 @@ public static unsafe partial class InputDevice
     /// </summary>
     public static Task<bool[]> SupportKeysAsync(double deviceId, IntPtr[] keys)
     {
-        return NodeApi.CallMethodAsync(Module, _supportKeys, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<bool>(e)), deviceId, keys);
+        return NodeApi.CallMethodAsync(Module, _supportKeys, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<bool>(e)), deviceId, NapiArg.Of(keys));
     }
 
     /// <summary>
@@ -151,7 +151,7 @@ public static unsafe partial class InputDevice
     /// </summary>
     public static bool[] SupportKeysSync(double deviceId, IntPtr[] keys)
     {
-        return NodeApi.CallMethod(Module, _supportKeysSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<bool>(e)), deviceId, keys);
+        return NodeApi.CallMethod(Module, _supportKeysSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<bool>(e)), deviceId, NapiArg.Of(keys));
     }
 
     /// <summary>

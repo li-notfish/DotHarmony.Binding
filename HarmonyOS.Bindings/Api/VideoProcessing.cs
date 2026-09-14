@@ -109,7 +109,7 @@ public sealed partial class VideoProcessor : JsObject
     /// </summary>
     public void OffStatusChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offStatusChange, callback);
+        CallMethodVoid(_offStatusChange, NapiArg.Of(callback));
     }
 
 }

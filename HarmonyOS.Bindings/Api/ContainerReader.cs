@@ -73,7 +73,7 @@ public static unsafe partial class ContainerReader
     /// </summary>
     public static IntPtr BreakpointConfig(IntPtr? value = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _breakpointConfig, value);
+        return NodeApi.CallMethod<IntPtr>(Module, _breakpointConfig, NapiArg.Of(value));
     }
 
 }

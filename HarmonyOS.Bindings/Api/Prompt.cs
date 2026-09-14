@@ -75,7 +75,7 @@ public static unsafe partial class Prompt
     /// </summary>
     public static void ShowToast(ShowToastOptions options)
     {
-        NodeApi.CallMethodVoid(Module, _showToast, options);
+        NodeApi.CallMethodVoid(Module, _showToast, NapiArg.Of(options));
     }
 
     /// <summary>

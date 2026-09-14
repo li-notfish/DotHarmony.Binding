@@ -99,7 +99,7 @@ public static unsafe partial class DataTransfer
     /// </summary>
     public static Task ConnectAsync(ConnectionParams @params)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _connect, @params);
+        return NodeApi.CallMethodAsyncVoid(Module, _connect, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public static unsafe partial class DataTransfer
     /// </summary>
     public static Task DisconnectAsync(ConnectionParams @params)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disconnect, @params);
+        return NodeApi.CallMethodAsyncVoid(Module, _disconnect, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public static unsafe partial class DataTransfer
     /// </summary>
     public static void OffConnectionStateChanged(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offConnectionStateChanged, callback);
+        NodeApi.CallMethodVoid(Module, _offConnectionStateChanged, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public static unsafe partial class DataTransfer
     /// </summary>
     public static Task WriteDataAsync(DataParams @params)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _writeData, @params);
+        return NodeApi.CallMethodAsyncVoid(Module, _writeData, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public static unsafe partial class DataTransfer
     /// </summary>
     public static void OffReadData(IntPtr? callback = null)
     {
-        NodeApi.CallMethodVoid(Module, _offReadData, callback);
+        NodeApi.CallMethodVoid(Module, _offReadData, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public static unsafe partial class DataTransfer
     /// </summary>
     public static global::HarmonyOS.ArkUI.ConnectionState GetConnectionState(ConnectionStateParams @params)
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.ConnectionState>(Module, _getConnectionState, @params);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.ConnectionState>(Module, _getConnectionState, NapiArg.Of(@params));
     }
 
 }

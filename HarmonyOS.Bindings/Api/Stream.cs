@@ -95,7 +95,7 @@ public sealed partial class Writable : JsObject
     /// </summary>
     public bool Write(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
-        return CallMethod<bool>(_write, chunk, encoding, callback);
+        return CallMethod<bool>(_write, chunk, encoding, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public sealed partial class Writable : JsObject
     /// </summary>
     public Writable End(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
-        return CallMethod(_end, static h => new Writable(h), chunk, encoding, callback);
+        return CallMethod(_end, static h => new Writable(h), chunk, encoding, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public sealed partial class Writable : JsObject
     /// </summary>
     public void DoWritev(string[] chunks, IntPtr callback)
     {
-        CallMethodVoid(_doWritev, chunks, callback);
+        CallMethodVoid(_doWritev, NapiArg.Of(chunks), callback);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -214,7 +214,7 @@ public sealed partial class Readable : JsObject
         : this(NodeApi.CreateInstance(Stream.Module, _Readable)) { }
 
     public Readable(ReadableOptions options)
-        : this(NodeApi.CreateInstance(Stream.Module, _Readable, options)) { }
+        : this(NodeApi.CreateInstance(Stream.Module, _Readable, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _read => "read"u8;
     private static ReadOnlySpan<byte> _resume => "resume"u8;
     private static ReadOnlySpan<byte> _pause => "pause"u8;
@@ -232,7 +232,7 @@ public sealed partial class Readable : JsObject
     /// </summary>
     public string Read(double? size = null)
     {
-        return CallMethod<string>(_read, size);
+        return CallMethod<string>(_read, NapiArg.Of(size));
     }
 
     /// <summary>
@@ -272,7 +272,7 @@ public sealed partial class Readable : JsObject
     /// </summary>
     public Writable Pipe(Writable destination, IntPtr? options = null)
     {
-        return CallMethod(_pipe, static h => new Writable(h), destination, options);
+        return CallMethod(_pipe, static h => new Writable(h), NapiArg.Of(destination), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -280,7 +280,7 @@ public sealed partial class Readable : JsObject
     /// </summary>
     public Readable Unpipe(Writable? destination = null)
     {
-        return CallMethod(_unpipe, static h => new Readable(h), destination);
+        return CallMethod(_unpipe, static h => new Readable(h), NapiArg.Of(destination));
     }
 
     /// <summary>
@@ -320,7 +320,7 @@ public sealed partial class Readable : JsObject
     /// </summary>
     public bool Push(byte[] chunk, string? encoding = null)
     {
-        return CallMethod<bool>(_push, chunk, encoding);
+        return CallMethod<bool>(_push, NapiArg.Of(chunk), encoding);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -389,7 +389,7 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public string Read(double? size = null)
     {
-        return CallMethod<string>(_read, size);
+        return CallMethod<string>(_read, NapiArg.Of(size));
     }
 
     /// <summary>
@@ -429,7 +429,7 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public Writable Pipe(Writable destination, IntPtr? options = null)
     {
-        return CallMethod(_pipe, static h => new Writable(h), destination, options);
+        return CallMethod(_pipe, static h => new Writable(h), NapiArg.Of(destination), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -437,7 +437,7 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public Readable Unpipe(Writable? destination = null)
     {
-        return CallMethod(_unpipe, static h => new Readable(h), destination);
+        return CallMethod(_unpipe, static h => new Readable(h), NapiArg.Of(destination));
     }
 
     /// <summary>
@@ -477,7 +477,7 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public bool Push(byte[] chunk, string? encoding = null)
     {
-        return CallMethod<bool>(_push, chunk, encoding);
+        return CallMethod<bool>(_push, NapiArg.Of(chunk), encoding);
     }
 
     /// <summary>
@@ -485,7 +485,7 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public bool Write(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
-        return CallMethod<bool>(_write, chunk, encoding, callback);
+        return CallMethod<bool>(_write, chunk, encoding, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -493,7 +493,7 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public Writable End(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
-        return CallMethod(_end, static h => new Writable(h), chunk, encoding, callback);
+        return CallMethod(_end, static h => new Writable(h), chunk, encoding, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -533,7 +533,7 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public void DoWritev(string[] chunks, IntPtr callback)
     {
-        CallMethodVoid(_doWritev, chunks, callback);
+        CallMethodVoid(_doWritev, NapiArg.Of(chunks), callback);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -604,7 +604,7 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public string Read(double? size = null)
     {
-        return CallMethod<string>(_read, size);
+        return CallMethod<string>(_read, NapiArg.Of(size));
     }
 
     /// <summary>
@@ -644,7 +644,7 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public Writable Pipe(Writable destination, IntPtr? options = null)
     {
-        return CallMethod(_pipe, static h => new Writable(h), destination, options);
+        return CallMethod(_pipe, static h => new Writable(h), NapiArg.Of(destination), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -652,7 +652,7 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public Readable Unpipe(Writable? destination = null)
     {
-        return CallMethod(_unpipe, static h => new Readable(h), destination);
+        return CallMethod(_unpipe, static h => new Readable(h), NapiArg.Of(destination));
     }
 
     /// <summary>
@@ -692,7 +692,7 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public bool Push(byte[] chunk, string? encoding = null)
     {
-        return CallMethod<bool>(_push, chunk, encoding);
+        return CallMethod<bool>(_push, NapiArg.Of(chunk), encoding);
     }
 
     /// <summary>
@@ -700,7 +700,7 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public bool Write(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
-        return CallMethod<bool>(_write, chunk, encoding, callback);
+        return CallMethod<bool>(_write, chunk, encoding, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -708,7 +708,7 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public Writable End(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
-        return CallMethod(_end, static h => new Writable(h), chunk, encoding, callback);
+        return CallMethod(_end, static h => new Writable(h), chunk, encoding, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -748,7 +748,7 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public void DoWritev(string[] chunks, IntPtr callback)
     {
-        CallMethodVoid(_doWritev, chunks, callback);
+        CallMethodVoid(_doWritev, NapiArg.Of(chunks), callback);
     }
 
     /// <summary>

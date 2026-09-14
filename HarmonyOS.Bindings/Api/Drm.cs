@@ -194,7 +194,7 @@ public sealed partial class MediaKeySystem : JsObject
     /// </summary>
     public void SetConfigurationByteArray(string configName, byte[] value)
     {
-        CallMethodVoid(_setConfigurationByteArray, configName, value);
+        CallMethodVoid(_setConfigurationByteArray, configName, NapiArg.Of(value));
     }
 
     /// <summary>
@@ -226,7 +226,7 @@ public sealed partial class MediaKeySystem : JsObject
     /// </summary>
     public Task ProcessKeySystemResponseAsync(byte[] response)
     {
-        return CallMethodAsyncVoid(_processKeySystemResponse, response);
+        return CallMethodAsyncVoid(_processKeySystemResponse, NapiArg.Of(response));
     }
 
     /// <summary>
@@ -282,7 +282,7 @@ public sealed partial class MediaKeySystem : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.OfflineMediaKeyStatus GetOfflineMediaKeyStatus(byte[] mediaKeyId)
     {
-        return CallMethod<global::HarmonyOS.ArkUI.OfflineMediaKeyStatus>(_getOfflineMediaKeyStatus, mediaKeyId);
+        return CallMethod<global::HarmonyOS.ArkUI.OfflineMediaKeyStatus>(_getOfflineMediaKeyStatus, NapiArg.Of(mediaKeyId));
     }
 
     /// <summary>
@@ -290,7 +290,7 @@ public sealed partial class MediaKeySystem : JsObject
     /// </summary>
     public void ClearOfflineMediaKeys(byte[] mediaKeyId)
     {
-        CallMethodVoid(_clearOfflineMediaKeys, mediaKeyId);
+        CallMethodVoid(_clearOfflineMediaKeys, NapiArg.Of(mediaKeyId));
     }
 
     /// <summary>
@@ -435,7 +435,7 @@ public sealed partial class MediaKeySession : JsObject
     /// </summary>
     public Task<MediaKeyRequest> GenerateMediaKeyRequestAsync(string mimeType, byte[] initData, double mediaKeyType, OptionsData[]? options = null)
     {
-        return CallMethodAsync(_generateMediaKeyRequest, static h => new MediaKeyRequest(h), mimeType, initData, mediaKeyType, options);
+        return CallMethodAsync(_generateMediaKeyRequest, static h => new MediaKeyRequest(h), mimeType, NapiArg.Of(initData), mediaKeyType, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -443,7 +443,7 @@ public sealed partial class MediaKeySession : JsObject
     /// </summary>
     public Task<byte[]> ProcessMediaKeyResponseAsync(byte[] response)
     {
-        return CallMethodAsync(_processMediaKeyResponse, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), response);
+        return CallMethodAsync(_processMediaKeyResponse, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(response));
     }
 
     /// <summary>
@@ -467,7 +467,7 @@ public sealed partial class MediaKeySession : JsObject
     /// </summary>
     public Task<byte[]> GenerateOfflineReleaseRequestAsync(byte[] mediaKeyId)
     {
-        return CallMethodAsync(_generateOfflineReleaseRequest, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), mediaKeyId);
+        return CallMethodAsync(_generateOfflineReleaseRequest, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(mediaKeyId));
     }
 
     /// <summary>
@@ -475,7 +475,7 @@ public sealed partial class MediaKeySession : JsObject
     /// </summary>
     public Task ProcessOfflineReleaseResponseAsync(byte[] mediaKeyId, byte[] response)
     {
-        return CallMethodAsyncVoid(_processOfflineReleaseResponse, mediaKeyId, response);
+        return CallMethodAsyncVoid(_processOfflineReleaseResponse, NapiArg.Of(mediaKeyId), NapiArg.Of(response));
     }
 
     /// <summary>
@@ -483,7 +483,7 @@ public sealed partial class MediaKeySession : JsObject
     /// </summary>
     public Task RestoreOfflineMediaKeysAsync(byte[] mediaKeyId)
     {
-        return CallMethodAsyncVoid(_restoreOfflineMediaKeys, mediaKeyId);
+        return CallMethodAsyncVoid(_restoreOfflineMediaKeys, NapiArg.Of(mediaKeyId));
     }
 
     /// <summary>

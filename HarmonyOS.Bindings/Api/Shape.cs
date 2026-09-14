@@ -170,7 +170,7 @@ public sealed partial class RectShape : JsObject
     private static ReadOnlySpan<byte> _RectShape => "RectShape"u8;
 
     public RectShape(RectShapeOptions? options = null)
-        : this(NodeApi.CreateInstance(Shape.Module, _RectShape, options)) { }
+        : this(NodeApi.CreateInstance(Shape.Module, _RectShape, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _radiusWidth => "radiusWidth"u8;
     private static ReadOnlySpan<byte> _radiusHeight => "radiusHeight"u8;
     private static ReadOnlySpan<byte> _radius => "radius"u8;
@@ -211,7 +211,7 @@ public sealed partial class CircleShape : JsObject
     private static ReadOnlySpan<byte> _CircleShape => "CircleShape"u8;
 
     public CircleShape(ShapeSize? options = null)
-        : this(NodeApi.CreateInstance(Shape.Module, _CircleShape, options)) { }
+        : this(NodeApi.CreateInstance(Shape.Module, _CircleShape, NapiArg.Of(options))) { }
 }
 
 /// <summary>
@@ -225,7 +225,7 @@ public sealed partial class EllipseShape : JsObject
     private static ReadOnlySpan<byte> _EllipseShape => "EllipseShape"u8;
 
     public EllipseShape(ShapeSize? options = null)
-        : this(NodeApi.CreateInstance(Shape.Module, _EllipseShape, options)) { }
+        : this(NodeApi.CreateInstance(Shape.Module, _EllipseShape, NapiArg.Of(options))) { }
 }
 
 /// <summary>
@@ -239,7 +239,7 @@ public sealed partial class PathShape : JsObject
     private static ReadOnlySpan<byte> _PathShape => "PathShape"u8;
 
     public PathShape(PathShapeOptions? options = null)
-        : this(NodeApi.CreateInstance(Shape.Module, _PathShape, options)) { }
+        : this(NodeApi.CreateInstance(Shape.Module, _PathShape, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _commands => "commands"u8;
     /// <summary>
     /// commands

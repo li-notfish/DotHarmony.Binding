@@ -89,7 +89,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnGetResourceId(IntPtr[] @params)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onGetResourceId, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onGetResourceId, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnOpenResource(string resourceId, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onOpenResource, resourceId, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onOpenResource, resourceId, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnCloseResource(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onCloseResource, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onCloseResource, handle, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnGetProperty(string handle, string propertyId, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onGetProperty, handle, propertyId, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onGetProperty, handle, propertyId, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnSetProperty(string handle, string propertyId, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onSetProperty, handle, propertyId, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onSetProperty, handle, propertyId, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnAuthUkeyPin(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onAuthUkeyPin, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onAuthUkeyPin, handle, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnGetUkeyPinAuthState(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onGetUkeyPinAuthState, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onGetUkeyPinAuthState, handle, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -145,7 +145,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnClearUkeyPinAuthState(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onClearUkeyPinAuthState, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onClearUkeyPinAuthState, handle, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnExportCertificate(string resourceId, IntPtr[]? @params = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onExportCertificate, resourceId, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onExportCertificate, resourceId, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -185,7 +185,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnImportCertificate(string handle, IntPtr[] @params, IntPtr certInfo)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onImportCertificate, handle, @params, certInfo);
+        return NodeApi.CallMethod<IntPtr>(Module, _onImportCertificate, handle, NapiArg.Of(@params), certInfo);
     }
 
     /// <summary>
@@ -193,7 +193,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnEnumCertificates(IntPtr[]? @params = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onEnumCertificates, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onEnumCertificates, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -201,7 +201,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnGenerateKeyItem(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onGenerateKeyItem, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onGenerateKeyItem, handle, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -209,7 +209,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnExportKeyItem(string handle, IntPtr[] @params)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onExportKeyItem, handle, @params);
+        return NodeApi.CallMethod<IntPtr>(Module, _onExportKeyItem, handle, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -217,7 +217,7 @@ public static unsafe partial class CryptoExtensionAbility
     /// </summary>
     public static IntPtr OnImportWrappedKeyItem(string handle, string wrappingHandle, IntPtr[] @params, byte[] wrappedKey)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _onImportWrappedKeyItem, handle, wrappingHandle, @params, wrappedKey);
+        return NodeApi.CallMethod<IntPtr>(Module, _onImportWrappedKeyItem, handle, wrappingHandle, NapiArg.Of(@params), NapiArg.Of(wrappedKey));
     }
 
 }

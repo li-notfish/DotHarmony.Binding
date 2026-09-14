@@ -84,7 +84,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static void AddAllowedUsbDevices(global::HarmonyOS.Bindings.Api.WantObject admin, UsbDeviceId[] usbDeviceIds)
     {
-        NodeApi.CallMethodVoid(Module, _addAllowedUsbDevices, admin, usbDeviceIds);
+        NodeApi.CallMethodVoid(Module, _addAllowedUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDeviceIds));
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static void RemoveAllowedUsbDevices(global::HarmonyOS.Bindings.Api.WantObject admin, UsbDeviceId[] usbDeviceIds)
     {
-        NodeApi.CallMethodVoid(Module, _removeAllowedUsbDevices, admin, usbDeviceIds);
+        NodeApi.CallMethodVoid(Module, _removeAllowedUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDeviceIds));
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static UsbDeviceId[] GetAllowedUsbDevices(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getAllowedUsbDevices, h => ValueConverter.ConvertArray(h, static e => new UsbDeviceId(e)), admin);
+        return NodeApi.CallMethod(Module, _getAllowedUsbDevices, h => ValueConverter.ConvertArray(h, static e => new UsbDeviceId(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static void SetUsbStorageDeviceAccessPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, global::HarmonyOS.ArkUI.UsbPolicy usbPolicy)
     {
-        NodeApi.CallMethodVoid(Module, _setUsbStorageDeviceAccessPolicy, admin, usbPolicy);
+        NodeApi.CallMethodVoid(Module, _setUsbStorageDeviceAccessPolicy, NapiArg.Of(admin), usbPolicy);
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static global::HarmonyOS.ArkUI.UsbPolicy GetUsbStorageDeviceAccessPolicy(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.UsbPolicy>(Module, _getUsbStorageDeviceAccessPolicy, admin);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.UsbPolicy>(Module, _getUsbStorageDeviceAccessPolicy, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static void AddDisallowedUsbDevices(global::HarmonyOS.Bindings.Api.WantObject admin, UsbDeviceType[] usbDevices)
     {
-        NodeApi.CallMethodVoid(Module, _addDisallowedUsbDevices, admin, usbDevices);
+        NodeApi.CallMethodVoid(Module, _addDisallowedUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDevices));
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static void RemoveDisallowedUsbDevices(global::HarmonyOS.Bindings.Api.WantObject admin, UsbDeviceType[] usbDevices)
     {
-        NodeApi.CallMethodVoid(Module, _removeDisallowedUsbDevices, admin, usbDevices);
+        NodeApi.CallMethodVoid(Module, _removeDisallowedUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDevices));
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static UsbDeviceType[] GetDisallowedUsbDevices(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getDisallowedUsbDevices, h => ValueConverter.ConvertArray(h, static e => new UsbDeviceType(e)), admin);
+        return NodeApi.CallMethod(Module, _getDisallowedUsbDevices, h => ValueConverter.ConvertArray(h, static e => new UsbDeviceType(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -148,7 +148,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static void AddDisallowedPermissiveUsbDevices(global::HarmonyOS.Bindings.Api.WantObject admin, PermissiveUsbDeviceType[] usbDevices)
     {
-        NodeApi.CallMethodVoid(Module, _addDisallowedPermissiveUsbDevices, admin, usbDevices);
+        NodeApi.CallMethodVoid(Module, _addDisallowedPermissiveUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDevices));
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static void RemoveDisallowedPermissiveUsbDevices(global::HarmonyOS.Bindings.Api.WantObject admin, PermissiveUsbDeviceType[] usbDevices)
     {
-        NodeApi.CallMethodVoid(Module, _removeDisallowedPermissiveUsbDevices, admin, usbDevices);
+        NodeApi.CallMethodVoid(Module, _removeDisallowedPermissiveUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDevices));
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static PermissiveUsbDeviceType[] GetDisallowedPermissiveUsbDevices(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getDisallowedPermissiveUsbDevices, h => ValueConverter.ConvertArray(h, static e => new PermissiveUsbDeviceType(e)), admin);
+        return NodeApi.CallMethod(Module, _getDisallowedPermissiveUsbDevices, h => ValueConverter.ConvertArray(h, static e => new PermissiveUsbDeviceType(e)), NapiArg.Of(admin));
     }
 
 }

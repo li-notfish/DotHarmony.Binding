@@ -96,7 +96,7 @@ public sealed partial class CalendarManagerObject : JsObject
     /// </summary>
     public Task<Calendar> CreateCalendarAsync(CalendarAccount calendarAccount)
     {
-        return CallMethodAsync(_createCalendar, static h => new Calendar(h), calendarAccount);
+        return CallMethodAsync(_createCalendar, static h => new Calendar(h), NapiArg.Of(calendarAccount));
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public sealed partial class CalendarManagerObject : JsObject
     /// </summary>
     public Task DeleteCalendarAsync(Calendar calendar)
     {
-        return CallMethodAsyncVoid(_deleteCalendar, calendar);
+        return CallMethodAsyncVoid(_deleteCalendar, NapiArg.Of(calendar));
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public sealed partial class CalendarManagerObject : JsObject
     /// </summary>
     public Task<Calendar> GetCalendarAsync(CalendarAccount? calendarAccount = null)
     {
-        return CallMethodAsync(_getCalendar, static h => new Calendar(h), calendarAccount);
+        return CallMethodAsync(_getCalendar, static h => new Calendar(h), NapiArg.Of(calendarAccount));
     }
 
     /// <summary>
@@ -178,7 +178,7 @@ public sealed partial class Calendar : JsObject
     /// </summary>
     public Task AddEventsAsync(IntPtr[] events)
     {
-        return CallMethodAsyncVoid(_addEvents, events);
+        return CallMethodAsyncVoid(_addEvents, NapiArg.Of(events));
     }
 
     /// <summary>
@@ -194,7 +194,7 @@ public sealed partial class Calendar : JsObject
     /// </summary>
     public Task DeleteEventsAsync(double[] ids)
     {
-        return CallMethodAsyncVoid(_deleteEvents, ids);
+        return CallMethodAsyncVoid(_deleteEvents, NapiArg.Of(ids));
     }
 
     /// <summary>
@@ -210,7 +210,7 @@ public sealed partial class Calendar : JsObject
     /// </summary>
     public Task<IntPtr[]> GetEventsAsync(EventFilter? eventFilter = null, object[]? eventKey = null)
     {
-        return CallMethodAsync(_getEvents, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), eventFilter, eventKey);
+        return CallMethodAsync(_getEvents, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(eventFilter), NapiArg.Of(eventKey));
     }
 
     /// <summary>
@@ -234,7 +234,7 @@ public sealed partial class Calendar : JsObject
     /// </summary>
     public Task SetConfigAsync(CalendarConfig config)
     {
-        return CallMethodAsyncVoid(_setConfig, config);
+        return CallMethodAsyncVoid(_setConfig, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -250,7 +250,7 @@ public sealed partial class Calendar : JsObject
     /// </summary>
     public Task<IntPtr[]> QueryEventInstancesAsync(double start, double end, double[]? ids = null, object[]? eventKey = null)
     {
-        return CallMethodAsync(_queryEventInstances, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), start, end, ids, eventKey);
+        return CallMethodAsync(_queryEventInstances, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), start, end, NapiArg.Of(ids), NapiArg.Of(eventKey));
     }
 
     /// <summary>
@@ -305,7 +305,7 @@ public sealed partial class EventFilter : JsObject
     /// </summary>
     public EventFilter FilterById(double[] ids)
     {
-        return CallMethod(_filterById, static h => new EventFilter(h), ids);
+        return CallMethod(_filterById, static h => new EventFilter(h), NapiArg.Of(ids));
     }
 
     /// <summary>

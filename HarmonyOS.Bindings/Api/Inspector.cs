@@ -120,7 +120,7 @@ public sealed partial class ComponentObserver : JsObject
     /// </summary>
     public void OffDrawChildren(IntPtr? callback = null)
     {
-        CallMethodVoid(_offDrawChildren, callback);
+        CallMethodVoid(_offDrawChildren, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public sealed partial class ComponentObserver : JsObject
     /// </summary>
     public void OffLayoutChildren(IntPtr? callback = null)
     {
-        CallMethodVoid(_offLayoutChildren, callback);
+        CallMethodVoid(_offLayoutChildren, NapiArg.Of(callback));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();

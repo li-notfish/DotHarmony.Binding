@@ -102,7 +102,7 @@ public static unsafe partial class StateManagement
     /// </summary>
     public static IntPtr Connect(IntPtr type, string? keyOrDefaultCreator = null, IntPtr? defaultCreator = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _connect, type, keyOrDefaultCreator, defaultCreator);
+        return NodeApi.CallMethod<IntPtr>(Module, _connect, type, keyOrDefaultCreator, NapiArg.Of(defaultCreator));
     }
 
     /// <summary>
@@ -182,7 +182,7 @@ public static unsafe partial class StateManagement
     /// </summary>
     public static void AddMonitor(IntPtr target, string path, IntPtr monitorCallback, IntPtr? options = null)
     {
-        NodeApi.CallMethodVoid(Module, _addMonitor, target, path, monitorCallback, options);
+        NodeApi.CallMethodVoid(Module, _addMonitor, target, path, monitorCallback, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -190,7 +190,7 @@ public static unsafe partial class StateManagement
     /// </summary>
     public static void ClearMonitor(IntPtr target, string path, IntPtr? monitorCallback = null)
     {
-        NodeApi.CallMethodVoid(Module, _clearMonitor, target, path, monitorCallback);
+        NodeApi.CallMethodVoid(Module, _clearMonitor, target, path, NapiArg.Of(monitorCallback));
     }
 
     /// <summary>
@@ -310,7 +310,7 @@ public static unsafe partial class StateManagement
     /// </summary>
     public static void AboutToReuse(IntPtr? @params = null)
     {
-        NodeApi.CallMethodVoid(Module, _aboutToReuse, @params);
+        NodeApi.CallMethodVoid(Module, _aboutToReuse, NapiArg.Of(@params));
     }
 
     /// <summary>

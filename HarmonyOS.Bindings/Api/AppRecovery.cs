@@ -92,7 +92,7 @@ public static unsafe partial class AppRecovery
     /// </summary>
     public static void SetRestartWant(global::HarmonyOS.Bindings.Api.WantObject want)
     {
-        NodeApi.CallMethodVoid(Module, _setRestartWant, want);
+        NodeApi.CallMethodVoid(Module, _setRestartWant, NapiArg.Of(want));
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public static unsafe partial class AppRecovery
     /// </summary>
     public static bool SaveAppState(IntPtr? context = null)
     {
-        return NodeApi.CallMethod<bool>(Module, _saveAppState, context);
+        return NodeApi.CallMethod<bool>(Module, _saveAppState, NapiArg.Of(context));
     }
 
 }

@@ -133,7 +133,7 @@ public static unsafe partial class Vibrator
     /// </summary>
     public static Task StopVibrationAsync(VibratorInfoParam? param = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, param);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, NapiArg.Of(param));
     }
 
     /// <summary>
@@ -157,7 +157,7 @@ public static unsafe partial class Vibrator
     /// </summary>
     public static EffectInfo GetEffectInfoSync(string effectId, VibratorInfoParam? param = null)
     {
-        return NodeApi.CallMethod(Module, _getEffectInfoSync, static h => new EffectInfo(h), effectId, param);
+        return NodeApi.CallMethod(Module, _getEffectInfoSync, static h => new EffectInfo(h), effectId, NapiArg.Of(param));
     }
 
     /// <summary>
@@ -181,7 +181,7 @@ public static unsafe partial class Vibrator
     /// </summary>
     public static VibratorInfo[] GetVibratorInfoSync(VibratorInfoParam? param = null)
     {
-        return NodeApi.CallMethod(Module, _getVibratorInfoSync, h => ValueConverter.ConvertArray(h, static e => new VibratorInfo(e)), param);
+        return NodeApi.CallMethod(Module, _getVibratorInfoSync, h => ValueConverter.ConvertArray(h, static e => new VibratorInfo(e)), NapiArg.Of(param));
     }
 
     /// <summary>

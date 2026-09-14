@@ -83,7 +83,7 @@ public static unsafe partial class InputConsumer
     /// </summary>
     public static void On(string type, HotkeyOptions hotkeyOptions, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, hotkeyOptions, callback);
+        NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(hotkeyOptions), callback);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public static unsafe partial class InputConsumer
     /// </summary>
     public static void Off(string type, HotkeyOptions hotkeyOptions, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _off, type, hotkeyOptions, callback);
+        NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(hotkeyOptions), callback);
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public static unsafe partial class InputConsumer
     /// </summary>
     public static void On(string type, KeyPressedConfig options, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, type, options, callback);
+        NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(options), callback);
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public static unsafe partial class InputConsumer
     {
         _eventListeners.Add((type, callback),
             args => callback(new HotkeyOptions(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, hotkeyOptions));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(hotkeyOptions)));
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public static unsafe partial class InputConsumer
     /// </summary>
     public static void Off(string type, System.Action<HotkeyOptions> callback, HotkeyOptions hotkeyOptions)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, hotkeyOptions));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, NapiArg.Of(hotkeyOptions)));
     }
 
     /// <summary>
@@ -145,7 +145,7 @@ public static unsafe partial class InputConsumer
     {
         _eventListeners.Add((type, callback),
             args => callback(new global::HarmonyOS.Bindings.Api.KeyEventKeyEvent(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, options));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, NapiArg.Of(options)));
     }
 
     /// <summary>

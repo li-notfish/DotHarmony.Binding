@@ -155,7 +155,7 @@ public static unsafe partial class ArrayList
     /// </summary>
     public static void ReplaceAllElements(IntPtr callbackFn, IntPtr? thisArg = null)
     {
-        NodeApi.CallMethodVoid(Module, _replaceAllElements, callbackFn, thisArg);
+        NodeApi.CallMethodVoid(Module, _replaceAllElements, callbackFn, NapiArg.Of(thisArg));
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ public static unsafe partial class ArrayList
     /// </summary>
     public static void ForEach(IntPtr callbackFn, IntPtr? thisArg = null)
     {
-        NodeApi.CallMethodVoid(Module, _forEach, callbackFn, thisArg);
+        NodeApi.CallMethodVoid(Module, _forEach, callbackFn, NapiArg.Of(thisArg));
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public static unsafe partial class ArrayList
     /// </summary>
     public static void Sort(IntPtr? comparator = null)
     {
-        NodeApi.CallMethodVoid(Module, _sort, comparator);
+        NodeApi.CallMethodVoid(Module, _sort, NapiArg.Of(comparator));
     }
 
     /// <summary>

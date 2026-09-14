@@ -186,7 +186,7 @@ public sealed partial class Client : JsObject
     /// </summary>
     public void OffPropertyChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offPropertyChange, callback);
+        CallMethodVoid(_offPropertyChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -202,7 +202,7 @@ public sealed partial class Client : JsObject
     /// </summary>
     public void OffConnectionStateChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offConnectionStateChange, callback);
+        CallMethodVoid(_offConnectionStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ public sealed partial class Client : JsObject
     /// </summary>
     public void OffMtuChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offMtuChange, callback);
+        CallMethodVoid(_offMtuChange, NapiArg.Of(callback));
     }
 
 }
@@ -280,7 +280,7 @@ public sealed partial class SsapServer : JsObject
     /// </summary>
     public void SendResponse(SsapServerResponse response)
     {
-        CallMethodVoid(_sendResponse, response);
+        CallMethodVoid(_sendResponse, NapiArg.Of(response));
     }
 
     /// <summary>
@@ -296,7 +296,7 @@ public sealed partial class SsapServer : JsObject
     /// </summary>
     public void OffConnectionStateChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offConnectionStateChange, callback);
+        CallMethodVoid(_offConnectionStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -312,7 +312,7 @@ public sealed partial class SsapServer : JsObject
     /// </summary>
     public void OffPropertyRead(IntPtr? callback = null)
     {
-        CallMethodVoid(_offPropertyRead, callback);
+        CallMethodVoid(_offPropertyRead, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -328,7 +328,7 @@ public sealed partial class SsapServer : JsObject
     /// </summary>
     public void OffPropertyWrite(IntPtr? callback = null)
     {
-        CallMethodVoid(_offPropertyWrite, callback);
+        CallMethodVoid(_offPropertyWrite, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -344,7 +344,7 @@ public sealed partial class SsapServer : JsObject
     /// </summary>
     public void OffMtuChange(IntPtr? callback = null)
     {
-        CallMethodVoid(_offMtuChange, callback);
+        CallMethodVoid(_offMtuChange, NapiArg.Of(callback));
     }
 
 }

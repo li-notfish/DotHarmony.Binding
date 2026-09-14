@@ -76,7 +76,7 @@ public static unsafe partial class Json
     /// </summary>
     public static IntPtr Parse(string text, IntPtr? reviver = null, ParseOptions? options = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _parse, text, reviver, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _parse, text, NapiArg.Of(reviver), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public static unsafe partial class Json
     /// </summary>
     public static string Stringify(IntPtr value, double? replacer = null, string? space = null)
     {
-        return NodeApi.CallMethod<string>(Module, _stringify, value, replacer, space);
+        return NodeApi.CallMethod<string>(Module, _stringify, value, NapiArg.Of(replacer), space);
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static unsafe partial class Json
     /// </summary>
     public static string Stringify(IntPtr value, IntPtr? replacer = null, string? space = null)
     {
-        return NodeApi.CallMethod<string>(Module, _stringify, value, replacer, space);
+        return NodeApi.CallMethod<string>(Module, _stringify, value, NapiArg.Of(replacer), space);
     }
 
     /// <summary>

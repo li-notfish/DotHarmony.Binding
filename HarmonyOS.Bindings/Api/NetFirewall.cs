@@ -80,7 +80,7 @@ public static unsafe partial class NetFirewall
     /// </summary>
     public static Task SetNetFirewallPolicyAsync(double userId, NetFirewallPolicy policy)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setNetFirewallPolicy, userId, policy);
+        return NodeApi.CallMethodAsyncVoid(Module, _setNetFirewallPolicy, userId, NapiArg.Of(policy));
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public static unsafe partial class NetFirewall
     /// </summary>
     public static Task<double> AddNetFirewallRuleAsync(NetFirewallRule rule)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _addNetFirewallRule, rule);
+        return NodeApi.CallMethodAsync<double>(Module, _addNetFirewallRule, NapiArg.Of(rule));
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public static unsafe partial class NetFirewall
     /// </summary>
     public static Task UpdateNetFirewallRuleAsync(NetFirewallRule rule)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateNetFirewallRule, rule);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateNetFirewallRule, NapiArg.Of(rule));
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public static unsafe partial class NetFirewall
     /// </summary>
     public static Task<FirewallRulePage> GetNetFirewallRulesAsync(double userId, RequestParam requestParam)
     {
-        return NodeApi.CallMethodAsync(Module, _getNetFirewallRules, static h => new FirewallRulePage(h), userId, requestParam);
+        return NodeApi.CallMethodAsync(Module, _getNetFirewallRules, static h => new FirewallRulePage(h), userId, NapiArg.Of(requestParam));
     }
 
     /// <summary>

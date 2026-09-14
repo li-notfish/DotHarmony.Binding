@@ -82,7 +82,7 @@ public sealed partial class Locale : JsObject
         : this(NodeApi.CreateInstance(Intl.Module, _Locale)) { }
 
     public Locale(string locale, LocaleOptions? options = null)
-        : this(NodeApi.CreateInstance(Intl.Module, _Locale, locale, options)) { }
+        : this(NodeApi.CreateInstance(Intl.Module, _Locale, locale, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _language => "language"u8;
     private static ReadOnlySpan<byte> _script => "script"u8;
     private static ReadOnlySpan<byte> _region => "region"u8;
@@ -186,7 +186,7 @@ public sealed partial class DateTimeFormat : JsObject
         : this(NodeApi.CreateInstance(Intl.Module, _DateTimeFormat)) { }
 
     public DateTimeFormat(string locale, DateTimeOptions? options = null)
-        : this(NodeApi.CreateInstance(Intl.Module, _DateTimeFormat, locale, options)) { }
+        : this(NodeApi.CreateInstance(Intl.Module, _DateTimeFormat, locale, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _format => "format"u8;
     private static ReadOnlySpan<byte> _formatRange => "formatRange"u8;
     private static ReadOnlySpan<byte> _resolvedOptions => "resolvedOptions"u8;
@@ -230,7 +230,7 @@ public sealed partial class NumberFormat : JsObject
         : this(NodeApi.CreateInstance(Intl.Module, _NumberFormat)) { }
 
     public NumberFormat(string locale, NumberOptions? options = null)
-        : this(NodeApi.CreateInstance(Intl.Module, _NumberFormat, locale, options)) { }
+        : this(NodeApi.CreateInstance(Intl.Module, _NumberFormat, locale, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _format => "format"u8;
     private static ReadOnlySpan<byte> _formatRange => "formatRange"u8;
     private static ReadOnlySpan<byte> _resolvedOptions => "resolvedOptions"u8;
@@ -274,7 +274,7 @@ public sealed partial class Collator : JsObject
         : this(NodeApi.CreateInstance(Intl.Module, _Collator)) { }
 
     public Collator(string locale, CollatorOptions? options = null)
-        : this(NodeApi.CreateInstance(Intl.Module, _Collator, locale, options)) { }
+        : this(NodeApi.CreateInstance(Intl.Module, _Collator, locale, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _compare => "compare"u8;
     private static ReadOnlySpan<byte> _resolvedOptions => "resolvedOptions"u8;
     /// <summary>
@@ -309,7 +309,7 @@ public sealed partial class PluralRules : JsObject
         : this(NodeApi.CreateInstance(Intl.Module, _PluralRules)) { }
 
     public PluralRules(string locale, PluralRulesOptions? options = null)
-        : this(NodeApi.CreateInstance(Intl.Module, _PluralRules, locale, options)) { }
+        : this(NodeApi.CreateInstance(Intl.Module, _PluralRules, locale, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _select => "select"u8;
     /// <summary>
     /// select
@@ -335,7 +335,7 @@ public sealed partial class RelativeTimeFormat : JsObject
         : this(NodeApi.CreateInstance(Intl.Module, _RelativeTimeFormat)) { }
 
     public RelativeTimeFormat(string locale, RelativeTimeFormatInputOptions? options = null)
-        : this(NodeApi.CreateInstance(Intl.Module, _RelativeTimeFormat, locale, options)) { }
+        : this(NodeApi.CreateInstance(Intl.Module, _RelativeTimeFormat, locale, NapiArg.Of(options))) { }
     private static ReadOnlySpan<byte> _format => "format"u8;
     private static ReadOnlySpan<byte> _formatToParts => "formatToParts"u8;
     private static ReadOnlySpan<byte> _resolvedOptions => "resolvedOptions"u8;

@@ -85,7 +85,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static IntPtr GetBluetoothInfo(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getBluetoothInfo, admin);
+        return NodeApi.CallMethod<IntPtr>(Module, _getBluetoothInfo, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static void AddAllowedBluetoothDevices(global::HarmonyOS.Bindings.Api.WantObject admin, string[] deviceIds)
     {
-        NodeApi.CallMethodVoid(Module, _addAllowedBluetoothDevices, admin, deviceIds);
+        NodeApi.CallMethodVoid(Module, _addAllowedBluetoothDevices, NapiArg.Of(admin), NapiArg.Of(deviceIds));
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static void RemoveAllowedBluetoothDevices(global::HarmonyOS.Bindings.Api.WantObject admin, string[] deviceIds)
     {
-        NodeApi.CallMethodVoid(Module, _removeAllowedBluetoothDevices, admin, deviceIds);
+        NodeApi.CallMethodVoid(Module, _removeAllowedBluetoothDevices, NapiArg.Of(admin), NapiArg.Of(deviceIds));
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static string[] GetAllowedBluetoothDevices(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getAllowedBluetoothDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin);
+        return NodeApi.CallMethod(Module, _getAllowedBluetoothDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static void TurnOnBluetooth(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        NodeApi.CallMethodVoid(Module, _turnOnBluetooth, admin);
+        NodeApi.CallMethodVoid(Module, _turnOnBluetooth, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static void TurnOffBluetooth(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        NodeApi.CallMethodVoid(Module, _turnOffBluetooth, admin);
+        NodeApi.CallMethodVoid(Module, _turnOffBluetooth, NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static void AddDisallowedBluetoothDevices(global::HarmonyOS.Bindings.Api.WantObject admin, string[] deviceIds)
     {
-        NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothDevices, admin, deviceIds);
+        NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothDevices, NapiArg.Of(admin), NapiArg.Of(deviceIds));
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static void RemoveDisallowedBluetoothDevices(global::HarmonyOS.Bindings.Api.WantObject admin, string[] deviceIds)
     {
-        NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothDevices, admin, deviceIds);
+        NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothDevices, NapiArg.Of(admin), NapiArg.Of(deviceIds));
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static string[] GetDisallowedBluetoothDevices(global::HarmonyOS.Bindings.Api.WantObject admin)
     {
-        return NodeApi.CallMethod(Module, _getDisallowedBluetoothDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), admin);
+        return NodeApi.CallMethod(Module, _getDisallowedBluetoothDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
@@ -157,7 +157,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static void AddDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId, global::HarmonyOS.ArkUI.Protocol[] protocols)
     {
-        NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothProtocols, admin, accountId, protocols);
+        NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols));
     }
 
     /// <summary>
@@ -165,7 +165,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static void RemoveDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId, global::HarmonyOS.ArkUI.Protocol[] protocols)
     {
-        NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothProtocols, admin, accountId, protocols);
+        NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols));
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static global::HarmonyOS.ArkUI.Protocol[] GetDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
-        return NodeApi.CallMethod(Module, _getDisallowedBluetoothProtocols, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Protocol>(e)), admin, accountId);
+        return NodeApi.CallMethod(Module, _getDisallowedBluetoothProtocols, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Protocol>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
@@ -181,7 +181,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static void AddDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId, global::HarmonyOS.ArkUI.Protocol[] protocols, global::HarmonyOS.ArkUI.TransferPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothProtocols, admin, accountId, protocols, policy);
+        NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols), policy);
     }
 
     /// <summary>
@@ -189,7 +189,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static void RemoveDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId, global::HarmonyOS.ArkUI.Protocol[] protocols, global::HarmonyOS.ArkUI.TransferPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothProtocols, admin, accountId, protocols, policy);
+        NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols), policy);
     }
 
     /// <summary>
@@ -197,7 +197,7 @@ public static unsafe partial class EnterpriseBluetoothManager
     /// </summary>
     public static global::HarmonyOS.ArkUI.Protocol[] GetDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId, global::HarmonyOS.ArkUI.TransferPolicy policy)
     {
-        return NodeApi.CallMethod(Module, _getDisallowedBluetoothProtocols, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Protocol>(e)), admin, accountId, policy);
+        return NodeApi.CallMethod(Module, _getDisallowedBluetoothProtocols, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Protocol>(e)), NapiArg.Of(admin), accountId, policy);
     }
 
 }

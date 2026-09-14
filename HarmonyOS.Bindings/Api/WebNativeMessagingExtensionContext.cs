@@ -76,7 +76,7 @@ public static unsafe partial class WebNativeMessagingExtensionContext
     /// </summary>
     public static Task StartAbilityAsync(IntPtr want, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startAbility, want, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _startAbility, want, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public static unsafe partial class WebNativeMessagingExtensionContext
     /// </summary>
     public static IntPtr StartAbilityForResult(IntPtr want, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _startAbilityForResult, want, options);
+        return NodeApi.CallMethod<IntPtr>(Module, _startAbilityForResult, want, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public sealed partial class WebNativeMessagingExtensionContextObject : JsObject
     /// </summary>
     public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want, global::HarmonyOS.Bindings.Api.StartOptionsObject? options = null)
     {
-        return CallMethodAsyncVoid(_startAbility, want, options);
+        return CallMethodAsyncVoid(_startAbility, NapiArg.Of(want), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public sealed partial class WebNativeMessagingExtensionContextObject : JsObject
     /// </summary>
     public Task<IntPtr> StartAbilityForResultAsync(global::HarmonyOS.Bindings.Api.WantObject want, global::HarmonyOS.Bindings.Api.StartOptionsObject? options = null)
     {
-        return CallMethodAsync<IntPtr>(_startAbilityForResult, want, options);
+        return CallMethodAsync<IntPtr>(_startAbilityForResult, NapiArg.Of(want), NapiArg.Of(options));
     }
 
     /// <summary>

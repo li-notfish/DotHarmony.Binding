@@ -81,7 +81,7 @@ public static unsafe partial class AccountManager
     /// </summary>
     public static void DisallowOsAccountAddition(global::HarmonyOS.Bindings.Api.WantObject admin, bool disallow, double? accountId = null)
     {
-        NodeApi.CallMethodVoid(Module, _disallowOsAccountAddition, admin, disallow, accountId);
+        NodeApi.CallMethodVoid(Module, _disallowOsAccountAddition, NapiArg.Of(admin), disallow, NapiArg.Of(accountId));
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public static unsafe partial class AccountManager
     /// </summary>
     public static bool IsOsAccountAdditionDisallowed(global::HarmonyOS.Bindings.Api.WantObject admin, double? accountId = null)
     {
-        return NodeApi.CallMethod<bool>(Module, _isOsAccountAdditionDisallowed, admin, accountId);
+        return NodeApi.CallMethod<bool>(Module, _isOsAccountAdditionDisallowed, NapiArg.Of(admin), NapiArg.Of(accountId));
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public static unsafe partial class AccountManager
     /// </summary>
     public static Task<IntPtr> AddOsAccountAsync(global::HarmonyOS.Bindings.Api.WantObject admin, string name, IntPtr type)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _addOsAccountAsync, admin, name, type);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _addOsAccountAsync, NapiArg.Of(admin), name, type);
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public static unsafe partial class AccountManager
     /// </summary>
     public static void SetDomainAccountPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr domainAccountInfo, DomainAccountPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _setDomainAccountPolicy, admin, domainAccountInfo, policy);
+        NodeApi.CallMethodVoid(Module, _setDomainAccountPolicy, NapiArg.Of(admin), domainAccountInfo, NapiArg.Of(policy));
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public static unsafe partial class AccountManager
     /// </summary>
     public static DomainAccountPolicy GetDomainAccountPolicy(global::HarmonyOS.Bindings.Api.WantObject admin, IntPtr domainAccountInfo)
     {
-        return NodeApi.CallMethod(Module, _getDomainAccountPolicy, static h => new DomainAccountPolicy(h), admin, domainAccountInfo);
+        return NodeApi.CallMethod(Module, _getDomainAccountPolicy, static h => new DomainAccountPolicy(h), NapiArg.Of(admin), domainAccountInfo);
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public static unsafe partial class AccountManager
     /// </summary>
     public static Task<IntPtr> CreateNormalOsAccountAsync(global::HarmonyOS.Bindings.Api.WantObject admin, string name)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _createNormalOsAccount, admin, name);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _createNormalOsAccount, NapiArg.Of(admin), name);
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public static unsafe partial class AccountManager
     /// </summary>
     public static Task RemoveOsAccountAsync(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeOsAccount, admin, accountId);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeOsAccount, NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public static unsafe partial class AccountManager
     /// </summary>
     public static Task ActivateOsAccountAsync(global::HarmonyOS.Bindings.Api.WantObject admin, double accountId)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _activateOsAccount, admin, accountId);
+        return NodeApi.CallMethodAsyncVoid(Module, _activateOsAccount, NapiArg.Of(admin), accountId);
     }
 
 }

@@ -88,7 +88,7 @@ public static unsafe partial class CertManagerDialog
     /// </summary>
     public static Task<string> OpenInstallCertificateDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateType certType, global::HarmonyOS.ArkUI.CertificateScope certScope, byte[] cert)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _openInstallCertificateDialog, context, certType, certScope, cert);
+        return NodeApi.CallMethodAsync<string>(Module, _openInstallCertificateDialog, context, certType, certScope, NapiArg.Of(cert));
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public static unsafe partial class CertManagerDialog
     /// </summary>
     public static Task OpenCertificateDetailDialogAsync(IntPtr context, byte[] cert, CertificateDialogProperty property)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openCertificateDetailDialog, context, cert, property);
+        return NodeApi.CallMethodAsyncVoid(Module, _openCertificateDetailDialog, context, NapiArg.Of(cert), NapiArg.Of(property));
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public static unsafe partial class CertManagerDialog
     /// </summary>
     public static Task OpenUkeyAuthDialogAsync(IntPtr context, UkeyAuthRequest ukeyAuthRequest)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openUkeyAuthDialog, context, ukeyAuthRequest);
+        return NodeApi.CallMethodAsyncVoid(Module, _openUkeyAuthDialog, context, NapiArg.Of(ukeyAuthRequest));
     }
 
     /// <summary>
