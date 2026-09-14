@@ -226,4 +226,34 @@ public unsafe partial class Swiper : ArkUINodeBase
         add => On(ArkUI_NodeEventType.NODE_ON_NEED_SOFTKEYBOARD, value!);
         remove => Off(ArkUI_NodeEventType.NODE_ON_NEED_SOFTKEYBOARD);
     }
+
+    // ───────────── CarouselView 通道手写扩展（Loop/位置回传，2026-09-15）─────────────
+
+    /// <summary>loop 属性（NODE_SWIPER_LOOP）：是否开启循环轮播</summary>
+
+    /// <summary>单值属性读取（NODE_SWIPER_LOOP/INDEX/DISABLE_SWIPE 手写通道）</summary>
+    private unsafe int GetAttr(ArkUI_NodeAttributeType attribute)
+    {
+        var item = ArkUINativeApi.GetAttribute(Handle, attribute);
+        return item != null && item->size > 0 ? item->value[0].i32 : 0;
+    }
+    public bool Loop
+    {
+        get => GetAttr(ArkUI_NodeAttributeType.NODE_SWIPER_LOOP) != 0;
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_SWIPER_LOOP, ArkUIValue.I(value ? 1 : 0));
+    }
+
+    /// <summary>index 属性（NODE_SWIPER_INDEX）：当前索引（设置即跳转）</summary>
+    public int CurrentIndex
+    {
+        get => GetAttr(ArkUI_NodeAttributeType.NODE_SWIPER_INDEX);
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_SWIPER_INDEX, ArkUIValue.I(value));
+    }
+
+    /// <summary>disableSwipe 属性（NODE_SWIPER_DISABLE_SWIPE）：禁用滑动切换</summary>
+    public bool DisableSwipe
+    {
+        get => GetAttr(ArkUI_NodeAttributeType.NODE_SWIPER_DISABLE_SWIPE) != 0;
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_SWIPER_DISABLE_SWIPE, ArkUIValue.I(value ? 1 : 0));
+    }
 }

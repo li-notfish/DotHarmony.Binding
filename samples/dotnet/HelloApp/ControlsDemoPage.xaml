@@ -43,7 +43,12 @@
             <DatePicker x:Name="TestDatePicker" TextColor="Black" />
             <TimePicker x:Name="TestTimePicker" TextColor="Black" />
             <CollectionView x:Name="TestCollection" HeightRequest="120" />
-            <CarouselView x:Name="TestCarousel" HeightRequest="150" />
+            <!-- CarouselView（Loop + 位置回传：滑动/程序化跳转 → PositionChanged → Label） -->
+            <CarouselView x:Name="TestCarousel" HeightRequest="150" Loop="True" />
+            <StackLayout Orientation="Horizontal" Spacing="8">
+                <Button x:Name="CarouselJumpBtn" Text="跳到第 3 页" TextColor="Black" />
+                <Label x:Name="CarouselPosLabel" Text="carousel pos: -" TextColor="Black" VerticalOptions="Center" />
+            </StackLayout>
 
             <!-- Radio group -->
             <StackLayout Orientation="Horizontal" Spacing="8">
