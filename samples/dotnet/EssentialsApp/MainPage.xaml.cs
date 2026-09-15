@@ -7,6 +7,8 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Devices;
+using Microsoft.Maui.Devices.Sensors;
+using Microsoft.Maui.Media;
 using Microsoft.Maui.Storage;
 
 namespace EssentialsApp;
@@ -244,6 +246,82 @@ public partial class MainPage : ContentPage
         catch (Exception ex)
         {
             SecureStorageLabel.Text = "secure storage FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private async void OnAccelerometerClicked(object? sender, EventArgs e)
+    {
+        var accel = Accelerometer.Default;
+        if (!accel.IsSupported)
+        {
+            AccelerometerLabel.Text = "accelerometer: UNSUPPORTED";
+            return;
+        }
+        int count = 0;
+        double x = 0, y = 0, z = 0;
+        void OnReading(object? s, AccelerometerChangedEventArgs a)
+        {
+            count++;
+            x = a.Reading.Acceleration.X;
+            y = a.Reading.Acceleration.Y;
+            z = a.Reading.Acceleration.Z;
+        }
+        accel.ReadingChanged += OnReading;
+        accel.Start(SensorSpeed.Default);
+        await Task.Delay(2000);
+        accel.Stop();
+        accel.ReadingChanged -= OnReading;
+        AccelerometerLabel.Text = count > 0
+            ? $"accel events: {count} in 2s, last=({x:F2},{y:F2},{z:F2})"
+            : "accel: NO events in 2s";
+    }
+
+    private async void OnCompassClicked(object? sender, EventArgs e)
+    {
+        var compass = Compass.Default;
+        if (!compass.IsSupported)
+        {
+            CompassLabel.Text = "compass: UNSUPPORTED";
+            return;
+        }
+        double? heading = null;
+        void OnReading(object? s, CompassChangedEventArgs a) => heading ??= a.Reading.HeadingMagneticNorth;
+        compass.ReadingChanged += OnReading;
+        compass.Start(SensorSpeed.Default);
+        await Task.Delay(1500);
+        compass.Stop();
+        compass.ReadingChanged -= OnReading;
+        CompassLabel.Text = heading is null
+            ? "compass: NO events in 1.5s"
+            : $"heading: {heading:F1}°";
+    }
+
+    private async void OnGeolocationClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            var request = new GeolocationRequest(GeolocationAccuracy.Default, TimeSpan.FromSeconds(10));
+            var location = await Geolocation.Default.GetLocationAsync(request);
+            GeolocationLabel.Text = location is null
+                ? "geolocation: null"
+                : $"geo: {location.Latitude:F4}, {location.Longitude:F4} acc={location.Accuracy:F0}m";
+        }
+        catch (Exception ex)
+        {
+            GeolocationLabel.Text = "geolocation FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private async void OnPickPhotoClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            var result = await MediaPicker.Default.PickPhotoAsync();
+            PickPhotoLabel.Text = result is null ? "pick photo: canceled" : $"picked: {result.FileName}";
+        }
+        catch (Exception ex)
+        {
+            PickPhotoLabel.Text = "pick photo FAILED: " + ex.GetType().Name + ": " + ex.Message;
         }
     }
 
