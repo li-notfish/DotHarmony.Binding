@@ -17,6 +17,11 @@ public partial class ControlsDemoPage : ContentPage
         // CarouselView 小项验证：位置回传（滑动/程序化 → PositionChanged → Label）+ 程序化跳转
         TestCarousel.PositionChanged += (s, e) => CarouselPosLabel.Text = $"carousel pos: {e.CurrentPosition}";
         CarouselJumpBtn.Clicked += (s, e) => TestCarousel.Position = 2;
+        // Drag & Drop 小项验证：源 DragStarting 填充文本 → 目标 Drop 读回（UDMF 文本载荷）
+        ((DragGestureRecognizer)DragSourceLabel.GestureRecognizers[0]).DragStarting +=
+            (s, e) => e.Data.Text = "hello harmony";
+        ((DropGestureRecognizer)DropTargetLabel.GestureRecognizers[0]).Drop += async (s, e) =>
+            DropStatusLabel.Text = $"drop: {await e.Data.GetTextAsync()}";
         // 流式图片（1x1 红 PNG → MemoryStream → 落盘 file://）
         const string redPng = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
         TestStreamImage.Source = Microsoft.Maui.Controls.ImageSource.FromStream(

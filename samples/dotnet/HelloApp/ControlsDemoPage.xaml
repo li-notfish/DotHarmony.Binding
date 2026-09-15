@@ -84,6 +84,23 @@
                 </Border.Background>
             </Border>
 
+            <!-- Drag & Drop：长按拖动源 → 目标接收（UDMF 文本载荷） -->
+            <Border BackgroundColor="LightGoldenrodYellow" Padding="8">
+                <Label x:Name="DragSourceLabel" Text="长按拖我 (drag me)" TextColor="Black">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Border>
+            <Border BackgroundColor="LightCyan" Padding="8">
+                <Label x:Name="DropTargetLabel" Text="放到这里 (drop here)" TextColor="Black">
+                    <Label.GestureRecognizers>
+                        <DropGestureRecognizer />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Border>
+            <Label x:Name="DropStatusLabel" Text="drop: -" TextColor="Black" />
+
             <!-- Back -->
             <Button Text="Pop back" Clicked="OnPopClicked" />
         </StackLayout>

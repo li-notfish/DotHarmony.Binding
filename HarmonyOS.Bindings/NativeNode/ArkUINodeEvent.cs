@@ -29,6 +29,9 @@ public readonly unsafe struct ArkUINodeEvent
     /// <summary>原生输入事件指针（触摸/按键），需要时经 ui_input_event.h 访问器解析</summary>
     public IntPtr InputEvent => ArkUINativeApi.GetInputEvent(_ptr);
 
+    /// <summary>拖拽事件指针（NODE_ON_DRAG_* / NODE_ON_DROP），经 drag_and_drop.h 访问器解析</summary>
+    public IntPtr DragEvent => ArkUINativeApi.GetDragEvent(_ptr);
+
     /// <summary>读取 NodeComponentEvent 附加数值数组第 index 项</summary>
     public ArkUI_NumberValue GetNumber(int index) => ArkUINativeApi.GetEventNumber(_ptr, index);
 

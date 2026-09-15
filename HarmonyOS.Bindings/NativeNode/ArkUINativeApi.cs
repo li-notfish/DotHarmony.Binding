@@ -255,6 +255,43 @@ internal static unsafe partial class ArkUINativeApi
             throw new InvalidOperationException($"OH_ArkUI_NodeEvent_GetNumberValue({index}) failed: {status}");
         return value;
     }
+
+    // ───────────── 拖拽事件（NODE_ON_DRAG_* / NODE_ON_DROP，drag_and_drop.h）─────────────
+    // ArkUI_DragEvent 为不透明指针：private partial 走 void*，internal 包装走 IntPtr
+
+    [LibraryImport(ArkuiLib)]
+    private static partial IntPtr OH_ArkUI_NodeEvent_GetDragEvent(ArkUI_NodeEvent* @event);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_SetNodeDraggable(ArkUI_NodeHandle node, [MarshalAs(UnmanagedType.U1)] bool enabled);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_DragEvent_SetData(void* @event, IntPtr data);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_DragEvent_GetUdmfData(void* @event, IntPtr data);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial float OH_ArkUI_DragEvent_GetTouchPointXToWindow(void* @event);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial float OH_ArkUI_DragEvent_GetTouchPointYToWindow(void* @event);
+
+    internal static IntPtr GetDragEvent(ArkUI_NodeEvent* @event)
+        => OH_ArkUI_NodeEvent_GetDragEvent(@event);
+
+    internal static int SetNodeDraggable(ArkUI_NodeHandle node, bool enabled)
+        => OH_ArkUI_SetNodeDraggable(node, enabled);
+
+    internal static int DragEventSetData(IntPtr dragEvent, IntPtr data)
+        => OH_ArkUI_DragEvent_SetData((void*)dragEvent, data);
+
+    internal static int DragEventGetUdmfData(IntPtr dragEvent, IntPtr data)
+        => OH_ArkUI_DragEvent_GetUdmfData((void*)dragEvent, data);
+
+    internal static (float X, float Y) DragEventTouchPointToWindow(IntPtr dragEvent)
+        => (OH_ArkUI_DragEvent_GetTouchPointXToWindow((void*)dragEvent),
+            OH_ArkUI_DragEvent_GetTouchPointYToWindow((void*)dragEvent));
 }
 
 // ───────────────────────── ABI 结构体 ─────────────────────────
