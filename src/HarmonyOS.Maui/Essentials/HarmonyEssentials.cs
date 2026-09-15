@@ -69,6 +69,11 @@ public static class HarmonyEssentials
             new HarmonyCompass(), static (m, impl) => m.CreateDelegate<Action<ICompass>>()(impl));
         SetImplementation(typeof(OrientationSensor), "SetDefault",
             new HarmonyOrientationSensor(), static (m, impl) => m.CreateDelegate<Action<IOrientationSensor>>()(impl));
+        // 定位（@ohos.geoLocationManager）与媒体选择（@ohos.file.picker + camera.picker）
+        SetImplementation(typeof(global::Microsoft.Maui.Devices.Sensors.Geolocation), "SetDefault",
+            new HarmonyGeolocation(), static (m, impl) => m.CreateDelegate<Action<IGeolocation>>()(impl));
+        SetImplementation(typeof(global::Microsoft.Maui.Media.MediaPicker), "SetDefault",
+            new HarmonyMediaPicker(), static (m, impl) => m.CreateDelegate<Action<IMediaPicker>>()(impl));
 
         // IMainThread 不注入：MAUI 10.0.11 的 MainThread 没有注入点（PlatformIsMainThread 直接 throw，
         // SetCustomImplementation 是 .NET 11 main 才加的 API）——曾误判为 AOT 裁剪，反编译 net10.0 产物实锤。
@@ -76,7 +81,7 @@ public static class HarmonyEssentials
         // 升级到含 SetCustomImplementation 的 MAUI 版本后再接回。
 
         HiLog.Info("Essentials",
-            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / FileSystem / Launcher / Browser / PhoneDialer / Share / Email / SecureStorage / Accelerometer / Magnetometer / Gyroscope / Compass / OrientationSensor");
+            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / FileSystem / Launcher / Browser / PhoneDialer / Share / Email / SecureStorage / Accelerometer / Magnetometer / Gyroscope / Compass / OrientationSensor / Geolocation / MediaPicker");
     }
 
     private delegate void Setter<TInterface>(MethodInfo m, TInterface impl);
