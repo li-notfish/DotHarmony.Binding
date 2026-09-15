@@ -58,6 +58,17 @@ public static class HarmonyEssentials
             new HarmonyEmail(), static (m, impl) => m.CreateDelegate<Action<IEmail>>()(impl));
         SetImplementation(typeof(global::Microsoft.Maui.Storage.SecureStorage), "SetDefault",
             new HarmonySecureStorage(), static (m, impl) => m.CreateDelegate<Action<ISecureStorage>>()(impl));
+        // 传感器族（@ohos.sensor）：五服务 SetDefault 注入
+        SetImplementation(typeof(Accelerometer), "SetDefault",
+            new HarmonyAccelerometer(), static (m, impl) => m.CreateDelegate<Action<IAccelerometer>>()(impl));
+        SetImplementation(typeof(Magnetometer), "SetDefault",
+            new HarmonyMagnetometer(), static (m, impl) => m.CreateDelegate<Action<IMagnetometer>>()(impl));
+        SetImplementation(typeof(Gyroscope), "SetDefault",
+            new HarmonyGyroscope(), static (m, impl) => m.CreateDelegate<Action<IGyroscope>>()(impl));
+        SetImplementation(typeof(Compass), "SetDefault",
+            new HarmonyCompass(), static (m, impl) => m.CreateDelegate<Action<ICompass>>()(impl));
+        SetImplementation(typeof(OrientationSensor), "SetDefault",
+            new HarmonyOrientationSensor(), static (m, impl) => m.CreateDelegate<Action<IOrientationSensor>>()(impl));
 
         // IMainThread 不注入：MAUI 10.0.11 的 MainThread 没有注入点（PlatformIsMainThread 直接 throw，
         // SetCustomImplementation 是 .NET 11 main 才加的 API）——曾误判为 AOT 裁剪，反编译 net10.0 产物实锤。
@@ -65,7 +76,7 @@ public static class HarmonyEssentials
         // 升级到含 SetCustomImplementation 的 MAUI 版本后再接回。
 
         HiLog.Info("Essentials",
-            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / FileSystem / Launcher / Browser / PhoneDialer / Share / Email / SecureStorage");
+            "HarmonyOS Essentials installed: DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery / Vibration / Connectivity / FileSystem / Launcher / Browser / PhoneDialer / Share / Email / SecureStorage / Accelerometer / Magnetometer / Gyroscope / Compass / OrientationSensor");
     }
 
     private delegate void Setter<TInterface>(MethodInfo m, TInterface impl);
