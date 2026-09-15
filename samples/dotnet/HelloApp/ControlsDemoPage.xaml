@@ -62,6 +62,16 @@
                     MinimumTrackColor="Blue" MaximumTrackColor="LightGray" />
             <ProgressBar Progress="0.4" ProgressColor="Green" HeightRequest="20" />
 
+            <!-- Grid Span>1 in Auto 轨道（跨轨道组合撑起，M2 小项验证） -->
+            <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto">
+                <Label Grid.Row="0" Grid.Column="0" Text="A1" TextColor="Black" />
+                <Label Grid.Row="0" Grid.Column="1" Text="A2" TextColor="Black" />
+                <Label Grid.Row="0" Grid.Column="2" Text="A3" TextColor="Black" />
+                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                       Text="span3-wide-label-text" TextColor="Black" />
+            </Grid>
+            <Label Text="span3 标签应完整显示（Auto 轨道被跨轨道子节点撑起）" TextColor="Black" />
+
             <!-- Image (network URL) -->
             <Image Source="https://picsum.photos/200/100" HeightRequest="100" Aspect="AspectFit" />
             <Image x:Name="TestStreamImage" HeightRequest="40" Aspect="Fill" />
