@@ -4,18 +4,19 @@ using Microsoft.Maui.Handlers;
 using MCollectionView = Microsoft.Maui.Controls.CollectionView;
 using MCarouselView = Microsoft.Maui.Controls.CarouselView;
 using HarmonyOS.Bindings.NativeNode;
-using ArkScroll = HarmonyOS.ArkUI.Scroll;
-using ArkColumn = HarmonyOS.ArkUI.Column;
+using ArkList = HarmonyOS.ArkUI.List;
 using ArkSwiper = HarmonyOS.ArkUI.Swiper;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>
-/// CollectionView → ArkUI Scroll + Column（全量物化子视图，非虚拟化）。
-/// M1 限制：无虚拟化/复用（虚拟化需 ArkUI NodeAdapter，ROADMAP 1.4）；仅纵向；ItemsSource 变更全量重建。
+/// CollectionView → ArkUI List（ARKUI_NODE_LIST + NodeAdapter 虚拟化）。
+/// 条目按可见范围物化：ON_ADD_NODE_TO_ADAPTER 事件回调创建子节点（ItemTemplate 经
+/// CreateContent，AOT 安全），ON_REMOVE 回调处置（Handler 置 null 断连 + 节点 Dispose）——
+/// 长列表内存/滚动性能不再随条数线性涨。ItemsSource 变更走 ReloadAllItems 全量重载。
 /// </summary>
-public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, ArkScroll>
+public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, ArkList>
 {
     public static PropertyMapper<MCollectionView, HarmonyCollectionViewHandler> Mapper = new(ViewMapper)
     {
@@ -23,34 +24,110 @@ public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, 
         [nameof(ItemsView.ItemTemplate)] = MapItems,
     };
 
-    private ArkColumn? _column;
+    private ArkUINodeAdapter? _adapter;
+    private List<object?> _items = new();
+    // 活跃条目：原生节点句柄 → (节点, 虚拟视图)；ON_REMOVE 时按句柄处置
+    private readonly Dictionary<nint, (ArkUINode Node, View View)> _live = new();
 
     public HarmonyCollectionViewHandler() : base(Mapper) { }
 
-    protected override ArkScroll CreatePlatformView()
+    protected override ArkList CreatePlatformView()
     {
-        var scroll = new ArkScroll();
-        scroll.SetWidthPercent(1.0f);
-        _column = new ArkColumn();
-        _column.SetWidthPercent(1.0f);
-        scroll.AddChild(_column);
-        return scroll;
+        var list = new ArkList();
+        list.SetWidthPercent(1.0f);
+        return list;
     }
 
-    protected override void ConnectHandler(ArkScroll platformView)
+    protected override void ConnectHandler(ArkList platformView)
     {
         base.ConnectHandler(platformView);
-        Rebuild();
+        // adapter 每次 connect 重建（disconnect 时随节点复位 + Dispose）
+        _adapter = new ArkUINodeAdapter();
+        _adapter.SetEventReceiver(OnAdapterEvent);
+        platformView.SetNodeAdapter(_adapter.Handle);
+        Reload();
+    }
+
+    protected override void DisconnectHandler(ArkList platformView)
+    {
+        foreach (var (node, view) in _live.Values)
+        {
+            ((Microsoft.Maui.IElement)view).Handler = null; // 触发 handler DisconnectHandler（手势/事件注销）
+            node.Dispose();
+        }
+        _live.Clear();
+        if (_adapter != null)
+        {
+            platformView.ResetNodeAdapter();
+            _adapter.Dispose();
+            _adapter = null;
+        }
+        base.DisconnectHandler(platformView);
     }
 
     public static void MapItems(HarmonyCollectionViewHandler handler, MCollectionView view)
-        => handler.Rebuild();
+        => handler.Reload();
 
-    private void Rebuild()
+    private void Reload()
     {
-        if (_column is null)
+        if (_adapter is null)
             return;
-        ItemsViewMaterializer.Rebuild(_column, VirtualView.ItemsSource, VirtualView.ItemTemplate, fillHeight: false);
+        _items.Clear();
+        if (VirtualView?.ItemsSource is not null)
+        {
+            foreach (var item in VirtualView.ItemsSource)
+                _items.Add(item);
+        }
+        _adapter.SetTotalCount(_items.Count);
+        _adapter.ReloadAllItems();
+    }
+
+    private void OnAdapterEvent(ArkUI_NodeAdapterEventView ev)
+    {
+        switch (ev.Type)
+        {
+            case ArkUI_NodeAdapterEventType.NODE_ADAPTER_EVENT_ON_GET_NODE_ID:
+                // 全量重载模型：索引即稳定 id（每次 Reload 全部重建）
+                ev.SetNodeId(ev.ItemIndex);
+                break;
+            case ArkUI_NodeAdapterEventType.NODE_ADAPTER_EVENT_ON_ADD_NODE_TO_ADAPTER:
+                var node = Materialize(ev.ItemIndex);
+                if (node is not null)
+                    ev.SetItem(node.Handle);
+                break;
+            case ArkUI_NodeAdapterEventType.NODE_ADAPTER_EVENT_ON_REMOVE_NODE_FROM_ADAPTER:
+                Dematerialize(ev.RemovedNode);
+                break;
+        }
+    }
+
+    /// <summary>物化条目节点（ItemTemplate → 视图 → handler；宽度 100% 填充 List 交叉轴）</summary>
+    private ArkUINode? Materialize(int index)
+    {
+        if (index < 0 || index >= _items.Count)
+            return null;
+        Bindings.Runtime.HiLog.Debug("HarmonyHost", $"[CollectionView] materialize idx={index}");
+        var item = _items[index];
+        var view = VirtualView?.ItemTemplate?.CreateContent() as View
+            ?? new Label { Text = item?.ToString() ?? string.Empty };
+        view.BindingContext = item;
+
+        var handler = HarmonyHandlerFactory.Create((Microsoft.Maui.IView)view);
+        handler.SetVirtualView(view);
+        if (handler.PlatformView is not ArkUINode node)
+            return null;
+        node.SetWidthPercent(1.0f);
+        _live[node.Handle.Handle] = (node, view);
+        return node;
+    }
+
+    /// <summary>处置条目节点（Handler 置 null 断连 + 节点 Dispose；框架已从列表摘除）</summary>
+    private void Dematerialize(nint nodeHandle)
+    {
+        if (!_live.Remove(nodeHandle, out var entry))
+            return;
+        ((Microsoft.Maui.IElement)entry.View).Handler = null;
+        entry.Node.Dispose();
     }
 }
 
@@ -170,7 +247,7 @@ public class HarmonyCarouselViewHandler : HarmonyViewHandler<MCarouselView, ArkS
     }
 }
 
-/// <summary>ItemsView 的 M1 物化器：ItemsSource + ItemTemplate → 子视图全量添加（AOT 安全，XamlC 模板为编译期工厂）</summary>
+/// <summary>ItemsView 的 M1 物化器（CarouselView 用）：ItemsSource + ItemTemplate → 子视图全量添加（AOT 安全，XamlC 模板为编译期工厂）</summary>
 internal static class ItemsViewMaterializer
 {
     public static void Rebuild(ArkUINodeBase container, System.Collections.IEnumerable? items, DataTemplate? template, bool fillHeight)

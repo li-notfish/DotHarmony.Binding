@@ -544,6 +544,28 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         return ArkUINativeApi.AllowNodeAllDropDataTypes(_handle);
     }
 
+    /// <summary>挂载虚拟化 adapter（NODE_LIST_NODE_ADAPTER，item.@object；返回 0 成功）</summary>
+    public int SetNodeAdapter(IntPtr adapterHandle)
+    {
+        ThrowIfDisposed();
+        var item = new ArkUI_AttributeItem { @object = (void*)adapterHandle };
+        var status = ArkUINativeApi.SetAttribute(
+            _handle, ArkUI_NodeAttributeType.NODE_LIST_NODE_ADAPTER, &item);
+        if (status != 0)
+            throw new InvalidOperationException($"SetNodeAdapter failed: {status}");
+        return status;
+    }
+
+    /// <summary>摘除虚拟化 adapter（NODE_LIST_NODE_ADAPTER 复位默认；dispose adapter 前必须先摘）</summary>
+    public void ResetNodeAdapter()
+    {
+        ThrowIfDisposed();
+        var status = ArkUINativeApi.ResetAttribute(
+            _handle, ArkUI_NodeAttributeType.NODE_LIST_NODE_ADAPTER);
+        if (status != 0)
+            throw new InvalidOperationException($"ResetNodeAdapter failed: {status}");
+    }
+
     /// <summary>节点实测尺寸（px）</summary>
     public ArkUI_IntSize MeasuredSize
     {

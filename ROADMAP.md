@@ -79,7 +79,9 @@
 
 ### 1.4 更多控件 Handler（✅ 已完成 22 个）
 
-已完成 22 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker + BoxView（纯色矩形→Stack 背景色，2026-09-12 补）+ CollectionView/CarouselView M1 版；RadioButton 的 Content 经 Row+Text 包装呈现，GroupName 已接通）。代码风格已统一为官方 handler 模式（`ViewHandler<TVirtualView, TPlatformView>` + 命名 Map 方法）。注意 MAUI 10 核心/Controls 接口差异：DatePicker.Date 等为可空类型，GroupName 仅在 Controls 类型上——虚拟视图类型按 Picker 先例直接用 Controls 具体类型。剩余：Shape/自绘（需 MAUI Graphics 前端）与 CollectionView 虚拟化（NodeAdapter）按需插入。
+已完成 22 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker + BoxView（纯色矩形→Stack 背景色，2026-09-12 补）+ CollectionView/CarouselView；RadioButton 的 Content 经 Row+Text 包装呈现，GroupName 已接通）。代码风格已统一为官方 handler 模式（`ViewHandler<TVirtualView, TPlatformView>` + 命名 Map 方法）。注意 MAUI 10 核心/Controls 接口差异：DatePicker.Date 等为可空类型，GroupName 仅在 Controls 类型上——虚拟视图类型按 Picker 先例直接用 Controls 具体类型。
+
+**CollectionView 虚拟化**（✅ 已完成，2026-09-17）：平台视图从 Scroll+Column 全量物化改为 `ARKUI_NODE_LIST` + NodeAdapter（`ArkUINodeAdapterApi.cs`：`ArkUINodeAdapter` 包装类，GCHandle + 单一 `[UnmanagedCallersOnly]` 跳板同 NodeEventBus 模式；`ArkUINodeBase.SetNodeAdapter/ResetNodeAdapter` 经 NODE_LIST_NODE_ADAPTER 挂载/摘除）。条目按可见范围物化：`ON_ADD_NODE_TO_ADAPTER` 回调创建子节点（ItemTemplate 经 CreateContent，AOT 安全），`ON_REMOVE_NODE_FROM_ADAPTER` 回调处置（Handler 置 null 断连 + 节点 Dispose）；ItemsSource 变更走 `SetTotalCount + ReloadAllItems` 全量重载（索引即稳定 id）。模拟器实测（ControlsDemoPage 200 条目）：初始仅物化可见 7 条、内部滚动索引按需前进、回滚复现，内存/滚动性能不再随条数线性涨。
 
 ### 1.5 真机 arm64 验证（小）
 
