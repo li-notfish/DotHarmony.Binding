@@ -266,6 +266,9 @@ internal static unsafe partial class ArkUINativeApi
     private static partial int OH_ArkUI_SetNodeDraggable(ArkUI_NodeHandle node, [MarshalAs(UnmanagedType.U1)] bool enabled);
 
     [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_AllowNodeAllDropDataTypes(ArkUI_NodeHandle node);
+
+    [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_DragEvent_SetData(void* @event, IntPtr data);
 
     [LibraryImport(ArkuiLib)]
@@ -282,6 +285,10 @@ internal static unsafe partial class ArkUINativeApi
 
     internal static int SetNodeDraggable(ArkUI_NodeHandle node, bool enabled)
         => OH_ArkUI_SetNodeDraggable(node, enabled);
+
+    /// <summary>放侧放行任意 UDMF 数据类型（等价 ArkTS allowDrop 全类型；不调用则 NODE_ON_DROP 不触发）</summary>
+    internal static int AllowNodeAllDropDataTypes(ArkUI_NodeHandle node)
+        => OH_ArkUI_AllowNodeAllDropDataTypes(node);
 
     internal static int DragEventSetData(IntPtr dragEvent, IntPtr data)
         => OH_ArkUI_DragEvent_SetData((void*)dragEvent, data);

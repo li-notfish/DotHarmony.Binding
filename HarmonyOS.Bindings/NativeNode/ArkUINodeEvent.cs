@@ -32,6 +32,18 @@ public readonly unsafe struct ArkUINodeEvent
     /// <summary>拖拽事件指针（NODE_ON_DRAG_* / NODE_ON_DROP），经 drag_and_drop.h 访问器解析</summary>
     public IntPtr DragEvent => ArkUINativeApi.GetDragEvent(_ptr);
 
+    /// <summary>写入拖拽载荷（UDMF data 指针，NODE_ON_DRAG_START；status != 0 时抛出）</summary>
+    public void SetDragData(IntPtr udmfData)
+    {
+        var status = ArkUINativeApi.DragEventSetData(DragEvent, udmfData);
+        if (status != 0)
+            throw new InvalidOperationException($"DragEventSetData failed: {status}");
+    }
+
+    /// <summary>读取拖拽 UDMF 载荷（NODE_ON_DROP / ON_DRAG_*；false = 无载荷）</summary>
+    public bool TryGetUdmfData(IntPtr udmfData)
+        => ArkUINativeApi.DragEventGetUdmfData(DragEvent, udmfData) == 0;
+
     /// <summary>读取 NodeComponentEvent 附加数值数组第 index 项</summary>
     public ArkUI_NumberValue GetNumber(int index) => ArkUINativeApi.GetEventNumber(_ptr, index);
 

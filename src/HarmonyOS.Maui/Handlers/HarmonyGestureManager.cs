@@ -103,6 +103,7 @@ internal sealed class HarmonyGestureManager : IDisposable
         {
             _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_START);
             _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_END);
+            _dragSubscribed = false;
         }
         if (_dropSubscribed)
         {
@@ -110,6 +111,7 @@ internal sealed class HarmonyGestureManager : IDisposable
             _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_MOVE);
             _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_LEAVE);
             _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DROP);
+            _dropSubscribed = false;
         }
 
         if (!_view.IsEnabled || _view.InputTransparent)
@@ -289,7 +291,7 @@ internal sealed class HarmonyGestureManager : IDisposable
         _drag = drag;
         if (_dragSubscribed) return;
         _dragSubscribed = true;
-        var status = ArkUINativeApi.SetNodeDraggable(_node.Handle, true);
+        var status = _node.SetDraggable(true);
         if (status != 0)
             throw new InvalidOperationException($"SetNodeDraggable failed: {status}");
         _node.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_START, OnDragStart);
@@ -301,6 +303,10 @@ internal sealed class HarmonyGestureManager : IDisposable
         _drop = drop;
         if (_dropSubscribed) return;
         _dropSubscribed = true;
+        // 放侧必须放行数据类型（等价 ArkTS allowDrop），否则 drop 被系统拒绝、NODE_ON_DROP 不触发
+        var status = _node.AllowAllDropDataTypes();
+        if (status != 0)
+            throw new InvalidOperationException($"AllowNodeAllDropDataTypes failed: {status}");
         _node.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_ENTER, OnDragEnter);
         _node.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_MOVE, OnDragMove);
         _node.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_LEAVE, OnDragLeave);
@@ -319,7 +325,7 @@ internal sealed class HarmonyGestureManager : IDisposable
             if (string.IsNullOrEmpty(text)) return;
             var data = UdmfNativeApi.CreateTextData(text);
             if (data != IntPtr.Zero)
-                ArkUINativeApi.DragEventSetData(e.DragEvent, data);
+                e.SetDragData(data);
         }
         catch (DllNotFoundException)
         {
@@ -380,7 +386,7 @@ internal sealed class HarmonyGestureManager : IDisposable
         if (data == IntPtr.Zero) return pkg;
         try
         {
-            if (ArkUINativeApi.DragEventGetUdmfData(dragEvent, data) == 0)
+            if (e.TryGetUdmfData(data))
             {
                 var text = UdmfNativeApi.ReadPrimaryText(data);
                 if (text != null) pkg.Text = text;

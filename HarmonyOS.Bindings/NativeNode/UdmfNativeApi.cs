@@ -2,6 +2,7 @@
 // 文本载荷构造（DragStarting → DragEvent SetData）与读取（DragEvent GetUdmfData → GetPrimaryPlainText）。
 // 官方用法（udmf.h docs）：AddPlainText/AddRecord 之后 record/plainText 即可销毁（Add 拷贝内容），
 // data 由调用方持有（DestroyData 释放）。
+// 库名：设备/模拟器系统库为 libudmf.so（sysroot 无 .z.so 变体，实测 libudmf.z.so DllNotFound）。
 #nullable enable
 using System;
 using System.Runtime.InteropServices;
@@ -10,7 +11,7 @@ namespace HarmonyOS.Bindings.NativeNode;
 
 internal static unsafe partial class UdmfNativeApi
 {
-    private const string UdmfLib = "libudmf.z.so";
+    private const string UdmfLib = "libudmf.so";
 
     [LibraryImport(UdmfLib)]
     internal static partial IntPtr OH_UdmfData_Create();

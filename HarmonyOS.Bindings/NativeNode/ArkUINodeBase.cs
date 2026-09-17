@@ -530,6 +530,20 @@ public abstract unsafe class ArkUINodeBase : IDisposable
 
     // ───────────────────────── 布局 ─────────────────────────
 
+    /// <summary>可拖拽（OH_ArkUI_SetNodeDraggable；返回 0 成功）</summary>
+    public int SetDraggable(bool enabled)
+    {
+        ThrowIfDisposed();
+        return ArkUINativeApi.SetNodeDraggable(_handle, enabled);
+    }
+
+    /// <summary>放侧放行任意拖拽数据类型（OH_ArkUI_AllowNodeAllDropDataTypes；返回 0 成功）</summary>
+    public int AllowAllDropDataTypes()
+    {
+        ThrowIfDisposed();
+        return ArkUINativeApi.AllowNodeAllDropDataTypes(_handle);
+    }
+
     /// <summary>节点实测尺寸（px）</summary>
     public ArkUI_IntSize MeasuredSize
     {
