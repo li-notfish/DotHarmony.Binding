@@ -11,21 +11,21 @@
 MAUI 控件 (VirtualView)                你要写的 Handler（本文重点）
       │ PropertyMapper / CommandMapper           │  属性/命令/事件翻译
       ▼                                          ▼
-src/HarmonyOS.Maui/Handlers/*  ──────►  HarmonyOS.Bindings/Nodes/*（ArkUI 节点类）
+src/HarmonyOS.Maui/Handlers/*  ──────►  src/HarmonyOS.Bindings/Nodes/*（ArkUI 节点类）
                                          │  NODE_* 属性枚举 → SetAttribute
                                          ▼
                                 libace_ndk.z.so（ArkUI C API，节点树渲染）
 
 @ohos.* 系统模块（deviceInfo 等，与 UI 无关的服务 API）
       ▼
-HarmonyOS.Bindings/Api/*  ──napi──►  libace_napi.z.so（napi_load_module / call_function）
+src/HarmonyOS.Bindings/Api/*  ──napi──►  libace_napi.z.so（napi_load_module / call_function）
 ```
 
 | 层 | 目录 | 职责 | 什么时候改 |
 |---|---|---|---|
-| 节点层 | `HarmonyOS.Bindings/Nodes/` | ArkUI 组件的 C# 包装（属性 setter、事件） | 目标属性/事件在节点类上不存在时 |
+| 节点层 | `src/HarmonyOS.Bindings/Nodes/` | ArkUI 组件的 C# 包装（属性 setter、事件） | 目标属性/事件在节点类上不存在时 |
 | Handler 层 | `src/HarmonyOS.Maui/Handlers/` | MAUI ↔ ArkUI 的属性/命令/事件翻译 | **适配新控件的主要工作** |
-| API 层 | `HarmonyOS.Bindings/Api/` | `@ohos.*` 模块绑定（napi 通道） | 绑定系统服务 API 时 |
+| API 层 | `src/HarmonyOS.Bindings/Api/` | `@ohos.*` 模块绑定（napi 通道） | 绑定系统服务 API 时 |
 | 宿主 | `samples/HarmonyHost/` | ArkTS 壳（ContentSlot 挂载 + ohosImports.ets 模块登记） | 新增 `@ohos.*` 模块绑定时同步登记 |
 
 **漏斗纪律（P0，机械闸强制）**：Handler/Hosting 层只允许经包装类型触碰 ArkUI——节点包装类、
@@ -44,15 +44,15 @@ HarmonyOS.Bindings/Api/*  ──napi──►  libace_napi.z.so（napi_load_modu
 
 ### Step 1：确认 ArkUI 节点类是否够用
 
-节点类在 `HarmonyOS.Bindings/Nodes/`，目前由 `src/parser/nativeCodeGenerator.ts` 从 SDK `.d.ts` 自动产出（已有 button/checkbox/column/flex/grid/image/list/progress/radio/refresh/row/scroll/slider/span/stack/swiper/text/toggle/xcomponent 共 19 个；text_area/text_input 因无 native node 类型由早期生成器产出）。查两个地方：
+节点类在 `src/HarmonyOS.Bindings/Nodes/`，目前由 `tools/api-generator/nativeCodeGenerator.ts` 从 SDK `.d.ts` 自动产出（已有 button/checkbox/column/flex/grid/image/list/progress/radio/refresh/row/scroll/slider/span/stack/swiper/text/toggle/xcomponent 共 19 个；text_area/text_input 因无 native node 类型由早期生成器产出）。查两个地方：
 
-- `HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.g.cs` 里 `ARKUI_NODE_*` 枚举 —— 确认目标组件类型存在（如 `ARKUI_NODE_SLIDER`）；
+- `src/HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.g.cs` 里 `ARKUI_NODE_*` 枚举 —— 确认目标组件类型存在（如 `ARKUI_NODE_SLIDER`）；
 - `Nodes/native-gaps.json` —— 生成器登记的"属性存在但 shape 未注册"缺口。
 
 上述 19 个组件的节点类已由生成器自动产出（含属性、事件、构造参数），**无需手写**。对于不在 SDK `.d.ts` 中的自定义组件或生成器未覆盖的属性，可手写补充节点类：
 
 ```csharp
-// HarmonyOS.Bindings/Nodes/slider.cs —— 手写节点类模板
+// src/HarmonyOS.Bindings/Nodes/slider.cs —— 手写节点类模板
 #nullable enable
 using HarmonyOS.Bindings.NativeNode;
 
@@ -260,15 +260,15 @@ MAUI 托管布局的对齐/ZIndex 约定（2026-09-12 落地）：
 
 ## 4. `@ohos.*` API 绑定（生成器产出，M2 完成）
 
-UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**模块绑定全部由生成器产出**（`HarmonyOS.Bindings/Api/`，438 个模块 / 375 个转正编译），不要手写——下面的铁律是生成器与运行时已经实现的约束，排查问题时读。
+UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**模块绑定全部由生成器产出**（`src/HarmonyOS.Bindings/Api/`，438 个模块 / 375 个转正编译），不要手写——下面的铁律是生成器与运行时已经实现的约束，排查问题时读。
 
 ### 4.1 生成与转正流程
 
 ```bash
 # 全量生成（449 个 d.ts → 438 模块）；不带 --all 只处理 PILOT_MODULES 白名单
-npx ts-node src/parser/index.ts --sdk "<SDK 路径>" --all
+npx ts-node tools/api-generator/index.ts --sdk "<SDK 路径>" --all
 
-# 转正策略：--all 模式默认全部转正，GRAYSCALE_MODULES（src/parser/index.ts）里的回灰；
+# 转正策略：--all 模式默认全部转正，GRAYSCALE_MODULES（tools/api-generator/index.ts）里的回灰；
 # 修复某模块的类型映射缺口后把它从黑名单移除即可
 dotnet build ArkTsBinding.slnx
 ```
@@ -357,7 +357,7 @@ MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实�
 - `ConnectHandler` 里如果自己还要订阅节点事件，放在 `base.ConnectHandler(platformView)` 之后即可，与手势管理器互不干扰；
 - `HarmonyGestureManager` 监听 `CompositeGestureRecognizers` 集合变化与 `IsEnabled/InputTransparent`，全量重建原生手势——不要在 Handler 里手工管理手势生命周期。
 
-分层文件：NDK 函数表 `HarmonyOS.Bindings/NativeNode/ArkUIGestureApi.cs`（镜像自 native_gesture.h，C bool 按字节用 `byte` 表达）、公共指针包装 `ArkUIPointerEvent.cs`（经 `ArkUINodeEvent.InputEvent` → `ArkUIPointerEvent.From(IntPtr)`，坐标 px）、托管包装 `HarmonyOS.Bindings/Nodes/Gestures/`、翻译层 `src/HarmonyOS.Maui/Handlers/HarmonyGestureManager.cs`、反射桥 `MauiGestureBridge.cs`（`TapGestureRecognizer.SendTapped` / `PointerGestureRecognizer.SendPointer*` 为 MAUI internal，`[DynamicDependency]` 收根 + `CreateDelegate` 缓存，**不得**改为逐次 `MethodInfo.Invoke`）。
+分层文件：NDK 函数表 `src/HarmonyOS.Bindings/NativeNode/ArkUIGestureApi.cs`（镜像自 native_gesture.h，C bool 按字节用 `byte` 表达）、公共指针包装 `ArkUIPointerEvent.cs`（经 `ArkUINodeEvent.InputEvent` → `ArkUIPointerEvent.From(IntPtr)`，坐标 px）、托管包装 `src/HarmonyOS.Bindings/Nodes/Gestures/`、翻译层 `src/HarmonyOS.Maui/Handlers/HarmonyGestureManager.cs`、反射桥 `MauiGestureBridge.cs`（`TapGestureRecognizer.SendTapped` / `PointerGestureRecognizer.SendPointer*` 为 MAUI internal，`[DynamicDependency]` 收根 + `CreateDelegate` 缓存，**不得**改为逐次 `MethodInfo.Invoke`）。
 
 | MAUI 识别器 | 原生通道 | 说明 |
 |---|---|---|

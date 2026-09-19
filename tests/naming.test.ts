@@ -1,4 +1,4 @@
-import { toPascalCase, withAsyncSuffix } from '../src/parser/naming';
+import { toPascalCase, withAsyncSuffix } from '../tools/api-generator/naming';
 
 describe('naming（.NET 风格命名规范化）', () => {
     describe('toPascalCase', () => {

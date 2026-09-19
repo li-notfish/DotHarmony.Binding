@@ -334,7 +334,7 @@ VIBRATE 为 system_grant，宿主模板 module.json5 已声明。**本批按用�
 - **NDK 头文件生成器（native API 绑定自动化）**：解析 ArkUI NDK C 头文件（native_node.h / native_gesture.h / native_animate.h / native_type.h 等），自动生成函数表镜像、枚举、结构体与 P/Invoke 声明，替换 `ArkUIGestureApi.cs` / `ArkUIAnimateApi.cs` / 事件/属性枚举等全部手工维护的原生层代码。要点与难点：
   - C 解析需 libclang（或等价 C 前端），不能用正则——现有 `extract_arkui_types.py` 只抽枚举，函数表/结构体均为手写镜像
   - 语义修正规则须沉淀为声明式配置（生成器不猜）：C bool 在 unmanaged 函数指针中按 1 字节显式 `byte`；头文件注释单位不可信（`GetX` 标注 px 实测为 vp 的笔误）需人工勘误表覆盖；`version` 字段为首成员的函数表布局约定
-  - 与 TS 侧生成器（`src/parser`）同仓共存：产物目录、命名归一、`--sdk` 输入路径复用
+  - 与 TS 侧生成器（`tools/api-generator`）同仓共存：产物目录、命名归一、`--sdk` 输入路径复用
   - 验收：重出产物与手写版逐签名 diff 为零（除勘误表标注项），全量单测 + 模拟器手势/动画链路回归通过
 - **NuGet 打包**：Bindings / HarmonyOS.Maui / 宿主工程模板三件套分发
 - **单项目体验**：MSBuild targets 让用户工程 `dotnet build` 直出 HAP（自动跑远程 AOT 或本机 WSL）。

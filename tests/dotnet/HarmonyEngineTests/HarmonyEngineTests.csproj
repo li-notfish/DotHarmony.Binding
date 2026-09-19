@@ -16,7 +16,7 @@
 
   <!-- 只测 Bindings 实验层（纯逻辑）；不需要 Handler 层 -->
   <ItemGroup>
-    <ProjectReference Include="..\..\..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,10 +1,10 @@
-import { ArkTsParser } from '../src/parser/index';
-import { NativeCodeGenerator, EnumMetadata } from '../src/parser/nativeCodeGenerator';
-import { ParseResult, ParameterInfo, EventInfo, MethodInfo } from '../src/parser/models';
+import { ArkTsParser } from '../tools/api-generator/index';
+import { NativeCodeGenerator, EnumMetadata } from '../tools/api-generator/nativeCodeGenerator';
+import { ParseResult, ParameterInfo, EventInfo, MethodInfo } from '../tools/api-generator/models';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const ENUM_META_PATH = path.join(__dirname, '../HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json');
+const ENUM_META_PATH = path.join(__dirname, '../src/HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json');
 
 function loadEnumMetadata(): EnumMetadata {
     return JSON.parse(fs.readFileSync(ENUM_META_PATH, 'utf-8')) as EnumMetadata;

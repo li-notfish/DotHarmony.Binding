@@ -61,10 +61,10 @@ DevEco Studio（内置 HarmonyOS SDK/NDK/hvigor）、可 SSH 的 Linux（NativeA
 npm install && npm test
 
 # 2. 从 NDK 头文件生成 C# 枚举（ArkUINodeTypes.g.cs + .json 元数据；SDK 探测顺序 --sdk → OHOS_SDK_BASE → OHSDK_HOME → 默认路径，找不到报错退出）
-python src/nativeBinding/extract_arkui_types.py --dump-json HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json
+python src/nativeBinding/extract_arkui_types.py --dump-json src/HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json
 
-# 3. 从 SDK 组件 .d.ts 生成 NodeHandle 包装类 → HarmonyOS.Bindings/Nodes/
-npx ts-node src/parser/index.ts --native
+# 3. 从 SDK 组件 .d.ts 生成 NodeHandle 包装类 → src/HarmonyOS.Bindings/Nodes/
+npx ts-node tools/api-generator/index.ts --native
 
 # 4. Windows 上构建绑定库 + 样例
 dotnet build ArkTsBinding.slnx
@@ -138,14 +138,14 @@ bash scripts/deploy-hap.sh
 ## 项目结构
 
 ```
-src/parser/                  解析器（TS Compiler API）
+tools/api-generator/         解析器（TS Compiler API）
   ├─ astParser.ts            AST → 组件/API 中间模型
   ├─ nativeCodeGenerator.ts  C API 目标生成器（shape 表 + gap 登记）
   ├─ codeGenerator.ts        napi 目标生成器（@ohos.* 服务层）
   └─ typeMapper.ts           类型映射
 src/nativeBinding/
   └─ extract_arkui_types.py  NDK 头文件 → C# 枚举 + JSON 元数据
-HarmonyOS.Bindings/          绑定库（net10.0, AOT/trim 友好；Api/ 438 个 @ohos.* 模块绑定）
+src/HarmonyOS.Bindings/      绑定库（net10.0, AOT/trim 友好；Api/ 438 个 @ohos.* 模块绑定）
   ├─ NativeNode/             ArkUI C API 互操作 + ArkUINodeBase + 事件总线
   ├─ Nodes/                  生成的组件包装类 + native-gaps.json
   ├─ Runtime/                napi 互操作（env 注入、INapiRecord、HiLog）
@@ -173,7 +173,7 @@ tests/                       jest（解析器/生成器 76 用例）
 - **手势识别**：TapGestureRecognizer/PanGestureRecognizer/PinchGestureRecognizer/SwipeGestureRecognizer/PointerGestureRecognizer 全支持（`HarmonyViewHandler` 基类统一挂载；Tap/Pinch 走 NDK 原生手势，Pan/Swipe/Pointer 走触摸流——pan 原生手势事件数据不可靠，实测沉淀；Tap/Pointer 经 AOT 安全的反射桥触发 internal SendTapped/SendPointer*）；PanUpdated 单位 vp（等价 iOS points）；未支持：Drag/Drop 识别器、鼠标 ButtonsMask 区分、hover 通道、Pinch 真机多点触控专项
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
-- **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；63 个含复杂缺口（TS 声明合并/深导入链）的模块保持灰度（`GRAYSCALE_MODULES`），清单见 `src/parser/index.ts`
+- **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；63 个含复杂缺口（TS 声明合并/深导入链）的模块保持灰度（`GRAYSCALE_MODULES`），清单见 `tools/api-generator/index.ts`
 - **基元装箱**：`object?` 参数转换点存在装箱；完全零装箱需要 union struct 参数设计（后续立项）
 
 ## 路线图

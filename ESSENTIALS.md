@@ -38,8 +38,8 @@ MAUI 的 Essentials 静态入口（`DeviceInfo.Current` / `Preferences.Default` 
 
 ### Step 2：确认底层 @ohos 模块
 
-- 生成产物存在：`HarmonyOS.Bindings/Api/<Module>.cs`（没有 → 生成器不支持该 d.ts，先补生成器）；
-- **转正状态**：`src/parser/index.ts` 的 `GRAYSCALE_MODULES`。灰度模块生成器会在 csproj 发射
+- 生成产物存在：`src/HarmonyOS.Bindings/Api/<Module>.cs`（没有 → 生成器不支持该 d.ts，先补生成器）；
+- **转正状态**：`tools/api-generator/index.ts` 的 `GRAYSCALE_MODULES`。灰度模块生成器会在 csproj 发射
   `Compile Remove`——**转正必须改这份名单**（源上），手改 csproj 会被下次重生成还原
   （BundleManager 踩过：`610dfa0`）；
 - 宿主登记：`ohosImports.ets` 由生成器自动维护，无需手改；
@@ -93,7 +93,7 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | 其他 app 改写剪贴板后 HasText 仍旧值 | 缓存未失效 | 底层变更事件先失效缓存再转发 |
 | 包装对象隔段时间方法全挂（napi_function_expected） | 裸 Handle 跨句柄范围 + GC 失效 | 基类已统一走 PinnedValue，别绕过 |
 | JS 报 401/must be Array 但错误文本不可见 | 旧版 ThrowIfFailed 丢 pending exception 消息 | 已修；手写封送数组用 `NativeValue.From(string[])` 或 `NodeApi.CreateInstance(global, "Array"u8, item)` |
-| 手改 csproj 转正被还原 | 转正状态归生成器所有 | 改 `src/parser/index.ts` 的 GRAYSCALE_MODULES |
+| 手改 csproj 转正被还原 | 转正状态归生成器所有 | 改 `tools/api-generator/index.ts` 的 GRAYSCALE_MODULES |
 | ability 上下文调用报 "The context is invalid" | 构造时缓存了 abilityContext 裸句柄，Install 到使用之间句柄失效 | 每次使用前重读 `NodeApi.GetProperty(global, "abilityContext"u8)`，勿缓存裸 napi 值（HarmonyPreferences 先例） |
 
 ## 3. 服务清单

@@ -9,8 +9,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { ArkTsParser } from '../src/parser/index';
-import { ApiGenerator } from '../src/parser/apiGenerator';
+import { ArkTsParser } from '../tools/api-generator/index';
+import { ApiGenerator } from '../tools/api-generator/apiGenerator';
 
 function writeTempDts(content: string): string {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ohos-api-'));

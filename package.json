@@ -6,13 +6,13 @@
   "name": "arktsbinding",
   "version": "1.0.0",
   "description": "ArkTS to C# binding generator",
-  "main": "dist/parser/index.js",
+  "main": "dist/api-generator/index.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
     "build": "tsc",
-    "generate": "ts-node src/parser/index.ts",
+    "generate": "ts-node tools/api-generator/index.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "tsc --noEmit"
