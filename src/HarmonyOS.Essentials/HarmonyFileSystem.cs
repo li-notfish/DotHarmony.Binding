@@ -6,7 +6,7 @@ using Microsoft.Maui.Storage;
 using HarmonyOS.Interop;
 using HResourceManager = HarmonyOS.Bindings.Api.ResourceManager;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyFileSystem : IFileSystem
 {

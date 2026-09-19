@@ -1,5 +1,5 @@
 // Essentials 鸿蒙实现的纯映射逻辑单测（无设备依赖）
-using HarmonyOS.Maui.Essentials;
+using HarmonyOS.Essentials;
 using Microsoft.Maui.Devices;
 using Xunit;
 

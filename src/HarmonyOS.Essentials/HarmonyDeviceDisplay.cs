@@ -9,7 +9,7 @@ using HDisplay = HarmonyOS.Bindings.Api.Display;
 using HWindow = HarmonyOS.Bindings.Api.Window.Window;
 using HarmonyOS.Interop;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyDeviceDisplay : IDeviceDisplay
 {

@@ -34,5 +34,7 @@
     <InternalsVisibleTo Include="HarmonyOS.Maui" />
     <!-- 引擎实验层测试需要 internal ctor（RecordingSink 注入）与 DispatchEvent -->
     <InternalsVisibleTo Include="HarmonyEngineTests" />
+    <!-- Essentials 装拆分前经 Maui 装 IVT 触达生成类型 internal 成员，拆分后自带条目 -->
+    <InternalsVisibleTo Include="HarmonyOS.Essentials" />
   </ItemGroup>
 </Project>

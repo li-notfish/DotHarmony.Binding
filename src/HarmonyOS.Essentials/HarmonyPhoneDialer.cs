@@ -5,7 +5,7 @@ using Microsoft.Maui.ApplicationModel.Communication;
 using HSim = HarmonyOS.Bindings.Api.Telephony.Sim;
 using HSimState = HarmonyOS.ArkUI.SimState;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyPhoneDialer : IPhoneDialer
 {

@@ -6,7 +6,7 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.ApplicationModel.Communication;
 using HarmonyOS.Interop;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyEmail : IEmail
 {

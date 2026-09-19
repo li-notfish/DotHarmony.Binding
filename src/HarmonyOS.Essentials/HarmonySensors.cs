@@ -9,7 +9,7 @@ using HarmonyOS.Bindings.Api;
 using HSensor = HarmonyOS.Bindings.Api.Sensor;
 using MSensorId = HarmonyOS.ArkUI.SensorId;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 /// <summary>传感器支持性/速率映射共享助手</summary>
 internal static class HarmonySensorSupport

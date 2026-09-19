@@ -150,6 +150,7 @@ src/HarmonyOS.Bindings/      绑定库（net10.0, AOT/trim 友好；Api/ 438 个
   ├─ NativeNode/             ArkUI C API 互操作 + ArkUINodeBase + 事件总线
   ├─ Nodes/                  生成的组件包装类 + native-gaps.json
   └─ Hosting/Host.cs         libapp.so 导出入口
+src/HarmonyOS.Essentials/    MAUI Essentials 鸿蒙实现独立装（DeviceInfo/剪贴板/Preferences/传感器/定位/选图等 16 服务）
 src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/ContentPage → ArkUI 节点）
 samples/HarmonyHost/         鸿蒙宿主模板（ArkTS + C shim + CMake + ohosImports.ets 模块登记；targets 按应用 stage 到 obj/harmony/host）
 samples/dotnet/HelloApp/     M1 控件 demo（XAML + NativeAOT → libapp.so）

@@ -15,7 +15,7 @@ using HStaticPrefs = HarmonyOS.Bindings.Api.Data.Preferences;
 using HPrefsObject = HarmonyOS.Bindings.Api.Data.PreferencesObject;
 using HOptions = HarmonyOS.Bindings.Api.Data.PreferencesOptions;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyPreferences : IPreferences
 {

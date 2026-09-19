@@ -12,7 +12,7 @@ using HNetCapabilities = HarmonyOS.Bindings.Api.Net.NetCapabilities;
 using HNetCap = HarmonyOS.ArkUI.NetCap;
 using HNetBear = HarmonyOS.ArkUI.NetBearType;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyConnectivity : IConnectivity
 {

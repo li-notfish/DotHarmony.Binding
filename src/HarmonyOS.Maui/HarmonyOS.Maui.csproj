@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HarmonyOS.Essentials\HarmonyOS.Essentials.csproj" />
     <ProjectReference Include="..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
   </ItemGroup>
 

@@ -47,7 +47,7 @@ MAUI 的 Essentials 静态入口（`DeviceInfo.Current` / `Preferences.Default` 
   `EntryAbility.ets` 已导出 `globalThis.abilityContext`，C# 侧
   `NodeApi.GetProperty(NodeApi.GetGlobal(), "abilityContext"u8)` 取用。
 
-### Step 3：写 `src/HarmonyOS.Maui/Essentials/HarmonyXxx.cs`
+### Step 3：写 `src/HarmonyOS.Essentials/HarmonyXxx.cs`
 
 参照范式选择通道，硬规则：
 

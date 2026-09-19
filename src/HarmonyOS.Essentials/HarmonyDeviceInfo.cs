@@ -5,7 +5,7 @@
 using Microsoft.Maui.Devices;
 using HDeviceInfo = HarmonyOS.Bindings.Api.DeviceInfo;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyDeviceInfo : IDeviceInfo
 {

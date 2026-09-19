@@ -14,7 +14,7 @@ using Microsoft.Maui.Storage;
 // 生成的 Path 绑定与 System.IO.Path 同名，显式别名消歧
 using Path = System.IO.Path;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 /// <summary>
 /// MediaPicker：@ohos.file.picker（选图/选视频）+ @ohos.multimedia.camera.picker（拍照/录像）支撑。

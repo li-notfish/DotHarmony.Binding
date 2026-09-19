@@ -3,7 +3,7 @@
 #nullable enable
 using Microsoft.Maui.ApplicationModel;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyBrowser : IBrowser
 {

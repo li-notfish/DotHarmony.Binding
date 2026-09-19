@@ -15,7 +15,7 @@ using Microsoft.Maui.Devices;
 using Microsoft.Maui.Storage;
 using HarmonyOS.Interop;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public static class HarmonyEssentials
 {

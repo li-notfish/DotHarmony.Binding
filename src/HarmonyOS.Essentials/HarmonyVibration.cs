@@ -8,7 +8,7 @@ using Microsoft.Maui.Devices;
 using HarmonyOS.Interop;
 using HVibrator = HarmonyOS.Bindings.Api.Vibrator;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyVibration : IVibration
 {

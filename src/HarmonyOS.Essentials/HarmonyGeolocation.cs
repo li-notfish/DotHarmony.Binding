@@ -6,7 +6,7 @@ using HarmonyOS.Interop;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Devices.Sensors;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 /// <summary>
 /// Geolocation：@ohos.geoLocationManager 支撑。

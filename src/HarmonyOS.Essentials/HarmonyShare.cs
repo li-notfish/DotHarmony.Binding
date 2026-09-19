@@ -10,7 +10,7 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.ApplicationModel.DataTransfer;
 using HarmonyOS.Interop;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyShare : IShare
 {

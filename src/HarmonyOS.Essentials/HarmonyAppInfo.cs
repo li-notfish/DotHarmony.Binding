@@ -8,7 +8,7 @@ using HBundleManager = HarmonyOS.Bindings.Api.Bundle.BundleManager;
 using HBundleInfo = HarmonyOS.Bindings.Api.Enterprise.BundleInfo;
 using HarmonyOS.Interop;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyAppInfo : IAppInfo
 {

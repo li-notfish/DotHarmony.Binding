@@ -29,22 +29,29 @@ public class FunnelDisciplineTests
     public void HandlerLayer_NeverTouchesNativeFunctionTables()
     {
         var root = FindRepoRoot();
-        var handlerRoot = Path.Combine(root, "src", "HarmonyOS.Maui");
-        Assert.True(Directory.Exists(handlerRoot), $"找不到 {handlerRoot}");
-
+        // 漏斗纪律约束全部 Handler 之上的层：Handlers/Hosting（Maui）与拆装后的 Essentials 同受此闸
+        string[] layerRoots =
+        [
+            Path.Combine(root, "src", "HarmonyOS.Maui"),
+            Path.Combine(root, "src", "HarmonyOS.Essentials"),
+        ];
         var violations = new List<string>();
-        foreach (var file in Directory.EnumerateFiles(handlerRoot, "*.cs", SearchOption.AllDirectories))
+        foreach (var layerRoot in layerRoots)
         {
-            if (file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") ||
-                file.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
-                continue;
-            var lines = File.ReadAllLines(file);
-            for (int i = 0; i < lines.Length; i++)
+            Assert.True(Directory.Exists(layerRoot), $"找不到 {layerRoot}");
+            foreach (var file in Directory.EnumerateFiles(layerRoot, "*.cs", SearchOption.AllDirectories))
             {
-                foreach (var (token, reason) in Forbidden)
+                if (file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") ||
+                    file.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
+                    continue;
+                var lines = File.ReadAllLines(file);
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    if (lines[i].Contains(token, StringComparison.Ordinal))
-                        violations.Add($"{Path.GetRelativePath(root, file)}:{i + 1}: '{token}' — {reason}");
+                    foreach (var (token, reason) in Forbidden)
+                    {
+                        if (lines[i].Contains(token, StringComparison.Ordinal))
+                            violations.Add($"{Path.GetRelativePath(root, file)}:{i + 1}: '{token}' — {reason}");
+                    }
                 }
             }
         }

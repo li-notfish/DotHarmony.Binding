@@ -7,7 +7,8 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/HarmonyOS.Interop/HarmonyOS.Interop.csproj" />
-    <Project Path="src/HarmonyOS.Maui/HarmonyOS.Maui.csproj" />
     <Project Path="src/HarmonyOS.Bindings/HarmonyOS.Bindings.csproj" />
+    <Project Path="src/HarmonyOS.Essentials/HarmonyOS.Essentials.csproj" />
+    <Project Path="src/HarmonyOS.Maui/HarmonyOS.Maui.csproj" />
   </Folder>
 </Solution>

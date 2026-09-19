@@ -8,7 +8,7 @@ using HBundleManager = HarmonyOS.Bindings.Api.Bundle.BundleManager;
 using HFileuri = HarmonyOS.Bindings.Api.File.Fileuri;
 using HarmonyOS.Interop;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyLauncher : ILauncher
 {

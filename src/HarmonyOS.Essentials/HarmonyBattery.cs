@@ -15,7 +15,7 @@ using HChargeState = HarmonyOS.ArkUI.BatteryChargeState;
 using HPluggedType = HarmonyOS.ArkUI.BatteryPluggedType;
 using HCommonEvent = HarmonyOS.Bindings.Api.CommonEventManager;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyBattery : IBattery
 {

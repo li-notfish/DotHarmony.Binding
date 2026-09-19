@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 纯 net10.0：MAUI Essentials 接口（IBattery/IGeolocation/IPreferences...）由
+         Microsoft.Maui.Controls 包的 netstandard 产物提供，鸿蒙实现注入其静态入口 -->
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- 与 HarmonyOS.Maui 相同的宽松集：接口实现 nullability（CS8766）与 MAUI 过时 API（CS0618） -->
+    <NoWarn>$(NoWarn);CS8766;CS0618</NoWarn>
+
+    <PackageId>HarmonyOS.Essentials</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>ArkTsBinding</Authors>
+    <Description>MAUI Essentials implementations for HarmonyOS (device info, sensors, geolocation, picker, storage, connectivity, ...)</Description>
+    <PackageTags>harmonyos;maui;essentials;dotnet</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+    <ProjectReference Include="..\HarmonyOS.Interop\HarmonyOS.Interop.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 单位换算/枚举映射等纯逻辑测试（EssentialsMappingTests 等 5 个套件）触达 internal 成员 -->
+    <InternalsVisibleTo Include="HarmonyGestureTests" />
+  </ItemGroup>
+</Project>

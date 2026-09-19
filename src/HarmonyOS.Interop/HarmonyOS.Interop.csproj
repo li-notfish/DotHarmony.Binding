@@ -25,6 +25,7 @@
          装拆前同装 internal 直达，拆装后经 IVT 保持同等可见性 -->
     <InternalsVisibleTo Include="HarmonyOS.Bindings" />
     <InternalsVisibleTo Include="HarmonyOS.Maui" />
+    <InternalsVisibleTo Include="HarmonyOS.Essentials" />
     <InternalsVisibleTo Include="HarmonyEngineTests" />
     <InternalsVisibleTo Include="HarmonyGestureTests" />
   </ItemGroup>

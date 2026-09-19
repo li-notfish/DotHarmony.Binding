@@ -18,7 +18,7 @@ using HSystemPasteboard = HarmonyOS.Bindings.Api.SystemPasteboard;
 using HAccessCtrl = HarmonyOS.Bindings.Api.AbilityAccessCtrl;
 using HPermissionStatus = HarmonyOS.ArkUI.PermissionStatus;
 
-namespace HarmonyOS.Maui.Essentials;
+namespace HarmonyOS.Essentials;
 
 public class HarmonyClipboard : IClipboard
 {
