@@ -723,7 +723,7 @@ export class ApiGenerator {
         lines.push('using System.Runtime.InteropServices;');
         lines.push('using System.Text;');
         lines.push('using System.Threading.Tasks;');
-        lines.push('using HarmonyOS.Bindings.Runtime;');
+        lines.push('using HarmonyOS.Interop;');
         lines.push('using HarmonyOS.ArkUI;');  // 枚举生成在 HarmonyOS.ArkUI 命名空间
         void needsTask;
         void needsLinq;

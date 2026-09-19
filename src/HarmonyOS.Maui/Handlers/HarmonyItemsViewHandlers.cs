@@ -5,6 +5,7 @@ using Microsoft.Maui.Handlers;
 using MCollectionView = Microsoft.Maui.Controls.CollectionView;
 using MCarouselView = Microsoft.Maui.Controls.CarouselView;
 using HarmonyOS.Bindings.NativeNode;
+using HarmonyOS.Interop;
 using ArkList = HarmonyOS.ArkUI.List;
 using ArkSwiper = HarmonyOS.ArkUI.Swiper;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
@@ -129,7 +130,7 @@ public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, 
     {
         if (index < 0 || index >= _items.Count)
             return null;
-        Bindings.Runtime.HiLog.Debug("HarmonyHost", $"[CollectionView] materialize idx={index}");
+        HiLog.Debug("HarmonyHost", $"[CollectionView] materialize idx={index}");
         var item = _items[index];
         var view = VirtualView?.ItemTemplate?.CreateContent() as View
             ?? new Label { Text = item?.ToString() ?? string.Empty };

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
+using HarmonyOS.Interop;
 namespace HarmonyOS.Bindings.NativeNode;
 
 /// <summary>
@@ -145,7 +146,7 @@ internal static unsafe class NodeEventBus
         _receiverPtr = &Dispatch;
         ArkUINativeApi.RegisterNodeEventReceiver(_receiverPtr);
         _registered = true;
-        Runtime.HiLog.Debug("HarmonyHost", $"[EventBus] receiver registered, fnPtr=0x{(long)_receiverPtr:X}");
+        HiLog.Debug("HarmonyHost", $"[EventBus] receiver registered, fnPtr=0x{(long)_receiverPtr:X}");
     }
 
     [UnmanagedCallersOnly]
@@ -161,7 +162,7 @@ internal static unsafe class NodeEventBus
         }
         catch (Exception ex)
         {
-            Runtime.HiLog.Error("HarmonyHost", $"[EventBus] dispatch error: {ex.GetType().Name}: {ex.Message}");
+            HiLog.Error("HarmonyHost", $"[EventBus] dispatch error: {ex.GetType().Name}: {ex.Message}");
         }
     }
 }

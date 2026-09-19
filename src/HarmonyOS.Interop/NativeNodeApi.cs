@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// HarmonyOS N-API P/Invoke 声明

@@ -1,7 +1,7 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using ArkImage = HarmonyOS.ArkUI.Image;
 using MImage = Microsoft.Maui.IImage;
 

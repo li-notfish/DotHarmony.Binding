@@ -7,7 +7,7 @@
 using System;
 using System.Runtime.InteropServices;
 using HarmonyOS.Bindings.NativeNode;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 
 namespace HarmonyOS.ArkUI;
 

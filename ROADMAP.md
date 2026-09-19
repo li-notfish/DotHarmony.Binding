@@ -174,7 +174,7 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 **2.5 .NET 风格标准化（2026-09-11 完成）**：
 - 命名规范化：`naming.ts` 缩写词归一（`getURI→GetUri`、`TYPE_DEFAULT→TypeDefault`），Task 方法自动 `Async` 后缀
 - 类型映射收口 TypeMapper 单一事实源；修复 `mapGenericType` 贪婪正则对嵌套泛型的误切（`Promise<Array<T>>` 曾整体退化为 IntPtr 的潜在 bug）
-- Runtime：`JsObject` 强引用包装基类、`ValueConverter` 统一转换（含枚举/数组/显式工厂委托）、`NodeApi.SetProperty/GetGlobal/CreateInstance/GetArrayElements`、PromiseTaskBridge 吸并 ThreadSafeFunction.FromPromise 重复实现
+- Interop（原 Runtime）：`JsObject` 强引用包装基类、`ValueConverter` 统一转换（含枚举/数组/显式工厂委托）、`NodeApi.SetProperty/GetGlobal/CreateInstance/GetArrayElements`、PromiseTaskBridge 吸并 ThreadSafeFunction.FromPromise 重复实现
 - 服务模块 `on*` 函数不再误判为组件事件；嵌套类构造函数支持（Picker 空壳修复）；无注解字面量常量类型推断（Pasteboard MIMETYPE_* 恢复）
 - ~~明确不做（后续立项）：ArrayBuffer/BigInt 封送、Map/Set 容器映射~~ → **2.6 已完成** ArrayBuffer/BigInt/Map（仍不做：Set 容器、EventHandler/EventArgs 模型）；TSFN abort 路径模拟器端到端验证仍未做（见 2.1 最小实验的未验证清单）
 
@@ -213,7 +213,7 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 - **实测修复 2（架构级）**：PromiseTaskBridge 原用 `RunContinuationsAsynchronously` + `ContinueWith` 把续体调度到线程池——wrapper 结果 await 后访问属性时 `NapiEnv.Current`（[ThreadStatic]）无 env 直接抛异常。改为 TCS 同步续体：Promise resolve 的 trampoline 在 JS 线程内联执行用户续体（与 JS await 微任务语义一致）；副作用：用户续体长耗时工作须自行 `Task.Run` 切走
 - **实测修复 3**：`async void` 事件处理器仅 catch `ArkTSException`，其它异常（如调用不存在的 JS 函数）未处理直接杀进程；samples 兜底 `catch (Exception)`，宿主 EntryAbility 补 `globalThis.somePromiseApi/willFail` 测试函数
 
-**最小实验结论**（2026-09-11，模拟器，HelloApp "TSFN test" 按钮 / `Runtime/TsfnExperiment.cs`）：
+**最小实验结论**（2026-09-11，模拟器，HelloApp "TSFN test" 按钮 / `src/HarmonyOS.Interop/TsfnExperiment.cs`）：
 - `CallJsTrampoline` 已实装（原为空壳）：context 解析回 ThreadSafeFunction 实例，转发 `OnCallJs`
 - 后台 .NET 线程 `Call()` → libuv 在 **JS（宿主主）线程**触发回调（managed thread id 与 UI 线程一致，实测吻合）
 - 回调内 `NapiEnv.Current` 可用，NAPI 字符串创建+读取往返成功
@@ -222,7 +222,7 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 - ⚠️ 未验证：abort 路径、release 后 call 的防御、跨 TSFN 实例 GC 压力——收编正式通道时补
 
 **怎么做**：
-1. `napi_create_threadsafe_function` 封装（`Runtime/ThreadSafeFunction.cs`）：
+1. `napi_create_threadsafe_function` 封装（`src/HarmonyOS.Interop/ThreadSafeFunction.cs`）：
    - C# 发起调用 → 拿到 Promise → 注册 TSFN（经 `napi_resolve` 在 JS 线程桥接）
    - C# 侧返回 `TaskCompletionSource<napi_value>` 包装的 `Task<T>`
 2. Promise 完成时（JS 线程）→ TSFN 回调 C#（线程安全排队）→ TCS.SetResult → `await` 继续
@@ -237,7 +237,7 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 ### 2.2 codeGenerator 缺陷修复（小，TSFN 的前置）
 
 - `CallMethod<void>` 非法 C# → 无参/void 方法（白皮书"泛型 void 清洁重载"）
-- using 生成缺失（产物缺 `using HarmonyOS.Bindings.Runtime`）
+- using 生成缺失（产物缺 `using HarmonyOS.Interop`）
 - 方法重载折叠保留全部签名
 - `Promise<T>` 映射接 2.1 的 `Task<T>`
 
@@ -318,7 +318,7 @@ VIBRATE 为 system_grant，宿主模板 module.json5 已声明。**本批按用�
 - **IShare**：文本走 ohos.want.action.sendData；文件分享需跨应用 URI 授权通道（ability.params.stream），
   唯一留白
 - **ISecureStorage**：@ohos.security.asset，AssetMap 数字 Tag 键经 IDictionary 字符串键构造，
-  BYTES 值要求 Uint8Array（Runtime 补 FromUint8Array = napi_create_arraybuffer +
+  BYTES 值要求 Uint8Array（Interop 补 FromUint8Array = napi_create_arraybuffer +
   napi_create_typedarray，非 ArrayBuffer）
 - **前两批未构建代码的编译缺口全数补齐**（IVibration.IsSupported / IEmail.IsComposeSupported /
   NetworkAccess.Local / EmailMessage.Cc/Bcc——均为成员名出入，75/75 测试绿）

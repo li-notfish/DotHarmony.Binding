@@ -4,7 +4,7 @@
 #nullable enable
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.ApplicationModel.Communication;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 
 namespace HarmonyOS.Maui.Essentials;
 

@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Bindings.Api;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Devices.Sensors;
 

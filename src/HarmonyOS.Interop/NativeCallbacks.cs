@@ -2,7 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// 预编译的 napi 回调 trampoline

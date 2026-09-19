@@ -6,7 +6,7 @@
 using Microsoft.Maui.ApplicationModel;
 using HBundleManager = HarmonyOS.Bindings.Api.Bundle.BundleManager;
 using HBundleInfo = HarmonyOS.Bindings.Api.Enterprise.BundleInfo;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 
 namespace HarmonyOS.Maui.Essentials;
 

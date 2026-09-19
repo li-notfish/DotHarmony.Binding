@@ -9,7 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>TSFN 跨线程封送最小实验（实验代码，验证通过后收编进正式通道）</summary>
 public static class TsfnExperiment

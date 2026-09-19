@@ -4,6 +4,7 @@
 #nullable enable
 using System.Numerics;
 using HarmonyOS.Bindings.NativeNode;
+using HarmonyOS.Interop;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Graphics.Text;
 
@@ -65,7 +66,7 @@ public class HarmonyDrawingCanvas : ICanvas, IDisposable
             if (value != null && !_dashWarned)
             {
                 _dashWarned = true;
-                Bindings.Runtime.HiLog.Warn("HarmonyHost",
+                HiLog.Warn("HarmonyHost",
                     "[DrawingCanvas] StrokeDashPattern 暂不支持（Pen 路径特效通道未接），按实线绘制");
             }
         }

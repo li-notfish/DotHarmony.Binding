@@ -5,7 +5,7 @@
 // 宿主模板 module.json5 已声明（reason: permission_VIBRATE_reason）。
 #nullable enable
 using Microsoft.Maui.Devices;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using HVibrator = HarmonyOS.Bindings.Api.Vibrator;
 
 namespace HarmonyOS.Maui.Essentials;

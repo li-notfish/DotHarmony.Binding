@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// JS → C# 回调的单一共享跳板：把 argv 读成 IntPtr[] 后调用 Action&lt;IntPtr[]&gt;。

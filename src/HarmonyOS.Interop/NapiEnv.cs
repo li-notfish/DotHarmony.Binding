@@ -1,7 +1,7 @@
 #if HARMONYOS
 using System;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// napi_env 生命周期管理。

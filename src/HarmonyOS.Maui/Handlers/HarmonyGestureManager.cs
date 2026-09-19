@@ -14,7 +14,7 @@ using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using HarmonyOS.Bindings.NativeNode;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;

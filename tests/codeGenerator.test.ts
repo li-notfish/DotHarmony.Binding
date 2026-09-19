@@ -374,7 +374,7 @@ describe('Code Generation Tests', () => {
         // 验证继承自 ArkUIComponentBase
         expect(content).toContain('ArkUIComponentBase');
         expect(content).toContain(': base(NodeApi.CreateComponent("Button"))');
-        expect(content).toContain('using HarmonyOS.Bindings.Runtime;');
+        expect(content).toContain('using HarmonyOS.Interop;');
     });
 
     test('should not have duplicate methods in list.cs', () => {

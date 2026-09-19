@@ -7,7 +7,7 @@
 using Microsoft.Maui.Devices;
 using HDisplay = HarmonyOS.Bindings.Api.Display;
 using HWindow = HarmonyOS.Bindings.Api.Window.Window;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 
 namespace HarmonyOS.Maui.Essentials;
 

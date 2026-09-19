@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 
 namespace HarmonyOS.Bindings.Experimental;
 

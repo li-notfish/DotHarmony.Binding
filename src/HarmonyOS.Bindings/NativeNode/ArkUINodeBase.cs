@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+using HarmonyOS.Interop;
 namespace HarmonyOS.Bindings.NativeNode;
 
 /// <summary>
@@ -368,7 +369,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
             catch (Exception ex)
             {
                 // 不得穿透原生帧；异步路径经 Completion 让 await 方感知异常
-                Runtime.HiLog.Error("HarmonyAnim", $"animate completed-callback error: {ex.GetType().Name}: {ex.Message}");
+                HiLog.Error("HarmonyAnim", $"animate completed-callback error: {ex.GetType().Name}: {ex.Message}");
                 state.Completion?.TrySetException(ex);
             }
         }
@@ -439,7 +440,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         // 注册进全局分发总线（含首次时的原生 receiver 注册），再向节点注册事件
         NodeEventBus.Register(_targetId, eventType, handler);
         ArkUINativeApi.RegisterNodeEvent(_handle, eventType, _targetId, null);
-        Runtime.HiLog.Debug("HarmonyHost",
+        HiLog.Debug("HarmonyHost",
             $"[Event] register node=0x{_handle.Handle:X} type={eventType} targetId={_targetId}");
     }
 

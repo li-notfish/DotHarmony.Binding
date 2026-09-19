@@ -2,6 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
+using HarmonyOS.Interop;
 namespace HarmonyOS.Bindings.NativeNode;
 
 /// <summary>ArkUI_NodeAdapterEvent（不透明，经访问器读取）</summary>
@@ -162,7 +163,7 @@ public sealed unsafe class ArkUINodeAdapter : IDisposable
         }
         catch (Exception ex)
         {
-            Runtime.HiLog.Error("HarmonyHost", $"[NodeAdapter] dispatch error: {ex.GetType().Name}: {ex.Message}");
+            HiLog.Error("HarmonyHost", $"[NodeAdapter] dispatch error: {ex.GetType().Name}: {ex.Message}");
         }
     }
 

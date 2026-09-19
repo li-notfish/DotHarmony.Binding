@@ -1,7 +1,7 @@
 #if HARMONYOS
 using System;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// napi_ref 引用管理，防止 JS 对象被 GC 回收

@@ -6,7 +6,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// HarmonyOS 主线程 SynchronizationContext。

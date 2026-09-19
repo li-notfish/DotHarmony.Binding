@@ -7,7 +7,7 @@
 #nullable enable
 using System.Runtime.InteropServices;
 using Microsoft.Maui.Devices;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using HBatteryInfo = HarmonyOS.Bindings.Api.BatteryInfo;
 using HPower = HarmonyOS.Bindings.Api.Power;
 using HPowerMode = HarmonyOS.ArkUI.DevicePowerMode;

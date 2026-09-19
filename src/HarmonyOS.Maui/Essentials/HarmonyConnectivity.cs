@@ -5,7 +5,7 @@
 // 回调内重读属性 + 去重（连接属性载荷不解析——属性即真相）。
 #nullable enable
 using Microsoft.Maui.Networking;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using HNetConn = HarmonyOS.Bindings.Api.Net.Connection;
 using HNetConnectionObject = HarmonyOS.Bindings.Api.Net.NetConnection;
 using HNetCapabilities = HarmonyOS.Bindings.Api.Net.NetCapabilities;

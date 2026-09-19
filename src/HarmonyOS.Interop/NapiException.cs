@@ -1,7 +1,7 @@
 #if HARMONYOS
 using System;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// Node-API 调用失败异常，携带 napi_status。

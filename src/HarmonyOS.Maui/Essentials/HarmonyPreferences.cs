@@ -10,7 +10,7 @@
 #nullable enable
 using System.Globalization;
 using Microsoft.Maui.Storage;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using HStaticPrefs = HarmonyOS.Bindings.Api.Data.Preferences;
 using HPrefsObject = HarmonyOS.Bindings.Api.Data.PreferencesObject;
 using HOptions = HarmonyOS.Bindings.Api.Data.PreferencesOptions;

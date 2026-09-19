@@ -3,7 +3,7 @@
 // file.fs（灰度）本接口不需要——四个成员全是目录与包内读取。
 #nullable enable
 using Microsoft.Maui.Storage;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using HResourceManager = HarmonyOS.Bindings.Api.ResourceManager;
 
 namespace HarmonyOS.Maui.Essentials;

@@ -6,7 +6,7 @@ using HarmonyOS.Bindings.Api.File;
 using HarmonyOS.Bindings.Api.Multimedia;
 using HarmonyOS.Bindings.Api.Net;
 using HarmonyOS.Bindings.Api;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 
 namespace ApiDemo;
 

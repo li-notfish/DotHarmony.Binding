@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// JS Map 的 C# 活视图包装。方法经句柄调用底层 map.get/map.set/map.has/map.delete/map.entries，

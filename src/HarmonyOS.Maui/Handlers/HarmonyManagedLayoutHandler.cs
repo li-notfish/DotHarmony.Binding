@@ -17,7 +17,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 using ArkStack = HarmonyOS.ArkUI.Stack;
 using MAbsolute = Microsoft.Maui.Controls.AbsoluteLayout;

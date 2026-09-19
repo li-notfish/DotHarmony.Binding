@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// JS 对象实例包装基类。生成器为 @ohos.* 接口类型产出派生类（如 PasteData、ImageSource、DisplayObject），

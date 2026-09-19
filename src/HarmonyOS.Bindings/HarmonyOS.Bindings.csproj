@@ -23,6 +23,11 @@
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- napi 互操作核心独立成装（对齐 Java.Interop / Mono.Android 分层） -->
+    <ProjectReference Include="..\HarmonyOS.Interop\HarmonyOS.Interop.csproj" />
+  </ItemGroup>
+
   <!-- 全量转正（438/438 编译，M2）：GRAYSCALE 已清空，Api/*.cs 全量参与编译，无需 Compile Remove。 -->
   <ItemGroup>
     <!-- Handler 层手势池化复用需要读取 internal 配置（ArkTapGesture.TapCount 等） -->

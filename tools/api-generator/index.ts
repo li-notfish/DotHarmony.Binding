@@ -1035,17 +1035,21 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
                 fs.mkdirSync(outBase, { recursive: true });
 
                 const csPath = path.join(outBase, `${gen.className}.cs`);
-                fs.writeFileSync(csPath, gen.csharp);
+                writeFileSyncRetry(csPath, gen.csharp);
                 console.log(`  Generated: ${subDir ? subDir + '/' : ''}${gen.className}.cs (${gen.permissions.length} perms)`);
                 apiSuccess++;
 
                 if (gen.enums) {
                     const enumCsPath = path.join(outBase, `${gen.className}.Enums.cs`);
-                    fs.writeFileSync(enumCsPath, gen.enums);
+                    writeFileSyncRetry(enumCsPath, gen.enums);
                 } else {
                     // 枚举本轮全部去重/过滤时，删除上一轮残留的 Enums.cs（否则 CS0101）
                     const enumCsPath = path.join(outBase, `${gen.className}.Enums.cs`);
-                    if (fs.existsSync(enumCsPath)) fs.unlinkSync(enumCsPath);
+                    try {
+                        if (fs.existsSync(enumCsPath)) fs.unlinkSync(enumCsPath);
+                    } catch {
+                        console.warn(`  unlink retryable lock on ${enumCsPath}, left in place`);
+                    }
                 }
 
                 boundModules.push({ module: pm.moduleInfo.module, local: pm.moduleInfo.local, className: pm.moduleInfo.className });
@@ -1069,14 +1073,20 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
 
     // 写 ohosImports.ets
     // 清理陈旧孤儿文件：SDK 中已不存在的模块（或 className 唯一化改名前）的旧产物——
-    // 编译时会因引用失效类型而 CS0246（实测 Hid.cs/Connection.cs）
-    const writtenClassNames = new Set(boundModules.map(m => m.className));
-    for (const f of fs.readdirSync(apiOutputDir)) {
-        if (!f.endsWith('.cs')) continue;
-        const stem = f.replace(/\.Enums\.cs$/, '').replace(/\.cs$/, '');
-        if (!writtenClassNames.has(stem)) {
-            fs.unlinkSync(path.join(apiOutputDir, f));
-            console.log(`  Removed stale: ${f}`);
+    // 编译时会因引用失效类型而 CS0246（实测 Hid.cs/Connection.cs）。
+    // 卫兵：本轮存在写失败（EBUSY/EPERM 等瞬态）时禁止清理——失败模块不在 written 集合，
+    // 清理会误删其已提交产物并逐轮级联（Windows 上 AV/编译服务器短暂锁文件，实测踩中）。
+    if (failedModules.size > 0) {
+        console.warn(`  Stale cleanup SKIPPED: ${failedModules.size} module(s) still failing this run: ${[...failedModules].join(', ')}`);
+    } else {
+        const writtenClassNames = new Set(boundModules.map(m => m.className));
+        for (const f of fs.readdirSync(apiOutputDir)) {
+            if (!f.endsWith('.cs')) continue;
+            const stem = f.replace(/\.Enums\.cs$/, '').replace(/\.cs$/, '');
+            if (!writtenClassNames.has(stem)) {
+                fs.unlinkSync(path.join(apiOutputDir, f));
+                console.log(`  Removed stale: ${f}`);
+            }
         }
     }
 
@@ -1362,6 +1372,26 @@ function writeOhosImports(modules: { module: string; local: string }[]): void {
     fs.mkdirSync(hostEtsDir, { recursive: true });
     fs.writeFileSync(outPath, lines.join('\n') + '\n');
     console.log(`  ohosImports.ets updated: ${modules.length} modules -> ${outPath}`);
+}
+
+/**
+ * 带重试的同步写文件：Windows 上 AV 实时扫描/编译服务器会瞬态锁住刚写出的文件，
+ * 下轮全量生成写回时 writeFileSync 撞 EBUSY/EPERM（errno 呈 UNKNOWN）。
+ * 不重试的后果不是少一个文件，而是级联误删：写失败的模块不进 boundModules，
+ * 末尾的孤儿清理会把它的已提交产物当陈旧文件 unlink 掉。
+ */
+function writeFileSyncRetry(p: string, data: string, attempts = 4): void {
+    for (let i = 0; ; i++) {
+        try {
+            fs.writeFileSync(p, data);
+            return;
+        } catch (e: any) {
+            if (i === attempts - 1) throw e;
+            const wait = 250 * (i + 1);
+            console.warn(`  write retry ${i + 1} (${e.code ?? 'UNKNOWN'}): ${p} (waiting ${wait}ms)`);
+            Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, wait);
+        }
+    }
 }
 
 function moduleSubDir(info: { subNamespace: string }): string {

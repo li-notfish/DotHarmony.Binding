@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 
+using HarmonyOS.Interop;
 namespace HarmonyOS.Bindings.NativeNode;
 
 /// <summary>ArkUI_NodeCustomEvent（不透明，经访问器读取）</summary>
@@ -81,7 +82,7 @@ internal static unsafe class NodeCustomEventBus
             _receiverPtr = &Dispatch;
             ArkUINativeApi.RegisterCustomEventReceiver(_receiverPtr);
             _registered = true;
-            Runtime.HiLog.Debug("HarmonyHost", $"[CustomEventBus] receiver registered, fnPtr=0x{(long)_receiverPtr:X}");
+            HiLog.Debug("HarmonyHost", $"[CustomEventBus] receiver registered, fnPtr=0x{(long)_receiverPtr:X}");
         }
     }
 
@@ -98,7 +99,7 @@ internal static unsafe class NodeCustomEventBus
         }
         catch (Exception ex)
         {
-            Runtime.HiLog.Error("HarmonyHost", $"[CustomEventBus] dispatch error: {ex.GetType().Name}: {ex.Message}");
+            HiLog.Error("HarmonyHost", $"[CustomEventBus] dispatch error: {ex.GetType().Name}: {ex.Message}");
         }
     }
 }

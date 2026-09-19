@@ -1,7 +1,7 @@
 #if HARMONYOS
 using System;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// napi_value → CLR 的统一转换入口（NodeApi / JsObject / PromiseTaskBridge 共用）。

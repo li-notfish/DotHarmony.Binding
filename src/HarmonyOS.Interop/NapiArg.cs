@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// napi 调用参数的 union struct（完全零装箱改造，ROADMAP 2.10 剩余分配源收口）。

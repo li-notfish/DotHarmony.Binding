@@ -32,8 +32,8 @@
 [HarmonyOS.Bindings]
     ├─ Nodes/       ArkUINodeBase : { ArkUI_NodeHandle } 包装类（解析器自动生成）
     ├─ NativeNode/  ArkUI NDK C API 互操作（ArkUI_NativeNodeAPI_1 函数表镜像、事件总线）
-    ├─ Runtime/     napi 互操作（非 UI 的 @ohos.* 服务调用；env 注入、hilog 桥）
     └─ Hosting/     Host 入口（libapp.so 导出 HarmonyInit / HarmonyBuildUI）
+[HarmonyOS.Interop] napi 互操作核心（独立装，对齐 Java.Interop 分层；env 注入、值封送、回调/TSFN、hilog 桥）
     │ P/Invoke / dlopen
 [HarmonyHost 宿主]  ArkTS 页面 (ContentSlot) + C shim (libentry.so) + libapp.so (NativeAOT)
 ```
@@ -145,10 +145,10 @@ tools/api-generator/         解析器（TS Compiler API）
   └─ typeMapper.ts           类型映射
 src/nativeBinding/
   └─ extract_arkui_types.py  NDK 头文件 → C# 枚举 + JSON 元数据
+src/HarmonyOS.Interop/       napi 互操作核心（独立装：env 注入、值封送、回调/TSFN、HiLog）
 src/HarmonyOS.Bindings/      绑定库（net10.0, AOT/trim 友好；Api/ 438 个 @ohos.* 模块绑定）
   ├─ NativeNode/             ArkUI C API 互操作 + ArkUINodeBase + 事件总线
   ├─ Nodes/                  生成的组件包装类 + native-gaps.json
-  ├─ Runtime/                napi 互操作（env 注入、INapiRecord、HiLog）
   └─ Hosting/Host.cs         libapp.so 导出入口
 src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/ContentPage → ArkUI 节点）
 samples/HarmonyHost/         鸿蒙宿主模板（ArkTS + C shim + CMake + ohosImports.ets 模块登记；targets 按应用 stage 到 obj/harmony/host）

@@ -1,5 +1,5 @@
 #if HARMONYOS
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// 可封送为 JS 对象的 record 契约。

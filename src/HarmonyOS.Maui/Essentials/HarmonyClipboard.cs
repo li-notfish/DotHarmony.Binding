@@ -11,7 +11,7 @@
 // 同时使 HasText 的回退缓存失效——否则其他 app 改写剪贴板后 HasText 仍按旧缓存回答。
 #nullable enable
 using Microsoft.Maui.ApplicationModel.DataTransfer;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using HPasteboard = HarmonyOS.Bindings.Api.Pasteboard;
 using HPasteData = HarmonyOS.Bindings.Api.PasteData;
 using HSystemPasteboard = HarmonyOS.Bindings.Api.SystemPasteboard;

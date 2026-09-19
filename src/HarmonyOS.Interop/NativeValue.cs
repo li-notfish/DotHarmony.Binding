@@ -3,7 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 /// <summary>
 /// C# 类型与 napi_value 之间的转换工具
 /// </summary>

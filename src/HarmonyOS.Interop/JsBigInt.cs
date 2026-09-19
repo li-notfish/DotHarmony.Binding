@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// JS bigint 的 C# 载体（long 语义）。为什么不是裸 long：JS 里 number 与 bigint 是两种类型，

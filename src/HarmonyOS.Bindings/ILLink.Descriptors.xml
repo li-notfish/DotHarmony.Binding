@@ -2,6 +2,5 @@
 <linker>
   <assembly fullname="HarmonyOS.Bindings" preserve="all">
     <namespace fullname="HarmonyOS.ArkUI" />
-    <namespace fullname="HarmonyOS.Bindings.Runtime" />
   </assembly>
 </linker>

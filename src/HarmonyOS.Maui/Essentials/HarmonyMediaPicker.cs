@@ -8,7 +8,7 @@ using HarmonyOS.Bindings.Api.Graphics;
 using HarmonyOS.Bindings.Api.Multimedia;
 using HarmonyOS.Bindings.Api.Util;
 using HarmonyOS.Bindings.Api;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using Microsoft.Maui.Media;
 using Microsoft.Maui.Storage;
 // 生成的 Path 绑定与 System.IO.Path 同名，显式别名消歧
@@ -116,12 +116,12 @@ internal class HarmonyMediaPicker : IMediaPicker
             {
                 Fs.CloseSync(src.Fd); // OS fd 须显式关，否则句柄滞留至进程退出
             }
-            HarmonyOS.Bindings.Runtime.HiLog.Debug("Essentials", $"MediaPicker copy: {uri} -> {dest}");
+            HarmonyOS.Interop.HiLog.Debug("Essentials", $"MediaPicker copy: {uri} -> {dest}");
             return new FileResult(dest, mimeType);
         }
         catch (Exception ex)
         {
-            HarmonyOS.Bindings.Runtime.HiLog.Warn("Essentials",
+            HarmonyOS.Interop.HiLog.Warn("Essentials",
                 $"MediaPicker cache copy failed, returning original uri: {ex.GetType().Name}: {ex.Message}");
             return new FileResult(uri, mimeType);
         }

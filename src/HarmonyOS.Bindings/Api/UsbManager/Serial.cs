@@ -8,7 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
 
 namespace HarmonyOS.Bindings.Api.UsbManager;

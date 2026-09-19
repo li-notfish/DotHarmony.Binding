@@ -7,7 +7,7 @@
 #nullable enable
 using Microsoft.Maui.Storage;
 using HAsset = HarmonyOS.Bindings.Api.Security.Asset;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 
 namespace HarmonyOS.Maui.Essentials;
 

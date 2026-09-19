@@ -1,7 +1,7 @@
 #if HARMONYOS
 using System;
 
-namespace HarmonyOS.Bindings.Runtime;
+namespace HarmonyOS.Interop;
 
 /// <summary>
 /// ArkTS 运行时异常，当 Promise 被 reject 时抛出
