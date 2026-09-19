@@ -6,9 +6,9 @@
 #nullable enable
 using Microsoft.Maui.Networking;
 using HarmonyOS.Bindings.Runtime;
-using HNetConn = HarmonyOS.Bindings.Api.NetConnection;
-using HNetConnectionObject = HarmonyOS.Bindings.Api.NetConnectionObject;
-using HNetCapabilities = HarmonyOS.Bindings.Api.NetCapabilities;
+using HNetConn = HarmonyOS.Bindings.Api.Net.Connection;
+using HNetConnectionObject = HarmonyOS.Bindings.Api.Net.NetConnection;
+using HNetCapabilities = HarmonyOS.Bindings.Api.Net.NetCapabilities;
 using HNetCap = HarmonyOS.ArkUI.NetCap;
 using HNetBear = HarmonyOS.ArkUI.NetBearType;
 

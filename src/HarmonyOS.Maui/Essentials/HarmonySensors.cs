@@ -4,6 +4,7 @@
 // 保证 off 传入同一 JS 函数）；速率经 SensorOptions.interval 映射。
 #nullable enable
 using Microsoft.Maui.Devices;
+using HarmonyOS.Bindings.Api.Util;
 using HarmonyOS.Bindings.Api;
 using HSensor = HarmonyOS.Bindings.Api.Sensor;
 using MSensorId = HarmonyOS.ArkUI.SensorId;

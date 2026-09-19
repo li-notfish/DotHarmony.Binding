@@ -4,8 +4,8 @@
 // ShowSettingsUI 经 startAbility({uri:'ohos.settings'}) 拉起系统设置；LayoutDirection 无系统通道按 Ltr。
 #nullable enable
 using Microsoft.Maui.ApplicationModel;
-using HBundleManager = HarmonyOS.Bindings.Api.BundleManager;
-using HBundleInfo = HarmonyOS.Bindings.Api.BundleInfo;
+using HBundleManager = HarmonyOS.Bindings.Api.Bundle.BundleManager;
+using HBundleInfo = HarmonyOS.Bindings.Api.Enterprise.BundleInfo;
 using HarmonyOS.Bindings.Runtime;
 
 namespace HarmonyOS.Maui.Essentials;

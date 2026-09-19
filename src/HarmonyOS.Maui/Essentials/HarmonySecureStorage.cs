@@ -6,7 +6,7 @@
 // ACCESSIBILITY=DEVICE_FIRST_UNLOCKED(1)；CONFLICT_RESOLUTION=OVERWRITE(0)；RETURN_TYPE=ALL(0)。
 #nullable enable
 using Microsoft.Maui.Storage;
-using HAsset = HarmonyOS.Bindings.Api.Asset;
+using HAsset = HarmonyOS.Bindings.Api.Security.Asset;
 using HarmonyOS.Bindings.Runtime;
 
 namespace HarmonyOS.Maui.Essentials;

@@ -126,7 +126,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createWantData
     /// </summary>
-    public static PasteData CreateWantData(global::HarmonyOS.Bindings.Api.WantObject want)
+    public static PasteData CreateWantData(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
     {
         return NodeApi.CallMethod(Module, _createWantData, static h => new PasteData(h), NapiArg.Of(want));
     }
@@ -174,7 +174,7 @@ public static unsafe partial class Pasteboard
     /// <summary>
     /// createWantRecord
     /// </summary>
-    public static PasteDataRecord CreateWantRecord(global::HarmonyOS.Bindings.Api.WantObject want)
+    public static PasteDataRecord CreateWantRecord(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
     {
         return NodeApi.CallMethod(Module, _createWantRecord, static h => new PasteDataRecord(h), NapiArg.Of(want));
     }
@@ -257,7 +257,7 @@ public sealed partial class PasteData : JsObject
     /// <summary>
     /// addWantRecord
     /// </summary>
-    public void AddWantRecord(global::HarmonyOS.Bindings.Api.WantObject want)
+    public void AddWantRecord(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
     {
         CallMethodVoid(_addWantRecord, NapiArg.Of(want));
     }
@@ -313,9 +313,9 @@ public sealed partial class PasteData : JsObject
     /// <summary>
     /// getPrimaryWant
     /// </summary>
-    public global::HarmonyOS.Bindings.Api.WantObject GetPrimaryWant()
+    public global::HarmonyOS.Bindings.Api.App.Ability.WantObject GetPrimaryWant()
     {
-        return CallMethod(_getPrimaryWant, static h => new global::HarmonyOS.Bindings.Api.WantObject(h));
+        return CallMethod(_getPrimaryWant, static h => new global::HarmonyOS.Bindings.Api.App.Ability.WantObject(h));
     }
 
     /// <summary>
@@ -491,7 +491,7 @@ public sealed partial class PasteDataRecord : JsObject
     /// <summary>
     /// want
     /// </summary>
-    public global::HarmonyOS.Bindings.Api.WantObject Want => new global::HarmonyOS.Bindings.Api.WantObject(GetPropertyRaw(_want));
+    public global::HarmonyOS.Bindings.Api.App.Ability.WantObject Want => new global::HarmonyOS.Bindings.Api.App.Ability.WantObject(GetPropertyRaw(_want));
 
     /// <summary>
     /// mimeType

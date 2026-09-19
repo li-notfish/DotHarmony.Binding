@@ -1,3 +1,10 @@
+using HarmonyOS.Bindings.Api.Ai;
+using HarmonyOS.Bindings.Api.Arkui;
+using HarmonyOS.Bindings.Api.Bluetooth;
+using HarmonyOS.Bindings.Api.Data;
+using HarmonyOS.Bindings.Api.File;
+using HarmonyOS.Bindings.Api.Multimedia;
+using HarmonyOS.Bindings.Api.Net;
 using HarmonyOS.Bindings.Api;
 using HarmonyOS.Bindings.Runtime;
 

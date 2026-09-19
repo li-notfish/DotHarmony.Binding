@@ -4,8 +4,8 @@
 // OpenAsync(OpenFileRequest) 的文件路径经 @ohos.file.fileuri.getUriFromPath 折算 file://。
 #nullable enable
 using Microsoft.Maui.ApplicationModel;
-using HBundleManager = HarmonyOS.Bindings.Api.BundleManager;
-using HFileuri = HarmonyOS.Bindings.Api.Fileuri;
+using HBundleManager = HarmonyOS.Bindings.Api.Bundle.BundleManager;
+using HFileuri = HarmonyOS.Bindings.Api.File.Fileuri;
 using HarmonyOS.Bindings.Runtime;
 
 namespace HarmonyOS.Maui.Essentials;

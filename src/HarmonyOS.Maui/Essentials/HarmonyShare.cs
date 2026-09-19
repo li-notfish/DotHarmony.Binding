@@ -3,6 +3,9 @@
 // @ohos.file.fs openSync(READ_ONLY) → fd → want { uri:'fd://fd', type:mime,
 // parameters:{'ability.params.stream':fd} }（OHOS 文件分享契约，接收方经 uri/params.stream 读 fd）。
 #nullable enable
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.ApplicationModel.DataTransfer;
 using HarmonyOS.Bindings.Runtime;
@@ -46,12 +49,14 @@ public class HarmonyShare : IShare
         }
         finally
         {
-            HarmonyOS.Bindings.Api.Fs.CloseSync(fd);
+            HarmonyOS.Bindings.Api.File.Fs.CloseSync(fd);
         }
     }
 
     public async Task RequestAsync(ShareMultipleFilesRequest request)
     {
+        if (request.Files.Count == 0)
+            throw new ArgumentException("ShareMultipleFilesRequest.Files is empty", nameof(request));
         // 多文件：fd 列表入 ability.params.stream（逗号分隔）+ uri 取首个；接收方按序读
         var fds = new List<int>();
         try
@@ -72,14 +77,14 @@ public class HarmonyShare : IShare
         finally
         {
             foreach (var fd in fds)
-                HarmonyOS.Bindings.Api.Fs.CloseSync(fd);
+                HarmonyOS.Bindings.Api.File.Fs.CloseSync(fd);
         }
     }
 
     /// <summary>file.fs openSync(READ_ONLY) → File.fd（fd 由调用方关闭）</summary>
     private static int OpenReadOnly(string fullPath)
     {
-        var fileObj = HarmonyOS.Bindings.Api.Fs.OpenSync(fullPath, HarmonyOS.Bindings.Api.Fs.ReadOnly);
+        var fileObj = HarmonyOS.Bindings.Api.File.Fs.OpenSync(fullPath, HarmonyOS.Bindings.Api.File.Fs.ReadOnly);
         if (fileObj == IntPtr.Zero)
             throw new FeatureNotSupportedException($"cannot open file for sharing: {fullPath}");
         var fd = NativeValue.ToInt(NodeApi.GetProperty(fileObj, "fd"));

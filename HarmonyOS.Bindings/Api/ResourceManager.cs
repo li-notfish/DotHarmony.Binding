@@ -811,25 +811,25 @@ public sealed partial class ResourceManagerObject : JsObject
     /// <summary>
     /// getDrawableDescriptor
     /// </summary>
-    public global::HarmonyOS.Bindings.Api.DrawableDescriptorObject GetDrawableDescriptor(double resId, double? density = null, double? type = null)
+    public global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject GetDrawableDescriptor(double resId, double? density = null, double? type = null)
     {
-        return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resId, NapiArg.Of(density), NapiArg.Of(type));
+        return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resId, NapiArg.Of(density), NapiArg.Of(type));
     }
 
     /// <summary>
     /// getDrawableDescriptorByName
     /// </summary>
-    public global::HarmonyOS.Bindings.Api.DrawableDescriptorObject GetDrawableDescriptorByName(string resName, double? density = null, double? type = null)
+    public global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject GetDrawableDescriptorByName(string resName, double? density = null, double? type = null)
     {
-        return CallMethod(_getDrawableDescriptorByName, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resName, NapiArg.Of(density), NapiArg.Of(type));
+        return CallMethod(_getDrawableDescriptorByName, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resName, NapiArg.Of(density), NapiArg.Of(type));
     }
 
     /// <summary>
     /// getDrawableDescriptor
     /// </summary>
-    public global::HarmonyOS.Bindings.Api.DrawableDescriptorObject GetDrawableDescriptor(IntPtr resource, double? density = null, double? type = null)
+    public global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject GetDrawableDescriptor(IntPtr resource, double? density = null, double? type = null)
     {
-        return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.DrawableDescriptorObject(h), resource, NapiArg.Of(density), NapiArg.Of(type));
+        return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resource, NapiArg.Of(density), NapiArg.Of(type));
     }
 
     /// <summary>

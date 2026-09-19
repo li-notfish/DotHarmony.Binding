@@ -14,11 +14,11 @@ using HarmonyOS.ArkUI;
 namespace HarmonyOS.Bindings.Api;
 
 /// <summary>
-/// WantAgent 绑定（@ohos.app.ability.wantAgent）。
+/// WantAgent 绑定（@ohos.wantAgent）。
 /// </summary>
 public static unsafe partial class WantAgent
 {
-    private const string ModuleName = "@ohos.app.ability.wantAgent";
+    private const string ModuleName = "@ohos.wantAgent";
 
     private static NapiReference? _moduleRef;
     private static bool _loadAttempted;
@@ -61,7 +61,7 @@ public static unsafe partial class WantAgent
                 throw new InvalidOperationException(
                     $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
 
-            HiLog.Info("HarmonyHost", $"[app.ability.wantAgent] module loaded via napi_load_module");
+            HiLog.Info("HarmonyHost", $"[wantAgent] module loaded via napi_load_module");
             return _moduleRef.Value;
         }
     }
@@ -72,7 +72,6 @@ public static unsafe partial class WantAgent
     private static ReadOnlySpan<byte> _trigger => "trigger"u8;
     private static ReadOnlySpan<byte> _equal => "equal"u8;
     private static ReadOnlySpan<byte> _getWantAgent => "getWantAgent"u8;
-    private static ReadOnlySpan<byte> _getOperationType => "getOperationType"u8;
 
     /// <summary>
     /// getBundleName
@@ -101,9 +100,9 @@ public static unsafe partial class WantAgent
     /// <summary>
     /// trigger
     /// </summary>
-    public static Task<IntPtr> TriggerAsync(IntPtr agent, IntPtr triggerInfo)
+    public static void Trigger(IntPtr agent, IntPtr triggerInfo, IntPtr? callback = null)
     {
-        return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _trigger, null, agent, triggerInfo);
+        NodeApi.CallMethodVoid(Module, _trigger, agent, triggerInfo, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -120,14 +119,6 @@ public static unsafe partial class WantAgent
     public static Task<IntPtr> GetWantAgentAsync(IntPtr info)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getWantAgent, info);
-    }
-
-    /// <summary>
-    /// getOperationType
-    /// </summary>
-    public static Task<double> GetOperationTypeAsync(IntPtr agent)
-    {
-        return NodeApi.CallMethodAsync<double>(Module, _getOperationType, agent);
     }
 
 }

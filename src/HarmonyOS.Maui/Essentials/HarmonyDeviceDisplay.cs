@@ -6,7 +6,7 @@
 #nullable enable
 using Microsoft.Maui.Devices;
 using HDisplay = HarmonyOS.Bindings.Api.Display;
-using HWindow = HarmonyOS.Bindings.Api.Window;
+using HWindow = HarmonyOS.Bindings.Api.Window.Window;
 using HarmonyOS.Bindings.Runtime;
 
 namespace HarmonyOS.Maui.Essentials;

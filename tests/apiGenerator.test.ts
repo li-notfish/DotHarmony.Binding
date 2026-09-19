@@ -225,7 +225,7 @@ describe('跨模块强类型解析（M2 残留：导入类型不再无条件 Int
     }
 
     test('返回位跨模块引用 → 完全限定包装类型 + 工厂（来源模块转正）', () => {
-        const { owner, importer } = generateTwo({
+        const { importer } = generateTwo({
             '@ohos.owner.d.ts': `
 declare namespace owner {
     interface DeviceInfoRec { name: string; mac: string; }
@@ -239,8 +239,10 @@ declare namespace importer {
 }
 `,
         });
+        // generateTwo 传入空解析表（来源模块未转正/灰度等价场景）→ 跨模块引用保守降级 IntPtr
+        expect(importer).toContain('public static Task<IntPtr> GetDeviceAsync()');
+        expect(importer).toContain('public static void SetDevice(IntPtr device)');
         // importer 侧手工传入解析表（模拟 index.ts 预计算：来源模块转正 → FQN）
-        // 上面的 generateTwo 未传 FQN——用第二个生成调用验证 FQN 映射
         const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ohos-xmod2-'));
         const parser = new ArkTsParser();
         const file = path.join(dir, '@ohos.importer2.d.ts');

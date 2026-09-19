@@ -3,9 +3,9 @@ using System;
 namespace HarmonyOS.ArkUI;
 
 /// <summary>
-/// WantAgentFlags 枚举
+/// WantAgentWantAgentFlags 枚举
 /// </summary>
-public enum WantAgentFlags
+public enum WantAgentWantAgentFlags
 {
     OneTimeFlag = 0,
     NoBuildFlag,
@@ -20,9 +20,9 @@ public enum WantAgentFlags
 }
 
 /// <summary>
-/// OperationType 枚举
+/// WantAgentOperationType 枚举
 /// </summary>
-public enum OperationType
+public enum WantAgentOperationType
 {
     UnknownType = 0,
     StartAbility,

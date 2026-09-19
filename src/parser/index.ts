@@ -6,7 +6,7 @@ import { AstParser } from './astParser';
 import { CodeGenerator } from './codeGenerator';
 import { EnumGenerator } from './enumGenerator';
 import { NativeCodeGenerator, EnumMetadata, NativeGap } from './nativeCodeGenerator';
-import { ApiGenerator, reservedModuleClassNames } from './apiGenerator';
+import { ApiGenerator, reservedModuleClassNames, moduleSubNamespace } from './apiGenerator';
 import { TypeMapper } from './typeMapper';
 import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo, ImportInfo } from './models';
 
@@ -748,52 +748,61 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
     const boundModules: { module: string; local: string; className: string }[] = [];
     const allPermissions = new Set<string>();
 
-    // className 唯一化：不同模块（@ohos.resourceManager vs @ohos.global.resourceManager）
-    // 末段同名时会互相覆盖产物文件。首个模块保留短名，后续撞名者加父段前缀
-    //（bluetooth.connection → BluetoothConnection）；无父段可用时追加序号。
-    const claimedClassNames = new Map<string, string>(); // className → module id
+    // className 唯一化：产物键 = 子命名空间 + 类名（命名空间已按模块路径中间段分组）。
+    // 跨子命名空间同名不再碰撞（bluetooth.connection → ns Bluetooth 下就叫 Connection）；
+    // 同一子命名空间内撞名（归一化后同路径，极罕见）追加序号避让。
+    const claimedClassNames = new Map<string, string>(); // 命名空间限定类名 → module id
+    // 父路径集：被其他模块扩展的模块路径。父模块的类名会与子模块创建的子命名空间同名
+    // （@ohos.accessibility 类 Accessibility vs @ohos.accessibility.GesturePath 的 ns …Api.Accessibility，
+    // C# 禁止类型与命名空间在父级同名 CS0101）——父模块下沉到自己的完整路径命名空间，
+    // 与子模块同文件夹同命名空间（类名不同，无碰撞）
+    const parentPaths = new Set<string>();
+    for (const f of apiFiles) {
+        const local = ApiGenerator.dtsToModuleInfo(f).local;
+        const segs = local.split('.');
+        for (let i = 1; i < segs.length; i++) parentPaths.add(segs.slice(0, i).join('.'));
+    }
+    const subWithChildren = (local: string) => {
+        const segs = local.split('.');
+        if (parentPaths.has(local))
+            return segs.map(seg => seg.charAt(0).toUpperCase() + seg.slice(1)).join('.');
+        return moduleSubNamespace(local);
+    };
     // 预计算全部模块（唯一化后）类名，供实例类型撞名判定（如 Want/WantObject）
-    const preInfos = apiFiles.map(f => ApiGenerator.dtsToModuleInfo(f));
+    const preInfos = apiFiles.map(f => {
+        const info = ApiGenerator.dtsToModuleInfo(f);
+        return { ...info, subNamespace: subWithChildren(info.local) };
+    });
+    const qualifiedClassName = (info: { subNamespace: string; className: string }) =>
+        `${info.subNamespace}.${info.className}`;
     {
         const seen = new Map<string, string>();
         for (let i = 0; i < preInfos.length; i++) {
             const info = preInfos[i];
-            if (!seen.has(info.className)) {
-                seen.set(info.className, info.module);
+            const key = qualifiedClassName(info);
+            if (!seen.has(key)) {
+                seen.set(key, info.module);
                 continue;
             }
-            const segs = info.local.split('.');
-            let candidate: string;
-            if (segs.length >= 2) {
-                candidate = segs.slice(0, -1).map(seg => seg.charAt(0).toUpperCase() + seg.slice(1)).join('')
-                    + info.className;
-            } else {
-                let n = 2;
-                candidate = `${info.className}${n}`;
-                while (seen.has(candidate)) candidate = `${info.className}${++n}`;
-            }
-            seen.set(candidate, info.module);
+            let n = 2;
+            let candidate = `${info.className}${n}`;
+            while (seen.has(qualifiedClassName({ ...info, className: candidate }))) candidate = `${info.className}${++n}`;
+            seen.set(qualifiedClassName({ ...info, className: candidate }), info.module);
             preInfos[i] = { ...info, className: candidate };
         }
         reservedModuleClassNames.clear();
-        for (const cn of seen.keys()) reservedModuleClassNames.add(cn);
+        for (const info of preInfos) reservedModuleClassNames.add(info.className);
     }
-    const uniqueModuleInfo = (info: { module: string; className: string; local: string }) => {
-        if (!claimedClassNames.has(info.className)) {
-            claimedClassNames.set(info.className, info.module);
+    const uniqueModuleInfo = (info: { module: string; className: string; local: string; subNamespace: string }) => {
+        const key = qualifiedClassName(info);
+        if (!claimedClassNames.has(key)) {
+            claimedClassNames.set(key, info.module);
             return info;
         }
-        const segs = info.local.split('.');
-        let candidate: string;
-        if (segs.length >= 2) {
-            candidate = segs.slice(0, -1).map(seg => seg.charAt(0).toUpperCase() + seg.slice(1)).join('')
-                + info.className;
-        } else {
-            let i = 2;
-            candidate = `${info.className}${i}`;
-            while (claimedClassNames.has(candidate)) candidate = `${info.className}${++i}`;
-        }
-        claimedClassNames.set(candidate, info.module);
+        let i = 2;
+        let candidate = `${info.className}${i}`;
+        while (claimedClassNames.has(qualifiedClassName({ ...info, className: candidate }))) candidate = `${info.className}${++i}`;
+        claimedClassNames.set(qualifiedClassName({ ...info, className: candidate }), info.module);
         return { ...info, className: candidate };
     };
 
@@ -805,7 +814,7 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
     // 3) 跨模块 demand（输入位/返回位）→ 本体 record 钉住 / 强制 wrapper / 强制发射
     type ParsedModule = {
         file: string;
-        moduleInfo: { module: string; className: string; local: string };
+        moduleInfo: { module: string; className: string; local: string; subNamespace: string };
         component: ComponentInfo;
         enums: EnumInfo[];
         imports: ImportInfo[];
@@ -813,8 +822,10 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
         finalAllEnums: EnumInfo[];
     };
     const parsedModules: ParsedModule[] = [];
-    for (const file of apiFiles) {
-        const moduleInfo = uniqueModuleInfo(ApiGenerator.dtsToModuleInfo(file));
+    for (let fileIdx = 0; fileIdx < apiFiles.length; fileIdx++) {
+        const file = apiFiles[fileIdx];
+        // 复用 preInfos（已带父路径下沉的 subNamespace + 唯一化后类名）——重调 dtsToModuleInfo 会丢失下沉
+        const moduleInfo = uniqueModuleInfo(preInfos[fileIdx]);
         try {
             const source = fs.readFileSync(path.join(apiDir, file), 'utf-8');
             const result = parser.parseFile(path.join(apiDir, file));
@@ -860,7 +871,9 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
             let name = e.name;
             if (ARKUI_RESERVED_NAMES.has(name)
                 || (writtenEnumNames.has(name) && writtenEnumNames.get(name) !== pm.moduleInfo.module)) {
-                name = `${pm.moduleInfo.className}${name}`;
+                // 前缀 = 子命名空间段 + 类名（模块路径唯一）——裸 className 在命名空间分组后
+                // 不再唯一（hiAppEvent 与 hiviewdfx.hiAppEvent 同为 HiAppEvent，同名改名即 CS0101）
+                name = `${pm.moduleInfo.subNamespace.replace(/\./g, '')}${pm.moduleInfo.className}${name}`;
                 (e as any).originalName = e.name;
             }
             return { ...e, name };
@@ -950,77 +963,108 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
         return strs;
     };
 
-    // 每个导入方的类型解析表：tsName → 完全限定 C# 名（来源模块转正）或 'IntPtr'（保守降级）。
-    // 显式覆盖全部非自有导入名（与旧"无条件 IntPtr"行为一致），来源未知的导入同样降级
-    const crossMaps = new Map<string, Map<string, string>>();
-    for (const pm of parsedModules) {
-        const map = new Map<string, string>();
-        crossMaps.set(pm.moduleInfo.module, map);
-        const retJoined = returnTypeStrings(pm.component).join(' ');
-        const isReturnPosition = (name: string) => new RegExp(`\\b${name}\\b`).test(retJoined);
-        for (const imp of pm.imports) {
-            const src = imp.module.replace(/^\.\//, '');
-            if (src === pm.moduleInfo.module) continue;
-            const ownerTypes = moduleTypes.get(src);
-            const ownerEnums = moduleEnumTypes.get(src);
-            const ownerClassName = parsedModules.find(x => x.moduleInfo.module === src)?.moduleInfo.className ?? '';
-            const ownerPromoted = ownerClassName !== '' && !GRAYSCALE_MODULES.has(ownerClassName);
-            for (const name of imp.imports) {
-                const t = ownerTypes?.get(name);
-                if (t && ownerPromoted) {
-                    map.set(name, `global::HarmonyOS.Bindings.Api.${t.csharpName}`);
-                    demandFor(isReturnPosition(name) ? demandReturn : demandInput, src).add(name);
-                } else if (ownerEnums?.has(name) && ownerPromoted) {
-                    map.set(name, ownerEnums.get(name)!);
+    // 跨模块解析 + 生成按"追加灰度集合"可整轮重跑（幂等：文件覆盖重写）——
+    // 生成期单模块失败时其产物缺失，引用方若已按 FQN 强类型生成会整树 CS0246；
+    // 首轮失败模块追加灰度（导入方回退 IntPtr）后全量重跑一轮，把失败影响收敛回局部。
+    const computeCrossMaps = (gray: ReadonlySet<string>) => {
+        const demandInput = new Map<string, Set<string>>();
+        const demandReturn = new Map<string, Set<string>>();
+        // 每个导入方的类型解析表：tsName → 完全限定 C# 名（来源模块转正）或 'IntPtr'（保守降级）。
+        // 显式覆盖全部非自有导入名（与旧"无条件 IntPtr"行为一致），来源未知的导入同样降级
+        const crossMaps = new Map<string, Map<string, string>>();
+        for (const pm of parsedModules) {
+            const map = new Map<string, string>();
+            crossMaps.set(pm.moduleInfo.module, map);
+            const retJoined = returnTypeStrings(pm.component).join(' ');
+            const isReturnPosition = (name: string) => new RegExp(`\\b${name}\\b`).test(retJoined);
+            for (const imp of pm.imports) {
+                const src = imp.module.replace(/^\.\//, '');
+                if (src === pm.moduleInfo.module) continue;
+                const ownerTypes = moduleTypes.get(src);
+                const ownerEnums = moduleEnumTypes.get(src);
+                const ownerInfo = parsedModules.find(x => x.moduleInfo.module === src)?.moduleInfo;
+                const ownerClassName = ownerInfo?.className ?? '';
+                const ownerPromoted = ownerClassName !== '' && !gray.has(ownerClassName);
+                for (const name of imp.imports) {
+                    const t = ownerTypes?.get(name);
+                    if (t && ownerPromoted) {
+                        // 源模块类型 FQN：命名空间按源模块子段分组（Api.Bluetooth.A2dp 形态）
+                        const ownerSub = ownerInfo?.subNamespace ?? '';
+                        map.set(name, `global::HarmonyOS.Bindings.Api${ownerSub ? '.' + ownerSub : ''}.${t.csharpName}`);
+                        demandFor(isReturnPosition(name) ? demandReturn : demandInput, src).add(name);
+                    } else if (ownerEnums?.has(name) && ownerPromoted) {
+                        map.set(name, ownerEnums.get(name)!);
+                    } else {
+                        map.set(name, 'IntPtr');
+                    }
+                }
+            }
+        }
+        return { crossMaps, demandInput, demandReturn };
+    };
+
+    const generateAll = (gray: ReadonlySet<string>): Set<string> => {
+        const failed = new Set<string>();
+        const { crossMaps, demandInput, demandReturn } = computeCrossMaps(gray);
+        for (const pm of parsedModules) {
+            const source = fs.readFileSync(path.join(apiDir, pm.file), 'utf-8');
+            const permissions = ApiGenerator.extractPermissions(source);
+            permissions.forEach(p => allPermissions.add(p));
+
+            try {
+                const gen = apiGen.generate(
+                    pm.component,
+                    pm.moduleInfo,
+                    permissions,
+                    pm.finalNewEnums,
+                    pm.finalAllEnums,
+                    {
+                        imports: crossMaps.get(pm.moduleInfo.module) ?? new Map(),
+                        demandedTs: new Set([
+                            ...(demandInput.get(pm.moduleInfo.module) ?? []),
+                            ...(demandReturn.get(pm.moduleInfo.module) ?? []),
+                        ]),
+                        returnDemandTs: demandReturn.get(pm.moduleInfo.module) ?? new Set(),
+                        enumFinalNames: allEnumFinalNames,
+                    }
+                );
+
+                // 目录化（命名空间分组）：产物落 Api/<sub 段路径>/X.cs，子目录按需创建
+                const subDir = moduleSubDir(pm.moduleInfo);
+                const outBase = path.join(apiOutputDir, subDir);
+                fs.mkdirSync(outBase, { recursive: true });
+
+                const csPath = path.join(outBase, `${gen.className}.cs`);
+                fs.writeFileSync(csPath, gen.csharp);
+                console.log(`  Generated: ${subDir ? subDir + '/' : ''}${gen.className}.cs (${gen.permissions.length} perms)`);
+                apiSuccess++;
+
+                if (gen.enums) {
+                    const enumCsPath = path.join(outBase, `${gen.className}.Enums.cs`);
+                    fs.writeFileSync(enumCsPath, gen.enums);
                 } else {
-                    map.set(name, 'IntPtr');
+                    // 枚举本轮全部去重/过滤时，删除上一轮残留的 Enums.cs（否则 CS0101）
+                    const enumCsPath = path.join(outBase, `${gen.className}.Enums.cs`);
+                    if (fs.existsSync(enumCsPath)) fs.unlinkSync(enumCsPath);
                 }
+
+                boundModules.push({ module: pm.moduleInfo.module, local: pm.moduleInfo.local, className: pm.moduleInfo.className });
+            } catch (e: any) {
+                console.error(`  Error: ${pm.file} - ${e.message}`);
+                failed.add(pm.moduleInfo.className);
+                apiSkipped++;
             }
         }
-    }
+        return failed;
+    };
 
-    for (const pm of parsedModules) {
-        const source = fs.readFileSync(path.join(apiDir, pm.file), 'utf-8');
-        const permissions = ApiGenerator.extractPermissions(source);
-        permissions.forEach(p => allPermissions.add(p));
-
-        try {
-            const gen = apiGen.generate(
-                pm.component,
-                pm.moduleInfo,
-                permissions,
-                pm.finalNewEnums,
-                pm.finalAllEnums,
-                {
-                    imports: crossMaps.get(pm.moduleInfo.module) ?? new Map(),
-                    demandedTs: new Set([
-                        ...(demandInput.get(pm.moduleInfo.module) ?? []),
-                        ...(demandReturn.get(pm.moduleInfo.module) ?? []),
-                    ]),
-                    returnDemandTs: demandReturn.get(pm.moduleInfo.module) ?? new Set(),
-                    enumFinalNames: allEnumFinalNames,
-                }
-            );
-
-            const csPath = path.join(apiOutputDir, `${gen.className}.cs`);
-            fs.writeFileSync(csPath, gen.csharp);
-            console.log(`  Generated: ${gen.className}.cs (${gen.permissions.length} perms)`);
-            apiSuccess++;
-
-            if (gen.enums) {
-                const enumCsPath = path.join(apiOutputDir, `${gen.className}.Enums.cs`);
-                fs.writeFileSync(enumCsPath, gen.enums);
-            } else {
-                // 枚举本轮全部去重/过滤时，删除上一轮残留的 Enums.cs（否则 CS0101）
-                const enumCsPath = path.join(apiOutputDir, `${gen.className}.Enums.cs`);
-                if (fs.existsSync(enumCsPath)) fs.unlinkSync(enumCsPath);
-            }
-
-            boundModules.push({ module: pm.moduleInfo.module, local: pm.moduleInfo.local, className: pm.moduleInfo.className });
-        } catch (e: any) {
-            console.error(`  Error: ${pm.file} - ${e.message}`);
-            apiSkipped++;
-        }
+    let failedModules = generateAll(GRAYSCALE_MODULES);
+    if (failedModules.size > 0) {
+        console.warn(`  ${failedModules.size} module(s) failed; re-running with failed modules degraded to IntPtr: ${[...failedModules].join(', ')}`);
+        boundModules.length = 0;
+        failedModules = generateAll(new Set([...GRAYSCALE_MODULES, ...failedModules]));
+        if (failedModules.size > 0)
+            console.error(`  Still failing after degradation pass: ${[...failedModules].join(', ')}`);
     }
 
     // 写 ohosImports.ets
@@ -1252,6 +1296,19 @@ function writeGrayscaleCompileRemove(modules: { module: string; className: strin
         ? classNames.filter(n => GRAYSCALE_MODULES.has(n))
         : classNames.filter(n => !APPROVED_MODULES.has(n));
 
+    // 全量转正（pending 空）不再维护灰度块：csproj 保持无块状态；
+    // 历史遗留块（旧运行追加的）此时清除而非原地重写
+    if (pending.length === 0) {
+        if (content.includes('灰度策略')) {
+            content = content.replace(/\r?\n?  <!-- 灰度策略[\s\S]*?<\/ItemGroup>\r?\n/, '\n');
+            fs.writeFileSync(csprojPath, content);
+            console.log('  HarmonyOS.Bindings.csproj: 全量转正，清除遗留灰度块');
+        } else {
+            console.log(`  HarmonyOS.Bindings.csproj: ${classNames.length}/${classNames.length} approved, 无灰度块需要维护`);
+        }
+        return;
+    }
+
     const removeItems = pending
         .map(n => `    <Compile Remove="Api\\${n}.cs" />`)
         .join('\n');
@@ -1307,27 +1364,9 @@ function writeOhosImports(modules: { module: string; local: string }[]): void {
     console.log(`  ohosImports.ets updated: ${modules.length} modules -> ${outPath}`);
 }
 
-function convertApiFileName(dtsFileName: string): string {
-    // @ohos.ability.ability.d.ts → Ability.Ability.cs
-    // @ohos.animator.d.ts → Animator.cs
-    // @ohos.arkui.dragController.d.ts → Arkui.DragController.cs
-    let name = dtsFileName.replace('.d.ts', '');
-    
-    // 去掉 @ohos. 前缀
-    if (name.startsWith('@ohos.')) {
-        name = name.substring(6); // 去掉 "@ohos." (6个字符)
-    } else if (name.startsWith('@')) {
-        name = name.substring(1);
-    }
-    
-    // 按 . 分割并转换每一段
-    const parts = name.split('.');
-    const converted = parts.map(part => {
-        // 首字母大写，其余小写
-        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
-    });
-    
-    return converted.join('.') + '.cs';
+function moduleSubDir(info: { subNamespace: string }): string {
+    // 产物子目录 = 命名空间子段（与 moduleSubNamespace 同源）：Bluetooth / Multimedia/Camera；顶层模块为空
+    return info.subNamespace.replace(/\./g, '/');
 }
 
 if (require.main === module) {

@@ -358,12 +358,14 @@ export class TypeMapper {
 
     static addMapping(typescript: string, csharp: string, isNative: boolean = false): void {
         this.TYPE_MAP[typescript] = { typescript, csharp, isNative };
+        this.reverseIndex = null;
     }
 
     /** 仅当尚无映射时登记（首登记者优先）：用于导入类型 IntPtr 回退，不覆盖全局字面量别名扫描的 string 映射 */
     static addMappingIfAbsent(typescript: string, csharp: string, isNative: boolean = false): void {
         if (this.TYPE_MAP[typescript] !== undefined) return;
         this.TYPE_MAP[typescript] = { typescript, csharp, isNative };
+        this.reverseIndex = null;
     }
 
     /** 字面量联合别名（Permissions 等）——导入回退须为其保留 string 映射，但仅限此名单 */
@@ -372,6 +374,7 @@ export class TypeMapper {
     static registerStringLiteralAlias(typescript: string): void {
         this.TYPE_MAP[typescript] = { typescript, csharp: 'string', isNative: false };
         this.stringLiteralAliases.add(typescript);
+        this.reverseIndex = null;
     }
 
     static isStringLiteralAlias(typescript: string): boolean {
@@ -381,6 +384,7 @@ export class TypeMapper {
     /** 移除映射（record 可封送性收敛时调用，移除后类型退回 IntPtr 句柄） */
     static removeMapping(typescript: string): void {
         delete this.TYPE_MAP[typescript];
+        this.reverseIndex = null;
     }
 
     /** 读取映射（apiGenerator 改名枚举的原始名临时映射需要保存/恢复） */
@@ -388,13 +392,22 @@ export class TypeMapper {
         return this.TYPE_MAP[typescript];
     }
 
+    /** 反向索引（csharp → tsName[]），懒构建，映射写操作即失效——
+     *  泄漏映射收敛对每条 unknown id 调 findSources，全表扫描 O(N)×(5 轮×id 数) 实测占生成期可观比例 */
+    private static reverseIndex: Map<string, string[]> | null = null;
+
     /** 反查映射到指定 C# 名的全部源 TS 名（泄漏映射验证降级源名——降映射结果名对 mapType 无效） */
     static findSources(csharp: string): string[] {
-        const sources: string[] = [];
-        for (const key of Object.keys(this.TYPE_MAP)) {
-            if (this.TYPE_MAP[key].csharp === csharp) sources.push(key);
+        if (this.reverseIndex === null) {
+            this.reverseIndex = new Map();
+            for (const key of Object.keys(this.TYPE_MAP)) {
+                const target = this.TYPE_MAP[key].csharp;
+                const list = this.reverseIndex.get(target);
+                if (list) list.push(key);
+                else this.reverseIndex.set(target, [key]);
+            }
         }
-        return sources;
+        return this.reverseIndex.get(csharp) ?? [];
     }
 
     static extractBaseType(typeWithUnion: string): string {

@@ -115,7 +115,7 @@ public sealed partial class InputMethodExtensionContextObject : JsObject
     /// <summary>
     /// startAbility
     /// </summary>
-    public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.WantObject want)
+    public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
     {
         return CallMethodAsyncVoid(_startAbility, NapiArg.Of(want));
     }

@@ -2,7 +2,7 @@
 // @ohos.telephony.sim.getSimStateSync（卡槽 0；无 SIM/未知 = 不支持，模拟器实测 NotPresent）。
 #nullable enable
 using Microsoft.Maui.ApplicationModel.Communication;
-using HSim = HarmonyOS.Bindings.Api.Sim;
+using HSim = HarmonyOS.Bindings.Api.Telephony.Sim;
 using HSimState = HarmonyOS.ArkUI.SimState;
 
 namespace HarmonyOS.Maui.Essentials;
