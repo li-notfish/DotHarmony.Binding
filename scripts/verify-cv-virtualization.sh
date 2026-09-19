@@ -30,7 +30,7 @@ cvitems() { # 只统计 条目 N 文本，输出条数 + 最小/最大索引
 import sys,re
 idx=[]
 for line in sys.stdin:
-    m=re.search(r'\xe6\x9d\xa1\xe7\x9b\xae (\d+)',line)
+    m=re.search(r'条目 (\d+)',line)
     if m: idx.append(int(m.group(1)))
 print('count=%d min=%d max=%d'%(len(idx),min(idx) if idx else -1,max(idx) if idx else -1))"
 }

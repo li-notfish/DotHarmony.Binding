@@ -13,4 +13,5 @@ src
 samples
 scripts
 Directory.Build.props
+Directory.Packages.props
 ArkTsBinding.slnx
