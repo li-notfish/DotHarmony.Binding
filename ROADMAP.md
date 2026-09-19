@@ -331,6 +331,16 @@ VIBRATE 为 system_grant，宿主模板 module.json5 已声明。**本批按用�
 
 ## M3 —— 工程化（远期）
 
+- **装配分层对齐（✅ 2026-09-20 完成，7 批提交）**：对照 dotnet/android（D:\Harmony\maui.android 参考库）——
+  `HarmonyOS.Interop`（napi 互操作核心独立装，对齐 Java.Interop；HiLog 归此层，留 Bindings 会反向依赖）/
+  `HarmonyOS.Bindings`（绑定 + ArkUI 节点，对齐 Mono.Android 的 Android.Runtime 同装模式）/
+  `HarmonyOS.Essentials` 独立装（对齐 Microsoft.Maui.Essentials；FunnelDisciplineTests 扫描面扩到 Maui+Essentials 双目录）/
+  全产品收编 `src/` + 生成器迁 `tools/api-generator` + TFM 集中 `$(HarmonyOSTargetFramework)` + CPM（Directory.Packages.props）。
+  附带修复：生成器 EBUSY 级联误删（Windows 瞬态锁文件 → 写失败模块不进 written 集合 → 孤儿清理误删已提交产物，
+  逐轮级联 38→87 个；写重试 4 次退避 + 本轮失败禁孤儿清理）、build-files.txt 补 CPM 清单（WSL 侧 NU1602 回退 MAUI 8.0.3）。
+  验证：10 工程 0 错误、dotnet 83+14、jest 79/79、双 App WSL NativeAOT 全链、模拟器冒烟全套（accel/compass/geo/
+  Carousel/drag&drop/CV 虚拟化 7→11→15/Shape 截图）。
+
 - **NDK 头文件生成器（native API 绑定自动化）**：解析 ArkUI NDK C 头文件（native_node.h / native_gesture.h / native_animate.h / native_type.h 等），自动生成函数表镜像、枚举、结构体与 P/Invoke 声明，替换 `ArkUIGestureApi.cs` / `ArkUIAnimateApi.cs` / 事件/属性枚举等全部手工维护的原生层代码。要点与难点：
   - C 解析需 libclang（或等价 C 前端），不能用正则——现有 `extract_arkui_types.py` 只抽枚举，函数表/结构体均为手写镜像
   - 语义修正规则须沉淀为声明式配置（生成器不猜）：C bool 在 unmanaged 函数指针中按 1 字节显式 `byte`；头文件注释单位不可信（`GetX` 标注 px 实测为 vp 的笔误）需人工勘误表覆盖；`version` 字段为首成员的函数表布局约定

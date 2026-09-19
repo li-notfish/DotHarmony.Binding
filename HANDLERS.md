@@ -18,7 +18,7 @@ src/HarmonyOS.Maui/Handlers/*  ──────►  src/HarmonyOS.Bindings/Nod
 
 @ohos.* 系统模块（deviceInfo 等，与 UI 无关的服务 API）
       ▼
-src/HarmonyOS.Bindings/Api/*  ──napi──►  libace_napi.z.so（napi_load_module / call_function）
+src/HarmonyOS.Bindings/Api/*  ──napi（经 HarmonyOS.Interop）──►  libace_napi.z.so（napi_load_module / call_function）
 ```
 
 | 层 | 目录 | 职责 | 什么时候改 |
@@ -28,7 +28,7 @@ src/HarmonyOS.Bindings/Api/*  ──napi──►  libace_napi.z.so（napi_load_
 | API 层 | `src/HarmonyOS.Bindings/Api/` | `@ohos.*` 模块绑定（napi 通道） | 绑定系统服务 API 时 |
 | 宿主 | `samples/HarmonyHost/` | ArkTS 壳（ContentSlot 挂载 + ohosImports.ets 模块登记） | 新增 `@ohos.*` 模块绑定时同步登记 |
 
-**漏斗纪律（P0，机械闸强制）**：Handler/Hosting 层只允许经包装类型触碰 ArkUI——节点包装类、
+**漏斗纪律（P0，机械闸强制）**：Handler/Hosting/Essentials 层（拆装后 FunnelDisciplineTests 扫双目录）只允许经包装类型触碰 ArkUI——节点包装类、
 `ArkUINodeEvent`/`ArkUIPointerEvent` 载荷包装、手势包装类、事件枚举。禁止直连原生函数表类
 （`ArkUINativeApi`/`ArkUIGestureApi`/`ArkUIAnimateApi`）、napi P/Invoke（`NativeNodeApi`/`OH_ArkUI_*`/
 `napi_*`）、原始事件/属性结构体（`GetNodeComponentEvent`/`ArkUI_AttributeItem`）与自行

@@ -3,8 +3,8 @@
 一个**模仿 .NET MAUI 平台绑定层逻辑**（Mono.Android / Microsoft.iOS 的思路）的鸿蒙试验项目：
 用 .NET (NativeAOT) 绑定 HarmonyOS (ArkUI/ArkTS)，并让 .NET MAUI 控件经 Handler 机制渲染为 ArkUI 原生节点。
 
-**当前状态：M1（MAUI 基本面）与 M2（服务层）均已完成并在模拟器端到端验证** —— XAML 声明式 UI → 鸿蒙原生渲染、
-22 个 MAUI 控件 Handler、手势识别（Tap/Pan/Pinch/Swipe/Pointer → ArkUI 原生手势 NDK）、**438 个 @ohos.\* 模块绑定（375 转正编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）**。
+**当前状态：M1（MAUI 基本面）与 M2（服务层）完成、装配分层已对齐 dotnet/android 标准（2026-09-20），模拟器端到端验证** —— XAML 声明式 UI → 鸿蒙原生渲染、
+22 个 MAUI 控件 Handler（CollectionView 虚拟化）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、**438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）**。
 距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 **上手**：从零创建鸿蒙 MAUI 应用 / 给已有 MAUI 应用加鸿蒙平台，见 **[GETTING_STARTED.md](GETTING_STARTED.md)**。
@@ -18,7 +18,9 @@
 
 | 官方生态 | 本项目 |
 |---|---|
-| Mono.Android（Java API 绑定） | `HarmonyOS.Bindings`（ArkUI C API / napi 绑定，生成器产出） |
+| Java.Interop（通用 JNI 互操作核心） | `HarmonyOS.Interop`（napi 互操作核心独立装：env/封送/回调/TSFN/hilog） |
+| Mono.Android（Java API 绑定 + Android.Runtime 胶水） | `HarmonyOS.Bindings`（ArkUI C API 节点 + @ohos.* 绑定，生成器产出） |
+| Microsoft.Maui.Essentials | `HarmonyOS.Essentials`（MAUI Essentials 鸿蒙实现独立装，16 服务） |
 | 各平台 Handler（Android/iOS/...） | `HarmonyOS.Maui`（MAUI 控件 → ArkUI 原生节点，不 fork dotnet/maui） |
 | Android/iOS head 工程 | `HarmonyHost`（ArkTS 宿主 + C shim 模板；targets 按应用生成实例） |
 | workload / msbuild 集成 | `scripts/`（远程 NativeAOT + hvigor + hdc 一键脚本）
@@ -170,8 +172,8 @@ tests/                       jest（解析器/生成器 76 用例）
 - **导航**：根页用 `new NavigationPage(...)` 即可走 MAUI 标准 `Navigation.PushAsync/PopAsync`（HarmonyNavigationPageHandler 转接 IStackNavigation 协议，已实测）；另有轻量 Page 栈与系统返回键（优先级：模态 → NavigationPage 内栈 → 轻量栈）。**模态** `PushModalAsync/PopModalAsync` 标准可用（ArkStack 覆盖 + RootNavigationAdapter 转接）；**生命周期** Appearing/Disappearing 已透传（宿主建最小 Window/Application 逻辑链放行 MAUI 的 SendAppearing 守卫）；页面推入有 250ms 淡入、返回/模态关闭有 250ms 淡出（animateTo，完成后才摘除释放旧页）；NavigationPage 自带标题栏（返回键 + 页 Title，`HasNavigationBar=false` 隐藏）。未支持：Shell（多平台 Shell 应用请把入口改写为 NavigationPage 结构）
 - **异步 API（M2 完成）**：`Promise<T>`→`Task<T>`；仅 callback 形式 API→`Task<T>`（CallbackTaskBridge，err-first）；`.NET event` 事件模型（真实触发已实测）；TSFN 生命周期三路径封装 + finalize 延迟释放防 UAF。**续体在 JS 线程内联恢复**（`NapiEnv` 线程亲和性），长耗时工作需自行 `Task.Run`
 - **零分配调用路径**：`params ReadOnlySpan<object?>`（C# 13）、trampoline/argv 栈分配、生成 record 的 u8 名字常量缓存、`SetNumericAttribute(params ReadOnlySpan<...>)`（C# 14 first-class span conversions，属性写热路径）、HiLog 格式串 u8 缓存 + 运行时开关；剩余分配源：基元装箱（object 转换点）、字符串结果物化、事件适配器闭包
-- **控件覆盖**：22 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/BoxView/RefreshView/Picker/DatePicker/TimePicker + CollectionView/CarouselView M1 物化版），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
-- **手势识别**：TapGestureRecognizer/PanGestureRecognizer/PinchGestureRecognizer/SwipeGestureRecognizer/PointerGestureRecognizer 全支持（`HarmonyViewHandler` 基类统一挂载；Tap/Pinch 走 NDK 原生手势，Pan/Swipe/Pointer 走触摸流——pan 原生手势事件数据不可靠，实测沉淀；Tap/Pointer 经 AOT 安全的反射桥触发 internal SendTapped/SendPointer*）；PanUpdated 单位 vp（等价 iOS points）；未支持：Drag/Drop 识别器、鼠标 ButtonsMask 区分、hover 通道、Pinch 真机多点触控专项
+- **控件覆盖**：22 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/BoxView/RefreshView/Picker/DatePicker/TimePicker + CollectionView（NodeAdapter 虚拟化）/CarouselView），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
+- **手势识别**：TapGestureRecognizer/PanGestureRecognizer/PinchGestureRecognizer/SwipeGestureRecognizer/PointerGestureRecognizer 全支持（`HarmonyViewHandler` 基类统一挂载；Tap/Pinch 走 NDK 原生手势，Pan/Swipe/Pointer 走触摸流——pan 原生手势事件数据不可靠，实测沉淀；Tap/Pointer 经 AOT 安全的反射桥触发 internal SendTapped/SendPointer*）；Drag/Drop 识别器（长按起拖 + UDMF 载荷，DRAG_END 销毁）已支持；PanUpdated 单位 vp（等价 iOS points）；未支持：鼠标 ButtonsMask 区分、hover 通道、Pinch 真机多点触控专项
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
 - **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；63 个含复杂缺口（TS 声明合并/深导入链）的模块保持灰度（`GRAYSCALE_MODULES`），清单见 `tools/api-generator/index.ts`
@@ -182,7 +184,7 @@ tests/                       jest（解析器/生成器 76 用例）
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
 - M1 尾巴（完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~、~~Grid/AbsoluteLayout（MAUI 托管布局）~~、~~布局遗留修复（Grid 对齐/ZIndex/Auto 重排）+ 返回动画 + NavigationPage 标题栏 + .NET 10 / C# 14 优化批次~~；剩真机验证
 - M2 全部完成（**Essentials 16 服务全量**：DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage/MainThread）：~~TSFN 异步层~~、~~codeGenerator 修复~~、~~@ohos.* 全量生成（438 模块/375 转正）~~、~~Promise→Task/AsyncCallback/.NET 事件/ArrayBuffer/Map~~、~~端到端模拟器验证~~、~~零分配调用路径~~、~~2.4 Essentials 首批（含剪贴板 user_grant 授权闭环 + Preferences 跨重启持久化 + Battery commonEvent 事件 + Vibration + Connectivity/KeepScreenOn/MainThread，2026-09-13）~~
-- M3：NuGet 打包、单项目体验、CI
+- M3：NuGet 打包、单项目体验、CI；~~装配分层对齐（Interop/Essentials 独立成装 + src/ 收编 + TFM/CPM 集中，2026-09-20）~~
 
 ## 致谢 / Acknowledgements
 
