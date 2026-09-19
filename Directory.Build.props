@@ -1,6 +1,6 @@
 <!--
-  Directory.Build.props：全仓公共属性收敛（此前 LangVersion/常量在 4 个 csproj 重复）。
-  注意：ImplicitUsings 保持各工程自设（HarmonyOS.Bindings 关闭以保留显式 using 风格，其余开启）。
+  Directory.Build.props：全仓公共属性收敛（LangVersion/常量/TFM）。
+  注意：ImplicitUsings 保持各工程自设（HarmonyOS.Bindings/Interop 关闭以保留显式 using 风格，其余开启）。
 -->
 <Project>
 
@@ -9,6 +9,8 @@
          null-conditional assignment、field 关键字等在 Binding/Handler 层均有落地 -->
     <LangVersion>preview</LangVersion>
     <DefineConstants>$(DefineConstants);HARMONYOS</DefineConstants>
+    <!-- 全产品/样本/测试统一 TFM（对齐 dotnet/android 根 props 集中 TFM 的模式） -->
+    <HarmonyOSTargetFramework>net10.0</HarmonyOSTargetFramework>
   </PropertyGroup>
 
 </Project>

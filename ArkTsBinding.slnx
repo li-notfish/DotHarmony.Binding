@@ -4,6 +4,7 @@
     <Project Path="samples/dotnet/HelloApp/HelloApp.csproj" />
     <Project Path="samples/dotnet/ApiDemo/ApiDemo.csproj" />
     <Project Path="samples/dotnet/EngineLab/EngineLab.csproj" />
+    <Project Path="samples/dotnet/EssentialsApp/EssentialsApp.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/HarmonyOS.Interop/HarmonyOS.Interop.csproj" />

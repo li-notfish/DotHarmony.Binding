@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!-- 纯 net10.0：MAUI Essentials 接口（IBattery/IGeolocation/IPreferences...）由
          Microsoft.Maui.Controls 包的 netstandard 产物提供，鸿蒙实现注入其静态入口 -->
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Maui.Controls" />
   </ItemGroup>
 
   <ItemGroup>

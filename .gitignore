@@ -3,12 +3,7 @@ node_modules/
 dist/
 *.js.map
 
-# 生成的绑定代码（在 HarmonyOS.Bindings/ 下）
-HarmonyOS.Bindings/Components/
-# HarmonyOS.Bindings/Api/ 为 @ohos.* 服务绑定（手写+生成），已入库
-
-# 但保留 Runtime（手写代码）
-!HarmonyOS.Bindings/Runtime/
+# 生成绑定说明：@ohos.* 服务绑定（src/HarmonyOS.Bindings/Api/）与节点包装（Nodes/）均已入库，由全量 regen 维护
 
 # IDE
 .vscode/
@@ -25,6 +20,7 @@ coverage/
 
 # Tests output
 tests-output/
+TestResults/
 
 # Logs
 *.log
@@ -40,12 +36,6 @@ output/
 bin/
 obj/
 *.user
-
-# .NET 构建产物
-samples/dotnet/HelloApp/bin/
-samples/dotnet/HelloApp/obj/
-samples/dotnet/EngineLab/bin/
-samples/dotnet/EngineLab/obj/
 
 # HarmonyHost 构建产物（共享 C 节点 API 宿主 + ArkTS 引擎实验宿主，两条模板同规则）
 samples/HarmonyHost/entry/build/

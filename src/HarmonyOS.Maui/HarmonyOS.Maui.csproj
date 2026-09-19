@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!-- 纯 net10.0：MAUI Controls 的 netstandard 产物提供 VirtualView/Handler 基建，
          平台视图为本仓库 HarmonyOS.Bindings 的 ArkUINodeBase（NativeAOT 友好） -->
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Maui.Controls" />
   </ItemGroup>
 
   <ItemGroup>
