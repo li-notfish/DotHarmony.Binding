@@ -9,11 +9,12 @@ using Microsoft.Maui.Graphics.Text;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonyDrawingCanvas : ICanvas
+public class HarmonyDrawingCanvas : ICanvas, IDisposable
 {
     private OHDrawingCanvas _canvas;
     private readonly Bindings.NativeNode.OHDrawingPen _pen = new();
     private readonly Bindings.NativeNode.OHDrawingBrush _brush = new();
+    private bool _disposed;
 
     private Color _fillColor = Colors.Black;
     private Color _strokeColor = Colors.Black;
@@ -53,7 +54,31 @@ public class HarmonyDrawingCanvas : ICanvas
     public float MiterLimit { get; set; } = 4f;
 
     /// <summary>虚线模式：on/off 交替（单值按 MAUI 语义展开为 on=off，best-effort）</summary>
-    public float[]? StrokeDashPattern { get; set; }
+    private float[]? _strokeDashPattern;
+    private bool _dashWarned;
+    public float[]? StrokeDashPattern
+    {
+        get => _strokeDashPattern;
+        set
+        {
+            _strokeDashPattern = value;
+            if (value != null && !_dashWarned)
+            {
+                _dashWarned = true;
+                Bindings.Runtime.HiLog.Warn("HarmonyHost",
+                    "[DrawingCanvas] StrokeDashPattern 暂不支持（Pen 路径特效通道未接），按实线绘制");
+            }
+        }
+    }
+
+    /// <summary>释放原生 Pen/Brush（handler Disconnect 时调用；无 finalizer，显式释放）</summary>
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _pen.Dispose();
+        _brush.Dispose();
+    }
 
     public void SetToSystemFont() { /* no-op：排版通道未接 */ }
     public IFont? Font { set { /* no-op：排版通道未接 */ } }
@@ -99,6 +124,7 @@ public class HarmonyDrawingCanvas : ICanvas
 
     public void DrawRectangle(float x, float y, float width, float height)
     {
+        if (_strokeThickness <= 0) return; // MAUI 语义：线宽 0 = 不描边
         ApplyPen();
         _canvas.DrawRect(x, y, width, height);
         _canvas.DetachPen();
@@ -115,6 +141,7 @@ public class HarmonyDrawingCanvas : ICanvas
 
     public void DrawEllipse(float x, float y, float width, float height)
     {
+        if (_strokeThickness <= 0) return;
         using var path = BuildPath(p => AddEllipseArcs(p, x, y, width, height));
         ApplyPen();
         _canvas.DrawPath(path);
@@ -135,6 +162,7 @@ public class HarmonyDrawingCanvas : ICanvas
 
     public void DrawArc(float x, float y, float width, float height, float startAngle, float sweepAngle, bool clockwise, bool close)
     {
+        if (_strokeThickness <= 0) return;
         var sweep = clockwise ? sweepAngle : -sweepAngle;
         using var path = BuildPath(p => AddArcSweep(p, x, y, x + width, y + height, startAngle, sweep));
         ApplyPen();
@@ -157,6 +185,7 @@ public class HarmonyDrawingCanvas : ICanvas
 
     public void DrawLine(float x1, float y1, float x2, float y2)
     {
+        if (_strokeThickness <= 0) return;
         ApplyPen();
         _canvas.DrawLine(x1, y1, x2, y2);
         _canvas.DetachPen();
@@ -166,6 +195,7 @@ public class HarmonyDrawingCanvas : ICanvas
 
     public void DrawPath(PathF path)
     {
+        if (_strokeThickness <= 0) return;
         using var p = ToNativePath(path, winding: false);
         ApplyPen();
         _canvas.DrawPath(p);
@@ -212,6 +242,7 @@ public class HarmonyDrawingCanvas : ICanvas
 
     public void DrawRoundedRectangle(float x, float y, float width, float height, float cornerRadius)
     {
+        if (_strokeThickness <= 0) return;
         var r = ClampRadius(cornerRadius, width, height);
         ApplyPen();
         _canvas.DrawRoundRect(x, y, width, height, r, r);
@@ -355,7 +386,7 @@ public class HarmonyDrawingCanvas : ICanvas
     private void ApplyPen()
     {
         _pen.SetColor(StrokeColorArgb);
-        _pen.SetWidth(StrokeThickness > 0 ? StrokeThickness : 1f);
+        _pen.SetWidth(StrokeThickness);
         _pen.SetCap(StrokeLineCap switch
         {
             LineCap.Round => CapRound,

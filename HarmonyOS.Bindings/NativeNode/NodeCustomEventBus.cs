@@ -55,6 +55,7 @@ internal static unsafe class NodeCustomEventBus
     private static readonly ConcurrentDictionary<(int TargetId, int EventType), Action<ArkUICustomEvent>> Handlers = new();
     private static delegate* unmanaged<IntPtr, void> _receiverPtr;
     private static int _nextTargetId;
+    private static readonly object Gate = new();
     private static bool _registered;
 
     /// <summary>分配进程内唯一的自绘事件 targetId（与普通事件共用计数空间）</summary>
@@ -73,11 +74,15 @@ internal static unsafe class NodeCustomEventBus
 
     private static void EnsureRegistered()
     {
-        if (_registered) return;
-        _receiverPtr = &Dispatch;
-        ArkUINativeApi.RegisterCustomEventReceiver(_receiverPtr);
-        _registered = true;
-        Runtime.HiLog.Debug("HarmonyHost", $"[CustomEventBus] receiver registered, fnPtr=0x{(long)_receiverPtr:X}");
+        // 注册动作是单例一次性：加锁保证多视图并发首挂时原生 receiver 只注册一次
+        lock (Gate)
+        {
+            if (_registered) return;
+            _receiverPtr = &Dispatch;
+            ArkUINativeApi.RegisterCustomEventReceiver(_receiverPtr);
+            _registered = true;
+            Runtime.HiLog.Debug("HarmonyHost", $"[CustomEventBus] receiver registered, fnPtr=0x{(long)_receiverPtr:X}");
+        }
     }
 
     [UnmanagedCallersOnly]

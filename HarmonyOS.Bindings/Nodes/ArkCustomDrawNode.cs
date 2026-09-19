@@ -86,7 +86,10 @@ public sealed unsafe class ArkCustomDrawNode : ArkUINodeBase
     private void OnDrawEvent(ArkUICustomEvent ev)
     {
         var (canvas, widthPx, heightPx) = ev.GetDrawContext();
-        var density = _vpWidth > 0 ? widthPx / _vpWidth : 1f;
+        // 密度推算：宽高各自可算则互校（不一致时取宽），单边未知用另一边，皆未知按 px 直绘
+        var densityW = _vpWidth > 0 ? widthPx / _vpWidth : 0f;
+        var densityH = _vpHeight > 0 ? heightPx / _vpHeight : 0f;
+        var density = densityW > 0 ? densityW : densityH > 0 ? densityH : 1f;
         var widthVp = widthPx / density;
         var heightVp = heightPx / density;
         if (!float.IsFinite(widthVp) || !float.IsFinite(heightVp) || density <= 0)
@@ -110,10 +113,11 @@ public sealed unsafe class ArkCustomDrawNode : ArkUINodeBase
     {
         if (disposing && !Handle.IsNull)
         {
-            NodeCustomEventBus.Unregister(_customTargetId, ArkUI_NodeCustomEventType.ARKUI_NODE_CUSTOM_EVENT_ON_MEASURE);
-            NodeCustomEventBus.Unregister(_customTargetId, ArkUI_NodeCustomEventType.ARKUI_NODE_CUSTOM_EVENT_ON_DRAW);
+            // 先注销 native（停事件源），再清路由表 —— 反序会让在途事件静默丢弃
             ArkUINativeApi.UnregisterNodeCustomEvent(Handle, ArkUI_NodeCustomEventType.ARKUI_NODE_CUSTOM_EVENT_ON_MEASURE);
             ArkUINativeApi.UnregisterNodeCustomEvent(Handle, ArkUI_NodeCustomEventType.ARKUI_NODE_CUSTOM_EVENT_ON_DRAW);
+            NodeCustomEventBus.Unregister(_customTargetId, ArkUI_NodeCustomEventType.ARKUI_NODE_CUSTOM_EVENT_ON_MEASURE);
+            NodeCustomEventBus.Unregister(_customTargetId, ArkUI_NodeCustomEventType.ARKUI_NODE_CUSTOM_EVENT_ON_DRAW);
         }
         base.Dispose(disposing);
     }

@@ -41,6 +41,8 @@ public class HarmonyGraphicsViewHandler : HarmonyViewHandler<MGraphicsView, ArkC
     protected override void DisconnectHandler(ArkCustomDrawNode platformView)
     {
         platformView.SetDrawCallback(null);
+        _canvas?.Dispose(); // 画布持有的 Pen/Brush 原生对象显式释放
+        _canvas = null;
         base.DisconnectHandler(platformView);
     }
 
@@ -98,6 +100,8 @@ public class HarmonyShapeHandler : HarmonyViewHandler<MShape, ArkCustomDrawNode>
     protected override void DisconnectHandler(ArkCustomDrawNode platformView)
     {
         platformView.SetDrawCallback(null);
+        _canvas?.Dispose(); // 同上：Pen/Brush 原生对象显式释放
+        _canvas = null;
         base.DisconnectHandler(platformView);
     }
 

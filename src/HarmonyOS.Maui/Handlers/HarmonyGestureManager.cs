@@ -50,6 +50,7 @@ internal sealed class HarmonyGestureManager : IDisposable
         _disposed = true;
         _observedCollection?.CollectionChanged -= OnRecognizersChanged; // C# 14 null-conditional assignment
         _view.PropertyChanged -= OnViewPropertyChanged;
+        DestroyPendingDragData(); // 拖拽载荷最终兜底（节点既销毁，管线已死）
         if (_touchSubscribed)
             _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_TOUCH_EVENT);
         foreach (var g in _attached.Concat(_parked))
@@ -285,6 +286,10 @@ internal sealed class HarmonyGestureManager : IDisposable
     private DropGestureRecognizer? _drop;
     private bool _dragSubscribed;
     private bool _dropSubscribed;
+    // 最后一次 SetDragData 传入的 UDMF data：ACE 侧持裸引用、消费发生在 handler 返回后的
+    // 拖拽管线内（UdmfClient::SetData→GetSummary，提前销毁即 UAF 崩溃，模拟器实锤），
+    // 须存活至 NODE_ON_DRAG_END 才能销毁
+    private IntPtr _pendingDragData;
 
     private void AttachDrag(DragGestureRecognizer drag)
     {
@@ -324,8 +329,12 @@ internal sealed class HarmonyGestureManager : IDisposable
             var text = args.Data.Text;
             if (string.IsNullOrEmpty(text)) return;
             var data = UdmfNativeApi.CreateTextData(text);
-            if (data != IntPtr.Zero)
-                e.SetDragData(data);
+            if (data == IntPtr.Zero) return;
+            DestroyPendingDragData(); // 异常路径丢失 DRAG_END 时的兜底（至多 1 条滞留）
+            _pendingDragData = data;
+            // 不可当场销毁：DragEvent 的 SetData 持裸引用（非拷贝语义），消费在返回后的拖拽管线内
+            // （GetSummary 读取即 UAF SIGSEGV，模拟器 faultlog 实锤）——存活至 NODE_ON_DRAG_END
+            e.SetDragData(data);
         }
         catch (DllNotFoundException)
         {
@@ -339,10 +348,19 @@ internal sealed class HarmonyGestureManager : IDisposable
 
     private void OnDragEnd(ArkUINodeEvent e)
     {
+        DestroyPendingDragData(); // 拖拽管线已走完，SetDragData 载荷用毕即销毁
         var drag = _drag;
         if (drag is null) return;
         try { MauiGestureBridge.SendDropCompleted(drag); }
         catch (Exception ex) { HiLog.Warn("HarmonyHost", $"drag end bridge failed: {ex.Message}"); }
+    }
+
+    /// <summary>销毁并清空挂起的拖拽载荷（幂等）</summary>
+    private void DestroyPendingDragData()
+    {
+        if (_pendingDragData == IntPtr.Zero) return;
+        UdmfNativeApi.DestroyData(_pendingDragData);
+        _pendingDragData = IntPtr.Zero;
     }
 
     private void OnDragEnter(ArkUINodeEvent e) => SendDragOver(e);

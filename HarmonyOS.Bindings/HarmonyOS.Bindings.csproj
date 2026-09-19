@@ -23,12 +23,7 @@
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
   </ItemGroup>
 
-  <!-- 灰度策略：已转正 AppManager, ArrayList, Audio, BatteryInfo, BundleManager, Camera, ColorSpaceManager, CommonEventManager, Convertxml, Curves, DataShare, DataSharePredicates, Deque, DeviceInfo, Display, DisplaySync, Emitter, Font, FormBindingData, FormProvider, Fs, GeoLocationManager, Geolocation, Hash, HashMap, HashSet, HiAppEvent, Hilog, Http, I18n, Image, InputMethod, Intl, LightWeightMap, List, Matrix4, Measure, Media, Mediaquery, Notification, OsAccount, Picker, Power, Preferences, Queue, Radio, RelationalStore, ResourceManager, Screen, ScreenLock, SecurityLabel, Sensor, Settings, Sms, Socket, Stack, Statvfs, Taskpool, Thermal, TreeMap, Uri, Url, UsbManager, Util, Vibrator, Wallpaper, WebSocket, WifiManager, Worker, Zlib（共 70 个）。
-       未转正模块默认不参与编译，逐个验证后加入 APPROVED_MODULES。 -->
-  <ItemGroup Condition="'$(SkipGeneratedApi)' != 'false'">
-
-
-  </ItemGroup>
+  <!-- 全量转正（438/438 编译，M2）：GRAYSCALE 已清空，Api/*.cs 全量参与编译，无需 Compile Remove。 -->
   <ItemGroup>
     <!-- Handler 层手势池化复用需要读取 internal 配置（ArkTapGesture.TapCount 等） -->
     <InternalsVisibleTo Include="HarmonyOS.Maui" />

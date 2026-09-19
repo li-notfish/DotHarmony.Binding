@@ -140,8 +140,12 @@ public sealed unsafe class ArkUINodeAdapter : IDisposable
         }
     }
 
-    /// <summary>设置条目总数（下一次 Reload 生效）</summary>
-    public void SetTotalCount(int count) => ArkUINativeApi.NodeAdapterSetTotalCount(_handle, count);
+    /// <summary>设置条目总数（下一次 Reload 生效；负数直接拒绝——(uint) 隐式收缩会把 -1 绕成天量）</summary>
+    public void SetTotalCount(int count)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+        ArkUINativeApi.NodeAdapterSetTotalCount(_handle, count);
+    }
 
     /// <summary>全量重载（框架按可见范围物化，虚拟化核心）</summary>
     public void ReloadAllItems() => ArkUINativeApi.NodeAdapterReloadAllItems(_handle);

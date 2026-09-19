@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
@@ -28,6 +29,8 @@ public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, 
     private List<object?> _items = new();
     // 活跃条目：原生节点句柄 → (节点, 虚拟视图)；ON_REMOVE 时按句柄处置
     private readonly Dictionary<nint, (ArkUINode Node, View View)> _live = new();
+    // 增量订阅源（ObservableCollection 等；属性引用不变时经 CollectionChanged 触发重载）
+    private INotifyCollectionChanged? _observed;
 
     public HarmonyCollectionViewHandler() : base(Mapper) { }
 
@@ -50,6 +53,7 @@ public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, 
 
     protected override void DisconnectHandler(ArkList platformView)
     {
+        UnhookItemsSource();
         foreach (var (node, view) in _live.Values)
         {
             ((Microsoft.Maui.IElement)view).Handler = null; // 触发 handler DisconnectHandler（手势/事件注销）
@@ -66,7 +70,26 @@ public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, 
     }
 
     public static void MapItems(HarmonyCollectionViewHandler handler, MCollectionView view)
-        => handler.Reload();
+    {
+        // 挂/换挂增量订阅（CollectionChanged → 全量重载兜底）后再首轮重载
+        handler.UnhookItemsSource();
+        if (view.ItemsSource is INotifyCollectionChanged incc)
+        {
+            handler._observed = incc;
+            incc.CollectionChanged += handler.OnItemsCollectionChanged;
+        }
+        handler.Reload();
+    }
+
+    private void UnhookItemsSource()
+    {
+        if (_observed is null) return;
+        _observed.CollectionChanged -= OnItemsCollectionChanged;
+        _observed = null;
+    }
+
+    private void OnItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        => Reload(); // 虚拟化框架按可见范围物化，全量重载代价可控；InsertItem/RemoveItem 精确增量留待立项
 
     private void Reload()
     {
@@ -145,6 +168,8 @@ public class HarmonyCarouselViewHandler : HarmonyViewHandler<MCarouselView, ArkS
     private const float DefaultHeight = 200f;
 
     private bool _syncingFromPlatform;
+    /// <summary>活跃条目（全量物化模型）：Rebuild/Disconnect 统一处置（Handler 断连 + 节点 Dispose）</summary>
+    private readonly List<(ArkUINode Node, View View)> _live = new();
 
     public static PropertyMapper<MCarouselView, HarmonyCarouselViewHandler> Mapper = new(ViewMapper)
     {
@@ -170,6 +195,7 @@ public class HarmonyCarouselViewHandler : HarmonyViewHandler<MCarouselView, ArkS
     protected override void DisconnectHandler(ArkSwiper platformView)
     {
         platformView.Change -= OnSwiperChange;
+        ItemsViewMaterializer.DisposeAll(_live);
         base.DisconnectHandler(platformView);
     }
 
@@ -243,15 +269,18 @@ public class HarmonyCarouselViewHandler : HarmonyViewHandler<MCarouselView, ArkS
     {
         if (VirtualView.HeightRequest <= 0)
             VirtualView.HeightRequest = DefaultHeight;
-        ItemsViewMaterializer.Rebuild(PlatformView, VirtualView.ItemsSource, VirtualView.ItemTemplate, fillHeight: true);
+        ItemsViewMaterializer.Rebuild(PlatformView, VirtualView.ItemsSource, VirtualView.ItemTemplate, _live, fillHeight: true);
     }
 }
 
-/// <summary>ItemsView 的 M1 物化器（CarouselView 用）：ItemsSource + ItemTemplate → 子视图全量添加（AOT 安全，XamlC 模板为编译期工厂）</summary>
+/// <summary>ItemsView 的 M1 物化器（CarouselView 用）：ItemsSource + ItemTemplate → 子视图全量添加（AOT 安全，XamlC 模板为编译期工厂）。
+/// 替换前统一处置上一批物化视图（Handler 置 null 断连 + 节点 Dispose），ItemsSource 变动不再泄漏旧 handler。</summary>
 internal static class ItemsViewMaterializer
 {
-    public static void Rebuild(ArkUINodeBase container, System.Collections.IEnumerable? items, DataTemplate? template, bool fillHeight)
+    public static void Rebuild(ArkUINodeBase container, System.Collections.IEnumerable? items, DataTemplate? template,
+        List<(ArkUINode Node, View View)> live, bool fillHeight)
     {
+        DisposeAll(live);
         container.RemoveAllChildren();
         if (items is null)
             return;
@@ -270,7 +299,19 @@ internal static class ItemsViewMaterializer
                 if (fillHeight)
                     node.SetHeightPercent(1.0f);
                 container.AddChild(node);
+                live.Add((node, view));
             }
         }
+    }
+
+    /// <summary>处置一批物化条目（Handler 置 null 触发 DisconnectHandler 注销手势/事件 + 节点 Dispose）</summary>
+    public static void DisposeAll(List<(ArkUINode Node, View View)> live)
+    {
+        foreach (var (node, view) in live)
+        {
+            ((Microsoft.Maui.IElement)view).Handler = null;
+            node.Dispose();
+        }
+        live.Clear();
     }
 }

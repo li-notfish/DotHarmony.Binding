@@ -79,6 +79,12 @@ internal static unsafe partial class UdmfNativeApi
                 throw new InvalidOperationException($"OH_UdmfData_AddRecord failed: {status}");
             return data;
         }
+        catch
+        {
+            // 组装失败：data 也是本函数产物，一并销毁（错误路径不泄漏）
+            OH_UdmfData_Destroy(data);
+            throw;
+        }
         finally
         {
             // Add 拷贝内容：item/record 即刻可销毁（官方 docs 用法）
