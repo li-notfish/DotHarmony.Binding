@@ -7,16 +7,20 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>
 /// IImageSource → ArkUI NODE_IMAGE_SRC 字符串（URI）的解析器。
 /// ArkUI C API 的 NODE_IMAGE_SRC 只接受 URI 字符串或 DrawableDescriptor，
-/// 流式来源落盘为临时文件再以 file:// 提供（M1；像素级 PixelMap 通道后续经 image native 模块接入）。
+/// 流式来源经异步落盘（<see cref="ResolveStreamAsync"/>，不在 UI 线程同步等待）
+/// 再以 file:// 提供（M1；像素级 PixelMap 通道后续经 image native 模块接入）。
 /// </summary>
 internal static class ImageSourceResolver
 {
+    private const string TempFilePrefix = "imgsrc_";
 
     public static string? Resolve(IImageSource? source) => source switch
     {
         UriImageSource uri => uri.Uri?.ToString(),
         FileImageSource file => ResolveFile(file.File),
-        StreamImageSource stream => ResolveStream(stream),
+        // 流式来源为异步 I/O：同步等待会在 UI 线程阻塞（宿主未装 SynchronizationContext 的
+        // promise 续体环境下仍会造成帧卡顿）——由 handler 层走 ResolveStreamAsync 异步路径
+        StreamImageSource => null,
         _ => null, // FontImageSource 等：无对应通道，记为 gap
     };
 
@@ -28,11 +32,19 @@ internal static class ImageSourceResolver
         return path.Contains("://") ? path : $"file://{path}";
     }
 
-    private static string? ResolveStream(StreamImageSource source)
+    /// <summary>
+    /// 流式来源 → 临时文件 URI（异步；可在任意线程 await）。
+    /// 文件以 imgsrc_*.png 落入可写缓存目录；TempDir 探测时顺带清扫 24h 前的历史临时文件。
+    /// </summary>
+    public static async Task<string?> ResolveStreamAsync(StreamImageSource source)
     {
         try
         {
-            using var stream = source.Stream?.Invoke(System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+            var streamFunc = source.Stream;
+            if (streamFunc is null)
+                return null;
+            var stream = await streamFunc(System.Threading.CancellationToken.None)
+                .ConfigureAwait(false);
             if (stream is null)
                 return null;
 
@@ -43,14 +55,15 @@ internal static class ImageSourceResolver
                 return null;
             }
 
-            var path = Path.Combine(dir, $"imgsrc_{Guid.NewGuid():N}.png");
-            using (var file = File.Create(path))
-                ((System.IO.Stream)stream).CopyTo(file);
+            var path = Path.Combine(dir, $"{TempFilePrefix}{Guid.NewGuid():N}.png");
+            await using var input = stream;
+            using var file = File.Create(path);
+            await input.CopyToAsync(file).ConfigureAwait(false);
             return $"file://{path}";
         }
         catch (Exception ex)
         {
-            HiLog.Warn("Image", $"Stream image source failed: {ex.Message}");
+            HiLog.Warn("Image", $"Stream image source failed: {ex.GetType().Name}: {ex.Message}");
             return null;
         }
     }
@@ -80,6 +93,7 @@ internal static class ImageSourceResolver
                     var probe = Path.Combine(dir, ".probe");
                     File.WriteAllText(probe, "1");
                     File.Delete(probe);
+                    SweepStaleTempFiles(dir);
                     field = dir;
                     HiLog.Debug("Image", $"Temp dir for stream sources: {dir}");
                     return dir;
@@ -91,5 +105,27 @@ internal static class ImageSourceResolver
             }
             return null;
         }
+    }
+
+    /// <summary>
+    /// 清扫 24 小时前的 imgsrc_* 临时文件（临时文件无精确生命周期锚点，
+    /// 以时间窗兜底防磁盘无限增长；仅在 TempDir 首次探测时执行一次）
+    /// </summary>
+    private static void SweepStaleTempFiles(string dir)
+    {
+        try
+        {
+            var cutoff = DateTimeOffset.UtcNow - TimeSpan.FromHours(24);
+            foreach (var file in Directory.EnumerateFiles(dir, $"{TempFilePrefix}*.png"))
+            {
+                try
+                {
+                    if (File.GetLastWriteTimeUtc(file) < cutoff.UtcDateTime)
+                        File.Delete(file);
+                }
+                catch { /* 占用中/无权限：跳过 */ }
+            }
+        }
+        catch { /* 目录不可列：跳过 */ }
     }
 }

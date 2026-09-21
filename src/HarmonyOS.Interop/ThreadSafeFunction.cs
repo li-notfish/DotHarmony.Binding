@@ -55,7 +55,9 @@ internal sealed class ThreadSafeFunction : IDisposable
     }
 
     /// <summary>
-    /// 从 Promise 创建 TSFN，返回 Task&lt;T&gt;
+    /// Promise → Task 转发入口。历史上曾以"每次 Promise 创建一支 TSFN"实现；
+    /// 现实现委托 PromiseTaskBridge（JS 线程 then + TCS，无 TSFN 开销）——
+    /// 本方法仅为兼容签名保留，TSFN 路径不承载 Promise。
     /// </summary>
     public static Task<T> FromPromise<T>(IntPtr promise)
         => PromiseTaskBridge.ToTask<T>(promise);

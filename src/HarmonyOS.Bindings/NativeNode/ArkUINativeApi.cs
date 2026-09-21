@@ -91,8 +91,14 @@ internal static unsafe partial class ArkUINativeApi
 
     // ───────────────────────── 事件 ─────────────────────────
 
+    // 原生返回 int32_t 错误码（native_node.h）；镜像曾经声明 void 返回静默吞错，
+    // 注册失败（重复注册/节点不支持的类型）必须上浮给调用方
     internal static void RegisterNodeEvent(ArkUI_NodeHandle node, ArkUI_NodeEventType eventType, int targetId, void* userData)
-        => Node->RegisterNodeEvent(node, eventType, targetId, userData);
+    {
+        var status = Node->RegisterNodeEvent(node, eventType, targetId, userData);
+        if (status != 0)
+            throw new InvalidOperationException($"RegisterNodeEvent({eventType}, targetId={targetId}) failed: {status}");
+    }
 
     internal static void UnregisterNodeEvent(ArkUI_NodeHandle node, ArkUI_NodeEventType eventType)
         => Node->UnregisterNodeEvent(node, eventType);
@@ -420,11 +426,11 @@ internal unsafe struct ArkUI_NativeNodeAPI_1
     public delegate* unmanaged<ArkUI_NodeHandle, ArkUI_NodeAttributeType, ArkUI_AttributeItem*, int> SetAttribute;
     public delegate* unmanaged<ArkUI_NodeHandle, ArkUI_NodeAttributeType, ArkUI_AttributeItem*> GetAttribute;
     public delegate* unmanaged<ArkUI_NodeHandle, ArkUI_NodeAttributeType, int> ResetAttribute;
-    public delegate* unmanaged<ArkUI_NodeHandle, ArkUI_NodeEventType, int, void*, void> RegisterNodeEvent;
+    public delegate* unmanaged<ArkUI_NodeHandle, ArkUI_NodeEventType, int, void*, int> RegisterNodeEvent;
     public delegate* unmanaged<ArkUI_NodeHandle, ArkUI_NodeEventType, void> UnregisterNodeEvent;
     public delegate* unmanaged<delegate* unmanaged<ArkUI_NodeEvent*, void>, void> RegisterNodeEventReceiver;
     public delegate* unmanaged<void> UnregisterNodeEventReceiver;
-    public delegate* unmanaged<ArkUI_NodeHandle, ArkUI_NodeDirtyFlag, int> MarkDirty;
+    public delegate* unmanaged<ArkUI_NodeHandle, ArkUI_NodeDirtyFlag, void> MarkDirty;
     public delegate* unmanaged<ArkUI_NodeHandle, uint> GetTotalChildCount;
     public delegate* unmanaged<ArkUI_NodeHandle, int, ArkUI_NodeHandle> GetChildAt;
     public delegate* unmanaged<ArkUI_NodeHandle, ArkUI_NodeHandle> GetFirstChild;

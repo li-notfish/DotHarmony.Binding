@@ -231,10 +231,16 @@ internal static class NativeValue
     };
 
     /// <summary>
-    /// 将 C# 委托转换为 napi_function
+    /// 将 C# 委托转换为 napi_function。
+    /// 注：本方法创建 GCHandle 固定委托但无法归还（JS 侧函数随 napi 生命周期 GC，
+    /// 无托管侧 owner 可释放句柄）——遗留兼容路径。新代码必须经
+    /// <see cref="NodeApi.CreateCallbackFunction"/> / 生成的事件适配通道挂载，
+    /// 由调用方持有 GCHandle 并负责释放。
     /// </summary>
     public static IntPtr From(Delegate del)
     {
+        HiLog.Warn("Interop", "NativeValue.From(Delegate) used: GCHandle is not reclaimable; " +
+            "prefer NodeApi.CreateCallbackFunction with explicit lifetime");
         var env = NapiEnv.Current;
         var method = del.Method;
         var parameters = method.GetParameters();
@@ -389,9 +395,25 @@ internal static class NativeValue
         NativeNodeApi.napi_is_typedarray(env, value, out var isTypedArray).ThrowIfFailed();
         if (isTypedArray)
         {
-            NativeNodeApi.napi_get_typedarray_info(env, value, out _, out var length,
+            // napi_get_typedarray_info 的 length 是元素个数而非字节数：按元素类型折算字节长
+            NativeNodeApi.napi_get_typedarray_info(env, value, out var elemType, out var length,
                 out var data, out _, out _).ThrowIfFailed();
-            var bytes = new byte[(int)length];
+            int bytesPerElement = (NativeNodeApi.napi_typedarray_type)elemType switch
+            {
+                NativeNodeApi.napi_typedarray_type.napi_int8_array or
+                NativeNodeApi.napi_typedarray_type.napi_uint8_array or
+                NativeNodeApi.napi_typedarray_type.napi_uint8_clamped_array => 1,
+                NativeNodeApi.napi_typedarray_type.napi_int16_array or
+                NativeNodeApi.napi_typedarray_type.napi_uint16_array => 2,
+                NativeNodeApi.napi_typedarray_type.napi_int32_array or
+                NativeNodeApi.napi_typedarray_type.napi_uint32_array or
+                NativeNodeApi.napi_typedarray_type.napi_float32_array => 4,
+                NativeNodeApi.napi_typedarray_type.napi_float64_array or
+                NativeNodeApi.napi_typedarray_type.napi_bigint64_array or
+                NativeNodeApi.napi_typedarray_type.napi_biguint64_array => 8,
+                _ => throw new NotSupportedException($"TypedArray element type {elemType} is not supported"),
+            };
+            var bytes = new byte[(int)length * bytesPerElement];
             if (bytes.Length > 0)
                 Marshal.Copy(data, bytes, 0, bytes.Length);
             return bytes;

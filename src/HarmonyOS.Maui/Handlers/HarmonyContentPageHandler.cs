@@ -56,7 +56,7 @@ public class HarmonyContentPageHandler : ViewHandler<ContentPage, ArkColumn>
     {
         if (_contentHandler is not null)
         {
-            PlatformView.RemoveAllChildren();
+            HarmonyViewHandler<IView, ArkUINode>.DisposeContent(_contentHandler, PlatformView);
             _contentHandler = null;
         }
 

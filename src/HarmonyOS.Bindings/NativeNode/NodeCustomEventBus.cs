@@ -3,7 +3,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 using HarmonyOS.Interop;
 namespace HarmonyOS.Bindings.NativeNode;
@@ -55,12 +54,12 @@ internal static unsafe class NodeCustomEventBus
 {
     private static readonly ConcurrentDictionary<(int TargetId, int EventType), Action<ArkUICustomEvent>> Handlers = new();
     private static delegate* unmanaged<IntPtr, void> _receiverPtr;
-    private static int _nextTargetId;
     private static readonly object Gate = new();
     private static bool _registered;
 
-    /// <summary>分配进程内唯一的自绘事件 targetId（与普通事件共用计数空间）</summary>
-    internal static int NextTargetId() => Interlocked.Increment(ref _nextTargetId);
+    /// <summary>分配进程内唯一的自绘事件 targetId（与普通节点事件共用 NodeEventBus 的计数空间，
+    /// 保证跨两类事件注册簿的键全局唯一，杜绝同号歧义）</summary>
+    internal static int NextTargetId() => NodeEventBus.NextTargetId();
 
     internal static void Register(int targetId, ArkUI_NodeCustomEventType eventType, Action<ArkUICustomEvent> handler)
     {
@@ -89,6 +88,8 @@ internal static unsafe class NodeCustomEventBus
     [UnmanagedCallersOnly]
     private static void Dispatch(IntPtr eventPtr)
     {
+        // JS 线程热点：同 NodeEventBus，顺带批量回收终结器线程暂存的 napi_ref
+        NapiFinalizationQueue.Drain();
         try
         {
             var ev = (ArkUI_NodeCustomEvent*)eventPtr;

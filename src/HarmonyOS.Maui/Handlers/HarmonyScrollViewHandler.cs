@@ -51,7 +51,7 @@ public class HarmonyScrollViewHandler : HarmonyViewHandler<IScrollView, ArkScrol
     {
         if (_contentHandler is not null)
         {
-            PlatformView.RemoveAllChildren();
+            HarmonyViewHandler<IScrollView, ArkScroll>.DisposeContent(_contentHandler, PlatformView);
             _contentHandler = null;
         }
 

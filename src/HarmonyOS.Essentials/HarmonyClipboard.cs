@@ -74,9 +74,11 @@ public class HarmonyClipboard : IClipboard
 
     public Task SetTextAsync(string? text)
     {
-        var data = HPasteboard.CreatePlainTextData(text ?? string.Empty);
+        var value = text ?? string.Empty;
+        var data = HPasteboard.CreatePlainTextData(value);
         _pasteboard.SetDataSync(data);
-        _lastKnownText = text ?? string.Empty;
+        // 空文本视为清空剪贴板：_lastKnownText 为 null 以让 HasText 回退路径回答 false
+        _lastKnownText = value.Length > 0 ? value : null;
         return Task.CompletedTask;
     }
 

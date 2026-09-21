@@ -68,8 +68,18 @@ internal class NapiReference : IDisposable
 
             if (_ref != IntPtr.Zero)
             {
-                var env = NapiEnv.Current;
-                NativeNodeApi.napi_delete_reference(env, _ref);
+                // napi_delete_reference 只允许在持有 napi_env 的 JS 线程调用
+                // （env 为 ThreadStatic；napi_ref 绑定其创建时的 env 实例）。
+                // 终结器线程上没有 env——直接落原生既会抛异常终止进程、也泄漏引用，
+                // 改由队列暂存，待 JS 线程事件分发时批量回收（见 NapiFinalizationQueue）。
+                if (NapiEnv.IsAvailable)
+                {
+                    NativeNodeApi.napi_delete_reference(NapiEnv.Current, _ref);
+                }
+                else
+                {
+                    NapiFinalizationQueue.Enqueue(_ref);
+                }
                 _ref = IntPtr.Zero;
             }
 

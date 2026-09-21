@@ -70,23 +70,33 @@ internal static class PromiseTaskBridge
         var nameBytes = ThenUtf8;
 
         // promise.then(fulfilled, rejected)
-        NativeNodeApi.napi_get_named_property(env, promise, nameBytes, out var thenFn).ThrowIfFailed();
+        try
+        {
+            NativeNodeApi.napi_get_named_property(env, promise, nameBytes, out var thenFn).ThrowIfFailed();
 
-        NativeNodeApi.napi_create_function(env, FulfilledUtf8, (IntPtr)FulfilledUtf8.Length,
-            FulfilledPtr, data, out var fulfilledFn).ThrowIfFailed();
-        NativeNodeApi.napi_create_function(env, RejectedUtf8, (IntPtr)RejectedUtf8.Length,
-            RejectedPtr, data, out var rejectedFn).ThrowIfFailed();
+            NativeNodeApi.napi_create_function(env, FulfilledUtf8, (IntPtr)FulfilledUtf8.Length,
+                FulfilledPtr, data, out var fulfilledFn).ThrowIfFailed();
+            NativeNodeApi.napi_create_function(env, RejectedUtf8, (IntPtr)RejectedUtf8.Length,
+                RejectedPtr, data, out var rejectedFn).ThrowIfFailed();
 
-        Span<IntPtr> argv = stackalloc IntPtr[2];
-        argv[0] = fulfilledFn;
-        argv[1] = rejectedFn;
-        var status = NativeNodeApi.napi_call_function(env, promise, thenFn,
-            2, argv, out _);
-        // M0 铁律：先清除挂起异常，再检查状态
-        NativeNodeApi.napi_get_and_clear_last_exception(env, out _).ThrowIfFailed();
-        status.ThrowIfFailed();
+            Span<IntPtr> argv = stackalloc IntPtr[2];
+            argv[0] = fulfilledFn;
+            argv[1] = rejectedFn;
+            var status = NativeNodeApi.napi_call_function(env, promise, thenFn,
+                2, argv, out _);
+            // M0 铁律：先清除挂起异常，再检查状态
+            NativeNodeApi.napi_get_and_clear_last_exception(env, out _).ThrowIfFailed();
+            status.ThrowIfFailed();
 
-        return tcs.Task;
+            return tcs.Task;
+        }
+        catch
+        {
+            // 桥建立失败（属性缺失/JS 抛错/napi 失败）：Trampoline 永不会被调用，
+            // 必须在此释放 GCHandle，否则句柄与 Task 一起永久滞留
+            gch.Free();
+            throw;
+        }
 #else
         throw new PlatformNotSupportedException("PromiseTaskBridge requires HarmonyOS runtime");
 #endif

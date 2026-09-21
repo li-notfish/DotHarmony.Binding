@@ -89,14 +89,28 @@ public class HarmonyPreferences : IPreferences
         var name = FileNamePrefix;
         if (sharedName is not null)
         {
-            // 文件名约束：仅字母数字、下划线、点（不含 '/' 与控制字符）
+            // 文件名约束：仅字母数字、下划线、点（不含 '/' 与控制字符）。
+            // 清洗会把 "a/b"、"a b"、"a\b" 塌缩为同一串——叠加内容哈希后缀消除碰撞，
+            // 保持"同一 sharedName 恒映射同一文件"的双向唯一性。
             var safe = new string(sharedName.Select(c =>
                 char.IsLetterOrDigit(c) || c is '_' or '.' ? c : '_').ToArray());
-            name = $"{FileNamePrefix}.{safe}";
+            name = $"{FileNamePrefix}.{safe}.{StableHash(sharedName):x8}";
         }
         var prefs = HStaticPrefs.GetPreferencesSync(Context, new HOptions(name));
         _files[fileKey] = prefs;
         return prefs;
+    }
+
+    /// <summary>sharedName 的稳定 32 位哈希（FNV-1a；仅用于文件名消歧，非安全用途）</summary>
+    internal static uint StableHash(string s)
+    {
+        unchecked
+        {
+            uint h = 2166136261;
+            foreach (var b in System.Text.Encoding.UTF8.GetBytes(s))
+                h = (h ^ b) * 16777619;
+            return h;
+        }
     }
 
     // ---- 类型标签编解码（internal 供单测；标签语义见文件头）----

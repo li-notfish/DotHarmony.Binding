@@ -288,16 +288,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     public void Animate(Action updates, Action completed, int durationMs = 250)
     {
         ThrowIfDisposed();
-        var context = ArkUINativeApi.OH_ArkUI_GetContextByNode(_handle);
-        if (context == IntPtr.Zero)
-        {
-            updates();
-            completed();
-            return;
-        }
-
         var state = new AnimState { Updates = updates, Completed = completed };
-        RunAnimate(state, context, durationMs);
+        RunAnimateChecked(state, durationMs);
     }
 
     /// <summary>
@@ -308,8 +300,31 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     {
         ThrowIfDisposed();
         var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        Animate(updates, () => tcs.TrySetResult(), durationMs);
+        var state = new AnimState { Updates = updates };
+        state.Completed = () =>
+        {
+            // update 闭包在原生回调内抛出的异常经 trampoline 捕获暂存（Failure），
+            // 在此向 await 方传播，避免"静默跳过属性更新却返回成功"
+            if (state.Failure is { } failure)
+                tcs.TrySetException(failure);
+            else
+                tcs.TrySetResult();
+        };
+        RunAnimateChecked(state, durationMs);
         return tcs.Task;
+    }
+
+    private void RunAnimateChecked(AnimState state, int durationMs)
+    {
+        var context = ArkUINativeApi.OH_ArkUI_GetContextByNode(_handle);
+        if (context == IntPtr.Zero)
+        {
+            // 无 UIContext（节点未挂树）：同步直跑，异常照常向调用方传播
+            state.Updates();
+            state.Completed?.Invoke();
+            return;
+        }
+        RunAnimate(state, context, durationMs);
     }
 
     private void RunAnimate(AnimState state, IntPtr context, int durationMs)
@@ -344,7 +359,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     {
         public Action Updates = default!;
         public Action? Completed;
-        public TaskCompletionSource? Completion;
+        /// <summary>update 闭包在原生回调中抛出的异常（由完成回调转交 await 方）</summary>
+        public Exception? Failure;
         public bool Done;
     }
 
@@ -352,7 +368,19 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     private static void AnimUpdateTrampoline(void* userData)
     {
         var state = (AnimState?)GCHandle.FromIntPtr((IntPtr)userData).Target;
-        state?.Updates();
+        if (state is null)
+            return;
+        try
+        {
+            state.Updates();
+        }
+        catch (Exception ex)
+        {
+            // 与 complete 跳板同纪律：异常不得穿透原生帧（会终止进程）；
+            // 暂存后由完成回调交给同步/await 调用方
+            state.Failure = ex;
+            HiLog.Error("HarmonyAnim", $"animate update-closure error: {ex.GetType().Name}: {ex.Message}");
+        }
     }
 
     [UnmanagedCallersOnly]
@@ -368,9 +396,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
             }
             catch (Exception ex)
             {
-                // 不得穿透原生帧；异步路径经 Completion 让 await 方感知异常
+                // 不得穿透原生帧（进程会随之终止）
                 HiLog.Error("HarmonyAnim", $"animate completed-callback error: {ex.GetType().Name}: {ex.Message}");
-                state.Completion?.TrySetException(ex);
             }
         }
         handle.Free();
@@ -615,8 +642,9 @@ public abstract unsafe class ArkUINodeBase : IDisposable
 
     ~ArkUINodeBase()
     {
-        // 终结器路径无法安全触达原生 UI 线程，仅记录句柄泄漏；
-        // 节点必须在 UI 线程显式 Dispose。
+        // 终结器路径无法安全触达原生 UI 线程（ArkUI C API 有主线程亲和
+        // 且无安全的跨线程回收通道），节点必须在 UI 线程显式 Dispose；
+        // 此处不做任何处理，泄漏诊断依赖宿主层日志。
     }
 
     private void ThrowIfDisposed()

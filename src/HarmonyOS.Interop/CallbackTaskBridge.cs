@@ -34,7 +34,7 @@ internal static class CallbackTaskBridge
     /// <summary>
     /// 创建 err-first 回调函数及其 Task。回调作为被调方法的最后一个实参传入。
     /// </summary>
-    public static (IntPtr jsFunc, Task<T> task) CreateCallback<T>(Func<IntPtr, T>? convert)
+    public static (IntPtr jsFunc, Task<T> task, Action abort) CreateCallback<T>(Func<IntPtr, T>? convert)
     {
 #if HARMONYOS
         var tcs = new TaskCompletionSource<T>();
@@ -54,9 +54,31 @@ internal static class CallbackTaskBridge
 
         var env = NapiEnv.Current;
         var nameBytes = "asyncCallback"u8.ToArray();
-        NativeNodeApi.napi_create_function(env, nameBytes, (IntPtr)nameBytes.Length,
-            TrampolinePtr, data, out var jsFunc).ThrowIfFailed();
-        return (jsFunc, tcs.Task);
+
+        // 中止通道：调用方在把回调交给 JS 之前失败（napi 调用抛错）时，
+        // 取消 Task（防止 await 永久挂起）并释放 GCHandle（Trampoline 永不会被调用）
+        Action abort = () =>
+        {
+            if (!state.Done)
+            {
+                state.Done = true;
+                tcs.TrySetCanceled();
+            }
+            if (gch.IsAllocated) gch.Free();
+        };
+
+        NativeNodeApi.napi_value jsFunc;
+        try
+        {
+            NativeNodeApi.napi_create_function(env, nameBytes, (IntPtr)nameBytes.Length,
+                TrampolinePtr, data, out jsFunc).ThrowIfFailed();
+        }
+        catch
+        {
+            abort();
+            throw;
+        }
+        return (jsFunc, tcs.Task, abort);   // napi_value 隐式转换为 IntPtr
 #else
         throw new PlatformNotSupportedException("CallbackTaskBridge requires HarmonyOS runtime");
 #endif

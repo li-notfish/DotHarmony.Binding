@@ -152,6 +152,8 @@ internal static unsafe class NodeEventBus
     [UnmanagedCallersOnly]
     private static void Dispatch(ArkUI_NodeEvent* eventPtr)
     {
+        // JS 线程热点：顺带批量回收终结器线程暂存的 napi_ref（空队列零成本）
+        NapiFinalizationQueue.Drain();
         try
         {
             var key = (ArkUINativeApi.GetTargetId(eventPtr), (int)ArkUINativeApi.GetEventType(eventPtr));

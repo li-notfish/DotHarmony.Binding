@@ -86,7 +86,8 @@ describe('NativeCodeGenerator（ArkUI C API 生成模式）', () => {
         expect(csharp).toContain('SetStringAttribute(ArkUI_NodeAttributeType.NODE_BUTTON_LABEL, value)');
         expect(csharp).toContain('SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BUTTON_TYPE, ArkUIValue.I((int)value))');
         expect(csharp).toContain('public event Action<ArkUINodeEvent>? Click');
-        expect(csharp).toContain('On(ArkUI_NodeEventType.NODE_ON_CLICK, value!)');
+        expect(csharp).toContain('if (first) On(ArkUI_NodeEventType.NODE_ON_CLICK, e => _onClick?.Invoke(e));');
+        expect(csharp).toContain('if (_onClick is null) Off(ArkUI_NodeEventType.NODE_ON_CLICK);');
     });
 
     test('Column/Row：真实 .d.ts 解析生成容器属性', () => {
@@ -113,7 +114,7 @@ describe('NativeCodeGenerator（ArkUI C API 生成模式）', () => {
             events: [{ name: 'onTouch', delegateName: 'TouchEventHandler', parameters: [], returnType: 'void' }],
         });
         const { csharp, gaps } = gen.generate(result);
-        expect(csharp).toContain('On(ArkUI_NodeEventType.NODE_TOUCH_EVENT, value!)');
+        expect(csharp).toContain('if (first) On(ArkUI_NodeEventType.NODE_TOUCH_EVENT, e => _onTouch?.Invoke(e));');
         expect(gaps.filter(g => g.kind === 'event' && g.member === 'onTouch')).toHaveLength(0);
     });
 });

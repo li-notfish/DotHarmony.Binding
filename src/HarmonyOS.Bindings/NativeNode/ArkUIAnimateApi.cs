@@ -3,7 +3,9 @@
 // 的属性变更按 option 插值过渡。供页面切换淡入等使用。
 // 维护约定（同 ArkUINativeApi.cs）：仅枚举由 extract_arkui_types.py 生成
 // （ArkUI_AnimationCurve / ArkUI_FinishCallbackType 等，源头 native_animate.h /
-// native_type_visual.h）；结构体与函数表镜像手工维护、成员顺序逐项对照头文件。</auto-generated>
+// native_type_visual.h）；结构体与函数表镜像手工维护、成员顺序逐项对照头文件。
+// 注意：与其它 ArkUI_Native*API_1 表不同，本表以 animateTo 起首、**没有 version 字段**
+//（已与 native_animate.h 逐项核实），勿按惯例补 version。
 #nullable enable
 using System;
 using System.Runtime.InteropServices;

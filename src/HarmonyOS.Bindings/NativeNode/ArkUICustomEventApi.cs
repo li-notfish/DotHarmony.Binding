@@ -12,8 +12,13 @@ internal static unsafe partial class ArkUINativeApi
 {
     // ───────────────────────── 自绘节点事件（函数表后段）─────────────────────────
 
+    // 原生返回 int32_t 错误码：自绘事件注册失败（重复注册/不支持的类型）必须上浮
     internal static void RegisterNodeCustomEvent(ArkUI_NodeHandle node, ArkUI_NodeCustomEventType eventType, int targetId, void* userData)
-        => Node->RegisterNodeCustomEvent(node, (int)eventType, targetId, userData);
+    {
+        var status = Node->RegisterNodeCustomEvent(node, (int)eventType, targetId, userData);
+        if (status != 0)
+            throw new InvalidOperationException($"RegisterNodeCustomEvent({eventType}, targetId={targetId}) failed: {status}");
+    }
 
     internal static void UnregisterNodeCustomEvent(ArkUI_NodeHandle node, ArkUI_NodeCustomEventType eventType)
         => Node->UnregisterNodeCustomEvent(node, (int)eventType);
@@ -67,7 +72,8 @@ internal static unsafe partial class ArkUINativeApi
 
     // ───────────────────────── markDirty / 布局约束与绘制上下文访问器 ─────────────────────────
 
-    internal static int MarkDirty(ArkUI_NodeHandle node, ArkUI_NodeDirtyFlag flags)
+    /// <summary>标记节点需重排/重绘（原生 void 返回，无错误码通道）</summary>
+    internal static void MarkDirty(ArkUI_NodeHandle node, ArkUI_NodeDirtyFlag flags)
         => Node->MarkDirty(node, flags);
 
     // native_type.h：约束最大/最小尺寸为 int（px 域）

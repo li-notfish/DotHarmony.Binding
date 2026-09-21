@@ -551,6 +551,22 @@ internal static partial class NativeNodeApi
         napi_bigint = 9
     }
 
+    /// <summary>napi_typedarray_type（js_native_api_types.h）</summary>
+    internal enum napi_typedarray_type
+    {
+        napi_int8_array = 0,
+        napi_uint8_array = 1,
+        napi_uint8_clamped_array = 2,
+        napi_int16_array = 3,
+        napi_uint16_array = 4,
+        napi_int32_array = 5,
+        napi_uint32_array = 6,
+        napi_float32_array = 7,
+        napi_float64_array = 8,
+        napi_bigint64_array = 9,
+        napi_biguint64_array = 10,
+    }
+
     #endregion
 
 

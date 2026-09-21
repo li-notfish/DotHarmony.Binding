@@ -541,10 +541,21 @@ export class NativeCodeGenerator {
 
         // 2. C# 事件名：组件级覆盖有 csName 时用它，否则从 ArkTS 名称推导（去 on + PascalCase）
         const csEventName = componentOverride?.csName || toPascal(evt.name.replace(/^on/, ''));
-        return `    /// <summary>${evt.name} 事件（${evtKey}）</summary>\n` +
+        // 3. 多播语义：同一事件类型多个订阅者经托管委托链合并，首订阅时注册原生、
+        //    链空时注销——避免"后 += 覆盖先 += / -= 误摘他人"违反 C# 事件契约
+        const field = `_on${csEventName}`;
+        return `    private Action<ArkUINodeEvent>? ${field};\n` +
+            `    /// <summary>${evt.name} 事件（${evtKey}）</summary>\n` +
             `    public event Action<ArkUINodeEvent>? ${csEventName}\n    {\n` +
-            `        add => On(ArkUI_NodeEventType.${evtKey}, value!);\n` +
-            `        remove => Off(ArkUI_NodeEventType.${evtKey});\n    }`;
+            `        add\n        {\n` +
+            `            var first = ${field} is null;\n` +
+            `            ${field} += value;\n` +
+            `            if (first) On(ArkUI_NodeEventType.${evtKey}, e => ${field}?.Invoke(e));\n` +
+            `        }\n` +
+            `        remove\n        {\n` +
+            `            ${field} -= value;\n` +
+            `            if (${field} is null) Off(ArkUI_NodeEventType.${evtKey});\n` +
+            `        }\n    }`;
     }
 
     private emit(

@@ -38,6 +38,8 @@ public static unsafe class Host
         {
             NapiEnv.Initialize(env);
             NativeMainThread.Capture();
+            // 线程派发器挂接 UI 线程（任意线程 Post 的动作随后可在 JS 线程执行）
+            MainThreadDispatcher.AttachUiThread();
             return 0;
         }
         catch

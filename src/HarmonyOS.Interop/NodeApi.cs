@@ -522,13 +522,23 @@ public static class NodeApi
     public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, byte[] methodName, Func<IntPtr, T>? convert, params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
-        var (jsFunc, task) = CallbackTaskBridge.CreateCallback(convert);
+        var (jsFunc, task, abort) = CallbackTaskBridge.CreateCallback(convert);
         // [args..., jsFunc]：NapiArg 为 struct 可 stackalloc；jsFunc 走 Of 工厂入 Ref 路径
         // NapiArg 含引用字段为托管类型不可 stackalloc——单次数组分配（零装箱收益在基元装箱）
         var argv = new NapiArg[args.Length + 1];
         args.CopyTo(argv);
         argv[args.Length] = NapiArg.Of(jsFunc);
-        _ = InvokeMethod(jsObject, methodName, argv);
+        try
+        {
+            _ = InvokeMethod(jsObject, methodName, argv);
+        }
+        catch
+        {
+            // 方法调用本身失败（JS 永不会回调）：取消 Task 并释放 GCHandle，
+            // 否则 await 方永久挂起、句柄永久滞留
+            abort();
+            throw;
+        }
         return task;
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
