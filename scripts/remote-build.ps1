@@ -11,7 +11,8 @@ $tmpDir = Join-Path $projectRoot "tmp"
 New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
 
 # 从环境变量读取配置，若未设置则使用默认值
-$REMOTE = if ($env:REMOTE) { $env:REMOTE } else { "wsl_auzrelinux" }
+# REMOTE 默认为 WSL 别名；远程 SSH 场景请显式提供（见 resolve-remote.ps1 的 REMOTE_SSH_ALIAS）
+$REMOTE = if ($env:REMOTE) { $env:REMOTE } elseif ($env:REMOTE_SSH_ALIAS) { $env:REMOTE_SSH_ALIAS } else { "wsl" }
 $BUILD  = if ($env:BUILD)  { $env:BUILD  } else { "/tmp/arktsbinding" }
 
 # 打包清单与 remote-build.sh 共用（scripts/build-files.txt）

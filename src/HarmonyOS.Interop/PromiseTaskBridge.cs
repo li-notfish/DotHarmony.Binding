@@ -1,7 +1,6 @@
 // Promise → Task 桥（ROADMAP 2.1 的最小切片）。
 // 前提：被调 Promise 在 JS 线程 resolve/reject，fulfilled/rejected 回调经
-// napi_create_function 的原生 trampoline 进入 C#（复用 NativeCallbacks 的
-// GCHandle-data 模式）。
+// napi_create_function 的原生 trampoline 进入 C#（GCHandle-data 模式）。
 // TCS 不使用 RunContinuationsAsynchronously：Task 续体在 TrySetResult 内联到
 // JS 线程执行（与 JS await 微任务语义一致），保证 await 之后的 NAPI 调用
 // （wrapper 属性访问等）仍有 env 可用；若调度到线程池，NapiEnv.Current 会

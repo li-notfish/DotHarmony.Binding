@@ -226,31 +226,20 @@ internal static class NativeValue
         byte[] buf => From(buf),
         string[] strs => From(strs),
         JsObject j => From(j),
-        Delegate d => From(d),
         _ => FromRecord(value)
     };
 
     /// <summary>
-    /// 将 C# 委托转换为 napi_function。
-    /// 注：本方法创建 GCHandle 固定委托但无法归还（JS 侧函数随 napi 生命周期 GC，
-    /// 无托管侧 owner 可释放句柄）——遗留兼容路径。新代码必须经
-    /// <see cref="NodeApi.CreateCallbackFunction"/> / 生成的事件适配通道挂载，
-    /// 由调用方持有 GCHandle 并负责释放。
+    /// 委托封送已封闭：GCHandle 固定委托后无处归还（JS 函数 GC 后句柄永久滞留），
+    /// 一律显式失败——事件/回调请经 NodeApi.CreateCallbackFunction 或生成的事件适配器
+    /// 挂载，由调用点持有 GCHandle 并负责释放。
     /// </summary>
     public static IntPtr From(Delegate del)
     {
-        HiLog.Warn("Interop", "NativeValue.From(Delegate) used: GCHandle is not reclaimable; " +
-            "prefer NodeApi.CreateCallbackFunction with explicit lifetime");
-        var env = NapiEnv.Current;
-        var method = del.Method;
-        var parameters = method.GetParameters();
-        var gch = GCHandle.Alloc(del);
-        var nameBytes = Encoding.UTF8.GetBytes(method.Name);
-        var fnPtr = (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr>)&NativeCallbacks.Action_Ptr;
-        NativeNodeApi.napi_create_function(
-            env, nameBytes, (IntPtr)nameBytes.Length,
-            fnPtr, GCHandle.ToIntPtr(gch), out var result).ThrowIfFailed();
-        return result;
+        throw new NotSupportedException(
+            "Delegate marshaling via NativeValue.From(Delegate) is not supported: " +
+            "the GCHandle pinning the delegate cannot be reclaimed once the JS function is collected. " +
+            "Use NodeApi.CreateCallbackFunction / SetEventHandler with explicit lifetime management instead.");
     }
 
     /// <summary>
