@@ -51,23 +51,6 @@ public unsafe partial class DatePicker : ArkUINodeBase
         }
     }
 
-    private Action<ArkUINodeEvent>? _onDateChange;
-    /// <summary>onDateChange 事件（NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE）</summary>
-    public event Action<ArkUINodeEvent>? DateChange
-    {
-        add
-        {
-            var first = _onDateChange is null;
-            _onDateChange += value;
-            if (first) On(ArkUI_NodeEventType.NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE, e => _onDateChange?.Invoke(e));
-        }
-        remove
-        {
-            _onDateChange -= value;
-            if (_onDateChange is null) Off(ArkUI_NodeEventType.NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE);
-        }
-    }
-
     private Action<ArkUINodeEvent>? _onChildTouchTest;
     /// <summary>onChildTouchTest 事件（NODE_ON_CHILD_TOUCH_TEST）</summary>
     public event Action<ArkUINodeEvent>? ChildTouchTest

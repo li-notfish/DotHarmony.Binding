@@ -394,9 +394,19 @@ export class NativeCodeGenerator {
             allEvents.push(evt);
         }
         const eventBlocks: string[] = [];
+        // 同一原生事件类型只允许一个托管事件（如 date_picker 的 onChange/onDateChange 均映射到
+        // NODE_DATE_PICKER_EVENT_ON_DATE_CHANGE）：重复订阅会经 ArkUINodeBase 的覆盖式注册相互覆盖，
+        // 保留 ArkTS 声明顺序中的第一个（语义最贴近原始 onXxx）
+        const seenNativeEventKeys = new Set<string>();
         for (const evt of allEvents) {
             const block = this.generateEvent(comp.name, evt, gaps, attrPrefix);
-            if (block) eventBlocks.push(block);
+            if (!block) continue;
+            const nativeKey = block.match(/ArkUI_NodeEventType\.(\w+)/)?.[1];
+            if (nativeKey) {
+                if (seenNativeEventKeys.has(nativeKey)) continue;
+                seenNativeEventKeys.add(nativeKey);
+            }
+            eventBlocks.push(block);
         }
 
         // 4. 产出

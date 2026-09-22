@@ -21,7 +21,15 @@ public class HarmonyDeviceInfo : IDeviceInfo
 
     public DevicePlatform Platform => DevicePlatform.Create("OpenHarmony");
 
-    public DeviceIdiom Idiom => DeviceIdiom.Phone;
+    // deviceInfo.deviceType 英文字符串（"phone"/"tablet"/"wearable"/"tv"/"car"/"2in1"...）；未知兜底 Phone
+    public DeviceIdiom Idiom => HDeviceInfo.DeviceType switch
+    {
+        "tablet" or "tablet_pc" => DeviceIdiom.Tablet,
+        "tv" or "television" => DeviceIdiom.TV,
+        "wearable" or "watch" => DeviceIdiom.Watch,
+        "desktop" or "2in1" or "pc" => DeviceIdiom.Desktop,
+        _ => DeviceIdiom.Phone,
+    };
 
     public DeviceType DeviceType => IsEmulator() ? DeviceType.Virtual : DeviceType.Physical;
 

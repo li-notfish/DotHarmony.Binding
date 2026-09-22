@@ -246,6 +246,17 @@ public static class NodeApi
     /// </summary>
     public static IntPtr GetProperty(IntPtr jsObject, string name)
         => GetProperty(jsObject, Encoding.UTF8.GetBytes(name));
+	
+    /// <summary>napi 值的类型判别（调用方按类型分流，替代"捕获异常做控制流"）</summary>
+    public static bool IsNumber(IntPtr value)
+    {
+#if HARMONYOS
+        NativeNodeApi.napi_typeof(NapiEnv.Current, value, out var type);
+        return type == NativeNodeApi.napi_valuetype.napi_number;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
 
     /// <summary>
     /// 写入对象属性（单值）。与 SetAttribute 的区别：SetAttribute 的多值参数会展开为 JS 数组，

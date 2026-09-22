@@ -59,7 +59,12 @@ public static class ArkTsEngine
 
     internal static void Register(VirtualNode node) => _nodes[node.Id] = node;
 
-    internal static void Unregister(int id) => _nodes.Remove(id);
+    internal static void Unregister(int id)
+    {
+        _nodes.Remove(id);
+        // 影子量测快照随节点生命周期摘除——节点已删，回流再命中会复活幽灵条目
+        _measures.Remove(id);
+    }
 
     internal static VirtualNode? GetNode(int id) => _nodes.TryGetValue(id, out var node) ? node : null;
 

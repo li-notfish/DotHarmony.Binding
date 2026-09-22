@@ -17,8 +17,15 @@ public static unsafe partial class HiLog
     [LibraryImport(Lib)]
     private static partial void OH_LOG_Print(int type, int level, uint domain, byte* tag, byte* fmt, byte* value);
 
-    /// <summary>运行时开关（默认开）。关闭后 Debug/Info 直接返回（Warn/Error 始终输出）。</summary>
-    public static bool VerboseEnabled { get; set; } = true;
+    private static volatile bool _verboseEnabled = true;
+
+    /// <summary>运行时开关（默认开）。关闭后 Debug/Info 直接返回（Warn/Error 始终输出）。
+    /// volatile：任意线程（含 TSFN 上行的后台线程）关闭后立即对全部读取者生效。</summary>
+    public static bool VerboseEnabled
+    {
+        get => _verboseEnabled;
+        set => _verboseEnabled = value;
+    }
 
     // 缓存一次的 UTF8 常量（Write 每次调用省两次编码分配）；空串以 NUL 终止符表示
     private static readonly byte[] FmtUtf8 = "%{public}s"u8.ToArray();

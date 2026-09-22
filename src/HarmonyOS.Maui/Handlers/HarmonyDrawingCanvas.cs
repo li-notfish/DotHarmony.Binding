@@ -21,6 +21,7 @@ public class HarmonyDrawingCanvas : ICanvas, IDisposable
     private Color _strokeColor = Colors.Black;
     private float _strokeThickness = 1f;
     private float _alpha = 1f;
+    private bool _skewWarned;
 
     public HarmonyDrawingCanvas(Bindings.NativeNode.OHDrawingCanvas canvas) => _canvas = canvas;
 
@@ -282,6 +283,14 @@ public class HarmonyDrawingCanvas : ICanvas, IDisposable
     /// </summary>
     public void ConcatenateTransform(Matrix3x2 transform)
     {
+        // 含剪切分量的矩阵无法分解为 平移+旋转+缩放：静默错绘前先告警一次
+        if (!_skewWarned && MathF.Abs(transform.M21) > 1e-4f)
+        {
+            _skewWarned = true;
+            HiLog.Warn("HarmonyHost",
+                "[DrawingCanvas] ConcatenateTransform: skew component dropped " +
+                "(OH_Drawing 无矩阵对象通道——当前按 translate/rotate/scale 近似)");
+        }
         _canvas.Translate(transform.M31, transform.M32);
         var rotation = MathF.Atan2(transform.M12, transform.M11) * 180f / MathF.PI;
         if (MathF.Abs(rotation) > 0.001f)

@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace HarmonyOS.Bindings.NativeNode;
 
@@ -16,18 +17,20 @@ internal static class NativeMainThread
     /// <summary>由宿主入口调用，将当前线程登记为 UI 主线程</summary>
     internal static void Capture()
     {
-        _mainThreadId = CurrentManagedThreadId64();
+        // 跨线程发布的守卫字段：用 Interlocked 保证其他线程读到一致值
+        Interlocked.Exchange(ref _mainThreadId, CurrentManagedThreadId64());
     }
 
     /// <summary>断言当前线程为 UI 主线程</summary>
     internal static void Ensure()
     {
-        if (_mainThreadId == 0)
+        var main = Interlocked.Read(ref _mainThreadId);
+        if (main == 0)
         {
             // 入口尚未登记（例如单元测试环境）——宽松放行，方便离线测试
             return;
         }
-        if (_mainThreadId != CurrentManagedThreadId64())
+        if (main != CurrentManagedThreadId64())
         {
             throw new InvalidOperationException(
                 "ArkUI native node APIs must be called on the main thread. " +

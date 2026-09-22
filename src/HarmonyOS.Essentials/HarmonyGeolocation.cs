@@ -102,8 +102,9 @@ internal sealed class HarmonyGeolocation : IGeolocation
 
     private static double? OptionalDouble(IntPtr handle, string name)
     {
-        try { return NativeValue.ToDouble(NodeApi.GetProperty(handle, name)); }
-        catch { return null; }
+        // 前置类型检查替代"抛异常再吞"：缺失字段返回 undefined，经 NodeApi.IsNumber 分流、零异常开销
+        var value = NodeApi.GetProperty(handle, name);
+        return NodeApi.IsNumber(value) ? NativeValue.ToDouble(value) : null;
     }
 
     /// <summary>GeolocationAccuracy → OHOS MaxAccuracy（米）</summary>

@@ -11,7 +11,7 @@ public unsafe partial class Swiper
     private int GetAttr(ArkUI_NodeAttributeType attribute)
     {
         var item = ArkUINativeApi.GetAttribute(Handle, attribute);
-        return item != null && item->size > 0 ? item->value[0].i32 : 0;
+        return item != null && item->value != null && item->size > 0 ? item->value[0].i32 : 0;
     }
 
     /// <summary>loop 属性（NODE_SWIPER_LOOP）：是否开启循环轮播</summary>

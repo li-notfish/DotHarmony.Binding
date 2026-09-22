@@ -63,9 +63,13 @@ public readonly unsafe struct ArkUINodeEvent
     // data[4..5]=窗口坐标 data[6..7]=屏幕坐标
     // （OH_ArkUI_NodeEvent_GetNumberValue 对 click 事件返回 106108，不可用）
 
-    /// <summary>读取 NodeComponentEvent 附加数值数组第 index 项（各事件的 data 布局见 native_node.h 注释）</summary>
+    /// <summary>读取 NodeComponentEvent 附加数值数组第 index 项（各事件的 data 布局见 native_node.h 注释；index ∈ [0, 12)）</summary>
     public ref readonly ArkUI_NumberValue ComponentData(int index)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
+        if (index >= 12)
+            throw new ArgumentOutOfRangeException(nameof(index), index,
+                "ArkUI_NodeComponentEvent data has exactly 12 slots (native_node.h)");
         var p = ArkUINativeApi.GetNodeComponentEvent(_ptr);
         if (p == IntPtr.Zero)
             throw new InvalidOperationException("event carries no NodeComponentEvent data");
@@ -78,7 +82,9 @@ public readonly unsafe struct ArkUINodeEvent
     /// <summary>点击 Y 坐标（相对组件左上角，vp）</summary>
     public float ClickY => ComponentData(1).f32;
 
-    /// <summary>事件时间戳（相对系统启动，微秒）</summary>
+    /// <summary>事件时间戳（相对系统启动，微秒）。
+    /// 经 f32 槽位承载（native_node.h data[] 为 NumberValue），绝对精度约 24 位尾数——
+    /// 大量程下只可比较先后/求差，不可换算墙钟时间。</summary>
     public long ClickTimestamp => (long)ComponentData(2).f32;
 
     /// <summary>输入设备：1=鼠标，2=触摸屏，4=按键</summary>
