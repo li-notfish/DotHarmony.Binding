@@ -4,7 +4,7 @@
 用 .NET (NativeAOT) 绑定 HarmonyOS (ArkUI/ArkTS)，并让 .NET MAUI 控件经 Handler 机制渲染为 ArkUI 原生节点。
 
 **当前状态：M1（MAUI 基本面）与 M2（服务层）完成、装配分层已对齐 dotnet/android 标准（2026-09-20），模拟器端到端验证** —— XAML 声明式 UI → 鸿蒙原生渲染、
-22 个 MAUI 控件 Handler（CollectionView 虚拟化）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、**438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）**。
+27 个 MAUI 控件 Handler（CollectionView 虚拟化）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、**438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）**。
 距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 **上手**：从零创建鸿蒙 MAUI 应用 / 给已有 MAUI 应用加鸿蒙平台，见 **[GETTING_STARTED.md](GETTING_STARTED.md)**。
@@ -59,7 +59,7 @@
 DevEco Studio（内置 HarmonyOS SDK/NDK/hvigor）、可 SSH 的 Linux（NativeAOT 交叉编译）。
 
 ```bash
-# 1. 解析器构建 + 测试（76 用例）
+# 1. 解析器构建 + 测试（79 用例）
 npm install && npm test
 
 # 2. 从 NDK 头文件生成 C# 枚举（ArkUINodeTypes.g.cs + .json 元数据；SDK 探测顺序 --sdk → OHOS_SDK_BASE → OHSDK_HOME → 默认路径，找不到报错退出）
@@ -86,7 +86,7 @@ bash scripts/deploy-hap.sh
 
 | 脚本 | 用途 | 说明 |
 |---|---|---|
-| `remote-build.ps1` / `remote-build.sh` | 交叉编译 libapp.so（arm64 + x64 双架构） | `LOCAL=true`：本地 WSL 构建——**上传式**（打包 → 解压到 WSL 原生文件系统 → 构建 → 取回），勿在 `/mnt/*` 上直接构建（9p I/O 慢一个数量级）；默认经 SSH 远程构建（别名 `wsl_auzrelinux`，构建机 IP 漂移先跑 `resolve-remote.ps1`） |
+| `remote-build.ps1` / `remote-build.sh` | 交叉编译 libapp.so（arm64 + x64 双架构） | `LOCAL=true`：本地 WSL 构建——**上传式**（打包 → 解压到 WSL 原生文件系统 → 构建 → 取回），勿在 `/mnt/*` 上直接构建（9p I/O 慢一个数量级）；默认本机 WSL 环境；远程构建经 `REMOTE`/`REMOTE_SSH_ALIAS` 环境变量指定 SSH 别名（构建机 IP 漂移先跑 `resolve-remote.ps1`） |
 | `stage-host.ps1` | 宿主工程生成：模板 → 按应用实例（重写 bundleName/应用名） | 由 targets 的 HarmonyStageHost 调用（内容戳增量）；`HarmonyGenerateHost=false` 可跳过 |
 | `build-hap.cmd` | hvigor 打 HAP | DevEco Studio 路径自动探测，`DEVECO_HOME` 可覆盖；`HOST_DIR` 指向按应用暂存宿主（targets 自动设置） |
 | `deploy-hap.sh` / `deploy-hap.ps1` | 重装 HAP → 启动 → 抓取 HarmonyHost 日志 | hdc 自动探测；无设备 / 缺 HAP / 安装失败即报错停止；启动前 `aa force-stop` 防 install 竞争 |
@@ -104,7 +104,7 @@ bash scripts/deploy-hap.sh
 | `DEVECO_HOME` | DevEco Studio 安装目录 | → `D:\Program Files\Huawei\DevEco Studio` → C 盘同名 |
 | `LOCAL` | `true` 时 remote-build 在本地 WSL 构建 | 否则走 SSH 远程 |
 | `DEMO_APP` | libapp.so 打包哪个 demo 工程（`HelloApp`=控件 demo / `ApiDemo`=API 绑定 demo / `EssentialsApp`=Essentials 验证） | `HelloApp` |
-| `REMOTE` / `BUILD` | SSH 别名 / 构建目录 | `wsl_auzrelinux` / `/tmp/arktsbinding` |
+| `REMOTE` / `BUILD` | SSH 别名 / 构建目录 | `wsl`（或 `REMOTE_SSH_ALIAS`） / `/tmp/arktsbinding` |
 | `HOST_DIR` | 宿主目录覆盖（三脚本通用；targets 生成模式自动指向 `obj/harmony/host`） | `samples/HarmonyHost` |
 
 > 约定：`.gitattributes` 强制 `*.sh` 为 LF（WSL bash 无法执行 CRLF 脚本）、`*.cmd/*.ps1` 为 CRLF；新增脚本请沿用"路径自动探测 + 前置检查失败即停"的风格。
@@ -162,7 +162,7 @@ samples/dotnet/EssentialsApp/ M2.4 Essentials 验证（16 服务全量：信息�
                              对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
                              由 src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets 提供
 scripts/                     remote-build / stage-host / build-hap / deploy-hap 一键工具链（+ verify-m1-uitest 行为回归）
-tests/                       jest（解析器/生成器 76 用例）
+tests/                       jest（解析器/生成器 79 用例）
 ```
 
 ## 已知限制（当前真实状态）
@@ -172,18 +172,18 @@ tests/                       jest（解析器/生成器 76 用例）
 - **导航**：根页用 `new NavigationPage(...)` 即可走 MAUI 标准 `Navigation.PushAsync/PopAsync`（HarmonyNavigationPageHandler 转接 IStackNavigation 协议，已实测）；另有轻量 Page 栈与系统返回键（优先级：模态 → NavigationPage 内栈 → 轻量栈）。**模态** `PushModalAsync/PopModalAsync` 标准可用（ArkStack 覆盖 + RootNavigationAdapter 转接）；**生命周期** Appearing/Disappearing 已透传（宿主建最小 Window/Application 逻辑链放行 MAUI 的 SendAppearing 守卫）；页面推入有 250ms 淡入、返回/模态关闭有 250ms 淡出（animateTo，完成后才摘除释放旧页）；NavigationPage 自带标题栏（返回键 + 页 Title，`HasNavigationBar=false` 隐藏）。未支持：Shell（多平台 Shell 应用请把入口改写为 NavigationPage 结构）
 - **异步 API（M2 完成）**：`Promise<T>`→`Task<T>`；仅 callback 形式 API→`Task<T>`（CallbackTaskBridge，err-first）；`.NET event` 事件模型（真实触发已实测）；TSFN 生命周期三路径封装 + finalize 延迟释放防 UAF。**续体在 JS 线程内联恢复**（`NapiEnv` 线程亲和性），长耗时工作需自行 `Task.Run`
 - **零分配调用路径**：`params ReadOnlySpan<object?>`（C# 13）、trampoline/argv 栈分配、生成 record 的 u8 名字常量缓存、`SetNumericAttribute(params ReadOnlySpan<...>)`（C# 14 first-class span conversions，属性写热路径）、HiLog 格式串 u8 缓存 + 运行时开关；剩余分配源：基元装箱（object 转换点）、字符串结果物化、事件适配器闭包
-- **控件覆盖**：22 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/BoxView/RefreshView/Picker/DatePicker/TimePicker + CollectionView（NodeAdapter 虚拟化）/CarouselView），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
+- **控件覆盖**：27 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/Border(BoxView)/RefreshView/Picker/DatePicker/TimePicker + CollectionView（NodeAdapter 虚拟化）/CarouselView + Shape/GraphicsView 自绘），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
 - **手势识别**：TapGestureRecognizer/PanGestureRecognizer/PinchGestureRecognizer/SwipeGestureRecognizer/PointerGestureRecognizer 全支持（`HarmonyViewHandler` 基类统一挂载；Tap/Pinch 走 NDK 原生手势，Pan/Swipe/Pointer 走触摸流——pan 原生手势事件数据不可靠，实测沉淀；Tap/Pointer 经 AOT 安全的反射桥触发 internal SendTapped/SendPointer*）；Drag/Drop 识别器（长按起拖 + UDMF 载荷，DRAG_END 销毁）已支持；PanUpdated 单位 vp（等价 iOS points）；未支持：鼠标 ButtonsMask 区分、hover 通道、Pinch 真机多点触控专项
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
-- **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；63 个含复杂缺口（TS 声明合并/深导入链）的模块保持灰度（`GRAYSCALE_MODULES`），清单见 `tools/api-generator/index.ts`
+- **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；~~63 个含复杂缺口的模块灰度~~（✅ 已于 `7acea5f` 全部转正，438/438 全量编译，灰度清单已清空）
 - **基元装箱**：`object?` 参数转换点存在装箱；完全零装箱需要 union struct 参数设计（后续立项）
 
 ## 路线图
 
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
 - M1 尾巴（完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~、~~Grid/AbsoluteLayout（MAUI 托管布局）~~、~~布局遗留修复（Grid 对齐/ZIndex/Auto 重排）+ 返回动画 + NavigationPage 标题栏 + .NET 10 / C# 14 优化批次~~；剩真机验证
-- M2 全部完成（**Essentials 16 服务全量**：DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage/MainThread）：~~TSFN 异步层~~、~~codeGenerator 修复~~、~~@ohos.* 全量生成（438 模块/375 转正）~~、~~Promise→Task/AsyncCallback/.NET 事件/ArrayBuffer/Map~~、~~端到端模拟器验证~~、~~零分配调用路径~~、~~2.4 Essentials 首批（含剪贴板 user_grant 授权闭环 + Preferences 跨重启持久化 + Battery commonEvent 事件 + Vibration + Connectivity/KeepScreenOn/MainThread，2026-09-13）~~
+- M2 全部完成（**Essentials 16 服务全量**：DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage/MainThread）：~~TSFN 异步层~~、~~codeGenerator 修复~~、~~@ohos.* 全量生成（438/438 全量转正）~~、~~Promise→Task/AsyncCallback/.NET 事件/ArrayBuffer/Map~~、~~端到端模拟器验证~~、~~零分配调用路径~~、~~2.4 Essentials 首批（含剪贴板 user_grant 授权闭环 + Preferences 跨重启持久化 + Battery commonEvent 事件 + Vibration + Connectivity/KeepScreenOn/MainThread，2026-09-13）~~
 - M3：NuGet 打包、单项目体验、CI；~~装配分层对齐（Interop/Essentials 独立成装 + src/ 收编 + TFM/CPM 集中，2026-09-20）~~
 
 ## 致谢 / Acknowledgements

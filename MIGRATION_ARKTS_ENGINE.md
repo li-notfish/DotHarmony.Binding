@@ -25,12 +25,13 @@
 | `NativeNode/ArkUIGestureApi.cs` + `Nodes/Gestures/` | `ArkUI_NativeGestureAPI_1` | ❌ 重写为 ArkTS 声明式手势 |
 | `NativeNode/ArkUIAnimateApi.cs` | `ArkUI_NativeAnimateAPI_1.animateTo` | ❌ 换 ArkTS animateTo |
 | 宿主 `napi_init.c`（NodeContent 桥） | `OH_ArkUI_GetNodeContentFromWindow` + C 节点填充 | ❌ 改为引擎根组件 |
-| `src/HarmonyOS.Maui/Handlers/*`（22 个 Handler + 布局 + 导航） | 只调包装方法 | ✅ 存活 |
+| `src/HarmonyOS.Maui/Handlers/*`（27 个 Handler + 布局 + 导航） | 只调包装方法 | ✅ 存活 |
 | 手势翻译层（`HarmonyGestureManager` 的 Send* 协议回送） | 平台无关 | ✅ 存活（仅事件源更换） |
 | `@ohos.*` 绑定、napi 运行时桥（TSFN/Promise） | Node-API（ArkTS 运行时稳定面） | ✅ 完全无关 |
 
-**漏斗纪律（P0，✅ 已执行，2026-09-12）**：Handler 层禁止直接触碰 `ArkUI_NativeNodeAPI_*`。经审计，
-当前 Handler/Hosting 层已无函数表直连（全部经包装类型）；纪律以
+**漏斗纪律（P0，✅ 已执行，2026-09-12；2026-09-20 装拆后扫描面扩为 Maui+Essentials 双层）**：
+Handler 层禁止直接触碰 `ArkUI_NativeNodeAPI_*`。经审计，
+当前 Handler/Hosting/Essentials 层已无函数表直连（全部经包装类型）；纪律以
 `tests/dotnet/HarmonyGestureTests/FunnelDisciplineTests`（源码扫描 11 类禁用符号：函数表类、
 napi P/Invoke、原始事件/属性结构体、自行 DllImport）**机械强制**——新增直连需求必须先在节点层
 加包装方法，违规即测试红。

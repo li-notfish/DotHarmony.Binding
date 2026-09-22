@@ -8,9 +8,9 @@ MAUI Essentials 的鸿蒙平台实现指南。视图 Handler 的适配见 [HANDL
 
 MAUI 的 Essentials 静态入口（`DeviceInfo.Current` / `Preferences.Default` / `Clipboard.Default`…）
 在 netstandard 产物里是**抛异常的缺省实现**，但每个静态类都留有 internal 注入点。
-本仓做法（`src/HarmonyOS.Maui/Essentials/HarmonyEssentials.cs`）：
+本仓做法（`src/HarmonyOS.Essentials/HarmonyEssentials.cs`——拆装后 Essentials 独立成装）：
 
-1. 实现层：每个服务写一个 `HarmonyXxx : IXxx`（`src/HarmonyOS.Maui/Essentials/`），
+1. 实现层：每个服务写一个 `HarmonyXxx : IXxx`（`src/HarmonyOS.Essentials/`），
    方法体调用 `HarmonyOS.Bindings.Api` 的 `@ohos.*` 包装类型；
 2. 注入层：`HarmonyEssentials.Install()` 经**反射桥**完成注入——
    `[DynamicDependency(DynamicallyAccessedMemberTypes.NonPublicMethods)]` 收根 +

@@ -370,11 +370,11 @@ MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实�
 
 **原生 recognizer 生命周期铁律**：不得在事件分发回调内 `dispose()` recognizer——dispose 后原生管线仍派发事件（SIGSEGV UAF，实测）。重建场景 Detach + 入池复用（`HarmonyGestureManager.Rebuild`），dispose 仅在 Handler 断连时统一执行。
 
-单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑、Essentials 密度/方向映射、Preferences 编解码、Battery 枚举映射、Connectivity bearer 映射，共 75 用例（含漏斗纪律源码扫描闸）。
+单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑、Essentials 密度/方向映射、Preferences 编解码、Battery 枚举映射、Connectivity bearer 映射，共 83 用例（含漏斗纪律源码扫描闸）；另有 `HarmonyEngineTests` 14 用例。
 
 ### 6.2 Essentials 注入适配要点
 
-MAUI 的 Essentials 静态类（`DeviceInfo.Current`/`DeviceDisplay`/`AppInfo`/`Clipboard`）在 netstandard 产物中默认实现全部抛异常，平台侧经 internal `SetCurrent`/`SetDefault` 注入点装载。本仓库实现：`HarmonyEssentials.Install()`（反射桥模式，同手势桥：`[DynamicDependency]` 收根 + `CreateDelegate` 缓存）+ 四个 `Harmony*` 实现（`src/HarmonyOS.Maui/Essentials/`）。注意：
+MAUI 的 Essentials 静态类（`DeviceInfo.Current`/`DeviceDisplay`/`AppInfo`/`Clipboard`）在 netstandard 产物中默认实现全部抛异常，平台侧经 internal `SetCurrent`/`SetDefault` 注入点装载。本仓库实现：`HarmonyEssentials.Install()`（反射桥模式，同手势桥：`[DynamicDependency]` 收根 + `CreateDelegate` 缓存）+ `Harmony*` 实现（`src/HarmonyOS.Essentials/`——Essentials 已独立成装）。注意：
 
 - **装载时机是铁律**：`Install()` 必须在 `MauiHarmonyHost.Run` 的 `RootBuilder` lambda 内调用（UI 线程首次构建时，napi env 已就绪）——放 ModuleInitializer（dlopen 时）会因 napi 未初始化直接闪退（实测 DfxFaultLogger 崩在 HarmonyInit+16）；
 - 实现类构造时即创建底层包装对象（如 `HarmonyClipboard` 构造时取 SystemPasteboard）——构造发生在 Install 时（napi 就绪），但**包装句柄跨时长持有会失效**（见 §7 PinnedValue 行）；

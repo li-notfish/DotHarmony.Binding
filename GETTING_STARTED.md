@@ -10,7 +10,7 @@
 | 层 | 内容 | 你是否要写 |
 |---|---|---|
 | 应用工程 | Program.cs + XAML 页面 + Platforms/HarmonyOS 启动代码 | ✅ 本文的主角 |
-| HarmonyOS.Maui | 22 个控件 Handler、手势、导航、托管布局 | ❌ 引用即可 |
+| HarmonyOS.Maui | 27 个控件 Handler、手势、导航、托管布局 | ❌ 引用即可 |
 | HarmonyOS.Essentials | MAUI Essentials 鸿蒙实现（16 服务） | ❌ 引用即可（MauiHarmonyHost.Run 自动安装） |
 | HarmonyOS.Bindings | ArkUI NDK 原生节点 + 438 个 @ohos.* 模块绑定 | ❌ 引用即可（仅声明用到的 @ohos 模块） |
 | HarmonyOS.Interop | napi 互操作核心独立装 | ❌ 引用即可 |
@@ -286,7 +286,7 @@ re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——�
 
 ## 5. 当前能力边界（决定 §2 盘点结论的细节）
 
-- **控件**：22 个 Handler（基础控件 + Picker/RefreshView/BoxView + CollectionView 虚拟化/CarouselView）
+- **控件**：27 个 Handler（基础控件 + Picker/RefreshView/BoxView + CollectionView 虚拟化/CarouselView + Shape/GraphicsView 自绘）
 - **手势**：Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop；hover、鼠标按键区分待做
 - **布局**：StackLayout（flex 托管）+ Grid/AbsoluteLayout（MAUI 托管，对齐/ZIndex/Auto 轨道自适应已对齐）
 - **自绘**：Shape + GraphicsView（ArkUI 自绘节点 + OH_Drawing）
