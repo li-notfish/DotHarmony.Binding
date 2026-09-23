@@ -21,16 +21,17 @@
 
 | 代码 | 绑定的 API 面 | 死区？ |
 |---|---|---|
-| `HarmonyOS.Bindings/NativeNode/ArkUINodeBase.cs` + `Nodes/*.cs` | `ArkUI_NativeNodeAPI_1`（createNode/setAttribute/addChild/事件注册） | ❌ 重写为 VirtualNode |
+| `src/HarmonyOS.Bindings/NativeNode/ArkUINodeBase.cs` + `Nodes/*.cs` | `ArkUI_NativeNodeAPI_1`（createNode/setAttribute/addChild/事件注册） | ❌ 重写为 VirtualNode |
 | `NativeNode/ArkUIGestureApi.cs` + `Nodes/Gestures/` | `ArkUI_NativeGestureAPI_1` | ❌ 重写为 ArkTS 声明式手势 |
 | `NativeNode/ArkUIAnimateApi.cs` | `ArkUI_NativeAnimateAPI_1.animateTo` | ❌ 换 ArkTS animateTo |
 | 宿主 `napi_init.c`（NodeContent 桥） | `OH_ArkUI_GetNodeContentFromWindow` + C 节点填充 | ❌ 改为引擎根组件 |
-| `src/HarmonyOS.Maui/Handlers/*`（22 个 Handler + 布局 + 导航） | 只调包装方法 | ✅ 存活 |
+| `src/HarmonyOS.Maui/Handlers/*`（27 个 Handler + 布局 + 导航） | 只调包装方法 | ✅ 存活 |
 | 手势翻译层（`HarmonyGestureManager` 的 Send* 协议回送） | 平台无关 | ✅ 存活（仅事件源更换） |
 | `@ohos.*` 绑定、napi 运行时桥（TSFN/Promise） | Node-API（ArkTS 运行时稳定面） | ✅ 完全无关 |
 
-**漏斗纪律（P0，✅ 已执行，2026-09-12）**：Handler 层禁止直接触碰 `ArkUI_NativeNodeAPI_*`。经审计，
-当前 Handler/Hosting 层已无函数表直连（全部经包装类型）；纪律以
+**漏斗纪律（P0，✅ 已执行，2026-09-12；2026-09-20 装拆后扫描面扩为 Maui+Essentials 双层）**：
+Handler 层禁止直接触碰 `ArkUI_NativeNodeAPI_*`。经审计，
+当前 Handler/Hosting/Essentials 层已无函数表直连（全部经包装类型）；纪律以
 `tests/dotnet/HarmonyGestureTests/FunnelDisciplineTests`（源码扫描 11 类禁用符号：函数表类、
 napi P/Invoke、原始事件/属性结构体、自行 DllImport）**机械强制**——新增直连需求必须先在节点层
 加包装方法，违规即测试红。
@@ -216,9 +217,9 @@ C NDK API 是 ArkUI-X 跨平台与游戏引擎接入的官方通道，整体移�
 
 | 组件 | 位置 | 说明 |
 |---|---|---|
-| `VirtualNode` | `HarmonyOS.Bindings/Experimental/VirtualNode.cs` | ArkUINodeBase 公开面子集；写操作全部翻译为指令入队，`MeasuredSize` 读影子快照；P2 增补 `SetPosition`/`SetPlaceholder`/`SetImageSource` |
-| `ArkTsEngine` | `HarmonyOS.Bindings/Experimental/ArkTsEngine.cs` | 指令队列 + `Flush()` 单次 napi 批量下发（布局 pass 边界钩子）；桥挂接（导出符号 `HarmonyEngineInit`）；事件/量测/文本回流分发；P2 增补 16ms tick 自动冲刷（引擎侧 setInterval → 'tick' 回流 → C# napi 回调线程内冲刷，兜底替代显式 Flush） |
-| `ArkTsCommand` | `HarmonyOS.Bindings/Experimental/ArkTsCommand.cs` | 指令模型（create/setAttrs/setChildren/setEvents/delete/setRoot），纯托管可单测 |
+| `VirtualNode` | `src/HarmonyOS.Bindings/Experimental/VirtualNode.cs` | ArkUINodeBase 公开面子集；写操作全部翻译为指令入队，`MeasuredSize` 读影子快照；P2 增补 `SetPosition`/`SetPlaceholder`/`SetImageSource` |
+| `ArkTsEngine` | `src/HarmonyOS.Bindings/Experimental/ArkTsEngine.cs` | 指令队列 + `Flush()` 单次 napi 批量下发（布局 pass 边界钩子）；桥挂接（导出符号 `HarmonyEngineInit`）；事件/量测/文本回流分发；P2 增补 16ms tick 自动冲刷（引擎侧 setInterval → 'tick' 回流 → C# napi 回调线程内冲刷，兜底替代显式 Flush） |
+| `ArkTsCommand` | `src/HarmonyOS.Bindings/Experimental/ArkTsCommand.cs` | 指令模型（create/setAttrs/setChildren/setEvents/delete/setRoot），纯托管可单测 |
 | 引擎宿主模板 | `samples/HarmonyHostEngine/`（由 `samples/HarmonyHost` 复制） | C shim 仅增 `initEngine` 通道；`ets/engine/`：EngineScene（SceneGraph + 增量 diff）、DynamicNode（递归渲染，Stack/Scroll/Text/Entry/Image/Button 六类 + position）、EngineBridge（tick 通道 + textChange 回流）、EngineHost |
 | 实验应用 | `samples/dotnet/EngineLab/` | 指令环演示：建树 → 点击/输入回流 → 改属性 → tick 自动冲刷；定位色块 + Entry textChange + 量测打日志。**不引用 src/HarmonyOS.Maui** |
 

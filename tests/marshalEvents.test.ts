@@ -4,9 +4,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { TypeMapper } from '../src/parser/typeMapper';
-import { ArkTsParser } from '../src/parser/index';
-import { ApiGenerator } from '../src/parser/apiGenerator';
+import { TypeMapper } from '../tools/api-generator/typeMapper';
+import { ArkTsParser } from '../tools/api-generator/index';
+import { ApiGenerator } from '../tools/api-generator/apiGenerator';
 
 function generate(content: string, fileName = '@ohos.testsvc.d.ts'): string {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ohos-ev-'));

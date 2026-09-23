@@ -46,7 +46,7 @@ public class HarmonyRefreshViewHandler : HarmonyViewHandler<IRefreshView, ArkRef
             // 防重入：Content 变更时先摘除旧子树（mapper 初始同步与属性变更都会进这里）
             if (h._contentHandler is not null)
             {
-                h.PlatformView.RemoveAllChildren();
+                HarmonyViewHandler<IRefreshView, ArkRefresh>.DisposeContent(h._contentHandler, h.PlatformView);
                 h._contentHandler = null;
             }
 

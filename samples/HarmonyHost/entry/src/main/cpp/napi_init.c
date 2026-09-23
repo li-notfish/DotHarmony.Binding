@@ -44,6 +44,9 @@ static bool load_dotnet(void)
     return true;
 }
 
+// 页面重建（恢复/多次 aboutToAppear）会让 TS 再走 passNodeContent；.NET 侧 UI 树只应该建一次
+static bool g_uiBuilt = false;
+
 static bool ensure_runtime(napi_env env)
 {
     if (!load_dotnet()) return false;
@@ -90,6 +93,12 @@ static napi_value InitDotnet(napi_env env, napi_callback_info info)
 static napi_value PassNodeContent(napi_env env, napi_callback_info info)
 {
     if (!ensure_runtime(env)) return NULL;
+    if (g_uiBuilt) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG,
+                     "passNodeContent: UI already built, skipping rebuild");
+        return NULL;
+    }
+    g_uiBuilt = true;
 
     size_t argc = 1;
     napi_value argv[1];

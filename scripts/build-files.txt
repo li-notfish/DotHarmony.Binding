@@ -10,8 +10,8 @@
 --exclude=UnityHarmony
 --exclude=tmp
 src
-HarmonyOS.Bindings
 samples
 scripts
 Directory.Build.props
+Directory.Packages.props
 ArkTsBinding.slnx

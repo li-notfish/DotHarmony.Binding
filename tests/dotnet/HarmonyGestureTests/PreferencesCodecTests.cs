@@ -3,7 +3,7 @@
 // 关注点：精度（long/DateTime.ToBinary 超 double 2^53 不得走 float/double 路径）、
 // 文化不变性（InvariantCulture）、字符串含冒号、外部写入的无标签数据容忍。
 using System.Globalization;
-using HarmonyOS.Maui.Essentials;
+using HarmonyOS.Essentials;
 using Xunit;
 
 namespace HarmonyGestureTests;

@@ -227,8 +227,11 @@ public static class HarmonyNavigation
 
         protected override Task<MPage> OnPopAsync(bool animated)
         {
+            // Pop 的执行是动画后异步落栈，但"被弹出的页"在调用时刻即可确定；
+            // MAUI 调用方需要该页以完成弹出协议（生命周期/事件派发）
+            var popped = _currentPage?.Page;
             Pop();
-            return Task.FromResult<MPage>(null!);
+            return Task.FromResult<MPage>(popped!);
         }
 
         protected override Task OnPopToRootAsync(bool animated)

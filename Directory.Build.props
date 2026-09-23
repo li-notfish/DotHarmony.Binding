@@ -1,6 +1,6 @@
 <!--
-  Directory.Build.props：全仓公共属性收敛（此前 LangVersion/常量在 4 个 csproj 重复）。
-  注意：ImplicitUsings 保持各工程自设（HarmonyOS.Bindings 关闭以保留显式 using 风格，其余开启）。
+  Directory.Build.props：全仓公共属性收敛（LangVersion/常量/TFM）。
+  注意：ImplicitUsings 保持各工程自设（HarmonyOS.Bindings/Interop 关闭以保留显式 using 风格，其余开启）。
 -->
 <Project>
 
@@ -8,7 +8,14 @@
     <!-- 统一 .NET 10 / C# 14（preview）：first-class span conversions、extension members、
          null-conditional assignment、field 关键字等在 Binding/Handler 层均有落地 -->
     <LangVersion>preview</LangVersion>
+    <!-- HARMONYOS 全仓无条件定义：Interop/Bindings 的 #if HARMONYOS / #else 分支中，
+         #else 分支是死代码——绑定生成的 Api/*.cs 直接在桌面编译期引用 NapiEnv 等
+         类型（去掉常量会导致整个 Bindings 桌面构建报错），所以"桌面可编译性"只能由
+         全量定义提供。这是单平台绑定的既有取舍；将来真做双 RID 构建时需要生成器
+         层先学会把同样的 #if 结构输出到 Api/* -->
     <DefineConstants>$(DefineConstants);HARMONYOS</DefineConstants>
+    <!-- 全产品/样本/测试统一 TFM（对齐 dotnet/android 根 props 集中 TFM 的模式） -->
+    <HarmonyOSTargetFramework>net10.0</HarmonyOSTargetFramework>
   </PropertyGroup>
 
 </Project>

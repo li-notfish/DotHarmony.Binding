@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- 目标：linux-musl-arm64 NativeAOT 共享库 → libs/arm64-v8a/libapp.so（仿 HelloApp） -->
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
     <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <!-- 刻意不引用 src/HarmonyOS.Maui：引擎实验层不经过 Handler 层 -->
-    <ProjectReference Include="..\..\..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
   </ItemGroup>
 
   <!-- MAUI 风格平台编排：dotnet build -t:HarmonyRun（libapp.so → HAP → 部署），targets 与 MAUI 无耦合 -->

@@ -20,6 +20,53 @@
                     HeightRequest="80"
                     TextColor="Black" />
 
+            <!-- CarouselView（Loop + 位置回传：滑动/程序化跳转 → PositionChanged → Label）。
+                 放在滚轮控件之前：滚轮吞纵向滑动，自动化无法滚过（实测） -->
+            <CarouselView x:Name="TestCarousel" HeightRequest="150" Loop="True" />
+            <StackLayout Orientation="Horizontal" Spacing="8">
+                <Button x:Name="CarouselJumpBtn" Text="跳到第 3 页" TextColor="Black" />
+                <Label x:Name="CarouselPosLabel" Text="carousel pos: -" TextColor="Black" VerticalOptions="Center" />
+            </StackLayout>
+
+            <!-- Grid Span>1 in Auto 轨道（跨轨道组合撑起，M2 小项验证） -->
+            <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto">
+                <Label Grid.Row="0" Grid.Column="0" Text="A1" TextColor="Black" />
+                <Label Grid.Row="0" Grid.Column="1" Text="A2" TextColor="Black" />
+                <Label Grid.Row="0" Grid.Column="2" Text="A3" TextColor="Black" />
+                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                       Text="span3-wide-label-text" TextColor="Black" />
+            </Grid>
+            <Label Text="span3 标签应完整显示（Auto 轨道被跨轨道子节点撑起）" TextColor="Black" />
+
+            <!-- Drag & Drop：长按拖动源 → 目标接收（UDMF 文本载荷） -->
+            <Border BackgroundColor="LightGoldenrodYellow" Padding="8">
+                <Label x:Name="DragSourceLabel" Text="长按拖我 (drag me)" TextColor="Black">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Border>
+            <Border BackgroundColor="LightCyan" Padding="8">
+                <Label x:Name="DropTargetLabel" Text="放到这里 (drop here)" TextColor="Black">
+                    <Label.GestureRecognizers>
+                        <DropGestureRecognizer />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Border>
+            <Label x:Name="DropStatusLabel" Text="drop: -" TextColor="Black" />
+
+            <!-- Shape/自绘（ARKUI_NODE_CUSTOM + NODE_ON_DRAW）：MAUI Shapes（官方 ShapeDrawable 复用） -->
+            <Grid HeightRequest="180" ColumnDefinitions="*,*,*" RowDefinitions="*,*">
+                <Ellipse Grid.Row="0" Grid.Column="0" Fill="LightGreen" Stroke="DarkGreen" StrokeThickness="2" />
+                <Rectangle Grid.Row="0" Grid.Column="1" Fill="LightBlue" Stroke="DarkBlue" StrokeThickness="2" RadiusX="8" RadiusY="8" />
+                <Line Grid.Row="0" Grid.Column="2" X1="10" Y1="10" X2="90" Y2="70" Stroke="Red" StrokeThickness="3" />
+                <Polygon Grid.Row="1" Grid.Column="0" Points="10,10 80,15 45,70" Fill="Orange" Stroke="DarkOrange" StrokeThickness="2" />
+                <Polyline Grid.Row="1" Grid.Column="1" Points="10,10 80,15 45,70 10,10" Stroke="Purple" StrokeThickness="3" />
+                <Path Grid.Row="1" Grid.Column="2" Data="M 10,10 L 85,10 L 45,70 Z" Fill="Pink" Stroke="DeepPink" StrokeThickness="2" />
+            </Grid>
+            <!-- GraphicsView（IDrawable → ICanvas → OH_Drawing） -->
+            <GraphicsView x:Name="TestGraphicsView" HeightRequest="100" />
+
             <!-- Stateful controls row -->
             <StackLayout Orientation="Horizontal" Spacing="8">
                 <Label Text="Switch:" VerticalTextAlignment="Center" />
@@ -43,7 +90,6 @@
             <DatePicker x:Name="TestDatePicker" TextColor="Black" />
             <TimePicker x:Name="TestTimePicker" TextColor="Black" />
             <CollectionView x:Name="TestCollection" HeightRequest="120" />
-            <CarouselView x:Name="TestCarousel" HeightRequest="150" />
 
             <!-- Radio group -->
             <StackLayout Orientation="Horizontal" Spacing="8">

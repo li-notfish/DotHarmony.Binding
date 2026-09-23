@@ -24,11 +24,19 @@ public class HarmonyFrameHandler : HarmonyViewHandler<Border, ArkStack>
 
     protected override ArkStack CreatePlatformView() => new();
 
+    private IElementHandler? _contentHandler;
+
     public static void MapContent(HarmonyFrameHandler h, Border v)
     {
+        if (h._contentHandler is not null)
+        {
+            HarmonyViewHandler<Border, ArkStack>.DisposeContent(h._contentHandler, h.PlatformView);
+            h._contentHandler = null;
+        }
         if (v.Content is not IView content) return;
         var childHandler = HarmonyHandlerFactory.Create(content);
         childHandler.SetVirtualView(content);
+        h._contentHandler = childHandler;
         if (childHandler.PlatformView is ArkUINode node)
         {
             // 内容宽度填满 Border；高度随内容自适应（百分比高度会把内容撑满整个容器）

@@ -11,24 +11,24 @@
 MAUI 控件 (VirtualView)                你要写的 Handler（本文重点）
       │ PropertyMapper / CommandMapper           │  属性/命令/事件翻译
       ▼                                          ▼
-src/HarmonyOS.Maui/Handlers/*  ──────►  HarmonyOS.Bindings/Nodes/*（ArkUI 节点类）
+src/HarmonyOS.Maui/Handlers/*  ──────►  src/HarmonyOS.Bindings/Nodes/*（ArkUI 节点类）
                                          │  NODE_* 属性枚举 → SetAttribute
                                          ▼
                                 libace_ndk.z.so（ArkUI C API，节点树渲染）
 
 @ohos.* 系统模块（deviceInfo 等，与 UI 无关的服务 API）
       ▼
-HarmonyOS.Bindings/Api/*  ──napi──►  libace_napi.z.so（napi_load_module / call_function）
+src/HarmonyOS.Bindings/Api/*  ──napi（经 HarmonyOS.Interop）──►  libace_napi.z.so（napi_load_module / call_function）
 ```
 
 | 层 | 目录 | 职责 | 什么时候改 |
 |---|---|---|---|
-| 节点层 | `HarmonyOS.Bindings/Nodes/` | ArkUI 组件的 C# 包装（属性 setter、事件） | 目标属性/事件在节点类上不存在时 |
+| 节点层 | `src/HarmonyOS.Bindings/Nodes/` | ArkUI 组件的 C# 包装（属性 setter、事件） | 目标属性/事件在节点类上不存在时 |
 | Handler 层 | `src/HarmonyOS.Maui/Handlers/` | MAUI ↔ ArkUI 的属性/命令/事件翻译 | **适配新控件的主要工作** |
-| API 层 | `HarmonyOS.Bindings/Api/` | `@ohos.*` 模块绑定（napi 通道） | 绑定系统服务 API 时 |
+| API 层 | `src/HarmonyOS.Bindings/Api/` | `@ohos.*` 模块绑定（napi 通道） | 绑定系统服务 API 时 |
 | 宿主 | `samples/HarmonyHost/` | ArkTS 壳（ContentSlot 挂载 + ohosImports.ets 模块登记） | 新增 `@ohos.*` 模块绑定时同步登记 |
 
-**漏斗纪律（P0，机械闸强制）**：Handler/Hosting 层只允许经包装类型触碰 ArkUI——节点包装类、
+**漏斗纪律（P0，机械闸强制）**：Handler/Hosting/Essentials 层（拆装后 FunnelDisciplineTests 扫双目录）只允许经包装类型触碰 ArkUI——节点包装类、
 `ArkUINodeEvent`/`ArkUIPointerEvent` 载荷包装、手势包装类、事件枚举。禁止直连原生函数表类
 （`ArkUINativeApi`/`ArkUIGestureApi`/`ArkUIAnimateApi`）、napi P/Invoke（`NativeNodeApi`/`OH_ArkUI_*`/
 `napi_*`）、原始事件/属性结构体（`GetNodeComponentEvent`/`ArkUI_AttributeItem`）与自行
@@ -44,15 +44,15 @@ HarmonyOS.Bindings/Api/*  ──napi──►  libace_napi.z.so（napi_load_modu
 
 ### Step 1：确认 ArkUI 节点类是否够用
 
-节点类在 `HarmonyOS.Bindings/Nodes/`，目前由 `src/parser/nativeCodeGenerator.ts` 从 SDK `.d.ts` 自动产出（已有 button/checkbox/column/flex/grid/image/list/progress/radio/refresh/row/scroll/slider/span/stack/swiper/text/toggle/xcomponent 共 19 个；text_area/text_input 因无 native node 类型由早期生成器产出）。查两个地方：
+节点类在 `src/HarmonyOS.Bindings/Nodes/`，目前由 `tools/api-generator/nativeCodeGenerator.ts` 从 SDK `.d.ts` 自动产出（已有 button/checkbox/column/flex/grid/image/list/progress/radio/refresh/row/scroll/slider/span/stack/swiper/text/toggle/xcomponent 共 19 个；text_area/text_input 因无 native node 类型由早期生成器产出）。查两个地方：
 
-- `HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.g.cs` 里 `ARKUI_NODE_*` 枚举 —— 确认目标组件类型存在（如 `ARKUI_NODE_SLIDER`）；
+- `src/HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.g.cs` 里 `ARKUI_NODE_*` 枚举 —— 确认目标组件类型存在（如 `ARKUI_NODE_SLIDER`）；
 - `Nodes/native-gaps.json` —— 生成器登记的"属性存在但 shape 未注册"缺口。
 
 上述 19 个组件的节点类已由生成器自动产出（含属性、事件、构造参数），**无需手写**。对于不在 SDK `.d.ts` 中的自定义组件或生成器未覆盖的属性，可手写补充节点类：
 
 ```csharp
-// HarmonyOS.Bindings/Nodes/slider.cs —— 手写节点类模板
+// src/HarmonyOS.Bindings/Nodes/slider.cs —— 手写节点类模板
 #nullable enable
 using HarmonyOS.Bindings.NativeNode;
 
@@ -260,15 +260,15 @@ MAUI 托管布局的对齐/ZIndex 约定（2026-09-12 落地）：
 
 ## 4. `@ohos.*` API 绑定（生成器产出，M2 完成）
 
-UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**模块绑定全部由生成器产出**（`HarmonyOS.Bindings/Api/`，438 个模块 / 375 个转正编译），不要手写——下面的铁律是生成器与运行时已经实现的约束，排查问题时读。
+UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**模块绑定全部由生成器产出**（`src/HarmonyOS.Bindings/Api/`，438 个模块 / 375 个转正编译），不要手写——下面的铁律是生成器与运行时已经实现的约束，排查问题时读。
 
 ### 4.1 生成与转正流程
 
 ```bash
 # 全量生成（449 个 d.ts → 438 模块）；不带 --all 只处理 PILOT_MODULES 白名单
-npx ts-node src/parser/index.ts --sdk "<SDK 路径>" --all
+npx ts-node tools/api-generator/index.ts --sdk "<SDK 路径>" --all
 
-# 转正策略：--all 模式默认全部转正，GRAYSCALE_MODULES（src/parser/index.ts）里的回灰；
+# 转正策略：--all 模式默认全部转正，GRAYSCALE_MODULES（tools/api-generator/index.ts）里的回灰；
 # 修复某模块的类型映射缺口后把它从黑名单移除即可
 dotnet build ArkTsBinding.slnx
 ```
@@ -337,7 +337,7 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★★☆ | `Slider` | `ARKUI_NODE_SLIDER` | — | ✅ 已完成 |
 | ★★☆ | `Editor` | `ARKUI_NODE_TEXT_AREA` | 同 Entry | ✅ 已完成 |
 | ★★☆ | `Border`（含废弃的 `Frame`） | `ARKUI_NODE_STACK` | flex 托管；工厂只注册 `Border`（Frame 已废弃，XAML 用 Border） | ✅ 已完成 |
-| ★☆☆ | `CollectionView`/`ListView` | Scroll+Column 全量物化 | M1 无虚拟化（NodeAdapter 虚拟化后续做）；纵向；ItemsSource 变更全量重建；ItemTemplate 经 CreateContent 物化（AOT 安全） | ✅ M1 已完成 |
+| ★☆☆ | `CollectionView` | `ARKUI_NODE_LIST` + NodeAdapter | **虚拟化**：条目按可见范围物化（ON_ADD/ON_REMOVE 事件回调，ItemTemplate 经 CreateContent，AOT 安全）；ItemsSource 变更走 SetTotalCount+ReloadAllItems；2026-09-17 模拟器实测（200 条目仅物化可见 7 条，滚动按需前进/回滚复现） | ✅ 已完成 |
 | ★☆☆ | `CarouselView` | `ARKUI_NODE_SWIPER` | 全量物化子视图；需显式高度（HeightRequest）；Loop/位置回传暂略 | ✅ M1 已完成 |
 | ★☆☆ | `Picker`/`DatePicker`/`TimePicker` | `ARKUI_NODE_TEXT_PICKER`/`DATE_PICKER`/`TIME_PICKER` | ArkUI 是内嵌滚轮非弹窗，视觉有差异；节点类已入解析器生成管线（NODE_TYPE_NAME_FIXES + CONSTRUCTOR_OPTION_PROPS，PickerManual/TextPickerManual.cs 已删除）；MAUI 10 的 Date/Time 为可空类型 | ✅ 已完成 |
 | ★☆☆ | `RefreshView` | `ARKUI_NODE_REFRESH` | 下拉经 NODE_REFRESH_ON_REFRESH 置 IsRefreshing；刷新态 setter 已入生成管线（CONSTRUCTOR_OPTION_PROPS，RefreshManual.cs 已删除） | ✅ 已完成 |
@@ -357,7 +357,7 @@ MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实�
 - `ConnectHandler` 里如果自己还要订阅节点事件，放在 `base.ConnectHandler(platformView)` 之后即可，与手势管理器互不干扰；
 - `HarmonyGestureManager` 监听 `CompositeGestureRecognizers` 集合变化与 `IsEnabled/InputTransparent`，全量重建原生手势——不要在 Handler 里手工管理手势生命周期。
 
-分层文件：NDK 函数表 `HarmonyOS.Bindings/NativeNode/ArkUIGestureApi.cs`（镜像自 native_gesture.h，C bool 按字节用 `byte` 表达）、公共指针包装 `ArkUIPointerEvent.cs`（经 `ArkUINodeEvent.InputEvent` → `ArkUIPointerEvent.From(IntPtr)`，坐标 px）、托管包装 `HarmonyOS.Bindings/Nodes/Gestures/`、翻译层 `src/HarmonyOS.Maui/Handlers/HarmonyGestureManager.cs`、反射桥 `MauiGestureBridge.cs`（`TapGestureRecognizer.SendTapped` / `PointerGestureRecognizer.SendPointer*` 为 MAUI internal，`[DynamicDependency]` 收根 + `CreateDelegate` 缓存，**不得**改为逐次 `MethodInfo.Invoke`）。
+分层文件：NDK 函数表 `src/HarmonyOS.Bindings/NativeNode/ArkUIGestureApi.cs`（镜像自 native_gesture.h，C bool 按字节用 `byte` 表达）、公共指针包装 `ArkUIPointerEvent.cs`（经 `ArkUINodeEvent.InputEvent` → `ArkUIPointerEvent.From(IntPtr)`，坐标 px）、托管包装 `src/HarmonyOS.Bindings/Nodes/Gestures/`、翻译层 `src/HarmonyOS.Maui/Handlers/HarmonyGestureManager.cs`、反射桥 `MauiGestureBridge.cs`（`TapGestureRecognizer.SendTapped` / `PointerGestureRecognizer.SendPointer*` 为 MAUI internal，`[DynamicDependency]` 收根 + `CreateDelegate` 缓存，**不得**改为逐次 `MethodInfo.Invoke`）。
 
 | MAUI 识别器 | 原生通道 | 说明 |
 |---|---|---|
@@ -370,11 +370,11 @@ MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实�
 
 **原生 recognizer 生命周期铁律**：不得在事件分发回调内 `dispose()` recognizer——dispose 后原生管线仍派发事件（SIGSEGV UAF，实测）。重建场景 Detach + 入池复用（`HarmonyGestureManager.Rebuild`），dispose 仅在 Handler 断连时统一执行。
 
-单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑、Essentials 密度/方向映射、Preferences 编解码、Battery 枚举映射、Connectivity bearer 映射，共 75 用例（含漏斗纪律源码扫描闸）。
+单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑、Essentials 密度/方向映射、Preferences 编解码、Battery 枚举映射、Connectivity bearer 映射，共 83 用例（含漏斗纪律源码扫描闸）；另有 `HarmonyEngineTests` 14 用例。
 
 ### 6.2 Essentials 注入适配要点
 
-MAUI 的 Essentials 静态类（`DeviceInfo.Current`/`DeviceDisplay`/`AppInfo`/`Clipboard`）在 netstandard 产物中默认实现全部抛异常，平台侧经 internal `SetCurrent`/`SetDefault` 注入点装载。本仓库实现：`HarmonyEssentials.Install()`（反射桥模式，同手势桥：`[DynamicDependency]` 收根 + `CreateDelegate` 缓存）+ 四个 `Harmony*` 实现（`src/HarmonyOS.Maui/Essentials/`）。注意：
+MAUI 的 Essentials 静态类（`DeviceInfo.Current`/`DeviceDisplay`/`AppInfo`/`Clipboard`）在 netstandard 产物中默认实现全部抛异常，平台侧经 internal `SetCurrent`/`SetDefault` 注入点装载。本仓库实现：`HarmonyEssentials.Install()`（反射桥模式，同手势桥：`[DynamicDependency]` 收根 + `CreateDelegate` 缓存）+ `Harmony*` 实现（`src/HarmonyOS.Essentials/`——Essentials 已独立成装）。注意：
 
 - **装载时机是铁律**：`Install()` 必须在 `MauiHarmonyHost.Run` 的 `RootBuilder` lambda 内调用（UI 线程首次构建时，napi env 已就绪）——放 ModuleInitializer（dlopen 时）会因 napi 未初始化直接闪退（实测 DfxFaultLogger 崩在 HarmonyInit+16）；
 - 实现类构造时即创建底层包装对象（如 `HarmonyClipboard` 构造时取 SystemPasteboard）——构造发生在 Install 时（napi 就绪），但**包装句柄跨时长持有会失效**（见 §7 PinnedValue 行）；

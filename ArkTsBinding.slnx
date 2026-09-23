@@ -4,9 +4,12 @@
     <Project Path="samples/dotnet/HelloApp/HelloApp.csproj" />
     <Project Path="samples/dotnet/ApiDemo/ApiDemo.csproj" />
     <Project Path="samples/dotnet/EngineLab/EngineLab.csproj" />
+    <Project Path="samples/dotnet/EssentialsApp/EssentialsApp.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/HarmonyOS.Interop/HarmonyOS.Interop.csproj" />
+    <Project Path="src/HarmonyOS.Bindings/HarmonyOS.Bindings.csproj" />
+    <Project Path="src/HarmonyOS.Essentials/HarmonyOS.Essentials.csproj" />
     <Project Path="src/HarmonyOS.Maui/HarmonyOS.Maui.csproj" />
   </Folder>
-  <Project Path="HarmonyOS.Bindings/HarmonyOS.Bindings.csproj" />
 </Solution>

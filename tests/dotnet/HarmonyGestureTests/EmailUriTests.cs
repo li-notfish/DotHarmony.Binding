@@ -1,5 +1,5 @@
 // HarmonyEmail 纯逻辑单测：mailto: URI 构造（不依赖真机）。
-using HarmonyOS.Maui.Essentials;
+using HarmonyOS.Essentials;
 using Microsoft.Maui.ApplicationModel.Communication;
 using Xunit;
 

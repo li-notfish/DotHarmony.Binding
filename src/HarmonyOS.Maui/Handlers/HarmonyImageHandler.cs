@@ -1,7 +1,7 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using ArkImage = HarmonyOS.ArkUI.Image;
 using MImage = Microsoft.Maui.IImage;
 
@@ -34,11 +34,34 @@ public class HarmonyImageHandler : HarmonyViewHandler<MImage, ArkImage>
 
     public static void MapSource(HarmonyImageHandler h, MImage v)
     {
+        // 流式来源：异步落盘后回写 Src（不阻塞 UI 线程；回写经 MainThreadDispatcher 落到 JS 线程）
+        if (v.Source is StreamImageSource stream)
+        {
+            _ = LoadStreamSourceAsync(h, stream);
+            return;
+        }
+
         var src = ImageSourceResolver.Resolve(v.Source);
         if (src is not null)
             h.PlatformView.Src = src;
         else
             HiLog.Warn("Image", $"Unsupported image source: {v.Source?.GetType().Name ?? "null"}");
+    }
+
+    private static async System.Threading.Tasks.Task LoadStreamSourceAsync(HarmonyImageHandler h, StreamImageSource source)
+    {
+        var path = await ImageSourceResolver.ResolveStreamAsync(source);
+        if (path is null)
+            return;
+        MainThreadDispatcher.Post(() =>
+        {
+            // 回写时视图可能已换图/断连：Source 仍指向同一流才更新，节点已释放则跳过
+            if (ReferenceEquals(h.VirtualView?.Source, source))
+            {
+                try { h.PlatformView.Src = path; }
+                catch (InvalidOperationException) { /* 节点已销毁 */ }
+            }
+        });
     }
 
     public static void MapAspect(HarmonyImageHandler h, MImage v)

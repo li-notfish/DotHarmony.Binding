@@ -7,6 +7,8 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Devices;
+using Microsoft.Maui.Devices.Sensors;
+using Microsoft.Maui.Media;
 using Microsoft.Maui.Storage;
 
 namespace EssentialsApp;
@@ -244,6 +246,97 @@ public partial class MainPage : ContentPage
         catch (Exception ex)
         {
             SecureStorageLabel.Text = "secure storage FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private void OnAccelerometerClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            var accel = Accelerometer.Default;
+            if (!accel.IsSupported)
+            {
+                AccelerometerLabel.Text = "accelerometer: UNSUPPORTED";
+                return;
+            }
+            int count = 0;
+            double x = 0, y = 0, z = 0;
+            // 停止/回显都在 ReadingChanged 回调内完成（JS 线程，NapiEnv 可用）——
+            // 不可用 Task.Delay 续体停订：续体落线程池线程，无 env，NAPI 调用即抛
+            void OnReading(object? s, AccelerometerChangedEventArgs a)
+            {
+                count++;
+                x = a.Reading.Acceleration.X;
+                y = a.Reading.Acceleration.Y;
+                z = a.Reading.Acceleration.Z;
+                if (count < 10) return;
+                accel.Stop();
+                accel.ReadingChanged -= OnReading;
+                AccelerometerLabel.Text = $"accel events: {count} @200ms, last=({x:F2},{y:F2},{z:F2})";
+            }
+            accel.ReadingChanged += OnReading;
+            accel.Start(SensorSpeed.Default);
+            AccelerometerLabel.Text = "accel: listening (10 readings @200ms)...";
+        }
+        catch (Exception ex)
+        {
+            AccelerometerLabel.Text = "accel FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private void OnCompassClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            var compass = Compass.Default;
+            if (!compass.IsSupported)
+            {
+                CompassLabel.Text = "compass: UNSUPPORTED";
+                return;
+            }
+            // 单次读数即停（回调内完成，JS 线程 NapiEnv 可用）
+            void OnReading(object? s, CompassChangedEventArgs a)
+            {
+                compass.Stop();
+                compass.ReadingChanged -= OnReading;
+                CompassLabel.Text = $"heading: {a.Reading.HeadingMagneticNorth:F1}°";
+            }
+            compass.ReadingChanged += OnReading;
+            compass.Start(SensorSpeed.Default);
+            CompassLabel.Text = "compass: listening...";
+        }
+        catch (Exception ex)
+        {
+            CompassLabel.Text = "compass FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private async void OnGeolocationClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            var request = new GeolocationRequest(GeolocationAccuracy.Default, TimeSpan.FromSeconds(10));
+            var location = await Geolocation.Default.GetLocationAsync(request);
+            GeolocationLabel.Text = location is null
+                ? "geolocation: null"
+                : $"geo: {location.Latitude:F4}, {location.Longitude:F4} acc={location.Accuracy:F0}m";
+        }
+        catch (Exception ex)
+        {
+            GeolocationLabel.Text = "geolocation FAILED: " + ex.GetType().Name + ": " + ex.Message;
+        }
+    }
+
+    private async void OnPickPhotoClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            var result = await MediaPicker.Default.PickPhotoAsync();
+            PickPhotoLabel.Text = result is null ? "pick photo: canceled" : $"picked: {result.FileName}";
+        }
+        catch (Exception ex)
+        {
+            PickPhotoLabel.Text = "pick photo FAILED: " + ex.GetType().Name + ": " + ex.Message;
         }
     }
 

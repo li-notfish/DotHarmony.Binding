@@ -64,6 +64,26 @@
         <Label x:Name="SecureStorageLabel"
                HorizontalTextAlignment="Center"
                BackgroundColor="White" Padding="8" />
+        <Button Text="Accelerometer 2s window"
+                Clicked="OnAccelerometerClicked" />
+        <Label x:Name="AccelerometerLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Compass single reading"
+                Clicked="OnCompassClicked" />
+        <Label x:Name="CompassLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Geolocation current"
+                Clicked="OnGeolocationClicked" />
+        <Label x:Name="GeolocationLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
+        <Button Text="Pick photo"
+                Clicked="OnPickPhotoClicked" />
+        <Label x:Name="PickPhotoLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
         <Button Text="Refresh display info"
                 Clicked="OnRefreshDisplayClicked" />
     </StackLayout>

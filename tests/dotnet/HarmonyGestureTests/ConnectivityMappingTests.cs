@@ -1,7 +1,7 @@
 // HarmonyConnectivity 纯逻辑单测：OHOS bearer → MAUI ConnectionProfile 映射（不依赖真机）。
 // NetBearType 底值锁死（Api 9 起稳定值）；NET_CAPABILITY 底值参与 CurrentAccess 判定。
 using HarmonyOS.ArkUI;
-using HarmonyOS.Maui.Essentials;
+using HarmonyOS.Essentials;
 using Microsoft.Maui.Networking;
 using Xunit;
 

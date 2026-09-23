@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsTrimmable>true</IsTrimmable>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+
+    <PackageId>HarmonyOS.Interop</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>ArkTsBinding</Authors>
+    <Description>Generic Node-API (napi) interop core for HarmonyOS: env injection, value marshaling, callbacks, TSFN, hilog bridge</Description>
+    <PackageTags>harmonyos;napi;interop;dotnet</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="HarmonyOS.Interop" />
+    <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 生成代码显式实现 internal 的 INapiRecord、经 internal 的 NativeNodeApi/NapiReference 封送——
+         装拆前同装 internal 直达，拆装后经 IVT 保持同等可见性 -->
+    <InternalsVisibleTo Include="HarmonyOS.Bindings" />
+    <InternalsVisibleTo Include="HarmonyOS.Maui" />
+    <InternalsVisibleTo Include="HarmonyOS.Essentials" />
+    <InternalsVisibleTo Include="HarmonyEngineTests" />
+    <InternalsVisibleTo Include="HarmonyGestureTests" />
+  </ItemGroup>
+</Project>

@@ -52,5 +52,13 @@ if (Test-Path $appString) {
         ('("name"\s*:\s*"app_name"\s*,\s*"value"\s*:\s*")[^"]*(")'), ('$1' + $AppTitle.Replace('$', '$$') + '$2'))) | Out-Null
 }
 
+# 3) Ability 显示名（入口模块资源：launcher/最近任务/权限弹窗上看到的名字走这条，
+#    不改则全部共用模板的 HarmonyHost —— staging 语义就是把这一层也拨过去）
+$abilityString = Join-Path $Destination "entry/src/main/resources/base/element/string.json"
+if (Test-Path $abilityString) {
+    (Set-Content $abilityString ((Get-Content $abilityString -Raw) -replace
+        ('("name"\s*:\s*"EntryAbility_label"\s*,\s*"value"\s*:\s*")[^"]*(")'), ('$1' + $AppTitle.Replace('$', '$$') + '$2'))) | Out-Null
+}
+
 Set-Content $buildStamp "$BundleId|$AppTitle"
 Write-Host "=== host staged OK"

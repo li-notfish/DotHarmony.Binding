@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ArkTsParser } from '../src/parser/index';
+import { ArkTsParser } from '../tools/api-generator/index';
 
 const outputDir = path.join(__dirname, '../tests-output');
 
@@ -302,7 +302,7 @@ describe('Code Generation Tests', () => {
 
     // 阶段6复杂类型测试
     test('should map union types correctly', () => {
-        const { TypeMapper } = require('../src/parser/typeMapper');
+        const { TypeMapper } = require('../tools/api-generator/typeMapper');
         
         // 测试联合类型映射
         expect(TypeMapper.mapType('string | number')).toBe('string');
@@ -313,7 +313,7 @@ describe('Code Generation Tests', () => {
     });
 
     test('should map intersection types correctly', () => {
-        const { TypeMapper } = require('../src/parser/typeMapper');
+        const { TypeMapper } = require('../tools/api-generator/typeMapper');
         
         // 测试交叉类型映射：所有未映射类型退回 IntPtr
         expect(TypeMapper.mapType('A & B')).toBe('IntPtr');
@@ -321,14 +321,14 @@ describe('Code Generation Tests', () => {
     });
 
     test('should map conditional types to object (AOT-safe)', () => {
-        const { TypeMapper } = require('../src/parser/typeMapper');
+        const { TypeMapper } = require('../tools/api-generator/typeMapper');
 
         // 测试条件类型映射
         expect(TypeMapper.mapType('T extends string ? string : number')).toBe('object');
     });
 
     test('should map mapped types to object (AOT-safe)', () => {
-        const { TypeMapper } = require('../src/parser/typeMapper');
+        const { TypeMapper } = require('../tools/api-generator/typeMapper');
 
         // 测试映射类型映射
         expect(TypeMapper.mapType('keyof T')).toBe('object');
@@ -336,7 +336,7 @@ describe('Code Generation Tests', () => {
     });
 
     test('should map readonly types', () => {
-        const { TypeMapper } = require('../src/parser/typeMapper');
+        const { TypeMapper } = require('../tools/api-generator/typeMapper');
         
         // 测试 readonly 类型映射
         expect(TypeMapper.mapType('readonly string[]')).toBe('string[]');
@@ -344,7 +344,7 @@ describe('Code Generation Tests', () => {
     });
 
     test('should detect complex types', () => {
-        const { TypeMapper } = require('../src/parser/typeMapper');
+        const { TypeMapper } = require('../tools/api-generator/typeMapper');
         
         // 测试类型检测
         expect(TypeMapper.isUnionType('string | number')).toBe(true);
@@ -374,7 +374,7 @@ describe('Code Generation Tests', () => {
         // 验证继承自 ArkUIComponentBase
         expect(content).toContain('ArkUIComponentBase');
         expect(content).toContain(': base(NodeApi.CreateComponent("Button"))');
-        expect(content).toContain('using HarmonyOS.Bindings.Runtime;');
+        expect(content).toContain('using HarmonyOS.Interop;');
     });
 
     test('should not have duplicate methods in list.cs', () => {

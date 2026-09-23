@@ -2,7 +2,7 @@
 // OHOS 侧语义：BatteryChargeState.Enable=充电中 / Disable=未充电 / Full=充满 / None=无效；
 // BatteryPluggedType 仅在充电状态下有意义；DevicePowerMode 600=普通，601/603/650=省电类。
 using HarmonyOS.ArkUI;
-using HarmonyOS.Maui.Essentials;
+using HarmonyOS.Essentials;
 using Microsoft.Maui.Devices;
 using Xunit;
 

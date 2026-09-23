@@ -10,9 +10,11 @@
 // 仅 TapGestureRecognizer.SendTapped / PointerGestureRecognizer.SendPointer* 走反射桥
 // （见 MauiGestureBridge），Pan/Pinch/Swipe 全部走公开控制器接口。
 #nullable enable
+using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using HarmonyOS.Bindings.NativeNode;
+using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -48,6 +50,7 @@ internal sealed class HarmonyGestureManager : IDisposable
         _disposed = true;
         _observedCollection?.CollectionChanged -= OnRecognizersChanged; // C# 14 null-conditional assignment
         _view.PropertyChanged -= OnViewPropertyChanged;
+        DestroyPendingDragData(); // 拖拽载荷最终兜底（节点既销毁，管线已死）
         if (_touchSubscribed)
             _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_TOUCH_EVENT);
         foreach (var g in _attached.Concat(_parked))
@@ -97,6 +100,20 @@ internal sealed class HarmonyGestureManager : IDisposable
             _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_TOUCH_EVENT);
             _touchSubscribed = false;
         }
+        if (_dragSubscribed)
+        {
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_START);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_END);
+            _dragSubscribed = false;
+        }
+        if (_dropSubscribed)
+        {
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_ENTER);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_MOVE);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_LEAVE);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DROP);
+            _dropSubscribed = false;
+        }
 
         if (!_view.IsEnabled || _view.InputTransparent)
             return;
@@ -125,8 +142,13 @@ internal sealed class HarmonyGestureManager : IDisposable
                 _pointers.Add(pointer);
                 EnsureTouchChannel();
                 break;
+            case DragGestureRecognizer drag:
+                AttachDrag(drag);
+                break;
+            case DropGestureRecognizer drop:
+                AttachDrop(drop);
+                break;
             default:
-                // DragGestureRecognizer/DropGestureRecognizer 等：暂不支持（见 ROADMAP）
                 break;
         }
     }
@@ -252,6 +274,147 @@ internal sealed class HarmonyGestureManager : IDisposable
     {
         public double StartX, StartY;
         public double LastX, LastY;
+    }
+
+    // ───────────── Drag/Drop 识别器（NODE_ON_DRAG_* / NODE_ON_DROP + drag_and_drop.h）─────────────
+    // 拖侧：SetNodeDraggable + 系统长按起拖 → NODE_ON_DRAG_START（DragStarting，Data.Text → UDMF SetData）
+    //       / NODE_ON_DRAG_END（DropCompleted）
+    // 放侧：NODE_ON_DRAG_ENTER/MOVE → SendDragOver、LEAVE → SendDragLeave、DROP → SendDrop
+    //       （UDMF GetUdmfData → 主纯文本 → DataPackage.Text；其他载荷类型留空）
+
+    private DragGestureRecognizer? _drag;
+    private DropGestureRecognizer? _drop;
+    private bool _dragSubscribed;
+    private bool _dropSubscribed;
+    // 最后一次 SetDragData 传入的 UDMF data：ACE 侧持裸引用、消费发生在 handler 返回后的
+    // 拖拽管线内（UdmfClient::SetData→GetSummary，提前销毁即 UAF 崩溃，模拟器实锤），
+    // 须存活至 NODE_ON_DRAG_END 才能销毁
+    private IntPtr _pendingDragData;
+
+    private void AttachDrag(DragGestureRecognizer drag)
+    {
+        _drag = drag;
+        if (_dragSubscribed) return;
+        _dragSubscribed = true;
+        var status = _node.SetDraggable(true);
+        if (status != 0)
+            throw new InvalidOperationException($"SetNodeDraggable failed: {status}");
+        _node.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_START, OnDragStart);
+        _node.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_END, OnDragEnd);
+    }
+
+    private void AttachDrop(DropGestureRecognizer drop)
+    {
+        _drop = drop;
+        if (_dropSubscribed) return;
+        _dropSubscribed = true;
+        // 放侧必须放行数据类型（等价 ArkTS allowDrop），否则 drop 被系统拒绝、NODE_ON_DROP 不触发
+        var status = _node.AllowAllDropDataTypes();
+        if (status != 0)
+            throw new InvalidOperationException($"AllowNodeAllDropDataTypes failed: {status}");
+        _node.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_ENTER, OnDragEnter);
+        _node.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_MOVE, OnDragMove);
+        _node.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_LEAVE, OnDragLeave);
+        _node.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_DROP, OnDrop);
+    }
+
+    private void OnDragStart(ArkUINodeEvent e)
+    {
+        var drag = _drag;
+        if (drag is null || e.DragEvent == IntPtr.Zero) return;
+        try
+        {
+            var args = MauiGestureBridge.SendDragStarting(drag, _view);
+            if (args.Cancel) return;
+            var text = args.Data.Text;
+            if (string.IsNullOrEmpty(text)) return;
+            var data = UdmfNativeApi.CreateTextData(text);
+            if (data == IntPtr.Zero) return;
+            DestroyPendingDragData(); // 异常路径丢失 DRAG_END 时的兜底（至多 1 条滞留）
+            _pendingDragData = data;
+            // 不可当场销毁：DragEvent 的 SetData 持裸引用（非拷贝语义），消费在返回后的拖拽管线内
+            // （GetSummary 读取即 UAF SIGSEGV，模拟器 faultlog 实锤）——存活至 NODE_ON_DRAG_END
+            e.SetDragData(data);
+        }
+        catch (DllNotFoundException)
+        {
+            // libudmf 缺失：无载荷起拖
+        }
+        catch (Exception ex)
+        {
+            HiLog.Warn("HarmonyHost", $"drag start bridge failed: {ex.Message}");
+        }
+    }
+
+    private void OnDragEnd(ArkUINodeEvent e)
+    {
+        DestroyPendingDragData(); // 拖拽管线已走完，SetDragData 载荷用毕即销毁
+        var drag = _drag;
+        if (drag is null) return;
+        try { MauiGestureBridge.SendDropCompleted(drag); }
+        catch (Exception ex) { HiLog.Warn("HarmonyHost", $"drag end bridge failed: {ex.Message}"); }
+    }
+
+    /// <summary>销毁并清空挂起的拖拽载荷（幂等）</summary>
+    private void DestroyPendingDragData()
+    {
+        if (_pendingDragData == IntPtr.Zero) return;
+        UdmfNativeApi.DestroyData(_pendingDragData);
+        _pendingDragData = IntPtr.Zero;
+    }
+
+    private void OnDragEnter(ArkUINodeEvent e) => SendDragOver(e);
+
+    private void OnDragMove(ArkUINodeEvent e) => SendDragOver(e);
+
+    private void SendDragOver(ArkUINodeEvent e)
+    {
+        var drop = _drop;
+        if (drop is null) return;
+        try { drop.SendDragOver(new DragEventArgs(ReadDropData(e))); }
+        catch (DllNotFoundException) { }
+        catch (Exception ex) { HiLog.Warn("HarmonyHost", $"drag over bridge failed: {ex.Message}"); }
+    }
+
+    private void OnDragLeave(ArkUINodeEvent e)
+    {
+        var drop = _drop;
+        if (drop is null) return;
+        try { MauiGestureBridge.SendDragLeave(drop, new DragEventArgs(ReadDropData(e))); }
+        catch (DllNotFoundException) { }
+        catch (Exception ex) { HiLog.Warn("HarmonyHost", $"drag leave bridge failed: {ex.Message}"); }
+    }
+
+    private void OnDrop(ArkUINodeEvent e)
+    {
+        var drop = _drop;
+        if (drop is null) return;
+        try { _ = MauiGestureBridge.SendDrop(drop, new DropEventArgs(ReadDropData(e).View)); }
+        catch (DllNotFoundException) { }
+        catch (Exception ex) { HiLog.Warn("HarmonyHost", $"drop bridge failed: {ex.Message}"); }
+    }
+
+    /// <summary>拖拽事件 UDMF 载荷 → DataPackage（主纯文本 → Text；其他载荷类型留空）</summary>
+    private static DataPackage ReadDropData(ArkUINodeEvent e)
+    {
+        var pkg = new DataPackage();
+        var dragEvent = e.DragEvent;
+        if (dragEvent == IntPtr.Zero) return pkg;
+        var data = UdmfNativeApi.OH_UdmfData_Create();
+        if (data == IntPtr.Zero) return pkg;
+        try
+        {
+            if (e.TryGetUdmfData(data))
+            {
+                var text = UdmfNativeApi.ReadPrimaryText(data);
+                if (text != null) pkg.Text = text;
+            }
+        }
+        finally
+        {
+            UdmfNativeApi.DestroyData(data);
+        }
+        return pkg;
     }
 
     private void AttachPan(PanGestureRecognizer pan)

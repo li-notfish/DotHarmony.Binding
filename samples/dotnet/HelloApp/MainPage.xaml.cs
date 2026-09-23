@@ -73,7 +73,7 @@ internal static class NavigationFireAndForget
         task.ContinueWith(t =>
         {
             if (t.Exception is not null)
-                HarmonyOS.Bindings.Runtime.HiLog.Error("HelloNav",
+                HarmonyOS.Interop.HiLog.Error("HelloNav",
                     $"navigation failed: {t.Exception.InnerException?.GetType().Name}: {t.Exception.InnerException?.Message}");
         }, TaskScheduler.Default);
     }

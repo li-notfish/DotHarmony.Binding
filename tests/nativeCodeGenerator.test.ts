@@ -1,10 +1,10 @@
-import { ArkTsParser } from '../src/parser/index';
-import { NativeCodeGenerator, EnumMetadata } from '../src/parser/nativeCodeGenerator';
-import { ParseResult, ParameterInfo, EventInfo, MethodInfo } from '../src/parser/models';
+import { ArkTsParser } from '../tools/api-generator/index';
+import { NativeCodeGenerator, EnumMetadata } from '../tools/api-generator/nativeCodeGenerator';
+import { ParseResult, ParameterInfo, EventInfo, MethodInfo } from '../tools/api-generator/models';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const ENUM_META_PATH = path.join(__dirname, '../HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json');
+const ENUM_META_PATH = path.join(__dirname, '../src/HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json');
 
 function loadEnumMetadata(): EnumMetadata {
     return JSON.parse(fs.readFileSync(ENUM_META_PATH, 'utf-8')) as EnumMetadata;
@@ -86,7 +86,8 @@ describe('NativeCodeGenerator（ArkUI C API 生成模式）', () => {
         expect(csharp).toContain('SetStringAttribute(ArkUI_NodeAttributeType.NODE_BUTTON_LABEL, value)');
         expect(csharp).toContain('SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BUTTON_TYPE, ArkUIValue.I((int)value))');
         expect(csharp).toContain('public event Action<ArkUINodeEvent>? Click');
-        expect(csharp).toContain('On(ArkUI_NodeEventType.NODE_ON_CLICK, value!)');
+        expect(csharp).toContain('if (first) On(ArkUI_NodeEventType.NODE_ON_CLICK, e => _onClick?.Invoke(e));');
+        expect(csharp).toContain('if (_onClick is null) Off(ArkUI_NodeEventType.NODE_ON_CLICK);');
     });
 
     test('Column/Row：真实 .d.ts 解析生成容器属性', () => {
@@ -113,7 +114,7 @@ describe('NativeCodeGenerator（ArkUI C API 生成模式）', () => {
             events: [{ name: 'onTouch', delegateName: 'TouchEventHandler', parameters: [], returnType: 'void' }],
         });
         const { csharp, gaps } = gen.generate(result);
-        expect(csharp).toContain('On(ArkUI_NodeEventType.NODE_TOUCH_EVENT, value!)');
+        expect(csharp).toContain('if (first) On(ArkUI_NodeEventType.NODE_TOUCH_EVENT, e => _onTouch?.Invoke(e));');
         expect(gaps.filter(g => g.kind === 'event' && g.member === 'onTouch')).toHaveLength(0);
     });
 });

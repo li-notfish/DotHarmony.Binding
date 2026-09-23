@@ -30,4 +30,21 @@ public abstract class HarmonyViewHandler<TVirtualView, TPlatformView> : ViewHand
         _gestures = null;
         base.DisconnectHandler(platformView);
     }
+
+    /// <summary>
+    /// 处置一个托管子内容（Content/Scroll 内容位场景）：断连 handler（注销手势与节点事件）
+    /// 并释放平台节点子树。直接 RemoveAllChildren 而不释放会泄漏 NodeEventBus 订阅与原生节点。
+    /// </summary>
+    internal static void DisposeContent(IElementHandler? contentHandler, ArkUINodeBase container)
+    {
+        if (contentHandler is null)
+            return;
+        if (contentHandler.VirtualView is IElement element)
+            element.Handler = null; // 触发 DisconnectHandler（HarmonyGestureManager / 事件订阅清理）
+        if (contentHandler.PlatformView is ArkUINodeBase node)
+        {
+            container.RemoveChild(node);
+            node.Dispose();
+        }
+    }
 }

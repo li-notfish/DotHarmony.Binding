@@ -1,11 +1,13 @@
 # 自动定位远程构建机：先试 SSH 配置里的 IP，连不上就扫描局域网。
-# 找到后把新 IP 写回 ~/.ssh/config 的 wsl_auzrelinux HostName，并把 IP 输出到 stdout。
+# 找到后把新 IP 写回 ~/.ssh/config 的 Alias HostName，并把 IP 输出到 stdout。
 # 用法: pwsh -NoProfile -File scripts/resolve-remote.ps1
+# 自定义（环境变量优先，均无硬编码个人机）：
+#   REMOTE_SSH_ALIAS / REMOTE_SSH_USER / REMOTE_EXPECTED_HOSTNAME / REMOTE_SUBNET
 param(
-    [string]$Alias = "wsl_auzrelinux",
-    [string]$User = "onlyfish",
-    [string]$ExpectedHostname = "SHDDesk",
-    [string]$Subnet = "192.168.1"
+    [string]$Alias = ($env:REMOTE_SSH_ALIAS ?? 'wsl_remote'),
+    [string]$User = ($env:REMOTE_SSH_USER ?? $env:USERNAME),
+    [string]$ExpectedHostname = ($env:REMOTE_EXPECTED_HOSTNAME ?? '').Trim(),
+    [string]$Subnet = ($env:REMOTE_SUBNET ?? '192.168.1')
 )
 
 $ErrorActionPreference = "Stop"
@@ -13,9 +15,12 @@ $sshConfig = "$env:USERPROFILE\.ssh\config"
 
 function Test-SshHost {
     param([string]$Ip)
-    # BatchMode 只用密钥认证；直连 IP 不走 ssh config 别名，需显式指定密钥
+    # BatchMode 只用密钥认证；直连 IP 不走 ssh config 别名，需显式指定密钥（可用 REMOTE_SSH_KEY 覆盖默认）
+    $keyPath = if ($env:REMOTE_SSH_KEY) { $env:REMOTE_SSH_KEY } else { "$env:USERPROFILE\.ssh\id_ed25519" }
     $out = ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=accept-new `
-        -i "$env:USERPROFILE\.ssh\id_ed25519_wsl" "$User@$Ip" "cat /etc/hostname" 2>$null
+        -i $keyPath "$User@$Ip" "cat /etc/hostname" 2>$null
+    # 未指定意向主机名时，任一"密钥可登录的 SSH 主机"就视命中
+    if ([string]::IsNullOrWhiteSpace($ExpectedHostname)) { return $LASTEXITCODE -eq 0 }
     return ($out -eq $ExpectedHostname)
 }
 

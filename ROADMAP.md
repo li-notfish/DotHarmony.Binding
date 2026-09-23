@@ -5,9 +5,12 @@
 
 ## 当前基线（已完成，详见 README）
 
+> 2026-09-22 复核：当时的"27 Handler"以 HarmonyHandlerFactory 现网为准；
+> 单测基线已涨到 xunit 83+14 + jest 79；本文历史上的用例计数保持出处标注，以当前 live count 为准。
+
 - ✅ UI 通道：ArkUI NDK C API（`ArkUI_NativeNodeAPI_1`）→ `ArkUINodeBase` 稳定句柄
 - ✅ 服务通道：napi（`napi_load_module("=@ohos.xxx")`）→ `@ohos.deviceInfo` 端到端
-- ✅ MAUI Handler 包：22 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker/BoxView/CollectionView/CarouselView）+ 手势识别五件套 + XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）；代码风格已统一为官方 handler 模式；漏斗纪律（Handler 层禁直连原生 API）已由测试闸强制
+- ✅ MAUI Handler 包：22+ 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker/BoxView/CollectionView/CarouselView……）+ 手势识别五件套 + XAML（XamlC/SourceGen 编译期，NativeAOT 零反射）；代码风格已统一为官方 handler 模式；漏斗纪律（Handler 层禁直连原生 API）已由测试闸强制
 - ✅ 工具链：`HarmonyStageHost`（宿主工程按应用自动生成）→ `remote-build`（NativeAOT 双架构）→ `build-hap.cmd`（hvigor）→ `deploy-hap`（hdc）；`dotnet build -t:HarmonyRun` 一键直达
 
 ---
@@ -79,7 +82,9 @@
 
 ### 1.4 更多控件 Handler（✅ 已完成 22 个）
 
-已完成 22 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker + BoxView（纯色矩形→Stack 背景色，2026-09-12 补）+ CollectionView/CarouselView M1 版；RadioButton 的 Content 经 Row+Text 包装呈现，GroupName 已接通）。代码风格已统一为官方 handler 模式（`ViewHandler<TVirtualView, TPlatformView>` + 命名 Map 方法）。注意 MAUI 10 核心/Controls 接口差异：DatePicker.Date 等为可空类型，GroupName 仅在 Controls 类型上——虚拟视图类型按 Picker 先例直接用 Controls 具体类型。剩余：Shape/自绘（需 MAUI Graphics 前端）与 CollectionView 虚拟化（NodeAdapter）按需插入。
+已完成 22 个 Handler（16 基础 + RefreshView/Picker/DatePicker/TimePicker + BoxView（纯色矩形→Stack 背景色，2026-09-12 补）+ CollectionView/CarouselView；RadioButton 的 Content 经 Row+Text 包装呈现，GroupName 已接通）。代码风格已统一为官方 handler 模式（`ViewHandler<TVirtualView, TPlatformView>` + 命名 Map 方法）。注意 MAUI 10 核心/Controls 接口差异：DatePicker.Date 等为可空类型，GroupName 仅在 Controls 类型上——虚拟视图类型按 Picker 先例直接用 Controls 具体类型。
+
+**CollectionView 虚拟化**（✅ 已完成，2026-09-17）：平台视图从 Scroll+Column 全量物化改为 `ARKUI_NODE_LIST` + NodeAdapter（`ArkUINodeAdapterApi.cs`：`ArkUINodeAdapter` 包装类，GCHandle + 单一 `[UnmanagedCallersOnly]` 跳板同 NodeEventBus 模式；`ArkUINodeBase.SetNodeAdapter/ResetNodeAdapter` 经 NODE_LIST_NODE_ADAPTER 挂载/摘除）。条目按可见范围物化：`ON_ADD_NODE_TO_ADAPTER` 回调创建子节点（ItemTemplate 经 CreateContent，AOT 安全），`ON_REMOVE_NODE_FROM_ADAPTER` 回调处置（Handler 置 null 断连 + 节点 Dispose）；ItemsSource 变更走 `SetTotalCount + ReloadAllItems` 全量重载（索引即稳定 id）。模拟器实测（ControlsDemoPage 200 条目）：初始仅物化可见 7 条、内部滚动索引按需前进、回滚复现，内存/滚动性能不再随条数线性涨。
 
 ### 1.5 真机 arm64 验证（小）
 
@@ -106,7 +111,8 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 
 **反射桥（唯一非公开通道）**：`TapGestureRecognizer.SendTapped` 与 `PointerGestureRecognizer.SendPointer*` 在 MAUI 10 为 internal（Tapped 是 event 无法外部 raise）。`MauiGestureBridge` 用 `[DynamicDependency(NonPublicMethods)]` 收根 + MethodInfo 查一次 `CreateDelegate` 缓存成强类型委托（NativeAOT 安全；与 XAML 零反射铁律不冲突——反射范围仅这两个类的指定方法）。单测覆盖桥全链路与 Swipe 方向映射（tests/dotnet/HarmonyGestureTests，现 16 用例：+布局对齐、漏斗纪律扫描）。
 
-**单位约定**：PanUpdated 单位 vp（见上）；tap 位置为节点相对坐标。Tap 的 ButtonsMask 鼠标按键区分 NDK 不暴露，按 Primary 处理。Pointer 仅触摸通道（hover/mouse 待补）。DragGestureRecognizer/DropGestureRecognizer 未实现（longpress+跨视图状态机，后续立项）。
+**单位约定**：PanUpdated 单位 vp（见上）；tap 位置为节点相对坐标。Tap 的 ButtonsMask 鼠标按键区分 NDK 不暴露，按 Primary 处理。Pointer 仅触摸通道（hover/mouse 待补）。
+**Drag/Drop（✅ 已补，2026-09-14）**：`NODE_ON_DRAG_*`/`NODE_ON_DROP` + `OH_ArkUI_SetNodeDraggable`/`AllowNodeAllDropDataTypes`，文本载荷经 `libudmf.so` 构造/签收（`UdmfNativeApi.cs`）；`DragGestureRecognizer`/`DropGestureRecognizer` 的 DragStarting/DropCompleted/Drop 协议已回流 MAUI。关键结晶：`DragEvent.SetData` 的 UDMF 指针在回调栈之后才被 ACE 消费（裸引用存活语义），托管侧须持有至 `NODE_ON_DRAG_END` 才能 `OH_UdmfData_Destroy`。
 
 **模拟器实测通过**（uitest 全链路）：单击恰好 +1（含 pos 回传）、双击、pan 累计位移 198vp（700px 拖动 ÷ 密度 3.5 吻合）、swipe Right/Up 方向判定、pointer pressed/moved/released 流、动态增删识别器后恰好 +1（池化回归通过）、IsEnabled=false 静默、进程存活。Pinch 多点触控 uitest 无注入能力，代码路径 + 单测覆盖，留待真机专项。
 
@@ -172,7 +178,7 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 **2.5 .NET 风格标准化（2026-09-11 完成）**：
 - 命名规范化：`naming.ts` 缩写词归一（`getURI→GetUri`、`TYPE_DEFAULT→TypeDefault`），Task 方法自动 `Async` 后缀
 - 类型映射收口 TypeMapper 单一事实源；修复 `mapGenericType` 贪婪正则对嵌套泛型的误切（`Promise<Array<T>>` 曾整体退化为 IntPtr 的潜在 bug）
-- Runtime：`JsObject` 强引用包装基类、`ValueConverter` 统一转换（含枚举/数组/显式工厂委托）、`NodeApi.SetProperty/GetGlobal/CreateInstance/GetArrayElements`、PromiseTaskBridge 吸并 ThreadSafeFunction.FromPromise 重复实现
+- Interop（原 Runtime）：`JsObject` 强引用包装基类、`ValueConverter` 统一转换（含枚举/数组/显式工厂委托）、`NodeApi.SetProperty/GetGlobal/CreateInstance/GetArrayElements`、PromiseTaskBridge 吸并 ThreadSafeFunction.FromPromise 重复实现
 - 服务模块 `on*` 函数不再误判为组件事件；嵌套类构造函数支持（Picker 空壳修复）；无注解字面量常量类型推断（Pasteboard MIMETYPE_* 恢复）
 - ~~明确不做（后续立项）：ArrayBuffer/BigInt 封送、Map/Set 容器映射~~ → **2.6 已完成** ArrayBuffer/BigInt/Map（仍不做：Set 容器、EventHandler/EventArgs 模型）；TSFN abort 路径模拟器端到端验证仍未做（见 2.1 最小实验的未验证清单）
 
@@ -187,7 +193,8 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 - **封送专项实测通过**（模拟器）：ArrayBuffer byte[8] 往返逐字节一致；JsMap 读侧（Count/TryGet/Entries）与写侧（Create+Set → JS forEach 求和）全通；TSFN 加固后 worker(tid 9)→JS(tid 1) 回调、env 往返正常
 - **TSFN 生命周期加固**：Release/Abort 与 Call 互斥（锁）防句柄竞态；GCHandle 延迟到 finalize 回调释放——abort 后已入队消息仍会派发，过早释放即 UAF；CallJsTrampoline 异常捕获（不得穿透原生帧）
 - **全量生成（M2.3 终态）**：`--all` 生成 449 个 d.ts 中的 438 个模块，**375 转正编译、63 灰度**（黑名单 GRAYSCALE_MODULES）。规模暴露的生成器工程化缺陷全部修复：模块 className 唯一化（resourceManager/global.resourceManager、net/bluetooth 的 connection/socket 同名互覆盖）；跨模块 import 类型降级 IntPtr（含 default import）；枚举冲突按属主模块加前缀（废弃"全局去重丢弃"——首发射者被灰度会拖垮依赖者）；陈旧 Enums.cs 清理；灰度清单携带唯一化后 className；含 UTF-16（CRLF/代理对）转义与命名保留字处理
-- **已知残留（立项待做）**：TS 声明合并类型（window.WindowRect 双定义）；跨模块强类型解析（现在降级 IntPtr）；63 灰度模块的类型映射缺口清单
+  - **后续收口**：63 灰度已全部转正（`7acea5f`：438/438 编译，`GRAYSCALE_MODULES` 清空，`HarmonyOS.Bindings.csproj` 中已无 `Compile Remove`）。M2.3 的"生成但不进编译"姿态到此终了。
+- **已知残留（立项待做）**：TS 声明合并类型（window.WindowRect 双定义）；跨模块强类型解析（现在降级 IntPtr）
 - **零分配调用路径（.NET 10 / C# 13 → C# 14）**：`params ReadOnlySpan<object?>`（params collections，调用点零数组）；argv 栈分配（InvokeMethod/CreateInstance/trampolines，>8 参数回退堆）；P/Invoke 改 `ReadOnlySpan<IntPtr>`（LibraryImport 钉扎零拷贝）；生成 record 的 WriteTo 属性名 u8 常量缓存（替代每次 `Encoding.UTF8.GetBytes`）；NodeApi 胶水名字节静态缓存。**2026-09-12 C# 14 批次（控件/运行时层落点，实现记录见 1.7）**：`SetNumericAttribute(params ReadOnlySpan<ArkUI_NumberValue>)`（全仓最热属性写路径零数组）；`PromiseTaskBridge` 桥名字节缓存 + `napi_call_function` 改 `ReadOnlySpan<IntPtr>`；`HiLog` 格式串 u8 静态缓存 + `VerboseEnabled` 运行时开关；`HarmonyGestureManager` 触摸热路径去分配（识别器快照缓存/普通循环/分类型入池）。**剩余分配源**：object 转换点基元装箱、字符串结果物化、事件适配器闭包——完全零装箱需 union struct 参数设计，后续立项
 
 **2.9 事件触发路径实测 + 第四批扩展（2026-09-12 完成）**：
@@ -211,7 +218,7 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 - **实测修复 2（架构级）**：PromiseTaskBridge 原用 `RunContinuationsAsynchronously` + `ContinueWith` 把续体调度到线程池——wrapper 结果 await 后访问属性时 `NapiEnv.Current`（[ThreadStatic]）无 env 直接抛异常。改为 TCS 同步续体：Promise resolve 的 trampoline 在 JS 线程内联执行用户续体（与 JS await 微任务语义一致）；副作用：用户续体长耗时工作须自行 `Task.Run` 切走
 - **实测修复 3**：`async void` 事件处理器仅 catch `ArkTSException`，其它异常（如调用不存在的 JS 函数）未处理直接杀进程；samples 兜底 `catch (Exception)`，宿主 EntryAbility 补 `globalThis.somePromiseApi/willFail` 测试函数
 
-**最小实验结论**（2026-09-11，模拟器，HelloApp "TSFN test" 按钮 / `Runtime/TsfnExperiment.cs`）：
+**最小实验结论**（2026-09-11，模拟器，HelloApp "TSFN test" 按钮 / `src/HarmonyOS.Interop/TsfnExperiment.cs`）：
 - `CallJsTrampoline` 已实装（原为空壳）：context 解析回 ThreadSafeFunction 实例，转发 `OnCallJs`
 - 后台 .NET 线程 `Call()` → libuv 在 **JS（宿主主）线程**触发回调（managed thread id 与 UI 线程一致，实测吻合）
 - 回调内 `NapiEnv.Current` 可用，NAPI 字符串创建+读取往返成功
@@ -219,8 +226,14 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 - 生命周期完成路径（回调末尾 `Release()`）实测无泄漏/UAF；连点两次（两个实例并发）无竞态
 - ⚠️ 未验证：abort 路径、release 后 call 的防御、跨 TSFN 实例 GC 压力——收编正式通道时补
 
+**2026-09-22 补丁**：TSFN 之上已新增 `MainThreadDispatcher`（`AttachUiThread`/`Post`），任意线程
+投递到 UI 线程的通用通道在 `Host.InitializeCore` 里挂接；`HarmonySynchronizationContext` 保留为
+.NET 生态兼容面，不作为本仓运行时投递通道。本段的"未验证缺口"已被 `PromiseTaskBridge` 与
+`CallbackTaskBridge` 的 GCHandle 异常兜底吸收（破解：成功后正式桥创建失败、调用失败 → 取消 Task
+并释放句柄，避免 await 悬垂）。
+
 **怎么做**：
-1. `napi_create_threadsafe_function` 封装（`Runtime/ThreadSafeFunction.cs`）：
+1. `napi_create_threadsafe_function` 封装（`src/HarmonyOS.Interop/ThreadSafeFunction.cs`）：
    - C# 发起调用 → 拿到 Promise → 注册 TSFN（经 `napi_resolve` 在 JS 线程桥接）
    - C# 侧返回 `TaskCompletionSource<napi_value>` 包装的 `Task<T>`
 2. Promise 完成时（JS 线程）→ TSFN 回调 C#（线程安全排队）→ TCS.SetResult → `await` 继续
@@ -235,7 +248,7 @@ MAUI 手势平台管线在 netstandard Controls 产物中为空实现（`Gesture
 ### 2.2 codeGenerator 缺陷修复（小，TSFN 的前置）
 
 - `CallMethod<void>` 非法 C# → 无参/void 方法（白皮书"泛型 void 清洁重载"）
-- using 生成缺失（产物缺 `using HarmonyOS.Bindings.Runtime`）
+- using 生成缺失（产物缺 `using HarmonyOS.Interop`）
 - 方法重载折叠保留全部签名
 - `Promise<T>` 映射接 2.1 的 `Task<T>`
 
@@ -266,7 +279,7 @@ MAUI 生态代码因此零改造可用。
 | `IDeviceInfo` | `@ohos.deviceInfo`（同步属性） | Model=productModel / Manufacturer=manufacture / Name=marketName；Version 从 OsFullName 尾段解析（OpenHarmony-7.0.0.105），失败回退 SdkApiVersion；DeviceType 以 emu/simulator 启发式判虚拟机 |
 | `IDeviceDisplay` | `@ohos.display` 的 `getDefaultDisplaySync` | DisplayInfo 语义对齐 Android（Width/Height px，Density=DPI/160）；Rotation 0~3 映射；MainDisplayInfoChanged 经模块级 `Change` 事件转发。**同步 getter 不允许 await promise**（JS 线程内联续体，阻塞即死锁） |
 | `IAppInfo` | `@ohos.bundle.bundleManager`（`getBundleInfoForSelfSync`） | PackageName=BundleInfo.Name；Name=AppInfo.Label；Version 回退版本码。**本项促使 bundleManager 从灰度转正**（移除 Compile Remove 即过编译——当年灰度原因无存证） |
-| `IClipboard` | `@ohos.pasteboard` SystemPasteboard | HasText/SetTextAsync 走同步通道即时生效；GetTextAsync 走 promise。ClipboardContentChanged 声明但不触发（生成器未为 SystemPasteboard 发射 onRemoteUpdate 访问器，留待补接）。**读权限完整闭环（2026-09-13 实测）**：API 26 起 `READ_PASTEBOARD` 为 user_grant，被拒时系统返回空 PasteData 壳而非抛错——读前 `getSelfPermissionStatus` 主动查状态，未授权经宿主导出的 `globalThis.abilityContext` 发 `requestPermissionsFromUser` 弹窗后重试（宿主模板 EntryAbility.ets 已导出该上下文）；授权后回环 `hasText=True text=hello-essentials`；同步 `HasText` 回退最近已知状态、远端 update 事件使其失效；**每次读重查授权状态**（用户改系统设置后下次读即生效，弹窗每会话至多一次）。ClipboardContentChanged 经 SystemPasteboard.Update 接线（2026-09-13） |
+| `IClipboard` | `@ohos.pasteboard` SystemPasteboard | HasText/SetTextAsync 走同步通道即时生效；GetTextAsync 走 promise。**读权限完整闭环（2026-09-13 实测）**：API 26 起 `READ_PASTEBOARD` 为 user_grant，被拒时系统返回空 PasteData 壳而非抛错——读前 `getSelfPermissionStatus` 主动查状态，未授权经宿主导出的 `globalThis.abilityContext` 发 `requestPermissionsFromUser` 弹窗后重试（宿主模板 EntryAbility.ets 已导出该上下文）；授权后回环 `hasText=True text=hello-essentials`；同步 `HasText` 回退最近已知状态、远端 update 事件使其失效；**每次读重查授权状态**（用户改系统设置后下次读即生效，弹窗每会话至多一次）。ClipboardContentChanged 经 SystemPasteboard.Update 接线（2026-09-13） |
 
 **独立示例**：`samples/dotnet/EssentialsApp`——四服务单独验证应用（DeviceInfo/DeviceDisplay/AppInfo 信息栏 + 剪贴板回环按钮），`dotnet build -t:HarmonyRun` 一键部署；HelloApp（Controls 示例）不再混入 Essentials 内容。
 
@@ -282,10 +295,10 @@ NodeApi.CreateCallbackFunction 做回调），回调内重读属性+去重缓存
 模拟器实测：`level=100% · state=Discharging · source=Battery · saver=Off`（模拟器
 chargingStatus=0 → 按 Discharging 处理，贴近 MAUI 语义）。
 
-**剩余清单（立项待做）**：ISecureStorage（@ohos.data.preferences 已转正，事务性 API 在自定义
-entry 写入路径）、IMainThread（借 napi 线程检查）、IConnectivity（net.connection
-灰度需转正）、传感器（Sensor 已可实测——2.9 有事件回路沉淀）等
-按价值逐项接入；电池事件的模拟器触发验证（需改电量通道）。
+**剩余清单（✅ 2026-09-22 复核收口）**：ISecureStorage 已于第 8/9 批收口（@ohos.security.asset）；
+传感器族/定位/媒体选择已接入；Connectivity/Vibration 出灰度转正。本节"剩余清单"的描述
+（ISecureStorage 待做/ImainThread 未接/Connectivity 灰度）与 09-13 的"最终批次"段落相矛盾，
+以最终批次为准；本节仅保留为历史记录。
 
 **IVibration（✅ 2026-09-13 第七个服务）**：@ohos.vibrator，Vibrate 走现代 startVibration
 （{type:'time', duration:ms} + {usage:'unknown'}，非 Api 9 起废弃的 vibrate(duration)），
@@ -316,7 +329,7 @@ VIBRATE 为 system_grant，宿主模板 module.json5 已声明。**本批按用�
 - **IShare**：文本走 ohos.want.action.sendData；文件分享需跨应用 URI 授权通道（ability.params.stream），
   唯一留白
 - **ISecureStorage**：@ohos.security.asset，AssetMap 数字 Tag 键经 IDictionary 字符串键构造，
-  BYTES 值要求 Uint8Array（Runtime 补 FromUint8Array = napi_create_arraybuffer +
+  BYTES 值要求 Uint8Array（Interop 补 FromUint8Array = napi_create_arraybuffer +
   napi_create_typedarray，非 ArrayBuffer）
 - **前两批未构建代码的编译缺口全数补齐**（IVibration.IsSupported / IEmail.IsComposeSupported /
   NetworkAccess.Local / EmailMessage.Cc/Bcc——均为成员名出入，75/75 测试绿）
@@ -329,10 +342,20 @@ VIBRATE 为 system_grant，宿主模板 module.json5 已声明。**本批按用�
 
 ## M3 —— 工程化（远期）
 
+- **装配分层对齐（✅ 2026-09-20 完成，7 批提交）**：对照 dotnet/android（D:\Harmony\maui.android 参考库）——
+  `HarmonyOS.Interop`（napi 互操作核心独立装，对齐 Java.Interop；HiLog 归此层，留 Bindings 会反向依赖）/
+  `HarmonyOS.Bindings`（绑定 + ArkUI 节点，对齐 Mono.Android 的 Android.Runtime 同装模式）/
+  `HarmonyOS.Essentials` 独立装（对齐 Microsoft.Maui.Essentials；FunnelDisciplineTests 扫描面扩到 Maui+Essentials 双目录）/
+  全产品收编 `src/` + 生成器迁 `tools/api-generator` + TFM 集中 `$(HarmonyOSTargetFramework)` + CPM（Directory.Packages.props）。
+  附带修复：生成器 EBUSY 级联误删（Windows 瞬态锁文件 → 写失败模块不进 written 集合 → 孤儿清理误删已提交产物，
+  逐轮级联 38→87 个；写重试 4 次退避 + 本轮失败禁孤儿清理）、build-files.txt 补 CPM 清单（WSL 侧 NU1602 回退 MAUI 8.0.3）。
+  验证：10 工程 0 错误、dotnet 83+14、jest 79/79、双 App WSL NativeAOT 全链、模拟器冒烟全套（accel/compass/geo/
+  Carousel/drag&drop/CV 虚拟化 7→11→15/Shape 截图）。
+
 - **NDK 头文件生成器（native API 绑定自动化）**：解析 ArkUI NDK C 头文件（native_node.h / native_gesture.h / native_animate.h / native_type.h 等），自动生成函数表镜像、枚举、结构体与 P/Invoke 声明，替换 `ArkUIGestureApi.cs` / `ArkUIAnimateApi.cs` / 事件/属性枚举等全部手工维护的原生层代码。要点与难点：
   - C 解析需 libclang（或等价 C 前端），不能用正则——现有 `extract_arkui_types.py` 只抽枚举，函数表/结构体均为手写镜像
   - 语义修正规则须沉淀为声明式配置（生成器不猜）：C bool 在 unmanaged 函数指针中按 1 字节显式 `byte`；头文件注释单位不可信（`GetX` 标注 px 实测为 vp 的笔误）需人工勘误表覆盖；`version` 字段为首成员的函数表布局约定
-  - 与 TS 侧生成器（`src/parser`）同仓共存：产物目录、命名归一、`--sdk` 输入路径复用
+  - 与 TS 侧生成器（`tools/api-generator`）同仓共存：产物目录、命名归一、`--sdk` 输入路径复用
   - 验收：重出产物与手写版逐签名 diff 为零（除勘误表标注项），全量单测 + 模拟器手势/动画链路回归通过
 - **NuGet 打包**：Bindings / HarmonyOS.Maui / 宿主工程模板三件套分发
 - **单项目体验**：MSBuild targets 让用户工程 `dotnet build` 直出 HAP（自动跑远程 AOT 或本机 WSL）。

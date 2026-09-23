@@ -10,8 +10,10 @@
 | 层 | 内容 | 你是否要写 |
 |---|---|---|
 | 应用工程 | Program.cs + XAML 页面 + Platforms/HarmonyOS 启动代码 | ✅ 本文的主角 |
-| HarmonyOS.Maui | 22 个控件 Handler、手势、导航、托管布局 | ❌ 引用即可 |
+| HarmonyOS.Maui | 27 个控件 Handler、手势、导航、托管布局 | ❌ 引用即可 |
+| HarmonyOS.Essentials | MAUI Essentials 鸿蒙实现（16 服务） | ❌ 引用即可（MauiHarmonyHost.Run 自动安装） |
 | HarmonyOS.Bindings | ArkUI NDK 原生节点 + 438 个 @ohos.* 模块绑定 | ❌ 引用即可（仅声明用到的 @ohos 模块） |
+| HarmonyOS.Interop | napi 互操作核心独立装 | ❌ 引用即可 |
 | HarmonyHost（ArkTS 宿主） | dlopen libapp.so 的壳工程模板 | ❌ 由 targets 自动生成按应用实例（见 §3） |
 
 ---
@@ -86,7 +88,7 @@ bash scripts/deploy-hap.sh         # hdc 安装 + 启动（多设备：HDC_TARGE
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+    <ProjectReference Include="..\..\src\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
     <ProjectReference Include="..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
   </ItemGroup>
 
@@ -203,8 +205,8 @@ dotnet build samples/dotnet/MyApp -t:HarmonyRun
 | `Navigation.PushAsync/PopAsync/PushModalAsync` | ✅ 直接复用 | 经 IStackNavigation 协议转接到 ArkUI |
 | 手势识别（Tap/Pan/Pinch/Swipe/Pointer） | ✅ 直接复用 | 注意 PanUpdated 单位为 vp（等价 iOS points，非 Android px） |
 | Shell（flyout/tab/URI 路由） | ❌ 需改造 | 入口改为 `new NavigationPage(...)`；TabbedPage 后续支持 |
-| 自绘（Shape/GraphicsView） | ❌ 待支持 | 需 MAUI Graphics 前端（ROADMAP 1.4 剩余） |
-| CollectionView 大数据量 | ⚠️ 可用 | 当前全量物化无虚拟化（NodeAdapter 后续做） |
+| 自绘（Shape/GraphicsView） | ✅ 已支持 | ArkUI 自绘节点（ARKUI_NODE_CUSTOM）+ OH_Drawing；ICanvas 适配器 vp 语义 |
+| CollectionView 大数据量 | ✅ 已支持 | NodeAdapter 虚拟化：按可见范围物化（实测 200 条仅物化 7 条，滚动按需推进/回滚） |
 | **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` / `Connectivity.Current` / `FileSystem.Current` / `Launcher.Default` / `SecureStorage.Default` 等） | ✅ 全部 16 个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；MauiHarmonyHost.Run 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage/MainThread（唯一例外：IShare 文件分享需跨应用 URI 授权通道，留待立项）；适配指南见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
 | 自定义 Handler / 平台服务 | ❌ 需移植 | 按 [HANDLERS.md](HANDLERS.md) 五步流程写鸿蒙侧 Handler |
 
@@ -284,9 +286,10 @@ re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——�
 
 ## 5. 当前能力边界（决定 §2 盘点结论的细节）
 
-- **控件**：22 个 Handler（基础控件 + Picker/RefreshView/BoxView + CollectionView/CarouselView 物化版）
-- **手势**：Tap/Pan/Pinch/Swipe/Pointer；Drag/Drop、hover、鼠标按键区分待做
+- **控件**：27 个 Handler（基础控件 + Picker/RefreshView/BoxView + CollectionView 虚拟化/CarouselView + Shape/GraphicsView 自绘）
+- **手势**：Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop；hover、鼠标按键区分待做
 - **布局**：StackLayout（flex 托管）+ Grid/AbsoluteLayout（MAUI 托管，对齐/ZIndex/Auto 轨道自适应已对齐）
-- **服务**：438 个 @ohos.* 模块绑定（Promise→Task、.NET 事件、ArrayBuffer/Map；bundleManager 已转正）+ **Essentials 首批**（DeviceInfo/DeviceDisplay/AppInfo/Clipboard）
+- **自绘**：Shape + GraphicsView（ArkUI 自绘节点 + OH_Drawing）
+- **服务**：438 个 @ohos.* 模块绑定（Promise→Task、.NET 事件、ArrayBuffer/Map）+ **Essentials 16 服务全量**
 - **证书/签名**：模拟器免签；真机需自行准备签名物料
 - 路线图：[ROADMAP.md](ROADMAP.md)（M1 控件/M2 服务已完成，M3 NuGet 打包等工程化远期）

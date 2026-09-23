@@ -15,9 +15,9 @@ public class FunnelDisciplineTests
         ("ArkUINativeApi", "节点函数表类——经 ArkUINodeBase 包装方法"),
         ("ArkUIGestureApi", "手势函数表类——经 Nodes/Gestures 包装类"),
         ("ArkUIAnimateApi", "动画函数表类——经 ArkUINodeBase.Animate/AnimateAsync"),
-        ("NativeNodeApi", "napi P/Invoke 类——属 Bindings/Runtime 层"),
+        ("NativeNodeApi", "napi P/Invoke 类——属 HarmonyOS.Interop 层"),
         ("OH_ArkUI_", "NDK C 入口——一律加包装后使用"),
-        ("napi_", "Node-API C 入口——属 Bindings/Runtime 层"),
+        ("napi_", "Node-API C 入口——属 HarmonyOS.Interop 层"),
         ("GetNodeComponentEvent", "原始事件结构体直读——经 ArkUINodeEvent 载荷包装"),
         ("ArkUI_NodeComponentEvent", "原始事件结构体——经 ArkUINodeEvent 载荷包装"),
         ("ArkUI_AttributeItem", "原始属性结构体——经 SetXxxAttribute 包装"),
@@ -29,22 +29,29 @@ public class FunnelDisciplineTests
     public void HandlerLayer_NeverTouchesNativeFunctionTables()
     {
         var root = FindRepoRoot();
-        var handlerRoot = Path.Combine(root, "src", "HarmonyOS.Maui");
-        Assert.True(Directory.Exists(handlerRoot), $"找不到 {handlerRoot}");
-
+        // 漏斗纪律约束全部 Handler 之上的层：Handlers/Hosting（Maui）与拆装后的 Essentials 同受此闸
+        string[] layerRoots =
+        [
+            Path.Combine(root, "src", "HarmonyOS.Maui"),
+            Path.Combine(root, "src", "HarmonyOS.Essentials"),
+        ];
         var violations = new List<string>();
-        foreach (var file in Directory.EnumerateFiles(handlerRoot, "*.cs", SearchOption.AllDirectories))
+        foreach (var layerRoot in layerRoots)
         {
-            if (file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") ||
-                file.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
-                continue;
-            var lines = File.ReadAllLines(file);
-            for (int i = 0; i < lines.Length; i++)
+            Assert.True(Directory.Exists(layerRoot), $"找不到 {layerRoot}");
+            foreach (var file in Directory.EnumerateFiles(layerRoot, "*.cs", SearchOption.AllDirectories))
             {
-                foreach (var (token, reason) in Forbidden)
+                if (file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") ||
+                    file.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
+                    continue;
+                var lines = File.ReadAllLines(file);
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    if (lines[i].Contains(token, StringComparison.Ordinal))
-                        violations.Add($"{Path.GetRelativePath(root, file)}:{i + 1}: '{token}' — {reason}");
+                    foreach (var (token, reason) in Forbidden)
+                    {
+                        if (lines[i].Contains(token, StringComparison.Ordinal))
+                            violations.Add($"{Path.GetRelativePath(root, file)}:{i + 1}: '{token}' — {reason}");
+                    }
                 }
             }
         }

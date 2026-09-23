@@ -17,7 +17,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
-using HarmonyOS.Bindings.Runtime;
+using HarmonyOS.Interop;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 using ArkStack = HarmonyOS.ArkUI.Stack;
 using MAbsolute = Microsoft.Maui.Controls.AbsoluteLayout;
@@ -218,6 +218,24 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
                 rowAuto[r] = Math.Max(rowAuto[r], size.height / density);
         }
 
+        // Span>1 子节点参与 Auto 轨道（跨轨道组合实测沉淀）：span 内 Auto 轨道当前和
+        // 不足自量测尺寸时分摊亏空（混合 Star/Auto 时均摊，纯 Auto 组合时该轨道整段撑起）
+        foreach (var (view, handler) in _children)
+        {
+            if (handler.PlatformView is not ArkUINode node) continue;
+            int c = Math.Clamp(Grid.GetColumn((MBindableObject)view), 0, nCols - 1);
+            int r = Math.Clamp(Grid.GetRow((MBindableObject)view), 0, nRows - 1);
+            int cs = Math.Clamp(Grid.GetColumnSpan((MBindableObject)view), 1, nCols - c);
+            int rs = Math.Clamp(Grid.GetRowSpan((MBindableObject)view), 1, nRows - r);
+            if (cs == 1 && rs == 1) continue;
+            var size = node.MeasuredSize;
+            float wVp = size.width / density, hVp = size.height / density;
+            if (wVp > 0 && SpannedAutoCount(colUnit, c, cs) > 0)
+                DistributeSpanDeficit(colAuto, colUnit, c, cs, wVp);
+            if (hVp > 0 && SpannedAutoCount(rowUnit, r, rs) > 0)
+                DistributeSpanDeficit(rowAuto, rowUnit, r, rs, hVp);
+        }
+
         // Auto 轨道兜底：子节点未被 ArkUI 量测时（首帧），按 MAUI 控件语义估算高度
         // 下一帧 SizeChange 触发后 MeasuredSize 有真实值，自动修正
         foreach (var (view, handler) in _children)
@@ -399,6 +417,38 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
         for (int i = start; i < start + count && i < tracks.Length; i++)
             sum += tracks[i];
         return sum;
+    }
+
+    /// <summary>span 覆盖范围内的 Auto 轨道数（布局热路径，显式循环）</summary>
+    private static int SpannedAutoCount(GridUnitType[] units, int start, int span)
+    {
+        int n = 0;
+        for (int i = start; i < start + span && i < units.Length; i++)
+            if (units[i] == GridUnitType.Auto)
+                n++;
+        return n;
+    }
+
+    /// <summary>亏空分摊：span 内 Auto 轨道当前和 < 子节点自量测尺寸时把差值补进 Auto 轨道
+    /// （混合 Star/Auto 均摊；纯 Auto 组合该轨道整段撑起）。只增不减，多子节点各自收敛。</summary>
+    private static void DistributeSpanDeficit(float[] autoSizes, GridUnitType[] units, int start, int span, float target)
+    {
+        int autoCount = 0;
+        float autoSum = 0;
+        for (int i = start; i < start + span && i < units.Length; i++)
+        {
+            if (units[i] == GridUnitType.Auto)
+            {
+                autoSum += autoSizes[i];
+                autoCount++;
+            }
+        }
+        if (autoCount == 0 || autoSum >= target)
+            return;
+        float share = (target - autoSum) / autoCount;
+        for (int i = start; i < start + span && i < units.Length; i++)
+            if (units[i] == GridUnitType.Auto)
+                autoSizes[i] += share;
     }
 
     /// <summary>轨道数组 → "1,2,3"（仅诊断用；显式循环避免 LINQ 在布局热路径分配）</summary>
