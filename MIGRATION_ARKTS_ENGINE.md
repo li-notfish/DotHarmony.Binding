@@ -12,7 +12,7 @@
 2. **方案 A（ArkTS 命令总线引擎）为主体**：C# 发指令流，ArkTS 侧声明式引擎持有真实节点树，
    覆盖全部运行时动态语义。**方案 B（编译期 .ets 生成）为静态层优化**：纯 XAML 常量子树在构建期
    直接生成 ArkTS 组件代码，运行时零指令流。两者互补分层，不是二选一；B 独立于 C 节点 API
-   （今天就能做），但不能脱离 A 单独承担完整 MAUI 渲染。
+   （当前即可做），但不能脱离 A 单独承担完整 MAUI 渲染。
 3. **真正的硬点只有三个**：同步量测回读（Auto 轨道/手势坐标依赖 `MeasuredSize` 的同步 P/Invoke）、
    手势动态挂接、动画完成回调。三者的现有设计（AREA_CHANGE 驱动 + 幂等快照、触摸流翻译层、
    inline 完成回调）都预留了应对空间。
@@ -53,7 +53,7 @@ VirtualNode（保留 id 句柄）             SceneGraph：@State 节点树
   Animate(updates, done)     ──动画──   animateTo + 完成回调回流
 ```
 
-- **接口不变量**：`VirtualNode` 公开方法签名与今天的 `ArkUINodeBase` 保持一致（差异仅
+- **接口不变量**：`VirtualNode` 公开方法签名与现有 `ArkUINodeBase` 保持一致（差异仅
   "同步原生回读 → 影子快照"），Handler 层迁移趋近于零。
 - **指令批处理**：同 UI 帧内的属性写合并为一次 napi 调用（在布局 pass 边界或 16ms 定时冲刷）。
   性能生命线——托管布局一次 Arrange 可写几十个属性，逐条 napi 调用不可接受。
@@ -62,7 +62,7 @@ VirtualNode（保留 id 句柄）             SceneGraph：@State 节点树
 
 指令经一条批量化通道（`napi_call_function` 携带 record 数组；复用现有 `INapiRecord` 封送）：
 
-| 指令 | 载荷 | 对应今天的调用 |
+| 指令 | 载荷 | 对应现有调用 |
 |---|---|---|
 | `Create` | nodeId, nodeType, 初始属性表 | `new ArkXxx()` |
 | `SetAttrs` | nodeId, 属性名→值字典（数值/字符串/颜色/边距/…) | 各 SetXxx |
@@ -92,7 +92,7 @@ VirtualNode（保留 id 句柄）             SceneGraph：@State 节点树
 ### 2.4 三个硬点的解法
 
 **① 同步量测回读 → 影子缓存**
-今天 `node.MeasuredSize`/`GetX` 是同步 P/Invoke。改为：引擎在 ON_AREA_CHANGE / 触摸事件里把量测值
+现有实现中 `node.MeasuredSize`/`GetX` 是同步 P/Invoke。改为：引擎在 ON_AREA_CHANGE / 触摸事件里把量测值
 随事件载荷推给 C#，C# 维护每节点快照，`MeasuredSize` 读快照。
 - 托管布局已是"AREA_CHANGE 驱动 + `_lastApplied` 幂等"设计，量测迟到不影响收敛语义；
 - 首帧兜底估算（按控件类型）保留；收敛帧数可能 +1~2，以 uitest 断言容忍；
@@ -122,7 +122,7 @@ MAUI XAML 本来就是编译期膨胀的——在 SourceGen 阶段额外生成�
 结构体），宿主直接加载静态页面树，运行时只对动态部分发指令。
 
 - **相对于 C 节点 API：完全独立。** B 的运行时是 ArkTS 声明式引擎，一行 C 节点 API 都不碰，
-  今天就能做（不依赖任何"未来 API"）。
+  当前即可做（不依赖任何未来 API）。
 - **相对于完整 MAUI 渲染：不能单独承担。** MAUI UI 本质是运行时动态的——绑定回写、集合增删、
   IsEnabled/属性变更、PushAsync/PopAsync、手势识别器动态增删。静态树无法表达"运行时改变"
   （除非 B 内嵌自己的命令通道——那就变成了 A）。纯 B 只能覆盖"一次性静态页面"。

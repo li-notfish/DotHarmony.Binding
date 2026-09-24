@@ -3,9 +3,13 @@
 一个**模仿 .NET MAUI 平台绑定层逻辑**（Mono.Android / Microsoft.iOS 的思路）的鸿蒙试验项目：
 用 .NET (NativeAOT) 绑定 HarmonyOS (ArkUI/ArkTS)，并让 .NET MAUI 控件经 Handler 机制渲染为 ArkUI 原生节点。
 
-**当前状态：M1（MAUI 基本面）与 M2（服务层）完成、装配分层已对齐 dotnet/android 标准（2026-09-20），模拟器端到端验证** —— XAML 声明式 UI → 鸿蒙原生渲染、
-27 个 MAUI 控件 Handler（CollectionView 虚拟化）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、**438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）**。
+**当前状态：M1（MAUI 基本面）与 M2（服务层）已完成并模拟器端到端验证；M3 工程化推进中（NDK 生成器与 NuGet 分发已落地）** —— XAML 声明式 UI → 鸿蒙原生渲染、
+27 个 MAUI 控件 Handler（CollectionView 虚拟化）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）。
 距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
+
+近期里程碑：**NDK 头文件生成器**（tools/arkui-bindgen，libclang 解析，枚举/结构体/函数表镜像全部由配置驱动生成，
+漂移检查 `--check` 供 CI 门禁）与 **NuGet 打包**（四库 + 模板包，buildTransitive 宿主编排，应用工程无需仓库工作副本）已落地；
+CI 与性能基线为当前进行项，详见 ROADMAP M3。
 
 **上手**：从零创建鸿蒙 MAUI 应用 / 给已有 MAUI 应用加鸿蒙平台，见 **[GETTING_STARTED.md](GETTING_STARTED.md)**。
 **平台服务**：适配一个新的 Essentials 服务（注入点取证/五步流程/坑表），见 **[ESSENTIALS.md](ESSENTIALS.md)**。
@@ -112,7 +116,7 @@ bash scripts/deploy-hap.sh
 
 > 约定：`.gitattributes` 强制 `*.sh` 为 LF（WSL bash 无法执行 CRLF 脚本）、`*.cmd/*.ps1` 为 CRLF；新增脚本请沿用"路径自动探测 + 前置检查失败即停"的风格。
 
-## NuGet 包与模板（B 线）
+## NuGet 包与模板
 
 五个包经 `dotnet pack -c Release -o dist` 产出（版本统一由根 `Directory.Build.props` 的 `PackageVersion` 供给）：
 
@@ -180,7 +184,7 @@ samples/dotnet/EssentialsApp/ M2.4 Essentials 验证（16 服务全量：信息�
                              两者的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
                              对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
                              由 src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets 提供
-scripts/                     remote-build / stage-host / build-hap / deploy-hap 一键工具链（+ verify-m1-uitest 行为回归）
+scripts/                     remote-build / stage-host / build-hap / deploy-hap 一键工具链（+ verify-*-uitest 行为回归）
 tests/                       jest（解析器/生成器 79 用例）
 ```
 
@@ -195,15 +199,15 @@ tests/                       jest（解析器/生成器 79 用例）
 - **手势识别**：TapGestureRecognizer/PanGestureRecognizer/PinchGestureRecognizer/SwipeGestureRecognizer/PointerGestureRecognizer 全支持（`HarmonyViewHandler` 基类统一挂载；Tap/Pinch 走 NDK 原生手势，Pan/Swipe/Pointer 走触摸流——pan 原生手势事件数据不可靠，实测沉淀；Tap/Pointer 经 AOT 安全的反射桥触发 internal SendTapped/SendPointer*）；Drag/Drop 识别器（长按起拖 + UDMF 载荷，DRAG_END 销毁）已支持；PanUpdated 单位 vp（等价 iOS points）；未支持：鼠标 ButtonsMask 区分、hover 通道、Pinch 真机多点触控专项
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
-- **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；~~63 个含复杂缺口的模块灰度~~（✅ 已于 `7acea5f` 全部转正，438/438 全量编译，灰度清单已清空）
+- **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；438/438 模块已全量转正编译，无灰度清单
 - **基元装箱**：`object?` 参数转换点存在装箱；完全零装箱需要 union struct 参数设计（后续立项）
 
 ## 路线图
 
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
-- M1 尾巴（完成）：~~Brush 助手~~、~~WidthRequest/HeightRequest~~、~~轻量导航~~、~~Grid/AbsoluteLayout（MAUI 托管布局）~~、~~布局遗留修复（Grid 对齐/ZIndex/Auto 重排）+ 返回动画 + NavigationPage 标题栏 + .NET 10 / C# 14 优化批次~~；剩真机验证
-- M2 全部完成（**Essentials 16 服务全量**：DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage/MainThread）：~~TSFN 异步层~~、~~codeGenerator 修复~~、~~@ohos.* 全量生成（438/438 全量转正）~~、~~Promise→Task/AsyncCallback/.NET 事件/ArrayBuffer/Map~~、~~端到端模拟器验证~~、~~零分配调用路径~~、~~2.4 Essentials 首批（含剪贴板 user_grant 授权闭环 + Preferences 跨重启持久化 + Battery commonEvent 事件 + Vibration + Connectivity/KeepScreenOn/MainThread，2026-09-13）~~
-- M3：NuGet 打包、单项目体验、CI；~~装配分层对齐（Interop/Essentials 独立成装 + src/ 收编 + TFM/CPM 集中，2026-09-20）~~
+- M1（完成）：MAUI 基本面——布局对齐、导航（NavigationPage 转接）、手势识别、CollectionView 虚拟化、 .NET 10 / C# 14 优化批次；剩真机验证
+- M2（完成）：服务层——TSFN 异步层、@ohos.\* 全量生成（438/438）、Promise→Task/事件/ArrayBuffer/Map 封送、Essentials 16 服务全量、端到端模拟器验证
+- M3（进行中）：装配分层、NDK 头文件生成器（`tools/arkui-bindgen`，镜像已全部切换为生成式）、NuGet 打包与 `dotnet new harmony-maui` 模板已完成；CI 与性能基线待办
 
 ## 致谢 / Acknowledgements
 

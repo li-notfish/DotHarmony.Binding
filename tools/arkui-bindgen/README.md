@@ -1,9 +1,8 @@
 # arkui-bindgen
 
-HarmonyOS NDK 头文件（ArkUI /*.h*）→ C# 绑定生成器。ROADMAP M3 的产物，取代：
-
-- `src/nativeBinding/extract_arkui_types.py`（正则抽枚举，A1 起下线）
-- `scripts/check-abi-mirror.ps1`（正则级函数表结构校验，A3 起已被 `--check` 吞并并删除）
+HarmonyOS NDK 头文件（ArkUI /*.h*）→ C# 绑定生成器。取代已删除的
+`src/nativeBinding/extract_arkui_types.py`（正则抽枚举）与 `scripts/check-abi-mirror.ps1`
+（正则级函数表结构校验，由 `--check` 吞并）。
 
 ## 原则
 
@@ -26,7 +25,7 @@ python -m arkui_bindgen gen --sdk D:\Harmony\OpenHarmony\Sdk\26.0.0 `
 # 声明了 snapshot 的 code target 同时做逐签名比对
 python -m arkui_bindgen check
 
-# 逐签名比对：生成物 vs 手写快照（A2 迁移验收）
+# 逐签名比对：生成物 vs 手写快照（迁移验收与 SDK 升级差异定位）
 python -m arkui_bindgen diff               # 全部声明 snapshot 的目标
 python -m arkui_bindgen diff --target animate
 ```

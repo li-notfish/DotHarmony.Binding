@@ -14,7 +14,7 @@
 | HarmonyOS.Essentials | MAUI Essentials 鸿蒙实现（16 服务） | ❌ 引用即可（MauiHarmonyHost.Run 自动安装） |
 | HarmonyOS.Bindings | ArkUI NDK 原生节点 + 438 个 @ohos.* 模块绑定 | ❌ 引用即可（仅声明用到的 @ohos 模块） |
 | HarmonyOS.Interop | napi 互操作核心独立装 | ❌ 引用即可 |
-| HarmonyHost（ArkTS 宿主） | dlopen libapp.so 的壳工程模板 | ❌ 由 targets 自动生成按应用实例（见 §3） |
+| HarmonyHost（ArkTS 宿主） | dlopen libapp.so 的壳工程模板 | ❌ 由 targets 自动生成按应用实例（见 §4） |
 
 ---
 
@@ -42,13 +42,37 @@ bash scripts/deploy-hap.sh         # hdc 安装 + 启动（多设备：HDC_TARGE
 
 ---
 
-## 1. 路线 A：从零创建鸿蒙 MAUI 应用
+## 1. 路线 A：经 NuGet 模板从零创建（推荐，无需仓库工作副本）
+
+前提：已产出或获得 `HarmonyOS.Maui` 等 nupkg（本仓库 `dotnet pack -c Release -o dist`，
+或后续发布的远端源）。
+
+```powershell
+# 1. 安装应用模板（本地包）
+dotnet new install <dist 目录>\HarmonyOS.Templates.1.0.0.nupkg
+
+# 2. 实例化（目录与命名空间取项目名）
+dotnet new harmony-maui -n MyApp
+
+# 3. 本机 NuGet 源指向 dist（仓库外消费时）：
+#    在解决方案目录建 nuget.config，packageSources 增加 <add key="local-dist" value="<dist 绝对路径>" />
+
+# 4. 一键链路：stage 宿主 → NativeAOT → HAP → 部署
+dotnet build MyApp -t:HarmonyStageHost   # 仅生成宿主实例（obj/harmony/host）
+dotnet build MyApp -t:HarmonyRun         # 全链路
+```
+
+模板工程已含：`Platforms/HarmonyOS/HarmonyExports.cs`（NativeAOT 导出薄转发层）、
+`Program.cs`（`MauiHarmonyHost.Run` 入口）、示例 `MainPage.xaml`。
+宿主编排 targets 由 `HarmonyOS.Maui` 包经 buildTransitive 自动导入，工程内无需手写 Import。
+release 签名通过属性簇配置（见 README「NuGet 包与模板」一节）。
+
+## 2. 路线 B：仓库内参照开发（samples/dotnet/）
 
 > 完整可运行的参照：[samples/dotnet/HelloApp](samples/dotnet/HelloApp)（XAML + 导航 + 手势 + 托管布局）与
 > [samples/dotnet/ApiDemo](samples/dotnet/ApiDemo)（@ohos.* 服务调用）与
 > [samples/dotnet/EssentialsApp](samples/dotnet/EssentialsApp)（DeviceInfo/Clipboard 等 Essentials 标准 API）。
-> **当前约束**：应用工程须放在本仓库 `samples/dotnet/<应用名>/` 下（打包清单与 libapp.so 取回路径按此约定；
-> NuGet 化后解除，见 ROADMAP M3）。
+> 此路线以 ProjectReference 直连源码，适用于本仓库自身的演进与调试。
 
 ### Step 1：创建 .NET 类库工程
 
@@ -188,11 +212,11 @@ dotnet build samples/dotnet/MyApp
 dotnet build samples/dotnet/MyApp -t:HarmonyRun
 ```
 
-部署目标默认模拟器；多设备在线时 `HDC_TARGET=192.168.1.6:8710 dotnet build -t:HarmonyRun`（或逐段手动跑三个脚本，见 §3）。
+部署目标默认模拟器；多设备在线时 `HDC_TARGET=192.168.1.6:8710 dotnet build -t:HarmonyRun`（或逐段手动跑三个脚本，见 §4）。
 
 ---
 
-## 2. 路线 B：已有 MAUI 应用加入鸿蒙平台
+## 3. 已有 MAUI 应用接入鸿蒙平台
 
 原则：**不动既有平台工程**（Android/iOS/Catalyst 照旧），为鸿蒙建一个独立的"外壳"工程，复用你的共享 UI 层。
 
@@ -235,10 +259,10 @@ public static void Register()
 
 ### Step 3：编译验证 + 真机/模拟器
 
-同路线 A 的 Step 5。建议先用最小的两三个页面验证控件覆盖度（§2.1 的 ⚠️/❌ 项逐个过），
+同路线 A 的 Step 5。建议先用最小的两三个页面验证控件覆盖度（§3.1 的 ⚠️/❌ 项逐个过），
 再全量引入。
 
-### 2.1 移植注意（MAUI 官方语义已对齐的部分不再列出）
+### 3.1 移植注意（MAUI 官方语义已对齐的部分不再列出）
 
 - `HorizontalOptions/VerticalOptions` 在 Grid/AbsoluteLayout 内为**单元格内对齐**（非 Fill 收缩偏移）；
   XAML 里没有 `HorizontalLayoutAlignment` 这个可写属性（MAUI 官方同样没有）
@@ -247,7 +271,7 @@ public static void Register()
 
 ---
 
-## 3. 构建链路详解（一键背后的三步）
+## 4. 构建链路详解（一键背后的三步）
 
 | 步骤 | 脚本 | 做什么 | 关键环境变量 |
 |---|---|---|---|
@@ -272,19 +296,19 @@ re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——�
 
 ---
 
-## 4. 排障速查
+## 5. 排障速查
 
 | 症状 | 去哪看 |
 |---|---|
 | 部署后白屏/闪退 | `hdc shell hilog \| grep HarmonyHost`；`.NET UI built successfully` 是否出现 |
-| 导航静默失败、后续导航全挂 | FireAndForget 吞了异常——确认已按 §1 改造 `FireAndForgetNavigation` 打 hilog（HelloApp 版可照抄） |
+| 导航静默失败、后续导航全挂 | FireAndForget 吞了异常——确认已按 §2 改造 `FireAndForgetNavigation` 打 hilog（HelloApp 版可照抄） |
 | Windows 编译过、WSL 编译不过 | 根目录新增共享文件（如 `Directory.Build.props`）要加进 `scripts/build-files.txt` 打包清单 |
 | hdc 命令路径被 Git Bash 吃掉 | 前缀 `MSYS_NO_PATHCONV=1` |
 | 更多坑 | [HANDLERS.md §7 速查表](HANDLERS.md) |
 
 ---
 
-## 5. 当前能力边界（决定 §2 盘点结论的细节）
+## 6. 当前能力边界（决定接入评估的细节）
 
 - **控件**：27 个 Handler（基础控件 + Picker/RefreshView/BoxView + CollectionView 虚拟化/CarouselView + Shape/GraphicsView 自绘）
 - **手势**：Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop；hover、鼠标按键区分待做
@@ -292,4 +316,4 @@ re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——�
 - **自绘**：Shape + GraphicsView（ArkUI 自绘节点 + OH_Drawing）
 - **服务**：438 个 @ohos.* 模块绑定（Promise→Task、.NET 事件、ArrayBuffer/Map）+ **Essentials 16 服务全量**
 - **证书/签名**：模拟器免签；真机需自行准备签名物料
-- 路线图：[ROADMAP.md](ROADMAP.md)（M1 控件/M2 服务已完成，M3 NuGet 打包等工程化远期）
+- 路线图：[ROADMAP.md](ROADMAP.md)（M1 与 M2 已完成；M3 中 NDK 生成器与 NuGet 分发已落地，CI 与性能基线待办）
