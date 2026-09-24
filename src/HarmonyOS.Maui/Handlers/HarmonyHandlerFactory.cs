@@ -9,10 +9,18 @@ public static class HarmonyHandlerFactory
 {
     public static IElementHandler Create(IView view) => Create((Microsoft.Maui.Controls.Element)view);
 
-    public static IElementHandler Create(Microsoft.Maui.Controls.Element element) => element switch
+    public static IElementHandler Create(Microsoft.Maui.Controls.Element element)
     {
+        IElementHandler handler = element switch
+        {
         Microsoft.Maui.Controls.NavigationPage => new HarmonyNavigationPageHandler(),
         Microsoft.Maui.Controls.ContentPage => new HarmonyContentPageHandler(),
+        // 具体派生必须排在基类 arm 之前：RefreshView : ContentView : TemplatedView : Compatibility.Layout
+        Microsoft.Maui.Controls.ScrollView => new HarmonyScrollViewHandler(),
+        Microsoft.Maui.Controls.RefreshView => new HarmonyRefreshViewHandler(),
+        // 模板化容器必须先于 Layout 分派（ContentPresenter/TemplatedView 都派生自 Compatibility.Layout）
+        Microsoft.Maui.Controls.ContentPresenter => new HarmonyContentPresenterHandler(),
+        Microsoft.Maui.Controls.ContentView => new HarmonyContentViewHandler(),
         Microsoft.Maui.Controls.Button => new HarmonyButtonHandler(),
         Microsoft.Maui.Controls.Label => new HarmonyLabelHandler(),
         Microsoft.Maui.Controls.StackLayout => new HarmonyLayoutHandler(),
@@ -26,8 +34,6 @@ public static class HarmonyHandlerFactory
         Microsoft.Maui.Controls.Slider => new HarmonySliderHandler(),
         Microsoft.Maui.Controls.ProgressBar => new HarmonyProgressBarHandler(),
         Microsoft.Maui.Controls.Image => new HarmonyImageHandler(),
-        Microsoft.Maui.Controls.ScrollView => new HarmonyScrollViewHandler(),
-        Microsoft.Maui.Controls.RefreshView => new HarmonyRefreshViewHandler(),
         Microsoft.Maui.Controls.Picker => new HarmonyPickerHandler(),
         Microsoft.Maui.Controls.DatePicker => new HarmonyDatePickerHandler(),
         Microsoft.Maui.Controls.TimePicker => new HarmonyTimePickerHandler(),
@@ -40,5 +46,9 @@ public static class HarmonyHandlerFactory
         Microsoft.Maui.Controls.Layout => new HarmonyLayoutHandler(),
         _ => throw new NotSupportedException(
             $"No HarmonyOS handler registered for {element.GetType().Name} (extend HarmonyHandlerFactory)")
-    };
+        };
+        // 动画/服务解析口：ViewExtensions（FadeTo 等）经 Handler.MauiContext.Services 取 IAnimationManager
+        handler.SetMauiContext(Hosting.HarmonyMauiContext.Shared);
+        return handler;
+    }
 }
