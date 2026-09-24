@@ -63,7 +63,10 @@ DevEco Studio（内置 HarmonyOS SDK/NDK/hvigor）、可 SSH 的 Linux（NativeA
 npm install && npm test
 
 # 2. 从 NDK 头文件生成 C# 枚举（ArkUINodeTypes.g.cs + .json 元数据；SDK 探测顺序 --sdk → OHOS_SDK_BASE → OHSDK_HOME → 默认路径，找不到报错退出）
-python src/nativeBinding/extract_arkui_types.py --dump-json src/HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json
+#    （生成器：tools/arkui-bindgen；首次运行需 python -m pip install -r tools/arkui-bindgen/requirements.txt）
+$env:PYTHONPATH = "tools/arkui-bindgen"
+python -m arkui_bindgen gen --config tools/arkui-bindgen/config/semantics.yaml --out-dir src/HarmonyOS.Bindings/NativeNode
+#    漂移检查（CI 门禁）：python -m arkui_bindgen check （同参数）
 
 # 3. 从 SDK 组件 .d.ts 生成 NodeHandle 包装类 → src/HarmonyOS.Bindings/Nodes/
 npx ts-node tools/api-generator/index.ts --native
@@ -145,8 +148,7 @@ tools/api-generator/         解析器（TS Compiler API）
   ├─ nativeCodeGenerator.ts  C API 目标生成器（shape 表 + gap 登记）
   ├─ codeGenerator.ts        napi 目标生成器（@ohos.* 服务层）
   └─ typeMapper.ts           类型映射
-src/nativeBinding/
-  └─ extract_arkui_types.py  NDK 头文件 → C# 枚举 + JSON 元数据
+tools/arkui-bindgen/           NDK 头文件 → C# 生成器（libclang；枚举/结构体/函数表镜像，semantics.yaml 语义配置）
 src/HarmonyOS.Interop/       napi 互操作核心（独立装：env 注入、值封送、回调/TSFN、HiLog）
 src/HarmonyOS.Bindings/      绑定库（net10.0, AOT/trim 友好；Api/ 438 个 @ohos.* 模块绑定）
   ├─ NativeNode/             ArkUI C API 互操作 + ArkUINodeBase + 事件总线

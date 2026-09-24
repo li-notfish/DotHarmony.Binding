@@ -1,0 +1,5 @@
+# arkui-bindgen 运行依赖（见 README.md；install: python -m pip install -r requirements.txt）
+libclang>=18.0
+PyYAML>=6.0
+# 测试依赖
+pytest>=8.0

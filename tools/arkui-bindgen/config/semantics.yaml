@@ -1,0 +1,464 @@
+# arkui-bindgen 语义配置：生成器不猜测，所有纠偏显式落在这里。
+#
+# 结构：
+#   headers                          —— 收割面（NDK 头文件集合与 glob 子目录）
+#   bool                             —— C bool 在各发射上下文中的表达
+#   alias_overrides/handwritten_aliases —— typedef 指针别名裁决（缺漏即报错，不猜）
+#   opaque_emit/defaults             —— 不透明类型取舍（默认 IntPtr）
+#   enum_targets                     —— 枚举产物（ArkUINodeTypes.g.cs + JSON 元数据）
+#   code_targets                     —— ABI 结构体/函数表/PInvoke 产物（A2 起）
+
+headers:
+  dir: arkui
+  files:
+    - native_node.h
+    - native_type.h
+    - native_node_napi.h
+    - common_type.h
+    - native_animate.h
+    - native_type_visual.h
+    - native_gesture.h      # A3：手势镜像
+    - ui_input_event.h      # A3：输入/指针事件枚举与读取器
+    - drag_and_drop.h       # A3：拖拽事件访问器（GetDragEvent/SetNodeDraggable 等）
+  # node_attributes/*.h 枚举全收（历史行为，与旧 extract_arkui_types.py 一致）
+  extra_glob_dirs:
+    - node_attributes
+
+# C bool：unmanaged 函数指针中以 byte 显式表达；[LibraryImport] 走 [MarshalAs(UnmanagedType.U1)]
+bool:
+  unmanaged_fnptr: byte
+  pinvoke: marshal_u1
+
+# typedef 指针别名 → C# 拼写。生成面实际用到的别名必须在此显式裁决。
+alias_overrides:
+  ArkUI_ContextHandle: IntPtr    # UIContext 句柄：镜像统一按裸指针持有
+  ArkUI_AnimatorHandle: IntPtr
+  ArkUI_CurveHandle: IntPtr
+  ArkUI_NodeAdapterHandle: IntPtr
+  ArkUI_NodeContentHandle: IntPtr
+  napi_env: IntPtr
+  napi_value: IntPtr
+  # typedef 到基元的语义别名：C 侧是 uint32_t 掩码，手写面以 flags 枚举表达
+  ArkUI_GestureDirectionMask: ArkUI_GestureDirection
+  ArkUI_GestureEventActionTypeMask: ArkUI_GestureEventActionType
+
+# 托管包装类型：C 侧不透明指针，C# 侧手写 readonly struct 句柄包装，fnptr 按值呈现
+managed_wrappers:
+  - ArkUI_GestureRecognizer
+
+# 手写侧已有公共定义的别名，生成物直接引用其名（不再发射）。
+# ArkUI_NodeHandle：ArkUINativeApi.cs 中的 public readonly struct（包裹 IntPtr）。
+handwritten_aliases:
+  - ArkUI_NodeHandle
+
+# 不透明类型：默认两态（值/指针）均映射 IntPtr；列入此表表示以"命名占位 struct"表达指针。
+opaque_emit:
+  ArkUI_GestureEvent: internal
+  ArkUI_UIInputEvent: internal
+  ArkUI_GestureInterruptInfo: internal
+  ArkUI_ParallelInnerGestureEvent: internal
+  ArkUI_NodeAdapterEvent: public
+  ArkUI_LayoutConstraint: public
+  ArkUI_NodeEvent: public
+  ArkUI_NodeCustomEvent: public      # 占位定义在 NodeCustomEventBus.cs（手写侧），生成物仅引用
+defaults:
+  opaque_value: IntPtr
+  opaque_pointer: IntPtr
+
+# C 枚举名 → C# 枚举名（匿名枚举以 parse 的稳定键引用）
+enum_renames:
+  ArkUI_UIInputEvent_Type: ArkUI_UIInputEventType
+  "anon:ui_input_event.h:UI_TOUCH_EVENT_ACTION_CANCEL": UI_TouchEventAction
+  "anon:ui_input_event.h:UI_INPUT_EVENT_SOURCE_TYPE_UNKNOWN": UI_InputEventSourceType
+  "anon:ui_input_event.h:UI_MOUSE_EVENT_ACTION_UNKNOWN": UI_MouseEventAction
+  "anon:ui_input_event.h:UI_MOUSE_EVENT_BUTTON_NONE": UI_MouseEventButton
+
+enum_targets:
+  node_types:
+    file: ArkUINodeTypes.g.cs
+    json: ArkUINodeTypes.json
+    # 主头文件中要进 g.cs 的枚举（9 个，与旧产物交集核验过）；
+    # node_attributes/*.h 的 107 个枚举由收割面全量带入，合计 116。
+    include_enums:
+      - ArkUI_AnimationCurve
+      - ArkUI_FinishCallbackType
+      - ArkUI_LengthMetricUnit
+      - ArkUI_NodeAdapterEventType
+      - ArkUI_NodeAttributeType
+      - ArkUI_NodeContentEventType
+      - ArkUI_NodeDirtyFlag
+      - ArkUI_NodeEventType
+      - ArkUI_NodeType
+
+code_targets:
+  # A2 试点：Animate 最小面。手写的 ArkUIAnimateApi.cs 只保留懒获取属性等逻辑，
+  # 镜像部分（2 结构体 + 函数表 + 5 个 PInvoke）全部由本目标生成。
+  animate:
+    file: ArkUIAnimateApi.g.cs
+    doc: |-
+      ArkUI_NativeAnimateAPI_1 镜像（native_animate.h，API 12+）：显式动画原语。
+      注意：与其它 ArkUI_Native*API_1 表不同，本表以 animateTo 起首、没有 version 字段
+      （native_animate.h 逐项核实），勿按惯例补 version。
+    types:
+      - ArkUI_ContextCallback
+      - ArkUI_AnimateCompleteCallback
+    fn_tables:
+      - ArkUI_NativeAnimateAPI_1
+    functions:
+      - OH_ArkUI_GetContextByNode
+      - OH_ArkUI_AnimateOption_Create
+      - OH_ArkUI_AnimateOption_Dispose
+      - OH_ArkUI_AnimateOption_SetDuration
+      - OH_ArkUI_AnimateOption_SetCurve
+    container:
+      class: ArkUINativeApi
+      lib_const: ArkuiLib
+      visibility: internal
+    per_type:
+      ArkUI_ContextCallback:
+        field_case: pascal
+      ArkUI_AnimateCompleteCallback:
+        field_case: pascal
+    per_fn:
+      OH_ArkUI_GetContextByNode:
+        doc: "/// <summary>由任意节点取 UIContext（animateTo 的 context 参数）</summary>"
+    # A2 验收：生成物与手写快照逐签名比对（`arkui_bindgen diff`，check 模式同样执行）
+    snapshot: snapshots/ArkUIAnimateApi.legacy.cs
+
+  # A3：Node 主镜像（native_node.h，API 26）。
+  node:
+    file: ArkUINativeApi.g.cs
+    doc: |-
+      ArkUINativeApi Node 面镜像（native_node.h，API 26）。
+      结构体布局与 ArkUI_NativeNodeAPI_1 成员顺序与头文件逐项对应，禁止重排。
+    opaque:
+      - name: ArkUI_LayoutConstraint
+        doc: "/// <summary>ArkUI_LayoutConstraint（不透明指针）</summary>"
+      - name: ArkUI_NodeEvent
+        doc: "/// <summary>ArkUI_NodeEvent（不透明，经访问器读取）</summary>"
+    types:
+      - ArkUI_NumberValue
+      - ArkUI_NodeComponentEvent
+      - ArkUI_StringAsyncEvent
+      - ArkUI_TextChangeEvent
+      - ArkUI_IntSize
+      - ArkUI_IntOffset
+      - ArkUI_AttributeItem
+      - ArkUI_ColorStop
+    fn_tables:
+      - ArkUI_NativeNodeAPI_1
+    functions:
+      - OH_ArkUI_GetNodeContentFromNapiValue
+      - OH_ArkUI_NodeContent_AddNode
+      - OH_ArkUI_NodeContent_RemoveNode
+      - OH_ArkUI_NodeContent_InsertNode
+      - OH_ArkUI_NodeEvent_GetEventType
+      - OH_ArkUI_NodeEvent_GetTargetId
+      - OH_ArkUI_NodeEvent_GetNodeHandle
+      - OH_ArkUI_NodeEvent_GetInputEvent
+      - OH_ArkUI_NodeEvent_GetNodeComponentEvent
+      - OH_ArkUI_NodeEvent_GetStringAsyncEvent
+      - OH_ArkUI_NodeEvent_GetTextChangeEvent
+      - OH_ArkUI_NodeEvent_GetUserData
+      - OH_ArkUI_NodeEvent_GetNumberValue
+      - OH_ArkUI_NodeEvent_GetDragEvent
+      - OH_ArkUI_SetNodeDraggable
+      - OH_ArkUI_AllowNodeAllDropDataTypes
+      - OH_ArkUI_DragEvent_SetData
+      - OH_ArkUI_DragEvent_GetUdmfData
+      - OH_ArkUI_DragEvent_GetTouchPointXToWindow
+      - OH_ArkUI_DragEvent_GetTouchPointYToWindow
+    container: { class: ArkUINativeApi, lib_const: ArkuiLib, visibility: private }
+    per_type:
+      ArkUI_NumberValue:
+        visibility: public
+        doc: "/// <summary>typedef union ArkUI_NumberValue（4 字节）</summary>"
+      ArkUI_NodeComponentEvent:
+        visibility: public
+        doc: "/// <summary>typedef struct ArkUI_NodeComponentEvent（NODE_*_EVENT 附加数据载体）</summary>"
+        inline_arrays: { data: ArkUI_NumberValueBuffer12 }
+      ArkUI_StringAsyncEvent:
+        visibility: public
+        doc: "/// <summary>typedef struct ArkUI_StringAsyncEvent</summary>"
+      ArkUI_TextChangeEvent:
+        visibility: public
+        doc: "/// <summary>typedef struct ArkUI_TextChangeEvent</summary>"
+      ArkUI_IntSize:
+        visibility: public
+        doc: "/// <summary>typedef struct { int32_t width; int32_t height; } ArkUI_IntSize</summary>"
+      ArkUI_IntOffset:
+        visibility: public
+        doc: "/// <summary>typedef struct { int32_t x; int32_t y; } ArkUI_IntOffset</summary>"
+      ArkUI_AttributeItem:
+        visibility: public
+        doc: "/// <summary>ArkUI_AttributeItem（节点属性通用入参）</summary>"
+      ArkUI_ColorStop:
+        visibility: public
+        doc: "/// <summary>ArkUI_ColorStop（渐变色标数组：colors[i] = 0xAARRGGBB，stops[i] = 0~1 位置）</summary>"
+      ArkUI_NativeNodeAPI_1:
+        member_case: pascal
+        doc: |-
+          /// <summary>
+          /// ArkUI_NativeNodeAPI_1 函数表镜像。
+          /// 成员顺序与 native_node.h（API 26）逐项对应，禁止重排。
+          /// </summary>
+        member_overrides:
+          # 勘误：手写面把 ArkUI_NodeCustomEventType 枚举以 int 表达、
+          # 把 ArkUI_NodeCustomEvent* 以 IntPtr 表达（回调签名见 ArkUICustomEventApi 包装层）
+          registerNodeCustomEvent: "delegate* unmanaged<ArkUI_NodeHandle, int, int, void*, int>"
+          unregisterNodeCustomEvent: "delegate* unmanaged<ArkUI_NodeHandle, int, void>"
+          registerNodeCustomEventReceiver: "delegate* unmanaged<delegate* unmanaged<IntPtr, void>, void>"
+          addNodeCustomEventReceiver: "delegate* unmanaged<ArkUI_NodeHandle, delegate* unmanaged<IntPtr, void>, int>"
+          removeNodeCustomEventReceiver: "delegate* unmanaged<ArkUI_NodeHandle, delegate* unmanaged<IntPtr, void>, int>"
+    per_fn:
+      OH_ArkUI_GetNodeContentFromNapiValue:
+        params: { content: "out IntPtr content", value: "IntPtr napiValue" }
+      OH_ArkUI_NodeEvent_GetEventType: { ret: int }
+      OH_ArkUI_NodeEvent_GetNodeHandle: { ret: IntPtr }
+      OH_ArkUI_NodeEvent_GetInputEvent: { ret: IntPtr }
+      OH_ArkUI_NodeEvent_GetNodeComponentEvent: { ret: IntPtr }
+      OH_ArkUI_NodeEvent_GetStringAsyncEvent: { ret: IntPtr }
+      OH_ArkUI_NodeEvent_GetTextChangeEvent: { ret: IntPtr }
+      OH_ArkUI_NodeEvent_GetUserData: { ret: IntPtr }
+      OH_ArkUI_NodeEvent_GetDragEvent:
+        # C 形参名 nodeEvent，手写面为 @event（与兄弟访问器对齐）
+        params: { nodeEvent: "ArkUI_NodeEvent* @event" }
+      OH_ArkUI_DragEvent_SetData: { params: { event: "void*" } }
+      OH_ArkUI_DragEvent_GetUdmfData: { params: { event: "void*" } }
+      OH_ArkUI_DragEvent_GetTouchPointXToWindow: { params: { event: "void*" } }
+      OH_ArkUI_DragEvent_GetTouchPointYToWindow: { params: { event: "void*" } }
+    ignore_scopes: [ArkUI_NodeHandle, ArkUIVariantKind]
+    snapshot: snapshots/ArkUINativeApi.legacy.cs
+
+  # A3：手势镜像（native_gesture.h + ui_input_event.h，API 12+）。
+  gesture:
+    file: ArkUIGestureApi.g.cs
+    doc: |-
+      ArkUI_NativeGestureAPI_1 镜像（native_gesture.h，API 12+）。
+      手势识别原语：tap/longpress/pan/pinch/rotation/swipe/组手势 + addGestureToNode。
+      枚举源头 native_gesture.h / ui_input_event.h。
+    enums:
+      - ArkUI_GestureEventActionType
+      - ArkUI_GesturePriority
+      - ArkUI_GroupGestureMode
+      - ArkUI_GestureDirection
+      - ArkUI_GestureMask
+      - ArkUI_GestureRecognizerType
+      - ArkUI_GestureInterruptResult
+      - ArkUI_GestureRecognizerState
+      - ArkUI_UIInputEvent_Type
+      - "anon:ui_input_event.h:UI_TOUCH_EVENT_ACTION_CANCEL"
+      - "anon:ui_input_event.h:UI_INPUT_EVENT_SOURCE_TYPE_UNKNOWN"
+      - "anon:ui_input_event.h:UI_MOUSE_EVENT_ACTION_UNKNOWN"
+      - "anon:ui_input_event.h:UI_MOUSE_EVENT_BUTTON_NONE"
+    opaque:
+      - name: ArkUI_GestureEvent
+        doc: "/// <summary>ArkUI_GestureEvent：不透明事件（内容经 OH_ArkUI_* 自由函数读取）</summary>"
+      - name: ArkUI_UIInputEvent
+        doc: "/// <summary>ArkUI_UIInputEvent：不透明输入事件（内容经 ui_input_event.h 的 OH_ArkUI_* 自由函数读取）</summary>"
+      - name: ArkUI_GestureInterruptInfo
+        doc: "/// <summary>ArkUI_GestureInterruptInfo：不透明中断信息（本轮未用，占位保 ABI）</summary>"
+      - name: ArkUI_ParallelInnerGestureEvent
+        doc: "/// <summary>ArkUI_ParallelInnerGestureEvent：不透明并行手势事件（本轮未用，占位保 ABI）</summary>"
+    fn_tables:
+      - ArkUI_NativeGestureAPI_1
+    functions:
+      - OH_ArkUI_GestureEvent_GetActionType
+      - OH_ArkUI_GestureEvent_GetRawInputEvent
+      - OH_ArkUI_GestureEvent_GetNode
+      - OH_ArkUI_NodeUtils_GetLayoutPositionInWindow
+      - OH_ArkUI_PanGesture_GetVelocity
+      - OH_ArkUI_PanGesture_GetVelocityX
+      - OH_ArkUI_PanGesture_GetVelocityY
+      - OH_ArkUI_PanGesture_GetOffsetX
+      - OH_ArkUI_PanGesture_GetOffsetY
+      - OH_ArkUI_SwipeGesture_GetAngle
+      - OH_ArkUI_SwipeGesture_GetVelocity
+      - OH_ArkUI_RotationGesture_GetAngle
+      - OH_ArkUI_PinchGesture_GetScale
+      - OH_ArkUI_PinchGesture_GetCenterX
+      - OH_ArkUI_PinchGesture_GetCenterY
+      - OH_ArkUI_UIInputEvent_GetType
+      - OH_ArkUI_UIInputEvent_GetAction
+      - OH_ArkUI_UIInputEvent_GetSourceType
+      - OH_ArkUI_PointerEvent_GetPointerCount
+      - OH_ArkUI_PointerEvent_GetPointerId
+      - OH_ArkUI_PointerEvent_GetX
+      - OH_ArkUI_PointerEvent_GetY
+      - OH_ArkUI_PointerEvent_GetXByIndex
+      - OH_ArkUI_PointerEvent_GetYByIndex
+      - OH_ArkUI_PointerEvent_GetWindowX
+      - OH_ArkUI_PointerEvent_GetWindowY
+      - OH_ArkUI_PointerEvent_GetDisplayX
+      - OH_ArkUI_PointerEvent_GetDisplayY
+      - OH_ArkUI_PointerEvent_GetPressure
+    container: { class: ArkUINativeApi, lib_const: ArkuiLib, visibility: internal }
+    per_type:
+      ArkUI_NativeGestureAPI_1:
+        doc: |-
+          /// <summary>
+          /// ArkUI_NativeGestureAPI_1 函数表镜像（native_gesture.h ~1253 行，@since 12）。
+          /// 成员顺序与头文件逐项对应（首个成员为 version），禁止重排。
+          /// C 侧 bool 在 unmanaged 函数指针中按 1 字节处理（显式用 byte 表达）。
+          /// </summary>
+    per_enum:
+      ArkUI_GestureEventActionType:
+        visibility: internal
+        flags: true
+        value_format: hex
+        member_prefix_strip: GESTURE_EVENT_ACTION_
+        member_case: pascal
+        doc: "/// <summary>ArkUI_GestureEventActionType（native_gesture.h ~41 行）：手势事件动作位</summary>"
+      ArkUI_GesturePriority:
+        visibility: internal
+        member_case: pascal
+        doc: "/// <summary>ArkUI_GesturePriority（native_gesture.h ~112 行）</summary>"
+      ArkUI_GroupGestureMode:
+        visibility: internal
+        member_case: pascal
+        doc: "/// <summary>ArkUI_GroupGestureMode（native_gesture.h ~136 行）</summary>"
+      ArkUI_GestureDirection:
+        visibility: internal
+        flags: true
+        value_format: binary
+        member_prefix_strip: GESTURE_DIRECTION_
+        member_case: pascal
+        doc: "/// <summary>ArkUI_GestureDirection（native_gesture.h ~182 行，位掩码）</summary>"
+        # 组合值以表达式呈现（头文件顺序 ALL/HORIZONTAL/... 在前，与手写顺序无关；diff 对枚举无序比对）
+        value_overrides:
+          Horizontal: { expr: "Left | Right", comment: "0b0011" }
+          Vertical: { expr: "Up | Down", comment: "0b1100" }
+          All: { expr: "Horizontal | Vertical", comment: "0b1111" }
+      ArkUI_GestureMask:
+        visibility: internal
+        member_case: pascal
+        doc: "/// <summary>ArkUI_GestureMask（native_gesture.h ~236 行）</summary>"
+      ArkUI_GestureRecognizerType:
+        visibility: internal
+        member_case: pascal
+        member_suffix_strip: _GESTURE
+        doc: "/// <summary>ArkUI_GestureRecognizerType（native_gesture.h ~262 行）</summary>"
+      ArkUI_GestureInterruptResult:
+        visibility: internal
+        member_prefix_strip: GESTURE_INTERRUPT_RESULT_
+        member_case: pascal
+        doc: "/// <summary>ArkUI_GestureInterruptResult（native_gesture.h ~314 行）</summary>"
+      ArkUI_GestureRecognizerState:
+        visibility: internal
+        member_prefix_strip: ARKUI_GESTURE_RECOGNIZER_STATE_
+        member_case: pascal
+        doc: "/// <summary>ArkUI_GestureRecognizerState（native_gesture.h ~330 行）</summary>"
+      ArkUI_UIInputEvent_Type:
+        visibility: internal
+        member_prefix_strip: ARKUI_UIINPUTEVENT_TYPE_
+        member_case: pascal
+        doc: "/// <summary>ArkUI_UIInputEvent_Type（ui_input_event.h ~100 行）</summary>"
+      "anon:ui_input_event.h:UI_TOUCH_EVENT_ACTION_CANCEL":
+        visibility: internal
+        member_prefix_strip: UI_TOUCH_EVENT_ACTION_
+        member_case: pascal
+        doc: "/// <summary>UI_TOUCH_EVENT_ACTION（ui_input_event.h ~121 行）</summary>"
+      "anon:ui_input_event.h:UI_INPUT_EVENT_SOURCE_TYPE_UNKNOWN":
+        visibility: internal
+        member_prefix_strip: UI_INPUT_EVENT_SOURCE_TYPE_
+        member_case: pascal
+        doc: "/// <summary>UI_INPUT_EVENT_SOURCE_TYPE（ui_input_event.h ~160 行）</summary>"
+      "anon:ui_input_event.h:UI_MOUSE_EVENT_ACTION_UNKNOWN":
+        visibility: internal
+        member_prefix_strip: UI_MOUSE_EVENT_ACTION_
+        member_case: pascal
+        doc: "/// <summary>UI_MOUSE_EVENT_ACTION（ui_input_event.h ~236 行，匿名 enum）</summary>"
+      "anon:ui_input_event.h:UI_MOUSE_EVENT_BUTTON_NONE":
+        visibility: internal
+        member_prefix_strip: UI_MOUSE_EVENT_BUTTON_
+        member_case: pascal
+        doc: "/// <summary>UI_MOUSE_EVENT_BUTTON（ui_input_event.h ~258 行，匿名 enum）</summary>"
+    per_fn:
+      OH_ArkUI_GestureEvent_GetActionType: { ret: int }
+      OH_ArkUI_GestureEvent_GetRawInputEvent:
+        ret: IntPtr
+        doc: "/// <summary>取手势事件背后的原始输入事件（ui_input_event.h 读取器适用；vp 坐标）</summary>"
+      OH_ArkUI_NodeUtils_GetLayoutPositionInWindow:
+        doc: "/// <summary>节点相对窗口的偏移（px，native_node.h NodeUtils @since 12）——手势事件坐标换算为视图相对坐标用</summary>"
+      OH_ArkUI_UIInputEvent_GetAction:
+        doc: "/// <summary>touch → UI_TouchEventAction；mouse → UI_MouseEventAction（见各自枚举）</summary>"
+      OH_ArkUI_PointerEvent_GetX:
+        doc: "/// <summary>视图（目标节点）相对坐标，vp</summary>"
+      OH_ArkUI_PointerEvent_GetY:
+        doc: "/// <summary>视图（目标节点）相对坐标，vp</summary>"
+      OH_ArkUI_PointerEvent_GetWindowX:
+        doc: "/// <summary>窗口相对坐标，vp</summary>"
+      OH_ArkUI_PointerEvent_GetWindowY:
+        doc: "/// <summary>窗口相对坐标，vp</summary>"
+      OH_ArkUI_PointerEvent_GetDisplayX:
+        doc: "/// <summary>屏幕相对坐标，px（ui_input_event.h）</summary>"
+      OH_ArkUI_PointerEvent_GetDisplayY:
+        doc: "/// <summary>屏幕相对坐标，px（ui_input_event.h）</summary>"
+      OH_ArkUI_PointerEvent_GetPressure:
+        doc: "/// <summary>按压压力（0~1），不支持时返回 0</summary>"
+    ignore_scopes: [ArkUI_GestureRecognizer]
+    snapshot: snapshots/ArkUIGestureApi.legacy.cs
+
+  # A3：自绘节点自定义事件访问器（native_node.h API 11+/12+）。
+  # 注：ArkUI_NodeCustomEvent 占位 struct 定义在手写侧 NodeCustomEventBus.cs，此处仅引用。
+  customevent:
+    file: ArkUICustomEventApi.g.cs
+    doc: |-
+      ArkUINativeApi 自绘节点扩展镜像：ArkUI_NodeCustomEvent 访问器、
+      ArkUI_LayoutConstraint 访问器与 ArkUI_DrawContext 访问器（native_node.h / native_type.h）。
+    functions:
+      - OH_ArkUI_NodeCustomEvent_GetEventType
+      - OH_ArkUI_NodeCustomEvent_GetEventTargetId
+      - OH_ArkUI_NodeCustomEvent_GetUserData
+      - OH_ArkUI_NodeCustomEvent_GetDrawContextInDraw
+      - OH_ArkUI_NodeCustomEvent_GetLayoutConstraintInMeasure
+      - OH_ArkUI_LayoutConstraint_GetMaxWidth
+      - OH_ArkUI_LayoutConstraint_GetMaxHeight
+      - OH_ArkUI_DrawContext_GetCanvas
+      - OH_ArkUI_DrawContext_GetSize
+    container: { class: ArkUINativeApi, lib_const: ArkuiLib, visibility: private }
+    per_fn:
+      OH_ArkUI_NodeCustomEvent_GetEventType: { ret: int }
+      OH_ArkUI_NodeCustomEvent_GetUserData: { ret: IntPtr }
+      OH_ArkUI_LayoutConstraint_GetMaxWidth:
+        # C 形参名 Constraint 大写开头，手写面小写
+        params: { Constraint: "ArkUI_LayoutConstraint* constraint" }
+      OH_ArkUI_LayoutConstraint_GetMaxHeight:
+        params: { Constraint: "ArkUI_LayoutConstraint* constraint" }
+      OH_ArkUI_DrawContext_GetCanvas: { ret: IntPtr }
+    snapshot: snapshots/ArkUICustomEventApi.legacy.cs
+
+  # A3：NodeAdapter 虚拟化适配器（native_node.h API 12+）。
+  adapter:
+    file: ArkUINodeAdapterApi.g.cs
+    doc: |-
+      ArkUINativeApi NodeAdapter 扩展镜像：List/Swiper/WaterFlow 虚拟化 adapter（native_node.h API 12+）。
+    opaque:
+      - name: ArkUI_NodeAdapterEvent
+        doc: "/// <summary>ArkUI_NodeAdapterEvent（不透明，经访问器读取）</summary>"
+    functions:
+      - OH_ArkUI_NodeAdapter_Create
+      - OH_ArkUI_NodeAdapter_Dispose
+      - OH_ArkUI_NodeAdapter_SetTotalNodeCount
+      - OH_ArkUI_NodeAdapter_RegisterEventReceiver
+      - OH_ArkUI_NodeAdapter_UnregisterEventReceiver
+      - OH_ArkUI_NodeAdapter_ReloadAllItems
+      - OH_ArkUI_NodeAdapter_ReloadItem
+      - OH_ArkUI_NodeAdapter_RemoveItem
+      - OH_ArkUI_NodeAdapter_InsertItem
+      - OH_ArkUI_NodeAdapterEvent_SetItem
+      - OH_ArkUI_NodeAdapterEvent_SetNodeId
+      - OH_ArkUI_NodeAdapterEvent_GetType
+      - OH_ArkUI_NodeAdapterEvent_GetRemovedNode
+      - OH_ArkUI_NodeAdapterEvent_GetItemIndex
+      - OH_ArkUI_NodeAdapterEvent_GetUserData
+    container: { class: ArkUINativeApi, lib_const: ArkuiLib, visibility: private }
+    per_fn:
+      # 勘误：手写面在本组访问器中以 IntPtr/int 表达 ArkUI_NodeHandle/枚举
+      OH_ArkUI_NodeAdapterEvent_SetItem: { params: { node: IntPtr } }
+      OH_ArkUI_NodeAdapterEvent_GetType: { ret: int }
+      OH_ArkUI_NodeAdapterEvent_GetRemovedNode: { ret: IntPtr }
+      OH_ArkUI_NodeAdapterEvent_GetUserData: { ret: IntPtr }
+      OH_ArkUI_NodeAdapter_RegisterEventReceiver: { params: { userData: IntPtr } }
+    ignore_scopes: [ArkUINodeAdapter, ArkUI_NodeAdapterEventView]
+    snapshot: snapshots/ArkUINodeAdapterApi.legacy.cs

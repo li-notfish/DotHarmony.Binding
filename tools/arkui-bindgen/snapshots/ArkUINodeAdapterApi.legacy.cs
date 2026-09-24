@@ -5,17 +5,64 @@ using System.Runtime.InteropServices;
 using HarmonyOS.Interop;
 namespace HarmonyOS.Bindings.NativeNode;
 
+/// <summary>ArkUI_NodeAdapterEvent（不透明，经访问器读取）</summary>
+public struct ArkUI_NodeAdapterEvent { }
+
 /// <summary>
 /// ArkUINativeApi NodeAdapter 扩展：List/Swiper/WaterFlow 虚拟化 adapter（native_node.h API 12+）。
 /// 流程：Create → SetTotalNodeCount → ReloadAllItems；事件 receiver 按类型分派
 /// （ON_GET_NODE_ID → SetNodeId 稳定 id；ON_ADD_NODE_TO_ADAPTER → SetItem 物化子节点，每条目一次；
 /// ON_REMOVE_NODE_FROM_ADAPTER → GetRemovedNode 处置）。adapter 经 NODE_LIST_NODE_ADAPTER
 /// 属性（item.@object）挂到 List 节点。
-/// PInvoke 镜像与 ArkUI_NodeAdapterEvent 占位由 tools/arkui-bindgen 生成于
-/// ArkUINodeAdapterApi.g.cs，请勿手改。
 /// </summary>
 internal static unsafe partial class ArkUINativeApi
 {
+    [LibraryImport(ArkuiLib)]
+    private static partial IntPtr OH_ArkUI_NodeAdapter_Create();
+
+    [LibraryImport(ArkuiLib)]
+    private static partial void OH_ArkUI_NodeAdapter_Dispose(IntPtr handle);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeAdapter_SetTotalNodeCount(IntPtr handle, uint size);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeAdapter_RegisterEventReceiver(
+        IntPtr handle, IntPtr userData, delegate* unmanaged<ArkUI_NodeAdapterEvent*, void> receiver);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial void OH_ArkUI_NodeAdapter_UnregisterEventReceiver(IntPtr handle);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeAdapter_ReloadAllItems(IntPtr handle);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeAdapter_ReloadItem(IntPtr handle, uint startPosition, uint itemCount);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeAdapter_RemoveItem(IntPtr handle, uint startPosition, uint itemCount);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeAdapter_InsertItem(IntPtr handle, uint startPosition, uint itemCount);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeAdapterEvent_SetItem(ArkUI_NodeAdapterEvent* @event, IntPtr node);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeAdapterEvent_SetNodeId(ArkUI_NodeAdapterEvent* @event, int id);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeAdapterEvent_GetType(ArkUI_NodeAdapterEvent* @event);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial IntPtr OH_ArkUI_NodeAdapterEvent_GetRemovedNode(ArkUI_NodeAdapterEvent* @event);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial uint OH_ArkUI_NodeAdapterEvent_GetItemIndex(ArkUI_NodeAdapterEvent* @event);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial IntPtr OH_ArkUI_NodeAdapterEvent_GetUserData(ArkUI_NodeAdapterEvent* @event);
+
     internal static IntPtr NodeAdapterCreate() => OH_ArkUI_NodeAdapter_Create();
 
     internal static void NodeAdapterDispose(IntPtr handle) => OH_ArkUI_NodeAdapter_Dispose(handle);

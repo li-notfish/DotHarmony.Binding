@@ -1,12 +1,12 @@
 #nullable enable
 using System;
+using System.Runtime.InteropServices;
 
 namespace HarmonyOS.Bindings.NativeNode;
 
 /// <summary>
 /// ArkUINativeApi 自绘节点扩展：RegisterNodeCustomEvent 系列（native_node.h API 11+）、
-/// markDirty、ArkUI_LayoutConstraint 访问器与 ArkUI_NodeCustomEvent 访问器的托管包装。
-/// PInvoke 镜像由 tools/arkui-bindgen 生成于 ArkUICustomEventApi.g.cs，请勿手改。
+/// markDirty、ArkUI_LayoutConstraint 访问器与 ArkUI_NodeCustomEvent 访问器。
 /// </summary>
 internal static unsafe partial class ArkUINativeApi
 {
@@ -37,6 +37,22 @@ internal static unsafe partial class ArkUINativeApi
 
     // ───────────────────────── 自绘事件访问器（native_node.h，@since 12）─────────────────────────
 
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeCustomEvent_GetEventType(ArkUI_NodeCustomEvent* @event);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_NodeCustomEvent_GetEventTargetId(ArkUI_NodeCustomEvent* @event);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial IntPtr OH_ArkUI_NodeCustomEvent_GetUserData(ArkUI_NodeCustomEvent* @event);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial IntPtr OH_ArkUI_NodeCustomEvent_GetDrawContextInDraw(ArkUI_NodeCustomEvent* @event);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial ArkUI_LayoutConstraint* OH_ArkUI_NodeCustomEvent_GetLayoutConstraintInMeasure(
+        ArkUI_NodeCustomEvent* @event);
+
     internal static int NodeCustomEventGetEventType(ArkUI_NodeCustomEvent* @event)
         => OH_ArkUI_NodeCustomEvent_GetEventType(@event);
 
@@ -62,6 +78,12 @@ internal static unsafe partial class ArkUINativeApi
 
     // native_type.h：约束最大/最小尺寸为 int（px 域）
 
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_LayoutConstraint_GetMaxWidth(ArkUI_LayoutConstraint* constraint);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_LayoutConstraint_GetMaxHeight(ArkUI_LayoutConstraint* constraint);
+
     internal static int ConstraintMaxWidth(ArkUI_LayoutConstraint* constraint)
         => OH_ArkUI_LayoutConstraint_GetMaxWidth(constraint);
 
@@ -69,6 +91,12 @@ internal static unsafe partial class ArkUINativeApi
         => OH_ArkUI_LayoutConstraint_GetMaxHeight(constraint);
 
     // native_type.h：ArkUI_DrawContext 不透明，经访问器读取画布与绘制区尺寸
+
+    [LibraryImport(ArkuiLib)]
+    private static partial IntPtr OH_ArkUI_DrawContext_GetCanvas(IntPtr context);
+
+    [LibraryImport(ArkuiLib)]
+    private static partial ArkUI_IntSize OH_ArkUI_DrawContext_GetSize(IntPtr context);
 
     internal static IntPtr DrawContextGetCanvas(IntPtr context)
         => OH_ArkUI_DrawContext_GetCanvas(context);
