@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageType>Template</PackageType>
+    <PackageId>HarmonyOS.Templates</PackageId>
+    <Title>HarmonyOS MAUI App Templates</Title>
+    <Description>dotnet new templates for HarmonyOS MAUI apps: harmony-maui（单项目 NativeAOT + 宿主编排）</Description>
+    <PackageTags>dotnet-new;templates;maui;arkui</PackageTags>
+    <IsPackable>true</IsPackable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- 本工程只是打包壳：不把模板内容当 C# 工程编译/收集 -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+    <NoWarn>$(NoWarn);NU5111;NU5128</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="harmony-maui\**"
+             Exclude="harmony-maui\**\bin\**;harmony-maui\**\obj\**"
+             Pack="true" PackagePath="content\harmony-maui\" />
+  </ItemGroup>
+</Project>

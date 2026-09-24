@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "ArkTsBinding",
+  "classifications": [ "HarmonyOS", "MAUI" ],
+  "identity": "HarmonyOS.Templates.MauiApp",
+  "name": "HarmonyOS MAUI App",
+  "description": "HarmonyOS 单项目 MAUI 应用（HarmonyOS.Maui 包 + Platforms/HarmonyOS 启动桩 + 宿主编排 targets）",
+  "shortName": "harmony-maui",
+  "sourceName": "HarmonyMauiApp",
+  "preferNameDirectory": true,
+  "groupIdentity": "HarmonyOS.Templates",
+  "defaultName": "HarmonyMauiApp",
+  "symbols": {
+    "HarmonyPackagesVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "1.0.0",
+      "replaces": "$HARMONY_PACKAGES_VERSION$",
+      "description": "HarmonyOS.* 包版本（本地 feed 或 nuget.org）"
+    }
+  }
+}

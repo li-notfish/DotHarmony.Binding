@@ -10,6 +10,12 @@
     <!-- CS8766: ViewHandler.PlatformView nullable vs I*Handler.PlatformView non-null (MAUI 官方做法同)
          CS0618: Controls.Frame 在 .NET 9+ 已弃用，推荐 Border，但我们仍需要支持旧 XAML -->
     <NoWarn>$(NoWarn);CS8766;CS0618</NoWarn>
+
+    <PackageId>HarmonyOS.Maui</PackageId>
+    <Description>.NET MAUI platform runtime for HarmonyOS: ArkUI handlers, app host orchestration (stage/build HAP/deploy via buildTransitive targets), ArkTS host template</Description>
+    <PackageTags>maui;arkui;handlers</PackageTags>
+    <!-- NU5111：harmonyos/scripts/ 下的 .ps1 是 targets 调用的编排脚本而非 NuGet 安装钩子，属既定用法 -->
+    <NoWarn>$(NoWarn);NU5111</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,4 +32,16 @@
     <ProjectReference Include="..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
   </ItemGroup>
 
+  <!-- B1：targets + 脚本 + 宿主模板内容化（消费方经 buildTransitive 自动导入，无需仓库工作副本）。
+       注意：libapp.so 等应用侧二进制一律不进包（各应用在自己 obj 下 AOT 产出）。 -->
+  <ItemGroup>
+    <None Include="build\HarmonyOS.Maui.App.targets" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.targets" />
+    <None Pack="true" PackagePath="harmonyos\scripts\"
+          Include="..\..\scripts\stage-host.ps1;..\..\scripts\remote-build.ps1;..\..\scripts\remote-build.sh;..\..\scripts\build-libapp.sh;..\..\scripts\build-hap.cmd;..\..\scripts\deploy-hap.ps1;..\..\scripts\deploy-hap.sh;..\..\scripts\build-files.txt" />
+    <None Pack="true" PackagePath="harmonyos\HarmonyHost\"
+          Include="..\..\samples\HarmonyHost\**\*"
+          Exclude="..\..\samples\HarmonyHost\.hvigor\**;..\..\samples\HarmonyHost\entry\.cxx\**;..\..\samples\HarmonyHost\entry\build\**;..\..\samples\HarmonyHost\entry\libs\**;..\..\samples\HarmonyHost\**\oh_modules\**;..\..\samples\HarmonyHost\**\node_modules\**;..\..\samples\HarmonyHost\local.properties" />
+  </ItemGroup>
+
 </Project>
+

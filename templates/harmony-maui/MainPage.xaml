@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HarmonyMauiApp.MainPage"
+             Title="Home">
+    <VerticalStackLayout Padding="24" Spacing="16">
+        <Label Text="Hello HarmonyOS (MAUI)" FontSize="24" FontAttributes="Bold" />
+        <Button x:Name="CounterBtn" Text="Click me" Clicked="OnCounterClicked" />
+    </VerticalStackLayout>
+</ContentPage>

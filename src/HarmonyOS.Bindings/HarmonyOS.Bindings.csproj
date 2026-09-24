@@ -9,10 +9,8 @@
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
 
     <PackageId>HarmonyOS.Bindings</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>ArkTsBinding</Authors>
     <Description>C# bindings for HarmonyOS ArkTS components and APIs</Description>
-    <PackageTags>harmonyos;arkui;arkts;bindings;dotnet</PackageTags>
+    <PackageTags>arkui;arkts;bindings</PackageTags>
   </PropertyGroup>
 
   <!-- 旧 napi 路线的过期产物（Api/、Components/）已删除；

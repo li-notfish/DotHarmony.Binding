@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- HarmonyOS 单项目：linux-musl-arm64 NativeAOT 共享库 → 宿主打包成 HAP。
+       宿主编排（stage/build-hap/deploy）经 HarmonyOS.Maui 包 buildTransitive 自动导入，
+       无需手动 Import targets；
+       targets 可用属性与签名属性簇见包内 harmonyos/scripts/ 注释或仓库 README。 -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <TrimMode>full</TrimMode>
+
+    <OutputType>Library</OutputType>
+    <AssemblyName>app</AssemblyName>
+    <RootNamespace>HarmonyMauiApp</RootNamespace>
+
+    <!-- 本工程即应用入口：ModuleInitializer 在宿主 dlopen 后、任何导出调用前注册 RootBuilder -->
+    <NoWarn>$(NoWarn);CA2255</NoWarn>
+
+    <!-- XAML：SourceGen 编译期 inflate（NativeAOT 零反射） -->
+    <EnableDefaultMauiItems>true</EnableDefaultMauiItems>
+    <MauiXamlInflator>SourceGen</MauiXamlInflator>
+
+    <!-- 应用身份（改后删 obj/harmony 重新 stage） -->
+    <HarmonyAppTitle>HarmonyMauiApp</HarmonyAppTitle>
+    <!-- <HarmonyBundleId>com.example.harmonymauiapp</HarmonyBundleId> -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HarmonyOS.Maui" Version="$HARMONY_PACKAGES_VERSION$" />
+  </ItemGroup>
+
+</Project>

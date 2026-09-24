@@ -1,19 +1,32 @@
 <!-- HarmonyOS 应用构建编排（对齐 MAUI 单项目体验：dotnet build -t:Run 的等价物）。
-     应用工程以 <Import Project=".../HarmonyOS.Maui.App.targets" /> 引入；
+
+     两种装载形态（布局自动判别，_HarmonyRepoRoot 概念已于 B1 删除）：
+       A. 仓库内：应用工程 <Import Project=".../src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets" />，
+          脚本/宿主模板取仓内 scripts/ 与 samples/HarmonyHost/。
+       B. 包内：HarmonyOS.Maui nupkg 经 buildTransitive/HarmonyOS.Maui.targets 自动导入，
+          脚本/宿主模板取包内 harmonyos/scripts/ 与 harmonyos/HarmonyHost/——消费方无需仓库工作副本。
      平台启动代码放应用工程的 Platforms/HarmonyOS/（默认 Compile 通配已包含）。
 
-     宿主工程自动生成：HarmonyStageHost 把共享模板（samples/HarmonyHost）实例化到应用
-     obj/harmony/host/，按应用重写 bundleName/应用名——用户工程不感知宿主的存在，也不需要
-     在 DevEco 里手动建工程。设 HarmonyGenerateHost=false + HarmonyHostRoot=<自备宿主> 可退回。
+     宿主工程自动生成：HarmonyStageHost 把宿主模板实例化到应用 obj/harmony/host/，
+     按应用重写 bundleName/应用名/签名配置——用户工程不感知宿主的存在。设
+     HarmonyGenerateHost=false + HarmonyHostRoot=<自备宿主> 可退回。
 
      可用属性：
-       HarmonyHostRoot      ArkTS 宿主模板目录（默认 samples/HarmonyHost）
+       HarmonyHostRoot      宿主模板目录（默认随布局取仓内 samples/HarmonyHost 或包内 content/HarmonyHost）
        HarmonyGenerateHost  是否生成按应用宿主实例（默认 true）
-       HarmonyBundleId      应用包名（默认 com.arktsbinding.<去符号小写工程名>；点分小写域名形式）
+       HarmonyBundleId      应用包名（默认 com.arktsbinding.<去符号小写工程名>）
        HarmonyAppTitle      应用显示名（默认工程名）
        HarmonyHostDir       宿主实例目录（默认 $(MSBuildProjectDirectory)\obj\harmony\host）
-       HarmonyPowerShell    pwsh 可执行文件（默认 pwsh，需 PowerShell 7+）
-     注意：修改 HarmonyBundleId/HarmonyAppTitle 后需删 obj/harmony 重新 stage（脚本按内容戳增量） -->
+       HarmonyPowerShell    pwsh 可执行文件（默认 pwsh，需 PowerShell 7+；Windows 上 build-hap 走 cmd）
+    签名（release 用；全不设置则打未签名 debug HAP）：
+      HarmonySigningKeystore          .p12/.keystore 路径
+      HarmonySigningKeystorePassword  keystore 口令
+      HarmonySigningCertAlias         证书别名
+      HarmonySigningCertPassword      证书口令
+      HarmonySigningCertPath          .cer 证书路径
+      HarmonySigningProfile           .p7b profile 路径
+     注意：修改 HarmonyBundleId/HarmonyAppTitle/签名属性后需删 obj/harmony 重新 stage
+          （stage-host.ps1 按 模板mtime+内容戳 增量） -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
@@ -21,9 +34,14 @@
     <HarmonyDemoApp>$(HarmonyDemoApp)</HarmonyDemoApp>
     <HarmonyDemoApp Condition="'$(HarmonyDemoApp)' == ''">$(MSBuildProjectName)</HarmonyDemoApp>
     <HarmonyPowerShell Condition="'$(HarmonyPowerShell)' == ''">pwsh</HarmonyPowerShell>
-    <_HarmonyRepoRoot>$(MSBuildThisFileDirectory)../../../</_HarmonyRepoRoot>
-    <_HarmonyScripts>$(_HarmonyRepoRoot)scripts\</_HarmonyScripts>
-    <HarmonyHostRoot Condition="'$(HarmonyHostRoot)' == ''">$(_HarmonyRepoRoot)samples\HarmonyHost</HarmonyHostRoot>
+
+    <!-- 布局判别：包内形态的标志是 buildTransitive 旁存在 harmonyos/scripts/stage-host.ps1 -->
+    <_HarmonyIsPackage Condition="Exists('$(MSBuildThisFileDirectory)..\harmonyos\scripts\stage-host.ps1')">true</_HarmonyIsPackage>
+    <_HarmonyScripts Condition="'$(_HarmonyIsPackage)' == 'true'">$(MSBuildThisFileDirectory)..\harmonyos\scripts\</_HarmonyScripts>
+    <_HarmonyScripts Condition="'$(_HarmonyIsPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\..\scripts\</_HarmonyScripts>
+    <HarmonyHostRoot Condition="'$(HarmonyHostRoot)' == '' AND '$(_HarmonyIsPackage)' == 'true'">$(MSBuildThisFileDirectory)..\harmonyos\HarmonyHost</HarmonyHostRoot>
+    <HarmonyHostRoot Condition="'$(HarmonyHostRoot)' == '' AND '$(_HarmonyIsPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\..\samples\HarmonyHost</HarmonyHostRoot>
+
     <HarmonyGenerateHost Condition="'$(HarmonyGenerateHost)' == ''">true</HarmonyGenerateHost>
     <HarmonyHostDir Condition="'$(HarmonyHostDir)' == ''">$(MSBuildProjectDirectory)\obj\harmony\host</HarmonyHostDir>
     <HarmonyBundleId Condition="'$(HarmonyBundleId)' == ''">com.arktsbinding.$([System.Text.RegularExpressions.Regex]::Replace('$(MSBuildProjectName)', '[^a-zA-Z0-9]', '').ToLower())</HarmonyBundleId>
@@ -31,32 +49,40 @@
     <!-- 实际参与构建的宿主目录（生成模式下为暂存实例） -->
     <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' == 'true'">$(HarmonyHostDir)</_HarmonyEffectiveHostDir>
     <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' != 'true'">$(HarmonyHostRoot)</_HarmonyEffectiveHostDir>
+
+    <!-- 签名参数：任一设置即要求全套（stage-host.ps1 校验并给清晰报错） -->
+    <_HarmonySigningKeystoreArg Condition="'$(HarmonySigningKeystore)' != ''">-SigningKeystore &quot;$(HarmonySigningKeystore)&quot;</_HarmonySigningKeystoreArg>
+    <_HarmonySigningKsPwdArg Condition="'$(HarmonySigningKeystorePassword)' != ''">-SigningKeystorePassword &quot;$(HarmonySigningKeystorePassword)&quot;</_HarmonySigningKsPwdArg>
+    <_HarmonySigningAliasArg Condition="'$(HarmonySigningCertAlias)' != ''">-SigningCertAlias &quot;$(HarmonySigningCertAlias)&quot;</_HarmonySigningAliasArg>
+    <_HarmonySigningCertPwdArg Condition="'$(HarmonySigningCertPassword)' != ''">-SigningCertPassword &quot;$(HarmonySigningCertPassword)&quot;</_HarmonySigningCertPwdArg>
+    <_HarmonySigningCertPathArg Condition="'$(HarmonySigningCertPath)' != ''">-SigningCertPath &quot;$(HarmonySigningCertPath)&quot;</_HarmonySigningCertPathArg>
+    <_HarmonySigningProfileArg Condition="'$(HarmonySigningProfile)' != ''">-SigningProfile &quot;$(HarmonySigningProfile)&quot;</_HarmonySigningProfileArg>
   </PropertyGroup>
 
-  <!-- 0/3：宿主工程生成（模板 → 按应用实例：bundleName/应用名重写，构建产物剔除）。
-       增量判断在 stage-host.ps1 内（内容戳：模板 mtime + bundle/title），故此目标不加 Inputs/Outputs -->
+  <!-- 0/3：宿主工程生成（模板 → 按应用实例：bundleName/应用名/签名重写，构建产物剔除）。
+       增量判断在 stage-host.ps1 内（内容戳：模板 mtime + bundle/title/签名），故此目标不加 Inputs/Outputs -->
   <Target Name="HarmonyStageHost" Condition="'$(HarmonyGenerateHost)' == 'true'">
     <Message Importance="high" Text="=== staging host for $(HarmonyDemoApp): bundle=$(HarmonyBundleId) -> $(HarmonyHostDir)" />
-    <Exec Command="&quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)stage-host.ps1&quot; -Template &quot;$(HarmonyHostRoot)&quot; -Destination &quot;$(HarmonyHostDir)&quot; -BundleId &quot;$(HarmonyBundleId)&quot; -AppTitle &quot;$(HarmonyAppTitle)&quot;"
-          WorkingDirectory="$(_HarmonyRepoRoot)" />
+    <Exec Command="&quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)stage-host.ps1&quot; -Template &quot;$(HarmonyHostRoot)&quot; -Destination &quot;$(HarmonyHostDir)&quot; -BundleId &quot;$(HarmonyBundleId)&quot; -AppTitle &quot;$(HarmonyAppTitle)&quot; $(_HarmonySigningKeystoreArg) $(_HarmonySigningKsPwdArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPwdArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
   <!-- 1/3：NativeAOT 交叉编译 libapp.so（arm64 + x86_64），LOCAL=true 走本地 WSL -->
   <Target Name="HarmonyBuildLibApp" DependsOnTargets="HarmonyStageHost">
     <Exec Command="set LOCAL=true&amp;&amp; set DEMO_APP=$(HarmonyDemoApp)&amp;&amp; set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)remote-build.ps1&quot;"
-          WorkingDirectory="$(_HarmonyRepoRoot)" />
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
   <!-- 2/3：hvigor 打 HAP（DevEco 路径自动探测） -->
   <Target Name="HarmonyBuildHap" DependsOnTargets="HarmonyStageHost">
     <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(_HarmonyScripts)build-hap.cmd&quot;"
-          WorkingDirectory="$(_HarmonyRepoRoot)" />
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
   <!-- 3/3：hdc 安装 → 启动 → 抓取日志 -->
   <Target Name="HarmonyDeploy" DependsOnTargets="HarmonyStageHost">
     <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)deploy-hap.ps1&quot;"
-          WorkingDirectory="$(_HarmonyRepoRoot)" />
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
   <!-- 一键：编译 libapp.so → 打 HAP → 部署运行（dotnet build -t:HarmonyRun） -->

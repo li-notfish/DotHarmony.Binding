@@ -11,10 +11,8 @@
     <NoWarn>$(NoWarn);CS8766;CS0618</NoWarn>
 
     <PackageId>HarmonyOS.Essentials</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>ArkTsBinding</Authors>
     <Description>MAUI Essentials implementations for HarmonyOS (device info, sensors, geolocation, picker, storage, connectivity, ...)</Description>
-    <PackageTags>harmonyos;maui;essentials;dotnet</PackageTags>
+    <PackageTags>maui;essentials</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

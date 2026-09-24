@@ -112,6 +112,23 @@ bash scripts/deploy-hap.sh
 
 > 约定：`.gitattributes` 强制 `*.sh` 为 LF（WSL bash 无法执行 CRLF 脚本）、`*.cmd/*.ps1` 为 CRLF；新增脚本请沿用"路径自动探测 + 前置检查失败即停"的风格。
 
+## NuGet 包与模板（B 线）
+
+五个包经 `dotnet pack -c Release -o dist` 产出（版本统一由根 `Directory.Build.props` 的 `PackageVersion` 供给）：
+
+| 包 | 内容 |
+|---|---|
+| `HarmonyOS.Interop` | napi 互操作核心（env 注入/封送/TSFN/HiLog） |
+| `HarmonyOS.Bindings` | ArkUI/@ohos.* 绑定（依赖 Interop） |
+| `HarmonyOS.Essentials` | Essentials 鸿蒙实现（依赖 Bindings） |
+| `HarmonyOS.Maui` | MAUI 渲染层 + **buildTransitive 宿主编排**（targets + scripts + 宿主模板随包分发；应用工程无需仓库工作副本） |
+| `HarmonyOS.Templates` | `dotnet new harmony-maui` 应用模板（含 `Platforms/HarmonyOS` 启动桩） |
+
+消费方体验对齐 maui-android 单项目：`<PackageReference Include="HarmonyOS.Maui" Version="..." />` 后
+`dotnet build -t:HarmonyStageHost / -t:HarmonyRun` 即可（targets 由包内 `buildTransitive/HarmonyOS.Maui.targets` 自动导入）。
+签名属性簇（release 用）：`HarmonySigningKeystore/KeystorePassword/CertAlias/CertPassword/CertPath/Profile`，
+缺项时 stage 会给出清晰报错；全不配置则产出未签名 debug HAP。
+
 ## 类型映射（Native 模式）
 
 | ArkTS (.d.ts) | C# (Nodes/) | 封送 |
