@@ -68,20 +68,40 @@ W
   chmod +x "$OBJCOPY_GNU"
 fi
 
+# 应用工程路径（相对打包根）：仓库内默认 samples/dotnet/$DEMO_APP；
+# 包消费模式由 remote-build 传入 APP_PATH（应用工程在其源码树内的相对路径）
 DEMO_APP="${DEMO_APP:-HelloApp}"
-echo "=== demo app: $DEMO_APP ==="
-cd "$(dirname "$0")/../samples/dotnet/$DEMO_APP"
+APP_PATH="${APP_PATH:-samples/dotnet/$DEMO_APP}"
+# 打包根：仓库内为脚本上级；消费方模式由 remote-build 显式指到解包目录
+SRC_ROOT="${SRC_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
+echo "=== demo app: $DEMO_APP (path: $APP_PATH, root: $SRC_ROOT) ==="
+
+# 消费方模式停用 workload 解析后，被引用类库的多 TFM（net10.0-android 等）无法求值——
+# remote-build 会同时传入 PIN_TFM=net10.0 把整棵引用树钉到纯托管目标
+PIN_ARGS=()
+if [ -n "$PIN_TFM" ]; then
+  PIN_ARGS+=(-p:TargetFrameworks=$PIN_TFM -p:TargetFramework=$PIN_TFM)
+fi
+# 与 TFM 同理：消费方若用 $(MauiVersion) 占位（workload 提供），解析器关闭后为空——
+# 由 remote-build 显式钉到包要求版本
+if [ -n "$PIN_MAUI" ]; then
+  PIN_ARGS+=(-p:MauiVersion=$PIN_MAUI)
+fi
 
 echo "=== publishing linux-musl-arm64 (musl.cc gcc) ==="
 dotnet publish -c Release -r linux-musl-arm64 \
+  "$SRC_ROOT/$APP_PATH" \
+  "${PIN_ARGS[@]}" \
   -p:CppCompilerAndLinker=$WRAP64 \
   -p:ObjCopyName=$HOME/aarch64-linux-musl-cross/bin/aarch64-linux-musl-objcopy \
   2>&1 | tail -2
-file bin/Release/net10.0/linux-musl-arm64/publish/app.so
+file "$SRC_ROOT/$APP_PATH/bin/Release/net10.0/linux-musl-arm64/publish/app.so"
 
 echo "=== publishing linux-musl-x64 (zig cc + zig objcopy) ==="
 dotnet publish -c Release -r linux-musl-x64 \
+  "$SRC_ROOT/$APP_PATH" \
+  "${PIN_ARGS[@]}" \
   -p:CppCompilerAndLinker=$WRAPX \
   -p:ObjCopyName=$HOME/zig/objcopy-gnu \
   2>&1 | tail -2
-file bin/Release/net10.0/linux-musl-x64/publish/app.so
+file "$SRC_ROOT/$APP_PATH/bin/Release/net10.0/linux-musl-x64/publish/app.so"

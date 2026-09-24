@@ -23,6 +23,10 @@ public static class MauiHarmonyHost
             // 不能在 ModuleInitializer 阶段（此时 napi 未初始化会闪退）
             Essentials.HarmonyEssentials.Install();
 
+            // IDispatcher 注册：MAUI 控件模板内的 Dispatcher.Dispatch/CreateTimer 依赖
+            // DispatcherProvider.Current（鸿蒙宿主不走 UseMauiApp 引导，需手动注册）
+            HarmonyDispatcher.EnsureRegistered();
+
             // 宿主根容器：页面栈 + 模态层的挂载点（Stack 叠加语义）
             var container = new ArkStack();
             container.SetWidthPercent(1.0f);

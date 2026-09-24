@@ -69,7 +69,7 @@
 
   <!-- 1/3：NativeAOT 交叉编译 libapp.so（arm64 + x86_64），LOCAL=true 走本地 WSL -->
   <Target Name="HarmonyBuildLibApp" DependsOnTargets="HarmonyStageHost">
-    <Exec Command="set LOCAL=true&amp;&amp; set DEMO_APP=$(HarmonyDemoApp)&amp;&amp; set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)remote-build.ps1&quot;"
+    <Exec Command="set LOCAL=true&amp;&amp; set DEMO_APP=$(HarmonyDemoApp)&amp;&amp; set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; set HARMONY_APP_DIR=$(MSBuildProjectDirectory)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)remote-build.ps1&quot;"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
