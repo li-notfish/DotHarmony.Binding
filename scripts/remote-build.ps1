@@ -56,9 +56,15 @@ if ($ConsumerAppDir) {
     New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
 
     Write-Host "=== 1. 打包源码（$srcRoot） ==="
-    & tar czf (Join-Path $tmpDir "arkts-src-consumer.tgz") `
-        --exclude=.git --exclude=bin --exclude=obj --exclude=node_modules --exclude=tmp -C $srcRoot .
-    if ($LASTEXITCODE -ne 0) { throw "打包失败" }
+    # 归档名用相对路径：GNU tar 会把含盘符冒号的路径当远程主机（"Cannot connect to D:"），
+    # 与 LOCAL 模式同一处理；以源码根为工作目录，中转目录固定在源码树内 tmp/
+    Push-Location $srcRoot
+    try {
+        & tar czf "tmp/arkts-src-consumer.tgz" `
+            --exclude=.git --exclude=bin --exclude=obj --exclude=node_modules --exclude=tmp -C $srcRoot .
+        if ($LASTEXITCODE -ne 0) { throw "打包失败" }
+    }
+    finally { Pop-Location }
 
     Write-Host "=== 2. 复制进 WSL 原生文件系统 ($BUILD) ==="
     & wsl bash -c "rm -rf '$BUILD' && mkdir -p '$BUILD' && tar xzf '$srcRootWsl/tmp/arkts-src-consumer.tgz' -C '$BUILD'"

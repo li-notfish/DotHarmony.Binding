@@ -18,6 +18,8 @@ public class HarmonyFrameHandler : HarmonyViewHandler<Border, ArkStack>
         [nameof(Border.BackgroundColor)] = MapBackgroundColor,
         [nameof(Border.Background)] = MapBackground,
         [nameof(Border.Padding)] = MapPadding,
+        [nameof(VisualElement.WidthRequest)] = MapWidthRequest,
+        [nameof(VisualElement.HeightRequest)] = MapHeightRequest,
     };
 
     public HarmonyFrameHandler() : base(Mapper) { }
@@ -41,8 +43,29 @@ public class HarmonyFrameHandler : HarmonyViewHandler<Border, ArkStack>
         {
             // 内容宽度填满 Border；高度随内容自适应（百分比高度会把内容撑满整个容器）
             node.SetWidthPercent(1.0f);
+            if (v.HeightRequest > 0)
+                // 显式定高（如磁贴 HeightRequest）时内容跟随填满，网格 Star 行获得可用高度
+                node.SetHeightPercent(1.0f);
             h.PlatformView.AddChild(node);
         }
+    }
+
+    public static void MapWidthRequest(HarmonyFrameHandler h, Border v)
+    {
+        // Request 清除（-1）须复位 Auto——同 ContentViewHandler.ApplySizing 的纪律，
+        // 否则 XAML/绑定往返一次后旧固定值永久残留在节点上
+        if (v.WidthRequest > 0)
+            h.PlatformView.SetWidth((float)v.WidthRequest);
+        else
+            h.PlatformView.SetWidthAuto();
+    }
+
+    public static void MapHeightRequest(HarmonyFrameHandler h, Border v)
+    {
+        if (v.HeightRequest > 0)
+            h.PlatformView.SetHeight((float)v.HeightRequest);
+        else
+            h.PlatformView.SetHeightAuto();
     }
 
     public static void MapBackgroundColor(HarmonyFrameHandler h, Border v)
@@ -67,3 +90,4 @@ public class HarmonyFrameHandler : HarmonyViewHandler<Border, ArkStack>
         }
     }
 }
+

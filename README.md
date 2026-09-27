@@ -192,12 +192,28 @@ tests/                       jest（解析器/生成器 79 用例）
 
 - **布局语义**：ArkUI flex 托管（StackLayout→Column/Row）+ Grid/AbsoluteLayout MAUI 托管（HarmonyManagedLayoutHandler 绝对定位）。已对齐：WidthRequest/HeightRequest、Margin、StackLayout.Spacing、HorizontalOptions/VerticalOptions 对齐（flex 交叉轴经 NODE_ALIGN_SELF；Grid 单元格内 Start/Center/End 收缩偏移，Fill 充满）、ZIndex（两套布局均接通）、Auto 轨道随子内容变化自适应重排（AREA_CHANGE 驱动 + 幂等快照）；说明：Stack 主轴方向 Options 与 MAUI 官方一致（官方布局管理器即忽略）
 - **画刷**：SolidColorBrush/LinearGradientBrush/RadialGradientBrush 全支持；ImageBrush 为 MAUI internal 类型无法声明（节点层 SetBackgroundImage 原语已就位）
-- **导航**：根页用 `new NavigationPage(...)` 即可走 MAUI 标准 `Navigation.PushAsync/PopAsync`（HarmonyNavigationPageHandler 转接 IStackNavigation 协议，已实测）；另有轻量 Page 栈与系统返回键（优先级：模态 → NavigationPage 内栈 → 轻量栈）。**模态** `PushModalAsync/PopModalAsync` 标准可用（ArkStack 覆盖 + RootNavigationAdapter 转接）；**生命周期** Appearing/Disappearing 已透传（宿主建最小 Window/Application 逻辑链放行 MAUI 的 SendAppearing 守卫）；页面推入有 250ms 淡入、返回/模态关闭有 250ms 淡出（animateTo，完成后才摘除释放旧页）；NavigationPage 自带标题栏（返回键 + 页 Title，`HasNavigationBar=false` 隐藏）。未支持：Shell（多平台 Shell 应用请把入口改写为 NavigationPage 结构）
+- **导航**：根页用 `new NavigationPage(...)` 即可走 MAUI 标准 `Navigation.PushAsync/PopAsync`（HarmonyNavigationPageHandler 转接 IStackNavigation 协议，已实测）；另有轻量 Page 栈与系统返回键（优先级：模态 → NavigationPage 内栈 → 轻量栈）。**模态** `PushModalAsync/PopModalAsync` 标准可用（ArkStack 覆盖 + RootNavigationAdapter 转接）；**生命周期** Appearing/Disappearing 已透传（宿主建最小 Window/Application 逻辑链放行 MAUI 的 SendAppearing 守卫）；页面推入有 250ms 淡入、返回/模态关闭有 250ms 淡出（animateTo，完成后才摘除释放旧页）；NavigationPage 自带标题栏（返回键 + 页 Title，`HasNavigationBar=false` 隐藏）。**Shell 第一版已支持**（HarmonyShellHandler + HarmonyShellNavigation 自持协议）：TabBar 条目切换、绝对/相对路由与 `..` 返回、注册路由推送、query parameters（IQueryAttributable + QueryProperty）、页内 PushAsync 入 section 栈、模态转发根栈、Appearing/Disappearing 透传。未覆盖：Flyout 菜单视觉、Shell 主题色（当前走静态兜底）
 - **异步 API（M2 完成）**：`Promise<T>`→`Task<T>`；仅 callback 形式 API→`Task<T>`（CallbackTaskBridge，err-first）；`.NET event` 事件模型（真实触发已实测）；TSFN 生命周期三路径封装 + finalize 延迟释放防 UAF。**续体在 JS 线程内联恢复**（`NapiEnv` 线程亲和性），长耗时工作需自行 `Task.Run`
 - **零分配调用路径**：`params ReadOnlySpan<object?>`（C# 13）、trampoline/argv 栈分配、生成 record 的 u8 名字常量缓存、`SetNumericAttribute(params ReadOnlySpan<...>)`（C# 14 first-class span conversions，属性写热路径）、HiLog 格式串 u8 缓存 + 运行时开关；剩余分配源：基元装箱（object 转换点）、字符串结果物化、事件适配器闭包
 - **控件覆盖**：27 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/Border(BoxView)/RefreshView/Picker/DatePicker/TimePicker + CollectionView（NodeAdapter 虚拟化）/CarouselView + Shape/GraphicsView 自绘），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
+- **控件完成度矩阵**：
+
+  | 能力 | 状态 | 说明 |
+  | --- | --- | --- |
+  | ContentPage / Grid / StackLayout / AbsoluteLayout | 已支持 | 基础布局与对齐已接通 |
+  | Label / Button / BoxView / Frame(Border) / Image | 已支持 | 常规属性已接通 |
+  | Entry / Editor / Switch / CheckBox / Slider / ProgressBar | 已支持 | 交互与值映射已接通 |
+  | ScrollView / CollectionView / CarouselView | 已支持 | 横竖滚动与虚拟化已接通 |
+  | Picker / DatePicker / TimePicker / RefreshView | 已支持 | 基础展示已接通 |
+  | Shape / GraphicsView | 部分支持 | 文本、渐变、位图与测量路径仍在补 |
+  | Button 字体族 | 已支持 | 通过 `NODE_FONT_FAMILY` 和子 Text 双写 |
+  | RadioButton 文本 | 已支持 | 以 Radio + Text 组合承载 |
+  | RefreshView 颜色 | 部分支持 | 原生侧暂无进度球颜色属性 |
+  | FontImageSource / DrawingCanvas 高级能力 | 部分支持 | 资源与绘制通道仍未完整对齐 |
+  | Shell | 已支持（第一版） | TabBar/路由/模态/query 已接通；Flyout 视觉与主题后续子阶段 |
 - **手势识别**：TapGestureRecognizer/PanGestureRecognizer/PinchGestureRecognizer/SwipeGestureRecognizer/PointerGestureRecognizer 全支持（`HarmonyViewHandler` 基类统一挂载；Tap/Pinch 走 NDK 原生手势，Pan/Swipe/Pointer 走触摸流——pan 原生手势事件数据不可靠，实测沉淀；Tap/Pointer 经 AOT 安全的反射桥触发 internal SendTapped/SendPointer*）；Drag/Drop 识别器（长按起拖 + UDMF 载荷，DRAG_END 销毁）已支持；PanUpdated 单位 vp（等价 iOS points）；未支持：鼠标 ButtonsMask 区分、hover 通道、Pinch 真机多点触控专项
 - **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
+- **手势注入限制**：当前模拟器的 `uitest uiInput` / `uinput -T` 与鼠标拖拽均不等效真实触摸（实测连系统 ArkTS 桌面对注入滑动也无响应，而 .NET 侧内容尺寸/滚动范围/程序化 `NODE_SCROLL_BY` 全部正常）；ScrollView 触摸滚动验收必须以真机或实际触摸为准
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
 - **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；438/438 模块已全量转正编译，无灰度清单
 - **基元装箱**：`object?` 参数转换点存在装箱；完全零装箱需要 union struct 参数设计（后续立项）

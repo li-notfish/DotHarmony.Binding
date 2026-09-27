@@ -59,6 +59,25 @@
     <_HarmonySigningProfileArg Condition="'$(HarmonySigningProfile)' != ''">-SigningProfile &quot;$(HarmonySigningProfile)&quot;</_HarmonySigningProfileArg>
   </PropertyGroup>
 
+  <!-- NativeAOT full-trim 下保留反射元数据：经典 XAML `{Binding}`（无 x:DataType）走运行时
+       反射取属性，full 裁剪会把仅存于反射路径的 public 属性/类型裁掉，导致绑定静默为 null。
+       HarmonyPreserveXamlBindings 默认 true（正确性优先）；全量 x:DataType compiled binding
+       的工程可显式置 false 收回保活面。
+       保活范围 = 应用程序集 + HarmonyBindingRootAssembly 显式条目 + 直接 ProjectReference
+       （贡献 XAML 的控件库跟随应用引用自动保活；NuGet 引用的控件库请用
+       HarmonyBindingRootAssembly 显式列入）。 -->
+  <PropertyGroup>
+    <HarmonyPreserveXamlBindings Condition="'$(HarmonyPreserveXamlBindings)' == ''">true</HarmonyPreserveXamlBindings>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(HarmonyPreserveXamlBindings)' == 'true'">
+    <!-- 取舍说明：整集 trim root 会全量保活公共图，代价是体积膨胀、失去对应用集自身的裁剪
+         收益。中期可改用 TrimmerRootDescriptor（rd.xml）精确指到含经典 {Binding} 的类型，
+         收窄保活面。当前方案作为正确性兜底。 -->
+    <HarmonyBindingRootAssembly Condition="'$(AssemblyName)' != ''" Include="$(AssemblyName)" />
+    <HarmonyBindingRootAssembly Include="@(ProjectReference->'%(Filename)')" />
+    <TrimmerRootAssembly Include="@(HarmonyBindingRootAssembly->Distinct())" />
+  </ItemGroup>
+
   <!-- 0/3：宿主工程生成（模板 → 按应用实例：bundleName/应用名/签名重写，构建产物剔除）。
        增量判断在 stage-host.ps1 内（内容戳：模板 mtime + bundle/title/签名），故此目标不加 Inputs/Outputs -->
   <Target Name="HarmonyStageHost" Condition="'$(HarmonyGenerateHost)' == 'true'">
@@ -83,6 +102,53 @@
   <Target Name="HarmonyDeploy" DependsOnTargets="HarmonyStageHost">
     <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)deploy-hap.ps1&quot;"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <!-- 0.5/3：MAUI 资源暂存（HarmonyStageResources）：@(MauiImage)/@(MauiAsset)/@(MauiFont)
+       按逻辑名（文件名）拷入宿主 HAP 的 resources/rawfile/maui/；运行期 FileImageSource
+       的裸相对名经 rawfile 探测路径加载（ImageSourceResolver）。同一逻辑名来自不同源文件
+       = 冲突（rawfile 按名解析无法区分），构建直接报错。HarmonyGenerateHost=false 时不暂存
+       （避免写进用户自备宿主的源树）。 -->
+  <PropertyGroup>
+    <HarmonyStageResources Condition="'$(HarmonyStageResources)' == ''">true</HarmonyStageResources>
+  </PropertyGroup>
+  <Target Name="HarmonyStageResources"
+          Condition="'$(HarmonyStageResources)' == 'true' AND '$(HarmonyGenerateHost)' == 'true'"
+          DependsOnTargets="HarmonyStageHost"
+          BeforeTargets="HarmonyBuildHap;HarmonyDeploy">
+    <PropertyGroup>
+      <_HarmonyRawfileRoot>$(_HarmonyEffectiveHostDir)\entry\src\main\resources\rawfile\maui</_HarmonyRawfileRoot>
+    </PropertyGroup>
+    <ItemGroup>
+      <_HarmonyResourceFile Include="@(MauiImage);@(MauiAsset);@(MauiFont)" />
+      <_HarmonyResourceFile Condition="'@(_HarmonyResourceFile)' != ''">
+        <HarmonyLogicalName>%(Filename)%(Extension)</HarmonyLogicalName>
+      </_HarmonyResourceFile>
+    </ItemGroup>
+    <PropertyGroup Condition="'@(_HarmonyResourceFile)' != ''">
+      <_HarmonyResourceCount>@(_HarmonyResourceFile->Count())</_HarmonyResourceCount>
+      <_HarmonyResourceDistinctCount>@(_HarmonyResourceFile->'%(HarmonyLogicalName)'->Distinct()->Count())</_HarmonyResourceDistinctCount>
+    </PropertyGroup>
+    <!-- 冲突子集精确点名：仅冲突时展开去重名单，批处理对每个逻辑名做出现次数统计。
+         Regex::Matches 在 |…| 护栏上做边界精确匹配（'|' 不是合法文件名），
+         且仅在冲突模式下求值（AND 短路）；正常构建零成本。 -->
+    <ItemGroup Condition="'@(_HarmonyResourceFile)' != '' AND '$(_HarmonyResourceCount)' != '$(_HarmonyResourceDistinctCount)'">
+      <_HarmonyResourceDistinctNames Include="@(_HarmonyResourceFile->'%(HarmonyLogicalName)'->Distinct())" />
+    </ItemGroup>
+    <PropertyGroup Condition="'@(_HarmonyResourceDistinctNames)' != ''">
+      <_HarmonyResourceNamePiped>|@(_HarmonyResourceFile->'%(HarmonyLogicalName)', '|')|</_HarmonyResourceNamePiped>
+    </PropertyGroup>
+    <Message Condition="'@(_HarmonyResourceDistinctNames)' != '' AND $([System.Text.RegularExpressions.Regex]::Matches('$(_HarmonyResourceNamePiped)', '\|$([System.Text.RegularExpressions.Regex]::Escape('%(_HarmonyResourceDistinctNames.Identity)'))\|').Count) > 1"
+             Importance="high"
+             Text="HarmonyStageResources 冲突逻辑名：%(_HarmonyResourceDistinctNames.Identity)（移除此逻辑名下的多余来源文件）" />
+    <Error Condition="'@(_HarmonyResourceFile)' != '' AND '$(_HarmonyResourceCount)' != '$(_HarmonyResourceDistinctCount)'"
+           Text="HarmonyStageResources: MauiImage/MauiAsset/MauiFont 存在同名逻辑资源冲突（rawfile/maui 按文件名解析，同名无法区分）。冲突名见上方 Message 明细。" />
+    <Copy Condition="'@(_HarmonyResourceFile)' != ''"
+          SourceFiles="@(_HarmonyResourceFile)"
+          DestinationFiles="@(_HarmonyResourceFile->'$(_HarmonyRawfileRoot)\%(HarmonyLogicalName)')"
+          SkipUnchangedFiles="true" />
+    <Message Condition="'@(_HarmonyResourceFile)' != ''" Importance="high"
+             Text="=== staged $(_HarmonyResourceCount) MAUI resource file(s) -> $(_HarmonyRawfileRoot)" />
   </Target>
 
   <!-- 一键：编译 libapp.so → 打 HAP → 部署运行（dotnet build -t:HarmonyRun） -->

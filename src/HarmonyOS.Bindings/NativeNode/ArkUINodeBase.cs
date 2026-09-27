@@ -202,6 +202,31 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_HEIGHT_PERCENT, ArkUIValue.F(fraction));
     }
 
+    /// <summary>恢复宽度自适应：同时清掉固定宽和百分比宽，供 ScrollView 等容器切换主轴时复位。</summary>
+    public void SetWidthAuto()
+    {
+        ResetAttribute(ArkUI_NodeAttributeType.NODE_WIDTH);
+        ResetAttribute(ArkUI_NodeAttributeType.NODE_WIDTH_PERCENT);
+    }
+
+    /// <summary>恢复高度自适应：同时清掉固定高和百分比高，供 ScrollView 等容器切换主轴时复位。</summary>
+    public void SetHeightAuto()
+    {
+        ResetAttribute(ArkUI_NodeAttributeType.NODE_HEIGHT);
+        ResetAttribute(ArkUI_NodeAttributeType.NODE_HEIGHT_PERCENT);
+    }
+
+    /// <summary>字体族（NODE_FONT_FAMILY）。空字符串走平台默认字体。</summary>
+    public void SetFontFamily(string family)
+    {
+        SetStringAttribute(ArkUI_NodeAttributeType.NODE_FONT_FAMILY, family ?? string.Empty);
+    }
+
+    /// <summary>命中测试行为（NODE_HIT_TEST_BEHAVIOR）。展示用子节点（如 Button 内建 label
+    /// 的替代 Text）须设为 TRANSPARENT 透传点击，否则会吃掉父节点的 CLICK。</summary>
+    public void SetHitTestBehavior(ArkUI_HitTestMode mode)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_HIT_TEST_BEHAVIOR, ArkUIValue.I((int)mode));
+
     /// <summary>绝对定位（vp，NODE_POSITION）—— 相对父容器左上角，托管布局的定位原语</summary>
     public void SetPosition(float x, float y)
     {
@@ -235,11 +260,57 @@ public abstract unsafe class ArkUINodeBase : IDisposable
             ArkUIValue.I(value ? 0 : 1));
     }
 
+    /// <summary>三态可见性（NODE_VISIBILITY）：Visible / Hidden（隐藏但占位）/ None（不占位）。
+    /// MAUI Visibility.Visible/Hidden/Collapsed 一一对应。</summary>
+    public void SetVisibility(ArkUI_Visibility visibility)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_VISIBILITY, ArkUIValue.I((int)visibility));
+
+    /// <summary>可交互（NODE_ENABLED）：false 时节点呈禁用态且不响应触摸</summary>
+    public bool Enabled
+    {
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_ENABLED, ArkUIValue.I(value ? 1 : 0));
+    }
+
     /// <summary>不透明度 0.0~1.0（NODE_OPACITY）——页面切换淡入动画的目标属性</summary>
     public void SetOpacity(float opacity)
     {
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_OPACITY, ArkUIValue.F(opacity));
     }
+
+    /// <summary>平移偏移（vp，NODE_TRANSLATE：value[0]=x、[1]=y、[2]=z，三值齐发——
+    /// NDK 形状为 ARRAY_OF_3，缺 z 会被参数校验 401 拒绝）</summary>
+    public void SetTranslate(float x, float y)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TRANSLATE,
+            ArkUIValue.F(x), ArkUIValue.F(y), ArkUIValue.F(0));
+
+    /// <summary>缩放比例（NODE_SCALE：value[0]=x、[1]=y，1.0 = 原始尺寸）</summary>
+    public void SetScale(float x, float y)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_SCALE,
+            ArkUIValue.F(x), ArkUIValue.F(y));
+
+    /// <summary>
+    /// 旋转（NODE_ROTATE：轴向量 x/y/z + 角度 + 视距，单次写入单轴语义）。
+    /// MAUI 的 Rotation(X/Y) 三角独立：按非零优先级选主轴（z > x > y）；
+    /// 全零写 z 轴 0 度复位。
+    /// </summary>
+    public void SetRotation(float xAngle, float yAngle, float zAngle)
+    {
+        (float ax, float ay, float az, float angle) =
+            MathF.Abs(zAngle) > 0.001f ? (0, 0, 1, zAngle) :
+            MathF.Abs(xAngle) > 0.001f ? (1, 0, 0, xAngle) :
+            MathF.Abs(yAngle) > 0.001f ? (0, 1, 0, yAngle) :
+            (0, 0, 1, 0);
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_ROTATE,
+            ArkUIValue.F(ax), ArkUIValue.F(ay), ArkUIValue.F(az),
+            ArkUIValue.F(angle), ArkUIValue.F(0));
+    }
+
+    /// <summary>变换中心（NODE_TRANSFORM_CENTER）：前 3 值为 vp 绝对坐标、后 3 值为
+    /// 百分比数字（0.5 = 50%）；MAUI AnchorX/Y 为 0~1 分数，走百分比槽位。</summary>
+    public void SetPivot(float x, float y)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TRANSFORM_CENTER,
+            ArkUIValue.F(0), ArkUIValue.F(0), ArkUIValue.F(0),
+            ArkUIValue.F(x), ArkUIValue.F(y), ArkUIValue.F(0));
 
     /// <summary>层级（NODE_Z_INDEX，值大者在上，默认 0）——MAUI IView.ZIndex 的翻译；
     /// 生成器未注册该属性 shape（native-gaps.json），按手写节点层约定补充</summary>
@@ -426,9 +497,10 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     protected void SetStringAttribute(ArkUI_NodeAttributeType attribute, string value)
     {
         ThrowIfDisposed();
-        // 空串时 GetBytes 返回 0 长数组，fixed 得到空指针 → 原生 401；
-        // 必须传 NUL 结尾的空 C 串
-        ReadOnlySpan<byte> utf8 = value.Length == 0 ? [(byte)0] : Encoding.UTF8.GetBytes(value);
+        // 原生侧按 NUL 结尾 C 串读取：GetBytes 不补终止符，长度恰好时会越界读
+        // （短文本侥幸正常、长文本被截断/吃掉）——显式补 0，空串即 "\0"
+        var utf8 = new byte[Encoding.UTF8.GetByteCount(value) + 1];
+        Encoding.UTF8.GetBytes(value.AsSpan(), utf8.AsSpan());
         fixed (byte* p = utf8)
         {
             var item = new ArkUI_AttributeItem { @string = p };

@@ -47,6 +47,11 @@ public partial class MainPage : ContentPage
         Navigation.PushAsync(new LayoutDemoPage()).FireAndForgetNavigation();
     }
 
+    private void OnOpenZIndexProbeClicked(object? sender, EventArgs e)
+    {
+        Navigation.PushAsync(new ProbeZIndexPage()).FireAndForgetNavigation();
+    }
+
     private void OnOpenControlsDemoClicked(object? sender, EventArgs e)
     {
         Navigation.PushAsync(new ControlsDemoPage()).FireAndForgetNavigation();

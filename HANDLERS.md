@@ -342,6 +342,8 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★☆☆ | `Picker`/`DatePicker`/`TimePicker` | `ARKUI_NODE_TEXT_PICKER`/`DATE_PICKER`/`TIME_PICKER` | ArkUI 是内嵌滚轮非弹窗，视觉有差异；节点类已入解析器生成管线（NODE_TYPE_NAME_FIXES + CONSTRUCTOR_OPTION_PROPS，PickerManual/TextPickerManual.cs 已删除）；MAUI 10 的 Date/Time 为可空类型 | ✅ 已完成 |
 | ★☆☆ | `RefreshView` | `ARKUI_NODE_REFRESH` | 下拉经 NODE_REFRESH_ON_REFRESH 置 IsRefreshing；刷新态 setter 已入生成管线（CONSTRUCTOR_OPTION_PROPS，RefreshManual.cs 已删除） | ✅ 已完成 |
 | ★☆☆ | `BoxView` | `ARKUI_NODE_STACK` | 纯色矩形（Color/BackgroundColor → 背景色） | ✅ 已完成 |
+| ★☆☆ | `ContentView` / `ContentPresenter` | `ARKUI_NODE_COLUMN` | 模板宿主（PresentedContent 槽）；空 Content 的槽位 HIT_TEST_MODE_NONE 防输入黑洞；Padding 已映射 NODE_PADDING | ✅ 已完成 |
+| ★☆☆ | `Shell` | 根 `ARKUI_NODE_COLUMN` + 内容栈/TabBar | 平台 fragment 机制自建（HarmonyShellNavigation：条目/路由/推送栈/query/模态转发）；Flyout 菜单视觉未覆盖 | ✅ 第一版完成 |
 | ☆ | `Shape`/自绘 | `ARKUI_NODE_CUSTOM` + `NODE_ON_DRAW` | 等价于 iOS `Draw`；需 MAUI Graphics 前端 | ⏳ 待做 |
 | ☆ | GestureRecognizers（Tap/Pan/Pinch/Swipe/Pointer） | NDK `ArkUI_NativeGestureAPI_1` + `NODE_TOUCH_EVENT` | 手势→MAUI Send* 协议回送；Tap/Pointer 走反射桥 | ✅ 已完成（见 §6.1） |
 

@@ -43,6 +43,37 @@
                 <Label Text="tap 演示区（IsEnabled=false 时静默）" TextColor="Black" />
             </Border>
 
+            <!-- 隔离探针：定位"手势/滚动失效"的容器层级（Metro Hub 回归问题） -->
+            <Label Text="—— 隔离探针 ——" TextColor="Black" FontSize="16" />
+            <ScrollView x:Name="ProbeHScroll" Orientation="Horizontal" HeightRequest="90" BackgroundColor="#F1F5F9">
+                <HorizontalStackLayout>
+                    <Border x:Name="ProbeHScrollTap" BackgroundColor="#FEE2E2" WidthRequest="220" HeightRequest="70" Margin="10">
+                        <Label Text="H-Scroll 内 tap（点我）" TextColor="Black" />
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnProbeTap" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <Border BackgroundColor="#FEF3C7" WidthRequest="220" HeightRequest="70" Margin="10">
+                        <Label Text="填充项（拖出滚动量）" TextColor="Black" />
+                    </Border>
+                    <Border BackgroundColor="#DCFCE7" WidthRequest="220" HeightRequest="70" Margin="10">
+                        <Label Text="填充项 2" TextColor="Black" />
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
+            <CollectionView x:Name="ProbeList" HeightRequest="150" BackgroundColor="#F1F5F9">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BackgroundColor="#FEE2E2" HeightRequest="60" Margin="10">
+                            <Label Text="List 条目 tap（点我）" TextColor="Black" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnProbeTap" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
             <Button Text="Pop back" Clicked="OnPopClicked" />
         </StackLayout>
     </ScrollView>

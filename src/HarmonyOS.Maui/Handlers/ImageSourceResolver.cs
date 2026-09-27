@@ -1,6 +1,7 @@
 using HarmonyOS.Interop;
 using Microsoft.Maui;
 using System.Text;
+using HResourceManager = HarmonyOS.Bindings.Api.ResourceManager;
 
 namespace HarmonyOS.Maui.Handlers;
 
@@ -28,8 +29,108 @@ internal static class ImageSourceResolver
     {
         if (string.IsNullOrEmpty(path))
             return null;
-        // 已带 scheme（file:// / http(s):// / data:）原样返回；纯路径视为本地绝对路径
+        // 已带 scheme（file:// / http(s):// / data:）原样返回；绝对路径直接 file://。
+        // 裸相对名（MAUI 资源约定）由 handler 层走 ResolveRawfileAsync 异步通道
+        // （resourceManager.getRawFileContent），miss 后回退本方法的 file://{path}。
         return path.Contains("://") ? path : $"file://{path}";
+    }
+
+    /// <summary>
+    /// 裸相对名 → 包内 rawfile（HarmonyStageResources 暂存的 maui/ 前缀）解析。
+    /// 走 ability context 的 resourceManager.getRawFileContentSync（模块级无参
+    /// getResourceManager 在本运行时返回对象类型不匹配，必须 context 作用域；沙盒内
+    /// rawfile 无稳定 file 路径可探测）。命中后落盘缓存并以 file:// URI 提供；
+    /// 结果缓存（同名资源只读一次）。须在 UI/napi 线程调用。
+    /// </summary>
+    public static async Task<string?> ResolveRawfileAsync(string logicalName)
+    {
+        lock (_gate)
+        {
+            if (_rawfileCache.TryGetValue(logicalName, out var cached))
+                return cached;
+        }
+
+        var bytes = GetRawfileBytesSync($"maui/{logicalName}");
+        if (bytes is null || bytes.Length == 0)
+            return null;
+
+        // 优先 ability context 的规范 cacheDir（图像框架按沙盒路径识别），探测式 TempDir 兜底
+        var dir = ContextCacheDir() ?? TempDir;
+        if (dir is null)
+            return null;
+        var safe = logicalName.Replace('/', '_');
+        var path = Path.Combine(dir, $"rawfile_{safe}");
+        await File.WriteAllBytesAsync(path, bytes).ConfigureAwait(false);
+        var uri = $"file://{path}";
+        lock (_gate)
+            _rawfileCache[logicalName] = uri;
+        HiLog.Info("Image", $"rawfile resolved: {logicalName} -> {path}");
+        return uri;
+    }
+
+    private static string? ContextCacheDir()
+    {
+        try
+        {
+            var dir = new Essentials.HarmonyFileSystem().CacheDirectory;
+            if (string.IsNullOrEmpty(dir))
+                return null;
+            Directory.CreateDirectory(dir);
+            return dir;
+        }
+        catch (Exception ex)
+        {
+            HiLog.Debug("Image", $"context cacheDir unavailable: {ex.Message}");
+            return null;
+        }
+    }
+
+    private static readonly Dictionary<string, string> _rawfileCache = new(StringComparer.Ordinal);
+    private static global::HarmonyOS.Bindings.Api.ResourceManagerObject? _contextResourceManager;
+    // _rawfileCache / _contextResourceManager 的并发保护：影子加载走后台 Task，
+    // 同名资源多发起请求应当在 _gate 内协作（getRawFileContent 路径本机实测单线程，
+    // 但 MAUI 绑定判定回调并不保证仅 UI 线程）
+    private static readonly object _gate = new();
+
+    private static byte[]? GetRawfileBytesSync(string rawfilePath)
+    {
+        global::HarmonyOS.Bindings.Api.ResourceManagerObject? rm;
+        lock (_gate)
+        {
+            // 惰性初始化只发生一次；裸 JS 句柄跨作用域会失效——Preferences 同款教训
+            rm = _contextResourceManager ??= CreateResourceManager();
+        }
+        if (rm is null)
+            return null;
+        try
+        {
+            return rm.GetRawFileContentBytesSync(rawfilePath);
+        }
+        catch (Exception ex)
+        {
+            // 未暂存/不存在的资源属常态：降级 debug（handler 层回退 file:// 相对路径）
+            HiLog.Debug("Image", $"rawfile miss for '{rawfilePath}': {ex.Message}");
+            return null;
+        }
+    }
+
+    private static global::HarmonyOS.Bindings.Api.ResourceManagerObject? CreateResourceManager()
+    {
+        try
+        {
+            var ctx = NodeApi.GetProperty(NodeApi.GetGlobal(), "abilityContext");
+            if (ctx == IntPtr.Zero)
+                return null;
+            var handle = NodeApi.GetProperty(ctx, "resourceManager");
+            if (handle == IntPtr.Zero)
+                return null;
+            return new global::HarmonyOS.Bindings.Api.ResourceManagerObject(handle);
+        }
+        catch (Exception ex)
+        {
+            HiLog.Debug("Image", $"resourceManager unavailable: {ex.Message}");
+            return null;
+        }
     }
 
     /// <summary>

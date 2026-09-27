@@ -41,6 +41,14 @@ public class HarmonyImageHandler : HarmonyViewHandler<MImage, ArkImage>
             return;
         }
 
+        // 裸相对名（MAUI 资源约定）：包内 rawfile 异步解析优先，miss 回退 file:// 相对路径
+        if (v.Source is FileImageSource { File: { } file } &&
+            !file.Contains("://") && !System.IO.Path.IsPathRooted(file))
+        {
+            _ = LoadRawfileSourceAsync(h, v, file);
+            return;
+        }
+
         var src = ImageSourceResolver.Resolve(v.Source);
         if (src is not null)
             h.PlatformView.Src = src;
@@ -64,6 +72,23 @@ public class HarmonyImageHandler : HarmonyViewHandler<MImage, ArkImage>
         });
     }
 
+    private static async System.Threading.Tasks.Task LoadRawfileSourceAsync(
+        HarmonyImageHandler h, MImage view, string logicalName)
+    {
+        // 捕获触发时的 Source，回写时比对对象本身（对齐 LoadStreamSourceAsync 的守卫口径）
+        var origin = view.Source;
+        var uri = await ImageSourceResolver.ResolveRawfileAsync(logicalName)
+                  ?? $"file://{logicalName}"; // rawfile 未暂存：退回相对路径语义（旧行为）
+        MainThreadDispatcher.Post(() =>
+        {
+            if (ReferenceEquals(h.VirtualView?.Source, origin))
+            {
+                try { h.PlatformView.Src = uri; }
+                catch (InvalidOperationException) { /* 节点已销毁 */ }
+            }
+        });
+    }
+
     public static void MapAspect(HarmonyImageHandler h, MImage v)
     {
         h.PlatformView.ObjectFit = v.Aspect switch
@@ -79,4 +104,5 @@ public class HarmonyImageHandler : HarmonyViewHandler<MImage, ArkImage>
     {
         HiLog.Warn("Image", $"Failed to load: {VirtualView.Source}");
     }
+
 }
