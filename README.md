@@ -27,7 +27,7 @@ CI 与性能基线为当前进行项，详见 ROADMAP M3。
 | Microsoft.Maui.Essentials | `HarmonyOS.Essentials`（MAUI Essentials 鸿蒙实现独立装，16 服务） |
 | 各平台 Handler（Android/iOS/...） | `HarmonyOS.Maui`（MAUI 控件 → ArkUI 原生节点，不 fork dotnet/maui） |
 | Android/iOS head 工程 | `HarmonyHost`（ArkTS 宿主 + C shim 模板；targets 按应用生成实例） |
-| workload / msbuild 集成 | `scripts/`（远程 NativeAOT + hvigor + hdc 一键脚本）
+| workload / msbuild 集成 | `scripts/`（PublishAotClang（Windows 本地 NativeAOT）+ hvigor + hdc 一键脚本）
 
 ```
 [MAUI 应用] XAML / C# 控件树（Microsoft.Maui.Controls VirtualView）
@@ -53,14 +53,14 @@ CI 与性能基线为当前进行项，详见 ROADMAP M3。
    早期白皮书（ArkTsBinding.md，文末附决策记录）的「napi 直调 ArkTS 影子对象」方案已被此路线取代。
 2. **非 UI 的 @ohos.\* 服务**（传感器/定位等）继续走 napi，env 由宿主 shim 在入口注入（`NapiEnv.Initialize`）。
 3. **运行时**：鸿蒙禁 JIT，唯一路线是 NativeAOT（linux-musl）产出 libapp.so，由 C shim dlopen。
-   Windows 不支持 cross-OS NativeAOT，交叉编译在远程 Linux（WSL2）完成。
+   Windows 侧通过 PublishAotClang + Zig 直接交叉编译，不再依赖 WSL 或远程 Linux。
 4. **入口程序集导出**：ILC 只导出入口程序集内的 `[UnmanagedCallersOnly]`，
    因此每个 libapp.so 应用需要薄转发层（见 HelloApp 的 `NativeExports`）。
 
 ## 快速开始
 
 环境：Node.js + npm（解析器）、Python 3（头文件提取）、.NET 10 SDK（绑定库）、
-DevEco Studio（内置 HarmonyOS SDK/NDK/hvigor）、可 SSH 的 Linux（NativeAOT 交叉编译）。
+DevEco Studio（内置 HarmonyOS SDK/NDK/hvigor）、PublishAotClang（Windows 本地 NativeAOT）。
 
 ```bash
 # 1. 解析器构建 + 测试（79 用例）
@@ -78,8 +78,9 @@ npx ts-node tools/api-generator/index.ts --native
 # 4. Windows 上构建绑定库 + 样例
 dotnet build ArkTsBinding.slnx
 
-# 5. 交叉编译 libapp.so（双架构）。LOCAL=true 走本地 WSL（上传式构建），默认经 SSH 远程
-bash scripts/remote-build.sh
+# 5. 交叉编译 libapp.so（PublishAotClang，双架构）
+dotnet publish samples/dotnet/HelloApp -c Release -r linux-musl-arm64
+dotnet publish samples/dotnet/HelloApp -c Release -r linux-musl-x64
 # （或用 MAUI 风格一键：dotnet build samples/dotnet/HelloApp -t:HarmonyRun —— 自动 stage 宿主 → AOT → HAP → 部署）
 
 # 6. 打 HAP（hvigor；DevEco 路径自动探测，或用 DEVECO_HOME 指定）
@@ -93,14 +94,9 @@ bash scripts/deploy-hap.sh
 
 | 脚本 | 用途 | 说明 |
 |---|---|---|
-| `remote-build.ps1` / `remote-build.sh` | 交叉编译 libapp.so（arm64 + x64 双架构） | `LOCAL=true`：本地 WSL 构建——**上传式**（打包 → 解压到 WSL 原生文件系统 → 构建 → 取回），勿在 `/mnt/*` 上直接构建（9p I/O 慢一个数量级）；默认本机 WSL 环境；远程构建经 `REMOTE`/`REMOTE_SSH_ALIAS` 环境变量指定 SSH 别名（构建机 IP 漂移先跑 `resolve-remote.ps1`） |
 | `stage-host.ps1` | 宿主工程生成：模板 → 按应用实例（重写 bundleName/应用名） | 由 targets 的 HarmonyStageHost 调用（内容戳增量）；`HarmonyGenerateHost=false` 可跳过 |
 | `build-hap.cmd` | hvigor 打 HAP | DevEco Studio 路径自动探测，`DEVECO_HOME` 可覆盖；`HOST_DIR` 指向按应用暂存宿主（targets 自动设置） |
 | `deploy-hap.sh` / `deploy-hap.ps1` | 重装 HAP → 启动 → 抓取 HarmonyHost 日志 | hdc 自动探测；无设备 / 缺 HAP / 安装失败即报错停止；启动前 `aa force-stop` 防 install 竞争 |
-| `build-files.txt` | remote-build 打包清单（含 excludes） | ps1/sh 共用的唯一来源，改一处即可 |
-| `build-libapp.sh` | 构建机内部的 NativeAOT 发布 | 由 remote-build 调用，不必手动跑；musl.cc gcc（arm64）+ zig cc（x64）wrapper 幂等生成 |
-| `resolve-remote.ps1` | 定位 SSH 构建机并回写 `~/.ssh/config` | 仅 SSH 远程模式需要 |
-| `smoke-aot.sh` | NativeAOT + zig cc 工具链冒烟探针 | 工具链问题排查用 |
 | `gen-module-sample.ts` | @ohos.* 模块绑定样例生成 | napi 路线（ROADMAP 2.3） |
 
 环境变量（全部可选，脚本内置默认探测链）：
@@ -109,12 +105,9 @@ bash scripts/deploy-hap.sh
 |---|---|---|
 | `OHOS_SDK_BASE` | OpenHarmony SDK 根目录（含 `26.0.0/toolchains`） | → `OHSDK_HOME` → `D:\Harmony\OpenHarmony\Sdk` → DevEco 内置 sdk |
 | `DEVECO_HOME` | DevEco Studio 安装目录 | → `D:\Program Files\Huawei\DevEco Studio` → C 盘同名 |
-| `LOCAL` | `true` 时 remote-build 在本地 WSL 构建 | 否则走 SSH 远程 |
-| `DEMO_APP` | libapp.so 打包哪个 demo 工程（`HelloApp`=控件 demo / `ApiDemo`=API 绑定 demo / `EssentialsApp`=Essentials 验证） | `HelloApp` |
-| `REMOTE` / `BUILD` | SSH 别名 / 构建目录 | `wsl`（或 `REMOTE_SSH_ALIAS`） / `/tmp/arktsbinding` |
 | `HOST_DIR` | 宿主目录覆盖（三脚本通用；targets 生成模式自动指向 `obj/harmony/host`） | `samples/HarmonyHost` |
 
-> 约定：`.gitattributes` 强制 `*.sh` 为 LF（WSL bash 无法执行 CRLF 脚本）、`*.cmd/*.ps1` 为 CRLF；新增脚本请沿用"路径自动探测 + 前置检查失败即停"的风格。
+> 约定：`.gitattributes` 强制 `*.sh` 为 LF、`*.cmd/*.ps1` 为 CRLF；新增脚本请沿用"路径自动探测 + 前置检查失败即停"的风格。
 
 ## NuGet 包与模板
 
@@ -154,10 +147,10 @@ bash scripts/deploy-hap.sh
 
 ## 运行时工具链要点（踩坑记录）
 
-- **musl 交叉**（方案借鉴 [PublishAotCross](https://github.com/MichalStrehovsky/PublishAotCross)，见文末致谢）：arm64 用 musl.cc gcc（`naot-driver` wrapper 过滤 clang 风格 `--target`）；
-  x64 用 zig cc（wrapper 需过滤 `-Wl,--gc-sections`——它会收割 ILC 的 `__modules` section，
-  导致 dlopen 时 `__start___modules` 重定位失败）。
-- **符号分离**：arm64 用工具链 objcopy；x64 用 `zig objcopy` 的 GNU 兼容 wrapper（`objcopy-gnu`）。
+- **Windows 本地 NativeAOT 交叉编译**：由 [PublishAotClang](https://github.com/xljiulang/PublishAotClang) 提供
+  Zig / Clang / objcopy 工具链，`linux-musl-arm64` 与 `linux-musl-x64` 均可在 Windows 直接发布；
+  该包会过滤 `-Wl,--gc-sections` 等与 ILC 不兼容的链接参数，避免 `__modules` 被误收割。
+- **符号分离**：由 `PublishAotClang` 内置的 objcopy 统一处理，不再需要手写 wrapper。
 - **引导参数**：shim 在 dlopen 前 setenv `DOTNET_GCHeapHardLimit`（默认 256G 虚拟预留超限）与 `ICU_DATA`。
 - **调试**：C# 经 `HiLog` 直写 hilog（含托管堆栈）；`hilog -x | grep HarmonyHost`。
 
@@ -184,7 +177,7 @@ samples/dotnet/EssentialsApp/ M2.4 Essentials 验证（16 服务全量：信息�
                              两者的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
                              对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
                              由 src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets 提供
-scripts/                     remote-build / stage-host / build-hap / deploy-hap 一键工具链（+ verify-*-uitest 行为回归）
+scripts/                     stage-host / build-hap / deploy-hap 一键工具链（+ verify-*-uitest 行为回归）
 tests/                       jest（解析器/生成器 79 用例）
 ```
 
@@ -228,11 +221,13 @@ tests/                       jest（解析器/生成器 79 用例）
 ## 致谢 / Acknowledgements
 
 本项目的交叉编译方案与运行时移植实践，建立在以下开源工作的基础上：
+- **[PublishAotClang](https://github.com/xljiulang/PublishAotClang)**（xljiulang）——
+  当前 Windows 本地 NativeAOT 交叉编译使用的 Zig/Clang 工具链包装，本项目已直接引用其 NuGet 包。
 - **[PublishAotCross](https://github.com/MichalStrehovsky/PublishAotCross)**（Michal Strehovsky）——
   用 zig cc 作为 NativeAOT 自定义链接驱动以实现 linux-musl 交叉编译的开创性方案。
-  本项目 x64 目标的链接驱动即此思路的手写实现（针对鸿蒙场景增加了
-  `-Wl,--gc-sections` 过滤等适配），未直接引用其 NuGet 包，特此声明并致谢。
-- **[musl.cc](https://musl.cc/)** —— aarch64-linux-musl 交叉工具链（arm64 构建使用）。
+  `PublishAotClang` 也源自该项目；早期版本中 x64 链接驱动曾是其思路的手写实现。
+- **[musl.cc](https://musl.cc/)** —— 历史上用于 arm64 构建的交叉工具链；当前主链路已切换为
+  `PublishAotClang`，保留致谢与迁移记录。
 - **[OpenHarmony.Avalonia](https://github.com/CeSun/OpenHarmony.Avalonia)**（CeSun）——
   .NET 运行时鸿蒙移植的先行实践，本项目采用的 GC 堆上限与 ICU 引导参数配方源自其公开的移植记录。
 - **OpenHarmony / HarmonyOS** —— ArkUI NDK（ArkUI_NativeNodeAPI_1）与 Node-API 的官方能力支撑。

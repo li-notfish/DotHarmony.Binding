@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="PublishAotClang" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- 手势映射等 internal 纯逻辑对 C# 测试工程可见 -->
     <InternalsVisibleTo Include="HarmonyGestureTests" />
   </ItemGroup>
@@ -37,7 +41,7 @@
   <ItemGroup>
     <None Include="build\HarmonyOS.Maui.App.targets" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.targets" />
     <None Pack="true" PackagePath="harmonyos\scripts\"
-          Include="..\..\scripts\stage-host.ps1;..\..\scripts\remote-build.ps1;..\..\scripts\remote-build.sh;..\..\scripts\build-libapp.sh;..\..\scripts\build-hap.cmd;..\..\scripts\deploy-hap.ps1;..\..\scripts\deploy-hap.sh;..\..\scripts\build-files.txt" />
+          Include="..\..\scripts\stage-host.ps1;..\..\scripts\build-hap.cmd;..\..\scripts\deploy-hap.ps1;..\..\scripts\deploy-hap.sh" />
     <None Pack="true" PackagePath="harmonyos\HarmonyHost\"
           Include="..\..\samples\HarmonyHost\**\*"
           Exclude="..\..\samples\HarmonyHost\.hvigor\**;..\..\samples\HarmonyHost\entry\.cxx\**;..\..\samples\HarmonyHost\entry\build\**;..\..\samples\HarmonyHost\entry\libs\**;..\..\samples\HarmonyHost\**\oh_modules\**;..\..\samples\HarmonyHost\**\node_modules\**;..\..\samples\HarmonyHost\local.properties" />

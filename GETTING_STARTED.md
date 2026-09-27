@@ -23,17 +23,14 @@
 | 工具 | 用途 | 说明 |
 |---|---|---|
 | .NET 10 SDK（Windows） | 本机编译检查（C#/XAML 编译期验证） | `dotnet --version` ≥ 10 |
-| WSL2（Ubuntu） | NativeAOT 交叉编译 libapp.so | 构建脚本走 WSL 原生文件系统 |
-| .NET 10 SDK（WSL 内 `$HOME/.dotnet`） | ILC 编译 | |
-| aarch64 musl 交叉工具链 | arm64 libapp.so | musl.cc gcc 解压到 `$HOME/aarch64-linux-musl-cross` |
-| zig（`$HOME/zig`） | x64 libapp.so（zig cc / zig objcopy） | 模拟器是 x86_64，必需 |
+| PublishAotClang | Windows 本地 NativeAOT 交叉编译 libapp.so | 由 `Directory.Build.props` 自动引用；内置 Zig / clang / objcopy |
 | DevEco Studio | hvigor 打 HAP、hdc 部署、模拟器 | 记住安装路径，脚本自动探测常见位置 |
 
 以上工具链就绪后，仓库根目录：
 
 ```powershell
 # 一键验证链路（HelloApp 示例：libapp.so 双架构 → HAP → 部署到模拟器）
-pwsh scripts/remote-build.ps1      # LOCAL=true 走本地 WSL；否则按 REMOTE/BUILD 变量走远程
+dotnet publish samples/dotnet/HelloApp -c Release -r linux-musl-arm64dotnet publish samples/dotnet/HelloApp -c Release -r linux-musl-x64
 scripts\build-hap.cmd              # hvigor 打包
 bash scripts/deploy-hap.sh         # hdc 安装 + 启动（多设备：HDC_TARGET=127.0.0.1:5555）
 ```
@@ -208,7 +205,7 @@ private void OnPushClicked(object? sender, EventArgs e)
 # Windows 本机先做编译期检查（秒级，不用等 AOT）
 dotnet build samples/dotnet/MyApp
 
-# 一键全链路（WSL AOT 双架构 → hvigor HAP → hdc 部署启动）
+# 一键全链路（PublishAotClang AOT 双架构 → hvigor HAP → hdc 部署启动）
 dotnet build samples/dotnet/MyApp -t:HarmonyRun
 ```
 
@@ -275,7 +272,7 @@ public static void Register()
 
 | 步骤 | 脚本 | 做什么 | 关键环境变量 |
 |---|---|---|---|
-| 1. AOT 编译 | `scripts/remote-build.ps1` | 打包源码 → WSL 原生 FS → ILC 双架构（arm64 musl.cc / x64 zig）→ 取回 libapp.so 放入 `samples/HarmonyHost/entry/libs/<abi>/` | `LOCAL=true` 本地 WSL；`REMOTE`/`BUILD` 远程；`DEMO_APP` 应用名 |
+| 1. AOT 编译 | PublishAotClang / MSBuild | Windows 本地直接 `dotnet publish -r linux-musl-arm64` / `-r linux-musl-x64` | — |
 | 2. 打 HAP | `scripts/build-hap.cmd` | hvigor assembleHap（DevEco 路径自动探测） | — |
 | 3. 部署 | `scripts/deploy-hap.sh` | hdc 安装 → 启动 → 跟踪 HarmonyHost 日志 | `HDC_TARGET` 设备选择 |
 
@@ -302,7 +299,7 @@ re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——�
 |---|---|
 | 部署后白屏/闪退 | `hdc shell hilog \| grep HarmonyHost`；`.NET UI built successfully` 是否出现 |
 | 导航静默失败、后续导航全挂 | FireAndForget 吞了异常——确认已按 §2 改造 `FireAndForgetNavigation` 打 hilog（HelloApp 版可照抄） |
-| Windows 编译过、WSL 编译不过 | 根目录新增共享文件（如 `Directory.Build.props`）要加进 `scripts/build-files.txt` 打包清单 |
+| Windows 本地 AOT 失败 | 检查 `PublishAotClang` 包是否还原成功，以及 .NET 10 SDK 是否可用 |
 | hdc 命令路径被 Git Bash 吃掉 | 前缀 `MSYS_NO_PATHCONV=1` |
 | 更多坑 | [HANDLERS.md §7 速查表](HANDLERS.md) |
 

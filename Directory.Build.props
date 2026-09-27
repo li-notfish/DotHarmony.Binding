@@ -23,4 +23,8 @@
     <PackageTags>$(PackageTags);harmonyos;dotnet</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <PackageReference Include="PublishAotClang" />
+  </ItemGroup>
+
 </Project>

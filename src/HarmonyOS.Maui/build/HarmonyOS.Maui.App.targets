@@ -30,12 +30,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <!-- libapp.so 打包的 demo 工程名 = 应用工程名（对齐 remote-build 的 DEMO_APP 约定） -->
     <HarmonyDemoApp>$(HarmonyDemoApp)</HarmonyDemoApp>
     <HarmonyDemoApp Condition="'$(HarmonyDemoApp)' == ''">$(MSBuildProjectName)</HarmonyDemoApp>
     <HarmonyPowerShell Condition="'$(HarmonyPowerShell)' == ''">pwsh</HarmonyPowerShell>
 
-    <!-- 布局判别：包内形态的标志是 buildTransitive 旁存在 harmonyos/scripts/stage-host.ps1 -->
     <_HarmonyIsPackage Condition="Exists('$(MSBuildThisFileDirectory)..\harmonyos\scripts\stage-host.ps1')">true</_HarmonyIsPackage>
     <_HarmonyScripts Condition="'$(_HarmonyIsPackage)' == 'true'">$(MSBuildThisFileDirectory)..\harmonyos\scripts\</_HarmonyScripts>
     <_HarmonyScripts Condition="'$(_HarmonyIsPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\..\scripts\</_HarmonyScripts>
@@ -46,69 +44,65 @@
     <HarmonyHostDir Condition="'$(HarmonyHostDir)' == ''">$(MSBuildProjectDirectory)\obj\harmony\host</HarmonyHostDir>
     <HarmonyBundleId Condition="'$(HarmonyBundleId)' == ''">com.arktsbinding.$([System.Text.RegularExpressions.Regex]::Replace('$(MSBuildProjectName)', '[^a-zA-Z0-9]', '').ToLower())</HarmonyBundleId>
     <HarmonyAppTitle Condition="'$(HarmonyAppTitle)' == ''">$(MSBuildProjectName)</HarmonyAppTitle>
-    <!-- 实际参与构建的宿主目录（生成模式下为暂存实例） -->
     <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' == 'true'">$(HarmonyHostDir)</_HarmonyEffectiveHostDir>
     <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' != 'true'">$(HarmonyHostRoot)</_HarmonyEffectiveHostDir>
 
-    <!-- 签名参数：任一设置即要求全套（stage-host.ps1 校验并给清晰报错） -->
-    <_HarmonySigningKeystoreArg Condition="'$(HarmonySigningKeystore)' != ''">-SigningKeystore &quot;$(HarmonySigningKeystore)&quot;</_HarmonySigningKeystoreArg>
-    <_HarmonySigningKsPwdArg Condition="'$(HarmonySigningKeystorePassword)' != ''">-SigningKeystorePassword &quot;$(HarmonySigningKeystorePassword)&quot;</_HarmonySigningKsPwdArg>
-    <_HarmonySigningAliasArg Condition="'$(HarmonySigningCertAlias)' != ''">-SigningCertAlias &quot;$(HarmonySigningCertAlias)&quot;</_HarmonySigningAliasArg>
-    <_HarmonySigningCertPwdArg Condition="'$(HarmonySigningCertPassword)' != ''">-SigningCertPassword &quot;$(HarmonySigningCertPassword)&quot;</_HarmonySigningCertPwdArg>
-    <_HarmonySigningCertPathArg Condition="'$(HarmonySigningCertPath)' != ''">-SigningCertPath &quot;$(HarmonySigningCertPath)&quot;</_HarmonySigningCertPathArg>
-    <_HarmonySigningProfileArg Condition="'$(HarmonySigningProfile)' != ''">-SigningProfile &quot;$(HarmonySigningProfile)&quot;</_HarmonySigningProfileArg>
+    <_HarmonySigningKeystoreArg Condition="'$(HarmonySigningKeystore)' != ''">-SigningKeystore "$(HarmonySigningKeystore)"</_HarmonySigningKeystoreArg>
+    <_HarmonySigningKsPwdArg Condition="'$(HarmonySigningKeystorePassword)' != ''">-SigningKeystorePassword "$(HarmonySigningKeystorePassword)"</_HarmonySigningKsPwdArg>
+    <_HarmonySigningAliasArg Condition="'$(HarmonySigningCertAlias)' != ''">-SigningCertAlias "$(HarmonySigningCertAlias)"</_HarmonySigningAliasArg>
+    <_HarmonySigningCertPwdArg Condition="'$(HarmonySigningCertPassword)' != ''">-SigningCertPassword "$(HarmonySigningCertPassword)"</_HarmonySigningCertPwdArg>
+    <_HarmonySigningCertPathArg Condition="'$(HarmonySigningCertPath)' != ''">-SigningCertPath "$(HarmonySigningCertPath)"</_HarmonySigningCertPathArg>
+    <_HarmonySigningProfileArg Condition="'$(HarmonySigningProfile)' != ''">-SigningProfile "$(HarmonySigningProfile)"</_HarmonySigningProfileArg>
   </PropertyGroup>
 
-  <!-- NativeAOT full-trim 下保留反射元数据：经典 XAML `{Binding}`（无 x:DataType）走运行时
-       反射取属性，full 裁剪会把仅存于反射路径的 public 属性/类型裁掉，导致绑定静默为 null。
-       HarmonyPreserveXamlBindings 默认 true（正确性优先）；全量 x:DataType compiled binding
-       的工程可显式置 false 收回保活面。
-       保活范围 = 应用程序集 + HarmonyBindingRootAssembly 显式条目 + 直接 ProjectReference
-       （贡献 XAML 的控件库跟随应用引用自动保活；NuGet 引用的控件库请用
-       HarmonyBindingRootAssembly 显式列入）。 -->
   <PropertyGroup>
     <HarmonyPreserveXamlBindings Condition="'$(HarmonyPreserveXamlBindings)' == ''">true</HarmonyPreserveXamlBindings>
   </PropertyGroup>
   <ItemGroup Condition="'$(HarmonyPreserveXamlBindings)' == 'true'">
-    <!-- 取舍说明：整集 trim root 会全量保活公共图，代价是体积膨胀、失去对应用集自身的裁剪
-         收益。中期可改用 TrimmerRootDescriptor（rd.xml）精确指到含经典 {Binding} 的类型，
-         收窄保活面。当前方案作为正确性兜底。 -->
     <HarmonyBindingRootAssembly Condition="'$(AssemblyName)' != ''" Include="$(AssemblyName)" />
     <HarmonyBindingRootAssembly Include="@(ProjectReference->'%(Filename)')" />
     <TrimmerRootAssembly Include="@(HarmonyBindingRootAssembly->Distinct())" />
   </ItemGroup>
 
-  <!-- 0/3：宿主工程生成（模板 → 按应用实例：bundleName/应用名/签名重写，构建产物剔除）。
-       增量判断在 stage-host.ps1 内（内容戳：模板 mtime + bundle/title/签名），故此目标不加 Inputs/Outputs -->
   <Target Name="HarmonyStageHost" Condition="'$(HarmonyGenerateHost)' == 'true'">
     <Message Importance="high" Text="=== staging host for $(HarmonyDemoApp): bundle=$(HarmonyBundleId) -> $(HarmonyHostDir)" />
     <Exec Command="&quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)stage-host.ps1&quot; -Template &quot;$(HarmonyHostRoot)&quot; -Destination &quot;$(HarmonyHostDir)&quot; -BundleId &quot;$(HarmonyBundleId)&quot; -AppTitle &quot;$(HarmonyAppTitle)&quot; $(_HarmonySigningKeystoreArg) $(_HarmonySigningKsPwdArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPwdArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
-  <!-- 1/3：NativeAOT 交叉编译 libapp.so（arm64 + x86_64），LOCAL=true 走本地 WSL -->
+  <!-- 1/3：Windows 本地 NativeAOT 交叉编译 libapp.so（PublishAotClang + Zig） -->
   <Target Name="HarmonyBuildLibApp" DependsOnTargets="HarmonyStageHost">
-    <Exec Command="set LOCAL=true&amp;&amp; set DEMO_APP=$(HarmonyDemoApp)&amp;&amp; set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; set HARMONY_APP_DIR=$(MSBuildProjectDirectory)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)remote-build.ps1&quot;"
+    <PropertyGroup>
+      <_HarmonyLibAppPublishRoot>$(MSBuildProjectDirectory)\obj\harmony\publish</_HarmonyLibAppPublishRoot>
+      <_HarmonyLibAppArm64Dir>$(_HarmonyLibAppPublishRoot)\linux-musl-arm64</_HarmonyLibAppArm64Dir>
+      <_HarmonyLibAppX64Dir>$(_HarmonyLibAppPublishRoot)\linux-musl-x64</_HarmonyLibAppX64Dir>
+    </PropertyGroup>
+
+    <Exec Command="dotnet publish &quot;$(MSBuildProjectDirectory)\$(MSBuildProjectFile)&quot; -c Release -r linux-musl-arm64 -o &quot;$(_HarmonyLibAppArm64Dir)&quot; -p:MSBuildEnableWorkloadResolver=false"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Exec Command="dotnet publish &quot;$(MSBuildProjectDirectory)\$(MSBuildProjectFile)&quot; -c Release -r linux-musl-x64 -o &quot;$(_HarmonyLibAppX64Dir)&quot; -p:MSBuildEnableWorkloadResolver=false"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+
+    <ItemGroup>
+      <_HarmonyArm64Lib Include="$(_HarmonyLibAppArm64Dir)\app.so" />
+      <_HarmonyX64Lib Include="$(_HarmonyLibAppX64Dir)\app.so" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_HarmonyArm64Lib)"
+          DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\libs\arm64-v8a\libapp.so" />
+    <Copy SourceFiles="@(_HarmonyX64Lib)"
+          DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\libs\x86_64\libapp.so" />
   </Target>
 
-  <!-- 2/3：hvigor 打 HAP（DevEco 路径自动探测） -->
   <Target Name="HarmonyBuildHap" DependsOnTargets="HarmonyStageHost">
     <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(_HarmonyScripts)build-hap.cmd&quot;"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
-  <!-- 3/3：hdc 安装 → 启动 → 抓取日志 -->
   <Target Name="HarmonyDeploy" DependsOnTargets="HarmonyStageHost">
     <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)deploy-hap.ps1&quot;"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
-  <!-- 0.5/3：MAUI 资源暂存（HarmonyStageResources）：@(MauiImage)/@(MauiAsset)/@(MauiFont)
-       按逻辑名（文件名）拷入宿主 HAP 的 resources/rawfile/maui/；运行期 FileImageSource
-       的裸相对名经 rawfile 探测路径加载（ImageSourceResolver）。同一逻辑名来自不同源文件
-       = 冲突（rawfile 按名解析无法区分），构建直接报错。HarmonyGenerateHost=false 时不暂存
-       （避免写进用户自备宿主的源树）。 -->
   <PropertyGroup>
     <HarmonyStageResources Condition="'$(HarmonyStageResources)' == ''">true</HarmonyStageResources>
   </PropertyGroup>
@@ -129,9 +123,6 @@
       <_HarmonyResourceCount>@(_HarmonyResourceFile->Count())</_HarmonyResourceCount>
       <_HarmonyResourceDistinctCount>@(_HarmonyResourceFile->'%(HarmonyLogicalName)'->Distinct()->Count())</_HarmonyResourceDistinctCount>
     </PropertyGroup>
-    <!-- 冲突子集精确点名：仅冲突时展开去重名单，批处理对每个逻辑名做出现次数统计。
-         Regex::Matches 在 |…| 护栏上做边界精确匹配（'|' 不是合法文件名），
-         且仅在冲突模式下求值（AND 短路）；正常构建零成本。 -->
     <ItemGroup Condition="'@(_HarmonyResourceFile)' != '' AND '$(_HarmonyResourceCount)' != '$(_HarmonyResourceDistinctCount)'">
       <_HarmonyResourceDistinctNames Include="@(_HarmonyResourceFile->'%(HarmonyLogicalName)'->Distinct())" />
     </ItemGroup>
@@ -151,7 +142,6 @@
              Text="=== staged $(_HarmonyResourceCount) MAUI resource file(s) -> $(_HarmonyRawfileRoot)" />
   </Target>
 
-  <!-- 一键：编译 libapp.so → 打 HAP → 部署运行（dotnet build -t:HarmonyRun） -->
   <Target Name="HarmonyRun" DependsOnTargets="HarmonyBuildLibApp;HarmonyBuildHap;HarmonyDeploy" />
 
 </Project>

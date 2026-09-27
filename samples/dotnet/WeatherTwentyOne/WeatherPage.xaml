@@ -1,0 +1,172 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:m="clr-namespace:WeatherTwentyOne.Models"
+             xmlns:vm="clr-namespace:WeatherTwentyOne.ViewModels"
+             x:Class="WeatherTwentyOne.WeatherPage"
+             x:DataType="vm:WeatherViewModel"
+             BackgroundColor="#F3F6FA">
+
+    <Grid RowDefinitions="Auto,*">
+        <StackLayout Grid.Row="0"
+                     Padding="18,14"
+                     Orientation="Horizontal"
+                     Spacing="10">
+            <Label Text="{Binding Location}"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="#1F2933"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Start" />
+            <Button Text="Refresh"
+                    FontSize="14"
+                    TextColor="#2563EB"
+                    BackgroundColor="#DBEAFE"
+                    BorderColor="#BFDBFE"
+                    BorderWidth="1"
+                    CornerRadius="8"
+                    Padding="12,6"
+                    VerticalOptions="Center"
+                    HorizontalOptions="End"
+                    Clicked="OnRefreshClicked" />
+        </StackLayout>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="18,10" Spacing="16">
+
+                <Border Stroke="#D7DEE8"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 24"
+                        BackgroundColor="#FFFFFF"
+                        Padding="22,18">
+                    <Grid ColumnDefinitions="*,Auto"
+                          RowDefinitions="Auto,Auto,Auto">
+                        <Label Grid.Row="0"
+                               Grid.Column="0"
+                               Text="{Binding CurrentTemperature}"
+                               FontSize="54"
+                               FontAttributes="Bold"
+                               TextColor="#111827" />
+                        <Label Grid.Row="0"
+                               Grid.Column="1"
+                               Text="{Binding CurrentCondition}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#4B5563"
+                               VerticalOptions="Center" />
+                        <Image Grid.Row="1"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="2"
+                               Source="{Binding CurrentIcon}"
+                               WidthRequest="90"
+                               HeightRequest="90"
+                               HorizontalOptions="Start" />
+                    </Grid>
+                </Border>
+
+                <Label Text="Next 24 Hours"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="#1F2933" />
+
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout Spacing="12">
+                        <BindableLayout.ItemsSource>
+                            <Binding Path="Hours" />
+                        </BindableLayout.ItemsSource>
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="m:HourlyForecast">
+                                <Border BackgroundColor="#FFFFFF"
+                                        Stroke="#E2E8F0"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 16"
+                                        Padding="14,10">
+                                    <VerticalStackLayout Spacing="6">
+                                        <Label Text="{Binding Time}"
+                                               FontSize="13"
+                                               FontAttributes="Bold"
+                                               TextColor="#4B5563"
+                                               HorizontalOptions="Center" />
+                                        <Image Source="{Binding Icon}"
+                                               WidthRequest="34"
+                                               HeightRequest="34"
+                                               HorizontalOptions="Center" />
+                                        <Label Text="{Binding Temperature}"
+                                               FontSize="15"
+                                               FontAttributes="Bold"
+                                               TextColor="#111827"
+                                               HorizontalOptions="Center" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </HorizontalStackLayout>
+                </ScrollView>
+
+                <Label Text="7-Day Forecast"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="#1F2933" />
+
+                <CollectionView ItemsSource="{Binding Days}"
+                                BackgroundColor="Transparent">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:DailyForecast">
+                            <Border BackgroundColor="#FFFFFF"
+                                    Stroke="#E2E8F0"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 16"
+                                    Padding="14,12"
+                                    Margin="0,0,0,10">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto"
+                                      RowDefinitions="Auto,Auto">
+                                    <Image Grid.Row="0"
+                                           Grid.RowSpan="2"
+                                           Grid.Column="0"
+                                           Source="{Binding Icon}"
+                                           WidthRequest="34"
+                                           HeightRequest="34"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Row="0"
+                                           Grid.Column="1"
+                                           Text="{Binding DayName}"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           TextColor="#1F2933"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Row="1"
+                                           Grid.Column="1"
+                                           Text="{Binding Condition}"
+                                           FontSize="12"
+                                           TextColor="#6B7280"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Row="0"
+                                           Grid.Column="2"
+                                           Text="{Binding High}"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           TextColor="#111827"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Row="1"
+                                           Grid.Column="2"
+                                           Text="{Binding Low}"
+                                           FontSize="12"
+                                           TextColor="#6B7280"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Row="0"
+                                           Grid.RowSpan="2"
+                                           Grid.Column="3"
+                                           Text="{Binding ChanceOfRain, StringFormat='{0}%'}"
+                                           FontSize="12"
+                                           TextColor="#2563EB"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

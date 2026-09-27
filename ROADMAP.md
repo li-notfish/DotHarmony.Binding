@@ -9,7 +9,7 @@
 - 服务通道：napi（`napi_load_module("=@ohos.xxx")`）→ `@ohos.*` 全量模块端到端
 - MAUI Handler 包：27 个 Handler + 手势识别五件套 + XAML（SourceGen 编译期，NativeAOT 零反射）；
   代码风格与 dotnet/maui 官方 handler 模式一致；漏斗纪律（Handler 层禁直连原生 API）由 `FunnelDisciplineTests` 机械强制
-- 工具链：`HarmonyStageHost`（宿主工程按应用自动生成）→ `remote-build`（NativeAOT 双架构）
+- 工具链：`HarmonyStageHost`（宿主工程按应用自动生成）→ `PublishAotClang`（Windows 本地 NativeAOT 双架构）
   → `build-hap.cmd`（hvigor）→ `deploy-hap`（hdc）；`dotnet build -t:HarmonyRun` 一键直达
 - 质量基线：xunit 83+14 全绿、jest 79/79、`arkui_bindgen check` 零漂移、五面 ArkUI 镜像全部生成式产出
 
@@ -201,7 +201,7 @@ FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage/MainThread。�
 ### 待办
 
 - **CI**：PR 门禁（restore/build、dotnet/jest 单测、`arkui_bindgen check`、本地 feed 消费验证）
-  与 main 全链冒烟（`build-libapp.sh` → HAP → 自签链签名 → 工件上传）；模拟器回归保持手动脚本
+  与 main 全链冒烟（NativeAOT → HAP → 自签链签名 → 工件上传）；模拟器回归保持手动脚本
 - **性能基线**：libapp.so/HAP 体积、冷启动、TSFN 吞吐，落 `scripts/perf/` + `docs/PERF_BASELINE.md`，
   持续记录不告警
 - **远期**：真 `net10.0-harmonyos` workload 化（前置：生成器 per-TFM 输出、KnownFrameworkReference/
