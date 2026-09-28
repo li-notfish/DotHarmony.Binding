@@ -25,7 +25,7 @@
 | `NativeNode/ArkUIGestureApi.cs` + `Nodes/Gestures/` | `ArkUI_NativeGestureAPI_1` | ❌ 重写为 ArkTS 声明式手势 |
 | `NativeNode/ArkUIAnimateApi.cs` | `ArkUI_NativeAnimateAPI_1.animateTo` | ❌ 换 ArkTS animateTo |
 | 宿主 `napi_init.c`（NodeContent 桥） | `OH_ArkUI_GetNodeContentFromWindow` + C 节点填充 | ❌ 改为引擎根组件 |
-| `src/HarmonyOS.Maui/Handlers/*`（27 个 Handler + 布局 + 导航） | 只调包装方法 | ✅ 存活 |
+| `src/HarmonyOS.Maui/Handlers/*`（28 个具体 Handler + 布局 + 导航） | 只调包装方法 | ✅ 存活 |
 | 手势翻译层（`HarmonyGestureManager` 的 Send* 协议回送） | 平台无关 | ✅ 存活（仅事件源更换） |
 | `@ohos.*` 绑定、napi 运行时桥（TSFN/Promise） | Node-API（ArkTS 运行时稳定面） | ✅ 完全无关 |
 

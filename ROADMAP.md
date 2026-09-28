@@ -7,11 +7,11 @@
 
 - UI 通道：ArkUI NDK C API（`ArkUI_NativeNodeAPI_1`）→ `ArkUINodeBase` 稳定句柄
 - 服务通道：napi（`napi_load_module("=@ohos.xxx")`）→ `@ohos.*` 全量模块端到端
-- MAUI Handler 包：27 个 Handler + 手势识别五件套 + XAML（SourceGen 编译期，NativeAOT 零反射）；
+- MAUI Handler 包：28 个具体 Handler（30 个工厂分派形态，含 Shell 第一版）+ 六类手势识别器（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）+ XAML（SourceGen 编译期，NativeAOT 零反射）；
   代码风格与 dotnet/maui 官方 handler 模式一致；漏斗纪律（Handler 层禁直连原生 API）由 `FunnelDisciplineTests` 机械强制
 - 工具链：`HarmonyStageHost`（宿主工程按应用自动生成）→ `PublishAotClang`（Windows 本地 NativeAOT 双架构）
   → `build-hap.cmd`（hvigor）→ `deploy-hap`（hdc）；`dotnet build -t:HarmonyRun` 一键直达
-- 质量基线：xunit 83+14 全绿、jest 79/79、`arkui_bindgen check` 零漂移、五面 ArkUI 镜像全部生成式产出
+- 质量基线：xunit 120+14 全绿、jest 79/79、pytest 11/11、`arkui_bindgen check` 零漂移、五面 ArkUI 镜像全部生成式产出
 
 ---
 
@@ -70,14 +70,16 @@ Span>1 的 Auto 轨道未做专项实测（按需立项）。
   （`Window.Parent = Application`）；模态 `PushModalAsync/PopModalAsync` 经 `RootNavigationAdapter` 承接，
   系统返回键优先关闭模态
 
-**Shell 结论**：Shell 不在支持计划内（flyout/tab/URI 路由协议过重）。多平台 Shell 应用做鸿蒙适配时，
-入口改写为 NavigationPage/TabbedPage 结构；TabbedPage（底部页签）为后续候选。
+**Shell 结论**：第一版已支持（TabBar 条目切换、绝对/相对路由与 `..` 返回、注册路由推送、
+query parameters、section 栈 PushAsync、模态转发、生命周期透传）。未覆盖：Flyout 菜单视觉、
+Shell 主题色（当前静态兜底）；TabbedPage 为后续候选。
 
 ### 1.4 控件 Handler
 
-27 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout、Entry/Editor/Switch/CheckBox/
-RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/Border(BoxView)/RefreshView/Picker/DatePicker/
-TimePicker、CollectionView/CarouselView、Shape/GraphicsView 自绘）。新控件适配指南见
+28 个具体 Handler / 30 个工厂分派形态（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout、
+Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/Border(BoxView)/
+RefreshView/Picker/DatePicker/TimePicker、CollectionView/CarouselView、Shape/GraphicsView 自绘、
+ContentView/ContentPresenter、Shell 第一版）。新控件适配指南见
 [HANDLERS.md](HANDLERS.md)。
 
 **CollectionView 虚拟化**：平台视图为 `ARKUI_NODE_LIST` + NodeAdapter（`ArkUINodeAdapter` 包装类，
@@ -157,28 +159,32 @@ Promise/AsyncCallback 回调桥接（`PromiseTaskBridge` / `CallbackTaskBridge`�
 事件成员参数撞名改名与签名去重、非标识符成员名过滤、跨模块同名别名解析等
 （gap 清单 `native-gaps.json` 为 C API/类型覆盖度的实时底账）。
 
-### 2.4 Essentials 平台实现（16 服务全量）
+### 2.4 Essentials 平台实现（22 服务）
 
 接线原理：MAUI 10 Essentials 静态入口在 netstandard 产物中缺省实现全部 throw，但留有 internal
 `SetCurrent`/`SetDefault` 注入点。`HarmonyEssentials.Install()`（`MauiHarmonyHost.Run` 自动调用）经
 `[DynamicDependency]` 收根 + `CreateDelegate` 缓存完成注入，MAUI 生态代码零改造可用。
 
-16 个服务：DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/
-FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage/MainThread。要点：
+22 个服务：DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/
+FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage + Accelerometer/Magnetometer/
+Gyroscope/Compass/OrientationSensor + Geolocation/MediaPicker。IMainThread 暂缓
+（MAUI 10.0.11 无注入点，宿主代码本就运行在 UI 线程）。要点：
 - IClipboard：API 26 起 `READ_PASTEBOARD` 为 user_grant，被拒返回空 PasteData 壳而非抛错——
   读前主动查权限状态，未授权弹窗后重试；每次读重查授权
 - IPreferences：值用「类型标签:载荷」字符串编码规避 OHOS number 的 2^53 精度丢失
 - 事件类服务经 commonEvent / 模块事件订阅，回调内重读 + 去重缓存
-- IMainThread：JS 线程 == UI 线程 == Install 线程，BeginInvokeOnMainThread 直接内联
+- 线程模型：JS 线程 == UI 线程 == Install 线程；`MainThreadDispatcher`/`HarmonySynchronizationContext`
+  作为内部投递通道直接内联，不依赖 MAUI `MainThread` 静态入口
 
 适配指南见 [ESSENTIALS.md](ESSENTIALS.md)；验证应用为 `samples/dotnet/EssentialsApp`。
 
-**留白（立项待办）**：IShare 文件分享（需跨应用 URI 授权通道）、部分高级传感器项；
+**留白（立项待办）**：IShare 文件分享（需跨应用 URI 授权通道）、TextToSpeech/HapticFeedback/
+Flashlight、Map/FilePicker/Screenshot；传感器族与 Geolocation/MediaPicker 的真机/模拟器专项验证；
 电池/网络/SecureStorage 事件的模拟器触发验证。
 
 ---
 
-## M3 —— 工程化
+## M3 —— 工程化（核心完成，收尾中）
 
 ### 已完成
 
@@ -189,7 +195,7 @@ FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage/MainThread。�
   头文件声明式生成（`config/semantics.yaml` 为唯一语义配置基，生成器不猜）；Animate/Node/Gesture/
   CustomEvent/Adapter 五面镜像已全部切换为 `.g.cs` 产物；`--check` 同时取代原
   `scripts/check-abi-mirror.ps1`（逐字节漂移 + 快照逐签名双门禁）；手写偏差经 `member_overrides`/
-  `per_fn` 勘误表显式声明。验收口径：生成物与手写快照逐签名 diff=0，dotnet 83+14 与 jest 79/79 全绿
+  `per_fn` 勘误表显式声明。验收口径：生成物与手写快照逐签名 diff=0，dotnet 120+14、jest 79/79 与 pytest 11/11 全绿
 - **NuGet 打包与分发**：`HarmonyOS.Interop` / `HarmonyOS.Bindings` / `HarmonyOS.Essentials` /
   `HarmonyOS.Maui` 四包；`HarmonyOS.Templates`（`dotnet new harmony-maui`）。版本集中于根
   `Directory.Build.props` 的 `PackageVersion`；`HarmonyOS.Maui` 经 buildTransitive 自动导入编排

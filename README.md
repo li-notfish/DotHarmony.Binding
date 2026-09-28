@@ -3,8 +3,7 @@
 一个**模仿 .NET MAUI 平台绑定层逻辑**（Mono.Android / Microsoft.iOS 的思路）的鸿蒙试验项目：
 用 .NET (NativeAOT) 绑定 HarmonyOS (ArkUI/ArkTS)，并让 .NET MAUI 控件经 Handler 机制渲染为 ArkUI 原生节点。
 
-**当前状态：M1（MAUI 基本面）与 M2（服务层）已完成并模拟器端到端验证；M3 工程化推进中（NDK 生成器与 NuGet 分发已落地）** —— XAML 声明式 UI → 鸿蒙原生渲染、
-27 个 MAUI 控件 Handler（CollectionView 虚拟化）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）。
+**当前状态：M1（MAUI 基本面）与 M2（服务层）已完成并模拟器端到端验证；M3 工程化核心已落地，CI 与性能基线待办** —— XAML 声明式 UI → 鸿蒙原生渲染、28 个具体 MAUI Handler（30 个工厂分派形态，含 Shell 第一版）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）。
 距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 近期里程碑：**NDK 头文件生成器**（tools/arkui-bindgen，libclang 解析，枚举/结构体/函数表镜像全部由配置驱动生成，
@@ -24,7 +23,7 @@ CI 与性能基线为当前进行项，详见 ROADMAP M3。
 |---|---|
 | Java.Interop（通用 JNI 互操作核心） | `HarmonyOS.Interop`（napi 互操作核心独立装：env/封送/回调/TSFN/hilog） |
 | Mono.Android（Java API 绑定 + Android.Runtime 胶水） | `HarmonyOS.Bindings`（ArkUI C API 节点 + @ohos.* 绑定，生成器产出） |
-| Microsoft.Maui.Essentials | `HarmonyOS.Essentials`（MAUI Essentials 鸿蒙实现独立装，16 服务） |
+| Microsoft.Maui.Essentials | `HarmonyOS.Essentials`（MAUI Essentials 鸿蒙实现独立装，22 服务） |
 | 各平台 Handler（Android/iOS/...） | `HarmonyOS.Maui`（MAUI 控件 → ArkUI 原生节点，不 fork dotnet/maui） |
 | Android/iOS head 工程 | `HarmonyHost`（ArkTS 宿主 + C shim 模板；targets 按应用生成实例） |
 | workload / msbuild 集成 | `scripts/`（PublishAotClang（Windows 本地 NativeAOT）+ hvigor + hdc 一键脚本）
@@ -168,12 +167,12 @@ src/HarmonyOS.Bindings/      绑定库（net10.0, AOT/trim 友好；Api/ 438 个
   ├─ NativeNode/             ArkUI C API 互操作 + ArkUINodeBase + 事件总线
   ├─ Nodes/                  生成的组件包装类 + native-gaps.json
   └─ Hosting/Host.cs         libapp.so 导出入口
-src/HarmonyOS.Essentials/    MAUI Essentials 鸿蒙实现独立装（DeviceInfo/剪贴板/Preferences/传感器/定位/选图等 16 服务）
+src/HarmonyOS.Essentials/    MAUI Essentials 鸿蒙实现独立装（DeviceInfo/剪贴板/Preferences/五类传感器/定位/选图等 22 服务）
 src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/ContentPage → ArkUI 节点）
 samples/HarmonyHost/         鸿蒙宿主模板（ArkTS + C shim + CMake + ohosImports.ets 模块登记；targets 按应用 stage 到 obj/harmony/host）
 samples/dotnet/HelloApp/     M1 控件 demo（XAML + NativeAOT → libapp.so）
 samples/dotnet/ApiDemo/      M2 API 绑定 demo（模块验证/Promise→Task/TSFN；DEMO_APP=ApiDemo 切换）
-samples/dotnet/EssentialsApp/ M2.4 Essentials 验证（16 服务全量：信息栏 + 剪贴板授权回环 + Preferences 持久化 + Battery/Vibration/Connectivity + SecureStorage 回环 + Browser/Share/Email）
+samples/dotnet/EssentialsApp/ M2.4 Essentials 验证（22 服务：信息栏 + 剪贴板授权回环 + Preferences 持久化 + Battery/Vibration/Connectivity + SecureStorage 回环 + Browser/Share/Email + 传感器/定位/选图）
                              两者的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
                              对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
                              由 src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets 提供
@@ -188,7 +187,7 @@ tests/                       jest（解析器/生成器 79 用例）
 - **导航**：根页用 `new NavigationPage(...)` 即可走 MAUI 标准 `Navigation.PushAsync/PopAsync`（HarmonyNavigationPageHandler 转接 IStackNavigation 协议，已实测）；另有轻量 Page 栈与系统返回键（优先级：模态 → NavigationPage 内栈 → 轻量栈）。**模态** `PushModalAsync/PopModalAsync` 标准可用（ArkStack 覆盖 + RootNavigationAdapter 转接）；**生命周期** Appearing/Disappearing 已透传（宿主建最小 Window/Application 逻辑链放行 MAUI 的 SendAppearing 守卫）；页面推入有 250ms 淡入、返回/模态关闭有 250ms 淡出（animateTo，完成后才摘除释放旧页）；NavigationPage 自带标题栏（返回键 + 页 Title，`HasNavigationBar=false` 隐藏）。**Shell 第一版已支持**（HarmonyShellHandler + HarmonyShellNavigation 自持协议）：TabBar 条目切换、绝对/相对路由与 `..` 返回、注册路由推送、query parameters（IQueryAttributable + QueryProperty）、页内 PushAsync 入 section 栈、模态转发根栈、Appearing/Disappearing 透传。未覆盖：Flyout 菜单视觉、Shell 主题色（当前走静态兜底）
 - **异步 API（M2 完成）**：`Promise<T>`→`Task<T>`；仅 callback 形式 API→`Task<T>`（CallbackTaskBridge，err-first）；`.NET event` 事件模型（真实触发已实测）；TSFN 生命周期三路径封装 + finalize 延迟释放防 UAF。**续体在 JS 线程内联恢复**（`NapiEnv` 线程亲和性），长耗时工作需自行 `Task.Run`
 - **零分配调用路径**：`params ReadOnlySpan<object?>`（C# 13）、trampoline/argv 栈分配、生成 record 的 u8 名字常量缓存、`SetNumericAttribute(params ReadOnlySpan<...>)`（C# 14 first-class span conversions，属性写热路径）、HiLog 格式串 u8 缓存 + 运行时开关；剩余分配源：基元装箱（object 转换点）、字符串结果物化、事件适配器闭包
-- **控件覆盖**：27 个 Handler（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/Border(BoxView)/RefreshView/Picker/DatePicker/TimePicker + CollectionView（NodeAdapter 虚拟化）/CarouselView + Shape/GraphicsView 自绘），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
+- **控件覆盖**：28 个具体 Handler / 30 个工厂分派形态（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout + Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/Border(BoxView)/RefreshView/Picker/DatePicker/TimePicker + CollectionView（NodeAdapter 虚拟化）/CarouselView + Shape/GraphicsView 自绘 + Shell 第一版），代码风格已统一为官方 handler 模式；新控件适配指南见 [HANDLERS.md](HANDLERS.md)
 - **控件完成度矩阵**：
 
   | 能力 | 状态 | 说明 |
@@ -215,8 +214,8 @@ tests/                       jest（解析器/生成器 79 用例）
 
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
 - M1（完成）：MAUI 基本面——布局对齐、导航（NavigationPage 转接）、手势识别、CollectionView 虚拟化、 .NET 10 / C# 14 优化批次；剩真机验证
-- M2（完成）：服务层——TSFN 异步层、@ohos.\* 全量生成（438/438）、Promise→Task/事件/ArrayBuffer/Map 封送、Essentials 16 服务全量、端到端模拟器验证
-- M3（进行中）：装配分层、NDK 头文件生成器（`tools/arkui-bindgen`，镜像已全部切换为生成式）、NuGet 打包与 `dotnet new harmony-maui` 模板已完成；CI 与性能基线待办
+- M2（完成）：服务层——TSFN 异步层、@ohos.\* 全量生成（438/438）、Promise→Task/事件/ArrayBuffer/Map 封送、Essentials 22 服务、端到端模拟器验证
+- M3（核心完成，收尾中）：装配分层、NDK 头文件生成器（`tools/arkui-bindgen`，镜像已全部切换为生成式）、NuGet 打包与 `dotnet new harmony-maui` 模板已完成；CI 与性能基线待办
 
 ## 致谢 / Acknowledgements
 

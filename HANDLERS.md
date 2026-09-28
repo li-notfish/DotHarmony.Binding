@@ -44,12 +44,12 @@ src/HarmonyOS.Bindings/Api/*  ──napi（经 HarmonyOS.Interop）──►  li
 
 ### Step 1：确认 ArkUI 节点类是否够用
 
-节点类在 `src/HarmonyOS.Bindings/Nodes/`，目前由 `tools/api-generator/nativeCodeGenerator.ts` 从 SDK `.d.ts` 自动产出（已有 button/checkbox/column/flex/grid/image/list/progress/radio/refresh/row/scroll/slider/span/stack/swiper/text/toggle/xcomponent 共 19 个；text_area/text_input 因无 native node 类型由早期生成器产出）。查两个地方：
+节点类在 `src/HarmonyOS.Bindings/Nodes/`，目前由 `tools/api-generator/nativeCodeGenerator.ts` 从 SDK `.d.ts` 自动产出（已有 button/checkbox/column/date_picker/flex/grid/image/list/progress/radio/refresh/row/scroll/slider/span/stack/swiper/text/text_area/text_input/text_picker/time_picker/toggle/xcomponent 共 24 个）。查两个地方：
 
 - `src/HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.g.cs` 里 `ARKUI_NODE_*` 枚举 —— 确认目标组件类型存在（如 `ARKUI_NODE_SLIDER`）；
 - `Nodes/native-gaps.json` —— 生成器登记的"属性存在但 shape 未注册"缺口。
 
-上述 19 个组件的节点类已由生成器自动产出（含属性、事件、构造参数），**无需手写**。对于不在 SDK `.d.ts` 中的自定义组件或生成器未覆盖的属性，可手写补充节点类：
+上述 24 个组件的节点类已由生成器自动产出（含属性、事件、构造参数），**无需手写**。对于不在 SDK `.d.ts` 中的自定义组件或生成器未覆盖的属性，可手写补充节点类：
 
 ```csharp
 // src/HarmonyOS.Bindings/Nodes/slider.cs —— 手写节点类模板
@@ -261,7 +261,7 @@ MAUI 托管布局的对齐/ZIndex 约定（2026-09-12 落地）：
 
 ## 4. `@ohos.*` API 绑定（生成器产出，M2 完成）
 
-UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**模块绑定全部由生成器产出**（`src/HarmonyOS.Bindings/Api/`，438 个模块 / 375 个转正编译），不要手写——下面的铁律是生成器与运行时已经实现的约束，排查问题时读。
+UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**模块绑定全部由生成器产出**（`src/HarmonyOS.Bindings/Api/`，438 个模块 / 438 个全量转正编译；`GRAYSCALE_MODULES` 当前为空），不要手写——下面的铁律是生成器与运行时已经实现的约束，排查问题时读。
 
 ### 4.1 生成与转正流程
 
@@ -345,7 +345,7 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★☆☆ | `BoxView` | `ARKUI_NODE_STACK` | 纯色矩形（Color/BackgroundColor → 背景色） | ✅ 已完成 |
 | ★☆☆ | `ContentView` / `ContentPresenter` | `ARKUI_NODE_COLUMN` | 模板宿主（PresentedContent 槽）；空 Content 的槽位 HIT_TEST_MODE_NONE 防输入黑洞；Padding 已映射 NODE_PADDING | ✅ 已完成 |
 | ★☆☆ | `Shell` | 根 `ARKUI_NODE_COLUMN` + 内容栈/TabBar | 平台 fragment 机制自建（HarmonyShellNavigation：条目/路由/推送栈/query/模态转发）；Flyout 菜单视觉未覆盖 | ✅ 第一版完成 |
-| ☆ | `Shape`/自绘 | `ARKUI_NODE_CUSTOM` + `NODE_ON_DRAW` | 等价于 iOS `Draw`；需 MAUI Graphics 前端 | ⏳ 待做 |
+| ☆ | `Shape`/自绘 | `ARKUI_NODE_CUSTOM` + `NODE_ON_DRAW` | MAUI Graphics → OH_Drawing 适配；文本/渐变/位图/测量路径仍有部分高级能力待补 | ✅ 已完成（高级能力继续补） |
 | ☆ | GestureRecognizers（Tap/Pan/Pinch/Swipe/Pointer） | NDK `ArkUI_NativeGestureAPI_1` + `NODE_TOUCH_EVENT` | 手势→MAUI Send* 协议回送；Tap/Pointer 走反射桥 | ✅ 已完成（见 §6.1） |
 
 **查询属性枚举值**：SDK 头文件
@@ -369,11 +369,11 @@ MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实�
 | SwipeGestureRecognizer | 同上触摸流 | 累计位移喂 `SendSwipe`，抬起时 `MapSwipeDirection` → `DetectSwipe`（阈值判定在识别器内部） |
 | PinchGestureRecognizer | `ArkPinchGesture(2)` | `GetScale` 为累计系数，直接透传 |
 | PointerGestureRecognizer | 同一触摸流 | Down→Entered+Pressed、Move→Moved、Up→Released；hover/mouse 通道待补 |
-| Drag/Drop 识别器 | 未实现 | longpress + 跨视图状态机，后续立项 |
+| Drag/Drop 识别器 | `NODE_ON_DRAG_*` / `NODE_ON_DROP` + `libudmf.so` | 文本载荷可拖拽；UDMF 指针须持有至 `NODE_ON_DRAG_END` 再销毁 |
 
 **原生 recognizer 生命周期铁律**：不得在事件分发回调内 `dispose()` recognizer——dispose 后原生管线仍派发事件（SIGSEGV UAF，实测）。重建场景 Detach + 入池复用（`HarmonyGestureManager.Rebuild`），dispose 仅在 Handler 断连时统一执行。
 
-单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑、Essentials 密度/方向映射、Preferences 编解码、Battery 枚举映射、Connectivity bearer 映射，共 83 用例（含漏斗纪律源码扫描闸）；另有 `HarmonyEngineTests` 14 用例。
+单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe/Drag&Drop 映射、Grid/ZIndex/ScrollView/Shell 路由、Essentials 映射与 Preferences 编解码等，共 120 用例（含漏斗纪律源码扫描闸）；另有 `HarmonyEngineTests` 14 用例。
 
 ### 6.2 Essentials 注入适配要点
 
