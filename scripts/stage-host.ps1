@@ -18,6 +18,13 @@ param(
 )
 $ErrorActionPreference = "Stop"
 
+if ([string]::IsNullOrEmpty($SigningKeystorePassword)) {
+    $SigningKeystorePassword = $env:HarmonySigningKeystorePassword
+}
+if ([string]::IsNullOrEmpty($SigningCertPassword)) {
+    $SigningCertPassword = $env:HarmonySigningCertPassword
+}
+
 if (-not (Test-Path "$Template/AppScope/app.json5")) {
     throw "宿主模板无效：$Template（缺 AppScope/app.json5）"
 }

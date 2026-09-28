@@ -27,7 +27,7 @@ public class HarmonyFileSystem : IFileSystem
         {
             var rm = await HResourceManager.GetResourceManagerAsync();
             var bytes = await rm.GetRawFileContentBytesAsync(filename);
-            return bytes.Length > 0;
+            return bytes is not null;
         }
         catch (Exception)
         {

@@ -33,6 +33,9 @@ static bool load_dotnet(void)
     // NativeAOT 运行时在首次进入导出函数时才初始化 CLR。
     // GC 硬上限：region 模式默认预留 ~256G 虚拟内存，会触发 mmap 限制；1GiB 物理足够样例。
     setenv("DOTNET_GCHeapHardLimit", "0x40000000", 1);
+    // 云真机 seccomp 会拦截 get_mempolicy；禁用 GC NUMA 探测与亲和化。
+    setenv("DOTNET_GCNumaAware", "0", 1);
+    setenv("DOTNET_GCNoAffinitize", "1", 1);
     // 鸿蒙系统 ICU 数据路径（社区移植配方）
     setenv("ICU_DATA", "/system/usr/ohos_icu", 1);
 

@@ -307,7 +307,7 @@ dotnet build ArkTsBinding.slnx
 | 项 | 规范 | 反例 |
 |---|---|---|
 | `ViewHandler` 泛型 | 核心接口优先（`ISlider`/`IEntry`）；**接口缺属性时回退具体类型**（`Label.HorizontalTextAlignment` 不在 `ILabel` 上） | `ViewHandler<Microsoft.Maui.Controls.Button, ...>`（冗长） |
-| PropertyMapper | `new(ViewMapper)` | `new(ViewHandler.ViewMapper)`（过时写法） |
+| PropertyMapper | `new(ViewHandler.ViewMapper)` | `new(ViewMapper)`（本仓当前未使用该写法） |
 | Mapper key | `[nameof(Button.Text)]` | `[("Text")]`（字符串硬编码） |
 | Mapper value | 命名静态方法 `MapText` | 内联 lambda `(h, v) => ...`（不利于测试和堆栈） |
 | Map 方法签名 | `MapText(HarmonyButtonHandler h, Button v)` | `MapText(IButtonHandler h, IButton v)`（接口不存在的属性访问不到） |

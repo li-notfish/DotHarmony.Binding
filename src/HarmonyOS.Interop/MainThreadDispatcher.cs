@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 namespace HarmonyOS.Interop;
 
 /// <summary>
-/// 任意线程 → JS/UI 线程的通用派发器（HarmonySynchronizationContext 的 TSFN 实质化）。
+/// 任意线程 → JS/UI 线程的通用派发器（取代未启用的 HarmonySynchronizationContext）。
 /// 宿主在 UI 线程初始化时调用 <see cref="AttachUiThread"/> 创建单例 TSFN；
 /// 之后任意线程 <see cref="Post"/> 的 Action 在 JS 线程执行（napi env 可用）。
 /// 全部异常被捕获并写 hilog——不得穿透原生回调帧。

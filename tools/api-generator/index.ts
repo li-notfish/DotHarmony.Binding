@@ -1108,25 +1108,84 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
 /**
  * 从 SDK permissions.d.ts 加载合法权限列表，过滤掉不存在的权限。
  */
-function filterSdkPermissions(perms: string[], sdkBase: string): string[] {
-    const sdkPermissionsPath = path.join(sdkBase, 'ets', 'api', 'permissions.d.ts');
-    if (!fs.existsSync(sdkPermissionsPath)) {
-        console.log(`  permissions.d.ts not found at ${sdkPermissionsPath}, skipping filter`);
-        return perms;
+function filterSdkPermissions(
+    perms: string[],
+    sdkBase: string,
+    permissionLevel: 'normal' | 'system_basic' | 'system_core' = 'normal',
+): string[] {
+    const permissionDefinitionsPath = path.join(
+        sdkBase,
+        'toolchains',
+        'lib',
+        'PermissionDefinitions.json',
+    );
+    if (!fs.existsSync(permissionDefinitionsPath)) {
+        throw new Error(
+            `PermissionDefinitions.json not found at ${permissionDefinitionsPath}; ` +
+            'cannot safely filter permissions by app level.',
+        );
     }
-    const content = fs.readFileSync(sdkPermissionsPath, 'utf-8');
-    const validPerms = new Set<string>();
-    const regex = /'(ohos\.permission\.[^']+)'/g;
-    let match: RegExpExecArray | null;
-    while ((match = regex.exec(content)) !== null) {
-        validPerms.add(match[1]);
-    }
-    const filtered = perms.filter(p => validPerms.has(p));
+
+    const permissionDefinitions = JSON.parse(
+        fs.readFileSync(permissionDefinitionsPath, 'utf-8'),
+    ) as {
+        definePermissions?: Array<{ name?: string; availableLevel?: string }>;
+    };
+    const allowedLevels = new Set<string>(
+        permissionDefinitions.definePermissions
+            ?.filter(p => p.name && p.availableLevel === permissionLevel)
+            .map(p => p.name!) ?? [],
+    );
+
+    const filtered = perms.filter(p => allowedLevels.has(p));
     const removed = perms.length - filtered.length;
     if (removed > 0) {
-        console.log(`  Filtered out ${removed} permissions not in SDK`);
+        console.log(
+            `  Filtered out ${removed} permissions above '${permissionLevel}' app level`,
+        );
     }
     return filtered;
+}
+
+/**
+ * 在 JSON5 文本中查找从 arrayStart 开始的数组闭合位置。
+ * 括号计数会跳过字符串字面量与 //、块注释，避免内容中的 [] 干扰匹配。
+ */
+function findJsonArrayEnd(content: string, arrayStart: number): number {
+    if (arrayStart < 0 || content[arrayStart] !== '[') return -1;
+    let depth = 0;
+    for (let i = arrayStart; i < content.length; i++) {
+        const ch = content[i];
+        if (ch === '/' && i + 1 < content.length) {
+            if (content[i + 1] === '/') {
+                while (i < content.length && content[i] !== '\n') i++;
+            } else if (content[i + 1] === '*') {
+                i += 2;
+                while (i + 1 < content.length && !(content[i] === '*' && content[i + 1] === '/')) i++;
+                i++;
+            }
+            continue;
+        }
+        if (ch === '"' || ch === "'") {
+            const quote = ch;
+            i++;
+            while (i < content.length) {
+                if (content[i] === '\\') {
+                    i += 2;
+                    continue;
+                }
+                if (content[i] === quote) break;
+                i++;
+            }
+            continue;
+        }
+        if (ch === '[') depth++;
+        else if (ch === ']') {
+            depth--;
+            if (depth === 0) return i;
+        }
+    }
+    return -1;
 }
 
 /**
@@ -1171,35 +1230,21 @@ function writeModuleJson5Permissions(perms: string[]): void {
     ].join('\n');
 
     if (content.includes('"requestPermissions"')) {
-        // 替换已有的 requestPermissions 块（用括号计数匹配到正确的闭合 ]）
+        // 替换已有的 requestPermissions 块（跳过字符串/注释后匹配闭合 ]）
         const startIdx = content.indexOf('"requestPermissions"');
         if (startIdx !== -1) {
-            // 找到 [ 的位置
-            let bracketStart = content.indexOf('[', startIdx);
-            if (bracketStart !== -1) {
-                let depth = 0;
-                let bracketEnd = -1;
-                for (let i = bracketStart; i < content.length; i++) {
-                    if (content[i] === '[') depth++;
-                    else if (content[i] === ']') {
-                        depth--;
-                        if (depth === 0) { bracketEnd = i; break; }
-                    }
+            const bracketStart = content.indexOf('[', startIdx);
+            const bracketEnd = findJsonArrayEnd(content, bracketStart);
+            if (bracketEnd !== -1) {
+                let deleteStart = startIdx;
+                while (deleteStart > 0 && content[deleteStart - 1] !== '\n' && content[deleteStart - 1] !== '\r') {
+                    deleteStart--;
                 }
-                if (bracketEnd !== -1) {
-                    // 找到 ] 前面的冒号和空白
-                    let deleteStart = startIdx;
-                    while (deleteStart > 0 && content[deleteStart - 1] !== '\n' && content[deleteStart - 1] !== '\r') {
-                        deleteStart--;
-                    }
-                    // 从 "requestPermissions" 行首到 ] 之后全部替换
-                    let deleteEnd = bracketEnd + 1;
-                    // 跳过 ] 后可能的逗号
-                    while (deleteEnd < content.length && (content[deleteEnd] === ',' || content[deleteEnd] === ' ' || content[deleteEnd] === '\t')) {
-                        deleteEnd++;
-                    }
-                    content = content.substring(0, deleteStart) + permBlock + ',' + content.substring(deleteEnd);
+                let deleteEnd = bracketEnd + 1;
+                while (deleteEnd < content.length && (content[deleteEnd] === ',' || content[deleteEnd] === ' ' || content[deleteEnd] === '\t')) {
+                    deleteEnd++;
                 }
+                content = content.substring(0, deleteStart) + permBlock + ',' + content.substring(deleteEnd);
             }
         }
     } else {
@@ -1232,9 +1277,10 @@ function writePermissionReasonStrings(perms: string[]): void {
         return;
     }
 
+    const content = fs.readFileSync(stringJsonPath, 'utf-8');
     let doc: { string: Array<{ name: string; value: string }> };
     try {
-        doc = JSON.parse(fs.readFileSync(stringJsonPath, 'utf-8'));
+        doc = JSON.parse(content);
     } catch (e: any) {
         console.error(`  string.json parse failed: ${e.message}, skipping permission reasons`);
         return;
@@ -1243,18 +1289,24 @@ function writePermissionReasonStrings(perms: string[]): void {
         doc.string = [];
     }
 
-    // 移除旧 permission_* 条目，保留其它资源
-    doc.string = doc.string.filter(s => !s.name.startsWith('permission_'));
-
-    for (const p of perms) {
-        const short = p.replace(/.*\./, '');
-        doc.string.push({
-            name: `permission_${short}_reason`,
-            value: `Allow the app to use ${p}`,
-        });
+    const stringKeyIdx = content.indexOf('"string"');
+    const arrayStart = stringKeyIdx === -1 ? -1 : content.indexOf('[', stringKeyIdx);
+    const arrayEnd = findJsonArrayEnd(content, arrayStart);
+    if (arrayStart === -1 || arrayEnd === -1) {
+        console.error('  string.json "string" array not found, skipping permission reasons');
+        return;
     }
 
-    fs.writeFileSync(stringJsonPath, JSON.stringify(doc, null, 2) + '\n');
+    const kept = doc.string.filter(s => !s.name.startsWith('permission_'));
+    const entries = [
+        ...kept.map(s => JSON.stringify(s)),
+        ...perms.map(p => JSON.stringify({
+            name: `permission_${p.replace(/.*\./, '')}_reason`,
+            value: `Allow the app to use ${p}`,
+        })),
+    ];
+    const replacement = `[\n${entries.map(e => `    ${e}`).join(',\n')}\n  ]`;
+    fs.writeFileSync(stringJsonPath, content.substring(0, arrayStart) + replacement + content.substring(arrayEnd + 1));
     console.log(`  string.json updated: ${perms.length} permission reasons`);
 }
 

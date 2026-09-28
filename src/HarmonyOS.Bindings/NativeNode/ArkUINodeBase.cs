@@ -715,8 +715,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     ~ArkUINodeBase()
     {
         // 终结器路径无法安全触达原生 UI 线程（ArkUI C API 有主线程亲和
-        // 且无安全的跨线程回收通道），节点必须在 UI 线程显式 Dispose；
-        // 此处不做任何处理，泄漏诊断依赖宿主层日志。
+        // 且无安全的跨线程回收通道），节点必须在 UI 线程显式 Dispose。
+        // 此处不做任何处理，也不提供跨作用域的原生句柄诊断。
     }
 
     private void ThrowIfDisposed()

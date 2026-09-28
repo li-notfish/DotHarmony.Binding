@@ -46,8 +46,14 @@ public sealed unsafe class OHDrawingCanvas
     public void DrawCircle(float cx, float cy, float radius)
     {
         var point = OHDrawingApi.OH_Drawing_PointCreate(cx, cy);
-        OHDrawingApi.OH_Drawing_CanvasDrawCircle(_canvas, point, radius);
-        OHDrawingApi.OH_Drawing_PointDestroy(point);
+        try
+        {
+            OHDrawingApi.OH_Drawing_CanvasDrawCircle(_canvas, point, radius);
+        }
+        finally
+        {
+            OHDrawingApi.OH_Drawing_PointDestroy(point);
+        }
     }
 
     /// <summary>描边矩形</summary>
@@ -77,8 +83,14 @@ public sealed unsafe class OHDrawingCanvas
     public void ClipRect(float x, float y, float width, float height, bool antialias = true)
     {
         var rect = OHDrawingApi.OH_Drawing_RectCreate(x, y, x + width, y + height);
-        OHDrawingApi.OH_Drawing_CanvasClipRect(_canvas, rect, OHDrawingApi.ClipOpIntersect, antialias);
-        OHDrawingApi.OH_Drawing_RectDestroy(rect);
+        try
+        {
+            OHDrawingApi.OH_Drawing_CanvasClipRect(_canvas, rect, OHDrawingApi.ClipOpIntersect, antialias);
+        }
+        finally
+        {
+            OHDrawingApi.OH_Drawing_RectDestroy(rect);
+        }
     }
 
     /// <summary>路径裁剪（INTERSECT 语义）</summary>
@@ -88,16 +100,28 @@ public sealed unsafe class OHDrawingCanvas
     private void DrawRectInternal(float x, float y, float width, float height, bool rounded, float xRad, float yRad)
     {
         var rect = OHDrawingApi.OH_Drawing_RectCreate(x, y, x + width, y + height);
-        if (rounded)
+        try
         {
-            var roundRect = OHDrawingApi.OH_Drawing_RoundRectCreate(rect, xRad, yRad);
-            OHDrawingApi.OH_Drawing_CanvasDrawRoundRect(_canvas, roundRect);
-            OHDrawingApi.OH_Drawing_RoundRectDestroy(roundRect);
+            if (rounded)
+            {
+                var roundRect = OHDrawingApi.OH_Drawing_RoundRectCreate(rect, xRad, yRad);
+                try
+                {
+                    OHDrawingApi.OH_Drawing_CanvasDrawRoundRect(_canvas, roundRect);
+                }
+                finally
+                {
+                    OHDrawingApi.OH_Drawing_RoundRectDestroy(roundRect);
+                }
+            }
+            else
+            {
+                OHDrawingApi.OH_Drawing_CanvasDrawRect(_canvas, rect);
+            }
         }
-        else
+        finally
         {
-            OHDrawingApi.OH_Drawing_CanvasDrawRect(_canvas, rect);
+            OHDrawingApi.OH_Drawing_RectDestroy(rect);
         }
-        OHDrawingApi.OH_Drawing_RectDestroy(rect);
     }
 }

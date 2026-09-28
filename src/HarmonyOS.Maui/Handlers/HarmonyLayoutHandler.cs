@@ -99,8 +99,8 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
     {
         if (args is LayoutHandlerUpdate u)
         {
-            if (h._children.TryGetValue(u.View, out var old) && old.PlatformView is ArkUINode oldNode)
-                h.PlatformView.RemoveChild(oldNode);
+            if (h._children.Remove(u.View, out var old))
+                HarmonyViewHandler<MLAYOUT, ArkUINode>.DisposeContent(old, h.PlatformView);
             h.AttachChild(u.View);
         }
     }
@@ -202,12 +202,14 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
 
     private void DetachChild(IView view)
     {
-        if (_children.Remove(view, out var handler) && handler.PlatformView is ArkUINode node)
-            PlatformView.RemoveChild(node);
+        if (_children.Remove(view, out var handler))
+            DisposeContent(handler, PlatformView);
     }
 
     private void ClearChildren()
     {
+        foreach (var handler in _children.Values)
+            DisposeContent(handler, PlatformView);
         PlatformView.RemoveAllChildren();
         _children.Clear();
     }

@@ -36,9 +36,10 @@ public class BindingComplianceTests
 
     [Fact]
     public void ContentPresenter_PaddingMapped()
-        => Assert.Contains(
-            nameof(ContentPresenter.Padding),
-            HarmonyContentPresenterHandler.Mapper.GetKeys());
+    {
+        var keys = HarmonyContentPresenterHandler.Mapper.GetKeys().ToArray();
+        Assert.Contains(nameof(ContentPresenter.Padding), keys);
+    }
 
     [Fact]
     public void FallbackValue_UsedWhenPathMissing()

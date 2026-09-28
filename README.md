@@ -3,7 +3,7 @@
 一个**模仿 .NET MAUI 平台绑定层逻辑**（Mono.Android / Microsoft.iOS 的思路）的鸿蒙试验项目：
 用 .NET (NativeAOT) 绑定 HarmonyOS (ArkUI/ArkTS)，并让 .NET MAUI 控件经 Handler 机制渲染为 ArkUI 原生节点。
 
-**当前状态：M1（MAUI 基本面）与 M2（服务层）已完成并模拟器端到端验证；M3 工程化核心已落地，CI 与性能基线待办** —— XAML 声明式 UI → 鸿蒙原生渲染、28 个具体 MAUI Handler（30 个工厂分派形态，含 Shell 第一版）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）。
+**当前状态：M1（MAUI 基本面）与 M2（服务层）已完成，模拟器与 arm64 云真机均已端到端验证；M3 工程化核心已落地，CI 与性能基线待办** —— XAML 声明式 UI → 鸿蒙原生渲染、28 个具体 MAUI Handler（30 个工厂分派形态，含 Shell 第一版）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）。
 距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 近期里程碑：**NDK 头文件生成器**（tools/arkui-bindgen，libclang 解析，枚举/结构体/函数表镜像全部由配置驱动生成，
@@ -89,11 +89,16 @@ cmd //c scripts\build-hap.cmd
 bash scripts/deploy-hap.sh
 ```
 
+> 云调试/真机安装注意：`normal` 应用只会声明 `normal` 等级权限；生成器会按 SDK 的
+> `PermissionDefinitions.json` 自动过滤。调试设备请使用 **debug profile**，release profile
+> 只用于发布渠道，直接安装到云调试手机通常会失败。
+
 ## 脚本工具链（scripts/）
 
 | 脚本 | 用途 | 说明 |
 |---|---|---|
 | `stage-host.ps1` | 宿主工程生成：模板 → 按应用实例（重写 bundleName/应用名） | 由 targets 的 HarmonyStageHost 调用（内容戳增量）；`HarmonyGenerateHost=false` 可跳过 |
+| `patch-openharmony-nativeaot.ps1` | 修补 arm64 NativeAOT runtime 的 NUMA 探测调用 | 由 `HarmonyBuildLibApp` 自动执行；避免云真机 seccomp 拦截 `get_mempolicy` |
 | `build-hap.cmd` | hvigor 打 HAP | DevEco Studio 路径自动探测，`DEVECO_HOME` 可覆盖；`HOST_DIR` 指向按应用暂存宿主（targets 自动设置） |
 | `deploy-hap.sh` / `deploy-hap.ps1` | 重装 HAP → 启动 → 抓取 HarmonyHost 日志 | hdc 自动探测；无设备 / 缺 HAP / 安装失败即报错停止；启动前 `aa force-stop` 防 install 竞争 |
 | `gen-module-sample.ts` | @ohos.* 模块绑定样例生成 | napi 路线（ROADMAP 2.3） |
@@ -151,6 +156,11 @@ bash scripts/deploy-hap.sh
   该包会过滤 `-Wl,--gc-sections` 等与 ILC 不兼容的链接参数，避免 `__modules` 被误收割。
 - **符号分离**：由 `PublishAotClang` 内置的 objcopy 统一处理，不再需要手写 wrapper。
 - **引导参数**：shim 在 dlopen 前 setenv `DOTNET_GCHeapHardLimit`（默认 256G 虚拟预留超限）与 `ICU_DATA`。
+- **OpenHarmony 云真机 arm64 兼容补丁**：官方 NativeAOT runtime 的 NUMA 探测会在启动时调用
+  `get_mempolicy`（arm64 syscall 236），部分云真机的 seccomp 策略会拦截该 syscall 并导致进程被杀。
+  `scripts/patch-openharmony-nativeaot.ps1` 会在 `HarmonyBuildLibApp` 中自动对 arm64 `app.so`
+  做等价的编译期规避：把该探测调用短路为 `ENOSYS`。脚本是幂等的，并按指令特征定位而非固定偏移；
+  升级 .NET 后如果 runtime 指令布局变化，脚本会显式失败，需要更新签名。
 - **调试**：C# 经 `HiLog` 直写 hilog（含托管堆栈）；`hilog -x | grep HarmonyHost`。
 
 ## 项目结构
@@ -204,7 +214,8 @@ tests/                       jest（解析器/生成器 79 用例）
   | FontImageSource / DrawingCanvas 高级能力 | 部分支持 | 资源与绘制通道仍未完整对齐 |
   | Shell | 已支持（第一版） | TabBar/路由/模态/query 已接通；Flyout 视觉与主题后续子阶段 |
 - **手势识别**：TapGestureRecognizer/PanGestureRecognizer/PinchGestureRecognizer/SwipeGestureRecognizer/PointerGestureRecognizer 全支持（`HarmonyViewHandler` 基类统一挂载；Tap/Pinch 走 NDK 原生手势，Pan/Swipe/Pointer 走触摸流——pan 原生手势事件数据不可靠，实测沉淀；Tap/Pointer 经 AOT 安全的反射桥触发 internal SendTapped/SendPointer*）；Drag/Drop 识别器（长按起拖 + UDMF 载荷，DRAG_END 销毁）已支持；PanUpdated 单位 vp（等价 iOS points）；未支持：鼠标 ButtonsMask 区分、hover 通道、Pinch 真机多点触控专项
-- **仅模拟器（x86_64）验证**：真机 arm64 待验证（工具链已就绪）
+- **模拟器与云真机验证**：x86_64 模拟器与 arm64 云真机均已通过端到端启动验证；
+  arm64 云真机需要上述 NativeAOT NUMA 探测补丁，当前由工具链自动完成。
 - **手势注入**：Metro Hub 场景此前现象为"注入/触摸滑动点击均无响应"，今已确认为 ContentPresenter 空槽命中测试黑洞所致（非模拟器注入限制），随 ContentPresenter/ContentView 宿主修复一并解决（`verify-zindex-probe.ps1` 的 `uitest uiInput click` 逐步走查在模拟器实测可用）；剩余限制：Pinch 多点触控注入通道，真机验收仍以实际触摸为准
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
 - **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；438/438 模块已全量转正编译，无灰度清单
@@ -229,4 +240,10 @@ tests/                       jest（解析器/生成器 79 用例）
   `PublishAotClang`，保留致谢与迁移记录。
 - **[OpenHarmony.Avalonia](https://github.com/CeSun/OpenHarmony.Avalonia)**（CeSun）——
   .NET 运行时鸿蒙移植的先行实践，本项目采用的 GC 堆上限与 ICU 引导参数配方源自其公开的移植记录。
+- **[OpenHarmony-NET/runtime](https://github.com/OpenHarmony-NET/runtime)** ——
+  其 OpenHarmony 目标移植明确指出了 `NUMASupport` 对 `get_mempolicy` 的依赖，并在
+  [60c85dca](https://github.com/OpenHarmony-NET/runtime/commit/60c85dca771c686d81d5c1802ae8abbbbc522acc)
+  与 [435caa71](https://github.com/OpenHarmony-NET/runtime/commit/435caa71f6ea4ee5e7d13c9611d32730a4d4dcfa)
+  中通过 `TARGET_OPENHARMONY` 在编译期跳过该路径。本项目的后链接二进制补丁采用了同一规避思路，
+  使官方 NativeAOT runtime 产物也能在云真机上启动。
 - **OpenHarmony / HarmonyOS** —— ArkUI NDK（ArkUI_NativeNodeAPI_1）与 Node-API 的官方能力支撑。

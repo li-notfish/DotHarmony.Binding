@@ -89,6 +89,8 @@ public static class HarmonyNavigation
     {
         if (_container is null)
             throw new InvalidOperationException("HarmonyNavigation not initialized (MauiHarmonyHost.Run first)");
+        if (_transitioning)
+            return;
 
         // 根级 INavigation 接线：无父链时 NavigationProxy.Inner 为 null（标准 API 会静默丢弃），
         // 接到适配器后 PushAsync/PushModalAsync 经适配器回到本类。
@@ -182,6 +184,8 @@ public static class HarmonyNavigation
     {
         if (_container is null)
             throw new InvalidOperationException("HarmonyNavigation not initialized (MauiHarmonyHost.Run first)");
+        if (_transitioning)
+            return;
 
         TopPage()?.SendDisappearing();
 

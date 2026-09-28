@@ -16,9 +16,20 @@ internal static class ValueConverter
         if (type.IsEnum)
         {
             var underlying = Enum.GetUnderlyingType(type);
-            return underlying == typeof(uint)
-                ? Enum.ToObject(type, NativeValue.ToUInt(value))
-                : Enum.ToObject(type, NativeValue.ToInt(value));
+            object raw = underlying switch
+            {
+                Type t when t == typeof(byte) => NativeValue.ToByte(value),
+                Type t when t == typeof(sbyte) => (sbyte)NativeValue.ToInt(value),
+                Type t when t == typeof(short) => (short)NativeValue.ToInt(value),
+                Type t when t == typeof(ushort) => (ushort)NativeValue.ToUInt(value),
+                Type t when t == typeof(int) => NativeValue.ToInt(value),
+                Type t when t == typeof(uint) => NativeValue.ToUInt(value),
+                Type t when t == typeof(long) => NativeValue.ToLong(value),
+                Type t when t == typeof(ulong) => NativeValue.ToUInt64(value),
+                _ => throw new NotSupportedException(
+                    $"Unsupported enum underlying type: {underlying.Name}."),
+            };
+            return Enum.ToObject(type, raw);
         }
         if (type == typeof(bool)) return NativeValue.ToBool(value);
         if (type == typeof(double)) return NativeValue.ToDouble(value);

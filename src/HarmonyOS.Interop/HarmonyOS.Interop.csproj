@@ -14,7 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <TrimmerRootAssembly Include="HarmonyOS.Interop" />
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
   </ItemGroup>
 
@@ -26,5 +25,6 @@
     <InternalsVisibleTo Include="HarmonyOS.Essentials" />
     <InternalsVisibleTo Include="HarmonyEngineTests" />
     <InternalsVisibleTo Include="HarmonyGestureTests" />
+    <InternalsVisibleTo Include="app" />
   </ItemGroup>
 </Project>

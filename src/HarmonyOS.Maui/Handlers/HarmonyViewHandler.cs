@@ -272,12 +272,8 @@ internal static class VisualProtocol
 /// </summary>
 internal static class ZIndexOrder
 {
-    /// <summary>
-    /// ZIndex 数值域截断边界。编码 z*count+i 以 float 下发（float 整数精确域 2^24），
-    /// 超界后先截断再做 int 乘加（long 防溢出）——极端灰点（如 int.MaxValue）只损失
-    /// 其夸张幅度，不吃溢出环绕导致的平局/次序反转。
-    /// </summary>
-    private const int MaxZ = 1_000_000;
+    /// <summary>float 整数精确域（2^24）；编码结果必须保持在该范围内。</summary>
+    private const int FloatExactMax = 1 << 24;
 
     // 父容器判定走 IList<IView>（Controls.Layout 直接实现该集合接口；
     // 不能靠 ILayoutController——反射实测 Grid 并未实现它，旧的旧实现因此从未命中）
@@ -312,5 +308,10 @@ internal static class ZIndexOrder
     }
 
     private static float Encode(int z, int count, int index)
-        => Math.Clamp((long)Math.Clamp(z, -MaxZ, MaxZ) * count + index, int.MinValue, int.MaxValue);
+    {
+        // 按兄弟数动态收缩 z 域，保证 z*count+i 始终落在 float 的整数精确域内。
+        int maxZ = Math.Max(1, FloatExactMax / Math.Max(count, 1));
+        long encoded = (long)Math.Clamp(z, -maxZ, maxZ) * count + index;
+        return Math.Clamp(encoded, -FloatExactMax, FloatExactMax);
+    }
 }

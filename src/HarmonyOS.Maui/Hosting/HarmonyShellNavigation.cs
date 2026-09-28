@@ -108,7 +108,7 @@ public static class HarmonyShellNavigation
         foreach (var page in ContentPages.Values)
             h!.ReleasePage(page);
         ContentPages.Clear();
-        Routes.Clear();
+        // Routes are process-lifetime registrations; a Shell reconnect must not discard them.
         _shell = null;
         _handler = null;
         _item = null;
@@ -340,7 +340,10 @@ public static class HarmonyShellNavigation
         }
     }
 
-    private static void ApplyPropertyValue(MPage page, string propertyName, string value)
+    private static void ApplyPropertyValue(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] MPage page,
+        string propertyName,
+        string value)
     {
         var property = page.GetType().GetProperty(propertyName);
         if (property?.SetMethod is null)

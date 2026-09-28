@@ -273,7 +273,7 @@ public static void Register()
 
 | 步骤 | 脚本 | 做什么 | 关键环境变量 |
 |---|---|---|---|
-| 1. AOT 编译 | PublishAotClang / MSBuild | Windows 本地直接 `dotnet publish -r linux-musl-arm64` / `-r linux-musl-x64` | — |
+| 1. AOT 编译 | PublishAotClang / MSBuild | Windows 本地直接 `dotnet publish -r linux-musl-arm64` / `-r linux-musl-x64`；arm64 云真机会自动应用 NativeAOT NUMA 探测补丁 | — |
 | 2. 打 HAP | `scripts/build-hap.cmd` | hvigor assembleHap（DevEco 路径自动探测） | — |
 | 3. 部署 | `scripts/deploy-hap.sh` | hdc 安装 → 启动 → 跟踪 HarmonyHost 日志 | `HDC_TARGET` 设备选择 |
 
@@ -290,7 +290,9 @@ DevEco 安装目录的 node/hvigor/SDK）。想用自备宿主：`-p:HarmonyGene
 re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——宿主模板层面的修改改模板即可，
 暂存实例会在下次构建自动带上。
 
-**真机**：工具链就绪（arm64 libapp.so 始终同步产出），当前未验证项是签名物料与真机性能调参（ROADMAP 1.5）。
+**真机**：arm64 云真机启动链路已验证；`HarmonyBuildLibApp` 会自动应用
+`patch-openharmony-nativeaot.ps1`，规避云真机 seccomp 对 `get_mempolicy` 的拦截。
+剩余待验证项是更广的真机矩阵与性能调参（ROADMAP 1.5）。
 
 ---
 

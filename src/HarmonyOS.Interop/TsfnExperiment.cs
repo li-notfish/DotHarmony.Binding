@@ -12,7 +12,7 @@ using System.Threading;
 namespace HarmonyOS.Interop;
 
 /// <summary>TSFN 跨线程封送最小实验（实验代码，验证通过后收编进正式通道）</summary>
-public static class TsfnExperiment
+internal static class TsfnExperiment
 {
     /// <summary>
     /// 必须在宿主主线程（JS 线程）调用。<paramref name="report"/> 在 JS 线程触发一次。

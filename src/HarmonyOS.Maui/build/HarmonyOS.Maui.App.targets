@@ -22,7 +22,7 @@
       HarmonySigningKeystore          .p12/.keystore 路径
       HarmonySigningKeystorePassword  keystore 口令
       HarmonySigningCertAlias         证书别名
-      HarmonySigningCertPassword      证书口令
+      HarmonySigningCertPassword     证书口令
       HarmonySigningCertPath          .cer 证书路径
       HarmonySigningProfile           .p7b profile 路径
      注意：修改 HarmonyBundleId/HarmonyAppTitle/签名属性后需删 obj/harmony 重新 stage
@@ -48,9 +48,7 @@
     <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' != 'true'">$(HarmonyHostRoot)</_HarmonyEffectiveHostDir>
 
     <_HarmonySigningKeystoreArg Condition="'$(HarmonySigningKeystore)' != ''">-SigningKeystore "$(HarmonySigningKeystore)"</_HarmonySigningKeystoreArg>
-    <_HarmonySigningKsPwdArg Condition="'$(HarmonySigningKeystorePassword)' != ''">-SigningKeystorePassword "$(HarmonySigningKeystorePassword)"</_HarmonySigningKsPwdArg>
     <_HarmonySigningAliasArg Condition="'$(HarmonySigningCertAlias)' != ''">-SigningCertAlias "$(HarmonySigningCertAlias)"</_HarmonySigningAliasArg>
-    <_HarmonySigningCertPwdArg Condition="'$(HarmonySigningCertPassword)' != ''">-SigningCertPassword "$(HarmonySigningCertPassword)"</_HarmonySigningCertPwdArg>
     <_HarmonySigningCertPathArg Condition="'$(HarmonySigningCertPath)' != ''">-SigningCertPath "$(HarmonySigningCertPath)"</_HarmonySigningCertPathArg>
     <_HarmonySigningProfileArg Condition="'$(HarmonySigningProfile)' != ''">-SigningProfile "$(HarmonySigningProfile)"</_HarmonySigningProfileArg>
   </PropertyGroup>
@@ -66,7 +64,8 @@
 
   <Target Name="HarmonyStageHost" Condition="'$(HarmonyGenerateHost)' == 'true'">
     <Message Importance="high" Text="=== staging host for $(HarmonyDemoApp): bundle=$(HarmonyBundleId) -> $(HarmonyHostDir)" />
-    <Exec Command="&quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)stage-host.ps1&quot; -Template &quot;$(HarmonyHostRoot)&quot; -Destination &quot;$(HarmonyHostDir)&quot; -BundleId &quot;$(HarmonyBundleId)&quot; -AppTitle &quot;$(HarmonyAppTitle)&quot; $(_HarmonySigningKeystoreArg) $(_HarmonySigningKsPwdArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPwdArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)"
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)stage-host.ps1" -Template "$(HarmonyHostRoot)" -Destination "$(HarmonyHostDir)" -BundleId "$(HarmonyBundleId)" -AppTitle "$(HarmonyAppTitle)" $(_HarmonySigningKeystoreArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)'
+          EnvironmentVariables="HarmonySigningKeystorePassword=$(HarmonySigningKeystorePassword);HarmonySigningCertPassword=$(HarmonySigningCertPassword)"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
@@ -78,9 +77,13 @@
       <_HarmonyLibAppX64Dir>$(_HarmonyLibAppPublishRoot)\linux-musl-x64</_HarmonyLibAppX64Dir>
     </PropertyGroup>
 
-    <Exec Command="dotnet publish &quot;$(MSBuildProjectDirectory)\$(MSBuildProjectFile)&quot; -c Release -r linux-musl-arm64 -o &quot;$(_HarmonyLibAppArm64Dir)&quot; -p:MSBuildEnableWorkloadResolver=false"
+    <Exec Command='dotnet publish "$(MSBuildProjectDirectory)\$(MSBuildProjectFile)" -c Release -r linux-musl-arm64 -o "$(_HarmonyLibAppArm64Dir)" -p:MSBuildEnableWorkloadResolver=false'
           WorkingDirectory="$(MSBuildProjectDirectory)" />
-    <Exec Command="dotnet publish &quot;$(MSBuildProjectDirectory)\$(MSBuildProjectFile)&quot; -c Release -r linux-musl-x64 -o &quot;$(_HarmonyLibAppX64Dir)&quot; -p:MSBuildEnableWorkloadResolver=false"
+    <Exec Command='dotnet publish "$(MSBuildProjectDirectory)\$(MSBuildProjectFile)" -c Release -r linux-musl-x64 -o "$(_HarmonyLibAppX64Dir)" -p:MSBuildEnableWorkloadResolver=false'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+
+    <!-- OpenHarmony cloud devices block get_mempolicy; short-circuit NativeAOT NUMA probing. -->
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)patch-openharmony-nativeaot.ps1" -Path "$(_HarmonyLibAppArm64Dir)\app.so"'
           WorkingDirectory="$(MSBuildProjectDirectory)" />
 
     <ItemGroup>
@@ -94,12 +97,14 @@
   </Target>
 
   <Target Name="HarmonyBuildHap" DependsOnTargets="HarmonyStageHost">
-    <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(_HarmonyScripts)build-hap.cmd&quot;"
+    <Exec Command='"$(_HarmonyScripts)build-hap.cmd"'
+          EnvironmentVariables="HOST_DIR=$(_HarmonyEffectiveHostDir)"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
   <Target Name="HarmonyDeploy" DependsOnTargets="HarmonyStageHost">
-    <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)deploy-hap.ps1&quot;"
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)deploy-hap.ps1"'
+          EnvironmentVariables="HOST_DIR=$(_HarmonyEffectiveHostDir)"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 

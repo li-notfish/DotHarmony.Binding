@@ -87,9 +87,11 @@ GCHandle + 单一 `[UnmanagedCallersOnly]` 跳板）；条目按可见范围物�
 创建（ItemTemplate 经 CreateContent，AOT 安全），`ON_REMOVE_NODE_FROM_ADAPTER` 处置
 （Handler 断连 + 节点 Dispose）；ItemsSource 变更走 `SetTotalCount + ReloadAllItems` 全量重载。
 
-### 1.5 真机 arm64 验证（待办）
+### 1.5 真机 arm64 验证（云真机启动已通过）
 
-工具链已就绪（arm64 libapp.so 随构建同步产出）。待办内容仅为签名物料与真机性能观测
+工具链已就绪（arm64 libapp.so 随构建同步产出），并已在 arm64 云真机完成端到端启动验证。
+云真机需启用 `patch-openharmony-nativeaot.ps1` 的 NUMA 探测规避，当前该步骤由
+`HarmonyBuildLibApp` 自动执行。剩余待办为更广的真机矩阵与性能观测
 （AOT 启动时间、GC 表现——`DOTNET_GCHeapHardLimit` 可能需按真机内存调参）。
 
 ### 1.6 手势识别 GestureRecognizers

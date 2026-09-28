@@ -149,7 +149,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return NodeApi.CallMethodAsyncCallback<T>(PinnedValue, methodName.ToArray(), convert, args);
+        return NodeApi.CallMethodAsyncCallback<T>(PinnedValue, methodName, convert, args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif
@@ -160,7 +160,7 @@ public abstract class JsObject : IDisposable
     {
 #if HARMONYOS
         ThrowIfDisposed();
-        return NodeApi.CallMethodAsyncCallbackVoid(PinnedValue, methodName.ToArray(), args);
+        return NodeApi.CallMethodAsyncCallbackVoid(PinnedValue, methodName, args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif

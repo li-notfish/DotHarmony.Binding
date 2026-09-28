@@ -201,6 +201,7 @@ internal static class NativeValue
         NapiArg.Tag.Null => IntPtr.Zero,
         NapiArg.Tag.Number => From(arg.Number),
         NapiArg.Tag.Int => From(arg.Integer),
+        NapiArg.Tag.UInt64 => From(unchecked((ulong)arg.Integer)),
         NapiArg.Tag.Bool => From(arg.Integer != 0),
         NapiArg.Tag.Native => (IntPtr)arg.Integer,
         _ => From(arg.RefValue),

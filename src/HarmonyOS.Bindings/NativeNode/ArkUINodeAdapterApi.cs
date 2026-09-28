@@ -67,10 +67,12 @@ internal static unsafe partial class ArkUINativeApi
 /// </summary>
 public sealed unsafe class ArkUINodeAdapter : IDisposable
 {
-    private readonly IntPtr _handle;
+    private IntPtr _handle;
+    private readonly object _disposeLock = new();
     private Action<ArkUI_NodeAdapterEventView>? _receiver;
     private GCHandle _self;
     private bool _registered;
+    private bool _disposed;
 
     public ArkUINodeAdapter() => _handle = ArkUINativeApi.NodeAdapterCreate();
 
@@ -124,14 +126,25 @@ public sealed unsafe class ArkUINodeAdapter : IDisposable
 
     public void Dispose()
     {
-        if (_registered)
+        lock (_disposeLock)
         {
-            ArkUINativeApi.NodeAdapterUnregisterEventReceiver(_handle);
-            _self.Free();
-            _registered = false;
+            if (_disposed)
+                return;
+            _disposed = true;
+
+            if (_registered)
+            {
+                ArkUINativeApi.NodeAdapterUnregisterEventReceiver(_handle);
+                if (_self.IsAllocated)
+                    _self.Free();
+                _registered = false;
+            }
+            if (_handle != IntPtr.Zero)
+            {
+                ArkUINativeApi.NodeAdapterDispose(_handle);
+                _handle = IntPtr.Zero;
+            }
         }
-        if (_handle != IntPtr.Zero)
-            ArkUINativeApi.NodeAdapterDispose(_handle);
     }
 }
 

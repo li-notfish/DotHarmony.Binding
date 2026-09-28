@@ -131,6 +131,14 @@ internal static partial class NativeNodeApi
         byte[] name,
         out napi_value result);
 
+    /// <summary>Span 重载：u8 常量方法名零拷贝传递（LibraryImport 固定钉扎）。</summary>
+    [LibraryImport(NApiLib, EntryPoint = "napi_get_named_property")]
+    internal static unsafe partial napi_status napi_get_named_property(
+        napi_env env,
+        napi_value obj,
+        ReadOnlySpan<byte> name,
+        out napi_value result);
+
     [LibraryImport(NApiLib)]
     internal static partial napi_status napi_set_named_property(
         napi_env env,
@@ -442,10 +450,17 @@ internal static partial class NativeNodeApi
             {
                 // JS 异常通常是 Error 对象：优先读 .message，失败再按字符串读
                 string? message = null;
+                long? errorCode = null;
                 try
                 {
                     var msgVal = NodeApi.GetProperty(jsError, "message"u8);
                     message = NativeValue.ToString(msgVal);
+                }
+                catch (NapiException) { }
+                try
+                {
+                    var codeVal = NodeApi.GetProperty(jsError, "code"u8);
+                    errorCode = (long)NativeValue.ToDouble(codeVal);
                 }
                 catch (NapiException) { }
                 if (string.IsNullOrEmpty(message))
@@ -454,7 +469,9 @@ internal static partial class NativeNodeApi
                     catch (NapiException) { }
                 }
                 if (!string.IsNullOrEmpty(message))
-                    throw new NapiException(status, $"{op}: {message}");
+                    throw new NapiException(status, $"{op}: {message}", errorCode);
+                if (errorCode is not null)
+                    throw new NapiException(status, $"{op}: code {errorCode}", errorCode);
             }
         }
         throw new NapiException(status, op);

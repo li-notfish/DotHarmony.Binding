@@ -143,11 +143,12 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
 
     internal void Remove(IView view)
     {
-        if (_children.Remove(view, out var handler) && handler.PlatformView is ArkUINode node)
+        if (_children.Remove(view, out var handler))
         {
-            node.SetAreaChangeObserver(null);
+            if (handler.PlatformView is ArkUINode node)
+                node.SetAreaChangeObserver(null);
             _lastApplied.Remove(view);
-            PlatformView.RemoveChild(node);
+            DisposeContent(handler, PlatformView);
         }
     }
 
@@ -157,6 +158,7 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
         {
             if (handler.PlatformView is ArkUINode node)
                 node.SetAreaChangeObserver(null);
+            DisposeContent(handler, PlatformView);
         }
         PlatformView.RemoveAllChildren();
         _children.Clear();
@@ -180,7 +182,8 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     private void Arrange()
     {
         if (_containerW <= 0 || _containerH <= 0) return;
-        HiLog.Debug("Grid", $"Arrange: containerW={_containerW} containerH={_containerH}");
+        if (LogLayout)
+            HiLog.Debug("Grid", $"Arrange: containerW={_containerW} containerH={_containerH}");
         if (VirtualView is Grid grid)
             ArrangeGrid(grid, GetDensity());
         else if (VirtualView is MAbsolute absolute)

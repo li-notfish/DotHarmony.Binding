@@ -13,11 +13,10 @@
     <PackageTags>arkui;arkts;bindings</PackageTags>
   </PropertyGroup>
 
-  <!-- 旧 napi 路线的过期产物（Api/、Components/）已删除；
-       @ohos.* 服务层生成器（src/parser/codeGenerator.ts 路线）重出产物时，
-       若产物尚不可编译，需在此重新加入 Compile Remove -->
+  <!-- @ohos.* 服务层生成器位于 tools/api-generator；
+       Api/** 生成产物当前全量参与编译。若后续生成器输出暂不可编译，
+       需在此重新加入 Compile Remove。 -->
   <ItemGroup>
-    <TrimmerRootAssembly Include="HarmonyOS.Bindings" />
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
   </ItemGroup>
 

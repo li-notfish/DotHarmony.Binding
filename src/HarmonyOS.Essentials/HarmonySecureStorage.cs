@@ -22,6 +22,7 @@ public class HarmonySecureStorage : ISecureStorage
     const double AccessibilityFirstUnlocked = 1.0; // DEVICE_FIRST_UNLOCKED
     const double ConflictOverwrite = 0.0;          // OVERWRITE
     const double ReturnAll = 0.0;                  // ALL
+    private const long AssetNotFound = 24000003;
 
     public Task SetAsync(string key, string value)
     {
@@ -38,7 +39,8 @@ public class HarmonySecureStorage : ISecureStorage
         {
             results = HAsset.QuerySync(QueryMap((TagAlias, Alias(key)), (TagReturnType, Num(ReturnAll))));
         }
-        catch (Exception ex) when (ex.Message.Contains("not found"))
+        catch (NapiException ex) when (ex.ErrorCode == AssetNotFound
+            || ex.Message.Contains("24000003", System.StringComparison.Ordinal))
         {
             return Task.FromResult<string?>(null);
         }

@@ -1,6 +1,8 @@
 using HarmonyOS.Interop;
 using Microsoft.Maui;
+using System.Collections.Concurrent;
 using System.Text;
+using System.Threading;
 using HResourceManager = HarmonyOS.Bindings.Api.ResourceManager;
 
 namespace HarmonyOS.Maui.Handlers;
@@ -42,14 +44,16 @@ internal static class ImageSourceResolver
     /// rawfile 无稳定 file 路径可探测）。命中后落盘缓存并以 file:// URI 提供；
     /// 结果缓存（同名资源只读一次）。须在 UI/napi 线程调用。
     /// </summary>
-    public static async Task<string?> ResolveRawfileAsync(string logicalName)
+    public static Task<string?> ResolveRawfileAsync(string logicalName)
     {
-        lock (_gate)
-        {
-            if (_rawfileCache.TryGetValue(logicalName, out var cached))
-                return cached;
-        }
+        var lazy = _rawfileCache.GetOrAdd(logicalName, _ =>
+            new Lazy<Task<string?>>(() => ResolveRawfileCoreAsync(logicalName),
+                LazyThreadSafetyMode.ExecutionAndPublication));
+        return lazy.Value;
+    }
 
+    private static async Task<string?> ResolveRawfileCoreAsync(string logicalName)
+    {
         var bytes = GetRawfileBytesSync($"maui/{logicalName}");
         if (bytes is null || bytes.Length == 0)
             return null;
@@ -62,8 +66,6 @@ internal static class ImageSourceResolver
         var path = Path.Combine(dir, $"rawfile_{safe}");
         await File.WriteAllBytesAsync(path, bytes).ConfigureAwait(false);
         var uri = $"file://{path}";
-        lock (_gate)
-            _rawfileCache[logicalName] = uri;
         HiLog.Info("Image", $"rawfile resolved: {logicalName} -> {path}");
         return uri;
     }
@@ -85,7 +87,8 @@ internal static class ImageSourceResolver
         }
     }
 
-    private static readonly Dictionary<string, string> _rawfileCache = new(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<string, Lazy<Task<string?>>> _rawfileCache =
+        new(StringComparer.Ordinal);
     private static global::HarmonyOS.Bindings.Api.ResourceManagerObject? _contextResourceManager;
     // _rawfileCache / _contextResourceManager 的并发保护：影子加载走后台 Task，
     // 同名资源多发起请求应当在 _gate 内协作（getRawFileContent 路径本机实测单线程，
