@@ -35,12 +35,17 @@ hdc_t() {
 }
 
 # ---- 定位 HAP ----
-# HAP 路径：HOST_DIR 覆盖（targets 生成的按应用暂存宿主），默认共享模板
-HAP="${HOST_DIR:-${PROJECT_ROOT}/samples/HarmonyHost}/entry/build/default/outputs/default/${MODULE}-default-unsigned.hap"
+# HAP 路径：HOST_DIR 覆盖（targets 生成的按应用暂存宿主），默认共享模板；优先安装签名产物
+OUTPUT_DIR="${HOST_DIR:-${PROJECT_ROOT}/samples/HarmonyHost}/entry/build/default/outputs/default"
+HAP="${OUTPUT_DIR}/${MODULE}-default-signed.hap"
+if [ ! -f "$HAP" ]; then
+    HAP="${OUTPUT_DIR}/${MODULE}-default-unsigned.hap"
+fi
 if [ ! -f "$HAP" ]; then
     echo "错误: 找不到 HAP：$HAP（请先运行 scripts/build-hap.cmd）" >&2
     exit 1
 fi
+echo "HAP: $HAP"
 # hdc.exe 不认 MSYS 正斜杠绝对路径（会拼到自身 CWD 前面），Git Bash 下转成反斜杠 Windows 路径
 if command -v cygpath >/dev/null 2>&1; then HAP_WIN=$(cygpath -w "$HAP"); else HAP_WIN="$HAP"; fi
 

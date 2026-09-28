@@ -100,6 +100,8 @@ bash scripts/deploy-hap.sh
 | `stage-host.ps1` | 宿主工程生成：模板 → 按应用实例（重写 bundleName/应用名） | 由 targets 的 HarmonyStageHost 调用（内容戳增量）；`HarmonyGenerateHost=false` 可跳过 |
 | `patch-openharmony-nativeaot.ps1` | 修补 arm64 NativeAOT runtime 的 NUMA 探测调用 | 由 `HarmonyBuildLibApp` 自动执行；避免云真机 seccomp 拦截 `get_mempolicy` |
 | `build-hap.cmd` | hvigor 打 HAP | DevEco Studio 路径自动探测，`DEVECO_HOME` 可覆盖；`HOST_DIR` 指向按应用暂存宿主（targets 自动设置） |
+| `build-hap.cmd <样例名>` | hvigor 打指定样例的 HAP | 支持 `WeatherTwentyOne`、样例目录或 staged host 目录；省略参数时仍默认 `samples/HarmonyHost` |
+| `sign-hap.ps1` | 用 OpenHarmony `hap-sign-tool.jar` 签名 unsigned HAP | 由 `HarmonyBuildHap` 在提供签名属性时自动调用；绕开 hvigor 对明文口令的 32 字符校验 |
 | `deploy-hap.sh` / `deploy-hap.ps1` | 重装 HAP → 启动 → 抓取 HarmonyHost 日志 | hdc 自动探测；无设备 / 缺 HAP / 安装失败即报错停止；启动前 `aa force-stop` 防 install 竞争 |
 | `gen-module-sample.ts` | @ohos.* 模块绑定样例生成 | napi 路线（ROADMAP 2.3） |
 
@@ -128,7 +130,8 @@ bash scripts/deploy-hap.sh
 消费方体验对齐 maui-android 单项目：`<PackageReference Include="HarmonyOS.Maui" Version="..." />` 后
 `dotnet build -t:HarmonyStageHost / -t:HarmonyRun` 即可（targets 由包内 `buildTransitive/HarmonyOS.Maui.targets` 自动导入）。
 签名属性簇（release 用）：`HarmonySigningKeystore/KeystorePassword/CertAlias/CertPassword/CertPath/Profile`，
-缺项时 stage 会给出清晰报错；全不配置则产出未签名 debug HAP。
+缺项时 stage 会给出清晰报错。提供完整签名属性时，构建先生成 unsigned HAP，再由
+`sign-hap.ps1` 输出 `entry-default-signed.hap`；全不配置则只产出 unsigned HAP。
 
 ## 类型映射（Native 模式）
 

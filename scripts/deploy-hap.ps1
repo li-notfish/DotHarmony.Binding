@@ -47,12 +47,17 @@ if ($HDC_TARGET) {
     function Invoke-Hdc { & $HDC @args }
 }
 
-# ---- 定位 HAP ----
-$HAP = Join-Path $hostDir "entry\build\default\outputs\default\$MODULE-default-unsigned.hap"
+# ---- 定位 HAP：优先安装签名产物 ----
+$outputDir = Join-Path $hostDir "entry\build\default\outputs\default"
+$HAP = Join-Path $outputDir "$MODULE-default-signed.hap"
+if (-not (Test-Path $HAP)) {
+    $HAP = Join-Path $outputDir "$MODULE-default-unsigned.hap"
+}
 if (-not (Test-Path $HAP)) {
     Write-Error "找不到 HAP：$HAP（请先运行 scripts\build-hap.cmd）"
     exit 1
 }
+Write-Host "HAP: $HAP"
 
 Write-Host "=== 1. 检查设备 ==="
 $targets = & $HDC list targets | Where-Object { $_ -match '\S' }

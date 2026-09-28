@@ -4,6 +4,7 @@
 # 用法：pwsh stage-host.ps1 -Template <模板目录> -Destination <暂存目录> -BundleId <xxx.yyy.zzz> -AppTitle <显示名>
 #        [-SigningKeystore <p12路径> -SigningKeystorePassword <口令> -SigningCertAlias <别名>
 #         -SigningCertPassword <口令> -SigningProfile <p7b路径>]
+# 签名参数只参与暂存内容戳；实际签名由 sign-hap.ps1 在 unsigned HAP 生成后执行。
 param(
     [Parameter(Mandatory = $true)][string]$Template,
     [Parameter(Mandatory = $true)][string]$Destination,
@@ -49,6 +50,8 @@ if ($signingEnabled) {
 }
 
 $buildStamp = Join-Path $Destination ".stage-stamp"
+# 修改 staging 行为时递增该版本，让已有暂存宿主自动重建。
+$stageVersion = "2"
 # 模板最新 mtime：任一模板文件改动（EntryAbility/ohosImports/module.json5 等）都应触发重导出
 $templateLatestMtime = (Get-ChildItem $Template -Recurse -File |
     Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1).LastWriteTimeUtc
@@ -60,7 +63,7 @@ $signingStamp = if ($signingEnabled) {
                 "$SigningKeystore|$SigningKeystorePassword|$SigningCertAlias|$SigningCertPassword|$SigningCertPath|$SigningProfile")))
     "signed:$h"
 } else { "unsigned" }
-$stampContent = "$BundleId|$AppTitle|$signingStamp"
+$stampContent = "$stageVersion|$BundleId|$AppTitle|$signingStamp"
 $upToDate = (Test-Path $buildStamp) -and
     ((Get-Item $buildStamp).LastWriteTimeUtc -ge $templateLatestMtime) -and
     ((Get-Content $buildStamp -Raw).Trim() -eq $stampContent.Trim())
@@ -100,34 +103,12 @@ if (Test-Path $abilityString) {
         ('("name"\s*:\s*"EntryAbility_label"\s*,\s*"value"\s*:\s*")[^"]*(")'), ('$1' + $AppTitle.Replace('$', '$$') + '$2'))) | Out-Null
 }
 
-# 4) 签名配置注入 build-profile.json5（json5 文本替换：占位 signingConfigs: [] → 实配置）
-if ($signingEnabled) {
-    $buildProfile = Join-Path $Destination "build-profile.json5"
-    $ks = ($SigningKeystore -replace '\\', '/')
-    $pf = ($SigningProfile -replace '\\', '/')
-    $cf = ($SigningCertPath -replace '\\', '/')
-    $block = @"
-"signingConfigs": [
-    {
-      "name": "default",
-      "type": "HarmonyOS",
-      "material": {
-        "certpath": "$($cf -replace '"', '\"')",
-        "keyAlias": "$SigningCertAlias",
-        "keyPassword": "$SigningCertPassword",
-        "profile": "$($pf -replace '"', '\"')",
-        "signAlg": "SHA256withECDSA",
-        "storeFile": "$($ks -replace '"', '\"')",
-        "storePassword": "$SigningKeystorePassword"
-      }
-    }
-  ]
-"@
-    if ((Get-Content $buildProfile -Raw) -notmatch '"signingConfigs"\s*:\s*\[\s*\]') {
-        throw "build-profile.json5 的 signingConfigs 不是可注入的空数组形态（模板结构变更？）"
-    }
-    (Set-Content $buildProfile ((Get-Content $buildProfile -Raw) -replace '"signingConfigs"\s*:\s*\[\s*\]', $block)) | Out-Null
-}
+# 4) 清空模板继承的 signingConfigs。签名由 hap-sign-tool 处理，避免 hvigor
+#    对 storePassword/keyPassword 明文字段的 32 字符校验限制。
+$buildProfile = Join-Path $Destination "build-profile.json5"
+$profileText = Get-Content $buildProfile -Raw
+$profileText = $profileText -replace '"signingConfigs"\s*:\s*\[[\s\S]*?\]\s*,\s*"products"', "`"signingConfigs`": [],`r`n    `"products`""
+Set-Content $buildProfile $profileText
 
 Set-Content $buildStamp $stampContent
 Write-Host "=== host staged OK"

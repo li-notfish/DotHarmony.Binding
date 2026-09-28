@@ -100,6 +100,10 @@
     <Exec Command='"$(_HarmonyScripts)build-hap.cmd"'
           EnvironmentVariables="HOST_DIR=$(_HarmonyEffectiveHostDir)"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Exec Condition="'$(HarmonySigningKeystore)' != ''"
+          Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)sign-hap.ps1" -HostDir "$(_HarmonyEffectiveHostDir)" $(_HarmonySigningKeystoreArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)'
+          EnvironmentVariables="HarmonySigningKeystorePassword=$(HarmonySigningKeystorePassword);HarmonySigningCertPassword=$(HarmonySigningCertPassword)"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
   <Target Name="HarmonyDeploy" DependsOnTargets="HarmonyStageHost">

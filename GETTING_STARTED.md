@@ -274,12 +274,21 @@ public static void Register()
 | 步骤 | 脚本 | 做什么 | 关键环境变量 |
 |---|---|---|---|
 | 1. AOT 编译 | PublishAotClang / MSBuild | Windows 本地直接 `dotnet publish -r linux-musl-arm64` / `-r linux-musl-x64`；arm64 云真机会自动应用 NativeAOT NUMA 探测补丁 | — |
-| 2. 打 HAP | `scripts/build-hap.cmd` | hvigor assembleHap（DevEco 路径自动探测） | — |
-| 3. 部署 | `scripts/deploy-hap.sh` | hdc 安装 → 启动 → 跟踪 HarmonyHost 日志 | `HDC_TARGET` 设备选择 |
+| 2. 打 HAP | `scripts/build-hap.cmd` | hvigor assembleHap 生成 unsigned HAP（DevEco 路径自动探测） | — |
+| 2b. 签名 | `scripts/sign-hap.ps1` | 提供完整 `HarmonySigning*` 属性时自动调用 `hap-sign-tool.jar`，输出 `entry-default-signed.hap` | — |
+| 3. 部署 | `scripts/deploy-hap.sh` / `scripts/deploy-hap.ps1` | 优先安装 signed HAP，无签名产物时回退 unsigned；启动并跟踪 HarmonyHost 日志 | `HDC_TARGET` 设备选择 |
 
 其它 targets：`HarmonyStageHost` / `HarmonyBuildLibApp` / `HarmonyBuildHap` / `HarmonyDeploy` 可单独执行。
+如果只想手动打某个样例的 HAP，可以用：
+```powershell
+.\scripts\build-hap.cmd WeatherTwentyOne
+```
+该命令会自动使用 `samples/dotnet/WeatherTwentyOne/obj/harmony/host`。也可以传样例目录或 staged host 目录。
 可用属性：`HarmonyHostRoot`（宿主模板目录）、`HarmonyGenerateHost`（默认 true）、`HarmonyBundleId`、
 `HarmonyAppTitle`、`HarmonyHostDir`、`HarmonyPowerShell`（默认 `pwsh`，需 PowerShell 7+）。
+签名属性：`HarmonySigningKeystore/KeystorePassword/CertAlias/CertPassword/CertPath/Profile`。
+签名不写入 hvigor 的 `build-profile.json5`，因此不受 hvigor 对 `storePassword/keyPassword`
+至少 32 字符的校验限制；signed HAP 位于应用 `obj/harmony/host/entry/build/default/outputs/default/`。
 
 **宿主工程自动生成**：`HarmonyStageHost` 把共享模板（`samples/HarmonyHost`）实例化到应用工程的
 `obj/harmony/host/`，并按应用重写 `bundleName`（默认 `com.arktsbinding.<工程名去符号小写>`）与应用
