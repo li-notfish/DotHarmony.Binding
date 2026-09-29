@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$Path,
-    [switch]$NoBackup
+    [switch]$NoBackup,
+    [switch]$CheckOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -62,6 +63,20 @@ for ($i = 0; $i -lt $replacement.Length; $i++) {
 }
 
 $matches = Find-ByteSignature -Source $bytes -Needle $signature
+
+if ($CheckOnly) {
+    $patchedMatches = Find-ByteSignature -Source $bytes -Needle $patchedSignature
+    if ($patchedMatches.Count -ne 1) {
+        throw "OpenHarmony NativeAOT patch verification failed: expected 1 patched signature, found $($patchedMatches.Count)."
+    }
+    if ($matches.Count -ne 0) {
+        throw "OpenHarmony NativeAOT patch verification failed: found $($matches.Count) unpatched signature(s)."
+    }
+
+    Write-Host "OpenHarmony NativeAOT patch verified: $resolvedPath"
+    exit 0
+}
+
 if ($matches.Count -eq 0) {
     $patchedMatches = Find-ByteSignature -Source $bytes -Needle $patchedSignature
     if ($patchedMatches.Count -eq 1) {
