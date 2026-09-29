@@ -295,6 +295,104 @@ public static void Register()
 显示名——每个应用有独立的包名与 HAP，用户全程不需要在 DevEco 里建工程（hvigor 仅以 CLI 方式借用
 DevEco 安装目录的 node/hvigor/SDK）。想用自备宿主：`-p:HarmonyGenerateHost=false -p:HarmonyHostRoot=<目录>`。
 
+**权限自动推导**：构建时会用 Roslyn source generator 扫描当前应用工程里的 MAUI/Essentials 调用，
+并生成 `obj/harmony/permissions.json`。`HarmonyStageHost` 再根据这份清单重写宿主的
+`entry/src/main/module.json5` 与 `entry/src/main/resources/base/element/string.json`。
+当前覆盖的高置信度映射包括：
+
+- `Geolocation` / `Permissions.LocationWhenInUse` → `ohos.permission.LOCATION`
+- `MediaPicker.Capture*` / `Permissions.Camera` → `ohos.permission.CAMERA`
+- `MediaPicker.Pick*` / `Permissions.Photos` / `Permissions.Media` → `ohos.permission.READ_MEDIA`
+- `Vibration` / `Permissions.Vibrate` → `ohos.permission.VIBRATE`
+- `Accelerometer` / `Gyroscope` → `ohos.permission.ACCELEROMETER` / `ohos.permission.GYROSCOPE`
+- `Permissions.Microphone` / `Permissions.Speech` → `ohos.permission.MICROPHONE`
+- `Permissions.StorageRead` / `Permissions.StorageWrite` → `ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY`
+- `Permissions.Bluetooth` → `ohos.permission.USE_BLUETOOTH`
+- `Permissions.CalendarRead` / `Permissions.CalendarWrite` → `ohos.permission.READ_CALENDAR` / `ohos.permission.WRITE_CALENDAR`
+- `Permissions.ContactsRead` / `Permissions.ContactsWrite` → `ohos.permission.READ_CONTACTS` / `ohos.permission.WRITE_CONTACTS`
+- `Permissions.PostNotifications` → `ohos.permission.PUBLISH_AGENT_REMINDER`
+
+权限默认会生成 `usedScene.when`：
+
+- 前台定位、媒体、传感器、麦克风、存储、蓝牙、日历、联系人：`inuse`
+- 震动、通知类权限：`always`
+
+如果应用工程引用了其他也使用 `HarmonyOS.Maui` 的项目，`HarmonyGeneratePermissions`
+会自动聚合这些 ProjectReference 生成的 `obj/harmony/permissions.json`。
+同名权限会合并，`always` 优先于 `inuse`。
+
+如果需要补充尚未映射的权限，在应用工程里显式声明即可，生成结果会与自动推导合并：
+
+```xml
+<ItemGroup>
+  <HarmonyPermission Include="ohos.permission.MICROPHONE" When="inuse" />
+</ItemGroup>
+```
+
+权限推导现在会同时扫描应用工程自身的 C# 源码和 XAML 事件处理器；引用类库内部调用仍通过
+ProjectReference 聚合，运行时反射不参与推导。`HarmonyPermission` 仍然是权限清单的最终事实源，
+自动推导只做高置信度补充。
+
+如果内置映射不满足需求，可以在应用工程根目录添加 `harmony-permissions.custom.json`：
+
+```json
+{
+  "version": 3,
+  "mauiMethods": [
+    {
+      "containingType": "Microsoft.Maui.ApplicationModel.Communication.IContacts",
+      "methodName": "GetAllAsync",
+      "permission": "ohos.permission.READ_CONTACTS",
+      "when": "inuse"
+    }
+  ]
+}
+```
+
+自定义映射会与内置映射合并；若要覆盖已有映射，需要把对应条目的 `override` 设为 `true`。
+
+构建后可单独查看权限报告：
+
+```powershell
+dotnet build -t:HarmonyPermissionReport
+```
+
+报告位于 `obj/harmony/permissions.report.md`，内容分为：
+
+- 自动推导
+- 显式声明
+- 最终写入 `module.json5` 的合并结果
+
+如果代码里调用了 `Permissions.RequestAsync<T>`，但 `T` 尚未映射到 HarmonyOS 权限，
+source generator 会给出 `HMP001` warning。
+
+权限推导还会输出以下 warning：
+
+- `HMP002`：调用了已知需要权限的 MAUI API，但映射表尚未提供 HarmonyOS 权限；
+  当前覆盖 `Contacts.GetAllAsync`、`Contacts.PickContactAsync`、`Screenshot.CaptureAsync`。
+- `HMP003`：显式声明的 HarmonyOS 权限没有匹配到任何自动推导结果。
+  显式清单来自 `obj/harmony/explicit-permissions.json`，由 MSBuild 的
+  `HarmonyPermission` item 生成。
+- `HMP004`：`Permissions.RequestAsync<T>` 的 `T` 存在多个可用 HarmonyOS 权限候选；
+  当前用于 `StorageRead` / `StorageWrite`，需要开发者显式选择目标权限。
+- `HMP005`：自定义映射与内置映射冲突，且没有显式声明 `override: true`。
+- `HMP006`：`harmony-permissions.custom.json` 不是合法的映射文档。
+
+如需校验 `permissions.json` 与 `module.json5` 是否一致，可运行：
+
+```powershell
+dotnet build -t:HarmonyPermissionCheck
+```
+
+发布包的本地消费验收可运行：
+
+```powershell
+./scripts/verify-package-consumer.ps1
+```
+
+该脚本会打包并从本地 NuGet feed 创建临时消费者工程，验证包还原、编译、
+`HarmonyPermissionCheck`、XAML 事件来源、自定义映射，以及 `LOCATION` / `VIBRATE` 权限推导。
+
 **用到了新的 @ohos.* 模块**？在 `samples/HarmonyHost/entry/src/main/ets/ohosImports.ets` 登记一行
 re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——宿主模板层面的修改改模板即可，
 暂存实例会在下次构建自动带上。
@@ -325,4 +423,5 @@ re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——�
 - **自绘**：Shape + GraphicsView（ArkUI 自绘节点 + OH_Drawing）
 - **服务**：438 个 @ohos.* 模块绑定（Promise→Task、.NET 事件、ArrayBuffer/Map）+ **Essentials 22 服务**
 - **证书/签名**：模拟器免签；真机需自行准备签名物料
-- 路线图：[ROADMAP.md](ROADMAP.md)（M1 与 M2 已完成；M3 工程化核心已落地，CI 与性能基线待办）
+- 路线图：[ROADMAP.md](ROADMAP.md)（M1 与 M2 已完成；M3 工程化核心已落地，
+  最小 CI 门禁、性能基线脚本与 MAUI 权限自动推导已就绪）

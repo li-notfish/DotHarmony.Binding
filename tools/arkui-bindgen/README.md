@@ -21,7 +21,7 @@ python -m pip install -r requirements.txt   # libclang + PyYAML（+pytest 跑单
 python -m arkui_bindgen gen --sdk D:\Harmony\OpenHarmony\Sdk\26.0.0 `
     --out-dir src\HarmonyOS.Bindings\NativeNode
 
-# 漂移检查（CI 门禁）：内存重出并与盘上产物逐字节比对；
+# 漂移检查（本地门禁）：内存重出并与盘上产物逐字节比对；
 # 声明了 snapshot 的 code target 同时做逐签名比对
 python -m arkui_bindgen check
 
@@ -32,6 +32,9 @@ python -m arkui_bindgen diff --target animate
 
 `--sdk` 省略时按 `OHOS_SDK_BASE` → `OHSDK_HOME` → `D:\Harmony\OpenHarmony\Sdk` → DevEco 内置探测
 （与 TS 侧 api-generator 同序）。
+
+> `check` 依赖本机 OpenHarmony SDK 头文件，因此当前 GitHub Actions 最小 CI 不执行该步骤；
+> 本地合入前请先运行一次。
 
 ## 测试
 

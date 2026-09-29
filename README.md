@@ -3,14 +3,17 @@
 一个**模仿 .NET MAUI 平台绑定层逻辑**（Mono.Android / Microsoft.iOS 的思路）的鸿蒙试验项目：
 用 .NET (NativeAOT) 绑定 HarmonyOS (ArkUI/ArkTS)，并让 .NET MAUI 控件经 Handler 机制渲染为 ArkUI 原生节点。
 
-**当前状态：M1（MAUI 基本面）与 M2（服务层）已完成，模拟器与 arm64 云真机均已端到端验证；M3 工程化核心已落地，CI 与性能基线待办** —— XAML 声明式 UI → 鸿蒙原生渲染、28 个具体 MAUI Handler（30 个工厂分派形态，含 Shell 第一版）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）。
+**当前状态：M1（MAUI 基本面）与 M2（服务层）已完成，模拟器与 arm64 云真机均已端到端验证；M3 工程化核心已落地，最小 CI 门禁、性能基线脚本与 MAUI 权限自动推导已就绪** —— XAML 声明式 UI → 鸿蒙原生渲染、28 个具体 MAUI Handler（30 个工厂分派形态，含 Shell 第一版）、手势识别（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）、Shape/GraphicsView 自绘（OH_Drawing）、438 个 @ohos.\* 模块绑定（全量编译，Promise→Task / .NET 事件 / ArrayBuffer/Map 封送全链路实测）。
 距离可用于生产的绑定库还有明确距离，见文末已知限制与 [ROADMAP.md](ROADMAP.md)。
 
 近期里程碑：**NDK 头文件生成器**（tools/arkui-bindgen，libclang 解析，枚举/结构体/函数表镜像全部由配置驱动生成，
 漂移检查 `--check` 供 CI 门禁）与 **NuGet 打包**（四库 + 模板包，buildTransitive 宿主编排，应用工程无需仓库工作副本）已落地；
-CI 与性能基线为当前进行项，详见 ROADMAP M3。
+最小 CI 门禁与性能基线脚本已落地，详见 ROADMAP M3 与 `docs/PERF_BASELINE.md`。
 
 **上手**：从零创建鸿蒙 MAUI 应用 / 给已有 MAUI 应用加鸿蒙平台，见 **[GETTING_STARTED.md](GETTING_STARTED.md)**。
+**权限自动推导**：MAUI 侧调用会自动生成 `module.json5` 的 `requestPermissions` 和 `usedScene`，
+并输出 `obj/harmony/permissions.report.md`；支持 ProjectReference 聚合、XAML 事件来源定位、
+自定义映射与显式 `When` 覆盖，未映射或冲突场景会给出 `HMP001`–`HMP006` warning。
 **平台服务**：适配一个新的 Essentials 服务（注入点取证/五步流程/坑表），见 **[ESSENTIALS.md](ESSENTIALS.md)**。
 **风险预案**：C 原生节点 API 退出假设下的 ArkTS 引擎迁移计划见 **[MIGRATION_ARKTS_ENGINE.md](MIGRATION_ARKTS_ENGINE.md)**。
 
@@ -69,7 +72,7 @@ npm install && npm test
 #    （生成器：tools/arkui-bindgen；首次运行需 python -m pip install -r tools/arkui-bindgen/requirements.txt）
 $env:PYTHONPATH = "tools/arkui-bindgen"
 python -m arkui_bindgen gen --config tools/arkui-bindgen/config/semantics.yaml --out-dir src/HarmonyOS.Bindings/NativeNode
-#    漂移检查（CI 门禁）：python -m arkui_bindgen check （同参数）
+#    漂移检查（本地门禁，需本机 OpenHarmony SDK）：python -m arkui_bindgen check （同参数）
 
 # 3. 从 SDK 组件 .d.ts 生成 NodeHandle 包装类 → src/HarmonyOS.Bindings/Nodes/
 npx ts-node tools/api-generator/index.ts --native
@@ -229,7 +232,7 @@ tests/                       jest（解析器/生成器 79 用例）
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
 - M1（完成）：MAUI 基本面——布局对齐、导航（NavigationPage 转接）、手势识别、CollectionView 虚拟化、 .NET 10 / C# 14 优化批次；剩真机验证
 - M2（完成）：服务层——TSFN 异步层、@ohos.\* 全量生成（438/438）、Promise→Task/事件/ArrayBuffer/Map 封送、Essentials 22 服务、端到端模拟器验证
-- M3（核心完成，收尾中）：装配分层、NDK 头文件生成器（`tools/arkui-bindgen`，镜像已全部切换为生成式）、NuGet 打包与 `dotnet new harmony-maui` 模板已完成；CI 与性能基线待办
+- M3（核心完成，收尾中）：装配分层、NDK 头文件生成器（`tools/arkui-bindgen`，镜像已全部切换为生成式）、NuGet 打包与 `dotnet new harmony-maui` 模板已完成；最小 CI 门禁、性能基线脚本与 MAUI 权限自动推导已就绪
 
 ## 致谢 / Acknowledgements
 

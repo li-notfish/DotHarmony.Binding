@@ -208,10 +208,20 @@ Flashlight、Map/FilePicker/Screenshot；传感器族与 Geolocation/MediaPicker
 
 ### 待办
 
-- **CI**：PR 门禁（restore/build、dotnet/jest 单测、`arkui_bindgen check`、本地 feed 消费验证）
-  与 main 全链冒烟（NativeAOT → HAP → 自签链签名 → 工件上传）；模拟器回归保持手动脚本
-- **性能基线**：libapp.so/HAP 体积、冷启动、TSFN 吞吐，落 `scripts/perf/` + `docs/PERF_BASELINE.md`，
-  持续记录不告警
+- **CI**：最小 PR 门禁已落地（最小 NativeAOT 样例构建、arm64 `app.so` 的
+  `get_mempolicy` 短路补丁校验）；`arkui_bindgen check` 因依赖本机 OpenHarmony SDK
+  保持本地门禁；全量单测与 HAP 全链冒烟暂不阻塞合入
+- **性能基线**：`scripts/perf/collect-baseline.ps1` 与 `docs/PERF_BASELINE.md` 已落地，
+  覆盖 libapp.so/HAP 体积、冷启动、TSFN 吞吐，持续记录不告警
+- **权限自动推导**：Roslyn source generator 扫描应用侧 MAUI/Essentials 调用，自动生成
+  `module.json5` 的 `requestPermissions`；显式 `HarmonyPermission` 仍可补充尚未映射的权限
+  - v1.1 已开始：新增 `HarmonyPermissionReport` 与 `HMP001` 未映射权限诊断
+  - v1.2 已开始：新增 `HarmonyPermissionCheck`，CI 上传 `permissions.report.md`
+  - v2 已完成：映射表外置为 `permission-mapping.json`，扩展常用 Essentials 权限，
+    支持 `usedScene`、显式 `When` 覆盖与 ProjectReference 聚合；`HMP002`–`HMP004`
+    覆盖已知 API 缺映射、显式权限未使用、映射歧义三类诊断，并通过本地 NuGet 包消费者验收
+  - v3 已完成：支持 `harmony-permissions.custom.json` 自定义映射、XAML 事件来源定位、
+    `HMP005`/`HMP006` 冲突与格式诊断；包消费者验收覆盖 XAML + 自定义映射 + ProjectReference
 - **远期**：真 `net10.0-harmonyos` workload 化（前置：生成器 per-TFM 输出、KnownFrameworkReference/
   RuntimePack 注册与 RID 图策略、workload manifest 广告链；需真实多 RID 需求支撑）
 
