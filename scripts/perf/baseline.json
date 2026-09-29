@@ -1,37 +1,41 @@
 {
-  "timestamp": "2026-09-28T13:12:36.1900779Z",
-  "gitCommit": "7629cee832de5bd4841e5d32befa33799aeeb0f3",
+  "timestamp": "2026-09-29T13:54:01.1279241Z",
+  "gitCommit": "c03bd5b45b72953342efeed929fd07785cd04d90",
   "project": "samples/dotnet/PerfApp",
   "configuration": "Release",
   "device": "127.0.0.1:5555",
   "sizes": {
-    "arm64LibAppBytes": 18303736,
-    "x64LibAppBytes": 17755752,
-    "hapBytes": 38713213
+    "arm64LibAppBytes": 18311976,
+    "x64LibAppBytes": 17763448,
+    "hapBytes": 38714656
   },
   "runs": [
     {
       "run": 1,
-      "coldStartMs": 1410,
-      "runtimeInitMs": 29,
-      "tsfnThroughputOpsPerSec": 144413.92
+      "coldStartMs": 763,
+      "runtimeInitMs": 39,
+      "firstFrameMs": 39,
+      "tsfnThroughputOpsPerSec": 65751.36
     },
     {
       "run": 2,
-      "coldStartMs": 1049,
-      "runtimeInitMs": 26,
-      "tsfnThroughputOpsPerSec": 145550.66
+      "coldStartMs": 440,
+      "runtimeInitMs": 16,
+      "firstFrameMs": 17,
+      "tsfnThroughputOpsPerSec": 256387.25
     },
     {
       "run": 3,
-      "coldStartMs": 740,
-      "runtimeInitMs": 24,
-      "tsfnThroughputOpsPerSec": 101743.06
+      "coldStartMs": 586,
+      "runtimeInitMs": 261,
+      "firstFrameMs": 261,
+      "tsfnThroughputOpsPerSec": 143434.36
     }
   ],
   "summary": {
-    "coldStartMsAverage": 1066.33,
-    "runtimeInitMsAverage": 26.33,
-    "tsfnThroughputOpsPerSecAverage": 130569.21
+    "coldStartMsAverage": 596.33,
+    "runtimeInitMsAverage": 105.33,
+    "firstFrameMsAverage": 105.67,
+    "tsfnThroughputOpsPerSecAverage": 155190.99
   }
 }

@@ -32,6 +32,8 @@ public partial class MainPage : ContentPage
 
         _started = true;
         PerfClock.MarkUiReady();
+        // 首帧近似：当前 UI 构建批次排空后的第一个 dispatcher 回调
+        Dispatcher.Dispatch(PerfClock.MarkFirstFrame);
         _ = RunBaselineAsync();
     }
 

@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "ArkTsBinding",
+  "classifications": [ "HarmonyOS", "MAUI", "App" ],
+  "identity": "HarmonyOS.Templates.MauiApp.CSharp",
+  "name": "HarmonyOS MAUI App",
+  "description": "A .NET MAUI-style app for HarmonyOS: NativeAOT shared library plus the staged ArkTS host, driven by the HarmonyOS.Maui package.",
+  "shortName": "harmony-maui",
+  "sourceName": "HarmonyApp1",
+  "defaultName": "HarmonyApp1",
+  "preferNameDirectory": true,
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "symbols": {
+    "packageVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "1.0.0",
+      "replaces": "HarmonyPackageVersion",
+      "description": "Version of the HarmonyOS.Maui package to reference."
+    }
+  }
+}

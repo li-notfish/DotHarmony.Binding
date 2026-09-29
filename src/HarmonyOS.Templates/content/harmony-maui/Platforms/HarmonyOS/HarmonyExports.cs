@@ -1,13 +1,13 @@
-// 平台启动代码（对齐 MAUI Platforms/Android/MainActivity 的摆放惯例）：
-// NativeAOT 共享库导出层 + 模块初始化器。
-// ILC 只导出入口程序集内的 [UnmanagedCallersOnly] 方法，
-// 因此每个 libapp.so 应用都需要这份薄转发层（Host 的真实实现见 HarmonyOS.Bindings/Hosting）。
+// Platform startup (mirrors Platforms/Android/MainActivity placement in MAUI):
+// NativeAOT shared-library exports plus the module initializer.
+// ILC only exports [UnmanagedCallersOnly] methods from the entry assembly,
+// so every libapp.so app needs this thin forwarding layer.
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using global::HarmonyOS.Bindings.Hosting;
 using global::HarmonyOS.Maui.Hosting;
 
-namespace HarmonyMauiApp.Platforms.HarmonyOS;
+namespace HarmonyApp1.Platforms.HarmonyOS;
 
 internal static class NativeExports
 {
@@ -25,7 +25,7 @@ internal static class NativeExports
 
 internal static class Bootstrap
 {
-    // NativeAOT 模块加载时自动执行，早于宿主对 HarmonyBuildUI 的任何调用
+    // Runs when the NativeAOT module loads, before the host calls HarmonyBuildUI
     [ModuleInitializer]
     internal static void Init() => Program.Register();
 }

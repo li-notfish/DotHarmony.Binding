@@ -154,8 +154,9 @@ for ($runIndex = 1; $runIndex -le $Runs; $runIndex++) {
 
     $coldStartMatch = [regex]::Match("$startOutput", "TotalTime:\s*(\d+)")
     $runtimeInitMatch = [regex]::Match($log, "PERF_RUNTIME_INIT_MS=(\d+)")
+    $firstFrameMatch = [regex]::Match($log, "PERF_FIRST_FRAME_MS=(\d+)")
     $throughputMatch = [regex]::Match($log, "PERF_TSFN_THROUGHPUT_OPS_PER_SEC=([0-9]+\.[0-9]+)")
-    if (-not $coldStartMatch.Success -or -not $runtimeInitMatch.Success -or -not $throughputMatch.Success) {
+    if (-not $coldStartMatch.Success -or -not $runtimeInitMatch.Success -or -not $firstFrameMatch.Success -or -not $throughputMatch.Success) {
         throw "Incomplete performance markers. Last log:`n$log"
     }
 
@@ -166,6 +167,7 @@ for ($runIndex = 1; $runIndex -le $Runs; $runIndex++) {
         run = $runIndex
         coldStartMs = $coldStartMs
         runtimeInitMs = $runtimeInitMs
+        firstFrameMs = [int]$firstFrameMatch.Groups[1].Value
         tsfnThroughputOpsPerSec = $throughput
     }
 
@@ -176,6 +178,7 @@ for ($runIndex = 1; $runIndex -le $Runs; $runIndex++) {
 
 $coldStartAverage = [Math]::Round(($baselineRuns | ForEach-Object { $_.coldStartMs } | Measure-Object -Average).Average, 2)
 $runtimeInitAverage = [Math]::Round(($baselineRuns | ForEach-Object { $_.runtimeInitMs } | Measure-Object -Average).Average, 2)
+$firstFrameAverage = [Math]::Round(($baselineRuns | ForEach-Object { $_.firstFrameMs } | Measure-Object -Average).Average, 2)
 $throughputAverage = [Math]::Round(($baselineRuns | ForEach-Object { $_.tsfnThroughputOpsPerSec } | Measure-Object -Average).Average, 2)
 
 $result = [ordered]@{
@@ -193,6 +196,7 @@ $result = [ordered]@{
     summary = [ordered]@{
         coldStartMsAverage = $coldStartAverage
         runtimeInitMsAverage = $runtimeInitAverage
+        firstFrameMsAverage = $firstFrameAverage
         tsfnThroughputOpsPerSecAverage = $throughputAverage
     }
 }

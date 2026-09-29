@@ -14,6 +14,7 @@
     <Project Path="src/HarmonyOS.Maui/HarmonyOS.Maui.csproj" />
     <Project Path="src/HarmonyOS.Maui.Permissions/HarmonyOS.Maui.Permissions.csproj" />
     <Project Path="src/HarmonyOS.Maui.Permissions.Abstractions/HarmonyOS.Maui.Permissions.Abstractions.csproj" />
+    <Project Path="src/HarmonyOS.Templates/HarmonyOS.Templates.csproj" />
   </Folder>
   <Folder Name="/tests/" />
   <Folder Name="/tests/dotnet/">

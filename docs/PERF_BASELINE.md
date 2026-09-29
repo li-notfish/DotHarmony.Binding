@@ -6,6 +6,7 @@ This baseline records three metrics for the NativeAOT HarmonyOS host:
 - HAP package size
 - Cold start time reported by `aa start -W`
 - .NET runtime initialization time from `HarmonyInit` to the first page appearing
+- First-frame time from `HarmonyInit` to the first page's initial layout (`OnSizeAllocated`)
 - TSFN throughput, measured as queued background-thread calls processed on the JS thread
 
 ## Collect
@@ -39,7 +40,7 @@ The script:
 - The target device or emulator
 - Arm64 and x64 `libapp.so` sizes
 - HAP size
-- Per-run cold start, runtime initialization, and TSFN throughput values
-- Averaged cold start, runtime initialization, and TSFN throughput values
+- Per-run cold start, runtime initialization, first-frame, and TSFN throughput values
+- Averaged cold start, runtime initialization, first-frame, and TSFN throughput values
 
 The baseline is informational only; it does not currently fail a build or emit alerts.
