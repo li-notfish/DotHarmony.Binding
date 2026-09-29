@@ -16,8 +16,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HarmonyOS.Maui.Permissions.Abstractions\HarmonyOS.Maui.Permissions.Abstractions.csproj" />
+    <ProjectReference Include="..\HarmonyOS.Maui.Permissions\HarmonyOS.Maui.Permissions.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" />
   </ItemGroup>
+
+  <Import Project="..\HarmonyOS.Maui.Permissions\build\HarmonyOS.Maui.Permissions.targets" />
 
   <ItemGroup>
     <ProjectReference Include="..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />

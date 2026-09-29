@@ -23,6 +23,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HarmonyOS.Maui.Permissions.Abstractions\HarmonyOS.Maui.Permissions.Abstractions.csproj"
+                      PrivateAssets="all" />
+    <ProjectReference Include="..\HarmonyOS.Maui.Permissions\HarmonyOS.Maui.Permissions.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <Import Project="..\HarmonyOS.Maui.Permissions\build\HarmonyOS.Maui.Permissions.targets" />
+
+  <ItemGroup>
     <!-- 手势映射等 internal 纯逻辑对 C# 测试工程可见 -->
     <InternalsVisibleTo Include="HarmonyGestureTests" />
   </ItemGroup>
@@ -37,7 +47,48 @@
   <ItemGroup>
     <None Include="build\HarmonyOS.Maui.App.targets" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.targets" />
     <None Pack="true" PackagePath="harmonyos\scripts\"
-          Include="..\..\scripts\stage-host.ps1;..\..\scripts\build-hap.cmd;..\..\scripts\deploy-hap.ps1;..\..\scripts\deploy-hap.sh" />
+          Include="..\..\scripts\stage-host.ps1;..\..\scripts\build-hap.cmd;..\..\scripts\deploy-hap.ps1;..\..\scripts\deploy-hap.sh;..\..\scripts\export-harmony-permissions.ps1;..\..\scripts\check-harmony-permissions.ps1" />
+    <None Pack="true" PackagePath="harmonyos\scripts\"
+          Include="..\..\scripts\write-explicit-permissions.ps1" />
+    <None Include="..\HarmonyOS.Maui.Permissions\bin\$(Configuration)\netstandard2.0\HarmonyOS.Maui.Permissions.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\system.text.json\9.0.0\lib\netstandard2.0\System.Text.Json.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\system.text.encodings.web\9.0.0\lib\netstandard2.0\System.Text.Encodings.Web.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\system.runtime.compilerservices.unsafe\6.0.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\system.threading.tasks.extensions\4.5.4\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\system.buffers\4.5.1\lib\netstandard2.0\System.Buffers.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\system.memory\4.5.5\lib\netstandard2.0\System.Memory.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\microsoft.bcl.asyncinterfaces\9.0.0\lib\netstandard2.0\Microsoft.Bcl.AsyncInterfaces.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\system.io.pipelines\9.0.0\lib\netstandard2.0\System.IO.Pipelines.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\system.collections.immutable\9.0.0\lib\netstandard2.0\System.Collections.Immutable.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\system.numerics.vectors\4.5.0\lib\netstandard2.0\System.Numerics.Vectors.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="$(NuGetPackageRoot)\system.text.encoding.codepages\7.0.0\lib\netstandard2.0\System.Text.Encoding.CodePages.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="..\HarmonyOS.Maui.Permissions.Abstractions\bin\$(Configuration)\netstandard2.0\HarmonyOS.Maui.Permissions.Abstractions.dll"
+          Pack="true"
+          PackagePath="lib\netstandard2.0\" />
     <None Pack="true" PackagePath="harmonyos\HarmonyHost\"
           Include="..\..\samples\HarmonyHost\**\*"
           Exclude="..\..\samples\HarmonyHost\.hvigor\**;..\..\samples\HarmonyHost\entry\.cxx\**;..\..\samples\HarmonyHost\entry\build\**;..\..\samples\HarmonyHost\entry\libs\**;..\..\samples\HarmonyHost\**\oh_modules\**;..\..\samples\HarmonyHost\**\node_modules\**;..\..\samples\HarmonyHost\local.properties" />

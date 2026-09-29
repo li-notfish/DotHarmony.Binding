@@ -1,0 +1,18 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <HarmonyPermissionsJson Condition="'$(HarmonyPermissionsJson)' == ''">$(MSBuildProjectDirectory)\obj\harmony\permissions.json</HarmonyPermissionsJson>
+    <HarmonyPowerShell Condition="'$(HarmonyPowerShell)' == ''">pwsh</HarmonyPowerShell>
+    <_HarmonyPermissionScripts>$(MSBuildThisFileDirectory)..\..\..\scripts\</_HarmonyPermissionScripts>
+  </PropertyGroup>
+
+  <Target Name="HarmonyGenerateProjectPermissions"
+          AfterTargets="Compile">
+    <PropertyGroup>
+      <_HarmonyExplicitProjectPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitProjectPermissions>
+    </PropertyGroup>
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyPermissionScripts)export-harmony-permissions.ps1" -AssemblyPath "$(IntermediateOutputPath)$(TargetFileName)" -ExplicitPermissions "$(_HarmonyExplicitProjectPermissions)" -OutputPath "$(HarmonyPermissionsJson)"'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+</Project>

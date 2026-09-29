@@ -17,8 +17,17 @@
        Api/** 生成产物当前全量参与编译。若后续生成器输出暂不可编译，
        需在此重新加入 Compile Remove。 -->
   <ItemGroup>
+    <ProjectReference Include="..\HarmonyOS.Maui.Permissions.Abstractions\HarmonyOS.Maui.Permissions.Abstractions.csproj" />
+    <ProjectReference Include="..\HarmonyOS.Maui.Permissions\HarmonyOS.Maui.Permissions.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
   </ItemGroup>
+
+  <Import Project="..\HarmonyOS.Maui.Permissions\build\HarmonyOS.Maui.Permissions.targets" />
 
   <ItemGroup>
     <!-- napi 互操作核心独立成装（对齐 Java.Interop / Mono.Android 分层） -->

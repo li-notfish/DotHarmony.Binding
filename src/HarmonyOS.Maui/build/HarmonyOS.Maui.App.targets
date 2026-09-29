@@ -55,16 +55,70 @@
 
   <PropertyGroup>
     <HarmonyPreserveXamlBindings Condition="'$(HarmonyPreserveXamlBindings)' == ''">true</HarmonyPreserveXamlBindings>
+    <HarmonyPermissionsJson Condition="'$(HarmonyPermissionsJson)' == ''">$(MSBuildProjectDirectory)\obj\harmony\permissions.json</HarmonyPermissionsJson>
+    <HarmonyExplicitPermissionsJson Condition="'$(HarmonyExplicitPermissionsJson)' == ''">$(MSBuildProjectDirectory)\obj\harmony\explicit-permissions.json</HarmonyExplicitPermissionsJson>
+    <HarmonyPermissionMappingJson Condition="'$(HarmonyPermissionMappingJson)' == ''">$(MSBuildProjectDirectory)\harmony-permissions.custom.json</HarmonyPermissionMappingJson>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(_HarmonyIsPackage)' != 'true'">
+    <Analyzer Include="$(MSBuildThisFileDirectory)..\..\..\src\HarmonyOS.Maui.Permissions\bin\$(Configuration)\netstandard2.0\HarmonyOS.Maui.Permissions.dll" />
+  </ItemGroup>
   <ItemGroup Condition="'$(HarmonyPreserveXamlBindings)' == 'true'">
     <HarmonyBindingRootAssembly Condition="'$(AssemblyName)' != ''" Include="$(AssemblyName)" />
     <HarmonyBindingRootAssembly Include="@(ProjectReference->'%(Filename)')" />
     <TrimmerRootAssembly Include="@(HarmonyBindingRootAssembly->Distinct())" />
   </ItemGroup>
 
-  <Target Name="HarmonyStageHost" Condition="'$(HarmonyGenerateHost)' == 'true'">
+  <Target Name="HarmonyGeneratePermissions"
+          Condition="'$(HarmonyGenerateHost)' == 'true'"
+          DependsOnTargets="Compile">
+    <PropertyGroup>
+      <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitPermissions>
+    </PropertyGroup>
+    <ItemGroup>
+      <_HarmonyReferencedPermissions Include="@(ProjectReference->'%(RootDir)%(Directory)obj\harmony\permissions.json')" />
+    </ItemGroup>
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)export-harmony-permissions.ps1" -AssemblyPath "$(IntermediateOutputPath)$(TargetFileName)" -ExplicitPermissions "$(_HarmonyExplicitPermissions)" -OutputPath "$(HarmonyPermissionsJson)" -ReferencedPermissionsJson "$(_HarmonyReferencedPermissions)"'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="HarmonyGenerateExplicitPermissions"
+          Condition="'$(HarmonyGenerateHost)' == 'true'"
+          BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitPermissions>
+    </PropertyGroup>
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)write-explicit-permissions.ps1" -Permissions "$(_HarmonyExplicitPermissions)" -OutputPath "$(HarmonyExplicitPermissionsJson)"'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <ItemGroup>
+      <AdditionalFiles Include="$(HarmonyExplicitPermissionsJson)" />
+      <AdditionalFiles Condition="Exists('$(HarmonyPermissionMappingJson)')" Include="$(HarmonyPermissionMappingJson)" />
+      <AdditionalFiles Include="@(MauiXaml)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="HarmonyPermissionReport"
+          Condition="'$(HarmonyGenerateHost)' == 'true'"
+          DependsOnTargets="HarmonyGeneratePermissions">
+    <Message Importance="high" Text="=== Harmony permission report: $(MSBuildProjectDirectory)\obj\harmony\permissions.report.md" />
+  </Target>
+
+  <Target Name="HarmonyPermissionCheck"
+          Condition="'$(HarmonyGenerateHost)' == 'true'"
+          DependsOnTargets="HarmonyStageHost">
+    <PropertyGroup>
+      <_HarmonyModuleJson5>$(_HarmonyEffectiveHostDir)\entry\src\main\module.json5</_HarmonyModuleJson5>
+      <_HarmonyPermissionReport>$([System.IO.Path]::ChangeExtension('$(HarmonyPermissionsJson)', '.report.md'))</_HarmonyPermissionReport>
+    </PropertyGroup>
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)check-harmony-permissions.ps1" -PermissionsJson "$(HarmonyPermissionsJson)" -ModuleJson5 "$(_HarmonyModuleJson5)" -ReportPath "$(_HarmonyPermissionReport)"'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="HarmonyStageHost"
+          Condition="'$(HarmonyGenerateHost)' == 'true'"
+          DependsOnTargets="HarmonyGeneratePermissions">
     <Message Importance="high" Text="=== staging host for $(HarmonyDemoApp): bundle=$(HarmonyBundleId) -> $(HarmonyHostDir)" />
-    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)stage-host.ps1" -Template "$(HarmonyHostRoot)" -Destination "$(HarmonyHostDir)" -BundleId "$(HarmonyBundleId)" -AppTitle "$(HarmonyAppTitle)" $(_HarmonySigningKeystoreArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)'
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)stage-host.ps1" -Template "$(HarmonyHostRoot)" -Destination "$(HarmonyHostDir)" -BundleId "$(HarmonyBundleId)" -AppTitle "$(HarmonyAppTitle)" -PermissionsJson "$(HarmonyPermissionsJson)" $(_HarmonySigningKeystoreArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)'
           EnvironmentVariables="HarmonySigningKeystorePassword=$(HarmonySigningKeystorePassword);HarmonySigningCertPassword=$(HarmonySigningCertPassword)"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
