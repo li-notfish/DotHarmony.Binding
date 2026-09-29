@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using global::HarmonyOS.Bindings.Hosting;
 using global::HarmonyOS.Maui.Hosting;
@@ -17,10 +16,4 @@ internal static class NativeExports
     [UnmanagedCallersOnly(EntryPoint = "HarmonyBuildUI")]
     private static int HarmonyBuildUI(nint env, nint nodeContentValue)
         => Host.BuildUICore(env, nodeContentValue);
-}
-
-internal static class Bootstrap
-{
-    [ModuleInitializer]
-    internal static void Init() => Program.Register();
 }

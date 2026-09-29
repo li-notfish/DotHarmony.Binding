@@ -26,9 +26,12 @@ internal sealed class HarmonyPermissionMap
             : null;
     }
 
-    public HarmonyPermissionMapping? ResolvePermissionType(string typeName)
+    // Full names (e.g. from custom mappings) win over the simple-name built-ins so
+    // user types that happen to share a simple name are not silently mismatched.
+    public HarmonyPermissionMapping? ResolvePermissionType(string fullName, string simpleName)
     {
-        return _permissionTypePermissions.TryGetValue(typeName, out var mapping)
+        return _permissionTypePermissions.TryGetValue(fullName, out var mapping) ||
+               _permissionTypePermissions.TryGetValue(simpleName, out mapping)
             ? mapping
             : null;
     }
@@ -38,9 +41,10 @@ internal sealed class HarmonyPermissionMap
         return _knownPermissionMethodKeys.Contains($"{containingType}.{methodName}");
     }
 
-    public string[]? GetAmbiguousPermissionTypeCandidates(string typeName)
+    public string[]? GetAmbiguousPermissionTypeCandidates(string fullName, string simpleName)
     {
-        return _ambiguousPermissionTypes.TryGetValue(typeName, out var candidates)
+        return _ambiguousPermissionTypes.TryGetValue(fullName, out var candidates) ||
+               _ambiguousPermissionTypes.TryGetValue(simpleName, out candidates)
             ? candidates
             : null;
     }
@@ -71,7 +75,6 @@ internal sealed class HarmonyPermissionMap
                 !mapping.Override)
             {
                 diagnostics.Add(new HarmonyPermissionMappingDiagnostic(
-                    "HMP005",
                     $"Custom mapping for '{key}' conflicts with the built-in mapping and must set override to true.",
                     sourcePath,
                     1));
@@ -88,7 +91,6 @@ internal sealed class HarmonyPermissionMap
                 !mapping.Override)
             {
                 diagnostics.Add(new HarmonyPermissionMappingDiagnostic(
-                    "HMP005",
                     $"Custom mapping for '{mapping.TypeName}' conflicts with the built-in mapping and must set override to true.",
                     sourcePath,
                     1));

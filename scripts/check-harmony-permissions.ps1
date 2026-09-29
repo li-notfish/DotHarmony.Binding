@@ -58,7 +58,7 @@ $actual = Normalize-StringArray ($manifest.permissions | ForEach-Object { $_.nam
 $modulePermissions = Normalize-StringArray ($module.module.requestPermissions | ForEach-Object { $_.name }) | Sort-Object -Unique
 
 if (-not (Test-SameSet $expected $actual)) {
-    throw "Permissions manifest is inconsistent: permissions must equal inferred + explicit."
+    throw "Permissions manifest is inconsistent: permissions must equal inferred + projects + explicit."
 }
 
 if (-not (Test-SameSet $actual $modulePermissions)) {

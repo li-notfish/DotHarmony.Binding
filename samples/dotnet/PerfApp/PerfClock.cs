@@ -6,7 +6,7 @@ namespace PerfApp;
 public static class PerfClock
 {
     private static readonly Stopwatch Stopwatch = new();
-    private static bool _uiReady;
+    private static volatile bool _uiReady;
 
     public static void Start()
     {

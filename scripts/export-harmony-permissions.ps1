@@ -78,13 +78,13 @@ function Convert-PermissionEntry {
     $parts = $Entry -split '\|'
     $permission = $parts[0]
     $when = if ($parts.Count -gt 1 -and $parts[1]) { $parts[1] } else { "always" }
-    $source = if ($parts.Count -gt 2 -and $parts[2]) { $parts[2] } else { "source" }
+    $sourcePath = if ($parts.Count -gt 2 -and $parts[2]) { $parts[2] } else { "source" }
     $line = if ($parts.Count -gt 3 -and $parts[3]) { [int]$parts[3] } else { 1 }
     [ordered]@{
         name = $permission
         when = $when
         source = $Source
-        sourcePath = $source
+        sourcePath = $sourcePath
         sourceLine = $line
     }
 }
@@ -92,6 +92,9 @@ function Convert-PermissionEntry {
 function Merge-Permissions {
     param([object[]]$Entries)
 
+    # Merge order matters: callers pass inferred, project, then explicit entries.
+    # "always" always wins (broader grant); otherwise the later entry wins, so
+    # explicit declarations override inferred/project ones at equal priority.
     $result = @{}
     foreach ($entry in $Entries) {
         if ($result.ContainsKey($entry.name)) {
@@ -163,62 +166,35 @@ $result = [ordered]@{
 $result | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $OutputPath
 
 $reportPath = [System.IO.Path]::ChangeExtension($OutputPath, ".report.md")
-$report = @(
-    "# Harmony permission report",
-    "",
-    "## Inferred from assembly",
-    ""
-)
-if ($inferredEntries.Count -eq 0) {
-    $report += "- None"
-}
-else {
-    foreach ($entry in $inferredEntries) {
-        $report += "- $($entry.name) ($($entry.when)) — $($entry.sourcePath):$($entry.sourceLine)"
+
+function Add-ReportSection {
+    param(
+        [System.Collections.Generic.List[string]]$Lines,
+        [string]$Title,
+        [object[]]$Entries,
+        [scriptblock]$FormatEntry
+    )
+
+    $Lines.Add("")
+    $Lines.Add("## $Title")
+    $Lines.Add("")
+    if ($Entries.Count -eq 0) {
+        $Lines.Add("- None")
+        return
+    }
+
+    foreach ($entry in $Entries) {
+        $Lines.Add((& $FormatEntry $entry))
     }
 }
 
-$report += @(
-    "",
-    "## Project references",
-    ""
-)
-if ($projectEntries.Count -eq 0) {
-    $report += "- None"
-}
-else {
-    foreach ($entry in $projectEntries) {
-        $report += "- $($entry.name) ($($entry.when)) — $($entry.source)"
-    }
-}
+$formatWithLocation = { param($e) "- $($e.name) ($($e.when)) — $($e.sourcePath):$($e.sourceLine)" }
+$formatWithSource = { param($e) "- $($e.name) ($($e.when)) — $($e.source)" }
 
-$report += @(
-    "",
-    "## Explicitly declared",
-    ""
-)
-if ($explicitEntries.Count -eq 0) {
-    $report += "- None"
-}
-else {
-    foreach ($entry in $explicitEntries) {
-        $report += "- $($entry.name) ($($entry.when)) — $($entry.source)"
-    }
-}
-
-$report += @(
-    "",
-    "## Final permissions written to module.json5",
-    ""
-)
-if ($merged.Count -eq 0) {
-    $report += "- None"
-}
-else {
-    foreach ($entry in $merged) {
-        $report += "- $($entry.name) ($($entry.when)) — $($entry.sourcePath):$($entry.sourceLine)"
-    }
-}
-
-$report += ""
+$report = [System.Collections.Generic.List[string]]@("# Harmony permission report")
+Add-ReportSection $report "Inferred from assembly" $inferredEntries $formatWithLocation
+Add-ReportSection $report "Project references" $projectEntries $formatWithSource
+Add-ReportSection $report "Explicitly declared" $explicitEntries $formatWithSource
+Add-ReportSection $report "Final permissions written to module.json5" $merged $formatWithLocation
+$report.Add("")
 $report | Set-Content -LiteralPath $reportPath

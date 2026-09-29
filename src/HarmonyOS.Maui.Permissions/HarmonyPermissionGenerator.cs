@@ -30,7 +30,9 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
         title: "Explicit HarmonyOS permission is not used",
         messageFormat: "Explicit HarmonyOS permission '{0}' is declared but not used by MAUI code",
         category: "HarmonyOS.Maui.Permissions",
-        defaultSeverity: DiagnosticSeverity.Warning,
+        // Explicit permissions commonly declare capabilities that cannot be inferred
+        // from code, so an unused match is informational rather than a warning.
+        defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true);
 
     private static readonly DiagnosticDescriptor AmbiguousPermissionMapping = new(
@@ -120,31 +122,33 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
             var handlerLookup = xamlHandlers
                 .SelectMany(handler => handler)
                 .GroupBy(handler => handler.HandlerName, StringComparer.Ordinal)
-                .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+                .ToDictionary(group => group.Key, group => group.ToArray(), StringComparer.Ordinal);
 
             foreach (var candidate in candidates)
             {
                 var sourcePath = candidate.SourcePath;
                 var sourceLine = candidate.Line;
-                if (handlerLookup.TryGetValue(candidate.EnclosingMethodName, out var handler))
+                if (handlerLookup.TryGetValue(candidate.EnclosingMethodName, out var handlers))
                 {
+                    // Prefer the XAML file whose name matches the candidate's source file
+                    // (e.g. MainPage.xaml for MainPage.xaml.cs) to avoid misattributing
+                    // handlers that share a name across pages.
+                    var candidateFile = Path.GetFileNameWithoutExtension(sourcePath);
+                    var handler = handlers.FirstOrDefault(h =>
+                        string.Equals(
+                            Path.GetFileNameWithoutExtension(h.SourcePath),
+                            candidateFile,
+                            StringComparison.OrdinalIgnoreCase)) ?? handlers[0];
                     sourcePath = handler.SourcePath;
                     sourceLine = handler.Line;
                 }
 
                 if (candidate.IsPermissionTypeRequest)
                 {
-                    var mapping = map.ResolvePermissionType(candidate.PermissionTypeName!);
-                    if (mapping is null)
-                    {
-                        diagnostics.Add(Diagnostic.Create(
-                            UnmappedPermissionType,
-                            CreateLocation(sourcePath, sourceLine),
-                            candidate.PermissionTypeName));
-                        continue;
-                    }
-
-                    var ambiguous = map.GetAmbiguousPermissionTypeCandidates(candidate.PermissionTypeName);
+                    // Ambiguity is checked first: an ambiguous type must not silently
+                    // resolve even when a direct mapping entry also exists.
+                    var ambiguous = map.GetAmbiguousPermissionTypeCandidates(
+                        candidate.PermissionTypeFullName!, candidate.PermissionTypeName!);
                     if (ambiguous is not null && ambiguous.Length > 0)
                     {
                         diagnostics.Add(Diagnostic.Create(
@@ -152,6 +156,17 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
                             CreateLocation(sourcePath, sourceLine),
                             candidate.PermissionTypeName,
                             string.Join(", ", ambiguous)));
+                        continue;
+                    }
+
+                    var mapping = map.ResolvePermissionType(
+                        candidate.PermissionTypeFullName!, candidate.PermissionTypeName!);
+                    if (mapping is null)
+                    {
+                        diagnostics.Add(Diagnostic.Create(
+                            UnmappedPermissionType,
+                            CreateLocation(sourcePath, sourceLine),
+                            candidate.PermissionTypeName));
                         continue;
                     }
 
@@ -195,7 +210,7 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
                 {
                     diagnostics.Add(Diagnostic.Create(
                         ExplicitPermissionNotUsed,
-                        CreateLocation(explicitPermission.SourcePath, explicitPermission.Line),
+                        CreateLocation(explicitPermission.SourcePath, 1),
                         explicitPermission.Name));
                 }
             }

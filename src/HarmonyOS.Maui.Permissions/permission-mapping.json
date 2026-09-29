@@ -41,8 +41,6 @@
     { "typeName": "Microphone", "permission": "ohos.permission.MICROPHONE", "when": "inuse" },
     { "typeName": "Speech", "permission": "ohos.permission.MICROPHONE", "when": "inuse" },
     { "typeName": "Vibrate", "permission": "ohos.permission.VIBRATE", "when": "always" },
-    { "typeName": "StorageRead", "permission": "ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY", "when": "inuse" },
-    { "typeName": "StorageWrite", "permission": "ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY", "when": "inuse" },
     { "typeName": "Bluetooth", "permission": "ohos.permission.USE_BLUETOOTH", "when": "inuse" },
     { "typeName": "CalendarRead", "permission": "ohos.permission.READ_CALENDAR", "when": "inuse" },
     { "typeName": "CalendarWrite", "permission": "ohos.permission.WRITE_CALENDAR", "when": "inuse" },

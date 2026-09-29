@@ -14,15 +14,13 @@ internal sealed class HarmonyPermissionMapping
 
 internal sealed class HarmonyPermissionMappingDiagnostic
 {
-    public HarmonyPermissionMappingDiagnostic(string id, string message, string sourcePath, int line)
+    public HarmonyPermissionMappingDiagnostic(string message, string sourcePath, int line)
     {
-        Id = id;
         Message = message;
         SourcePath = sourcePath;
         Line = line;
     }
 
-    public string Id { get; }
     public string Message { get; }
     public string SourcePath { get; }
     public int Line { get; }

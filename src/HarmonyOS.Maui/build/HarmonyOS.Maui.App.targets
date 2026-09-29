@@ -71,6 +71,8 @@
 
   <Target Name="HarmonyGeneratePermissions"
           Condition="'$(HarmonyGenerateHost)' == 'true'"
+          Inputs="$(IntermediateOutputPath)$(TargetFileName);@(HarmonyPermission)"
+          Outputs="$(HarmonyPermissionsJson)"
           DependsOnTargets="Compile">
     <PropertyGroup>
       <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitPermissions>
@@ -84,6 +86,8 @@
 
   <Target Name="HarmonyGenerateExplicitPermissions"
           Condition="'$(HarmonyGenerateHost)' == 'true'"
+          Inputs="@(HarmonyPermission);@(MauiXaml)"
+          Outputs="$(HarmonyExplicitPermissionsJson)"
           BeforeTargets="CoreCompile">
     <PropertyGroup>
       <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitPermissions>

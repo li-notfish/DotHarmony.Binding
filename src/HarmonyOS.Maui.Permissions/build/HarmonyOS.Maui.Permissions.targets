@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <Target Name="HarmonyGenerateProjectPermissions"
+          Inputs="$(IntermediateOutputPath)$(TargetFileName);@(HarmonyPermission)"
+          Outputs="$(HarmonyPermissionsJson)"
           AfterTargets="Compile">
     <PropertyGroup>
       <_HarmonyExplicitProjectPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitProjectPermissions>

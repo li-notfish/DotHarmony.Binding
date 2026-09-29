@@ -15,6 +15,7 @@ public sealed partial class HarmonyPermissionGenerator
         string ContainingType,
         string MethodName,
         string? PermissionTypeName,
+        string? PermissionTypeFullName,
         bool IsPermissionTypeRequest,
         string SourcePath,
         int Line,
@@ -32,8 +33,7 @@ public sealed partial class HarmonyPermissionGenerator
 
     private sealed record ExplicitPermission(
         string Name,
-        string SourcePath,
-        int Line);
+        string SourcePath);
 
     private sealed record ResolvedPermission(
         string Permission,
@@ -66,9 +66,14 @@ public sealed partial class HarmonyPermissionGenerator
             return null;
         }
 
-        var permissionTypeName = isPermissionTypeRequest
-            ? ((INamedTypeSymbol)method.TypeArguments[0]).Name
-            : null;
+        string? permissionTypeName = null;
+        string? permissionTypeFullName = null;
+        if (isPermissionTypeRequest)
+        {
+            var typeArgument = (INamedTypeSymbol)method.TypeArguments[0];
+            permissionTypeName = typeArgument.Name;
+            permissionTypeFullName = typeArgument.ToDisplayString();
+        }
 
         var enclosingMethod = context.Node.Ancestors()
             .OfType<MethodDeclarationSyntax>()
@@ -85,6 +90,7 @@ public sealed partial class HarmonyPermissionGenerator
             containingType,
             method.Name,
             permissionTypeName,
+            permissionTypeFullName,
             isPermissionTypeRequest,
             sourcePath,
             lineSpan.StartLinePosition.Line + 1,
@@ -95,7 +101,7 @@ public sealed partial class HarmonyPermissionGenerator
     {
         try
         {
-            var document = HarmonyPermissionMappingDocument.Parse(text.GetText().ToString());
+            var document = HarmonyPermissionMappingDocument.Parse(text.GetText()?.ToString() ?? string.Empty);
             return new CustomMappingParseResult(text.Path, document, null);
         }
         catch (Exception exception)
@@ -110,7 +116,7 @@ public sealed partial class HarmonyPermissionGenerator
         try
         {
             var document = XDocument.Parse(
-                text.GetText().ToString(),
+                text.GetText()?.ToString() ?? string.Empty,
                 LoadOptions.SetLineInfo);
 
             foreach (var attribute in document.Descendants().SelectMany(element => element.Attributes()))
@@ -138,25 +144,24 @@ public sealed partial class HarmonyPermissionGenerator
         return result.ToImmutable();
     }
 
+    private static readonly string[] EventHandlerSuffixes =
+    {
+        "Clicked", "Tapped", "Pressed", "Released", "TextChanged", "Focused",
+        "Unfocused", "SelectionChanged", "Completed", "Appearing", "Disappearing",
+        "Scrolled", "Swiped", "Panned", "Pinched", "Dragged", "Dropped"
+    };
+
     private static bool IsEventHandlerName(string localName)
     {
-        return localName.EndsWith("Clicked", StringComparison.Ordinal) ||
-               localName.EndsWith("Tapped", StringComparison.Ordinal) ||
-               localName.EndsWith("Pressed", StringComparison.Ordinal) ||
-               localName.EndsWith("Released", StringComparison.Ordinal) ||
-               localName.EndsWith("TextChanged", StringComparison.Ordinal) ||
-               localName.EndsWith("Focused", StringComparison.Ordinal) ||
-               localName.EndsWith("Unfocused", StringComparison.Ordinal) ||
-               localName.EndsWith("SelectionChanged", StringComparison.Ordinal) ||
-               localName.EndsWith("Completed", StringComparison.Ordinal) ||
-               localName.EndsWith("Appearing", StringComparison.Ordinal) ||
-               localName.EndsWith("Disappearing", StringComparison.Ordinal) ||
-               localName.EndsWith("Scrolled", StringComparison.Ordinal) ||
-               localName.EndsWith("Swiped", StringComparison.Ordinal) ||
-               localName.EndsWith("Panned", StringComparison.Ordinal) ||
-               localName.EndsWith("Pinched", StringComparison.Ordinal) ||
-               localName.EndsWith("Dragged", StringComparison.Ordinal) ||
-               localName.EndsWith("Dropped", StringComparison.Ordinal);
+        foreach (var suffix in EventHandlerSuffixes)
+        {
+            if (localName.EndsWith(suffix, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static ImmutableArray<ExplicitPermission> ParseExplicitPermissions(AdditionalText text)
@@ -174,7 +179,7 @@ public sealed partial class HarmonyPermissionGenerator
             {
                 if (permission.TryGetProperty("name", out var name))
                 {
-                    result.Add(new ExplicitPermission(name.GetString() ?? "", text.Path, 1));
+                    result.Add(new ExplicitPermission(name.GetString() ?? "", text.Path));
                 }
             }
         }

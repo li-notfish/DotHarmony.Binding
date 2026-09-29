@@ -76,8 +76,11 @@ public partial class MainPage : ContentPage
         };
 
         worker.Start();
-        await completion.Task;
+        var finished = await Task.WhenAny(completion.Task, Task.Delay(TimeSpan.FromSeconds(30)));
         stopwatch.Stop();
+
+        if (finished != completion.Task)
+            throw new TimeoutException($"TSFN baseline timed out: {processed}/{iterations} calls processed.");
 
         return iterations / stopwatch.Elapsed.TotalSeconds;
     }
