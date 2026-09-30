@@ -154,7 +154,9 @@
           DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\libs\x86_64\libapp.so" />
   </Target>
 
-  <Target Name="HarmonyBuildHap" DependsOnTargets="HarmonyStageHost">
+  <!-- 依赖 HarmonyBuildLibApp 而非仅 HarmonyStageHost：单独调用本目标也必须先重编 libapp.so，
+       否则会打出包含宿主模板陈旧 so 的 HAP -->
+  <Target Name="HarmonyBuildHap" DependsOnTargets="HarmonyBuildLibApp">
     <Exec Command='"$(_HarmonyScripts)build-hap.cmd"'
           EnvironmentVariables="HOST_DIR=$(_HarmonyEffectiveHostDir)"
           WorkingDirectory="$(MSBuildProjectDirectory)" />

@@ -29,13 +29,9 @@ struct Index {
   }
 
   build() {
+    // .NET 构建的原生节点树挂载点（整页；@Entry 根节点必须是容器，ContentSlot 自身不支持尺寸属性）
     Column() {
-      // .NET 构建的原生节点树挂载点
-      Row() {
-        ContentSlot(this.nodeContent)
-      }
-      .width('100%')
-      .layoutWeight(1)
+      ContentSlot(this.nodeContent)
     }
     .width('100%')
     .height('100%')
