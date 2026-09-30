@@ -183,6 +183,17 @@ Microsoft.Maui.Controls.Slider => new HarmonySliderHandler(),
 
 ### Step 4：属性映射核对清单
 
+> **基座收口（HarmonyViewMapper.Base）**：所有 Handler 的 `Mapper` 一律 `new(HarmonyViewMapper.Base)`，
+> 不要在各 handler 重复映射 `WidthRequest/HeightRequest/Background/Padding`——基座已统一落地
+> （显式值 SetWidth/SetHeight，-1 复位 Auto；Background 走 BrushHelper；Padding 非零才下发）。
+> 需要特化（如 ContentView/Frame 的水平栈 auto 宽）时在自身 Mapper 写同名键覆盖即可（链式语义：外层优先）。
+> 视觉属性（Visibility/IsEnabled/Opacity/Transform/Anchor/InputTransparent）由 `HarmonyViewHandler.UpdateValue`
+> 拦截，同样不要进 mapper。
+>
+> **一致性门槛**：`dotnet run --project tools/HandlerAudit` 会比对工厂每个分派类型的接口继承链
+> 属性全集与 handler 实际映射键，未在 `tools/HandlerAudit/baseline.json` 登记原因的缺口使 CI 失败；
+> 同时静态检查工厂 switch 臂的继承拓扑（派生类必须排在基类臂之前）。报告见 `docs/handler-coverage.md`。
+
 | MAUI 概念 | ArkUI 翻译 | 备注 |
 |---|---|---|
 | `Color` / `Brush` | `(byte)r,(byte)g,(byte)b,(byte)a` → `0xAARRGGBB` | 纯色走 `BrushHelper.TryGetColor`；背景画刷走 `BrushHelper.ApplyBackground`（LinearGradient→NODE_LINEAR_GRADIENT、RadialGradient→NODE_RADIAL_GRADIENT；ImageBrush 为 MAUI internal 类型不映射） |

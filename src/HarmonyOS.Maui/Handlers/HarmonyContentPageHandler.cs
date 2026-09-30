@@ -9,7 +9,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>MAUI ContentPage 的 HarmonyOS Handler（ArkUI Column 容器 + 单 Content 子节点）。</summary>
 public class HarmonyContentPageHandler : ViewHandler<ContentPage, ArkColumn>
 {
-    public static PropertyMapper<ContentPage, HarmonyContentPageHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<ContentPage, HarmonyContentPageHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(IContentView.Content)] = MapContent,
         [nameof(IContentView.Background)] = MapBackground,

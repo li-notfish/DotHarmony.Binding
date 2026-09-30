@@ -1,4 +1,5 @@
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
 using HarmonyOS.Interop;
@@ -10,15 +11,36 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>MAUI Image 的 HarmonyOS Handler（ArkUI Image 节点）。</summary>
 public class HarmonyImageHandler : HarmonyViewHandler<MImage, ArkImage>
 {
-    public static PropertyMapper<MImage, HarmonyImageHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MImage, HarmonyImageHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(MImage.Source)] = MapSource,
         [nameof(MImage.Aspect)] = MapAspect,
+        [nameof(VisualElement.WidthRequest)] = MapWidthRequest,
+        [nameof(VisualElement.HeightRequest)] = MapHeightRequest,
     };
 
     public HarmonyImageHandler() : base(Mapper) { }
 
     protected override ArkImage CreatePlatformView() => new();
+
+    public static void MapWidthRequest(HarmonyImageHandler h, MImage v)
+    {
+        // Request 清除（-1）须复位 Auto——否则绑定往返后旧固定值残留在节点上。
+        // 显式宽度必须落到节点：Auto 轨道/水平栈里 ArkUI Image 按解码原图尺寸自撑，
+        // 34x34 的图标会按 PNG 原尺寸溢出轨道（WeatherTwentyOne 七日行图标实测踩过）
+        if (v is VisualElement ve && ve.WidthRequest >= 0)
+            h.PlatformView.SetWidth((float)ve.WidthRequest);
+        else
+            h.PlatformView.SetWidthAuto();
+    }
+
+    public static void MapHeightRequest(HarmonyImageHandler h, MImage v)
+    {
+        if (v is VisualElement ve && ve.HeightRequest >= 0)
+            h.PlatformView.SetHeight((float)ve.HeightRequest);
+        else
+            h.PlatformView.SetHeightAuto();
+    }
 
     protected override void ConnectHandler(ArkImage platformView)
     {

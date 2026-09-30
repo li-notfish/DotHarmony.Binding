@@ -13,7 +13,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// </summary>
 public class HarmonyPickerHandler : HarmonyViewHandler<Picker, ArkTextPicker>
 {
-    public static PropertyMapper<Picker, HarmonyPickerHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<Picker, HarmonyPickerHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(Picker.ItemsSource)] = MapItemsSource,
         [nameof(Picker.SelectedIndex)] = MapSelectedIndex,

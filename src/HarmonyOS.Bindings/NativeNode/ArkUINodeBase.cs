@@ -83,6 +83,41 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BACKGROUND_COLOR, ArkUIValue.U(argb));
     }
 
+    /// <summary>字重（NODE_FONT_WEIGHT，ArkUI_FontWeight）</summary>
+    public void SetFontWeight(ArkUI_FontWeight weight)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_FONT_WEIGHT, ArkUIValue.I((int)weight));
+
+    /// <summary>字体样式（NODE_FONT_STYLE，ArkUI_FontStyle：NORMAL/ITALIC）</summary>
+    public void SetFontStyle(ArkUI_FontStyle style)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_FONT_STYLE, ArkUIValue.I((int)style));
+
+    /// <summary>行高倍数（NODE_TEXT_LINE_HEIGHT_MULTIPLE，f32；MAUI LineHeight 语义即倍数）</summary>
+    public void SetLineHeightMultiple(float multiple)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_LINE_HEIGHT_MULTIPLE, ArkUIValue.F(multiple));
+
+    /// <summary>边框色（NODE_BORDER_COLOR，四边同值，0xAARRGGBB）</summary>
+    public void SetBorderColor(uint argb)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BORDER_COLOR,
+            ArkUIValue.U(argb), ArkUIValue.U(argb), ArkUIValue.U(argb), ArkUIValue.U(argb));
+    }
+
+    /// <summary>边框宽（NODE_BORDER_WIDTH，四边同值，vp）</summary>
+    public void SetBorderWidth(float widthVp)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BORDER_WIDTH,
+            ArkUIValue.F(widthVp), ArkUIValue.F(widthVp), ArkUIValue.F(widthVp), ArkUIValue.F(widthVp));
+    }
+
+    /// <summary>边框圆角（NODE_BORDER_RADIUS，四角 vp，顺序 TL/TR/BL/BR 与 MAUI CornerRadius 一致）。
+    /// 同时开启 NODE_CLIP 让内容随圆角裁剪。</summary>
+    public void SetBorderRadius(float topLeft, float topRight, float bottomLeft, float bottomRight)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BORDER_RADIUS,
+            ArkUIValue.F(topLeft), ArkUIValue.F(topRight), ArkUIValue.F(bottomLeft), ArkUIValue.F(bottomRight));
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_CLIP, ArkUIValue.I(1));
+    }
+
     /// <summary>
     /// 线性渐变背景（NODE_LINEAR_GRADIENT）。
     /// 角度为 CSS 语义（0 = 向上，顺时针增大，默认 180 = 向下）；

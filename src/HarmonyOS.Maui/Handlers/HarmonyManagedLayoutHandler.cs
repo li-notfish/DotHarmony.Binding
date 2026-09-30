@@ -35,7 +35,7 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     private static readonly bool LogLayout = false;
 
     public static PropertyMapper<MControlsLayout, HarmonyManagedLayoutHandler> Mapper =
-        new(ViewHandler.ViewMapper)
+        new(HarmonyViewMapper.Base)
         {
             [nameof(MControlsLayout.BackgroundColor)] = (h, v) =>
             {
@@ -94,7 +94,10 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
                  || VirtualView.Parent is Microsoft.Maui.Controls.TemplatedView
                  || VirtualView.Parent is Microsoft.Maui.Controls.ContentPresenter)
             // 模板宿主（TemplatedView/ContentPresenter）在我们的模型里是 100% 栈列容器：
-            // 模板根 Grid 需要充满才能产生 SizeChange 驱动 Arrange
+            // 模板根 Grid 需要充满才能产生 SizeChange 驱动 Arrange。
+            // 无 Star 行的 Grid 在首帧 Arrange 后改写为内容显式高（见 ArrangeGrid 尾部），
+            // 否则百分比高在 auto 高宿主里向上解析到视口，把 Auto 卡片撑成整屏
+            // （WeatherTwentyOne 天气卡片实测踩过）
             platformView.SetHeightPercent(1.0f);
         if (LogLayout) HiLog.Debug("Grid", $"ConnectHandler#{GetHashCode():X}: Stack W%+H% set, children={VirtualView.Children.Count}");
         // 连接时全量同步已存在的 Children（Controls 侧在 Handler 连接前添加的子节点不会发 Add 命令）
@@ -188,6 +191,17 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
             ArrangeGrid(grid, GetDensity());
         else if (VirtualView is MAbsolute absolute)
             ArrangeAbsolute(absolute);
+    }
+
+    /// <summary>Grid 是否含 Star 行（无 Star 行时内容高度可自闭合，无需充满宿主撑出 SizeChange）。</summary>
+    internal static bool GridHasStarRow(Grid grid)
+    {
+        if (grid.RowDefinitions.Count == 0)
+            return true; // 未定义行 = 单行 Star（MAUI 默认）
+        foreach (var row in grid.RowDefinitions)
+            if (row.Height.GridUnitType == GridUnitType.Star)
+                return true;
+        return false;
     }
 
     private void ArrangeGrid(Grid grid, float density)
@@ -285,6 +299,20 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
         var heights = ResolveTracks(rowUnit, rowValue, rowAuto, _containerH);
 
         if (LogLayout) HiLog.Debug("Grid", $"Tracks: widths=[{FormatTracks(widths)}] heights=[{FormatTracks(heights)}]");
+
+        // 无 Star 行的 Grid 内容高度可自闭合：模板宿主场景下平台节点是 100% 高
+        // （ConnectHandler 为触发 SizeChange 而设），百分比高在 auto 高宿主里会向上
+        // 解析到视口，把 Auto 卡片撑成整屏（WeatherTwentyOne 天气卡片实测踩过）。
+        // 行高解析完成后改写为显式内容高；引发的 SizeChange 重排由幂等守卫终止。
+        if (!GridHasStarRow(grid)
+            && (VirtualView.Parent is not Microsoft.Maui.Controls.Layout
+                || VirtualView.Parent is Microsoft.Maui.Controls.TemplatedView
+                || VirtualView.Parent is Microsoft.Maui.Controls.ContentPresenter))
+        {
+            float contentH = Sum(heights, 0, nRows);
+            if (contentH > 0 && Math.Abs(contentH - _containerH) > 0.5f)
+                PlatformView.SetHeight(contentH);
+        }
 
         foreach (var (view, handler) in _children)
         {
@@ -439,8 +467,14 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     private (float W, float H) NaturalSize(IView view, ArkUINode node, float density)
     {
         var native = node.MeasuredSize;
-        var mw = native.width > 0 ? native.width / density : 0;
-        var mh = native.height > 0 ? native.height / density : 0;
+        // 显式 WidthRequest/HeightRequest 优先于原生实测：叶子控件首帧按 Fill 占满轨道，
+        // 实测值就是上一轮的占位满尺寸，不看显式请求会让 90x90 的 Image 永远撑满整格
+        var wReq = view is VisualElement veW ? veW.WidthRequest : -1;
+        var hReq = view is VisualElement veH ? veH.HeightRequest : -1;
+        var mw = wReq >= 0 ? (float)wReq
+            : native.width > 0 ? native.width / density : 0;
+        var mh = hReq >= 0 ? (float)hReq
+            : native.height > 0 ? native.height / density : 0;
         // 反馈环防护：MeasuredSize 是上一轮 Arrange 写过 "Margin 内缩后" 的占位尺寸，
         // 直接当作下一轮的期望尺寸会让 Auto 轨道每轮再减一遍 Margin（实测 End 对齐
         // 按钮 178→162→146→…→65 逐轮塌陷）。仅上一轮当真做过 Margin 内缩的轴补回

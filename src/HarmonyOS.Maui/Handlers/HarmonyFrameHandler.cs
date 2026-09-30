@@ -12,12 +12,15 @@ namespace HarmonyOS.Maui.Handlers;
 /// </summary>
 public class HarmonyFrameHandler : HarmonyViewHandler<Border, ArkStack>
 {
-    public static PropertyMapper<Border, HarmonyFrameHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<Border, HarmonyFrameHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(Border.Content)] = MapContent,
         [nameof(Border.BackgroundColor)] = MapBackgroundColor,
         [nameof(Border.Background)] = MapBackground,
         [nameof(Border.Padding)] = MapPadding,
+        [nameof(Border.Stroke)] = MapStroke,
+        [nameof(Border.StrokeThickness)] = MapStrokeThickness,
+        [nameof(Border.StrokeShape)] = MapStrokeShape,
         [nameof(VisualElement.WidthRequest)] = MapWidthRequest,
         [nameof(VisualElement.HeightRequest)] = MapHeightRequest,
     };
@@ -41,8 +44,14 @@ public class HarmonyFrameHandler : HarmonyViewHandler<Border, ArkStack>
         h._contentHandler = childHandler;
         if (childHandler.PlatformView is ArkUINode node)
         {
-            // 内容宽度填满 Border；高度随内容自适应（百分比高度会把内容撑满整个容器）
-            node.SetWidthPercent(1.0f);
+            // 内容宽度填满 Border；高度随内容自适应（百分比高度会把内容撑满整个容器）。
+            // 例外：Border 在水平栈里且无显式 WidthRequest 时，Border 自身是 auto 宽，
+            // 内容 100% 宽会向上解析到视口，把每个子项撑成整屏
+            // （WeatherTwentyOne 小时预报卡片实测踩过）——此时内容也随内容自适应
+            if (v.WidthRequest <= 0 && HarmonyLayoutHandler.IsHorizontalStack(v.Parent))
+                node.SetWidthAuto();
+            else
+                node.SetWidthPercent(1.0f);
             if (v.HeightRequest > 0)
                 // 显式定高（如磁贴 HeightRequest）时内容跟随填满，网格 Star 行获得可用高度
                 node.SetHeightPercent(1.0f);
@@ -78,6 +87,29 @@ public class HarmonyFrameHandler : HarmonyViewHandler<Border, ArkStack>
     public static void MapBackground(HarmonyFrameHandler h, Border v)
     {
         BrushHelper.ApplyBackground(h.PlatformView, v.Background);
+    }
+
+    public static void MapStroke(HarmonyFrameHandler h, Border v)
+    {
+        // Stroke 是 Brush，仅纯色落地（渐变描边 ArkUI 边框不承载，静默跳过）
+        if (BrushHelper.TryGetColor(v.Stroke, out var color))
+            h.PlatformView.SetBorderColor(color.ToUint());
+    }
+
+    public static void MapStrokeThickness(HarmonyFrameHandler h, Border v)
+    {
+        if (v.StrokeThickness > 0)
+            h.PlatformView.SetBorderWidth((float)v.StrokeThickness);
+    }
+
+    public static void MapStrokeShape(HarmonyFrameHandler h, Border v)
+    {
+        if (v.StrokeShape is Microsoft.Maui.Controls.Shapes.RoundRectangle rr)
+        {
+            var c = rr.CornerRadius;
+            h.PlatformView.SetBorderRadius(
+                (float)c.TopLeft, (float)c.TopRight, (float)c.BottomLeft, (float)c.BottomRight);
+        }
     }
 
     public static void MapPadding(HarmonyFrameHandler h, Border v)

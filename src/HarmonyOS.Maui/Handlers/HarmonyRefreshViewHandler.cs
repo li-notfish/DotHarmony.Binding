@@ -8,7 +8,7 @@ namespace HarmonyOS.Maui.Handlers;
 
 public class HarmonyRefreshViewHandler : HarmonyViewHandler<IRefreshView, ArkRefresh>, IRefreshViewHandler
 {
-    public static PropertyMapper<IRefreshView, IRefreshViewHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<IRefreshView, IRefreshViewHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(IRefreshView.IsRefreshing)] = MapIsRefreshing,
         [nameof(IRefreshView.Content)] = MapContent,

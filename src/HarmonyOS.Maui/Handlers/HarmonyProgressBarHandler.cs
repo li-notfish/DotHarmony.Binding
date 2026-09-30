@@ -7,7 +7,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>MAUI ProgressBar 的 HarmonyOS Handler（ArkUI Progress 节点）。</summary>
 public class HarmonyProgressBarHandler : HarmonyViewHandler<Microsoft.Maui.Controls.ProgressBar, ArkProgress>
 {
-    public static PropertyMapper<Microsoft.Maui.Controls.ProgressBar, HarmonyProgressBarHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<Microsoft.Maui.Controls.ProgressBar, HarmonyProgressBarHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(Microsoft.Maui.Controls.ProgressBar.Progress)] = MapProgress,
         [nameof(Microsoft.Maui.Controls.ProgressBar.ProgressColor)] = MapProgressColor,

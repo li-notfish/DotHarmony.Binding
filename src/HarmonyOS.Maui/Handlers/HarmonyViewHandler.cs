@@ -77,7 +77,7 @@ public abstract class HarmonyViewHandler<TVirtualView, TPlatformView> : ViewHand
 
     // ───────────────────────── 通用视觉协议 ─────────────────────────
     // MAUI 基础视觉属性（Visibility/IsEnabled/Opacity/变换/锚点/InputTransparent）统一在此
-    // 映射：拦截走 UpdateValue 之前，先于各 handler 的 new(ViewMapper) 链生效——具体
+    // 映射：拦截走 UpdateValue 之前，先于各 handler 的 new(HarmonyViewMapper.Base) 链生效——具体
     // handler 的 mapper 不必也不应重复映射这些键。初始态在 SetVirtualView（mapper 刷新
     // 之后）一次性落齐，替代旧的 Connect 一次性 InputTransparent 写入（后者无法响应变更）。
 

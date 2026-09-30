@@ -22,7 +22,7 @@ public class HarmonyContentViewHandler : HarmonyViewHandler<IContentView, ArkCol
     /// <summary>视图热路径日志开关（SizeChange / 内容挂载；与 LogLayout/LogScroll 同一纪律）</summary>
     internal static readonly bool LogView = false;
 
-    public static PropertyMapper<IContentView, HarmonyContentViewHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<IContentView, HarmonyContentViewHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(IContentView.Content)] = MapContent,
         [nameof(IContentView.Background)] = MapBackground,
@@ -53,6 +53,10 @@ public class HarmonyContentViewHandler : HarmonyViewHandler<IContentView, ArkCol
         if (VirtualView is VisualElement ve)
         {
             if (ve.WidthRequest > 0) PlatformView.SetWidth((float)ve.WidthRequest);
+            else if (HarmonyLayoutHandler.IsHorizontalStack(ve.Parent))
+                // 水平栈主轴 = 水平：子项宽度由内容决定，100% 宽会把每个子项撑成整屏
+                // （WeatherTwentyOne 小时预报卡片实测踩过）
+                PlatformView.SetWidthAuto();
             else PlatformView.SetWidthPercent(1.0f);
             if (ve.HeightRequest > 0) PlatformView.SetHeight((float)ve.HeightRequest);
             else if (ve.Parent is not Microsoft.Maui.Controls.Layout
@@ -123,7 +127,7 @@ public class HarmonyContentViewHandler : HarmonyViewHandler<IContentView, ArkCol
 /// <summary>布局模板内 ContentPresenter（承载外层 ContentView.Content 的槽位）的 Handler。</summary>
 public class HarmonyContentPresenterHandler : HarmonyViewHandler<ContentPresenter, ArkColumn>
 {
-    public static PropertyMapper<ContentPresenter, HarmonyContentPresenterHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<ContentPresenter, HarmonyContentPresenterHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(ContentPresenter.Content)] = MapContent,
         [nameof(VisualElement.BackgroundColor)] = MapBackgroundColor,

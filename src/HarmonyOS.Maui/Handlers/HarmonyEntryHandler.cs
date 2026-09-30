@@ -7,12 +7,13 @@ namespace HarmonyOS.Maui.Handlers;
 
 public class HarmonyEntryHandler : HarmonyViewHandler<IEntry, ArkTextInput>, IEntryHandler
 {
-    public static PropertyMapper<IEntry, IEntryHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<IEntry, IEntryHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(IEntry.Text)] = MapText,
         [nameof(IEntry.Placeholder)] = MapPlaceholder,
         [nameof(IEntry.TextColor)] = MapTextColor,
         [nameof(Microsoft.Maui.Controls.Entry.FontSize)] = MapFontSize,
+        [nameof(Microsoft.Maui.Controls.Entry.FontFamily)] = MapFontFamily,
         [nameof(IEntry.PlaceholderColor)] = MapPlaceholderColor,
         [nameof(IEntry.IsPassword)] = MapIsPassword,
         [nameof(IEntry.IsReadOnly)] = MapIsReadOnly,
@@ -43,6 +44,13 @@ public class HarmonyEntryHandler : HarmonyViewHandler<IEntry, ArkTextInput>, IEn
         // FontSize 在 Controls 类型上（核心接口 IEntry 未暴露）
         if (handler is HarmonyEntryHandler h && view is Microsoft.Maui.Controls.Entry entry && entry.FontSize > 0)
             h.PlatformView.FontSize = (float)entry.FontSize;
+    }
+
+    public static void MapFontFamily(IEntryHandler handler, IEntry view)
+    {
+        // FontFamily 在 Controls 类型上（核心接口 IEntry 未暴露）
+        if (handler is HarmonyEntryHandler h && view is Microsoft.Maui.Controls.Entry { FontFamily: { } ff })
+            h.PlatformView.SetFontFamily(ff);
     }
 
     public static void MapText(IEntryHandler handler, IEntry view)

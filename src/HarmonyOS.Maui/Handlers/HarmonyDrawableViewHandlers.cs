@@ -18,7 +18,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// </summary>
 public class HarmonyGraphicsViewHandler : HarmonyViewHandler<MGraphicsView, ArkCustomDrawNode>
 {
-    public static PropertyMapper<MGraphicsView, HarmonyGraphicsViewHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MGraphicsView, HarmonyGraphicsViewHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(MGraphicsView.Drawable)] = MapInvalidate,
         [nameof(VisualElement.BackgroundColor)] = MapInvalidate,
@@ -68,7 +68,7 @@ public class HarmonyGraphicsViewHandler : HarmonyViewHandler<MGraphicsView, ArkC
 /// </summary>
 public class HarmonyShapeHandler : HarmonyViewHandler<MShape, ArkCustomDrawNode>
 {
-    public static PropertyMapper<MShape, HarmonyShapeHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MShape, HarmonyShapeHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         // 形状属性变化时重绘（ShapeDrawable.Draw 读取的就是这些属性）
         [nameof(MShape.Fill)] = MapInvalidate,

@@ -1,0 +1,227 @@
+{
+  "*": {
+    "AutomationId": "无障碍/自动化标识：ArkUI NDK 无对应属性（native-gaps.json 已记录）",
+    "Clip": "IView.Clip 几何裁剪未接线",
+    "DesiredSize": "布局结果（只读），由引擎 Arrange 写回",
+    "FlowDirection": "RTL 未支持",
+    "Frame": "布局结果（只读）",
+    "Handler": "MAUI 基建属性",
+    "Height": "布局结果（只读）；显式定高走 HeightRequest（基座 Mapper）",
+    "Width": "布局结果（只读）；显式定宽走 WidthRequest（基座 Mapper）",
+    "HorizontalLayoutAlignment": "父容器职责（AttachChild/Arrange 通道，非子节点自身映射）",
+    "VerticalLayoutAlignment": "父容器职责（AttachChild/Arrange 通道）",
+    "IsFocused": "焦点态只读，未接线",
+    "Margin": "父容器职责（AttachChild/Arrange 通道）",
+    "MaximumHeight": "ArkUI NDK 无 max-size 属性",
+    "MaximumWidth": "ArkUI NDK 无 max-size 属性",
+    "MinimumHeight": "ArkUI NDK 无 min-size 属性",
+    "MinimumWidth": "ArkUI NDK 无 min-size 属性",
+    "Semantics": "无障碍语义未支持",
+    "Shadow": "阴影未接线",
+    "ZIndex": "命令通道（Handler.Invoke ZIndex / ZIndexOrder），非 mapper",
+    "SafeAreaEdges": "安全区由宿主页/页面级处理，控件级未接线",
+    "PresentedContent": "MAUI 内部表现层属性",
+    "CascadeInputTransparent": "级联由 VisualProtocol.ResolveHitTestMode 计算，非 mapper",
+    "Children": "布局子树由 Add/Remove 命令通道装配",
+    "Count": "布局只读集合属性",
+    "Item": "布局只读索引器",
+    "IsReadOnly": "Layout.IsReadOnly 为 MAUI 内部兼容属性",
+    "IsClippedToBounds": "裁剪由边框圆角 NODE_CLIP 承载，独立属性未接线",
+    "ClipsToBounds": "同上",
+    "IgnoreSafeArea": "安全区由宿主页处理",
+    "LayoutAreaOverride": "ScrollView 内部布局覆盖，未接线",
+    "IsOpaque": "只读渲染状态",
+    "IsLoading": "只读状态",
+    "IsAnimationPlaying": "只读状态",
+    "IsPressed": "只读按压态",
+    "IsToggled": "ISwitch 兼容属性（IsOn 已映射）",
+    "Command": "命令由 Click/Toggled 等事件通道间接触发（MAUI 内部）",
+    "CommandParameter": "随 Command 通道",
+    "Font": "复合字体对象：FontSize/FontFamily/FontAttributes 已分别映射",
+    "FontAutoScalingEnabled": "字体自动缩放未支持（ArkUI 无开关）",
+    "CharacterSpacing": "ArkUI NDK 无字符间距属性",
+    "TextTransform": "文本变换未接线",
+    "IsOpen": "Picker 弹出态（只读/未接线）"
+  },
+  "HarmonyNavigationPageHandler": {
+    "Background": "导航页背景由宿主页承载",
+    "BarBackgroundColor": "导航栏样式未接线",
+    "BarTextColor": "导航栏样式未接线",
+    "CurrentPage": "导航栈只读属性（HarmonyShellNavigation 通道）",
+    "RootPage": "导航栈只读属性"
+  },
+  "HarmonyShellHandler": {
+    "Background": "Shell 背景由宿主页承载",
+    "CurrentPage": "Shell 结构属性由 HarmonyShellNavigation 内部装配",
+    "CurrentState": "Shell 结构属性（只读）",
+    "FlyoutBackdrop": "Flyout 未实现",
+    "FlyoutBackground": "Flyout 未实现",
+    "FlyoutBackgroundColor": "Flyout 未实现",
+    "FlyoutBackgroundImage": "Flyout 未实现",
+    "FlyoutBackgroundImageAspect": "Flyout 未实现",
+    "FlyoutBehavior": "Flyout 未实现",
+    "FlyoutContent": "Flyout 未实现",
+    "FlyoutContentTemplate": "Flyout 未实现",
+    "FlyoutFooter": "Flyout 未实现",
+    "FlyoutFooterTemplate": "Flyout 未实现",
+    "FlyoutHeader": "Flyout 未实现",
+    "FlyoutHeaderBehavior": "Flyout 未实现",
+    "FlyoutHeaderTemplate": "Flyout 未实现",
+    "FlyoutHeight": "Flyout 未实现",
+    "FlyoutIcon": "Flyout 未实现",
+    "FlyoutIsPresented": "Flyout 未实现",
+    "FlyoutItems": "Flyout 未实现",
+    "FlyoutVerticalScrollMode": "Flyout 未实现",
+    "FlyoutWidth": "Flyout 未实现",
+    "Items": "Shell 结构属性由 HarmonyShellNavigation 内部装配",
+    "ItemTemplate": "Shell 结构属性",
+    "MenuItemTemplate": "Shell 结构属性"
+  },
+  "HarmonyContentPageHandler": {
+    "HideSoftInputOnTapped": "软键盘行为未接线",
+    "Padding": "页面 Padding 由内容布局承担"
+  },
+  "HarmonyScrollViewHandler": {
+    "ContentSize": "滚动内容尺寸（只读）",
+    "ScrollX": "滚动位置经 RequestScrollTo 命令通道",
+    "ScrollY": "滚动位置经 RequestScrollTo 命令通道",
+    "HorizontalOffset": "滚动偏移由 OnScroll 事件写回",
+    "VerticalOffset": "滚动偏移由 OnScroll 事件写回"
+  },
+  "HarmonyRefreshViewHandler": {
+    "IsRefreshEnabled": "刷新使能未接线"
+  },
+  "HarmonyContentPresenterHandler": {
+    "Padding": "模板宿主内边距由模板根布局承担"
+  },
+  "HarmonyButtonHandler": {
+    "Aspect": "按钮图片填充模式未接线",
+    "BorderColorDefaultValue": "MAUI 内部默认值标记",
+    "BorderWidthDefaultValue": "MAUI 内部默认值标记",
+    "CornerRadiusDefaultValue": "MAUI 内部默认值标记",
+    "ContentLayout": "按钮图文混排未接线",
+    "FontAttributes": "按钮字重/斜体未接线（文字由子 Text 承载）",
+    "ImageSource": "按钮图片未接线",
+    "Source": "按钮图片未接线",
+    "LineBreakMode": "按钮文字截断未接线"
+  },
+  "HarmonyLabelHandler": {
+    "FormattedText": "富文本未支持",
+    "TextType": "Html 文本未支持",
+    "TextDecorations": "文本装饰线未接线"
+  },
+  "HarmonyLayoutHandler": {
+    "Orientation": "AttachChild/CreatePlatformView 直接读取，非 mapper 通道",
+    "Spacing": "AttachChild 叠加 Margin 实现，非 mapper 通道"
+  },
+  "HarmonyManagedLayoutHandler": {
+    "ColumnDefinitions": "ArrangeGrid 直接读取，非 mapper 通道",
+    "RowDefinitions": "ArrangeGrid 直接读取，非 mapper 通道",
+    "ColumnSpacing": "ArrangeGrid 直接读取",
+    "RowSpacing": "ArrangeGrid 直接读取"
+  },
+  "HarmonySwitchHandler": {
+    "OffColor": "ArkUI Toggle 无关态轨道色属性",
+    "TrackColor": "ArkUI Toggle 无独立轨道色属性（开态色=SelectedColor 已映射）"
+  },
+  "HarmonyCheckBoxHandler": {
+    "BackgroundColor": "背景经基座 Background 通道",
+    "BorderColor": "复选框边框样式未接线",
+    "BorderColorDefaultValue": "MAUI 内部默认值标记",
+    "BorderWidth": "复选框边框样式未接线",
+    "BorderWidthDefaultValue": "MAUI 内部默认值标记",
+    "CornerRadius": "复选框圆角未接线",
+    "CornerRadiusDefaultValue": "MAUI 内部默认值标记",
+    "Foreground": "前景色未接线"
+  },
+  "HarmonyRadioButtonHandler": {
+    "BackgroundColor": "背景经基座 Background 通道",
+    "BorderColor": "单选框边框样式未接线",
+    "BorderColorDefaultValue": "MAUI 内部默认值标记",
+    "BorderWidth": "单选框边框样式未接线",
+    "BorderWidthDefaultValue": "MAUI 内部默认值标记",
+    "CornerRadius": "单选框圆角未接线",
+    "CornerRadiusDefaultValue": "MAUI 内部默认值标记",
+    "Content": "单选框内容未接线",
+    "FontFamily": "单选框文字未接线",
+    "FontSize": "单选框文字未接线",
+    "FontAttributes": "单选框文字未接线",
+    "TextColor": "单选框文字未接线",
+    "GroupName": "分组未接线",
+    "Value": "组值未接线",
+    "Padding": "单选框内边距未接线"
+  },
+  "HarmonyEntryHandler": {
+    "ClearButtonVisibility": "清除按钮未接线",
+    "HorizontalTextAlignment": "TextInput 文本对齐属性未接线",
+    "VerticalTextAlignment": "单行输入无垂直对齐",
+    "ReturnCommand": "回车命令未接线",
+    "ReturnCommandParameter": "随 ReturnCommand"
+  },
+  "HarmonyEditorHandler": {
+    "AutoSize": "自动增高未接线",
+    "HorizontalTextAlignment": "TextArea 文本对齐属性未接线",
+    "VerticalTextAlignment": "TextArea 垂直对齐未接线"
+  },
+  "HarmonySliderHandler": {
+    "DragCompletedCommand": "拖动命令未接线",
+    "DragStartedCommand": "拖动命令未接线",
+    "ThumbImageSource": "滑块图片未接线"
+  },
+  "HarmonyPickerHandler": {
+    "FontFamily": "Picker 文字样式未接线",
+    "FontSize": "Picker 文字样式未接线",
+    "FontAttributes": "Picker 文字样式未接线",
+    "HorizontalTextAlignment": "Picker 文字对齐未接线",
+    "VerticalTextAlignment": "Picker 文字对齐未接线",
+    "ItemDisplayBinding": "项显示绑定未接线",
+    "Items": "数据源未接线",
+    "SelectedItem": "选中项未接线",
+    "TextColor": "Picker 文字样式未接线",
+    "Title": "Picker 标题未接线",
+    "TitleColor": "Picker 标题未接线"
+  },
+  "HarmonyDatePickerHandler": {
+    "FontFamily": "文字样式未接线",
+    "FontSize": "文字样式未接线",
+    "FontAttributes": "文字样式未接线",
+    "Format": "日期格式未接线",
+    "TextColor": "文字样式未接线"
+  },
+  "HarmonyTimePickerHandler": {
+    "FontFamily": "文字样式未接线",
+    "FontSize": "文字样式未接线",
+    "FontAttributes": "文字样式未接线",
+    "Format": "时间格式未接线",
+    "TextColor": "文字样式未接线"
+  },
+  "HarmonyCarouselViewHandler": {
+    "AnimateCurrentItemChanges": "轮播行为属性未接线",
+    "AnimatePositionChanges": "轮播行为属性未接线",
+    "CurrentItemChangedCommand": "轮播命令未接线",
+    "CurrentItemChangedCommandParameter": "轮播命令未接线",
+    "IndicatorView": "指示器未接线",
+    "IsBounceEnabled": "回弹开关未接线",
+    "IsDragging": "只读状态",
+    "IsScrollAnimated": "滚动动画开关未接线",
+    "IsScrolling": "只读状态",
+    "ItemsLayout": "轮播布局未接线",
+    "PeekAreaInsets": "窥视边距未接线",
+    "PositionChangedCommand": "轮播命令未接线",
+    "PositionChangedCommandParameter": "轮播命令未接线",
+    "VisibleViews": "只读状态"
+  },
+  "HarmonyFrameHandler": {
+    "StrokeDashArray": "ArkUI 边框无虚线",
+    "StrokeDashOffset": "ArkUI 边框无虚线",
+    "StrokeDashPattern": "ArkUI 边框无虚线",
+    "StrokeLineCap": "ArkUI 边框无线条端点样式",
+    "StrokeLineJoin": "ArkUI 边框无线条连接样式",
+    "StrokeMiterLimit": "ArkUI 边框无斜接限制"
+  },
+  "HarmonyBoxViewHandler": {
+    "Aspect": "BoxView 填充模式未接线",
+    "Fill": "渐变填充未接线（Color/Background 已映射）",
+    "Shape": "形状描述未接线"
+  }
+}

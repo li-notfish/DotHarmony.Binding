@@ -19,7 +19,7 @@ namespace HarmonyOS.Maui.Handlers;
 
 public class HarmonyShellHandler : ViewHandler<Shell, ArkColumn>
 {
-    public static PropertyMapper<Shell, HarmonyShellHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<Shell, HarmonyShellHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         // 应用/MAUI 内部改 CurrentItem 时反向同步（选择状态由 HarmonyShellNavigation 自持；
         // Controls Shell 的 BP 变更不保证触发 UpdateValue，此条为尽力而为）

@@ -11,13 +11,17 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkButton>
     /// <summary>点击事件日志开关（插值分配走在调用点，仅在排障时打开）</summary>
     private static readonly bool LogClick = false;
 
-    public static PropertyMapper<Button, HarmonyButtonHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<Button, HarmonyButtonHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(Button.Text)] = MapText,
         [nameof(Button.TextColor)] = MapTextColor,
         [nameof(Button.FontSize)] = MapFontSize,
         [nameof(Button.FontFamily)] = MapFontFamily,
         [nameof(Button.BackgroundColor)] = MapBackgroundColor,
+        [nameof(Button.BorderColor)] = MapBorderColor,
+        [nameof(Button.BorderWidth)] = MapBorderWidth,
+        [nameof(Button.CornerRadius)] = MapCornerRadius,
+        [nameof(Button.Padding)] = MapPadding,
     };
 
     public HarmonyButtonHandler() : base(Mapper) { }
@@ -71,6 +75,31 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkButton>
     {
         if (v.BackgroundColor is { } c)
             h.PlatformView.SetBackgroundColor(c.ToUint());
+    }
+
+    public static void MapBorderColor(HarmonyButtonHandler h, Button v)
+    {
+        if (v.BorderColor is { } c)
+            h.PlatformView.SetBorderColor(c.ToUint());
+    }
+
+    public static void MapBorderWidth(HarmonyButtonHandler h, Button v)
+    {
+        // MAUI 默认 -1 = 未设置；ArkUI 边框宽无"未设置"值，仅在显式非负时下发
+        if (v.BorderWidth >= 0)
+            h.PlatformView.SetBorderWidth((float)v.BorderWidth);
+    }
+
+    public static void MapCornerRadius(HarmonyButtonHandler h, Button v)
+    {
+        if (v.CornerRadius >= 0)
+            h.PlatformView.SetBorderRadius(v.CornerRadius, v.CornerRadius, v.CornerRadius, v.CornerRadius);
+    }
+
+    public static void MapPadding(HarmonyButtonHandler h, Button v)
+    {
+        var p = v.Padding;
+        h.PlatformView.SetPaddingEdges((float)p.Top, (float)p.Right, (float)p.Bottom, (float)p.Left);
     }
 
     private void OnClick(HarmonyOS.Bindings.NativeNode.ArkUINodeEvent _)

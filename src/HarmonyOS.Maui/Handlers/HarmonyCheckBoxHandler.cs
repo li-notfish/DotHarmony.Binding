@@ -7,9 +7,10 @@ namespace HarmonyOS.Maui.Handlers;
 
 public class HarmonyCheckBoxHandler : HarmonyViewHandler<ICheckBox, ArkCheckBox>, ICheckBoxHandler
 {
-    public static PropertyMapper<ICheckBox, ICheckBoxHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<ICheckBox, ICheckBoxHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(ICheckBox.IsChecked)] = MapIsChecked,
+        [nameof(Microsoft.Maui.Controls.CheckBox.Color)] = MapColor,
     };
 
     public HarmonyCheckBoxHandler() : base(Mapper) { }
@@ -39,6 +40,13 @@ public class HarmonyCheckBoxHandler : HarmonyViewHandler<ICheckBox, ArkCheckBox>
     {
         if (handler is HarmonyCheckBoxHandler h)
             h.PlatformView.Select = view.IsChecked;
+    }
+
+    public static void MapColor(ICheckBoxHandler handler, ICheckBox view)
+    {
+        // MAUI CheckBox.Color = 选中态标记色 → NODE_CHECKBOX_SELECT_COLOR
+        if (handler is HarmonyCheckBoxHandler h && view is Microsoft.Maui.Controls.CheckBox { Color: { } c })
+            h.PlatformView.SetSelectColor(c.ToUint());
     }
 
     private void OnCheckBoxChanged(ArkUINodeEvent e)

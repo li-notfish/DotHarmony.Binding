@@ -25,7 +25,7 @@ namespace HarmonyOS.Maui.Handlers;
 public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColumn>
 {
     public static readonly PropertyMapper<NavigationPage, HarmonyNavigationPageHandler> Mapper =
-        new(ViewMapper)
+        new(HarmonyViewMapper.Base)
         {
             [nameof(VisualElement.BackgroundColor)] = MapBackgroundColor,
             [nameof(NavigationPage.BarBackground)] = MapBarBackground,

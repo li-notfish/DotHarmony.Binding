@@ -12,7 +12,7 @@ public class HarmonyScrollViewHandler : HarmonyViewHandler<IScrollView, ArkScrol
     /// <summary>滚动事件日志开关：插值分配走在调用点，开启才付出分配代价（与布局热路径同一纪律）</summary>
     private static readonly bool LogScroll = false;
 
-    public static PropertyMapper<IScrollView, IScrollViewHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<IScrollView, IScrollViewHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(IScrollView.Content)] = MapContent,
         [nameof(IScrollView.Orientation)] = MapOrientation,
@@ -86,12 +86,24 @@ public class HarmonyScrollViewHandler : HarmonyViewHandler<IScrollView, ArkScrol
         if (node is null) return;
 
         var (stretchWidth, stretchHeight) = GetContentSizing(VirtualView.Orientation);
+        // 交叉轴百分比只有在 Scroll 自身该轴受约束时才有意义：auto 高宿主里的
+        // 百分比高会向上解析到视口，把横向滚动区撑满剩余整屏、内容被顶到底部
+        // （WeatherTwentyOne "Next 24 Hours" 横向小时条实测踩过）。
+        // 高度受约束 = 显式 HeightRequest，或父级是 Grid（Arrange 会写显式高）
+        if (stretchHeight && !IsHeightBounded())
+            stretchHeight = false;
         if (stretchWidth) node.SetWidthPercent(1.0f);
         else node.SetWidthAuto();
 
         if (stretchHeight) node.SetHeightPercent(1.0f);
         else node.SetHeightAuto();
     }
+
+    /// <summary>Scroll 自身高度是否受约束（显式 HeightRequest 或位于 Grid 托管布局内）。</summary>
+    private bool IsHeightBounded()
+        => VirtualView is Microsoft.Maui.Controls.VisualElement ve
+           && (ve.HeightRequest >= 0
+               || ve.Parent is Microsoft.Maui.Controls.Grid);
 
     /// <summary>
     /// MAUI 官方测量语义：竖向滚动约束宽、横向滚动约束高（交叉轴充满），

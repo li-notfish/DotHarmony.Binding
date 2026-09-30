@@ -11,7 +11,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>MAUI Layout 的 HarmonyOS Handler（ArkUI Column/Row 托管布局）。</summary>
 public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
 {
-    public static PropertyMapper<MLAYOUT, HarmonyLayoutHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MLAYOUT, HarmonyLayoutHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(MLAYOUT.Background)] = MapBackground,
         [nameof(MLAYOUT.Padding)] = MapPadding,

@@ -20,7 +20,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// </summary>
 public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, ArkList>
 {
-    public static PropertyMapper<MCollectionView, HarmonyCollectionViewHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MCollectionView, HarmonyCollectionViewHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(ItemsView.ItemsSource)] = MapItems,
         [nameof(ItemsView.ItemTemplate)] = MapItems,
@@ -204,7 +204,7 @@ public class HarmonyCarouselViewHandler : HarmonyViewHandler<MCarouselView, ArkS
     /// <summary>活跃条目（全量物化模型）：Rebuild/Disconnect 统一处置（Handler 断连 + 节点 Dispose）</summary>
     private readonly List<(ArkUINode Node, View View)> _live = new();
 
-    public static PropertyMapper<MCarouselView, HarmonyCarouselViewHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MCarouselView, HarmonyCarouselViewHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(ItemsView.ItemsSource)] = MapItems,
         [nameof(ItemsView.ItemTemplate)] = MapItems,

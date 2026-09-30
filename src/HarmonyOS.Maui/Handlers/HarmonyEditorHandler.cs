@@ -9,13 +9,14 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>MAUI Editor 的 HarmonyOS Handler（ArkUI TextArea 节点）。FontSize 不在核心 IEditor 接口中。</summary>
 public class HarmonyEditorHandler : HarmonyViewHandler<Editor, ArkTextArea>
 {
-    public static PropertyMapper<Editor, HarmonyEditorHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<Editor, HarmonyEditorHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(Editor.Text)] = MapText,
         [nameof(Editor.Placeholder)] = MapPlaceholder,
         [nameof(Editor.TextColor)] = MapTextColor,
         [nameof(Editor.PlaceholderColor)] = MapPlaceholderColor,
         [nameof(Editor.FontSize)] = MapFontSize,
+        [nameof(Editor.FontFamily)] = MapFontFamily,
         [nameof(Editor.IsReadOnly)] = MapIsReadOnly,
         [nameof(Editor.MaxLength)] = MapMaxLength,
     };
@@ -64,6 +65,12 @@ public class HarmonyEditorHandler : HarmonyViewHandler<Editor, ArkTextArea>
     {
         if (v.FontSize >= 0)
             h.PlatformView.FontSize = (float)v.FontSize;
+    }
+
+    public static void MapFontFamily(HarmonyEditorHandler h, Editor v)
+    {
+        if (!string.IsNullOrEmpty(v.FontFamily))
+            h.PlatformView.SetFontFamily(v.FontFamily);
     }
 
     public static void MapIsReadOnly(HarmonyEditorHandler h, Editor v)
