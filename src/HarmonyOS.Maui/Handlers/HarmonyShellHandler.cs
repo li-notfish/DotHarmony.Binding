@@ -1,5 +1,6 @@
 // HarmonyShellHandler：MAUI Shell 视觉宿主（Flyout + TabBar + 主题色）。
-// 平台结构：根 Stack = 主 Column（顶部导航栏 + 内容区 + 底部 TabBar）+ Flyout 覆盖层。
+// 平台结构：根 Stack = 主 Column（顶部导航栏 + 内容区 + 底部 TabBar）+ 遮罩 + Flyout 面板
+//（后两者为根直接子节点，z 序在上；FlyoutBehavior.Locked 时主列右移收窄与面板并排）。
 // ShellContent 页经 IShellContentController.Page 惰性创建，节点按 Page 缓存（条目切换保留
 // 状态）；注册路由推送页同驻内容区。路由/栈语义在 HarmonyShellNavigation（自持，不依赖
 // MAUI Shell 的平台 fragment 机制）；MAUI 侧 CurrentItem 变更经 mapper 反向同步。
@@ -39,7 +40,7 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
     private ArkText? _topBarTitle;
     private ArkStack? _contentHost;
     private ArkRow? _tabBar;
-    private ArkStack? _flyoutOverlay;
+    private ArkStack? _backdrop;
     private ArkColumn? _flyoutPanel;
     private bool _flyoutVisible;
     private readonly Dictionary<Page, ArkUINode> _nodes = new();
@@ -51,6 +52,7 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
     private bool _tabBarShown = true; // 初值 true：单条目 Shell 首次 ApplyChromeVisibility 才会产生"变更"并落 NONE
     private bool _navBarShown = true;
     private float _lastColumnHeight;
+    private float _lastRootWidth;
     private bool _syncingFlyout; // FlyoutIsPresented 双向同步回环防护
 
     // 内容区高度显式回填（NODE_FLEX_GROW 在 Column 内不可靠，见 ConnectHandler 注释）：
@@ -127,33 +129,32 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         // 列高 - 顶栏 - （可见时）TabBar
         _mainColumn.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_SIZE_CHANGE, OnMainColumnSizeChange);
 
-        // Flyout 覆盖层：全屏 Stack，默认不可见；展开时半透明遮罩 + 左侧面板
-        _flyoutOverlay = new ArkStack();
-        _flyoutOverlay.SetWidthPercent(1.0f);
-        _flyoutOverlay.SetHeightPercent(1.0f);
-        _flyoutOverlay.Visible = false;
-        platformView.AddChild(_flyoutOverlay);
+        // 根尺寸：Locked 并排让宽的数据源
+        platformView.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_SIZE_CHANGE, OnRootSizeChange);
 
-        // 遮罩背景（点击关闭）
-        var backdrop = new ArkStack();
-        backdrop.SetWidthPercent(1.0f);
-        backdrop.SetHeightPercent(1.0f);
-        backdrop.SetBackgroundColor(0, 0, 0, HarmonyShellTheme.BackdropAlpha);
-        backdrop.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_CLICK, _ => ToggleFlyout());
-        _flyoutOverlay.AddChild(backdrop);
+        // 遮罩（全屏，仅 Flyout 模式展开时可见；点击关闭）。面板与遮罩同为根直接
+        // 子节点而非覆盖层容器，Locked 并排时无全屏容器遮挡内容区命中测试。
+        _backdrop = new ArkStack();
+        _backdrop.SetWidthPercent(1.0f);
+        _backdrop.SetHeightPercent(1.0f);
+        _backdrop.SetBackgroundColor(0, 0, 0, HarmonyShellTheme.BackdropAlpha);
+        _backdrop.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_CLICK, _ => ToggleFlyout());
+        _backdrop.Visible = false;
+        platformView.AddChild(_backdrop);
 
-        // Flyout 面板（左侧，宽度/背景/内边距走主题）
+        // Flyout 面板（左侧，宽度/背景/内边距走主题；关闭时隐藏）
         _flyoutPanel = new ArkColumn();
         _flyoutPanel.SetWidth(HarmonyShellTheme.FlyoutWidthVp);
         _flyoutPanel.SetHeightPercent(1.0f);
         _flyoutPanel.SetPosition(0f, 0f);
         _flyoutPanel.SetTranslate(-HarmonyShellTheme.FlyoutWidthVp, 0f);
+        _flyoutPanel.Visible = false;
         _flyoutPanel.SetPaddingEdges(
             HarmonyShellTheme.FlyoutPaddingTop,
             HarmonyShellTheme.FlyoutPaddingRight,
             HarmonyShellTheme.FlyoutPaddingBottom,
             HarmonyShellTheme.FlyoutPaddingLeft);
-        _flyoutOverlay.AddChild(_flyoutPanel);
+        platformView.AddChild(_flyoutPanel);
 
         BuildTabBar();
         BuildFlyout();
@@ -170,10 +171,12 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         if (Application.Current is { } application)
             application.RequestedThemeChanged -= OnRequestedThemeChanged;
         Hosting.HarmonyShellNavigation.Detach(this);
-        // 关闭动画可能被断开打断，强制复位遮罩，避免覆盖层悬挂在 Visible=true
+        // 关闭动画可能被断开打断，强制复位遮罩/面板，避免悬挂在 Visible=true
         _flyoutVisible = false;
-        if (_flyoutOverlay is { } overlay)
-            overlay.Visible = false;
+        if (_backdrop is { } backdrop)
+            backdrop.Visible = false;
+        if (_flyoutPanel is { } panel)
+            panel.Visible = false;
         // FlyoutHeader 的 handler 不入 _flyoutEntries，单独断连并释放节点子树
         if (_flyoutHeaderHandler is { } headerHandler)
         {
@@ -195,10 +198,10 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         }
         _visibleNode = null;
         _visiblePage = null;
-        // 外壳子树（主列/顶栏/内容区/TabBar/Flyout 覆盖层）随根 Stack 级联释放——
+        // 外壳子树（主列/顶栏/内容区/TabBar/遮罩/Flyout 面板）随根 Stack 级联释放——
         // ViewHandler 不自动 Dispose PlatformView，不释放则 Shell 重建时整树泄漏
         _flyoutPanel = null;
-        _flyoutOverlay = null;
+        _backdrop = null;
         _contentHost = null;
         _tabBar = null;
         _topBarTitle = null;
@@ -346,14 +349,15 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
     private void SetFlyoutVisible(bool visible, bool syncToShell)
     {
         var shell = VirtualView;
-        if (shell is not null && shell.FlyoutBehavior == FlyoutBehavior.Disabled && visible)
+        var behavior = shell?.FlyoutBehavior ?? FlyoutBehavior.Flyout;
+        if (behavior == FlyoutBehavior.Disabled && visible)
             return; // Disabled：拒绝打开
-        if (shell is not null && shell.FlyoutBehavior == FlyoutBehavior.Locked && !visible)
+        if (behavior == FlyoutBehavior.Locked && !visible)
             return; // Locked：常驻，拒绝关闭
         if (_flyoutVisible == visible)
             return;
         _flyoutVisible = visible;
-        if (_flyoutOverlay is not { } overlay || _flyoutPanel is not { } panel)
+        if (_backdrop is not { } backdrop || _flyoutPanel is not { } panel)
             return;
 
         // 反向同步 MAUI 侧（回环由 MapFlyoutIsPresented 的 _syncingFlyout 守卫）
@@ -366,7 +370,9 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
 
         if (_flyoutVisible)
         {
-            overlay.Visible = true;
+            panel.Visible = true;
+            // Locked 并排：无遮罩（遮罩会阻断内容区命中测试）
+            backdrop.Visible = behavior == FlyoutBehavior.Flyout;
             panel.SetTranslate(-HarmonyShellTheme.FlyoutWidthVp, 0f);
             panel.Animate(
                 () => panel.SetTranslate(0f, 0f),
@@ -375,10 +381,11 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         }
         else
         {
+            backdrop.Visible = false;
             panel.Animate(
                 () => panel.SetTranslate(-HarmonyShellTheme.FlyoutWidthVp, 0f),
                 // 关闭动画期间被重新打开时不得隐藏（完成回调不可取消，加状态守卫）
-                () => { if (!_flyoutVisible) overlay.Visible = false; },
+                () => { if (!_flyoutVisible) panel.Visible = false; },
                 HarmonyShellTheme.FlyoutAnimationMs);
         }
     }
@@ -398,8 +405,8 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
     private static void MapChromeVisibility(HarmonyShellHandler handler, Shell shell)
         => handler.ApplyChromeVisibility();
 
-    /// <summary>FlyoutBehavior：Disabled 隐藏汉堡并强制关闭；Locked 常驻展开（无遮罩、
-    /// 内容区不让宽——覆盖式常驻，与 MAUI 的并排布局有差异，文档声明）；Flyout 常规。</summary>
+    /// <summary>FlyoutBehavior：Disabled 隐藏汉堡并强制关闭；Locked 常驻展开并与内容区
+    /// 并排（无遮罩、主列右移让宽）；Flyout 常规覆盖。</summary>
     private void ApplyFlyoutBehavior()
     {
         var shell = VirtualView;
@@ -411,9 +418,52 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
                 ? ArkUI_Visibility.ARKUI_VISIBILITY_VISIBLE
                 : ArkUI_Visibility.ARKUI_VISIBILITY_NONE);
         if (behavior == FlyoutBehavior.Disabled)
+        {
+            ApplyLockedLayout(locked: false);
             SetFlyoutVisible(false, syncToShell: true);
+        }
         else if (behavior == FlyoutBehavior.Locked)
+        {
+            ApplyLockedLayout(locked: true);
             SetFlyoutVisible(true, syncToShell: true);
+        }
+        else
+        {
+            ApplyLockedLayout(locked: false);
+            // 从 Locked 切回：面板仍处展开态时补回遮罩，恢复覆盖式语义
+            if (_flyoutVisible && _backdrop is { } bd)
+                bd.Visible = true;
+        }
+    }
+
+    /// <summary>Locked 并排布局：主列右移 FlyoutWidthVp 并显式收窄；解除时恢复满宽。</summary>
+    private void ApplyLockedLayout(bool locked)
+    {
+        if (_mainColumn is null)
+            return;
+        if (locked && _lastRootWidth > 0)
+        {
+            _mainColumn.SetWidth(ResolveLockedContentWidth(_lastRootWidth, HarmonyShellTheme.FlyoutWidthVp));
+            _mainColumn.SetPosition(HarmonyShellTheme.FlyoutWidthVp, 0f);
+        }
+        else if (!locked)
+        {
+            _mainColumn.SetWidthPercent(1.0f);
+            _mainColumn.SetPosition(0f, 0f);
+        }
+        // locked 但根尺寸未就绪：等 OnRootSizeChange 回填
+    }
+
+    /// <summary>Locked 并排时主列宽度：根宽 - 面板宽，下限 0（窄屏/超宽面板不设负宽）。</summary>
+    internal static float ResolveLockedContentWidth(float rootWidth, float flyoutWidth)
+        => Math.Max(0f, rootWidth - flyoutWidth);
+
+    private void OnRootSizeChange(ArkUINodeEvent e)
+    {
+        _lastRootWidth = e.SizeChangeWidth;
+        // Locked 并排：根宽变化（旋转/折叠屏展开）需重算主列让宽
+        if (VirtualView?.FlyoutBehavior == FlyoutBehavior.Locked)
+            ApplyLockedLayout(locked: true);
     }
 
     /// <summary>NavBar/TabBar 可见性：Shell 级与可见页 attached 值合成（页级优先），

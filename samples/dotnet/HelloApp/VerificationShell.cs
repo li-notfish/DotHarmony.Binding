@@ -81,7 +81,18 @@ public class ShellHomePage : ContentPage
         };
         layout.Children.Add(modalBtn);
 
-        // M2 探针：FlyoutIsPresented 双向 / NavBar / TabBar / 标题热更新
+        // M2 探针：FlyoutBehavior / FlyoutIsPresented 双向 / NavBar / TabBar / 标题热更新
+        // （Locked 切换放最前：Locked 并排后内容区极窄，靠后的按钮会被挤出可视区）
+        var lockBtn = new Button { Text = "Toggle FlyoutBehavior Locked" };
+        lockBtn.Clicked += (_, _) =>
+        {
+            var sh = AppShell.Instance!;
+            sh.FlyoutBehavior = sh.FlyoutBehavior == FlyoutBehavior.Locked
+                ? FlyoutBehavior.Flyout : FlyoutBehavior.Locked;
+            HiLog.Info("VProbe", $"[V][BEHAVIOR] {sh.FlyoutBehavior}");
+        };
+        layout.Children.Add(lockBtn);
+
         var flyoutBtn = new Button { Text = "Open flyout via FlyoutIsPresented" };
         flyoutBtn.Clicked += (_, _) =>
         {
