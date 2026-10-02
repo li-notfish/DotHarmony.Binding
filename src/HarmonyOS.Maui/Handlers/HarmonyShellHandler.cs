@@ -7,6 +7,7 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
+using HarmonyOS.Interop;
 using HarmonyOS.Bindings.NativeNode;
 using ArkColumn = HarmonyOS.ArkUI.Column;
 using ArkRow = HarmonyOS.ArkUI.Row;
@@ -42,6 +43,20 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
     private IElementHandler? _flyoutHeaderHandler;
     private Page? _visiblePage;
     private ArkUINode? _visibleNode;
+    private bool _tabBarShown;
+
+    // 内容区高度显式回填（NODE_FLEX_GROW 在 Column 内不可靠，见 ConnectHandler 注释）
+    private void OnMainColumnSizeChange(ArkUINodeEvent e)
+    {
+        if (_contentHost is null || e.SizeChangeHeight <= 0)
+            return;
+        var contentHeight = e.SizeChangeHeight
+            - HarmonyShellTheme.TopBarHeightVp
+            - (_tabBarShown ? HarmonyShellTheme.TabBarHeightVp : 0f);
+        if (contentHeight > 0)
+            _contentHost.SetHeight(contentHeight);
+    }
+
     private void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
         => ApplyThemeColors();
 
@@ -85,13 +100,17 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
 
         _contentHost = new ArkStack();
         _contentHost.SetWidthPercent(1.0f);
-        _contentHost.SetFlexGrow(1f);
         _mainColumn.AddChild(_contentHost);
 
         _tabBar = new ArkRow();
         _tabBar.SetWidthPercent(1.0f);
         _tabBar.SetHeight(HarmonyShellTheme.TabBarHeightVp);
         _mainColumn.AddChild(_tabBar);
+
+        // ArkUI NDK 的 NODE_FLEX_GROW 在 Column 内不按"剩余空间"收缩（实测内容区拿了
+        // 整列高，把固定高 TabBar 挤出可视区）——改为列尺寸就绪后显式回填内容区高度：
+        // 列高 - 顶栏 - （可见时）TabBar
+        _mainColumn.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_SIZE_CHANGE, OnMainColumnSizeChange);
 
         // Flyout 覆盖层：全屏 Stack，默认不可见；展开时半透明遮罩 + 左侧面板
         _flyoutOverlay = new ArkStack();
@@ -159,6 +178,17 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         }
         _visibleNode = null;
         _visiblePage = null;
+        // 外壳子树（主列/顶栏/内容区/TabBar/Flyout 覆盖层）随根 Stack 级联释放——
+        // ViewHandler 不自动 Dispose PlatformView，不释放则 Shell 重建时整树泄漏
+        _flyoutPanel = null;
+        _flyoutOverlay = null;
+        _contentHost = null;
+        _tabBar = null;
+        _topBarTitle = null;
+        _hamburger = null;
+        _topBar = null;
+        _mainColumn = null;
+        platformView.Dispose();
         base.DisconnectHandler(platformView);
     }
 
@@ -174,7 +204,9 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
             return;
         var items = shell.Items.ToList();
         // 单条目不显示 TabBar（对齐主流平台 Shell 行为）
-        _tabBar.Visible = items.Count > 1;
+        _tabBarShown = items.Count > 1;
+        // None（不占位）而非 Hidden：显式高度布局下 Hidden 仍占 56vp 会把内容区顶出界
+        _tabBar.SetVisibility(_tabBarShown ? ArkUI_Visibility.ARKUI_VISIBILITY_VISIBLE : ArkUI_Visibility.ARKUI_VISIBILITY_NONE);
         foreach (var item in items)
         {
             var entry = new ArkColumn();
@@ -280,7 +312,6 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
             return;
         headerView.Parent ??= shell;
         _flyoutHeaderHandler = HarmonyHandlerFactory.Create((Element)headerView);
-        _flyoutHeaderHandler.SetVirtualView(headerView);
         if (_flyoutHeaderHandler.PlatformView is ArkUINode headerNode)
         {
             headerNode.SetWidthPercent(1.0f);
@@ -310,7 +341,8 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         {
             panel.Animate(
                 () => panel.SetTranslate(-HarmonyShellTheme.FlyoutWidthVp, 0f),
-                () => overlay.Visible = false,
+                // 关闭动画期间被重新打开时不得隐藏（完成回调不可取消，加状态守卫）
+                () => { if (!_flyoutVisible) overlay.Visible = false; },
                 HarmonyShellTheme.FlyoutAnimationMs);
         }
     }
@@ -426,7 +458,6 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         if (_nodes.TryGetValue(page, out var cached))
             return cached;
         var handler = HarmonyHandlerFactory.Create((Element)page);
-        handler.SetVirtualView(page);
         var node = handler.PlatformView as ArkUINode
             ?? throw new InvalidOperationException(
                 $"page handler PlatformView is not an ArkUI node: {handler.PlatformView?.GetType().Name}");

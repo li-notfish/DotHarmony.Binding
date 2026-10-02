@@ -78,7 +78,6 @@ public static class HarmonyNavigation
     private static ArkUINode AssemblePage(MPage page)
     {
         var handler = Handlers.HarmonyHandlerFactory.Create((Microsoft.Maui.Controls.Element)page);
-        handler.SetVirtualView(page);
         return handler.PlatformView as ArkUINode
             ?? throw new InvalidOperationException(
                 $"page handler PlatformView is not an ArkUI node: {handler.PlatformView?.GetType().Name}");
@@ -155,14 +154,17 @@ public static class HarmonyNavigation
 
         var current = _currentPage.Value;
         current.Page.SendDisappearing();
+        // 动画回调可能晚于宿主换容器（Detach/重建），捕获当前容器避免摘除错树
+        var container = _container;
 
         void Finish()
         {
-            _container!.RemoveChild(current.Node);
+            container!.RemoveChild(current.Node);
+            current.Page.Handler = null; // 触发 DisconnectHandler（手势/事件订阅清理）
             current.Node.Dispose();
             _currentPage = BackStack.Pop();
             _currentPage.Value.Page.SendAppearing();
-            _container.AddChild(_currentPage.Value.Node);
+            container.AddChild(_currentPage.Value.Node);
             _transitioning = false;
         }
 
@@ -207,12 +209,14 @@ public static class HarmonyNavigation
 
         var (page, node) = Modals[^1];
         Modals.RemoveAt(Modals.Count - 1);
+        var container = _container;
 
         page.SendDisappearing();
         _transitioning = true;
         node.Animate(() => node.SetOpacity(0f), () =>
         {
-            _container!.RemoveChild(node);
+            container!.RemoveChild(node);
+            page.Handler = null; // 触发 DisconnectHandler（手势/事件订阅清理）
             node.Dispose();
             _transitioning = false;
         });

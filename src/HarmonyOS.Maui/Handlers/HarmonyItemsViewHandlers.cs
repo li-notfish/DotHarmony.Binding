@@ -169,7 +169,6 @@ public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, 
         view.BindingContext = item;
 
         var handler = HarmonyHandlerFactory.Create((Microsoft.Maui.IView)view);
-        handler.SetVirtualView(view);
         if (handler.PlatformView is not ArkUINode node)
             return null;
         node.SetWidthPercent(1.0f);
@@ -325,7 +324,6 @@ internal static class ItemsViewMaterializer
             view.BindingContext = item;
 
             var handler = HarmonyHandlerFactory.Create((Microsoft.Maui.IView)view);
-            handler.SetVirtualView(view);
             if (handler.PlatformView is ArkUINode node)
             {
                 node.SetWidthPercent(1.0f);

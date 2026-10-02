@@ -48,8 +48,19 @@ public sealed class HarmonyDispatcher : IDispatcher
         Timer? timer = null;
         timer = new Timer(_ =>
         {
-            Dispatch(action);
-            timer?.Dispose();
+            try
+            {
+                Dispatch(action);
+            }
+            catch (Exception ex)
+            {
+                // 线程池回调内异常不可外溢（进程级崩溃风险）
+                HiLog.Error("HarmonyDispatcher", $"DispatchDelayed action threw: {ex.Message}");
+            }
+            finally
+            {
+                timer?.Dispose();
+            }
         }, null, delay, Timeout.InfiniteTimeSpan);
         return true;
     }

@@ -53,7 +53,6 @@ public class HarmonyRefreshViewHandler : HarmonyViewHandler<IRefreshView, ArkRef
             if (view.Content is IView content)
             {
                 var childHandler = HarmonyHandlerFactory.Create(content);
-                childHandler.SetVirtualView(content);
                 h._contentHandler = childHandler;
                 if (childHandler.PlatformView is ArkUINode node)
                 {

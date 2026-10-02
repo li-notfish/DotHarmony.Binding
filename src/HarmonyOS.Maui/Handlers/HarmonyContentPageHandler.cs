@@ -63,7 +63,6 @@ public class HarmonyContentPageHandler : ViewHandler<ContentPage, ArkColumn>
         if (content is not IView view) return;
 
         var childHandler = HarmonyHandlerFactory.Create(view);
-        childHandler.SetVirtualView(view);
         _contentHandler = childHandler;
 
         if (childHandler.PlatformView is ArkUINode node)

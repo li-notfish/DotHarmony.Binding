@@ -40,7 +40,6 @@ public class HarmonyFrameHandler : HarmonyViewHandler<Border, ArkStack>
         }
         if (v.Content is not IView content) return;
         var childHandler = HarmonyHandlerFactory.Create(content);
-        childHandler.SetVirtualView(content);
         h._contentHandler = childHandler;
         if (childHandler.PlatformView is ArkUINode node)
         {

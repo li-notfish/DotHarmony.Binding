@@ -120,7 +120,6 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
     {
         if (_children.ContainsKey(view)) return;
         var handler = HarmonyHandlerFactory.Create(view);
-        handler.SetVirtualView(view);
         if (handler.PlatformView is ArkUINode node)
         {
             // MAUI 显式 WidthRequest/HeightRequest 优先（vp）；view.Width/Height 是布局后的

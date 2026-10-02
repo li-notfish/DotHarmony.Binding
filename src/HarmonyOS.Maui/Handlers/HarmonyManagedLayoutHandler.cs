@@ -128,7 +128,6 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     {
         if (_children.ContainsKey(view)) return;
         var handler = HarmonyHandlerFactory.Create(view);
-        handler.SetVirtualView(view);
         if (handler.PlatformView is ArkUINode node)
         {
             // 尺寸与位置全部由 Arrange 决定，此处不设任何布局属性

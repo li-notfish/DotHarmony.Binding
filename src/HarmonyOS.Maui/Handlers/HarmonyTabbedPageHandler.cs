@@ -204,7 +204,6 @@ public class HarmonyTabbedPageHandler : ViewHandler<TabbedPage, ArkColumn>
         if (_nodes.TryGetValue(page, out var cached))
             return cached;
         var handler = HarmonyHandlerFactory.Create((Element)page);
-        handler.SetVirtualView(page);
         var node = handler.PlatformView as ArkUINode
             ?? throw new InvalidOperationException(
                 $"page handler PlatformView is not an ArkUI node: {handler.PlatformView?.GetType().Name}");

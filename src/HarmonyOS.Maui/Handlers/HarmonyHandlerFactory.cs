@@ -54,6 +54,11 @@ public static class HarmonyHandlerFactory
         };
         // 动画/服务解析口：ViewExtensions（FadeTo 等）经 Handler.MauiContext.Services 取 IAnimationManager
         handler.SetMauiContext(Hosting.HarmonyMauiContext.Shared);
+        // 必须回写 element.Handler：setter 内部完成 SetVirtualView（Connect），
+        // 且只有经此建立 element→handler 反向链，后续清理路径的 element.Handler = null
+        // 才会真正触发 DisconnectHandler（手势/事件订阅释放）。直接调 handler.SetVirtualView
+        // 不回写，element.Handler 恒 null，DisconnectHandler 永不执行 → 原生手势句柄泄漏。
+        element.Handler = handler;
         return handler;
     }
 }

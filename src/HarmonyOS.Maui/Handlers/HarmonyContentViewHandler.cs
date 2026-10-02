@@ -212,7 +212,6 @@ internal static class ContentHost
         if (HarmonyContentViewHandler.LogView)
             HiLog.Info("HarmonyHost", $"[ContentHost] attach {content.GetType().Name} under {self.VirtualView?.GetType().Name}");
         var childHandler = HarmonyHandlerFactory.Create(content);
-        childHandler.SetVirtualView(content);
         holder.Handler = childHandler;
         if (childHandler.PlatformView is ArkUINode node)
         {

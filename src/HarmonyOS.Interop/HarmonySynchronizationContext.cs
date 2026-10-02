@@ -88,7 +88,16 @@ public sealed class HarmonySynchronizationContext : SynchronizationContext
         if (d == null) throw new ArgumentNullException(nameof(d));
 
         // Post is asynchronous even when called from the UI thread.
-        _queue.Add((d, state));
+        try
+        {
+            _queue.Add((d, state));
+        }
+        catch (InvalidOperationException)
+        {
+            // pump 已停（宿主退出中，CompleteAdding 后）：SynchronizationContext.Post
+            // 契约不应抛异常，降级线程池执行
+            ThreadPool.QueueUserWorkItem(s => d(s), state);
+        }
     }
 
     /// <summary>

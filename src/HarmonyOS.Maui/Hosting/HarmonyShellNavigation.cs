@@ -267,10 +267,12 @@ public static class HarmonyShellNavigation
 
         protected override Task<MPage> OnPopAsync(bool animated)
         {
-            var popped = StackPages.Count > 0 ? StackPages[^1] : null;
-            if (popped is not null)
-                PopCore();
-            return Task.FromResult<MPage>(popped!);
+            // 空栈明确抛错（与 GoToCore 语义一致），不以 null 伪装非空返回值
+            if (StackPages.Count == 0)
+                throw new InvalidOperationException("Shell section navigation stack is empty");
+            var popped = StackPages[^1];
+            PopCore();
+            return Task.FromResult(popped);
         }
 
         protected override Task OnPopToRootAsync(bool animated)
@@ -351,7 +353,18 @@ public static class HarmonyShellNavigation
         var target = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
         object converted = value;
         if (target != typeof(string))
-            converted = Convert.ChangeType(value, target, System.Globalization.CultureInfo.InvariantCulture);
+        {
+            try
+            {
+                converted = Convert.ChangeType(value, target, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch (Exception ex) when (ex is FormatException or InvalidCastException)
+            {
+                // 对齐 MAUI 语义：query 值转换失败仅告警，不阻断整次导航
+                HiLog.Warn("Shell", $"query value for '{propertyName}' not convertible to {target.Name}: '{value}'");
+                return;
+            }
+        }
         property.SetValue(page, converted);
     }
 

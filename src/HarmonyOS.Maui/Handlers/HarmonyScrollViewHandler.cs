@@ -69,7 +69,6 @@ public class HarmonyScrollViewHandler : HarmonyViewHandler<IScrollView, ArkScrol
         if (content is not IView view) return;
 
         var childHandler = HarmonyHandlerFactory.Create(view);
-        childHandler.SetVirtualView((IElement)view);
         _contentHandler = childHandler;
 
         if (childHandler.PlatformView is ArkUINode node)

@@ -162,7 +162,6 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
                 continue;
 
             var pageHandler = HarmonyHandlerFactory.Create((Microsoft.Maui.Controls.Element)page);
-            pageHandler.SetVirtualView(page);
             var node = pageHandler.PlatformView as ArkUINode
                 ?? throw new InvalidOperationException(
                     $"page handler PlatformView is not an ArkUI node: {pageHandler.PlatformView?.GetType().Name}");
