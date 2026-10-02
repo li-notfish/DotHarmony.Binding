@@ -10,7 +10,7 @@ public static class HarmonyShellTheme
 {
     private static bool IsDark => Application.Current?.RequestedTheme == AppTheme.Dark;
 
-    public static MColor ShellBackground => IsDark ? MColor.FromRgba(0.09, 0.09, 0.11, 1) : MColor.FromRgba(1, 1, 1, 1);
+    public static MColor ShellBackground => IsDark ? MColor.FromRgba(0.09, 0.09, 0.11, 1) : MColor.FromRgba(255, 255, 255, 255);
 
     // ── Flyout ──
     public static float FlyoutWidthVp { get; set; } = 280f;
@@ -23,7 +23,7 @@ public static class HarmonyShellTheme
     public static float FlyoutItemMarginLeft { get; set; } = 16f;
     public static float FlyoutItemFontSize { get; set; } = 15f;
     public static float FlyoutIconSizeVp { get; set; } = 22f;
-    public static MColor FlyoutBackground => IsDark ? MColor.FromRgba(0.09, 0.09, 0.11, 1) : MColor.FromRgba(1, 1, 1, 1);
+    public static MColor FlyoutBackground => IsDark ? MColor.FromRgba(0.09, 0.09, 0.11, 1) : MColor.FromRgba(255, 255, 255, 255);
     public static MColor FlyoutForeground => IsDark ? MColor.FromRgba(0.92, 0.92, 0.95, 1) : MColor.FromRgba(0, 0, 0, 1);
 
     // ── 顶部导航栏 ──
@@ -32,7 +32,7 @@ public static class HarmonyShellTheme
     public static float HamburgerFontSize { get; set; } = 22f;
     public static float HamburgerMarginLeft { get; set; } = 16f;
     public static float HamburgerMarginRight { get; set; } = 16f;
-    public static MColor TopBarBackground => IsDark ? MColor.FromRgba(0.09, 0.09, 0.11, 1) : MColor.FromRgba(1, 1, 1, 1);
+    public static MColor TopBarBackground => IsDark ? MColor.FromRgba(0.09, 0.09, 0.11, 1) : MColor.FromRgba(255, 255, 255, 255);
 
     // ── TabBar ──
     public static float TabBarHeightVp { get; set; } = 56f;

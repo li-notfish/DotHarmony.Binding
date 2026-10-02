@@ -81,6 +81,41 @@ public class ShellHomePage : ContentPage
         };
         layout.Children.Add(modalBtn);
 
+        // M2 探针：FlyoutIsPresented 双向 / NavBar / TabBar / 标题热更新
+        var flyoutBtn = new Button { Text = "Open flyout via FlyoutIsPresented" };
+        flyoutBtn.Clicked += (_, _) =>
+        {
+            AppShell.Instance!.FlyoutIsPresented = true;
+            HiLog.Info("VProbe", $"[V][FLYOUT] set presented=true, actual={AppShell.Instance!.FlyoutIsPresented}");
+        };
+        layout.Children.Add(flyoutBtn);
+
+        var navBtn = new Button { Text = "Toggle NavBar" };
+        navBtn.Clicked += (_, _) =>
+        {
+            var next = !Shell.GetNavBarIsVisible(this);
+            Shell.SetNavBarIsVisible(this, next);
+            HiLog.Info("VProbe", $"[V][NAVBAR] visible={next}");
+        };
+        layout.Children.Add(navBtn);
+
+        var tabBtn = new Button { Text = "Toggle TabBar" };
+        tabBtn.Clicked += (_, _) =>
+        {
+            var next = !Shell.GetTabBarIsVisible(this);
+            Shell.SetTabBarIsVisible(this, next);
+            HiLog.Info("VProbe", $"[V][TABBAR] visible={next}");
+        };
+        layout.Children.Add(tabBtn);
+
+        var titleBtn = new Button { Text = "Rename title" };
+        titleBtn.Clicked += (_, _) =>
+        {
+            Title = "已改名";
+            HiLog.Info("VProbe", "[V][TITLE] renamed");
+        };
+        layout.Children.Add(titleBtn);
+
         // 视觉协议探针：Translation/Scale/Rotation/Opacity 一次落齐
         layout.Children.Add(new Label
         {

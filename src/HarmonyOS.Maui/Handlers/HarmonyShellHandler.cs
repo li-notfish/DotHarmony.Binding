@@ -24,6 +24,11 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
     public static PropertyMapper<Shell, HarmonyShellHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(Shell.CurrentItem)] = MapCurrentItem,
+        [nameof(Shell.FlyoutIsPresented)] = MapFlyoutIsPresented,
+        [nameof(Shell.FlyoutBehavior)] = MapFlyoutBehavior,
+        // NavBarIsVisible/TabBarIsVisible 是 attached 属性，mapper 键取属性名
+        [Shell.NavBarIsVisibleProperty.PropertyName] = MapChromeVisibility,
+        [Shell.TabBarIsVisibleProperty.PropertyName] = MapChromeVisibility,
     };
 
     public HarmonyShellHandler() : base(Mapper) { }
@@ -43,18 +48,28 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
     private IElementHandler? _flyoutHeaderHandler;
     private Page? _visiblePage;
     private ArkUINode? _visibleNode;
-    private bool _tabBarShown;
+    private bool _tabBarShown = true; // 初值 true：单条目 Shell 首次 ApplyChromeVisibility 才会产生"变更"并落 NONE
+    private bool _navBarShown = true;
+    private float _lastColumnHeight;
+    private bool _syncingFlyout; // FlyoutIsPresented 双向同步回环防护
 
-    // 内容区高度显式回填（NODE_FLEX_GROW 在 Column 内不可靠，见 ConnectHandler 注释）
-    private void OnMainColumnSizeChange(ArkUINodeEvent e)
+    // 内容区高度显式回填（NODE_FLEX_GROW 在 Column 内不可靠，见 ConnectHandler 注释）：
+    // 列高 - （可见时）顶栏 - （可见时）TabBar
+    private void RelayoutContent()
     {
-        if (_contentHost is null || e.SizeChangeHeight <= 0)
+        if (_contentHost is null || _lastColumnHeight <= 0)
             return;
-        var contentHeight = e.SizeChangeHeight
-            - HarmonyShellTheme.TopBarHeightVp
+        var contentHeight = _lastColumnHeight
+            - (_navBarShown ? HarmonyShellTheme.TopBarHeightVp : 0f)
             - (_tabBarShown ? HarmonyShellTheme.TabBarHeightVp : 0f);
         if (contentHeight > 0)
             _contentHost.SetHeight(contentHeight);
+    }
+
+    private void OnMainColumnSizeChange(ArkUINodeEvent e)
+    {
+        _lastColumnHeight = e.SizeChangeHeight;
+        RelayoutContent();
     }
 
     private void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
@@ -143,6 +158,8 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         BuildTabBar();
         BuildFlyout();
         ApplyThemeColors();
+        ApplyFlyoutBehavior();
+        ApplyChromeVisibility();
         if (Application.Current is { } application)
             application.RequestedThemeChanged += OnRequestedThemeChanged;
         Hosting.HarmonyShellNavigation.Attach(VirtualView, this);
@@ -203,10 +220,8 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         if (_tabBar is null || shell is null)
             return;
         var items = shell.Items.ToList();
-        // 单条目不显示 TabBar（对齐主流平台 Shell 行为）
-        _tabBarShown = items.Count > 1;
+        // 可见性统一由 ApplyChromeVisibility 合成（条目数 > 1 且页级 TabBarIsVisible），
         // None（不占位）而非 Hidden：显式高度布局下 Hidden 仍占 56vp 会把内容区顶出界
-        _tabBar.SetVisibility(_tabBarShown ? ArkUI_Visibility.ARKUI_VISIBILITY_VISIBLE : ArkUI_Visibility.ARKUI_VISIBILITY_NONE);
         foreach (var item in items)
         {
             var entry = new ArkColumn();
@@ -324,9 +339,30 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
 
     private void ToggleFlyout()
     {
-        _flyoutVisible = !_flyoutVisible;
+        SetFlyoutVisible(!_flyoutVisible, syncToShell: true);
+    }
+
+    /// <summary>Flyout 开关统一入口：UI 手势与 Shell.FlyoutIsPresented 双向同源。</summary>
+    private void SetFlyoutVisible(bool visible, bool syncToShell)
+    {
+        var shell = VirtualView;
+        if (shell is not null && shell.FlyoutBehavior == FlyoutBehavior.Disabled && visible)
+            return; // Disabled：拒绝打开
+        if (shell is not null && shell.FlyoutBehavior == FlyoutBehavior.Locked && !visible)
+            return; // Locked：常驻，拒绝关闭
+        if (_flyoutVisible == visible)
+            return;
+        _flyoutVisible = visible;
         if (_flyoutOverlay is not { } overlay || _flyoutPanel is not { } panel)
             return;
+
+        // 反向同步 MAUI 侧（回环由 MapFlyoutIsPresented 的 _syncingFlyout 守卫）
+        if (syncToShell && shell is not null)
+        {
+            _syncingFlyout = true;
+            try { shell.FlyoutIsPresented = visible; }
+            finally { _syncingFlyout = false; }
+        }
 
         if (_flyoutVisible)
         {
@@ -345,6 +381,58 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
                 () => { if (!_flyoutVisible) overlay.Visible = false; },
                 HarmonyShellTheme.FlyoutAnimationMs);
         }
+    }
+
+    // ───────────────────────── Shell 语义映射（M2） ─────────────────────────
+
+    private static void MapFlyoutIsPresented(HarmonyShellHandler handler, Shell shell)
+    {
+        if (handler._syncingFlyout)
+            return; // 本侧 SetFlyoutVisible 触发的回写，忽略
+        handler.SetFlyoutVisible(shell.FlyoutIsPresented, syncToShell: false);
+    }
+
+    private static void MapFlyoutBehavior(HarmonyShellHandler handler, Shell shell)
+        => handler.ApplyFlyoutBehavior();
+
+    private static void MapChromeVisibility(HarmonyShellHandler handler, Shell shell)
+        => handler.ApplyChromeVisibility();
+
+    /// <summary>FlyoutBehavior：Disabled 隐藏汉堡并强制关闭；Locked 常驻展开（无遮罩、
+    /// 内容区不让宽——覆盖式常驻，与 MAUI 的并排布局有差异，文档声明）；Flyout 常规。</summary>
+    private void ApplyFlyoutBehavior()
+    {
+        var shell = VirtualView;
+        if (shell is null)
+            return;
+        var behavior = shell.FlyoutBehavior;
+        if (_hamburger is { } ham)
+            ham.SetVisibility(behavior == FlyoutBehavior.Flyout
+                ? ArkUI_Visibility.ARKUI_VISIBILITY_VISIBLE
+                : ArkUI_Visibility.ARKUI_VISIBILITY_NONE);
+        if (behavior == FlyoutBehavior.Disabled)
+            SetFlyoutVisible(false, syncToShell: true);
+        else if (behavior == FlyoutBehavior.Locked)
+            SetFlyoutVisible(true, syncToShell: true);
+    }
+
+    /// <summary>NavBar/TabBar 可见性：Shell 级与可见页 attached 值合成（页级优先），
+    /// 变更后按可见性重新回填内容区高度（隐藏用 NONE 不占位）。</summary>
+    internal void ApplyChromeVisibility()
+    {
+        var shell = VirtualView;
+        if (shell is null)
+            return;
+        var navShown = _visiblePage is { } p ? Shell.GetNavBarIsVisible(p) : true;
+        var tabShown = _tabEntries.Count > 1
+            && (_visiblePage is { } p2 ? Shell.GetTabBarIsVisible(p2) : true);
+        if (navShown == _navBarShown && tabShown == _tabBarShown)
+            return;
+        _navBarShown = navShown;
+        _tabBarShown = tabShown;
+        _topBar?.SetVisibility(navShown ? ArkUI_Visibility.ARKUI_VISIBILITY_VISIBLE : ArkUI_Visibility.ARKUI_VISIBILITY_NONE);
+        _tabBar?.SetVisibility(tabShown ? ArkUI_Visibility.ARKUI_VISIBILITY_VISIBLE : ArkUI_Visibility.ARKUI_VISIBILITY_NONE);
+        RelayoutContent();
     }
 
     internal void ApplyThemeColors()
@@ -407,6 +495,8 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
     {
         if (_contentHost is null || ReferenceEquals(_visiblePage, page))
             return;
+        if (_visiblePage is { } old)
+            old.PropertyChanged -= OnVisiblePagePropertyChanged;
         _visiblePage?.SendDisappearing();
 
         var node = GetOrCreateNode(page);
@@ -415,8 +505,20 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         _contentHost.AddChild(node);
         _visiblePage = page;
         _visibleNode = node;
+        // 跟踪可见页 Title / NavBarIsVisible / TabBarIsVisible 变更（attached 属性
+        // 变更走元素 PropertyChanged，不经 Shell 的 mapper）
+        page.PropertyChanged += OnVisiblePagePropertyChanged;
         page.SendAppearing();
         UpdateTopBarTitle(page);
+        ApplyChromeVisibility();
+    }
+
+    private void OnVisiblePagePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Page.Title))
+            UpdateTopBarTitle(sender as Page);
+        else if (e.PropertyName is "NavBarIsVisible" or "TabBarIsVisible")
+            ApplyChromeVisibility();
     }
 
     internal void ShowEmpty()
@@ -424,6 +526,8 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         if (_contentHost is null)
             return;
         _visiblePage?.SendDisappearing();
+        if (_visiblePage is { } old)
+            old.PropertyChanged -= OnVisiblePagePropertyChanged;
         if (_visibleNode is not null)
             _contentHost.RemoveChild(_visibleNode);
         _visibleNode = null;
