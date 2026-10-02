@@ -63,7 +63,7 @@ public class HarmonyEditorHandler : HarmonyViewHandler<Editor, ArkTextArea>
 
     public static void MapFontSize(HarmonyEditorHandler h, Editor v)
     {
-        if (v.FontSize >= 0)
+        if (v.FontSize > 0)
             h.PlatformView.FontSize = (float)v.FontSize;
     }
 

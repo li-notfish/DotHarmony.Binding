@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\HarmonyOS.Maui.Permissions\HarmonyOS.Maui.Permissions.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,6 @@ public class VerificationApp : Application
     public VerificationApp()
     {
         Resources["ProbeAccent"] = Colors.Purple;
-        UserAppTheme = AppTheme.Light;
         MainPage = Program.UseShell ? new AppShell() : new NavigationPage(new MainPage());
         HiLog.Info("VProbe", $"[V][HOST] VerificationApp built (shell={Program.UseShell})");
     }

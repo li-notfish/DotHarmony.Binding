@@ -1,6 +1,7 @@
-import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import native from 'libentry.so';
 
 const TAG: string = 'HarmonyHost';
 
@@ -57,6 +58,13 @@ export default class EntryAbility extends UIAbility {
 
   onForeground(): void {
     hilog.info(0x0000, TAG, 'Ability onForeground');
+  }
+
+  onConfigurationUpdate(newConfig: Configuration): void {
+    hilog.info(0x0000, TAG, 'Ability onConfigurationUpdate');
+    if (newConfig.colorMode !== undefined) {
+      native.notifyThemeChanged(newConfig.colorMode);
+    }
   }
 
   onBackground(): void {

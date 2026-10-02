@@ -532,7 +532,7 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     }
 
     /// <summary>span 覆盖范围内的 Auto 轨道数（布局热路径，显式循环）</summary>
-    private static int SpannedAutoCount(GridUnitType[] units, int start, int span)
+    internal static int SpannedAutoCount(GridUnitType[] units, int start, int span)
     {
         int n = 0;
         for (int i = start; i < start + span && i < units.Length; i++)
@@ -545,7 +545,7 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     /// （纯 Auto 组合该轨道整段撑起）。span 内含 Star 轨时跳过——剩余空间由 Star
     /// 吸收，不得吹大 Auto（HubView 模板 Grid 的 RowSpan=2 满铺底图实测踩过）。
     /// 只增不减，多子节点各自收敛。</summary>
-    private static void DistributeSpanDeficit(float[] autoSizes, GridUnitType[] units, int start, int span, float target)
+    internal static void DistributeSpanDeficit(float[] autoSizes, GridUnitType[] units, int start, int span, float target)
     {
         for (int i = start; i < start + span && i < units.Length; i++)
             if (units[i] == GridUnitType.Star)

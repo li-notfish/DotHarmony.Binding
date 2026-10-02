@@ -1,5 +1,5 @@
-// HarmonyShellHandler：MAUI Shell 第一版视觉宿主。
-// 平台结构：根 Column = 内容区（ArkStack，FlexGrow 占满）+ 底部 TabBar（ArkRow，多条目时显示）。
+// HarmonyShellHandler：MAUI Shell 视觉宿主（Flyout + TabBar + 主题色）。
+// 平台结构：根 Stack = 主 Column（顶部导航栏 + 内容区 + 底部 TabBar）+ Flyout 覆盖层。
 // ShellContent 页经 IShellContentController.Page 惰性创建，节点按 Page 缓存（条目切换保留
 // 状态）；注册路由推送页同驻内容区。路由/栈语义在 HarmonyShellNavigation（自持，不依赖
 // MAUI Shell 的平台 fragment 机制）；MAUI 侧 CurrentItem 变更经 mapper 反向同步。
@@ -14,65 +14,148 @@ using ArkStack = HarmonyOS.ArkUI.Stack;
 using ArkText = HarmonyOS.ArkUI.Text;
 using ArkImage = HarmonyOS.ArkUI.Image;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
+using MGraphicsColor = Microsoft.Maui.Graphics.Color;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonyShellHandler : ViewHandler<Shell, ArkColumn>
+public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
 {
     public static PropertyMapper<Shell, HarmonyShellHandler> Mapper = new(HarmonyViewMapper.Base)
     {
-        // 应用/MAUI 内部改 CurrentItem 时反向同步（选择状态由 HarmonyShellNavigation 自持；
-        // Controls Shell 的 BP 变更不保证触发 UpdateValue，此条为尽力而为）
         [nameof(Shell.CurrentItem)] = MapCurrentItem,
     };
 
     public HarmonyShellHandler() : base(Mapper) { }
 
+    private ArkColumn? _mainColumn;
+    private ArkRow? _topBar;
+    private ArkText? _hamburger;
+    private ArkText? _topBarTitle;
     private ArkStack? _contentHost;
     private ArkRow? _tabBar;
+    private ArkStack? _flyoutOverlay;
+    private ArkColumn? _flyoutPanel;
+    private bool _flyoutVisible;
     private readonly Dictionary<Page, ArkUINode> _nodes = new();
     private readonly List<(ArkUINode Node, ShellItem Item, ArkText Title)> _tabEntries = new();
+    private readonly List<(ArkUINode Node, ShellItem Item)> _flyoutEntries = new();
+    private IElementHandler? _flyoutHeaderHandler;
     private Page? _visiblePage;
     private ArkUINode? _visibleNode;
+    private void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
+        => ApplyThemeColors();
 
-    protected override ArkColumn CreatePlatformView()
+    protected override ArkStack CreatePlatformView()
     {
-        var root = new ArkColumn();
+        var root = new ArkStack();
         root.SetWidthPercent(1.0f);
         root.SetHeightPercent(1.0f);
         return root;
     }
 
-    protected override void ConnectHandler(ArkColumn platformView)
+    protected override void ConnectHandler(ArkStack platformView)
     {
         base.ConnectHandler(platformView);
+
+        // 主内容列：顶部导航栏 + 内容区 + 底部 TabBar
+        _mainColumn = new ArkColumn();
+        _mainColumn.SetWidthPercent(1.0f);
+        _mainColumn.SetHeightPercent(1.0f);
+        platformView.AddChild(_mainColumn);
+
+        // 顶部导航栏：汉堡按钮 + 标题
+        _topBar = new ArkRow();
+        _topBar.SetWidthPercent(1.0f);
+        _topBar.SetHeight(HarmonyShellTheme.TopBarHeightVp);
+        _mainColumn.AddChild(_topBar);
+
+        _hamburger = new ArkText();
+        _hamburger.Content = "\u2630";
+        _hamburger.FontSize = HarmonyShellTheme.HamburgerFontSize;
+        _hamburger.SetMarginEdges(0, HarmonyShellTheme.HamburgerMarginRight, 0, HarmonyShellTheme.HamburgerMarginLeft);
+        _hamburger.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_CENTER);
+        _hamburger.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_CLICK, _ => ToggleFlyout());
+        _topBar.AddChild(_hamburger);
+
+        _topBarTitle = new ArkText();
+        _topBarTitle.FontSize = HarmonyShellTheme.TopBarTitleFontSize;
+        _topBarTitle.SetFlexGrow(1f);
+        _topBarTitle.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_CENTER);
+        _topBar.AddChild(_topBarTitle);
 
         _contentHost = new ArkStack();
         _contentHost.SetWidthPercent(1.0f);
         _contentHost.SetFlexGrow(1f);
-        platformView.AddChild(_contentHost);
+        _mainColumn.AddChild(_contentHost);
 
         _tabBar = new ArkRow();
         _tabBar.SetWidthPercent(1.0f);
-        _tabBar.SetHeight(56f);
-        platformView.AddChild(_tabBar);
+        _tabBar.SetHeight(HarmonyShellTheme.TabBarHeightVp);
+        _mainColumn.AddChild(_tabBar);
+
+        // Flyout 覆盖层：全屏 Stack，默认不可见；展开时半透明遮罩 + 左侧面板
+        _flyoutOverlay = new ArkStack();
+        _flyoutOverlay.SetWidthPercent(1.0f);
+        _flyoutOverlay.SetHeightPercent(1.0f);
+        _flyoutOverlay.Visible = false;
+        platformView.AddChild(_flyoutOverlay);
+
+        // 遮罩背景（点击关闭）
+        var backdrop = new ArkStack();
+        backdrop.SetWidthPercent(1.0f);
+        backdrop.SetHeightPercent(1.0f);
+        backdrop.SetBackgroundColor(0, 0, 0, HarmonyShellTheme.BackdropAlpha);
+        backdrop.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_CLICK, _ => ToggleFlyout());
+        _flyoutOverlay.AddChild(backdrop);
+
+        // Flyout 面板（左侧，宽度/背景/内边距走主题）
+        _flyoutPanel = new ArkColumn();
+        _flyoutPanel.SetWidth(HarmonyShellTheme.FlyoutWidthVp);
+        _flyoutPanel.SetHeightPercent(1.0f);
+        _flyoutPanel.SetPosition(0f, 0f);
+        _flyoutPanel.SetTranslate(-HarmonyShellTheme.FlyoutWidthVp, 0f);
+        _flyoutPanel.SetPaddingEdges(
+            HarmonyShellTheme.FlyoutPaddingTop,
+            HarmonyShellTheme.FlyoutPaddingRight,
+            HarmonyShellTheme.FlyoutPaddingBottom,
+            HarmonyShellTheme.FlyoutPaddingLeft);
+        _flyoutOverlay.AddChild(_flyoutPanel);
 
         BuildTabBar();
+        BuildFlyout();
+        ApplyThemeColors();
+        if (Application.Current is { } application)
+            application.RequestedThemeChanged += OnRequestedThemeChanged;
         Hosting.HarmonyShellNavigation.Attach(VirtualView, this);
     }
 
-    protected override void DisconnectHandler(ArkColumn platformView)
+    protected override void DisconnectHandler(ArkStack platformView)
     {
-        // 先通知 HarmonyShellNavigation 归还其缓存/栈页（Shell 重建不留静态残留）；
-        // 仍留在 _nodes 里的残余页（如曾 ShowPage 但未入库的边缘值）逐项走 ReleasePage 释放
+        if (Application.Current is { } application)
+            application.RequestedThemeChanged -= OnRequestedThemeChanged;
         Hosting.HarmonyShellNavigation.Detach(this);
+        // 关闭动画可能被断开打断，强制复位遮罩，避免覆盖层悬挂在 Visible=true
+        _flyoutVisible = false;
+        if (_flyoutOverlay is { } overlay)
+            overlay.Visible = false;
+        // FlyoutHeader 的 handler 不入 _flyoutEntries，单独断连并释放节点子树
+        if (_flyoutHeaderHandler is { } headerHandler)
+        {
+            if (headerHandler.VirtualView is { } headerView)
+                headerView.Handler = null;
+            (headerHandler.PlatformView as ArkUINode)?.Dispose();
+            _flyoutHeaderHandler = null;
+        }
         foreach (var (node, _, _) in _tabEntries)
             node.Dispose();
         _tabEntries.Clear();
+        foreach (var (node, _) in _flyoutEntries)
+            node.Dispose();
+        _flyoutEntries.Clear();
         while (_nodes.Count > 0)
         {
             foreach (var page in _nodes.Keys.ToArray())
-                ReleasePage(page); // 断连 handler 链并 Dispose 节点
+                ReleasePage(page);
         }
         _visibleNode = null;
         _visiblePage = null;
@@ -82,7 +165,7 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkColumn>
     private static void MapCurrentItem(HarmonyShellHandler handler, Shell shell)
         => Hosting.HarmonyShellNavigation.SyncFromShell(shell);
 
-    // ───────────────────────── TabBar ─────────────────────────
+    // ───────────────────────── TabBar / Flyout ─────────────────────────
 
     private void BuildTabBar()
     {
@@ -99,13 +182,12 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkColumn>
             entry.SetHeightPercent(1.0f);
             entry.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_CENTER);
 
-            // 图标（FileImageSource 等可解析来源）；Icon 缺省时仅渲染标题
             if (ImageSourceResolver.Resolve(item.Icon) is { } iconSrc)
             {
                 var icon = new ArkImage();
                 icon.Src = iconSrc;
-                icon.SetWidth(20f);
-                icon.SetHeight(20f);
+                icon.SetWidth(HarmonyShellTheme.TabIconSizeVp);
+                icon.SetHeight(HarmonyShellTheme.TabIconSizeVp);
                 icon.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_CENTER);
                 entry.AddChild(icon);
             }
@@ -122,21 +204,167 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkColumn>
             _tabBar.AddChild(entry);
             _tabEntries.Add((entry, item, title));
         }
-        ApplyTabColors(shell.CurrentItem);
+    }
+
+    private void BuildFlyout()
+    {
+        var shell = VirtualView;
+        if (_flyoutPanel is null || shell is null)
+            return;
+
+        // Flyout 背景色（先落白色兜底，再叠加自定义画刷）
+        var defaultBg = HarmonyShellTheme.FlyoutBackground;
+        _flyoutPanel.SetBackgroundColor(
+            (byte)(defaultBg.Red * 255), (byte)(defaultBg.Green * 255),
+            (byte)(defaultBg.Blue * 255), (byte)(defaultBg.Alpha * 255));
+        var flyoutBg = shell.GetValue(Shell.FlyoutBackgroundProperty) as Brush;
+        if (flyoutBg is { } bg)
+            BrushHelper.ApplyBackground(_flyoutPanel, bg);
+
+        // Flyout 前景色
+        var fgColor = HarmonyShellTheme.FlyoutForeground;
+
+        // FlyoutHeader（View 或 DataTemplate）
+        if (shell.GetValue(Shell.FlyoutHeaderProperty) is { } header)
+        {
+            if (header is View headerView)
+                AttachFlyoutHeader(headerView, shell);
+            else if (header is DataTemplate template && template.CreateContent() is View templateView)
+                AttachFlyoutHeader(templateView, shell);
+        }
+
+        // Flyout 条目（FlyoutItem / ShellContent 均可作为菜单项）
+        foreach (var item in shell.Items)
+        {
+            var row = new ArkRow();
+            row.SetWidthPercent(1.0f);
+            row.SetHeight(HarmonyShellTheme.FlyoutItemHeightVp);
+            row.SetMarginEdges(4f, 12f, 4f, HarmonyShellTheme.FlyoutItemMarginLeft);
+            row.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_CENTER);
+
+            if (ImageSourceResolver.Resolve(item.Icon) is { } iconSrc)
+            {
+                var icon = new ArkImage();
+                icon.Src = iconSrc;
+                icon.SetWidth(HarmonyShellTheme.FlyoutIconSizeVp);
+                icon.SetHeight(HarmonyShellTheme.FlyoutIconSizeVp);
+                icon.SetMarginEdges(0, 8f, 0, 0);
+                icon.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_CENTER);
+                row.AddChild(icon);
+            }
+
+            var label = new ArkText();
+            label.Content = string.IsNullOrEmpty(item.Title) ? DisplayKey(item) : item.Title;
+            label.FontSize = HarmonyShellTheme.FlyoutItemFontSize;
+            label.SetMarginEdges(0, 8f, 0, 0);
+            label.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_CENTER);
+            label.SetFontColor((byte)(fgColor.Red * 255), (byte)(fgColor.Green * 255),
+                (byte)(fgColor.Blue * 255));
+            row.AddChild(label);
+
+            var captured = item;
+            row.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_CLICK, _ =>
+            {
+                ToggleFlyout();
+                Hosting.HarmonyShellNavigation.SelectItem(shell, captured);
+            });
+            _flyoutPanel.AddChild(row);
+            _flyoutEntries.Add((row, item));
+        }
+    }
+
+    /// <summary>装配 FlyoutHeader：统一补 Parent、创建 handler 并持有引用（Disconnect 时释放）。</summary>
+    private void AttachFlyoutHeader(View headerView, Shell shell)
+    {
+        if (_flyoutPanel is null)
+            return;
+        headerView.Parent ??= shell;
+        _flyoutHeaderHandler = HarmonyHandlerFactory.Create((Element)headerView);
+        _flyoutHeaderHandler.SetVirtualView(headerView);
+        if (_flyoutHeaderHandler.PlatformView is ArkUINode headerNode)
+        {
+            headerNode.SetWidthPercent(1.0f);
+            _flyoutPanel.AddChild(headerNode);
+        }
     }
 
     private static string DisplayKey(ShellItem item)
         => string.IsNullOrEmpty(item.Route) ? item.GetType().Name : item.Route;
 
-    internal void ApplyTabColors(ShellItem? selected)
+    private void ToggleFlyout()
     {
-        // selected/unselected 色走静态兜底（选中黑 / 未选灰）：MAUI 的 Shell attached
-        // 颜色访问器非公开 API，完整主题接入随 Shell 子阶段进行
+        _flyoutVisible = !_flyoutVisible;
+        if (_flyoutOverlay is not { } overlay || _flyoutPanel is not { } panel)
+            return;
+
+        if (_flyoutVisible)
+        {
+            overlay.Visible = true;
+            panel.SetTranslate(-HarmonyShellTheme.FlyoutWidthVp, 0f);
+            panel.Animate(
+                () => panel.SetTranslate(0f, 0f),
+                null,
+                HarmonyShellTheme.FlyoutAnimationMs);
+        }
+        else
+        {
+            panel.Animate(
+                () => panel.SetTranslate(-HarmonyShellTheme.FlyoutWidthVp, 0f),
+                () => overlay.Visible = false,
+                HarmonyShellTheme.FlyoutAnimationMs);
+        }
+    }
+
+    internal void ApplyThemeColors()
+    {
+        var shell = VirtualView;
+        if (shell is null)
+            return;
+
+        if (_mainColumn is { } mainColumn)
+            mainColumn.SetBackgroundColor(HarmonyShellTheme.ShellBackground.ToUint());
+
+        var bg = Shell.GetBackgroundColor(shell);
+        var fg = Shell.GetForegroundColor(shell);
+        var title = Shell.GetTitleColor(shell);
+        var unselected = Shell.GetUnselectedColor(shell);
+
+        // 顶部导航栏背景色
+        if (_topBar is { } bar)
+        {
+            if (bg is { } bgColor)
+                bar.SetBackgroundColor(bgColor.ToUint());
+            else
+                bar.SetBackgroundColor(HarmonyShellTheme.TopBarBackground.ToUint());
+        }
+
+        // 汉堡按钮前景色 / 标题颜色（缺省回退主题值）
+        var fgColor = fg ?? HarmonyShellTheme.FlyoutForeground;
+        var titleColor = title ?? fgColor;
+        if (_hamburger is { } ham)
+            ham.SetFontColor((byte)(fgColor.Red * 255), (byte)(fgColor.Green * 255), (byte)(fgColor.Blue * 255));
+        if (_topBarTitle is { } barTitle)
+            barTitle.SetFontColor((byte)(titleColor.Red * 255), (byte)(titleColor.Green * 255), (byte)(titleColor.Blue * 255));
+
+        // TabBar 未选中色（公开 API；缺省灰）
+        var unselectedColor = unselected ?? HarmonyShellTheme.TabUnselected;
+        ApplyTabColors(shell.CurrentItem, unselectedColor);
+    }
+
+    internal void ApplyTabColors(ShellItem? selected)
+        => ApplyTabColors(selected, null);
+
+    private void ApplyTabColors(ShellItem? selected, MGraphicsColor? unselectedOverride)
+    {
+        var shell = VirtualView;
+        var fg = shell is not null ? Shell.GetForegroundColor(shell) : null;
+        var fgColor = fg ?? HarmonyShellTheme.TabSelected;
+        var unselected = unselectedOverride ?? HarmonyShellTheme.TabUnselected;
+
         foreach (var (entry, item, title) in _tabEntries)
         {
-            title.SetFontColor(ReferenceEquals(item, selected)
-                ? Microsoft.Maui.Graphics.Colors.Black
-                : Microsoft.Maui.Graphics.Colors.Gray);
+            var c = ReferenceEquals(item, selected) ? fgColor : unselected;
+            title.SetFontColor((byte)(c.Red * 255), (byte)(c.Green * 255), (byte)(c.Blue * 255));
         }
     }
 
@@ -156,6 +384,7 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkColumn>
         _visiblePage = page;
         _visibleNode = node;
         page.SendAppearing();
+        UpdateTopBarTitle(page);
     }
 
     internal void ShowEmpty()
@@ -167,6 +396,13 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkColumn>
             _contentHost.RemoveChild(_visibleNode);
         _visibleNode = null;
         _visiblePage = null;
+    }
+
+    private void UpdateTopBarTitle(Page? page)
+    {
+        if (_topBarTitle is null)
+            return;
+        _topBarTitle.Content = page?.Title ?? string.Empty;
     }
 
     /// <summary>释放弹出页（不可达）：断连 handler 并释放平台节点子树。</summary>

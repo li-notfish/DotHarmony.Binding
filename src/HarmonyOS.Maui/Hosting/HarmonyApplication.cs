@@ -1,4 +1,5 @@
 using Microsoft.Maui.Controls;
+using HarmonyOS.ArkUI;
 
 namespace HarmonyOS.Maui.Hosting;
 
@@ -37,6 +38,33 @@ internal static class HarmonyApplication
         if (globalResources is not null && !app.Resources.MergedDictionaries.Contains(globalResources))
             app.Resources.MergedDictionaries.Add(globalResources);
 
+        // 对齐官方 MAUI：系统主题写入 PlatformAppTheme；UserAppTheme 保持 Unspecified
+        // 才能继续跟随系统，开发者显式设置时则优先覆盖。
+        ((Microsoft.Maui.IApplication)app).ThemeChanged();
+
         return app;
+    }
+
+    /// <summary>
+    /// 系统配置变化入口：由 ArkTS Ability 的 onConfigurationUpdate 经 native shim 调用。
+    /// ThemeChanged 会重新读取 AppInfo.RequestedTheme 并触发 RequestedThemeChanged。
+    /// </summary>
+    internal static int ThemeChangedCore(nint env, int colorMode)
+    {
+        try
+        {
+            global::HarmonyOS.Bindings.Hosting.Host.InitializeCore(env);
+            var app = Application.Current;
+            if (app is not null)
+            {
+                global::HarmonyOS.Essentials.HarmonyAppInfo.SetConfigurationColorMode(colorMode);
+                ((Microsoft.Maui.IApplication)app).ThemeChanged();
+            }
+            return 0;
+        }
+        catch
+        {
+            return -1;
+        }
     }
 }

@@ -74,10 +74,67 @@ public static class Program
                 expected, mapped, covered, mergedBaseline));
         }
 
+        var disciplineViolations = CheckDefaultValueDiscipline(handlersDir);
         WriteReports(root, results, errors);
         var gapCount = results.Sum(r => r.Gaps.Count);
-        Console.WriteLine($"HandlerAudit: {arms.Count} 个分派臂，{gapCount} 个未入基线缺口，{errors.Count} 个结构错误");
-        return gapCount > 0 || errors.Count > 0 ? 1 : 0;
+        foreach (var v in disciplineViolations)
+            Console.WriteLine($"  默认值纪律: {v}");
+        Console.WriteLine($"HandlerAudit: {arms.Count} 个分派臂，{gapCount} 个未入基线缺口，{errors.Count} 个结构错误，{disciplineViolations.Count} 个默认值纪律违规");
+        return gapCount > 0 || errors.Count > 0 || disciplineViolations.Count > 0 ? 1 : 0;
+    }
+
+    /// <summary>
+    /// 默认值纪律检查：Handler 源码不得硬编码颜色/字号兜底（应走 sentinel 条件判断
+    /// 或 HarmonyControlDefaults / HarmonyShellTheme 引用）。
+    /// 豁免：HarmonyDrawingCanvas（图形绘制默认）、HarmonyShellTheme /
+    /// HarmonyControlDefaults（默认值定义中心本身）、BrushHelper（Transparent 哨兵）。
+    /// </summary>
+    private static List<string> CheckDefaultValueDiscipline(string handlersDir)
+    {
+        var violations = new List<string>();
+        var exemptFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "HarmonyDrawingCanvas.cs",
+            "HarmonyShellTheme.cs",
+            "HarmonyControlDefaults.cs",
+            "BrushHelper.cs",
+        };
+
+        // 硬编码字号模式：仅匹配字号语义上下文（FontSize = 16f / SetFontSize(16f) 等），
+        // 避免误伤 SetWidth(24f) 之类的合法尺寸字面量
+        var fontSizeRx = new System.Text.RegularExpressions.Regex(
+            @"\bFontSize\s*=\s*(1[0-9]|2[0-9]|3[0-2])(\.\d+)?f?\b",
+            System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        // 硬编码颜色模式：Colors.Black / Colors.White / Colors.Gray / FromRgba(
+        var colorRx = new System.Text.RegularExpressions.Regex(
+            @"Colors\.(Black|White|Gray|Red|Green|Blue)|FromRgba\(",
+            System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        foreach (var file in Directory.EnumerateFiles(handlersDir, "*.cs"))
+        {
+            var name = Path.GetFileName(file);
+            if (exemptFiles.Contains(name))
+                continue;
+            var source = File.ReadAllText(file);
+            var lineNum = 0;
+            foreach (var line in source.Split('\n'))
+            {
+                lineNum++;
+                // 剥离行注释，避免命中注释中的示例值
+                var code = line;
+                var commentIdx = code.IndexOf("//", StringComparison.Ordinal);
+                if (commentIdx >= 0)
+                    code = code[..commentIdx];
+                if (string.IsNullOrWhiteSpace(code))
+                    continue;
+                if (fontSizeRx.IsMatch(code))
+                    violations.Add($"{name}:{lineNum} 硬编码字号兜底（应走 sentinel 判断或 HarmonyControlDefaults）");
+                if (colorRx.IsMatch(code))
+                    violations.Add($"{name}:{lineNum} 硬编码颜色（应走 sentinel 判断或主题引用）");
+            }
+        }
+        return violations;
     }
 
     private static string? FindRepoRoot(string start)

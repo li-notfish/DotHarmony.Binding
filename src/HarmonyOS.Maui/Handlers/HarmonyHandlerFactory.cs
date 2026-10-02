@@ -17,6 +17,8 @@ public static class HarmonyHandlerFactory
         // Shell 是 Page 直接派生（非 ContentPage），必须在页面 arm 之前分派；
         // 路由/栈语义见 HarmonyShellNavigation
         Microsoft.Maui.Controls.Shell => new HarmonyShellHandler(),
+        // TabbedPage : MultiPage<Page> : Page，必须在 ContentPage 之前分派
+        Microsoft.Maui.Controls.TabbedPage => new HarmonyTabbedPageHandler(),
         Microsoft.Maui.Controls.ContentPage => new HarmonyContentPageHandler(),
         // 具体派生必须排在基类 arm 之前：RefreshView : ContentView : TemplatedView : Compatibility.Layout
         Microsoft.Maui.Controls.ScrollView => new HarmonyScrollViewHandler(),

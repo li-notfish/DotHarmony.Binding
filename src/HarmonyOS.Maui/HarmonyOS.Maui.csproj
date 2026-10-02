@@ -35,6 +35,7 @@
   <ItemGroup>
     <!-- 手势映射等 internal 纯逻辑对 C# 测试工程可见 -->
     <InternalsVisibleTo Include="HarmonyGestureTests" />
+    <InternalsVisibleTo Include="HarmonyPermissionGeneratorTests" />
   </ItemGroup>
 
   <ItemGroup>

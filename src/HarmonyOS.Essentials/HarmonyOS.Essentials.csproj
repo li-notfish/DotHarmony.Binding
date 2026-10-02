@@ -36,5 +36,6 @@
   <ItemGroup>
     <!-- 单位换算/枚举映射等纯逻辑测试（EssentialsMappingTests 等 5 个套件）触达 internal 成员 -->
     <InternalsVisibleTo Include="HarmonyGestureTests" />
+    <InternalsVisibleTo Include="HarmonyOS.Maui" />
   </ItemGroup>
 </Project>

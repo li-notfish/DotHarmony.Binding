@@ -4,6 +4,7 @@ param(
     [string]$Target = "",
     [int]$Runs = 3,
     [string]$OutputPath = "scripts/perf/baseline.json",
+    [string]$GCHeapHardLimit = "",
     [switch]$SkipBuild
 )
 
@@ -116,6 +117,9 @@ if (Test-Path -LiteralPath $appJson5Path) {
 
 Write-Host "bundle: $bundleName"
 Write-Host "HAP: $hapPath"
+if ($GCHeapHardLimit) {
+    Write-Host "GC heap hard limit: $GCHeapHardLimit"
+}
 
 $baselineRuns = @()
 for ($runIndex = 1; $runIndex -le $Runs; $runIndex++) {
@@ -156,6 +160,9 @@ for ($runIndex = 1; $runIndex -le $Runs; $runIndex++) {
     $runtimeInitMatch = [regex]::Match($log, "PERF_RUNTIME_INIT_MS=(\d+)")
     $firstFrameMatch = [regex]::Match($log, "PERF_FIRST_FRAME_MS=(\d+)")
     $throughputMatch = [regex]::Match($log, "PERF_TSFN_THROUGHPUT_OPS_PER_SEC=([0-9]+\.[0-9]+)")
+    $gcAllocMatch = [regex]::Match($log, "PERF_GC_ALLOC_BYTES=(\d+)")
+    $gcCountMatch = [regex]::Match($log, "PERF_GC_COUNT=(\d+)")
+    $gcPauseMatch = [regex]::Match($log, "PERF_GC_PAUSE_MS=([0-9]+\.[0-9]+)")
     if (-not $coldStartMatch.Success -or -not $runtimeInitMatch.Success -or -not $firstFrameMatch.Success -or -not $throughputMatch.Success) {
         throw "Incomplete performance markers. Last log:`n$log"
     }
@@ -169,17 +176,26 @@ for ($runIndex = 1; $runIndex -le $Runs; $runIndex++) {
         runtimeInitMs = $runtimeInitMs
         firstFrameMs = [int]$firstFrameMatch.Groups[1].Value
         tsfnThroughputOpsPerSec = $throughput
+        gcAllocBytes = if ($gcAllocMatch.Success) { [long]$gcAllocMatch.Groups[1].Value } else { $null }
+        gcCount = if ($gcCountMatch.Success) { [int]$gcCountMatch.Groups[1].Value } else { $null }
+        gcPauseMs = if ($gcPauseMatch.Success) { [double]$gcPauseMatch.Groups[1].Value } else { $null }
     }
 
     Write-Host "cold start: $coldStartMs ms"
     Write-Host "runtime init: $runtimeInitMs ms"
     Write-Host "TSFN throughput: $throughput ops/s"
+    if ($gcAllocMatch.Success) { Write-Host "GC alloc: $([long]$gcAllocMatch.Groups[1].Value) bytes" }
+    if ($gcCountMatch.Success) { Write-Host "GC count: $($gcCountMatch.Groups[1].Value)" }
+    if ($gcPauseMatch.Success) { Write-Host "GC pause avg: $($gcPauseMatch.Groups[1].Value) ms" }
 }
 
 $coldStartAverage = [Math]::Round(($baselineRuns | ForEach-Object { $_.coldStartMs } | Measure-Object -Average).Average, 2)
 $runtimeInitAverage = [Math]::Round(($baselineRuns | ForEach-Object { $_.runtimeInitMs } | Measure-Object -Average).Average, 2)
 $firstFrameAverage = [Math]::Round(($baselineRuns | ForEach-Object { $_.firstFrameMs } | Measure-Object -Average).Average, 2)
 $throughputAverage = [Math]::Round(($baselineRuns | ForEach-Object { $_.tsfnThroughputOpsPerSec } | Measure-Object -Average).Average, 2)
+$gcAllocValues = $baselineRuns | Where-Object { $null -ne $_.gcAllocBytes } | ForEach-Object { $_.gcAllocBytes }
+$gcCountValues = $baselineRuns | Where-Object { $null -ne $_.gcCount } | ForEach-Object { $_.gcCount }
+$gcPauseValues = $baselineRuns | Where-Object { $null -ne $_.gcPauseMs } | ForEach-Object { $_.gcPauseMs }
 
 $result = [ordered]@{
     timestamp = (Get-Date).ToUniversalTime().ToString("o")
@@ -198,7 +214,11 @@ $result = [ordered]@{
         runtimeInitMsAverage = $runtimeInitAverage
         firstFrameMsAverage = $firstFrameAverage
         tsfnThroughputOpsPerSecAverage = $throughputAverage
+        gcAllocBytesAverage = if ($gcAllocValues) { [Math]::Round(($gcAllocValues | Measure-Object -Average).Average, 0) } else { $null }
+        gcCountAverage = if ($gcCountValues) { [Math]::Round(($gcCountValues | Measure-Object -Average).Average, 1) } else { $null }
+        gcPauseMsAverage = if ($gcPauseValues) { [Math]::Round(($gcPauseValues | Measure-Object -Average).Average, 2) } else { $null }
     }
+    gcHeapHardLimit = $GCHeapHardLimit
 }
 
 $resolvedOutputPath = if ([System.IO.Path]::IsPathRooted($OutputPath)) {

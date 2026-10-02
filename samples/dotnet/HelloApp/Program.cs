@@ -14,7 +14,7 @@ namespace HelloApp;
 public static class Program
 {
     /// <summary>双入口开关：true = AppShell；false = NavigationPage。</summary>
-    internal static bool UseShell = false;
+    internal static bool UseShell = true;
 
     public static void Register() => MauiHarmonyHost.RunApplication(() => new VerificationApp());
 }

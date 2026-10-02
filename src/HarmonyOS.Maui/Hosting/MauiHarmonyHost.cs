@@ -2,6 +2,8 @@
 // 宿主根为一个 100% Stack 容器（挂入 ContentSlot）：Stack 后挂者覆盖先挂者，
 // 模态页借此覆盖在页面之上；页面经 HarmonyNavigation 挂入该容器。
 using HarmonyOS.Bindings.Hosting;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using ArkStack = HarmonyOS.ArkUI.Stack;
 using MApplication = Microsoft.Maui.Controls.Application;
 using MPage = Microsoft.Maui.Controls.Page;
@@ -12,6 +14,44 @@ namespace HarmonyOS.Maui.Hosting;
 
 public static class MauiHarmonyHost
 {
+    /// <summary>
+    /// 系统 colorMode 变化入口。正常路径：宿主初始化时经 RegisterThemeCallback
+    /// 把 <see cref="OnThemeChangedNative"/> 的函数指针注册进 libentry 回调表；
+    /// 旧版宿主（无 HarmonyHostSetThemeChangedCallback 导出）由应用层
+    /// HarmonyThemeChanged 导出经 dlsym 回退转发到这里。
+    /// </summary>
+    public static int ThemeChangedCore(nint env, int colorMode)
+        => HarmonyApplication.ThemeChangedCore(env, colorMode);
+
+    // 函数指针注册用入口：UnmanagedCallersOnly 取地址不受 ILC 入口程序集导出限制
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static int OnThemeChangedNative(nint env, int colorMode) => ThemeChangedCore(env, colorMode);
+
+    /// <summary>向 libentry.so 注册主题回调函数指针（旧宿主无此导出时静默跳过，走 dlsym 回退）。</summary>
+    private static unsafe void RegisterThemeCallback()
+    {
+        try
+        {
+            if (NativeLibrary.TryLoad("libentry.so", out var lib) &&
+                NativeLibrary.TryGetExport(lib, "HarmonyHostSetThemeChangedCallback", out var registrar))
+            {
+                ((delegate* unmanaged[Cdecl]<nint, void>)registrar)(
+                    (nint)(delegate* unmanaged[Cdecl]<nint, int, int>)&OnThemeChangedNative);
+                Interop.HiLog.Info("HarmonyHost", "theme callback registered via libentry");
+            }
+            else
+            {
+                Interop.HiLog.Warn("HarmonyHost",
+                    "HarmonyHostSetThemeChangedCallback not found; theme sync relies on dlsym fallback");
+            }
+        }
+        catch
+        {
+            // 注册失败不致命：仅影响系统深浅色跟随
+            Interop.HiLog.Warn("HarmonyHost", "theme callback registration failed; dlsym fallback only");
+        }
+    }
+
     /// <summary>
     /// 注册 MAUI 根页面工厂。rootFactory 在 UI 主线程（HarmonyBuildUI 时序）被调用，
     /// 返回的首页经 HarmonyHandlerFactory 装配 handler 并挂载上屏。
@@ -51,6 +91,7 @@ public static class MauiHarmonyHost
     /// </summary>
     public static void RunApplication(Func<MApplication> applicationFactory)
     {
+        RegisterThemeCallback();
         Host.RootBuilder = contentHandle =>
         {
             Essentials.HarmonyEssentials.Install();

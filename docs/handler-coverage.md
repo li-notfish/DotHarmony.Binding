@@ -4,12 +4,13 @@
 |---|---|---|---|---|---|
 | HarmonyNavigationPageHandler | NavigationPage | 2 | 20 | 23 | 0 |
 | HarmonyShellHandler | Shell | 1 | 20 | 43 | 0 |
+| HarmonyTabbedPageHandler | TabbedPage | 6 | 20 | 19 | 0 |
 | HarmonyContentPageHandler | ContentPage | 4 | 20 | 22 | 0 |
 | HarmonyScrollViewHandler | ScrollView | 4 | 20 | 29 | 0 |
 | HarmonyRefreshViewHandler | RefreshView | 3 | 20 | 23 | 0 |
 | HarmonyContentPresenterHandler | ContentPresenter | 3 | 20 | 22 | 0 |
 | HarmonyContentViewHandler | ContentView | 5 | 20 | 21 | 0 |
-| HarmonyButtonHandler | Button | 9 | 20 | 38 | 0 |
+| HarmonyButtonHandler | Button | 11 | 20 | 38 | 0 |
 | HarmonyLabelHandler | Label | 12 | 20 | 26 | 0 |
 | HarmonyLayoutHandler | StackLayout | 2 | 20 | 22 | 0 |
 | HarmonyManagedLayoutHandler | Grid | 1 | 20 | 24 | 0 |

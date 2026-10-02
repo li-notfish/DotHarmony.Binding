@@ -54,9 +54,19 @@ public class ShellHomePage : ContentPage
     public ShellHomePage()
     {
         Title = "首页";
+        this.SetAppThemeColor(
+            VisualElement.BackgroundColorProperty,
+            Colors.White,
+            Color.FromRgba(24, 24, 28, 255));
+
         var layout = new VerticalStackLayout { Spacing = 10, Padding = 12 };
 
-        layout.Children.Add(new Label { Text = "Shell 验证主页", FontSize = 22 });
+        var title = new Label { Text = "Shell 验证主页", FontSize = 22 };
+        title.SetAppThemeColor(
+            Label.TextColorProperty,
+            Colors.Black,
+            Color.FromRgba(235, 235, 240, 255));
+        layout.Children.Add(title);
 
         var routeBtn = new Button { Text = "GoToAsync //probeDetail?value=hello42" };
         routeBtn.Clicked += async (_, _) =>
@@ -105,13 +115,16 @@ public class ShellHomePage : ContentPage
         {
             Orientation = ScrollOrientation.Neither,
             HeightRequest = 90,
-            BackgroundColor = Colors.Beige,
             Content = new Label
             {
                 Text = "NEITHER long content 1\nNEITHER long content 2\nNEITHER long content 3\nNEITHER long content 4",
                 Padding = 8,
             },
         };
+        neither.SetAppThemeColor(
+            ScrollView.BackgroundColorProperty,
+            Colors.Beige,
+            Color.FromHex("#2A2A30"));
         layout.Children.Add(neither);
 
         layout.Children.Add(_status);

@@ -391,7 +391,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// completed 在动画完成回调（UI 线程）内联执行——用于必须在 UI 线程收尾的导航过渡，
     /// 避免 Task 续体漂移到线程池（宿主未安装 UI 线程 SynchronizationContext）。
     /// </summary>
-    public void Animate(Action updates, Action completed, int durationMs = 250)
+    public void Animate(Action updates, Action? completed, int durationMs = 250)
     {
         ThrowIfDisposed();
         var state = new AnimState { Updates = updates, Completed = completed };

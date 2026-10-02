@@ -1,12 +1,17 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
-using ArkButton = HarmonyOS.ArkUI.Button;
+using HarmonyOS.Bindings.NativeNode;
+using ArkStack = HarmonyOS.ArkUI.Stack;
+using ArkText = HarmonyOS.ArkUI.Text;
 
 namespace HarmonyOS.Maui.Handlers;
 
-/// <summary>MAUI Button 的 HarmonyOS Handler（ArkUI Button 节点）。Button.Text/TextColor 不在核心 IButton 接口中。</summary>
-public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkButton>
+/// <summary>MAUI Button 的 HarmonyOS Handler。
+/// 实测当前 NDK 的 Button 节点两条文字路径均不可用：内建 NODE_BUTTON_LABEL 参与测量但不绘制
+/// （胶囊有形无字），AddChild 子 Text 不布局不渲染。因此用 Stack + 子 Text 组合实现，
+/// 视觉默认值（胶囊圆角/主题蓝/白字/内边距）由 HarmonyControlDefaults 集中定义。</summary>
+public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkStack>
 {
     /// <summary>点击事件日志开关（插值分配走在调用点，仅在排障时打开）</summary>
     private static readonly bool LogClick = false;
@@ -22,53 +27,73 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkButton>
         [nameof(Button.BorderWidth)] = MapBorderWidth,
         [nameof(Button.CornerRadius)] = MapCornerRadius,
         [nameof(Button.Padding)] = MapPadding,
+        // 覆盖基座：NDK Button 的 Auto 测量不含子节点（内建 label 路径不入排版），
+        // 基座对 WidthRequest/HeightRequest=-1 复位 Auto 会把按钮压成零尺寸（实测回归：
+        // HelloApp 全部按钮消失）。Button 仅在显式请求时设固定尺寸，-1 时保持节点默认。
+        [nameof(VisualElement.WidthRequest)] = MapWidthRequest,
+        [nameof(VisualElement.HeightRequest)] = MapHeightRequest,
     };
+
+    private ArkText? _label;
 
     public HarmonyButtonHandler() : base(Mapper) { }
 
-
-    protected override ArkButton CreatePlatformView() => new();
-
-    protected override void ConnectHandler(ArkButton platformView)
+    protected override ArkStack CreatePlatformView()
     {
-        base.ConnectHandler(platformView);
-        platformView.Click += OnClick;
+        var stack = new ArkStack();
+        // 默认按钮视觉：胶囊圆角 + 主题蓝底 + 默认内边距（NDK 无样式表，显式补齐）
+        stack.SetBackgroundColor(HarmonyControlDefaults.ButtonBackground.ToUint());
+        var r = HarmonyControlDefaults.ButtonCornerRadius;
+        stack.SetBorderRadius(r, r, r, r);
+        var p = HarmonyControlDefaults.ButtonPadding;
+        stack.SetPaddingEdges((float)p.Top, (float)p.Right, (float)p.Bottom, (float)p.Left);
+
+        _label = new ArkText();
+        _label.FontSize = (float)HarmonyControlDefaults.ButtonFontSize;
+        var tc = HarmonyControlDefaults.ButtonTextColor;
+        _label.SetFontColor((byte)(tc.Red * 255), (byte)(tc.Green * 255), (byte)(tc.Blue * 255), (byte)(tc.Alpha * 255));
+        // 纯展示节点必须透传命中：否则子 Text 挡住点击，Stack 的 CLICK 永远不触发
+        _label.SetHitTestBehavior(ArkUI_HitTestMode.ARKUI_HIT_TEST_MODE_TRANSPARENT);
+        stack.AddChild(_label);
+        return stack;
     }
 
-    protected override void DisconnectHandler(ArkButton platformView)
+    protected override void ConnectHandler(ArkStack platformView)
     {
-        platformView.Click -= OnClick;
+        base.ConnectHandler(platformView);
+        platformView.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_CLICK, OnClick);
+    }
+
+    protected override void DisconnectHandler(ArkStack platformView)
+    {
+        // 显式退订：SubscribeEvent 为覆盖式注册，重连不会重复触发，但断开时归还订阅更干净
+        platformView.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_CLICK);
         base.DisconnectHandler(platformView);
     }
 
     public static void MapText(HarmonyButtonHandler h, Button v)
     {
-        // 不设置内建 Label：设了 label 的 Button 会忽略/不布局子节点（实测子 Text 零尺寸不可见）
-        h.PlatformView.SetLabelChild(v.Text ?? string.Empty);
+        if (h._label is not null)
+            h._label.Content = v.Text ?? string.Empty;
     }
 
     public static void MapFontSize(HarmonyButtonHandler h, Button v)
     {
-        // MAUI FontSize=0(Default) 语义=平台默认；NDK 节点无样式表，须显式补默认字号
-        var fs = v.FontSize > 0 ? (float)v.FontSize : 16f;
-        h.PlatformView.FontSize = fs;
-        h.PlatformView.SetLabelChildFontSize(fs);
+        // MAUI FontSize=0(Default) 语义=平台默认；NDK 无样式表，缺省落 HarmonyControlDefaults.ButtonFontSize
+        if (h._label is not null)
+            h._label.FontSize = v.FontSize > 0 ? (float)v.FontSize : (float)HarmonyControlDefaults.ButtonFontSize;
     }
 
     public static void MapFontFamily(HarmonyButtonHandler h, Button v)
     {
-        // NODE_FONT_FAMILY 是通用属性；按钮文字实际由子 Text 承载，双写保证样式一致
-        h.PlatformView.SetFontFamily(v.FontFamily);
-        h.PlatformView.SetLabelChildFontFamily(v.FontFamily);
+        if (!string.IsNullOrEmpty(v.FontFamily))
+            h._label?.SetFontFamily(v.FontFamily);
     }
 
     public static void MapTextColor(HarmonyButtonHandler h, Button v)
     {
-        if (v.TextColor is { } c)
-        {
-            h.PlatformView.SetFontColor(c);
-            h.PlatformView.SetLabelChildColor((byte)(c.Red * 255), (byte)(c.Green * 255), (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
-        }
+        if (v.TextColor is { } c && h._label is not null)
+            h._label.SetFontColor((byte)(c.Red * 255), (byte)(c.Green * 255), (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
     }
 
     public static void MapBackgroundColor(HarmonyButtonHandler h, Button v)
@@ -98,13 +123,28 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkButton>
 
     public static void MapPadding(HarmonyButtonHandler h, Button v)
     {
+        // MAUI Button.Padding 默认 0 语义=平台默认内边距；显式非零时才覆写 CreatePlatformView 的默认值。
+        // 已知取舍：显式 Padding(0) 无法回到零内边距（0 被当作 sentinel），NDK 无样式表可查询区分。
         var p = v.Padding;
-        h.PlatformView.SetPaddingEdges((float)p.Top, (float)p.Right, (float)p.Bottom, (float)p.Left);
+        if (p.Top > 0 || p.Right > 0 || p.Bottom > 0 || p.Left > 0)
+            h.PlatformView.SetPaddingEdges((float)p.Top, (float)p.Right, (float)p.Bottom, (float)p.Left);
+    }
+
+    public static void MapWidthRequest(HarmonyButtonHandler h, Button v)
+    {
+        if (v.WidthRequest >= 0)
+            h.PlatformView.SetWidth((float)v.WidthRequest);
+    }
+
+    public static void MapHeightRequest(HarmonyButtonHandler h, Button v)
+    {
+        if (v.HeightRequest >= 0)
+            h.PlatformView.SetHeight((float)v.HeightRequest);
     }
 
     private void OnClick(HarmonyOS.Bindings.NativeNode.ArkUINodeEvent _)
     {
         if (LogClick) HarmonyOS.Interop.HiLog.Debug("HarmonyHost", $"[Click] {VirtualView?.Text}");
-        VirtualView.SendClicked();
+        VirtualView?.SendClicked();
     }
 }
