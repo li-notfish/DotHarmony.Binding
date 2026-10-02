@@ -38,6 +38,8 @@ $Steps = @(
     @{ Name = "home";   Click = $null;                      Capture = $true },
     @{ Name = "detail"; Click = "probeDetail?value=hello42"; Capture = $true },
     @{ Name = "back";   Click = "GoToAsync ..";             Capture = $false },
+    @{ Name = "grid";   Click = "GoToAsync //probeGrid";    Capture = $true },
+    @{ Name = "back2";  Click = "GoToAsync ..";             Capture = $false },
     @{ Name = "modal";  Click = "Open modal";               Capture = $true }
 )
 

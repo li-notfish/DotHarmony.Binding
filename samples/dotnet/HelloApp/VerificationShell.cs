@@ -16,6 +16,7 @@ public class AppShell : Shell
     {
         Instance = this;
         HarmonyShellNavigation.RegisterRoute("probeDetail", typeof(ProbeDetailPage));
+        HarmonyShellNavigation.RegisterRoute("probeGrid", typeof(GridProbePage));
 
         Items.Add(new ShellItem
         {
@@ -80,6 +81,11 @@ public class ShellHomePage : ContentPage
             await Navigation.PushModalAsync(new ModalProbePage());
         };
         layout.Children.Add(modalBtn);
+
+        var gridBtn = new Button { Text = "GoToAsync //probeGrid" };
+        gridBtn.Clicked += async (_, _) =>
+            await HarmonyShellNavigation.GoToAsync(AppShell.Instance!, "//probeGrid");
+        layout.Children.Add(gridBtn);
 
         // M2 探针：FlyoutBehavior / FlyoutIsPresented 双向 / NavBar / TabBar / 标题热更新
         // （Locked 切换放最前：Locked 并排后内容区极窄，靠后的按钮会被挤出可视区）
@@ -216,6 +222,57 @@ public class ProbeDetailPage : ContentPage, IQueryAttributable
     {
         base.OnAppearing();
         HiLog.Info("VProbe", "[V][SHELL] detail appearing");
+    }
+}
+
+/// <summary>W2 布局夹具：Star 列（2*,1*）+ Auto/Star 混合行 + AbsoluteLayout 比例定位。</summary>
+public class GridProbePage : ContentPage
+{
+    public GridProbePage()
+    {
+        Title = "GridProbe";
+        var root = new VerticalStackLayout { Spacing = 12, Padding = 12 };
+
+        // Star 列 + Auto 行：两列按 2:1 分宽，首行随内容高
+        var grid = new Grid
+        {
+            ColumnDefinitions =
+            {
+                new ColumnDefinition(new GridLength(2, GridUnitType.Star)),
+                new ColumnDefinition(new GridLength(1, GridUnitType.Star)),
+            },
+            RowDefinitions =
+            {
+                new RowDefinition(GridLength.Auto),
+                new RowDefinition(new GridLength(1, GridUnitType.Star)),
+            },
+            HeightRequest = 220,
+        };
+        var header = new Label { Text = "Auto row, span 2", BackgroundColor = Colors.LightGray };
+        Grid.SetColumnSpan(header, 2);
+        grid.Children.Add(header);
+        var left = new Label { Text = "2* col", BackgroundColor = Colors.LightBlue, VerticalTextAlignment = TextAlignment.Center };
+        Grid.SetRow(left, 1);
+        grid.Children.Add(left);
+        var right = new Button { Text = "1* col" };
+        Grid.SetRow(right, 1);
+        Grid.SetColumn(right, 1);
+        grid.Children.Add(right);
+        root.Children.Add(grid);
+
+        // AbsoluteLayout 比例定位：50% 宽贴右下
+        var abs = new Microsoft.Maui.Controls.AbsoluteLayout { HeightRequest = 160, BackgroundColor = Colors.Beige };
+        var box = new BoxView { Color = Colors.Orange };
+        Microsoft.Maui.Controls.AbsoluteLayout.SetLayoutFlags(box, Microsoft.Maui.Layouts.AbsoluteLayoutFlags.All);
+        Microsoft.Maui.Controls.AbsoluteLayout.SetLayoutBounds(box, new Microsoft.Maui.Graphics.Rect(0.5, 0.5, 0.5, 0.5));
+        abs.Children.Add(box);
+        root.Children.Add(abs);
+
+        var back = new Button { Text = "GoToAsync .." };
+        back.Clicked += async (_, _) => await HarmonyShellNavigation.GoToAsync(AppShell.Instance!, "..");
+        root.Children.Add(back);
+
+        Content = root;
     }
 }
 
