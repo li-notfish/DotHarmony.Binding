@@ -277,6 +277,7 @@ public static void Register()
 | 2. 打 HAP | `scripts/build-hap.cmd` | hvigor assembleHap 生成 unsigned HAP（DevEco 路径自动探测） | — |
 | 2b. 签名 | `scripts/sign-hap.ps1` | 提供完整 `HarmonySigning*` 属性时自动调用 `hap-sign-tool.jar`，输出 `entry-default-signed.hap` | — |
 | 3. 部署 | `scripts/deploy-hap.sh` / `scripts/deploy-hap.ps1` | 优先安装 signed HAP，无签名产物时回退 unsigned；启动并跟踪 HarmonyHost 日志 | `HDC_TARGET` 设备选择 |
+| 4. 布局回归 | `scripts/verify-layout-baseline.ps1` | 样本关键界面截图与基线像素 diff；`-Update` 生成基线（分辨率相关，基线存 artifacts/ 不入库） | `-App` / `-Target` / `-Tolerance` |
 
 其它 targets：`HarmonyStageHost` / `HarmonyBuildLibApp` / `HarmonyBuildHap` / `HarmonyDeploy` 可单独执行。
 如果只想手动打某个样例的 HAP，可以用：
