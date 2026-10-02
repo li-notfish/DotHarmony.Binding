@@ -52,14 +52,37 @@ public sealed class HarmonyMauiContext : MauiContext
 
     private HarmonyMauiContext() : base(new HarmonyServices()) { }
 
+    /// <summary>
+    /// 注册托管服务（第三方库/应用扩展点：鸿蒙宿主无 UseMauiApp 的 IServiceCollection，
+    /// 此为最小等价物）。同类型后注册覆盖先注册；AnimationManager 为内置服务不可覆盖。
+    /// </summary>
+    public static void RegisterService<T>(T instance) where T : notnull
+    {
+        ArgumentNullException.ThrowIfNull(instance);
+        ((HarmonyServices)Shared.Services).Register(typeof(T), instance);
+    }
+
     private sealed class HarmonyServices : IServiceProvider
     {
         private AnimationManager? _animations;
+        private readonly System.Collections.Generic.Dictionary<Type, object> _services = new();
+        private readonly object _lock = new();
+
+        public void Register(Type serviceType, object instance)
+        {
+            lock (_lock)
+                _services[serviceType] = instance;
+        }
 
         public object? GetService(Type serviceType)
         {
             if (serviceType.IsAssignableFrom(typeof(AnimationManager)))
                 return _animations ??= new AnimationManager(HarmonyTicker.Shared);
+            lock (_lock)
+            {
+                if (_services.TryGetValue(serviceType, out var service))
+                    return service;
+            }
             return null;
         }
     }
