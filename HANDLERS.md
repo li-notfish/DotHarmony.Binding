@@ -175,10 +175,23 @@ public class HarmonySliderHandler : ViewHandler<Microsoft.Maui.Controls.Slider, 
 
 ### Step 3：注册到工厂
 
-`src/HarmonyOS.Maui/Handlers/HarmonyHandlerFactory.cs` 的 switch 里加一行。**注意顺序：子类在前**（`Grid` 在 `Layout` 前，否则永远命中基类分支）：
+两条路径：
+
+**A. 内置控件（改本仓库）**：`src/HarmonyOS.Maui/Handlers/HarmonyHandlerFactory.cs` 的 switch 里加一行。**注意顺序：子类在前**（`Grid` 在 `Layout` 前，否则永远命中基类分支）：
 
 ```csharp
 Microsoft.Maui.Controls.Slider => new HarmonySliderHandler(),
+```
+
+**B. 应用/第三方库自定义 Handler（不改本仓库）**：开放注册表，优先于内置分派，
+沿类型继承链向上找最近注册（鸿蒙宿主不走 `UseMauiApp`，此为 `ConfigureMauiHandlers` 的最小等价物）：
+
+```csharp
+// 应用启动时（MauiHarmonyHost.Run/RunApplication 之前）
+HarmonyHandlerFactory.Register<MyCustomView>(() => new MyCustomViewHandler());
+
+// 第三方库需要的托管服务（Handler.MauiContext.Services 解析口）：
+HarmonyMauiContext.RegisterService<IMyService>(new MyService());
 ```
 
 ### Step 4：属性映射核对清单
@@ -355,7 +368,7 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★☆☆ | `RefreshView` | `ARKUI_NODE_REFRESH` | 下拉经 NODE_REFRESH_ON_REFRESH 置 IsRefreshing；刷新态 setter 已入生成管线（CONSTRUCTOR_OPTION_PROPS，RefreshManual.cs 已删除） | ✅ 已完成 |
 | ★☆☆ | `BoxView` | `ARKUI_NODE_STACK` | 纯色矩形（Color/BackgroundColor → 背景色） | ✅ 已完成 |
 | ★☆☆ | `ContentView` / `ContentPresenter` | `ARKUI_NODE_COLUMN` | 模板宿主（PresentedContent 槽）；空 Content 的槽位 HIT_TEST_MODE_NONE 防输入黑洞；Padding 已映射 NODE_PADDING | ✅ 已完成 |
-| ★☆☆ | `Shell` | 根 `ARKUI_NODE_COLUMN` + 内容栈/TabBar | 平台 fragment 机制自建（HarmonyShellNavigation：条目/路由/推送栈/query/模态转发）；Flyout 菜单视觉未覆盖 | ✅ 第一版完成 |
+| ★☆☆ | `Shell` | 根 `ARKUI_NODE_STACK`（主列 + Flyout 覆盖层） | 平台 fragment 机制自建（HarmonyShellNavigation：条目/路由/推送栈/query/模态转发）；Flyout 菜单、主题色、FlyoutIsPresented/FlyoutBehavior/NavBarIsVisible/TabBarIsVisible 已覆盖（Locked 为覆盖式常驻） | ✅ 第一版完成 |
 | ☆ | `Shape`/自绘 | `ARKUI_NODE_CUSTOM` + `NODE_ON_DRAW` | MAUI Graphics → OH_Drawing 适配；文本/渐变/位图/测量路径仍有部分高级能力待补 | ✅ 已完成（高级能力继续补） |
 | ☆ | GestureRecognizers（Tap/Pan/Pinch/Swipe/Pointer） | NDK `ArkUI_NativeGestureAPI_1` + `NODE_TOUCH_EVENT` | 手势→MAUI Send* 协议回送；Tap/Pointer 走反射桥 | ✅ 已完成（见 §6.1） |
 
@@ -400,6 +413,9 @@ MAUI 的 Essentials 静态类（`DeviceInfo.Current`/`DeviceDisplay`/`AppInfo`/`
 
 | 症状 | 根因 | 修复 |
 |---|---|---|
+| 固定高兄弟节点被挤出可视区（如 Shell 底部 TabBar 不渲染） | ArkUI NDK `NODE_FLEX_GROW` 在 Column 内不按"剩余空间"收缩，内容区拿满整列高 | 列 SIZE_CHANGE 时显式回填内容区高度（列高 - 顶栏 - TabBar），见 HarmonyShellHandler.RelayoutContent |
+| 隐藏容器仍占位顶歪布局 | `NODE_VISIBILITY` Hidden(1) 隐藏但占位 | 需要"不占位"用 `SetVisibility(ARKUI_VISIBILITY_NONE)` |
+| 浅色主题 Flyout 面板/顶栏背景近乎透明（#01010101） | `Color.FromRgba(1, 1, 1, 1)` 命中 **int 重载**（0-255 域），1/255 ≈ 全透明 | 用 `FromRgba(255, 255, 255, 255)` 或 `FromArgb("#FFFFFF")`；0-1 域写法必须带小数点 |
 | 事件注册了没反应 | `On()` 漏 `NodeEventBus.Register`；或 receiver 未注册 | 基类 `On()` 已内置；新事件类型走基类，勿绕过 |
 | `SetAttribute` 返回 401 | 枚举用错（如对齐用了 `ArkUI_Alignment`） | 对照 native_node.h 注释选枚举 |
 | `SetStringAttribute` 401（设空串时） | 空串 `GetBytes` 返回 0 长数组，`fixed` 得空指针传给 `item.@string` | 基类已修（空串转 NUL 结尾空 C 串）；绕过基类的手写封送注意同样问题 |

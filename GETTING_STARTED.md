@@ -138,7 +138,7 @@ public static class Program
 ```
 
 支持的根页类型：`ContentPage` / `NavigationPage`（推荐，配套返回键/标题栏/模态）/
-`Shell` 第一版（TabBar、路由、query、模态；Flyout 视觉与主题色未覆盖）/ `TabbedPage` 待支持。
+`Shell`（TabBar、Flyout 菜单、路由、query、模态、主题色、NavBar/TabBar 可见性）/ `TabbedPage`。
 
 ### Step 3：平台启动代码（必抄的薄转发层）
 
@@ -226,7 +226,7 @@ dotnet build samples/dotnet/MyApp -t:HarmonyRun
 | MVVM（ViewModel/绑定/Command） | ✅ 直接复用 | 数据绑定走 MAUI 标准管线 |
 | `Navigation.PushAsync/PopAsync/PushModalAsync` | ✅ 直接复用 | 经 IStackNavigation 协议转接到 ArkUI |
 | 手势识别（Tap/Pan/Pinch/Swipe/Pointer） | ✅ 直接复用 | 注意 PanUpdated 单位为 vp（等价 iOS points，非 Android px） |
-| Shell（tab/URI 路由） | ✅ 第一版支持 | TabBar、绝对/相对路由、query、section 栈、模态可用；Flyout 视觉与主题色未覆盖 |
+| Shell（tab/URI 路由/Flyout） | ✅ 支持 | TabBar、Flyout 菜单、绝对/相对路由、query、section 栈、模态、主题色；`FlyoutBehavior.Locked` 为覆盖式常驻（内容区不让宽，与 MAUI 并排布局有差异） |
 | 自绘（Shape/GraphicsView） | ✅ 已支持 | ArkUI 自绘节点（ARKUI_NODE_CUSTOM）+ OH_Drawing；ICanvas 适配器 vp 语义 |
 | CollectionView 大数据量 | ✅ 已支持 | NodeAdapter 虚拟化：按可见范围物化（实测 200 条仅物化 7 条，滚动按需推进/回滚） |
 | **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` / `Connectivity.Current` / `FileSystem.Current` / `Launcher.Default` / `SecureStorage.Default` / 传感器 / `Geolocation` / `MediaPicker` 等） | ✅ 22 个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；MauiHarmonyHost.Run 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage + Accelerometer/Magnetometer/Gyroscope/Compass/OrientationSensor/Geolocation/MediaPicker。IMainThread 暂缓（MAUI 10 无注入点）；IShare 文件分享需跨应用 URI 授权通道，留待立项；适配指南见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
