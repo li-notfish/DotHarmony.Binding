@@ -59,3 +59,16 @@ samples/HarmonyHostEngine/oh_modules/
 .vs/
 # 本地构建中转产物（remote-build 压缩包等）
 tmp/
+
+# Python（tools/arkui-bindgen 等）
+__pycache__/
+.pytest_cache/
+
+# HarmonyOS 签名材料（私钥/证书/Profile 一律不入库，存放于仓库外如 D:\Harmony\secrets\）
+*.p12
+*.csr
+*.cer
+*.p7b
+
+# 本地打包/验证产物
+artifacts/

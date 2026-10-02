@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Runtime.ExceptionServices;
 
 namespace HarmonyOS.Interop;
 
@@ -20,7 +21,7 @@ public sealed class HarmonySynchronizationContext : SynchronizationContext
     private static Thread? _uiThread;
 
     private readonly BlockingCollection<(SendOrPostCallback callback, object? state)> _queue = new();
-    private bool _running;
+    private volatile bool _running;
 
     private HarmonySynchronizationContext() { }
 
@@ -62,6 +63,11 @@ public sealed class HarmonySynchronizationContext : SynchronizationContext
             {
                 break;
             }
+            catch (Exception ex)
+            {
+                HiLog.Error("HarmonySync",
+                    $"callback failed: {ex.GetType().Name}: {ex.Message}");
+            }
         }
     }
 
@@ -81,14 +87,17 @@ public sealed class HarmonySynchronizationContext : SynchronizationContext
     {
         if (d == null) throw new ArgumentNullException(nameof(d));
 
-        if (Thread.CurrentThread == _uiThread)
+        // Post is asynchronous even when called from the UI thread.
+        try
         {
-            // 已在主线程，直接执行
-            d(state);
-            return;
+            _queue.Add((d, state));
         }
-
-        _queue.Add((d, state));
+        catch (InvalidOperationException)
+        {
+            // pump 已停（宿主退出中，CompleteAdding 后）：SynchronizationContext.Post
+            // 契约不应抛异常，降级线程池执行
+            ThreadPool.QueueUserWorkItem(s => d(s), state);
+        }
     }
 
     /// <summary>
@@ -106,12 +115,25 @@ public sealed class HarmonySynchronizationContext : SynchronizationContext
         }
 
         using var completed = new ManualResetEventSlim(false);
+        Exception? failure = null;
         _queue.Add((_ =>
         {
-            d(state);
-            completed.Set();
+            try
+            {
+                d(state);
+            }
+            catch (Exception ex)
+            {
+                failure = ex;
+            }
+            finally
+            {
+                completed.Set();
+            }
         }, null));
         completed.Wait();
+        if (failure is not null)
+            ExceptionDispatchInfo.Capture(failure).Throw();
     }
 
     /// <summary>

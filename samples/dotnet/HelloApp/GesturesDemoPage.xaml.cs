@@ -19,6 +19,9 @@ public partial class GesturesDemoPage : ContentPage
     {
         InitializeComponent();
 
+        // ── 隔离探针数据（Metro Hub 回归：水平 Scroll 内/List 条目内手势是否触发）──
+        ProbeList.ItemsSource = new[] { "a", "b", "c" };
+
         // ── Tap / Double-Tap ──
         var tap = new TapGestureRecognizer { NumberOfTapsRequired = 1 };
         tap.Tapped += (_, e) =>
@@ -100,6 +103,27 @@ public partial class GesturesDemoPage : ContentPage
         var areaTap = new TapGestureRecognizer();
         areaTap.Tapped += (_, _) => Status.Text = "demo area tapped";
         DisabledArea.GestureRecognizers.Add(areaTap);
+    }
+
+    private int _probeTaps;
+
+    /// <summary>隔离探针命中点：水平 Scroll 内 / List 条目内（区分容器层级）</summary>
+    private void OnProbeTap(object? sender, TappedEventArgs e)
+    {
+        _probeTaps++;
+        var scope = "?";
+        if (sender is VisualElement ve)
+        {
+            var p = ve.Parent;
+            while (p is not null and not ContentPage)
+            {
+                if (p is CollectionView) { scope = "LIST"; break; }
+                if (p is ScrollView) { scope = "H-SCROLL"; break; }
+                p = p.Parent;
+            }
+        }
+        Status.Text = $"probe[{scope}] tapped #{_probeTaps}";
+        HarmonyOS.Interop.HiLog.Info("VProbe", $"[V][GESTURE] probe {scope} tapped #{_probeTaps}");
     }
 
     private void OnToggleTapClicked(object? sender, EventArgs e)

@@ -13,7 +13,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// </summary>
 public class HarmonyDatePickerHandler : HarmonyViewHandler<MDatePicker, ArkDatePicker>
 {
-    public static PropertyMapper<MDatePicker, HarmonyDatePickerHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MDatePicker, HarmonyDatePickerHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(IDatePicker.Date)] = MapDate,
         [nameof(IDatePicker.MinimumDate)] = MapMinimumDate,

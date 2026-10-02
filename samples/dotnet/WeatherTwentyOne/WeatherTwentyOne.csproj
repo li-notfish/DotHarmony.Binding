@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <TrimMode>full</TrimMode>
+    <IlcGenerateStackTraceData Condition="'$(Configuration)' == 'Debug'">true</IlcGenerateStackTraceData>
+    <OutputType>Library</OutputType>
+    <AssemblyName>app</AssemblyName>
+    <NoWarn>$(NoWarn);CA2255</NoWarn>
+    <EnableDefaultMauiItems>true</EnableDefaultMauiItems>
+    <MauiXamlInflator>SourceGen</MauiXamlInflator>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <MauiImage Include="Assets\weather_partly_cloudy_day.svg" />
+    <MauiImage Include="Assets\weather_partly_cloudy_night.svg" />
+    <MauiImage Include="Assets\weather_cloudy.svg" />
+    <MauiImage Include="Assets\weather_rain.svg" />
+    <MauiImage Include="Assets\weather_thunderstorm.svg" />
+    <MauiImage Include="Assets\weather_moon.svg" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)../../../src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets" />
+
+</Project>

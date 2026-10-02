@@ -13,10 +13,13 @@ public sealed class ArkTSException : Exception
     /// </summary>
     public string? Reason { get; }
 
+    /// <summary>BusinessError.code；非对象错误或缺失时为 null。</summary>
+    public long? ErrorCode { get; }
+
     /// <summary>
     /// 原始 napi_value 句柄，用于调试时获取完整错误信息
     /// </summary>
-    public IntPtr NapiValue { get; }
+    internal IntPtr NapiValue { get; }
 
     /// <summary>
     /// 创建一个包含错误原因的 ArkTS 异常
@@ -26,6 +29,7 @@ public sealed class ArkTSException : Exception
     {
         Reason = reason;
         NapiValue = IntPtr.Zero;
+        ErrorCode = null;
     }
 
     /// <summary>
@@ -36,16 +40,18 @@ public sealed class ArkTSException : Exception
     {
         NapiValue = napiValue;
         Reason = null;
+        ErrorCode = null;
     }
 
     /// <summary>
     /// 创建一个包含错误原因和 napi_value 句柄的 ArkTS 异常
     /// </summary>
-    internal ArkTSException(string message, string? reason, IntPtr napiValue)
+    internal ArkTSException(string message, string? reason, IntPtr napiValue, long? errorCode = null)
         : base(message)
     {
         Reason = reason;
         NapiValue = napiValue;
+        ErrorCode = errorCode;
     }
 }
 #endif

@@ -25,7 +25,7 @@ namespace HarmonyOS.Maui.Handlers;
 public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColumn>
 {
     public static readonly PropertyMapper<NavigationPage, HarmonyNavigationPageHandler> Mapper =
-        new(ViewMapper)
+        new(HarmonyViewMapper.Base)
         {
             [nameof(VisualElement.BackgroundColor)] = MapBackgroundColor,
             [nameof(NavigationPage.BarBackground)] = MapBarBackground,
@@ -115,13 +115,22 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
             && popped.Contains(oldTop)
             && handler._nodes.GetValueOrDefault(oldTop) is { } oldNode)
         {
-            oldNode.Animate(
-                () => oldNode.SetOpacity(0f),
-                () =>
-                {
-                    handler.SyncToStack(request);
-                    ((IStackNavigation)handler.VirtualView).NavigationFinished(request.NavigationStack);
-                });
+            try
+            {
+                oldNode.Animate(
+                    () => oldNode.SetOpacity(0f),
+                    () =>
+                    {
+                        handler.SyncToStack(request);
+                        ((IStackNavigation)handler.VirtualView).NavigationFinished(request.NavigationStack);
+                    });
+            }
+            catch
+            {
+                // animateTo 同步失败时也必须完成 MAUI 导航请求，否则 PushAsync/PopAsync 永久挂起。
+                handler.SyncToStack(request);
+                ((IStackNavigation)handler.VirtualView).NavigationFinished(request.NavigationStack);
+            }
             return;
         }
 
@@ -153,7 +162,6 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
                 continue;
 
             var pageHandler = HarmonyHandlerFactory.Create((Microsoft.Maui.Controls.Element)page);
-            pageHandler.SetVirtualView(page);
             var node = pageHandler.PlatformView as ArkUINode
                 ?? throw new InvalidOperationException(
                     $"page handler PlatformView is not an ArkUI node: {pageHandler.PlatformView?.GetType().Name}");

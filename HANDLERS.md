@@ -44,12 +44,12 @@ src/HarmonyOS.Bindings/Api/*  ──napi（经 HarmonyOS.Interop）──►  li
 
 ### Step 1：确认 ArkUI 节点类是否够用
 
-节点类在 `src/HarmonyOS.Bindings/Nodes/`，目前由 `tools/api-generator/nativeCodeGenerator.ts` 从 SDK `.d.ts` 自动产出（已有 button/checkbox/column/flex/grid/image/list/progress/radio/refresh/row/scroll/slider/span/stack/swiper/text/toggle/xcomponent 共 19 个；text_area/text_input 因无 native node 类型由早期生成器产出）。查两个地方：
+节点类在 `src/HarmonyOS.Bindings/Nodes/`，目前由 `tools/api-generator/nativeCodeGenerator.ts` 从 SDK `.d.ts` 自动产出（已有 button/checkbox/column/date_picker/flex/grid/image/list/progress/radio/refresh/row/scroll/slider/span/stack/swiper/text/text_area/text_input/text_picker/time_picker/toggle/xcomponent 共 24 个）。查两个地方：
 
 - `src/HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.g.cs` 里 `ARKUI_NODE_*` 枚举 —— 确认目标组件类型存在（如 `ARKUI_NODE_SLIDER`）；
 - `Nodes/native-gaps.json` —— 生成器登记的"属性存在但 shape 未注册"缺口。
 
-上述 19 个组件的节点类已由生成器自动产出（含属性、事件、构造参数），**无需手写**。对于不在 SDK `.d.ts` 中的自定义组件或生成器未覆盖的属性，可手写补充节点类：
+上述 24 个组件的节点类已由生成器自动产出（含属性、事件、构造参数），**无需手写**。对于不在 SDK `.d.ts` 中的自定义组件或生成器未覆盖的属性，可手写补充节点类：
 
 ```csharp
 // src/HarmonyOS.Bindings/Nodes/slider.cs —— 手写节点类模板
@@ -175,13 +175,37 @@ public class HarmonySliderHandler : ViewHandler<Microsoft.Maui.Controls.Slider, 
 
 ### Step 3：注册到工厂
 
-`src/HarmonyOS.Maui/Handlers/HarmonyHandlerFactory.cs` 的 switch 里加一行。**注意顺序：子类在前**（`Grid` 在 `Layout` 前，否则永远命中基类分支）：
+两条路径：
+
+**A. 内置控件（改本仓库）**：`src/HarmonyOS.Maui/Handlers/HarmonyHandlerFactory.cs` 的 switch 里加一行。**注意顺序：子类在前**（`Grid` 在 `Layout` 前，否则永远命中基类分支）：
 
 ```csharp
 Microsoft.Maui.Controls.Slider => new HarmonySliderHandler(),
 ```
 
+**B. 应用/第三方库自定义 Handler（不改本仓库）**：开放注册表，优先于内置分派，
+沿类型继承链向上找最近注册（鸿蒙宿主不走 `UseMauiApp`，此为 `ConfigureMauiHandlers` 的最小等价物）：
+
+```csharp
+// 应用启动时（MauiHarmonyHost.Run/RunApplication 之前）
+HarmonyHandlerFactory.Register<MyCustomView>(() => new MyCustomViewHandler());
+
+// 第三方库需要的托管服务（Handler.MauiContext.Services 解析口）：
+HarmonyMauiContext.RegisterService<IMyService>(new MyService());
+```
+
 ### Step 4：属性映射核对清单
+
+> **基座收口（HarmonyViewMapper.Base）**：所有 Handler 的 `Mapper` 一律 `new(HarmonyViewMapper.Base)`，
+> 不要在各 handler 重复映射 `WidthRequest/HeightRequest/Background/Padding`——基座已统一落地
+> （显式值 SetWidth/SetHeight，-1 复位 Auto；Background 走 BrushHelper；Padding 非零才下发）。
+> 需要特化（如 ContentView/Frame 的水平栈 auto 宽）时在自身 Mapper 写同名键覆盖即可（链式语义：外层优先）。
+> 视觉属性（Visibility/IsEnabled/Opacity/Transform/Anchor/InputTransparent）由 `HarmonyViewHandler.UpdateValue`
+> 拦截，同样不要进 mapper。
+>
+> **一致性门槛**：`dotnet run --project tools/HandlerAudit` 会比对工厂每个分派类型的接口继承链
+> 属性全集与 handler 实际映射键，未在 `tools/HandlerAudit/baseline.json` 登记原因的缺口使 CI 失败；
+> 同时静态检查工厂 switch 臂的继承拓扑（派生类必须排在基类臂之前）。报告见 `docs/handler-coverage.md`。
 
 | MAUI 概念 | ArkUI 翻译 | 备注 |
 |---|---|---|
@@ -204,8 +228,9 @@ dotnet build samples/dotnet/HelloApp/HelloApp.csproj -t:HarmonyRun
 # 或分步：
 # 1. 编译（Windows 本地即可验证 C#/XAML）
 dotnet build samples/dotnet/HelloApp/HelloApp.csproj
-# 2. NativeAOT → 双架构 libapp.so（LOCAL=true 走本地 WSL）
-bash scripts/remote-build.sh
+# 2. NativeAOT → 双架构 libapp.so（PublishAotClang，Windows 本地）
+dotnet publish samples/dotnet/HelloApp/HelloApp.csproj -c Release -r linux-musl-arm64
+dotnet publish samples/dotnet/HelloApp/HelloApp.csproj -c Release -r linux-musl-x64
 # 3. 打包 HAP
 cmd //c "scripts\build-hap.cmd"
 # 4. 部署模拟器（按需）
@@ -260,7 +285,7 @@ MAUI 托管布局的对齐/ZIndex 约定（2026-09-12 落地）：
 
 ## 4. `@ohos.*` API 绑定（生成器产出，M2 完成）
 
-UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**模块绑定全部由生成器产出**（`src/HarmonyOS.Bindings/Api/`，438 个模块 / 375 个转正编译），不要手写——下面的铁律是生成器与运行时已经实现的约束，排查问题时读。
+UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**模块绑定全部由生成器产出**（`src/HarmonyOS.Bindings/Api/`，438 个模块 / 438 个全量转正编译；`GRAYSCALE_MODULES` 当前为空），不要手写——下面的铁律是生成器与运行时已经实现的约束，排查问题时读。
 
 ### 4.1 生成与转正流程
 
@@ -306,7 +331,7 @@ dotnet build ArkTsBinding.slnx
 | 项 | 规范 | 反例 |
 |---|---|---|
 | `ViewHandler` 泛型 | 核心接口优先（`ISlider`/`IEntry`）；**接口缺属性时回退具体类型**（`Label.HorizontalTextAlignment` 不在 `ILabel` 上） | `ViewHandler<Microsoft.Maui.Controls.Button, ...>`（冗长） |
-| PropertyMapper | `new(ViewMapper)` | `new(ViewHandler.ViewMapper)`（过时写法） |
+| PropertyMapper | `new(ViewHandler.ViewMapper)` | `new(ViewMapper)`（本仓当前未使用该写法） |
 | Mapper key | `[nameof(Button.Text)]` | `[("Text")]`（字符串硬编码） |
 | Mapper value | 命名静态方法 `MapText` | 内联 lambda `(h, v) => ...`（不利于测试和堆栈） |
 | Map 方法签名 | `MapText(HarmonyButtonHandler h, Button v)` | `MapText(IButtonHandler h, IButton v)`（接口不存在的属性访问不到） |
@@ -342,7 +367,9 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★☆☆ | `Picker`/`DatePicker`/`TimePicker` | `ARKUI_NODE_TEXT_PICKER`/`DATE_PICKER`/`TIME_PICKER` | ArkUI 是内嵌滚轮非弹窗，视觉有差异；节点类已入解析器生成管线（NODE_TYPE_NAME_FIXES + CONSTRUCTOR_OPTION_PROPS，PickerManual/TextPickerManual.cs 已删除）；MAUI 10 的 Date/Time 为可空类型 | ✅ 已完成 |
 | ★☆☆ | `RefreshView` | `ARKUI_NODE_REFRESH` | 下拉经 NODE_REFRESH_ON_REFRESH 置 IsRefreshing；刷新态 setter 已入生成管线（CONSTRUCTOR_OPTION_PROPS，RefreshManual.cs 已删除） | ✅ 已完成 |
 | ★☆☆ | `BoxView` | `ARKUI_NODE_STACK` | 纯色矩形（Color/BackgroundColor → 背景色） | ✅ 已完成 |
-| ☆ | `Shape`/自绘 | `ARKUI_NODE_CUSTOM` + `NODE_ON_DRAW` | 等价于 iOS `Draw`；需 MAUI Graphics 前端 | ⏳ 待做 |
+| ★☆☆ | `ContentView` / `ContentPresenter` | `ARKUI_NODE_COLUMN` | 模板宿主（PresentedContent 槽）；空 Content 的槽位 HIT_TEST_MODE_NONE 防输入黑洞；Padding 已映射 NODE_PADDING | ✅ 已完成 |
+| ★☆☆ | `Shell` | 根 `ARKUI_NODE_STACK`（主列 + Flyout 覆盖层） | 平台 fragment 机制自建（HarmonyShellNavigation：条目/路由/推送栈/query/模态转发）；Flyout 菜单、主题色、FlyoutIsPresented/FlyoutBehavior/NavBarIsVisible/TabBarIsVisible 已覆盖（Locked 为覆盖式常驻） | ✅ 第一版完成 |
+| ☆ | `Shape`/自绘 | `ARKUI_NODE_CUSTOM` + `NODE_ON_DRAW` | MAUI Graphics → OH_Drawing 适配；文本/渐变/位图/测量路径仍有部分高级能力待补 | ✅ 已完成（高级能力继续补） |
 | ☆ | GestureRecognizers（Tap/Pan/Pinch/Swipe/Pointer） | NDK `ArkUI_NativeGestureAPI_1` + `NODE_TOUCH_EVENT` | 手势→MAUI Send* 协议回送；Tap/Pointer 走反射桥 | ✅ 已完成（见 §6.1） |
 
 **查询属性枚举值**：SDK 头文件
@@ -366,11 +393,11 @@ MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实�
 | SwipeGestureRecognizer | 同上触摸流 | 累计位移喂 `SendSwipe`，抬起时 `MapSwipeDirection` → `DetectSwipe`（阈值判定在识别器内部） |
 | PinchGestureRecognizer | `ArkPinchGesture(2)` | `GetScale` 为累计系数，直接透传 |
 | PointerGestureRecognizer | 同一触摸流 | Down→Entered+Pressed、Move→Moved、Up→Released；hover/mouse 通道待补 |
-| Drag/Drop 识别器 | 未实现 | longpress + 跨视图状态机，后续立项 |
+| Drag/Drop 识别器 | `NODE_ON_DRAG_*` / `NODE_ON_DROP` + `libudmf.so` | 文本载荷可拖拽；UDMF 指针须持有至 `NODE_ON_DRAG_END` 再销毁 |
 
 **原生 recognizer 生命周期铁律**：不得在事件分发回调内 `dispose()` recognizer——dispose 后原生管线仍派发事件（SIGSEGV UAF，实测）。重建场景 Detach + 入池复用（`HarmonyGestureManager.Rebuild`），dispose 仅在 Handler 断连时统一执行。
 
-单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe 方向映射、Grid 对齐偏移纯逻辑、Essentials 密度/方向映射、Preferences 编解码、Battery 枚举映射、Connectivity bearer 映射，共 83 用例（含漏斗纪律源码扫描闸）；另有 `HarmonyEngineTests` 14 用例。
+单测：`tests/dotnet/HarmonyGestureTests`（xunit，`dotnet test` 跑）——反射桥全链路、Swipe/Drag&Drop 映射、Grid/ZIndex/ScrollView/Shell 路由、Essentials 映射与 Preferences 编解码等，共 120 用例（含漏斗纪律源码扫描闸）；另有 `HarmonyEngineTests` 14 用例。
 
 ### 6.2 Essentials 注入适配要点
 
@@ -386,6 +413,9 @@ MAUI 的 Essentials 静态类（`DeviceInfo.Current`/`DeviceDisplay`/`AppInfo`/`
 
 | 症状 | 根因 | 修复 |
 |---|---|---|
+| 固定高兄弟节点被挤出可视区（如 Shell 底部 TabBar 不渲染） | ArkUI NDK `NODE_FLEX_GROW` 在 Column 内不按"剩余空间"收缩，内容区拿满整列高 | 列 SIZE_CHANGE 时显式回填内容区高度（列高 - 顶栏 - TabBar），见 HarmonyShellHandler.RelayoutContent |
+| 隐藏容器仍占位顶歪布局 | `NODE_VISIBILITY` Hidden(1) 隐藏但占位 | 需要"不占位"用 `SetVisibility(ARKUI_VISIBILITY_NONE)` |
+| 浅色主题 Flyout 面板/顶栏背景近乎透明（#01010101） | `Color.FromRgba(1, 1, 1, 1)` 命中 **int 重载**（0-255 域），1/255 ≈ 全透明 | 用 `FromRgba(255, 255, 255, 255)` 或 `FromArgb("#FFFFFF")`；0-1 域写法必须带小数点 |
 | 事件注册了没反应 | `On()` 漏 `NodeEventBus.Register`；或 receiver 未注册 | 基类 `On()` 已内置；新事件类型走基类，勿绕过 |
 | `SetAttribute` 返回 401 | 枚举用错（如对齐用了 `ArkUI_Alignment`） | 对照 native_node.h 注释选枚举 |
 | `SetStringAttribute` 401（设空串时） | 空串 `GetBytes` 返回 0 长数组，`fixed` 得空指针传给 `item.@string` | 基类已修（空串转 NUL 结尾空 C 串）；绕过基类的手写封送注意同样问题 |
@@ -400,7 +430,7 @@ MAUI 的 Essentials 静态类（`DeviceInfo.Current`/`DeviceDisplay`/`AppInfo`/`
 | 核心接口缺成员（GroupName/Refreshing 等） | MAUI 核心接口（IRadioButton/IRefreshView）比 Controls 类型瘦 | 按官方风格回退 Controls 具体类型，虚拟视图泛型直接用 Controls 类（Picker 先例） |
 | 生成器重跑覆盖手写节点类 | 手写节点类（如 RefreshManual.cs）被生成器输出覆盖 | 手写文件不带 `<auto-generated>` 标记，生成器只覆盖带标记的文件；`CLASS_NAME_FIXES` / `ATTR_ALIASES` / `DEFAULT_SHAPES` 保证生成类名与 handler 别名一致 |
 | 连续 uitest 手势后 hdc 挂死 | 模拟器 UI/uitest 过载 | `hdc kill` → `tconn 127.0.0.1:5555` → 重试；快照用 `timeout` 包裹 |
-| Windows 本地编译过、WSL AOT 编译不过（CS0246 等） | 根目录级共享文件（如 `Directory.Build.props`）不在 `scripts/build-files.txt` 打包清单里 | 新增根目录共享文件时同步加入打包清单 |
+| Windows 本地 AOT 失败 | 检查 `PublishAotClang` 包是否还原成功，以及 .NET 10 SDK 是否可用 |
 | PushAsync/PopAsync 静默失败（无日志无崩溃，后续导航全挂起） | 工厂抛 `NotSupportedException` 等异常被 `FireAndForget` 吞掉；MAUI 的 SendHandlerUpdateAsync 信号量不释放，后续导航永久排队 | `FireAndForget` 兜底必须打 hilog（HelloApp 的 FireAndForgetNavigation 已改）；推入新控件页面前先确认工厂注册 |
 | 嵌套 Grid/AbsoluteLayout 撑爆父容器（后续兄弟节点被推出屏幕） | 托管布局容器无条件 `SetHeightPercent(1.0)`——只对页面根布局正确；MAUI 语义里 StackLayout 主轴 Fill = 自然高度 | `ConnectHandler` 按 `HeightRequest > 0 → 显式高；Parent 是 Layout → 自然高；否则 100%` |
 | Essentials 注入后启动闪退（DfxFaultLogger 崩在 HarmonyInit） | `HarmonyEssentials.Install()`（或任何 napi 调用）放进了 ModuleInitializer——dlopen 时 napi env 尚未初始化 | 注入必须发生在 `RootBuilder` lambda 内（UI 线程首次构建时）；见 §6.2 |

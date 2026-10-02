@@ -10,6 +10,12 @@
     <!-- CS8766: ViewHandler.PlatformView nullable vs I*Handler.PlatformView non-null (MAUI 官方做法同)
          CS0618: Controls.Frame 在 .NET 9+ 已弃用，推荐 Border，但我们仍需要支持旧 XAML -->
     <NoWarn>$(NoWarn);CS8766;CS0618</NoWarn>
+
+    <PackageId>HarmonyOS.Maui</PackageId>
+    <Description>.NET MAUI platform runtime for HarmonyOS: ArkUI handlers, app host orchestration (stage/build HAP/deploy via buildTransitive targets), ArkTS host template</Description>
+    <PackageTags>maui;arkui;handlers</PackageTags>
+    <!-- NU5111：harmonyos/scripts/ 下的 .ps1 是 targets 调用的编排脚本而非 NuGet 安装钩子，属既定用法 -->
+    <NoWarn>$(NoWarn);NU5111</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,8 +23,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HarmonyOS.Maui.Permissions.Abstractions\HarmonyOS.Maui.Permissions.Abstractions.csproj"
+                      PrivateAssets="all" />
+    <ProjectReference Include="..\HarmonyOS.Maui.Permissions\HarmonyOS.Maui.Permissions.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <Import Project="..\HarmonyOS.Maui.Permissions\build\HarmonyOS.Maui.Permissions.targets" />
+
+  <ItemGroup>
     <!-- 手势映射等 internal 纯逻辑对 C# 测试工程可见 -->
     <InternalsVisibleTo Include="HarmonyGestureTests" />
+    <InternalsVisibleTo Include="HarmonyPermissionGeneratorTests" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,4 +43,27 @@
     <ProjectReference Include="..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
   </ItemGroup>
 
+  <!-- B1：targets + 脚本 + 宿主模板内容化（消费方经 buildTransitive 自动导入，无需仓库工作副本）。
+       注意：libapp.so 等应用侧二进制一律不进包（各应用在自己 obj 下 AOT 产出）。 -->
+  <ItemGroup>
+    <None Include="build\HarmonyOS.Maui.App.targets" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.targets" />
+    <None Pack="true" PackagePath="harmonyos\scripts\"
+          Include="..\..\scripts\stage-host.ps1;..\..\scripts\build-hap.cmd;..\..\scripts\deploy-hap.ps1;..\..\scripts\deploy-hap.sh;..\..\scripts\export-harmony-permissions.ps1;..\..\scripts\check-harmony-permissions.ps1" />
+    <None Pack="true" PackagePath="harmonyos\scripts\"
+          Include="..\..\scripts\write-explicit-permissions.ps1" />
+    <!-- 打包分析器及其全部 copy-local 依赖：直接收集生成器输出目录，
+         避免对 NuGet 全局包路径与传递依赖版本号的硬编码。 -->
+    <None Include="..\HarmonyOS.Maui.Permissions\bin\$(Configuration)\netstandard2.0\*.dll"
+          Exclude="..\HarmonyOS.Maui.Permissions\bin\$(Configuration)\netstandard2.0\Microsoft.CodeAnalysis*.dll"
+          Pack="true"
+          PackagePath="analyzers\dotnet\cs\" />
+    <None Include="..\HarmonyOS.Maui.Permissions.Abstractions\bin\$(Configuration)\netstandard2.0\HarmonyOS.Maui.Permissions.Abstractions.dll"
+          Pack="true"
+          PackagePath="lib\netstandard2.0\" />
+    <None Pack="true" PackagePath="harmonyos\HarmonyHost\"
+          Include="..\..\samples\HarmonyHost\**\*"
+          Exclude="..\..\samples\HarmonyHost\.hvigor\**;..\..\samples\HarmonyHost\entry\.cxx\**;..\..\samples\HarmonyHost\entry\build\**;..\..\samples\HarmonyHost\entry\libs\**;..\..\samples\HarmonyHost\**\oh_modules\**;..\..\samples\HarmonyHost\**\node_modules\**;..\..\samples\HarmonyHost\local.properties" />
+  </ItemGroup>
+
 </Project>
+

@@ -151,7 +151,7 @@ internal static class CallbackTaskBridge
                 }
                 state.SetException(new ArkTSException(
                     $"ArkTS callback error (code {code?.ToString() ?? "unknown"}): {message ?? "unknown"}",
-                    message, err));
+                    message, err, code));
             }
         }
         catch (Exception ex)

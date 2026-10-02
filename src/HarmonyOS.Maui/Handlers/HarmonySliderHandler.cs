@@ -8,7 +8,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>MAUI Slider 的 HarmonyOS Handler（ArkUI Slider 节点）。</summary>
 public class HarmonySliderHandler : HarmonyViewHandler<ISlider, ArkSlider>
 {
-    public static PropertyMapper<ISlider, HarmonySliderHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<ISlider, HarmonySliderHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(ISlider.Minimum)] = MapMinimum,
         [nameof(ISlider.Maximum)] = MapMaximum,

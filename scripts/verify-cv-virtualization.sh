@@ -5,7 +5,7 @@
 set -e
 TARGET="${1:-127.0.0.1:5555}"
 HDC=""
-for base in "$OHOS_SDK_BASE" "D:/Harmony/OpenHarmony/Sdk" "D:/Program Files/Huawei/DevEco Studio/sdk/default/openharmony"; do
+for base in "$OHOS_SDK_BASE" "D:/Harmony/OpenHarmony/Sdk" "/mnt/d/Harmony/OpenHarmony/Sdk" "D:/Program Files/Huawei/DevEco Studio/sdk/default/openharmony" "/mnt/d/Program Files/Huawei/DevEco Studio/sdk/default/openharmony"; do
     [ -n "$base" ] || continue
     for rel in "26.0.0/toolchains/hdc.exe" "toolchains/hdc.exe"; do
         [ -f "$base/$rel" ] && HDC="$base/$rel" && break 2
@@ -55,17 +55,32 @@ walk(d)" "$1")
 echo "=== 1. push Controls demo"
 sleep 3
 click "Controls demo (10 widgets)"; sleep 2
-echo "=== 2. 外层滚动到 CollectionView（Picker '选一个' 标题可见即到位）"
-for i in 1 2 3 4 5 6 7 8; do
-    t shell uitest uiInput swipe 660 2000 660 500 400 >/dev/null 2>&1; sleep 1
-    if snap | grep -q "选一个"; then echo "scrolled to picker area (pass $i)"; break; fi
+echo "=== 2. 外层滚动到 CollectionView（条目文本出现即到位）"
+# 屏幕中线 x=660 会命中 Picker/DatePicker（变成滚轮选择），外层滚动走右边缘；
+# DatePicker/TimePicker 展开后很高，'选一个' 可见时 CV 仍在屏外，故以"条目"文本为准
+for i in $(seq 1 12); do
+    t shell uitest uiInput swipe 1250 2000 1250 500 400 >/dev/null 2>&1; sleep 1
+    if snap | grep -q "条目"; then echo "scrolled to CV strip (pass $i)"; break; fi
 done
 echo "=== 3. 初始物化统计（期望：远小于 200，仅可见范围）"
 cvitems
+# 由 dump 计算 CV 条目带纵范围，内部滚动落在条带内（不写死坐标，布局变了也能跑）
+cvswipe() {
+    YC=$(snap | python -c "
+import sys, re
+bys = []
+for line in sys.stdin:
+    m = re.search(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\].*条目 \d+', line)
+    if m: bys += [int(m.group(2)), int(m.group(4))]
+print((min(bys)+max(bys))//2 if bys else 0)")
+    [ "$YC" != "0" ] || { echo "FAIL: CV strip not found in dump"; exit 1; }
+    y2=$((YC-250)); [ $y2 -lt 700 ] && y2=700
+    t shell uitest uiInput swipe 660 $YC 660 $y2 300 >/dev/null 2>&1; sleep 2
+}
 echo "=== 4. 内部滚动（在 CollectionView 区域上滑）"
-t shell uitest uiInput swipe 660 1500 660 700 400 >/dev/null 2>&1; sleep 2
+cvswipe
 cvitems
-t shell uitest uiInput swipe 660 1500 660 700 400 >/dev/null 2>&1; sleep 2
+cvswipe
 echo "=== 5. 再滚一次后统计（期望：max 索引继续前进）"
 cvitems
 echo "=== 6. 进程存活"

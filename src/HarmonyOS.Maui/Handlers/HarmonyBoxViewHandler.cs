@@ -10,10 +10,11 @@ namespace HarmonyOS.Maui.Handlers;
 /// </summary>
 public class HarmonyBoxViewHandler : HarmonyViewHandler<BoxView, ArkStack>
 {
-    public static PropertyMapper<BoxView, HarmonyBoxViewHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<BoxView, HarmonyBoxViewHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(BoxView.Color)] = MapColor,
         [nameof(BoxView.BackgroundColor)] = MapBackgroundColor,
+        [nameof(BoxView.CornerRadius)] = MapCornerRadius,
     };
 
     public HarmonyBoxViewHandler() : base(Mapper) { }
@@ -30,5 +31,12 @@ public class HarmonyBoxViewHandler : HarmonyViewHandler<BoxView, ArkStack>
     {
         if (v.BackgroundColor is { } c)
             h.PlatformView.SetBackgroundColor(c.ToUint());
+    }
+
+    public static void MapCornerRadius(HarmonyBoxViewHandler h, BoxView v)
+    {
+        var c = v.CornerRadius;
+        h.PlatformView.SetBorderRadius(
+            (float)c.TopLeft, (float)c.TopRight, (float)c.BottomLeft, (float)c.BottomRight);
     }
 }

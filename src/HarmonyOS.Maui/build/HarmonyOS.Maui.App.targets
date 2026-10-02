@@ -1,65 +1,216 @@
 <!-- HarmonyOS 应用构建编排（对齐 MAUI 单项目体验：dotnet build -t:Run 的等价物）。
-     应用工程以 <Import Project=".../HarmonyOS.Maui.App.targets" /> 引入；
+
+     两种装载形态（布局自动判别，_HarmonyRepoRoot 概念已于 B1 删除）：
+       A. 仓库内：应用工程 <Import Project=".../src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets" />，
+          脚本/宿主模板取仓内 scripts/ 与 samples/HarmonyHost/。
+       B. 包内：HarmonyOS.Maui nupkg 经 buildTransitive/HarmonyOS.Maui.targets 自动导入，
+          脚本/宿主模板取包内 harmonyos/scripts/ 与 harmonyos/HarmonyHost/——消费方无需仓库工作副本。
      平台启动代码放应用工程的 Platforms/HarmonyOS/（默认 Compile 通配已包含）。
 
-     宿主工程自动生成：HarmonyStageHost 把共享模板（samples/HarmonyHost）实例化到应用
-     obj/harmony/host/，按应用重写 bundleName/应用名——用户工程不感知宿主的存在，也不需要
-     在 DevEco 里手动建工程。设 HarmonyGenerateHost=false + HarmonyHostRoot=<自备宿主> 可退回。
+     宿主工程自动生成：HarmonyStageHost 把宿主模板实例化到应用 obj/harmony/host/，
+     按应用重写 bundleName/应用名/签名配置——用户工程不感知宿主的存在。设
+     HarmonyGenerateHost=false + HarmonyHostRoot=<自备宿主> 可退回。
 
      可用属性：
-       HarmonyHostRoot      ArkTS 宿主模板目录（默认 samples/HarmonyHost）
+       HarmonyHostRoot      宿主模板目录（默认随布局取仓内 samples/HarmonyHost 或包内 content/HarmonyHost）
        HarmonyGenerateHost  是否生成按应用宿主实例（默认 true）
-       HarmonyBundleId      应用包名（默认 com.arktsbinding.<去符号小写工程名>；点分小写域名形式）
+       HarmonyBundleId      应用包名（默认 com.arktsbinding.<去符号小写工程名>）
        HarmonyAppTitle      应用显示名（默认工程名）
        HarmonyHostDir       宿主实例目录（默认 $(MSBuildProjectDirectory)\obj\harmony\host）
-       HarmonyPowerShell    pwsh 可执行文件（默认 pwsh，需 PowerShell 7+）
-     注意：修改 HarmonyBundleId/HarmonyAppTitle 后需删 obj/harmony 重新 stage（脚本按内容戳增量） -->
+       HarmonyPowerShell    pwsh 可执行文件（默认 pwsh，需 PowerShell 7+；Windows 上 build-hap 走 cmd）
+    签名（release 用；全不设置则打未签名 debug HAP）：
+      HarmonySigningKeystore          .p12/.keystore 路径
+      HarmonySigningKeystorePassword  keystore 口令
+      HarmonySigningCertAlias         证书别名
+      HarmonySigningCertPassword     证书口令
+      HarmonySigningCertPath          .cer 证书路径
+      HarmonySigningProfile           .p7b profile 路径
+     注意：修改 HarmonyBundleId/HarmonyAppTitle/签名属性后需删 obj/harmony 重新 stage
+          （stage-host.ps1 按 模板mtime+内容戳 增量） -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <!-- libapp.so 打包的 demo 工程名 = 应用工程名（对齐 remote-build 的 DEMO_APP 约定） -->
     <HarmonyDemoApp>$(HarmonyDemoApp)</HarmonyDemoApp>
     <HarmonyDemoApp Condition="'$(HarmonyDemoApp)' == ''">$(MSBuildProjectName)</HarmonyDemoApp>
     <HarmonyPowerShell Condition="'$(HarmonyPowerShell)' == ''">pwsh</HarmonyPowerShell>
-    <_HarmonyRepoRoot>$(MSBuildThisFileDirectory)../../../</_HarmonyRepoRoot>
-    <_HarmonyScripts>$(_HarmonyRepoRoot)scripts\</_HarmonyScripts>
-    <HarmonyHostRoot Condition="'$(HarmonyHostRoot)' == ''">$(_HarmonyRepoRoot)samples\HarmonyHost</HarmonyHostRoot>
+
+    <_HarmonyIsPackage Condition="Exists('$(MSBuildThisFileDirectory)..\harmonyos\scripts\stage-host.ps1')">true</_HarmonyIsPackage>
+    <_HarmonyScripts Condition="'$(_HarmonyIsPackage)' == 'true'">$(MSBuildThisFileDirectory)..\harmonyos\scripts\</_HarmonyScripts>
+    <_HarmonyScripts Condition="'$(_HarmonyIsPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\..\scripts\</_HarmonyScripts>
+    <HarmonyHostRoot Condition="'$(HarmonyHostRoot)' == '' AND '$(_HarmonyIsPackage)' == 'true'">$(MSBuildThisFileDirectory)..\harmonyos\HarmonyHost</HarmonyHostRoot>
+    <HarmonyHostRoot Condition="'$(HarmonyHostRoot)' == '' AND '$(_HarmonyIsPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\..\samples\HarmonyHost</HarmonyHostRoot>
+
     <HarmonyGenerateHost Condition="'$(HarmonyGenerateHost)' == ''">true</HarmonyGenerateHost>
     <HarmonyHostDir Condition="'$(HarmonyHostDir)' == ''">$(MSBuildProjectDirectory)\obj\harmony\host</HarmonyHostDir>
     <HarmonyBundleId Condition="'$(HarmonyBundleId)' == ''">com.arktsbinding.$([System.Text.RegularExpressions.Regex]::Replace('$(MSBuildProjectName)', '[^a-zA-Z0-9]', '').ToLower())</HarmonyBundleId>
     <HarmonyAppTitle Condition="'$(HarmonyAppTitle)' == ''">$(MSBuildProjectName)</HarmonyAppTitle>
-    <!-- 实际参与构建的宿主目录（生成模式下为暂存实例） -->
     <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' == 'true'">$(HarmonyHostDir)</_HarmonyEffectiveHostDir>
     <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' != 'true'">$(HarmonyHostRoot)</_HarmonyEffectiveHostDir>
+
+    <_HarmonySigningKeystoreArg Condition="'$(HarmonySigningKeystore)' != ''">-SigningKeystore "$(HarmonySigningKeystore)"</_HarmonySigningKeystoreArg>
+    <_HarmonySigningAliasArg Condition="'$(HarmonySigningCertAlias)' != ''">-SigningCertAlias "$(HarmonySigningCertAlias)"</_HarmonySigningAliasArg>
+    <_HarmonySigningCertPathArg Condition="'$(HarmonySigningCertPath)' != ''">-SigningCertPath "$(HarmonySigningCertPath)"</_HarmonySigningCertPathArg>
+    <_HarmonySigningProfileArg Condition="'$(HarmonySigningProfile)' != ''">-SigningProfile "$(HarmonySigningProfile)"</_HarmonySigningProfileArg>
   </PropertyGroup>
 
-  <!-- 0/3：宿主工程生成（模板 → 按应用实例：bundleName/应用名重写，构建产物剔除）。
-       增量判断在 stage-host.ps1 内（内容戳：模板 mtime + bundle/title），故此目标不加 Inputs/Outputs -->
-  <Target Name="HarmonyStageHost" Condition="'$(HarmonyGenerateHost)' == 'true'">
+  <PropertyGroup>
+    <HarmonyPreserveXamlBindings Condition="'$(HarmonyPreserveXamlBindings)' == ''">true</HarmonyPreserveXamlBindings>
+    <HarmonyPermissionsJson Condition="'$(HarmonyPermissionsJson)' == ''">$(MSBuildProjectDirectory)\obj\harmony\permissions.json</HarmonyPermissionsJson>
+    <HarmonyExplicitPermissionsJson Condition="'$(HarmonyExplicitPermissionsJson)' == ''">$(MSBuildProjectDirectory)\obj\harmony\explicit-permissions.json</HarmonyExplicitPermissionsJson>
+    <HarmonyPermissionMappingJson Condition="'$(HarmonyPermissionMappingJson)' == ''">$(MSBuildProjectDirectory)\harmony-permissions.custom.json</HarmonyPermissionMappingJson>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(_HarmonyIsPackage)' != 'true'">
+    <Analyzer Include="$(MSBuildThisFileDirectory)..\..\..\src\HarmonyOS.Maui.Permissions\bin\$(Configuration)\netstandard2.0\HarmonyOS.Maui.Permissions.dll" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(HarmonyPreserveXamlBindings)' == 'true'">
+    <HarmonyBindingRootAssembly Condition="'$(AssemblyName)' != ''" Include="$(AssemblyName)" />
+    <HarmonyBindingRootAssembly Include="@(ProjectReference->'%(Filename)')" />
+    <TrimmerRootAssembly Include="@(HarmonyBindingRootAssembly->Distinct())" />
+  </ItemGroup>
+
+  <Target Name="HarmonyGeneratePermissions"
+          Condition="'$(HarmonyGenerateHost)' == 'true'"
+          Inputs="$(IntermediateOutputPath)$(TargetFileName);@(HarmonyPermission)"
+          Outputs="$(HarmonyPermissionsJson)"
+          DependsOnTargets="Compile">
+    <PropertyGroup>
+      <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitPermissions>
+    </PropertyGroup>
+    <ItemGroup>
+      <_HarmonyReferencedPermissions Include="@(ProjectReference->'%(RootDir)%(Directory)obj\harmony\permissions.json')" />
+    </ItemGroup>
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)export-harmony-permissions.ps1" -AssemblyPath "$(IntermediateOutputPath)$(TargetFileName)" -ExplicitPermissions "$(_HarmonyExplicitPermissions)" -OutputPath "$(HarmonyPermissionsJson)" -ReferencedPermissionsJson "$(_HarmonyReferencedPermissions)"'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="HarmonyGenerateExplicitPermissions"
+          Condition="'$(HarmonyGenerateHost)' == 'true'"
+          Inputs="@(HarmonyPermission);@(MauiXaml)"
+          Outputs="$(HarmonyExplicitPermissionsJson)"
+          BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitPermissions>
+    </PropertyGroup>
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)write-explicit-permissions.ps1" -Permissions "$(_HarmonyExplicitPermissions)" -OutputPath "$(HarmonyExplicitPermissionsJson)"'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <ItemGroup>
+      <AdditionalFiles Include="$(HarmonyExplicitPermissionsJson)" />
+      <AdditionalFiles Condition="Exists('$(HarmonyPermissionMappingJson)')" Include="$(HarmonyPermissionMappingJson)" />
+      <AdditionalFiles Include="@(MauiXaml)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="HarmonyPermissionReport"
+          Condition="'$(HarmonyGenerateHost)' == 'true'"
+          DependsOnTargets="HarmonyGeneratePermissions">
+    <Message Importance="high" Text="=== Harmony permission report: $(MSBuildProjectDirectory)\obj\harmony\permissions.report.md" />
+  </Target>
+
+  <Target Name="HarmonyPermissionCheck"
+          Condition="'$(HarmonyGenerateHost)' == 'true'"
+          DependsOnTargets="HarmonyStageHost">
+    <PropertyGroup>
+      <_HarmonyModuleJson5>$(_HarmonyEffectiveHostDir)\entry\src\main\module.json5</_HarmonyModuleJson5>
+      <_HarmonyPermissionReport>$([System.IO.Path]::ChangeExtension('$(HarmonyPermissionsJson)', '.report.md'))</_HarmonyPermissionReport>
+    </PropertyGroup>
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)check-harmony-permissions.ps1" -PermissionsJson "$(HarmonyPermissionsJson)" -ModuleJson5 "$(_HarmonyModuleJson5)" -ReportPath "$(_HarmonyPermissionReport)"'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="HarmonyStageHost"
+          Condition="'$(HarmonyGenerateHost)' == 'true'"
+          DependsOnTargets="HarmonyGeneratePermissions">
     <Message Importance="high" Text="=== staging host for $(HarmonyDemoApp): bundle=$(HarmonyBundleId) -> $(HarmonyHostDir)" />
-    <Exec Command="&quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)stage-host.ps1&quot; -Template &quot;$(HarmonyHostRoot)&quot; -Destination &quot;$(HarmonyHostDir)&quot; -BundleId &quot;$(HarmonyBundleId)&quot; -AppTitle &quot;$(HarmonyAppTitle)&quot;"
-          WorkingDirectory="$(_HarmonyRepoRoot)" />
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)stage-host.ps1" -Template "$(HarmonyHostRoot)" -Destination "$(HarmonyHostDir)" -BundleId "$(HarmonyBundleId)" -AppTitle "$(HarmonyAppTitle)" -PermissionsJson "$(HarmonyPermissionsJson)" $(_HarmonySigningKeystoreArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)'
+          EnvironmentVariables="HarmonySigningKeystorePassword=$(HarmonySigningKeystorePassword);HarmonySigningCertPassword=$(HarmonySigningCertPassword)"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
-  <!-- 1/3：NativeAOT 交叉编译 libapp.so（arm64 + x86_64），LOCAL=true 走本地 WSL -->
+  <!-- 1/3：Windows 本地 NativeAOT 交叉编译 libapp.so（PublishAotClang + Zig） -->
   <Target Name="HarmonyBuildLibApp" DependsOnTargets="HarmonyStageHost">
-    <Exec Command="set LOCAL=true&amp;&amp; set DEMO_APP=$(HarmonyDemoApp)&amp;&amp; set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)remote-build.ps1&quot;"
-          WorkingDirectory="$(_HarmonyRepoRoot)" />
+    <PropertyGroup>
+      <_HarmonyLibAppPublishRoot>$(MSBuildProjectDirectory)\obj\harmony\publish</_HarmonyLibAppPublishRoot>
+      <_HarmonyLibAppArm64Dir>$(_HarmonyLibAppPublishRoot)\linux-musl-arm64</_HarmonyLibAppArm64Dir>
+      <_HarmonyLibAppX64Dir>$(_HarmonyLibAppPublishRoot)\linux-musl-x64</_HarmonyLibAppX64Dir>
+    </PropertyGroup>
+
+    <Exec Command='dotnet publish "$(MSBuildProjectDirectory)\$(MSBuildProjectFile)" -c Release -r linux-musl-arm64 -o "$(_HarmonyLibAppArm64Dir)" -p:MSBuildEnableWorkloadResolver=false'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Exec Command='dotnet publish "$(MSBuildProjectDirectory)\$(MSBuildProjectFile)" -c Release -r linux-musl-x64 -o "$(_HarmonyLibAppX64Dir)" -p:MSBuildEnableWorkloadResolver=false'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+
+    <!-- OpenHarmony cloud devices block get_mempolicy; short-circuit NativeAOT NUMA probing. -->
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)patch-openharmony-nativeaot.ps1" -Path "$(_HarmonyLibAppArm64Dir)\app.so"'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+
+    <ItemGroup>
+      <_HarmonyArm64Lib Include="$(_HarmonyLibAppArm64Dir)\app.so" />
+      <_HarmonyX64Lib Include="$(_HarmonyLibAppX64Dir)\app.so" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_HarmonyArm64Lib)"
+          DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\libs\arm64-v8a\libapp.so" />
+    <Copy SourceFiles="@(_HarmonyX64Lib)"
+          DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\libs\x86_64\libapp.so" />
   </Target>
 
-  <!-- 2/3：hvigor 打 HAP（DevEco 路径自动探测） -->
-  <Target Name="HarmonyBuildHap" DependsOnTargets="HarmonyStageHost">
-    <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(_HarmonyScripts)build-hap.cmd&quot;"
-          WorkingDirectory="$(_HarmonyRepoRoot)" />
+  <!-- 依赖 HarmonyBuildLibApp 而非仅 HarmonyStageHost：单独调用本目标也必须先重编 libapp.so，
+       否则会打出包含宿主模板陈旧 so 的 HAP -->
+  <Target Name="HarmonyBuildHap" DependsOnTargets="HarmonyBuildLibApp">
+    <Exec Command='"$(_HarmonyScripts)build-hap.cmd"'
+          EnvironmentVariables="HOST_DIR=$(_HarmonyEffectiveHostDir)"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Exec Condition="'$(HarmonySigningKeystore)' != ''"
+          Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)sign-hap.ps1" -HostDir "$(_HarmonyEffectiveHostDir)" $(_HarmonySigningKeystoreArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)'
+          EnvironmentVariables="HarmonySigningKeystorePassword=$(HarmonySigningKeystorePassword);HarmonySigningCertPassword=$(HarmonySigningCertPassword)"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
-  <!-- 3/3：hdc 安装 → 启动 → 抓取日志 -->
   <Target Name="HarmonyDeploy" DependsOnTargets="HarmonyStageHost">
-    <Exec Command="set HOST_DIR=$(_HarmonyEffectiveHostDir)&amp;&amp; &quot;$(HarmonyPowerShell)&quot; -NoProfile -File &quot;$(_HarmonyScripts)deploy-hap.ps1&quot;"
-          WorkingDirectory="$(_HarmonyRepoRoot)" />
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)deploy-hap.ps1"'
+          EnvironmentVariables="HOST_DIR=$(_HarmonyEffectiveHostDir)"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
-  <!-- 一键：编译 libapp.so → 打 HAP → 部署运行（dotnet build -t:HarmonyRun） -->
+  <PropertyGroup>
+    <HarmonyStageResources Condition="'$(HarmonyStageResources)' == ''">true</HarmonyStageResources>
+  </PropertyGroup>
+  <Target Name="HarmonyStageResources"
+          Condition="'$(HarmonyStageResources)' == 'true' AND '$(HarmonyGenerateHost)' == 'true'"
+          DependsOnTargets="HarmonyStageHost"
+          BeforeTargets="HarmonyBuildHap;HarmonyDeploy">
+    <PropertyGroup>
+      <_HarmonyRawfileRoot>$(_HarmonyEffectiveHostDir)\entry\src\main\resources\rawfile\maui</_HarmonyRawfileRoot>
+    </PropertyGroup>
+    <ItemGroup>
+      <_HarmonyResourceFile Include="@(MauiImage);@(MauiAsset);@(MauiFont)" />
+      <_HarmonyResourceFile Condition="'@(_HarmonyResourceFile)' != ''">
+        <HarmonyLogicalName>%(Filename)%(Extension)</HarmonyLogicalName>
+      </_HarmonyResourceFile>
+    </ItemGroup>
+    <PropertyGroup Condition="'@(_HarmonyResourceFile)' != ''">
+      <_HarmonyResourceCount>@(_HarmonyResourceFile->Count())</_HarmonyResourceCount>
+      <_HarmonyResourceDistinctCount>@(_HarmonyResourceFile->'%(HarmonyLogicalName)'->Distinct()->Count())</_HarmonyResourceDistinctCount>
+    </PropertyGroup>
+    <ItemGroup Condition="'@(_HarmonyResourceFile)' != '' AND '$(_HarmonyResourceCount)' != '$(_HarmonyResourceDistinctCount)'">
+      <_HarmonyResourceDistinctNames Include="@(_HarmonyResourceFile->'%(HarmonyLogicalName)'->Distinct())" />
+    </ItemGroup>
+    <PropertyGroup Condition="'@(_HarmonyResourceDistinctNames)' != ''">
+      <_HarmonyResourceNamePiped>|@(_HarmonyResourceFile->'%(HarmonyLogicalName)', '|')|</_HarmonyResourceNamePiped>
+    </PropertyGroup>
+    <Message Condition="'@(_HarmonyResourceDistinctNames)' != '' AND $([System.Text.RegularExpressions.Regex]::Matches('$(_HarmonyResourceNamePiped)', '\|$([System.Text.RegularExpressions.Regex]::Escape('%(_HarmonyResourceDistinctNames.Identity)'))\|').Count) > 1"
+             Importance="high"
+             Text="HarmonyStageResources 冲突逻辑名：%(_HarmonyResourceDistinctNames.Identity)（移除此逻辑名下的多余来源文件）" />
+    <Error Condition="'@(_HarmonyResourceFile)' != '' AND '$(_HarmonyResourceCount)' != '$(_HarmonyResourceDistinctCount)'"
+           Text="HarmonyStageResources: MauiImage/MauiAsset/MauiFont 存在同名逻辑资源冲突（rawfile/maui 按文件名解析，同名无法区分）。冲突名见上方 Message 明细。" />
+    <Copy Condition="'@(_HarmonyResourceFile)' != ''"
+          SourceFiles="@(_HarmonyResourceFile)"
+          DestinationFiles="@(_HarmonyResourceFile->'$(_HarmonyRawfileRoot)\%(HarmonyLogicalName)')"
+          SkipUnchangedFiles="true" />
+    <Message Condition="'@(_HarmonyResourceFile)' != ''" Importance="high"
+             Text="=== staged $(_HarmonyResourceCount) MAUI resource file(s) -> $(_HarmonyRawfileRoot)" />
+  </Target>
+
   <Target Name="HarmonyRun" DependsOnTargets="HarmonyBuildLibApp;HarmonyBuildHap;HarmonyDeploy" />
 
 </Project>

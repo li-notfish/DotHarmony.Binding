@@ -17,7 +17,7 @@ public class HarmonyFileSystem : IFileSystem
     public async Task<Stream> OpenAppPackageFileAsync(string filename)
     {
         var rm = await HResourceManager.GetResourceManagerAsync();
-        var bytes = await rm.GetRawFileContentAsync(filename);
+        var bytes = await rm.GetRawFileContentBytesAsync(filename);
         return new MemoryStream(bytes, writable: false);
     }
 
@@ -26,8 +26,8 @@ public class HarmonyFileSystem : IFileSystem
         try
         {
             var rm = await HResourceManager.GetResourceManagerAsync();
-            var bytes = await rm.GetRawFileContentAsync(filename);
-            return bytes.Length > 0;
+            var bytes = await rm.GetRawFileContentBytesAsync(filename);
+            return bytes is not null;
         }
         catch (Exception)
         {

@@ -45,6 +45,7 @@ public class HarmonyBattery : IBattery
 
     readonly EventListenerRegistry _batteryListeners = new();
     readonly EventListenerRegistry _saverListeners = new();
+    readonly object _eventGate = new();
     IntPtr _batterySubscriber, _saverSubscriber;
 
     // 去重缓存：commonEvent 回调内重读属性，仅变化时才触发
@@ -57,16 +58,22 @@ public class HarmonyBattery : IBattery
     {
         add
         {
-            bool first = _batteryChanged is null;
-            _batteryChanged += value;
-            if (first)
-                StartBatteryListeners();
+            lock (_eventGate)
+            {
+                bool first = _batteryChanged is null;
+                _batteryChanged += value;
+                if (first)
+                    StartBatteryListeners();
+            }
         }
         remove
         {
-            _batteryChanged -= value;
-            if (_batteryChanged is null)
-                StopBatteryListeners();
+            lock (_eventGate)
+            {
+                _batteryChanged -= value;
+                if (_batteryChanged is null)
+                    StopBatteryListeners();
+            }
         }
     }
 
@@ -74,16 +81,22 @@ public class HarmonyBattery : IBattery
     {
         add
         {
-            bool first = _saverChanged is null;
-            _saverChanged += value;
-            if (first)
-                StartSaverListeners();
+            lock (_eventGate)
+            {
+                bool first = _saverChanged is null;
+                _saverChanged += value;
+                if (first)
+                    StartSaverListeners();
+            }
         }
         remove
         {
-            _saverChanged -= value;
-            if (_saverChanged is null)
-                StopSaverListeners();
+            lock (_eventGate)
+            {
+                _saverChanged -= value;
+                if (_saverChanged is null)
+                    StopSaverListeners();
+            }
         }
     }
 

@@ -1,0 +1,29 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:HelloApp"
+             x:Class="HelloApp.BindingProbePage"
+             Title="绑定探针"
+             BackgroundColor="White">
+    <VerticalStackLayout Spacing="14" Padding="14">
+        <Label Text="Binding Probe (NativeAOT)" FontSize="20" />
+        <!-- 经典字符串路径 Binding：运行时反射取值，依赖 HarmonyPreserveXamlBindings 保活 -->
+        <Label x:Name="ClassicLabel"
+               Text="{Binding Item.Title}"
+               FontSize="16" BackgroundColor="AliceBlue" Padding="6" />
+        <!-- compiled binding（x:DataType）：编译期解析，AOT 首选路径 -->
+        <Label x:Name="CompiledLabel"
+               Text="{Binding Item.Title, x:DataType=local:ProbeHost}"
+               FontSize="16" BackgroundColor="Lavender" Padding="6" />
+        <!-- 应用级资源 DynamicResource（VerificationApp.Resources） -->
+        <Label x:Name="DynamicLabel"
+               Text="DynamicResource ProbeAccent"
+               TextColor="{DynamicResource ProbeAccent}" />
+        <!-- 主题绑定（UserAppTheme=Light → DarkGreen） -->
+        <Label x:Name="ThemeLabel"
+               Text="AppThemeBinding (Light=DarkGreen)"
+               TextColor="{AppThemeBinding Light=DarkGreen, Dark=OrangeRed}" />
+        <!-- FileImageSource 裸名 → rawfile/maui（HarmonyStageResources 暂存） -->
+        <Image Source="probe_logo.png" WidthRequest="64" HeightRequest="64" />
+        <Label x:Name="Status" Text="init" FontSize="14" />
+    </VerticalStackLayout>
+</ContentPage>

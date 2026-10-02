@@ -35,22 +35,40 @@ public sealed class EventListenerRegistry
             if (_listeners.ContainsKey(key))
                 return; // 幂等：重复订阅同一 handler 忽略
             var (jsFunc, gch) = NodeApi.CreateCallbackFunction(adapted);
-            on(jsFunc);
-            _listeners[key] = new ListenerEntry(gch, new NapiReference(jsFunc));
+            NapiReference? jsFuncRef = null;
+            try
+            {
+                jsFuncRef = new NapiReference(jsFunc);
+                on(jsFunc);
+            }
+            catch
+            {
+                jsFuncRef?.Dispose();
+                NodeApi.FreeEventHandle(gch);
+                throw;
+            }
+            _listeners[key] = new ListenerEntry(gch, jsFuncRef);
         }
     }
 
     /// <summary>解除订阅并释放资源；未找到订阅时返回 false。</summary>
     public bool Remove(object key, Action<IntPtr> off)
     {
+        ListenerEntry entry;
         lock (_lock)
         {
-            if (!_listeners.Remove(key, out var entry))
+            if (!_listeners.Remove(key, out entry))
                 return false;
+        }
+        try
+        {
             off(entry.JsFuncRef.Value);
+        }
+        finally
+        {
             NodeApi.FreeEventHandle(entry.Gch);
             entry.JsFuncRef.Dispose();
-            return true;
         }
+        return true;
     }
 }

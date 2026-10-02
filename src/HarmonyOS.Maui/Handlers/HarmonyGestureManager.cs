@@ -26,6 +26,10 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>单视图手势管理器：View.GestureRecognizers ↔ ArkUI 原生手势生命周期</summary>
 internal sealed class HarmonyGestureManager : IDisposable
 {
+    /// <summary>手势通道日志开关（tap accept/attach 等；触摸事件与点击回调属热路径，
+    /// 默认关闭保持与 LogLayout/LogScroll 同一纪律——开启才付出插值分配代价）</summary>
+    private static readonly bool LogGestures = false;
+
     private readonly View _view;
     private readonly ArkUINodeBase _node;
     private readonly List<ArkUIGestureRecognizer> _attached = new();
@@ -186,9 +190,17 @@ internal sealed class HarmonyGestureManager : IDisposable
         native.GestureEvent = e =>
         {
             if (e.Action == ArkGestureAction.Accept)
+            {
+                if (LogGestures)
+                    HiLog.Debug("HarmonyHost",
+                        $"[Gesture] tap accept view={_view.GetType().Name} count={count}");
                 RaiseTap(count, e);
+            }
         };
         AttachNative(native);
+        if (LogGestures)
+            HiLog.Debug("HarmonyHost",
+                $"[Gesture] attach tap view={_view.GetType().Name} count={count} node=0x{_node.Handle.Handle:X}");
     }
 
     private void RaiseTap(int tapCount, ArkUIGestureEvent e)

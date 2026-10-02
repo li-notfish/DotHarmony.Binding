@@ -19,6 +19,8 @@
                 Clicked="OnOpenControlsDemoClicked" />
         <Button Text="Gestures demo (tap/pan/pinch/swipe)"
                 Clicked="OnOpenGesturesDemoClicked" />
+        <Button Text="ZIndex arbitration probe"
+                Clicked="OnOpenZIndexProbeClicked" />
         <Button Text="Open modal page"
                 Clicked="OnOpenModalClicked" />
         <Label x:Name="LifecycleLabel"

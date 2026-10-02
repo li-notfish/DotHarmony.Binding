@@ -13,7 +13,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// </summary>
 public class HarmonyTimePickerHandler : HarmonyViewHandler<MTimePicker, ArkTimePicker>
 {
-    public static PropertyMapper<MTimePicker, HarmonyTimePickerHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MTimePicker, HarmonyTimePickerHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(ITimePicker.Time)] = MapTime,
     };

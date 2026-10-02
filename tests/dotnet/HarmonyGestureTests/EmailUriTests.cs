@@ -24,7 +24,7 @@ public class EmailUriTests
             Subject = "hi there",
             Body = "line1&line2",
         });
-        Assert.Equal("mailto:a@b.c?to=a%40b.c&subject=hi%20there&body=line1%26line2", uri);
+        Assert.Equal("mailto:a%40b.c?subject=hi%20there&body=line1%26line2", uri);
     }
 
     [Fact]
@@ -55,6 +55,6 @@ public class EmailUriTests
         {
             To = ["a@b.c", "d@e.f"],
         });
-        Assert.Contains("a@b.c,d@e.f", uri);
+        Assert.Contains("a%40b.c,d%40e.f", uri);
     }
 }

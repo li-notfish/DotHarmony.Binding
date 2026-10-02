@@ -20,10 +20,11 @@ namespace HarmonyOS.Maui.Handlers;
 /// </summary>
 public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, ArkList>
 {
-    public static PropertyMapper<MCollectionView, HarmonyCollectionViewHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MCollectionView, HarmonyCollectionViewHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(ItemsView.ItemsSource)] = MapItems,
         [nameof(ItemsView.ItemTemplate)] = MapItems,
+        [nameof(MCollectionView.ItemsLayout)] = MapItemsLayout,
     };
 
     private ArkUINodeAdapter? _adapter;
@@ -92,6 +93,38 @@ public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, 
     private void OnItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         => Reload(); // 虚拟化框架按可见范围物化，全量重载代价可控；InsertItem/RemoveItem 精确增量留待立项
 
+    /// <summary>ItemsLayout → 原生映射：方向映射到列表 Axis（横向 ItemsLayout 即横向列表）；
+    /// GridItemsLayout → lanes 多车道（交叉轴间距 = gutter，主轴间距 = LIST_SPACE，随方向互换——
+    /// 横向列表里 lanes 纵向堆叠，即 MAUI Span 行数）；Linear → 单车道 + 主轴行距。</summary>
+    public static void MapItemsLayout(HarmonyCollectionViewHandler handler, MCollectionView view)
+    {
+        var list = handler.PlatformView;
+        int lanes = 1;
+        float gutter = 0f, space = 0f;
+        bool horizontal = view.ItemsLayout is ItemsLayout { Orientation: ItemsLayoutOrientation.Horizontal };
+        if (view.ItemsLayout is GridItemsLayout g)
+        {
+            lanes = Math.Max(1, g.Span);
+            if (horizontal)
+            {
+                gutter = (float)g.VerticalItemSpacing;
+                space = (float)g.HorizontalItemSpacing;
+            }
+            else
+            {
+                gutter = (float)g.HorizontalItemSpacing;
+                space = (float)g.VerticalItemSpacing;
+            }
+        }
+        else if (view.ItemsLayout is LinearItemsLayout l)
+        {
+            space = (float)l.ItemSpacing;
+        }
+        list.SetDirection(horizontal ? ArkUI_Axis.ARKUI_AXIS_HORIZONTAL : ArkUI_Axis.ARKUI_AXIS_VERTICAL);
+        list.SetLanes((uint)lanes, gutter);
+        list.SetSpace(space);
+    }
+
     private void Reload()
     {
         if (_adapter is null)
@@ -130,14 +163,12 @@ public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, 
     {
         if (index < 0 || index >= _items.Count)
             return null;
-        HiLog.Debug("HarmonyHost", $"[CollectionView] materialize idx={index}");
         var item = _items[index];
         var view = VirtualView?.ItemTemplate?.CreateContent() as View
             ?? new Label { Text = item?.ToString() ?? string.Empty };
         view.BindingContext = item;
 
         var handler = HarmonyHandlerFactory.Create((Microsoft.Maui.IView)view);
-        handler.SetVirtualView(view);
         if (handler.PlatformView is not ArkUINode node)
             return null;
         node.SetWidthPercent(1.0f);
@@ -172,7 +203,7 @@ public class HarmonyCarouselViewHandler : HarmonyViewHandler<MCarouselView, ArkS
     /// <summary>活跃条目（全量物化模型）：Rebuild/Disconnect 统一处置（Handler 断连 + 节点 Dispose）</summary>
     private readonly List<(ArkUINode Node, View View)> _live = new();
 
-    public static PropertyMapper<MCarouselView, HarmonyCarouselViewHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MCarouselView, HarmonyCarouselViewHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(ItemsView.ItemsSource)] = MapItems,
         [nameof(ItemsView.ItemTemplate)] = MapItems,
@@ -293,7 +324,6 @@ internal static class ItemsViewMaterializer
             view.BindingContext = item;
 
             var handler = HarmonyHandlerFactory.Create((Microsoft.Maui.IView)view);
-            handler.SetVirtualView(view);
             if (handler.PlatformView is ArkUINode node)
             {
                 node.SetWidthPercent(1.0f);

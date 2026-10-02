@@ -7,14 +7,11 @@ import native from 'libentry.so';
 // 本页引用 deviceInfo 作为该清单的真实使用点。
 
 /**
- * .NET 宿主页：上方为 ArkTS 声明式区域（对照用），
- * ContentSlot 内挂载 .NET (NativeAOT) 经 ArkUI C API 构建的原生节点树。
+ * .NET 宿主页：整页 ContentSlot，挂载 .NET (NativeAOT) 经 ArkUI C API 构建的原生节点树。
  */
 @Entry
 @Component
 struct Index {
-  @State message: string = 'ArkTS host page';
-  @State dotnetStatus: string = 'initializing .NET...';
   private nodeContent: NodeContent = new NodeContent();
 
   aboutToAppear(): void {
@@ -24,7 +21,6 @@ struct Index {
     native.initDotnet();
     // 2. 把 NodeContent 交给 .NET 侧，由其用 ArkUI C API 命令式构建 UI
     native.passNodeContent(this.nodeContent);
-    this.dotnetStatus = '.NET UI mounted below';
   }
 
   // 返回键/返回手势：交 .NET 页面栈处理；根页时返回 false 走系统默认
@@ -33,26 +29,11 @@ struct Index {
   }
 
   build() {
+    // .NET 构建的原生节点树挂载点（整页；@Entry 根节点必须是容器，ContentSlot 自身不支持尺寸属性）
     Column() {
-      Text(this.message)
-        .fontSize(16)
-        .fontWeight(FontWeight.Bold)
-        .margin({ top: 24 })
-
-      Text(this.dotnetStatus)
-        .fontSize(12)
-        .fontColor('#666666')
-        .margin({ top: 4 })
-
-      // .NET 构建的原生节点树挂载点
-      Row() {
-        ContentSlot(this.nodeContent)
-      }
-      .width('100%')
-      .layoutWeight(1)
+      ContentSlot(this.nodeContent)
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#FFFFFF')
   }
 }

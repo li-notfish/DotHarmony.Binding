@@ -32,10 +32,10 @@ namespace HarmonyOS.Maui.Handlers;
 public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, ArkStack>
 {
     /// <summary>布局热路径诊断日志开关（插值分配只在开启时发生）</summary>
-    private const bool LogLayout = false;
+    private static readonly bool LogLayout = false;
 
     public static PropertyMapper<MControlsLayout, HarmonyManagedLayoutHandler> Mapper =
-        new(ViewHandler.ViewMapper)
+        new(HarmonyViewMapper.Base)
         {
             [nameof(MControlsLayout.BackgroundColor)] = (h, v) =>
             {
@@ -60,7 +60,7 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
                     && ((HarmonyManagedLayoutHandler)h)._children.TryGetValue(u.View, out var ch)
                     && ch.PlatformView is ArkUINode node)
                 {
-                    node.SetZIndex(u.View.ZIndex);
+                    node.SetZIndex(ZIndexOrder.EffectiveZ(u.View));
                 }
             },
         };
@@ -73,7 +73,9 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     private readonly Dictionary<IView, IElementHandler> _children = new();
     // 上次应用到节点的布局结果：AREA_CHANGE 回调 → Arrange 幂等（值未变不写属性），
     // 防止"设置尺寸 → 触发 AreaChange → 再 Arrange"回环
-    private readonly Dictionary<IView, (float X, float Y, float W, float H, int Z, bool WAuto, bool HAuto)> _lastApplied = new();
+    // WShrink/HShrink：该帧对应维是否做过 Margin 内缩——NaturalSize 的反馈环防护
+    // 只对内缩过的轴补回 Margin（无条件补回会让 auto 维期望尺寸虚胖一轮）
+    private readonly Dictionary<IView, (float X, float Y, float W, float H, float Z, bool WAuto, bool HAuto, bool WShrink, bool HShrink)> _lastApplied = new();
 
     protected override ArkStack CreatePlatformView() => new();
 
@@ -88,7 +90,14 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
         // 显式 HeightRequest 时用显式值。无条件 100% 会让嵌套 Grid 撑爆父容器（实测踩过）
         if (VirtualView.HeightRequest > 0)
             platformView.SetHeight((float)VirtualView.HeightRequest);
-        else if (VirtualView.Parent is not Microsoft.Maui.Controls.Layout)
+        else if (VirtualView.Parent is not Microsoft.Maui.Controls.Layout
+                 || VirtualView.Parent is Microsoft.Maui.Controls.TemplatedView
+                 || VirtualView.Parent is Microsoft.Maui.Controls.ContentPresenter)
+            // 模板宿主（TemplatedView/ContentPresenter）在我们的模型里是 100% 栈列容器：
+            // 模板根 Grid 需要充满才能产生 SizeChange 驱动 Arrange。
+            // 无 Star 行的 Grid 在首帧 Arrange 后改写为内容显式高（见 ArrangeGrid 尾部），
+            // 否则百分比高在 auto 高宿主里向上解析到视口，把 Auto 卡片撑成整屏
+            // （WeatherTwentyOne 天气卡片实测踩过）
             platformView.SetHeightPercent(1.0f);
         if (LogLayout) HiLog.Debug("Grid", $"ConnectHandler#{GetHashCode():X}: Stack W%+H% set, children={VirtualView.Children.Count}");
         // 连接时全量同步已存在的 Children（Controls 侧在 Handler 连接前添加的子节点不会发 Add 命令）
@@ -119,13 +128,15 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     {
         if (_children.ContainsKey(view)) return;
         var handler = HarmonyHandlerFactory.Create(view);
-        handler.SetVirtualView(view);
         if (handler.PlatformView is ArkUINode node)
         {
             // 尺寸与位置全部由 Arrange 决定，此处不设任何布局属性
             PlatformView.AddChild(node);
             _children[view] = handler;
             node.SetAreaChangeObserver(OnChildAreaChange);
+            // 中部插入时 z 编码随兄弟数变化：全体兄弟按声明序重写（同 Invoke ZIndex 路径），
+            // 无布局父容器时 TryRewriteSiblings 返回 false， Arrange 循环落自己的值
+            ZIndexOrder.TryRewriteSiblings(view);
             Arrange();
         }
     }
@@ -134,11 +145,12 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
 
     internal void Remove(IView view)
     {
-        if (_children.Remove(view, out var handler) && handler.PlatformView is ArkUINode node)
+        if (_children.Remove(view, out var handler))
         {
-            node.SetAreaChangeObserver(null);
+            if (handler.PlatformView is ArkUINode node)
+                node.SetAreaChangeObserver(null);
             _lastApplied.Remove(view);
-            PlatformView.RemoveChild(node);
+            DisposeContent(handler, PlatformView);
         }
     }
 
@@ -148,6 +160,7 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
         {
             if (handler.PlatformView is ArkUINode node)
                 node.SetAreaChangeObserver(null);
+            DisposeContent(handler, PlatformView);
         }
         PlatformView.RemoveAllChildren();
         _children.Clear();
@@ -171,11 +184,23 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     private void Arrange()
     {
         if (_containerW <= 0 || _containerH <= 0) return;
-        HiLog.Debug("Grid", $"Arrange: containerW={_containerW} containerH={_containerH}");
+        if (LogLayout)
+            HiLog.Debug("Grid", $"Arrange: containerW={_containerW} containerH={_containerH}");
         if (VirtualView is Grid grid)
             ArrangeGrid(grid, GetDensity());
         else if (VirtualView is MAbsolute absolute)
             ArrangeAbsolute(absolute);
+    }
+
+    /// <summary>Grid 是否含 Star 行（无 Star 行时内容高度可自闭合，无需充满宿主撑出 SizeChange）。</summary>
+    internal static bool GridHasStarRow(Grid grid)
+    {
+        if (grid.RowDefinitions.Count == 0)
+            return true; // 未定义行 = 单行 Star（MAUI 默认）
+        foreach (var row in grid.RowDefinitions)
+            if (row.Height.GridUnitType == GridUnitType.Star)
+                return true;
+        return false;
     }
 
     private void ArrangeGrid(Grid grid, float density)
@@ -205,17 +230,25 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
             rowValue[i] = (float)gl.Value;
         }
 
-        // Auto 轨道：取子节点上一帧自量测尺寸（px→vp）的最大值
+        if (LogLayout) HiLog.Debug("Grid", $"ArrangeGrid: container={_containerW}x{_containerH} children={_children.Count}");
+        // Auto 轨道：子节点的期望尺寸（px→vp）最大值。
+        // 优先 MAUI 托管测量（vp）：原生自量测对带 % 尺寸的子节点（模板宿主
+        // ContentPresenter/ContentView 的 ArkColumn 强制 100%）会回报容器满尺寸，
+        // 把 Auto 轨道吹爆、Star 轨道归零（HubView 模板 Grid 实测踩过）；
+        // MAUI 测量无效时才回退到上一帧自量测
         foreach (var (view, handler) in _children)
         {
             if (handler.PlatformView is not ArkUINode node) continue;
             int c = Math.Clamp(Grid.GetColumn((MBindableObject)view), 0, nCols - 1);
             int r = Math.Clamp(Grid.GetRow((MBindableObject)view), 0, nRows - 1);
-            var size = node.MeasuredSize;
-            if (colUnit[c] == GridUnitType.Auto && Grid.GetColumnSpan((MBindableObject)view) == 1 && size.width > 0)
-                colAuto[c] = Math.Max(colAuto[c], size.width / density);
-            if (rowUnit[r] == GridUnitType.Auto && Grid.GetRowSpan((MBindableObject)view) == 1 && size.height > 0)
-                rowAuto[r] = Math.Max(rowAuto[r], size.height / density);
+            var ds = MeasureChild(view, node, density);
+            // MAUI 语义：Auto 轨道尺寸 = 子节点期望尺寸 + Margin（Margin 占轨道空间，排布重叠实测踩过）
+            float mgWH = (float)(view.Margin.Left + view.Margin.Right);
+            float mgHV = (float)(view.Margin.Top + view.Margin.Bottom);
+            if (colUnit[c] == GridUnitType.Auto && Grid.GetColumnSpan((MBindableObject)view) == 1 && ds.W > 0)
+                colAuto[c] = Math.Max(colAuto[c], ds.W + mgWH);
+            if (rowUnit[r] == GridUnitType.Auto && Grid.GetRowSpan((MBindableObject)view) == 1 && ds.H > 0)
+                rowAuto[r] = Math.Max(rowAuto[r], ds.H + mgHV);
         }
 
         // Span>1 子节点参与 Auto 轨道（跨轨道组合实测沉淀）：span 内 Auto 轨道当前和
@@ -228,12 +261,11 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
             int cs = Math.Clamp(Grid.GetColumnSpan((MBindableObject)view), 1, nCols - c);
             int rs = Math.Clamp(Grid.GetRowSpan((MBindableObject)view), 1, nRows - r);
             if (cs == 1 && rs == 1) continue;
-            var size = node.MeasuredSize;
-            float wVp = size.width / density, hVp = size.height / density;
-            if (wVp > 0 && SpannedAutoCount(colUnit, c, cs) > 0)
-                DistributeSpanDeficit(colAuto, colUnit, c, cs, wVp);
-            if (hVp > 0 && SpannedAutoCount(rowUnit, r, rs) > 0)
-                DistributeSpanDeficit(rowAuto, rowUnit, r, rs, hVp);
+            var ds = MeasureChild(view, node, density);
+            if (ds.W > 0 && SpannedAutoCount(colUnit, c, cs) > 0)
+                DistributeSpanDeficit(colAuto, colUnit, c, cs, ds.W);
+            if (ds.H > 0 && SpannedAutoCount(rowUnit, r, rs) > 0)
+                DistributeSpanDeficit(rowAuto, rowUnit, r, rs, ds.H);
         }
 
         // Auto 轨道兜底：子节点未被 ArkUI 量测时（首帧），按 MAUI 控件语义估算高度
@@ -267,6 +299,20 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
 
         if (LogLayout) HiLog.Debug("Grid", $"Tracks: widths=[{FormatTracks(widths)}] heights=[{FormatTracks(heights)}]");
 
+        // 无 Star 行的 Grid 内容高度可自闭合：模板宿主场景下平台节点是 100% 高
+        // （ConnectHandler 为触发 SizeChange 而设），百分比高在 auto 高宿主里会向上
+        // 解析到视口，把 Auto 卡片撑成整屏（WeatherTwentyOne 天气卡片实测踩过）。
+        // 行高解析完成后改写为显式内容高；引发的 SizeChange 重排由幂等守卫终止。
+        if (!GridHasStarRow(grid)
+            && (VirtualView.Parent is not Microsoft.Maui.Controls.Layout
+                || VirtualView.Parent is Microsoft.Maui.Controls.TemplatedView
+                || VirtualView.Parent is Microsoft.Maui.Controls.ContentPresenter))
+        {
+            float contentH = Sum(heights, 0, nRows);
+            if (contentH > 0 && Math.Abs(contentH - _containerH) > 0.5f)
+                PlatformView.SetHeight(contentH);
+        }
+
         foreach (var (view, handler) in _children)
         {
             if (handler.PlatformView is not ArkUINode node) continue;
@@ -287,37 +333,45 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
             // MAUI 对齐语义（官方：布局管理器发全尺寸 frame，Start/Center/End 由子节点
             // 按实测尺寸在 frame 内摆放，Fill 拉伸）：非 auto 维在单元格内收缩+偏移。
             // 实测尺寸尚未产生（首帧）时保持 Fill，AREA_CHANGE 触发下一轮后生效
-            var size = node.MeasuredSize;
+            // 须取 Margin 恢复后的自然尺寸（原生 measured 是上一轮 Margin 内缩后的占位值，
+            // 直接喂给对齐会逐轮再缩一遍，逻辑同 MeasureChild 的反馈环防护）
+            var nat = NaturalSize(view, node, density);
             if (!wAuto)
-                (x, w) = ApplyAlignment(view.HorizontalLayoutAlignment, x, w, size.width / density);
+                (x, w) = ApplyAlignment(view.HorizontalLayoutAlignment, x, w, nat.W);
             if (!hAuto)
-                (y, h) = ApplyAlignment(view.VerticalLayoutAlignment, y, h, size.height / density);
+                (y, h) = ApplyAlignment(view.VerticalLayoutAlignment, y, h, nat.H);
 
             // MAUI 子节点 Margin：在轨道单元内内缩（auto 维不缩，让内容自撑）
             var mg = view.Margin;
             float mgL = (float)mg.Left, mgT = (float)mg.Top, mgR = (float)mg.Right, mgB = (float)mg.Bottom;
+            bool wShrink = !wAuto && (mgL > 0 || mgR > 0);
+            bool hShrink = !hAuto && (mgT > 0 || mgB > 0);
             if (mgL > 0 || mgT > 0 || mgR > 0 || mgB > 0)
             {
                 x += mgL; y += mgT;
-                if (!wAuto) w = Math.Max(w - mgL - mgR, 0);
-                if (!hAuto) h = Math.Max(h - mgT - mgB, 0);
+                if (wShrink) w = Math.Max(w - mgL - mgR, 0);
+                if (hShrink) h = Math.Max(h - mgT - mgB, 0);
             }
 
-            int z = view.ZIndex;
+            float z = ZIndexOrder.EffectiveZ(view);
 
             // 幂等：与上次应用结果一致则跳过（AREA_CHANGE 回环的终止条件）
             if (_lastApplied.TryGetValue(view, out var prev)
                 && prev.X == x && prev.Y == y && prev.W == w && prev.H == h
-                && prev.Z == z && prev.WAuto == wAuto && prev.HAuto == hAuto)
+                && prev.Z == z && prev.WAuto == wAuto && prev.HAuto == hAuto
+                && prev.WShrink == wShrink && prev.HShrink == hShrink)
             {
                 continue;
             }
-            _lastApplied[view] = (x, y, w, h, z, wAuto, hAuto);
+            _lastApplied[view] = (x, y, w, h, z, wAuto, hAuto, wShrink, hShrink);
 
             if (LogLayout) HiLog.Debug("Grid", $"  [{view.GetType().Name}] r={r}c={c} span={rs}x{cs} -> ({x:F0},{y:F0}) {w:F0}x{h:F0} z={z}");
 
-            if (!wAuto) node.SetWidth(w);
-            if (!hAuto) node.SetHeight(h);
+            // 对齐收缩后得到 0 = 原生未量测（NDK 无样式表，如按钮自然宽塌成 0）。
+            // 此处不写 0：回退到 Auto（原生自量测），保证叶子控件自然尺寸（实测 Metro
+            // 顶行 End 对齐的 Mode 切换按钮被压成 0，从 a11y/dump 中消失）
+            if (!wAuto) { if (w > 0) node.SetWidth(w); else node.SetWidthAuto(); }
+            if (!hAuto) { if (h > 0) node.SetHeight(h); else node.SetHeightAuto(); }
             node.SetPosition(x, y);
             node.SetZIndex(z);
         }
@@ -352,9 +406,10 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
                 if (!hAuto) h = Math.Max(h - mgT - mgB, 0);
             }
 
-            if (!wAuto) node.SetWidth(w);
-            if (!hAuto) node.SetHeight(h);
+            if (!wAuto) { if (w > 0) node.SetWidth(w); else node.SetWidthAuto(); }
+            if (!hAuto) { if (h > 0) node.SetHeight(h); else node.SetHeightAuto(); }
             node.SetPosition(Math.Max(x, 0), Math.Max(y, 0));
+            node.SetZIndex(ZIndexOrder.EffectiveZ(view));
         }
     }
 
@@ -374,6 +429,62 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
             MALIGNMENT.End => (offset + frameSize - cs, cs),
             _ => (offset, cs), // Start
         };
+    }
+
+    /// <summary>子节点期望尺寸（vp）选择策略：模板宿主类容器（IContentView/ContentPresenter，
+    /// 平台节点强制 % 尺寸）的原生自量测恒等于容器满尺寸，必须取 MAUI 托管期望尺寸；
+    /// 叶子控件（Label/Button 等）的托管测量依赖字体服务等平台基建（当前宿主不完整，
+    /// 实测 Button 塌成 19x8），信原生前帧自量测（px→vp）。</summary>
+    private (float W, float H) MeasureChild(IView view, ArkUINode node, float density)
+    {
+        if (view is IContentView or ContentPresenter && view.Handler is not null)
+        {
+            try
+            {
+                var ds = view.Measure(
+                    _containerW > 0 ? _containerW : double.PositiveInfinity,
+                    double.PositiveInfinity);
+                // 托管结果（含合法的 0）直接采信；NaN/Infinity 视为不可用
+                double w = double.IsNaN(ds.Width) || double.IsInfinity(ds.Width) ? 0 : ds.Width;
+                double h = double.IsNaN(ds.Height) || double.IsInfinity(ds.Height) ? 0 : ds.Height;
+                // MAUI Measure() 的返回已含 Margin（MeasureOverride 口径）：减去后与
+                // NaturalSize 统一为"不含 Margin 的自然期望"——Auto 轨道/span 亏空在
+                // 调用侧统一补一次，不减则 Margin 被叠加两遍（Auto 轨道虚胖）
+                var nw = Math.Max(w - view.Margin.HorizontalThickness, 0);
+                var nh = Math.Max(h - view.Margin.VerticalThickness, 0);
+                return ((float)nw, (float)nh);
+            }
+            catch { /* 托管测量抛异常 → 回退原生自量测 */ }
+        }
+        return NaturalSize(view, node, density);
+    }
+
+    /// <summary>原生实测尺寸（px→vp）的 Margin 恢复口径：MeasuredSize 是上一轮 Arrange
+    /// 写过 "Margin 内缩后" 的占位尺寸，直接当作自然期望会让 Auto 轨道每轮再减一遍
+    /// Margin（实测 End 对齐按钮 178→162→146→…→65 逐轮塌陷）。已排布过时把 Margin
+    /// 补回，恢复自然尺寸。</summary>
+    private (float W, float H) NaturalSize(IView view, ArkUINode node, float density)
+    {
+        var native = node.MeasuredSize;
+        // 显式 WidthRequest/HeightRequest 优先于原生实测：叶子控件首帧按 Fill 占满轨道，
+        // 实测值就是上一轮的占位满尺寸，不看显式请求会让 90x90 的 Image 永远撑满整格
+        var wReq = view is VisualElement veW ? veW.WidthRequest : -1;
+        var hReq = view is VisualElement veH ? veH.HeightRequest : -1;
+        var mw = wReq >= 0 ? (float)wReq
+            : native.width > 0 ? native.width / density : 0;
+        var mh = hReq >= 0 ? (float)hReq
+            : native.height > 0 ? native.height / density : 0;
+        // 反馈环防护：MeasuredSize 是上一轮 Arrange 写过 "Margin 内缩后" 的占位尺寸，
+        // 直接当作下一轮的期望尺寸会让 Auto 轨道每轮再减一遍 Margin（实测 End 对齐
+        // 按钮 178→162→146→…→65 逐轮塌陷）。仅上一轮当真做过 Margin 内缩的轴补回
+        // （auto 维从未内缩；无条件补回会把期望尺寸虚胖一轮）
+        if (_lastApplied.TryGetValue(view, out var prev))
+        {
+            var mg = view.Margin;
+            if (prev.WShrink) mw += (float)(mg.Left + mg.Right);
+            if (prev.HShrink) mh += (float)(mg.Top + mg.Bottom);
+        }
+        return (mw, mh);
     }
 
     /// <summary>按 Absolute/Auto/Star 语义解析轨道尺寸（vp）；无 Star 时剩余空间留空。</summary>
@@ -420,7 +531,7 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     }
 
     /// <summary>span 覆盖范围内的 Auto 轨道数（布局热路径，显式循环）</summary>
-    private static int SpannedAutoCount(GridUnitType[] units, int start, int span)
+    internal static int SpannedAutoCount(GridUnitType[] units, int start, int span)
     {
         int n = 0;
         for (int i = start; i < start + span && i < units.Length; i++)
@@ -429,10 +540,15 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
         return n;
     }
 
-    /// <summary>亏空分摊：span 内 Auto 轨道当前和 < 子节点自量测尺寸时把差值补进 Auto 轨道
-    /// （混合 Star/Auto 均摊；纯 Auto 组合该轨道整段撑起）。只增不减，多子节点各自收敛。</summary>
-    private static void DistributeSpanDeficit(float[] autoSizes, GridUnitType[] units, int start, int span, float target)
+    /// <summary>亏空分摊：span 内 Auto 轨道当前和小于子节点期望尺寸时把差值补进 Auto 轨道
+    /// （纯 Auto 组合该轨道整段撑起）。span 内含 Star 轨时跳过——剩余空间由 Star
+    /// 吸收，不得吹大 Auto（HubView 模板 Grid 的 RowSpan=2 满铺底图实测踩过）。
+    /// 只增不减，多子节点各自收敛。</summary>
+    internal static void DistributeSpanDeficit(float[] autoSizes, GridUnitType[] units, int start, int span, float target)
     {
+        for (int i = start; i < start + span && i < units.Length; i++)
+            if (units[i] == GridUnitType.Star)
+                return;
         int autoCount = 0;
         float autoSum = 0;
         for (int i = start; i < start + span && i < units.Length; i++)

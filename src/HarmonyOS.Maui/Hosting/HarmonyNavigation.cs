@@ -11,6 +11,7 @@ using Microsoft.Maui;
 using ArkStack = HarmonyOS.ArkUI.Stack;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 using MApplication = Microsoft.Maui.Controls.Application;
+using MResourceDictionary = Microsoft.Maui.Controls.ResourceDictionary;
 using MNavigationProxy = Microsoft.Maui.Controls.Internals.NavigationProxy;
 using MPage = Microsoft.Maui.Controls.Page;
 using MWindow = Microsoft.Maui.Controls.Window;
@@ -38,7 +39,32 @@ public static class HarmonyNavigation
     /// <summary>当前打开的模态数量</summary>
     public static int ModalCount => Modals.Count;
 
+    /// <summary>当前模态页快照（Shell section 导航适配器的 ModalStack 语义）</summary>
+    internal static System.Collections.Generic.IReadOnlyList<MPage> CurrentModals
+        => Modals.Select(m => m.Page).ToArray();
+
     internal static void Attach(ArkStack container)
+        => Attach(container, null);
+
+    internal static void Attach(ArkStack container, MResourceDictionary? globalResources)
+    {
+        var app = HarmonyApplication.EnsureCurrent(globalResources);
+        AttachCore(container, app, null);
+    }
+
+    /// <summary>
+    /// RunApplication 路径：应用自建的 Application/Window 直接接入（不新建最小实例）。
+    /// window.Page 的 NavigationProxy.Inner 会随后续 Push 统一重接到根适配器。
+    /// </summary>
+    internal static void Attach(ArkStack container, MApplication? application, MWindow? window)
+    {
+        if (application is not null)
+            HarmonyApplication.EnsureCurrent(globalResources: null, application);
+        AttachCore(container, application, window);
+    }
+
+    // 两路 Attach 的公共体：连接后 reset 全部栈态；EnsureCurrent 由各自入口负责（不复调）
+    private static void AttachCore(ArkStack container, MApplication? application, MWindow? window)
     {
         _container = container;
         BackStack.Clear();
@@ -46,17 +72,12 @@ public static class HarmonyNavigation
         _currentPage = null;
 
         if (_window is null)
-        {
-            var app = new MApplication();
-            MApplication.SetCurrentApplication(app);
-            _window = new MWindow { Parent = app };
-        }
+            _window = window ?? new MWindow { Parent = application };
     }
 
     private static ArkUINode AssemblePage(MPage page)
     {
         var handler = Handlers.HarmonyHandlerFactory.Create((Microsoft.Maui.Controls.Element)page);
-        handler.SetVirtualView(page);
         return handler.PlatformView as ArkUINode
             ?? throw new InvalidOperationException(
                 $"page handler PlatformView is not an ArkUI node: {handler.PlatformView?.GetType().Name}");
@@ -67,6 +88,8 @@ public static class HarmonyNavigation
     {
         if (_container is null)
             throw new InvalidOperationException("HarmonyNavigation not initialized (MauiHarmonyHost.Run first)");
+        if (_transitioning)
+            return;
 
         // 根级 INavigation 接线：无父链时 NavigationProxy.Inner 为 null（标准 API 会静默丢弃），
         // 接到适配器后 PushAsync/PushModalAsync 经适配器回到本类。
@@ -91,7 +114,8 @@ public static class HarmonyNavigation
 
     /// <summary>
     /// 系统返回键/返回手势请求（由宿主 onBackPress 转入）。
-    /// 优先级：模态 → 当前 NavigationPage 内部栈 → 根级轻量栈；均空返回 false 交还系统。
+    /// 优先级：模态 → Shell section 内栈 → 当前 NavigationPage 内部栈 → 根级轻量栈；
+    /// 均空返回 false 交还系统。
     /// </summary>
     public static bool OnBackRequested()
     {
@@ -100,6 +124,10 @@ public static class HarmonyNavigation
             PopModal();
             return true;
         }
+
+        if (_currentPage?.Page is Microsoft.Maui.Controls.Shell shell &&
+            HarmonyShellNavigation.HandleBack(shell))
+            return true;
 
         if (_currentPage?.Page is Microsoft.Maui.Controls.NavigationPage navPage &&
             navPage.Navigation.NavigationStack.Count > 1)
@@ -126,14 +154,17 @@ public static class HarmonyNavigation
 
         var current = _currentPage.Value;
         current.Page.SendDisappearing();
+        // 动画回调可能晚于宿主换容器（Detach/重建），捕获当前容器避免摘除错树
+        var container = _container;
 
         void Finish()
         {
-            _container!.RemoveChild(current.Node);
+            container!.RemoveChild(current.Node);
+            current.Page.Handler = null; // 触发 DisconnectHandler（手势/事件订阅清理）
             current.Node.Dispose();
             _currentPage = BackStack.Pop();
             _currentPage.Value.Page.SendAppearing();
-            _container.AddChild(_currentPage.Value.Node);
+            container.AddChild(_currentPage.Value.Node);
             _transitioning = false;
         }
 
@@ -155,6 +186,8 @@ public static class HarmonyNavigation
     {
         if (_container is null)
             throw new InvalidOperationException("HarmonyNavigation not initialized (MauiHarmonyHost.Run first)");
+        if (_transitioning)
+            return;
 
         TopPage()?.SendDisappearing();
 
@@ -176,12 +209,14 @@ public static class HarmonyNavigation
 
         var (page, node) = Modals[^1];
         Modals.RemoveAt(Modals.Count - 1);
+        var container = _container;
 
         page.SendDisappearing();
         _transitioning = true;
         node.Animate(() => node.SetOpacity(0f), () =>
         {
-            _container!.RemoveChild(node);
+            container!.RemoveChild(node);
+            page.Handler = null; // 触发 DisconnectHandler（手势/事件订阅清理）
             node.Dispose();
             _transitioning = false;
         });
@@ -252,7 +287,10 @@ internal static class TaskFireAndForgetExtensions
         task.ContinueWith(t =>
         {
             if (t.Exception is not null)
+            {
                 System.Diagnostics.Debug.WriteLine($"navigation failed: {t.Exception.InnerException}");
+                HarmonyOS.Interop.HiLog.Error("HarmonyHost", $"[Nav] failed: {t.Exception.InnerException}");
+            }
         }, TaskScheduler.Default);
     }
 }

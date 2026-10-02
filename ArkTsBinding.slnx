@@ -5,11 +5,19 @@
     <Project Path="samples/dotnet/ApiDemo/ApiDemo.csproj" />
     <Project Path="samples/dotnet/EngineLab/EngineLab.csproj" />
     <Project Path="samples/dotnet/EssentialsApp/EssentialsApp.csproj" />
+    <Project Path="samples/dotnet/WeatherTwentyOne/WeatherTwentyOne.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/HarmonyOS.Interop/HarmonyOS.Interop.csproj" />
     <Project Path="src/HarmonyOS.Bindings/HarmonyOS.Bindings.csproj" />
     <Project Path="src/HarmonyOS.Essentials/HarmonyOS.Essentials.csproj" />
     <Project Path="src/HarmonyOS.Maui/HarmonyOS.Maui.csproj" />
+    <Project Path="src/HarmonyOS.Maui.Permissions/HarmonyOS.Maui.Permissions.csproj" />
+    <Project Path="src/HarmonyOS.Maui.Permissions.Abstractions/HarmonyOS.Maui.Permissions.Abstractions.csproj" />
+    <Project Path="src/HarmonyOS.Templates/HarmonyOS.Templates.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/dotnet/">
+    <Project Path="tests/dotnet/HarmonyPermissionGeneratorTests/HarmonyPermissionGeneratorTests.csproj" />
   </Folder>
 </Solution>

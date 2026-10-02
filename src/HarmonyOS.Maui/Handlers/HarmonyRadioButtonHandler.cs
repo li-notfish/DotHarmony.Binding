@@ -15,7 +15,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// </summary>
 public class HarmonyRadioButtonHandler : HarmonyViewHandler<IRadioButton, ArkRow>, IRadioButtonHandler
 {
-    public static PropertyMapper<IRadioButton, IRadioButtonHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<IRadioButton, IRadioButtonHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(IRadioButton.IsChecked)] = MapIsChecked,
         [nameof(IRadioButton.Content)] = MapContent,

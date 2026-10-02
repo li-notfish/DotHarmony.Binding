@@ -98,7 +98,8 @@ public static class ArkTsEngine
 
         NativeNodeApi.napi_call_function(env, bridge, fn, 1, new IntPtr[] { arr }, out _).ThrowIfFailed();
         HiLog.Info(Tag, $"flushed {count} commands");
-        _queue.Clear();
+        // applyCommands may synchronously enqueue new commands; only remove the prefix sent to JS.
+        _queue.RemoveRange(0, count);
 #endif
     }
 

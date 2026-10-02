@@ -15,12 +15,12 @@ namespace HarmonyOS.Interop;
 public readonly struct NapiArg
 {
     /// <summary>值域标签：Null 空值；Number double/float；Int 整数；Bool；Native 句柄直传；Ref 引用类型</summary>
-    public enum Tag : byte { Null, Number, Int, Bool, Native, Ref }
+    public enum Tag : byte { Null, Number, Int, UInt64, Bool, Native, Ref }
 
     public readonly Tag Kind;
     /// <summary>Number 值域（double/float）</summary>
     public readonly double Number;
-    /// <summary>Int/Bool/Native 值域（long、uint、bool 位、IntPtr.ToInt64）</summary>
+    /// <summary>Int/UInt64/Bool/Native 值域（long、ulong 位、bool 位、IntPtr.ToInt64）</summary>
     public readonly long Integer;
     /// <summary>Ref 值域（string/JsObject/INapiRecord/Delegate/Enum/object）</summary>
     public readonly object? RefValue;
@@ -38,7 +38,7 @@ public readonly struct NapiArg
     public static implicit operator NapiArg(int v) => new(Tag.Int, integer: v);
     public static implicit operator NapiArg(uint v) => new(Tag.Int, integer: v);
     public static implicit operator NapiArg(long v) => new(Tag.Int, integer: v);
-    public static implicit operator NapiArg(ulong v) => new(Tag.Int, integer: unchecked((long)v));
+    public static implicit operator NapiArg(ulong v) => new(Tag.UInt64, integer: unchecked((long)v));
     public static implicit operator NapiArg(short v) => new(Tag.Int, integer: v);
     public static implicit operator NapiArg(ushort v) => new(Tag.Int, integer: v);
     public static implicit operator NapiArg(sbyte v) => new(Tag.Int, integer: v);

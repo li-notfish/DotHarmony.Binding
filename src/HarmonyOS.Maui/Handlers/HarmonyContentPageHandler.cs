@@ -9,7 +9,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>MAUI ContentPage 的 HarmonyOS Handler（ArkUI Column 容器 + 单 Content 子节点）。</summary>
 public class HarmonyContentPageHandler : ViewHandler<ContentPage, ArkColumn>
 {
-    public static PropertyMapper<ContentPage, HarmonyContentPageHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<ContentPage, HarmonyContentPageHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(IContentView.Content)] = MapContent,
         [nameof(IContentView.Background)] = MapBackground,
@@ -63,7 +63,6 @@ public class HarmonyContentPageHandler : ViewHandler<ContentPage, ArkColumn>
         if (content is not IView view) return;
 
         var childHandler = HarmonyHandlerFactory.Create(view);
-        childHandler.SetVirtualView(view);
         _contentHandler = childHandler;
 
         if (childHandler.PlatformView is ArkUINode node)

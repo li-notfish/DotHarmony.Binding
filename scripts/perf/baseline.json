@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-09-29T13:54:01.1279241Z",
+  "gitCommit": "c03bd5b45b72953342efeed929fd07785cd04d90",
+  "project": "samples/dotnet/PerfApp",
+  "configuration": "Release",
+  "device": "127.0.0.1:5555",
+  "sizes": {
+    "arm64LibAppBytes": 18311976,
+    "x64LibAppBytes": 17763448,
+    "hapBytes": 38714656
+  },
+  "runs": [
+    {
+      "run": 1,
+      "coldStartMs": 763,
+      "runtimeInitMs": 39,
+      "firstFrameMs": 39,
+      "tsfnThroughputOpsPerSec": 65751.36
+    },
+    {
+      "run": 2,
+      "coldStartMs": 440,
+      "runtimeInitMs": 16,
+      "firstFrameMs": 17,
+      "tsfnThroughputOpsPerSec": 256387.25
+    },
+    {
+      "run": 3,
+      "coldStartMs": 586,
+      "runtimeInitMs": 261,
+      "firstFrameMs": 261,
+      "tsfnThroughputOpsPerSec": 143434.36
+    }
+  ],
+  "summary": {
+    "coldStartMsAverage": 596.33,
+    "runtimeInitMsAverage": 105.33,
+    "firstFrameMsAverage": 105.67,
+    "tsfnThroughputOpsPerSecAverage": 155190.99
+  }
+}

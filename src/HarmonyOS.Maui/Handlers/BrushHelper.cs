@@ -3,6 +3,7 @@
 // 是平行类型树（不可互相模式匹配），XAML BackgroundColor 产物为 SolidColorBrush。
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using HarmonyOS.Bindings.NativeNode;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 
 namespace HarmonyOS.Maui.Handlers;
@@ -43,9 +44,22 @@ public static class BrushHelper
                     false, ToColors(radial.GradientStops), ToStops(radial.GradientStops));
                 return;
         }
+        // ImageBrush 运行时检测：MAUI 10 将其保持为 internal（无法构造/声明），
+        // 但 MAUI 内部管线可能产生实例；通过类型名匹配 + 反射提取 ImageSource/ImageRepeat。
+        if (brush is not null && brush.GetType().Name == "ImageBrush")
+        {
+            var brushType = brush.GetType();
+            var resolved = brushType.GetProperty("ImageSource")?.GetValue(brush) is ImageSource imgSrc
+                ? ImageSourceResolver.Resolve(imgSrc)
+                : null;
+            // 解析失败也要清空旧背景图：节点复用场景（如回收容器）不得残留上一张图。
+            // MAUI ImageRepeat 枚举值与 NDK ArkUI_ImageRepeat 整型对齐，缺省 0
+            var repeat = brushType.GetProperty("Repeat")?.GetValue(brush);
+            var repeatMode = repeat is null ? 0 : (int)repeat;
+            node.SetBackgroundImage(resolved ?? string.Empty, repeatMode);
+            return;
+        }
         // 其余（无色 SolidColorBrush、空 GradientBrush 等）：静默跳过。
-        // ImageBrush 不处理——MAUI 10 将其保持为 internal（无法构造/声明，上游 API 限制），
-        // 节点层的 SetBackgroundImage 原语已就位，上游公开后即可接线。
     }
 
     private static bool HasStops(GradientBrush brush) => brush.GradientStops is { Count: > 0 };

@@ -8,7 +8,8 @@ namespace HarmonyOS.Interop;
 /// hilog 原生日志（libhilog_ndk.z.so）。
 /// OH_LOG_Print 是 C 变参函数；对 %{public}s 单字符串场景，
 /// arm64/x64 上以固定签名调用变参函数是安全的（前几个参数均走整型/指针寄存器）。
-/// 热路径注意：本类不阻止调用方的字符串插值分配——高频日志请在调用方用常量门控。/// </summary>
+/// 热路径注意：本类不阻止调用方的字符串插值分配——高频日志请在调用方用常量门控。
+/// </summary>
 public static unsafe partial class HiLog
 {
     private const string Lib = "libhilog_ndk.z.so";

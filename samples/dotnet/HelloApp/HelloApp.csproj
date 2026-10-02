@@ -37,6 +37,12 @@
     <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
   </ItemGroup>
 
+  <!-- HarmonyStageResources 验证：MauiImage 按逻辑名暂存到宿主 HAP rawfile/maui/，
+       BindingProbePage 的 FileImageSource 裸名（probe_logo.png）经包内 rawfile 加载 -->
+  <ItemGroup>
+    <MauiImage Include="Assets\probe_logo.png" />
+  </ItemGroup>
+
   <!-- MAUI 风格平台编排：dotnet build -t:HarmonyRun（libapp.so → HAP → 部署） -->
   <Import Project="$(MSBuildThisFileDirectory)../../../src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets" />
 

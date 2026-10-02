@@ -16,8 +16,21 @@
 typedef int (*harmony_init_t)(void* env);
 typedef int (*harmony_buildui_t)(void* env, void* nodeContentValue);
 typedef int (*harmony_poppage_t)(void* env);
+typedef int (*harmony_themechanged_t)(void* env, int colorMode);
 
 static void* g_app = NULL;
+
+// 主题回调注册表：.NET 库代码（HarmonyOS.Maui）在初始化时经 libentry 导出符号
+// 主动注册函数指针——ILC 只导出入口程序集的 [UnmanagedCallersOnly]，库内方法无法
+// 经 dlsym 发现，但取函数指针不受此限。注册后优先于 dlsym 回退路径。
+typedef int (*theme_changed_fn)(void* env, int colorMode);
+static theme_changed_fn g_themeChangedCallback = NULL;
+
+__attribute__((visibility("default")))
+void HarmonyHostSetThemeChangedCallback(void* fn)
+{
+    g_themeChangedCallback = (theme_changed_fn)fn;
+}
 
 static void loge(const char* what, const char* detail)
 {
@@ -33,6 +46,9 @@ static bool load_dotnet(void)
     // NativeAOT 运行时在首次进入导出函数时才初始化 CLR。
     // GC 硬上限：region 模式默认预留 ~256G 虚拟内存，会触发 mmap 限制；1GiB 物理足够样例。
     setenv("DOTNET_GCHeapHardLimit", "0x40000000", 1);
+    // 云真机 seccomp 会拦截 get_mempolicy；禁用 GC NUMA 探测与亲和化。
+    setenv("DOTNET_GCNumaAware", "0", 1);
+    setenv("DOTNET_GCNoAffinitize", "1", 1);
     // 鸿蒙系统 ICU 数据路径（社区移植配方）
     setenv("ICU_DATA", "/system/usr/ohos_icu", 1);
 
@@ -123,6 +139,37 @@ static napi_value PassNodeContent(napi_env env, napi_callback_info info)
     return NULL;
 }
 
+// 系统 colorMode 变化：转发给 .NET，走 MAUI IApplication.ThemeChanged 标准路径
+static napi_value NotifyThemeChanged(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 1;
+    napi_value argv[1];
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    int colorMode = -1;
+    if (argc >= 1) {
+        napi_get_value_int32(env, argv[0], &colorMode);
+    }
+
+    // 优先走 .NET 侧注册的函数指针；旧版 app.so（导出 HarmonyThemeChanged）回退 dlsym
+    harmony_themechanged_t themeChanged = g_themeChangedCallback;
+    if (!themeChanged) {
+        themeChanged = (harmony_themechanged_t)dlsym(g_app, "HarmonyThemeChanged");
+    }
+    if (!themeChanged) {
+        loge("dlsym HarmonyThemeChanged", dlerror());
+        return NULL;
+    }
+
+    int r = themeChanged((void*)env, colorMode);
+    if (r != 0) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG,
+                     "HarmonyThemeChanged failed: %{public}d", r);
+    }
+    return NULL;
+}
+
 EXTERN_C_START
 static napi_value ModuleInit(napi_env env, napi_value exports)
 {
@@ -130,6 +177,7 @@ static napi_value ModuleInit(napi_env env, napi_value exports)
         {"initDotnet", NULL, InitDotnet, NULL, NULL, NULL, napi_default, NULL},
         {"popPage", NULL, PopPage, NULL, NULL, NULL, napi_default, NULL},
         {"passNodeContent", NULL, PassNodeContent, NULL, NULL, NULL, napi_default, NULL},
+        {"notifyThemeChanged", NULL, NotifyThemeChanged, NULL, NULL, NULL, napi_default, NULL},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;

@@ -8,6 +8,15 @@ $projectRoot = Split-Path -Parent $scriptDir
 
 # 宿主目录：HOST_DIR 覆盖（targets 生成的按应用暂存宿主），默认共享模板
 $hostDir = if ($env:HOST_DIR) { $env:HOST_DIR } else { Join-Path $projectRoot "samples\HarmonyHost" }
+if (-not $env:HOST_DIR) {
+    $staged = Get-ChildItem (Join-Path $projectRoot "samples\dotnet") -Directory -ErrorAction SilentlyContinue |
+        ForEach-Object { Join-Path $_.FullName "obj\harmony\host" } |
+        Where-Object { Test-Path (Join-Path $_ "entry\build\default\outputs\default") }
+    if ($staged) {
+        Write-Warning "未设置 HOST_DIR，将使用共享模板宿主（可能是旧 HAP）。检测到按应用暂存宿主："
+        $staged | ForEach-Object { Write-Warning "  $_  （使用时：`$env:HOST_DIR='...'）" }
+    }
+}
 # bundle 名：HOST_DIR 为暂存宿主时读其 app.json5；默认共享模板
 $BUNDLE = "com.arktsbinding.harmonyhost"
 if ($hostDir -and (Test-Path (Join-Path $hostDir "AppScope/app.json5"))) {
@@ -19,10 +28,11 @@ $MODULE  = "entry"
 
 # ---- 定位 hdc ----
 $candidates = @($env:OHOS_SDK_BASE, $env:OHSDK_HOME,
-    "D:\Harmony\OpenHarmony\Sdk", "C:\Program Files\Huawei\DevEco Studio\sdk") | Where-Object { $_ }
+    "D:\Harmony\OpenHarmony\Sdk", "C:\Program Files\Huawei\DevEco Studio\sdk",
+    "D:\Program Files\Huawei\DevEco Studio\sdk") | Where-Object { $_ }
 $HDC = $null
 foreach ($base in $candidates) {
-    foreach ($rel in @("26.0.0\toolchains\hdc.exe", "toolchains\hdc.exe")) {
+    foreach ($rel in @("26.0.0\toolchains\hdc.exe", "toolchains\hdc.exe", "default\openharmony\toolchains\hdc.exe")) {
         $p = Join-Path $base $rel
         if (Test-Path $p) { $HDC = $p; break }
     }
@@ -47,12 +57,17 @@ if ($HDC_TARGET) {
     function Invoke-Hdc { & $HDC @args }
 }
 
-# ---- 定位 HAP ----
-$HAP = Join-Path $hostDir "entry\build\default\outputs\default\$MODULE-default-unsigned.hap"
+# ---- 定位 HAP：优先安装签名产物 ----
+$outputDir = Join-Path $hostDir "entry\build\default\outputs\default"
+$HAP = Join-Path $outputDir "$MODULE-default-signed.hap"
+if (-not (Test-Path $HAP)) {
+    $HAP = Join-Path $outputDir "$MODULE-default-unsigned.hap"
+}
 if (-not (Test-Path $HAP)) {
     Write-Error "找不到 HAP：$HAP（请先运行 scripts\build-hap.cmd）"
     exit 1
 }
+Write-Host "HAP: $HAP"
 
 Write-Host "=== 1. 检查设备 ==="
 $targets = & $HDC list targets | Where-Object { $_ -match '\S' }

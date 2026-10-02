@@ -31,7 +31,6 @@ public class HarmonyEmail : IEmail
             if (joined.Length > 0)
                 query.Add($"{key}={Uri.EscapeDataString(joined)}");
         }
-        Add("to", message.To);
         Add("cc", message.Cc);
         Add("bcc", message.Bcc);
         if (!string.IsNullOrEmpty(message.Subject))
@@ -39,8 +38,8 @@ public class HarmonyEmail : IEmail
         if (!string.IsNullOrEmpty(message.Body))
             query.Add($"body={Uri.EscapeDataString(message.Body)}");
 
-        var to = string.Join(",", message.To ?? []);
-        // 收件人整体不转义（逗号分隔多个收件人）；无 query 时不带 ?
+        var to = string.Join(",", (message.To ?? []).Select(Uri.EscapeDataString));
+        // 收件人只在 path 中出现一次；query 不再重复 to。
         if (query.Count == 0)
             return $"mailto:{to}";
         return to.Length == 0

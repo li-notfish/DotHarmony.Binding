@@ -83,6 +83,41 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BACKGROUND_COLOR, ArkUIValue.U(argb));
     }
 
+    /// <summary>字重（NODE_FONT_WEIGHT，ArkUI_FontWeight）</summary>
+    public void SetFontWeight(ArkUI_FontWeight weight)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_FONT_WEIGHT, ArkUIValue.I((int)weight));
+
+    /// <summary>字体样式（NODE_FONT_STYLE，ArkUI_FontStyle：NORMAL/ITALIC）</summary>
+    public void SetFontStyle(ArkUI_FontStyle style)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_FONT_STYLE, ArkUIValue.I((int)style));
+
+    /// <summary>行高倍数（NODE_TEXT_LINE_HEIGHT_MULTIPLE，f32；MAUI LineHeight 语义即倍数）</summary>
+    public void SetLineHeightMultiple(float multiple)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_LINE_HEIGHT_MULTIPLE, ArkUIValue.F(multiple));
+
+    /// <summary>边框色（NODE_BORDER_COLOR，四边同值，0xAARRGGBB）</summary>
+    public void SetBorderColor(uint argb)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BORDER_COLOR,
+            ArkUIValue.U(argb), ArkUIValue.U(argb), ArkUIValue.U(argb), ArkUIValue.U(argb));
+    }
+
+    /// <summary>边框宽（NODE_BORDER_WIDTH，四边同值，vp）</summary>
+    public void SetBorderWidth(float widthVp)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BORDER_WIDTH,
+            ArkUIValue.F(widthVp), ArkUIValue.F(widthVp), ArkUIValue.F(widthVp), ArkUIValue.F(widthVp));
+    }
+
+    /// <summary>边框圆角（NODE_BORDER_RADIUS，四角 vp，顺序 TL/TR/BL/BR 与 MAUI CornerRadius 一致）。
+    /// 同时开启 NODE_CLIP 让内容随圆角裁剪。</summary>
+    public void SetBorderRadius(float topLeft, float topRight, float bottomLeft, float bottomRight)
+    {
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_BORDER_RADIUS,
+            ArkUIValue.F(topLeft), ArkUIValue.F(topRight), ArkUIValue.F(bottomLeft), ArkUIValue.F(bottomRight));
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_CLIP, ArkUIValue.I(1));
+    }
+
     /// <summary>
     /// 线性渐变背景（NODE_LINEAR_GRADIENT）。
     /// 角度为 CSS 语义（0 = 向上，顺时针增大，默认 180 = 向下）；
@@ -202,6 +237,31 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_HEIGHT_PERCENT, ArkUIValue.F(fraction));
     }
 
+    /// <summary>恢复宽度自适应：同时清掉固定宽和百分比宽，供 ScrollView 等容器切换主轴时复位。</summary>
+    public void SetWidthAuto()
+    {
+        ResetAttribute(ArkUI_NodeAttributeType.NODE_WIDTH);
+        ResetAttribute(ArkUI_NodeAttributeType.NODE_WIDTH_PERCENT);
+    }
+
+    /// <summary>恢复高度自适应：同时清掉固定高和百分比高，供 ScrollView 等容器切换主轴时复位。</summary>
+    public void SetHeightAuto()
+    {
+        ResetAttribute(ArkUI_NodeAttributeType.NODE_HEIGHT);
+        ResetAttribute(ArkUI_NodeAttributeType.NODE_HEIGHT_PERCENT);
+    }
+
+    /// <summary>字体族（NODE_FONT_FAMILY）。空字符串走平台默认字体。</summary>
+    public void SetFontFamily(string family)
+    {
+        SetStringAttribute(ArkUI_NodeAttributeType.NODE_FONT_FAMILY, family ?? string.Empty);
+    }
+
+    /// <summary>命中测试行为（NODE_HIT_TEST_BEHAVIOR）。展示用子节点（如 Button 内建 label
+    /// 的替代 Text）须设为 TRANSPARENT 透传点击，否则会吃掉父节点的 CLICK。</summary>
+    public void SetHitTestBehavior(ArkUI_HitTestMode mode)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_HIT_TEST_BEHAVIOR, ArkUIValue.I((int)mode));
+
     /// <summary>绝对定位（vp，NODE_POSITION）—— 相对父容器左上角，托管布局的定位原语</summary>
     public void SetPosition(float x, float y)
     {
@@ -235,11 +295,57 @@ public abstract unsafe class ArkUINodeBase : IDisposable
             ArkUIValue.I(value ? 0 : 1));
     }
 
+    /// <summary>三态可见性（NODE_VISIBILITY）：Visible / Hidden（隐藏但占位）/ None（不占位）。
+    /// MAUI Visibility.Visible/Hidden/Collapsed 一一对应。</summary>
+    public void SetVisibility(ArkUI_Visibility visibility)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_VISIBILITY, ArkUIValue.I((int)visibility));
+
+    /// <summary>可交互（NODE_ENABLED）：false 时节点呈禁用态且不响应触摸</summary>
+    public bool Enabled
+    {
+        set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_ENABLED, ArkUIValue.I(value ? 1 : 0));
+    }
+
     /// <summary>不透明度 0.0~1.0（NODE_OPACITY）——页面切换淡入动画的目标属性</summary>
     public void SetOpacity(float opacity)
     {
         SetNumericAttribute(ArkUI_NodeAttributeType.NODE_OPACITY, ArkUIValue.F(opacity));
     }
+
+    /// <summary>平移偏移（vp，NODE_TRANSLATE：value[0]=x、[1]=y、[2]=z，三值齐发——
+    /// NDK 形状为 ARRAY_OF_3，缺 z 会被参数校验 401 拒绝）</summary>
+    public void SetTranslate(float x, float y)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TRANSLATE,
+            ArkUIValue.F(x), ArkUIValue.F(y), ArkUIValue.F(0));
+
+    /// <summary>缩放比例（NODE_SCALE：value[0]=x、[1]=y，1.0 = 原始尺寸）</summary>
+    public void SetScale(float x, float y)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_SCALE,
+            ArkUIValue.F(x), ArkUIValue.F(y));
+
+    /// <summary>
+    /// 旋转（NODE_ROTATE：轴向量 x/y/z + 角度 + 视距，单次写入单轴语义）。
+    /// MAUI 的 Rotation(X/Y) 三角独立：按非零优先级选主轴（z > x > y）；
+    /// 全零写 z 轴 0 度复位。
+    /// </summary>
+    public void SetRotation(float xAngle, float yAngle, float zAngle)
+    {
+        (float ax, float ay, float az, float angle) =
+            MathF.Abs(zAngle) > 0.001f ? (0, 0, 1, zAngle) :
+            MathF.Abs(xAngle) > 0.001f ? (1, 0, 0, xAngle) :
+            MathF.Abs(yAngle) > 0.001f ? (0, 1, 0, yAngle) :
+            (0, 0, 1, 0);
+        SetNumericAttribute(ArkUI_NodeAttributeType.NODE_ROTATE,
+            ArkUIValue.F(ax), ArkUIValue.F(ay), ArkUIValue.F(az),
+            ArkUIValue.F(angle), ArkUIValue.F(0));
+    }
+
+    /// <summary>变换中心（NODE_TRANSFORM_CENTER）：前 3 值为 vp 绝对坐标、后 3 值为
+    /// 百分比数字（0.5 = 50%）；MAUI AnchorX/Y 为 0~1 分数，走百分比槽位。</summary>
+    public void SetPivot(float x, float y)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TRANSFORM_CENTER,
+            ArkUIValue.F(0), ArkUIValue.F(0), ArkUIValue.F(0),
+            ArkUIValue.F(x), ArkUIValue.F(y), ArkUIValue.F(0));
 
     /// <summary>层级（NODE_Z_INDEX，值大者在上，默认 0）——MAUI IView.ZIndex 的翻译；
     /// 生成器未注册该属性 shape（native-gaps.json），按手写节点层约定补充</summary>
@@ -285,7 +391,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// completed 在动画完成回调（UI 线程）内联执行——用于必须在 UI 线程收尾的导航过渡，
     /// 避免 Task 续体漂移到线程池（宿主未安装 UI 线程 SynchronizationContext）。
     /// </summary>
-    public void Animate(Action updates, Action completed, int durationMs = 250)
+    public void Animate(Action updates, Action? completed, int durationMs = 250)
     {
         ThrowIfDisposed();
         var state = new AnimState { Updates = updates, Completed = completed };
@@ -426,9 +532,10 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     protected void SetStringAttribute(ArkUI_NodeAttributeType attribute, string value)
     {
         ThrowIfDisposed();
-        // 空串时 GetBytes 返回 0 长数组，fixed 得到空指针 → 原生 401；
-        // 必须传 NUL 结尾的空 C 串
-        ReadOnlySpan<byte> utf8 = value.Length == 0 ? [(byte)0] : Encoding.UTF8.GetBytes(value);
+        // 原生侧按 NUL 结尾 C 串读取：GetBytes 不补终止符，长度恰好时会越界读
+        // （短文本侥幸正常、长文本被截断/吃掉）——显式补 0，空串即 "\0"
+        var utf8 = new byte[Encoding.UTF8.GetByteCount(value) + 1];
+        Encoding.UTF8.GetBytes(value.AsSpan(), utf8.AsSpan());
         fixed (byte* p = utf8)
         {
             var item = new ArkUI_AttributeItem { @string = p };
@@ -643,8 +750,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     ~ArkUINodeBase()
     {
         // 终结器路径无法安全触达原生 UI 线程（ArkUI C API 有主线程亲和
-        // 且无安全的跨线程回收通道），节点必须在 UI 线程显式 Dispose；
-        // 此处不做任何处理，泄漏诊断依赖宿主层日志。
+        // 且无安全的跨线程回收通道），节点必须在 UI 线程显式 Dispose。
+        // 此处不做任何处理，也不提供跨作用域的原生句柄诊断。
     }
 
     private void ThrowIfDisposed()

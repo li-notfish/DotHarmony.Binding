@@ -9,14 +9,11 @@
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
 
     <PackageId>HarmonyOS.Interop</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>ArkTsBinding</Authors>
     <Description>Generic Node-API (napi) interop core for HarmonyOS: env injection, value marshaling, callbacks, TSFN, hilog bridge</Description>
-    <PackageTags>harmonyos;napi;interop;dotnet</PackageTags>
+    <PackageTags>napi;interop</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <TrimmerRootAssembly Include="HarmonyOS.Interop" />
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
   </ItemGroup>
 
@@ -28,5 +25,6 @@
     <InternalsVisibleTo Include="HarmonyOS.Essentials" />
     <InternalsVisibleTo Include="HarmonyEngineTests" />
     <InternalsVisibleTo Include="HarmonyGestureTests" />
+    <InternalsVisibleTo Include="app" />
   </ItemGroup>
 </Project>

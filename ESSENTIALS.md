@@ -2,7 +2,8 @@
 
 MAUI Essentials 的鸿蒙平台实现指南。视图 Handler 的适配见 [HANDLERS.md](HANDLERS.md)；
 本文只讲 `Microsoft.Maui.Essentials` / `Microsoft.Maui.Devices` / `Microsoft.Maui.ApplicationModel` /
-`Microsoft.Maui.Storage` 下的平台服务。
+`Microsoft.Maui.Storage` 下的平台服务。当前注入 22 个服务；`IMainThread` 因 MAUI 10.0.11
+缺少注入点而暂缓。
 
 ## 0. 原理（为什么可用）
 
@@ -39,9 +40,9 @@ MAUI 的 Essentials 静态入口（`DeviceInfo.Current` / `Preferences.Default` 
 ### Step 2：确认底层 @ohos 模块
 
 - 生成产物存在：`src/HarmonyOS.Bindings/Api/<Module>.cs`（没有 → 生成器不支持该 d.ts，先补生成器）；
-- **转正状态**：`tools/api-generator/index.ts` 的 `GRAYSCALE_MODULES`。灰度模块生成器会在 csproj 发射
-  `Compile Remove`——**转正必须改这份名单**（源上），手改 csproj 会被下次重生成还原
-  （BundleManager 踩过：`610dfa0`）；
+- **转正状态**：当前 `GRAYSCALE_MODULES` 为空，`--all` 生成后 `Api/*.cs` 438/438 全量参与编译。
+  生成器仍保留回灰机制：若某个新 SDK 产物暂不可编译，才把它加入该名单，让 csproj 发射
+  `Compile Remove`；不要手改 csproj，下次重生成会还原（BundleManager 踩过：`610dfa0`）；
 - 宿主登记：`ohosImports.ets` 由生成器自动维护，无需手改；
 - 系统能力需要 ability 上下文的（权限弹窗、窗口、startAbility 类）：宿主模板
   `EntryAbility.ets` 已导出 `globalThis.abilityContext`，C# 侧
@@ -118,7 +119,10 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | IPhoneDialer | SetDefault | startAbility({uri:'tel:'+number})；IsSupported 经 sim.getSimStateSync（卡槽 0，无 SIM = 不支持） | ✅ 2026-09-13 |
 | IShare | SetDefault | 文本经 startAbility({action:'ohos.want.action.sendData', type:'text/plain', parameters:{text}})；**文件分享需跨应用 URI 授权通道（ability.params.stream），抛 FeatureNotSupportedException 留待立项** | ✅ 2026-09-13（文本） |
 | IEmail | SetDefault | mailto: URI（to/cc/bcc/subject/body 编码进 query）+ startAbility；IsComposeSupported 尽力 true（mailto 由系统路由） | ✅ 2026-09-13 |
+| IAccelerometer / IMagnetometer / IGyroscope / ICompass / IOrientationSensor | SetDefault | @ohos.sensor on/off；SensorSpeed → interval 阶梯；Compass 走 Orientation，OrientationSensor 走 RotationVector；Accelerometer.ShakeDetected 仅声明事件，阈值状态机待补 | ✅ 已实现（专项设备验证待补） |
+| IGeolocation | SetDefault | @ohos.geoLocationManager：GetLastKnownLocation / getCurrentLocation + locationChange/locationError 事件；Cancellation 只取消托管等待（OHOS 当前定位无取消通道） | ✅ 已实现（专项设备验证待补） |
+| IMediaPicker | SetDefault | @ohos.file.picker（选图/选视频，支持多选）+ @ohos.multimedia.camera.picker（拍照/录像）；结果复制到 cache，失败时回退原 URI | ✅ 已实现（专项设备验证待补） |
 | ITextToSpeech / IHapticFeedback / IFlashlight | SetDefault | textToSpeech / vibrator / brightness | 远期 |
-| IGeolocation / IMap / ISensors 族 / IMediaPicker / IFilePicker / IScreenshot | SetDefault | 各自子系统 | 远期 |
+| IMap / IFilePicker / IScreenshot | SetDefault | 各自子系统 | 远期 |
 
 已实现服务的成员级缺口（非阻塞、按价值补）：~~AppInfo.RequestedTheme/ShowSettingsUI~~（✅ 2026-09-13）、~~DeviceDisplay.KeepScreenOn~~（✅ 2026-09-13）、~~IShare 文件分享~~（需跨应用 URI 授权，见上表）、DeviceInfo.Idiom 平板判定。

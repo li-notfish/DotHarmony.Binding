@@ -1,0 +1,55 @@
+name: CI
+
+# arkui_bindgen check is intentionally local-only because it requires the
+# OpenHarmony SDK headers. Cloud CI only covers the minimal build and patch gate.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  minimal:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build minimal arm64 NativeAOT sample
+        shell: pwsh
+        run: |
+          dotnet publish samples/dotnet/HelloApp/HelloApp.csproj `
+            -c Release `
+            -r linux-musl-arm64 `
+            -o artifacts/harmony-arm64 `
+            -p:MSBuildEnableWorkloadResolver=false
+
+      - name: Apply and verify NativeAOT patch
+        shell: pwsh
+        run: |
+          ./scripts/patch-openharmony-nativeaot.ps1 `
+            -Path artifacts/harmony-arm64/app.so `
+            -NoBackup
+          ./scripts/patch-openharmony-nativeaot.ps1 `
+            -Path artifacts/harmony-arm64/app.so `
+            -CheckOnly
+
+      - name: Check generated permissions
+        shell: pwsh
+        run: dotnet build samples/dotnet/EssentialsApp/EssentialsApp.csproj -t:HarmonyPermissionCheck -c Release
+
+      - name: Handler coverage audit
+        shell: pwsh
+        run: |
+          dotnet run --project tools/HandlerAudit --selftest
+          dotnet run --project tools/HandlerAudit
+
+      - name: Upload permission report
+        uses: actions/upload-artifact@v4
+        with:
+          name: harmony-permission-report
+          path: samples/dotnet/EssentialsApp/obj/harmony/permissions.report.md

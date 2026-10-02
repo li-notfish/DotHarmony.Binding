@@ -11,7 +11,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>MAUI Layout 的 HarmonyOS Handler（ArkUI Column/Row 托管布局）。</summary>
 public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
 {
-    public static PropertyMapper<MLAYOUT, HarmonyLayoutHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<MLAYOUT, HarmonyLayoutHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(MLAYOUT.Background)] = MapBackground,
         [nameof(MLAYOUT.Padding)] = MapPadding,
@@ -32,11 +32,20 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
 
     protected override ArkUINode CreatePlatformView()
     {
-        // StackLayout 按 Orientation 选择 ArkUI 容器；其余布局默认 Column
-        if (VirtualView is StackLayout sl && sl.Orientation == StackOrientation.Horizontal)
+        // StackLayout 按 Orientation 选择 ArkUI 容器；其余布局默认 Column。
+        // 注意 HorizontalStackLayout 继承自 StackBase 而非 StackLayout，必须合并判断
+        if (IsHorizontalStack(VirtualView))
             return new HarmonyOS.ArkUI.Row();
         return new HarmonyOS.ArkUI.Column();
     }
+
+    /// <summary>判定虚拟视图是否为水平栈（StackLayout{Horizontal} / HorizontalStackLayout 都合法）</summary>
+    internal static bool IsHorizontalStack(object? view)
+        => view is Microsoft.Maui.Controls.HorizontalStackLayout
+           || (view is Microsoft.Maui.Controls.StackLayout sl && sl.Orientation == StackOrientation.Horizontal);
+
+    /// <summary>判定是否为任意栈式布局（StackBase 覆盖 Stack/HStack/VStack）</summary>
+    internal static bool IsAnyStack(object? view) => view is Microsoft.Maui.Controls.StackBase;
 
     protected override void ConnectHandler(ArkUINode platformView)
     {
@@ -90,8 +99,8 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
     {
         if (args is LayoutHandlerUpdate u)
         {
-            if (h._children.TryGetValue(u.View, out var old) && old.PlatformView is ArkUINode oldNode)
-                h.PlatformView.RemoveChild(oldNode);
+            if (h._children.Remove(u.View, out var old))
+                HarmonyViewHandler<MLAYOUT, ArkUINode>.DisposeContent(old, h.PlatformView);
             h.AttachChild(u.View);
         }
     }
@@ -103,7 +112,7 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
             && h._children.TryGetValue(u.View, out var ch)
             && ch.PlatformView is ArkUINode node)
         {
-            node.SetZIndex(u.View.ZIndex);
+            node.SetZIndex(ZIndexOrder.EffectiveZ(u.View));
         }
     }
 
@@ -111,12 +120,11 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
     {
         if (_children.ContainsKey(view)) return;
         var handler = HarmonyHandlerFactory.Create(view);
-        handler.SetVirtualView(view);
         if (handler.PlatformView is ArkUINode node)
         {
             // MAUI 显式 WidthRequest/HeightRequest 优先（vp）；view.Width/Height 是布局后的
             // 实测值（未布局时为 -1），不能用来判断显式尺寸
-            bool isHorizontalStack = VirtualView is StackLayout { Orientation: StackOrientation.Horizontal };
+            bool isHorizontalStack = IsHorizontalStack(VirtualView);
             if (view is VisualElement ve && ve.WidthRequest >= 0)
             {
                 node.SetWidth((float)ve.WidthRequest);
@@ -174,7 +182,7 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
             var margin = view.Margin;
             float mTop = (float)margin.Top, mRight = (float)margin.Right,
                   mBottom = (float)margin.Bottom, mLeft = (float)margin.Left;
-            if (VirtualView is StackLayout sl && sl.Spacing > 0)
+            if (VirtualView is Microsoft.Maui.Controls.StackBase sl && sl.Spacing > 0)
             {
                 if (isHorizontalStack) mRight += (float)sl.Spacing;
                 else mBottom += (float)sl.Spacing;
@@ -183,19 +191,24 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
                 node.SetMarginEdges(mTop, mRight, mBottom, mLeft);
 
             PlatformView.AddChild(node);
-            node.SetZIndex(view.ZIndex);
+            // 中部插入时 z 编码随兄弟数变化：全体兄弟按声明序重写；
+            // 非布局父容器（返回 false）按单节点落值
+            if (!ZIndexOrder.TryRewriteSiblings(view))
+                node.SetZIndex(ZIndexOrder.EffectiveZ(view));
             _children[view] = handler;
         }
     }
 
     private void DetachChild(IView view)
     {
-        if (_children.Remove(view, out var handler) && handler.PlatformView is ArkUINode node)
-            PlatformView.RemoveChild(node);
+        if (_children.Remove(view, out var handler))
+            DisposeContent(handler, PlatformView);
     }
 
     private void ClearChildren()
     {
+        foreach (var handler in _children.Values)
+            DisposeContent(handler, PlatformView);
         PlatformView.RemoveAllChildren();
         _children.Clear();
     }

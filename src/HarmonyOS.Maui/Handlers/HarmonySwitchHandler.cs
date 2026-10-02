@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui;
+using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
 using ArkSwitch = HarmonyOS.ArkUI.Toggle;
@@ -7,9 +7,11 @@ namespace HarmonyOS.Maui.Handlers;
 
 public class HarmonySwitchHandler : HarmonyViewHandler<ISwitch, ArkSwitch>, ISwitchHandler
 {
-    public static PropertyMapper<ISwitch, ISwitchHandler> Mapper = new(ViewMapper)
+    public static PropertyMapper<ISwitch, ISwitchHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(ISwitch.IsOn)] = MapIsOn,
+        [nameof(Microsoft.Maui.Controls.Switch.OnColor)] = MapOnColor,
+        [nameof(Microsoft.Maui.Controls.Switch.ThumbColor)] = MapThumbColor,
     };
 
     public HarmonySwitchHandler() : base(Mapper) { }
@@ -39,6 +41,20 @@ public class HarmonySwitchHandler : HarmonyViewHandler<ISwitch, ArkSwitch>, ISwi
     {
         if (handler is HarmonySwitchHandler h)
             h.PlatformView.IsOn = view.IsOn;
+    }
+
+    public static void MapOnColor(ISwitchHandler handler, ISwitch view)
+    {
+        // Toggle.SetSelectedColor = 开态轨道色
+        if (handler is HarmonySwitchHandler h && view is Microsoft.Maui.Controls.Switch { OnColor: { } c })
+            h.PlatformView.SetSelectedColor(
+                (byte)(c.Red * 255), (byte)(c.Green * 255), (byte)(c.Blue * 255), (byte)(c.Alpha * 255));
+    }
+
+    public static void MapThumbColor(ISwitchHandler handler, ISwitch view)
+    {
+        if (handler is HarmonySwitchHandler h && view is Microsoft.Maui.Controls.Switch { ThumbColor: { } c })
+            h.PlatformView.SetSwitchPointColor(c.ToUint());
     }
 
     private void OnToggleChanged(ArkUINodeEvent e)

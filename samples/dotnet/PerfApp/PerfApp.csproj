@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <TrimMode>full</TrimMode>
+    <IlcGenerateStackTraceData Condition="'$(Configuration)' == 'Debug'">true</IlcGenerateStackTraceData>
+
+    <OutputType>Library</OutputType>
+    <AssemblyName>app</AssemblyName>
+    <NoWarn>$(NoWarn);CA2255</NoWarn>
+    <EnableDefaultMauiItems>false</EnableDefaultMauiItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)../../../src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets" />
+
+</Project>

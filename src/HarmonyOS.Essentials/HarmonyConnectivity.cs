@@ -8,6 +8,7 @@ using Microsoft.Maui.Networking;
 using HarmonyOS.Interop;
 using HNetConn = HarmonyOS.Bindings.Api.Net.Connection;
 using HNetConnectionObject = HarmonyOS.Bindings.Api.Net.NetConnection;
+using HNetHandle = HarmonyOS.Bindings.Api.Net.NetHandle;
 using HNetCapabilities = HarmonyOS.Bindings.Api.Net.NetCapabilities;
 using HNetCap = HarmonyOS.ArkUI.NetCap;
 using HNetBear = HarmonyOS.ArkUI.NetBearType;
@@ -54,6 +55,7 @@ public class HarmonyConnectivity : IConnectivity
 
     event EventHandler<ConnectivityChangedEventArgs>? _changed;
     HNetConnectionObject? _watch;
+    readonly object _eventGate = new();
 
     // 去重缓存：netAvailable/netLost/netConnectionChange 回调内重读属性，仅变化时才触发
     NetworkAccess _lastAccess;
@@ -63,16 +65,22 @@ public class HarmonyConnectivity : IConnectivity
     {
         add
         {
-            bool first = _changed is null;
-            _changed += value;
-            if (first)
-                StartWatcher();
+            lock (_eventGate)
+            {
+                bool first = _changed is null;
+                _changed += value;
+                if (first)
+                    StartWatcher();
+            }
         }
         remove
         {
-            _changed -= value;
-            if (_changed is null)
-                StopWatcher();
+            lock (_eventGate)
+            {
+                _changed -= value;
+                if (_changed is null)
+                    StopWatcher();
+            }
         }
     }
 
@@ -80,12 +88,12 @@ public class HarmonyConnectivity : IConnectivity
     {
         try
         {
-            // 无 specifier 的默认连接监听：三个事件通道都带单参（不解析，属性即真相）
+            // 无 specifier 的默认连接监听：事件访问器保证 on/off 使用同一 registry key。
             var watch = HNetConn.CreateNetConnection();
-            watch.On("netAvailable", new Action<IntPtr>(_ => OnNetChanged()));
-            watch.On("netLost", new Action<IntPtr>(_ => OnNetChanged()));
-            watch.On("netConnectionChange", new Action<IntPtr>(_ => OnNetChanged()));
-            _ = watch.RegisterAsync();
+            watch.NetAvailable += OnNetAvailable;
+            watch.NetLost += OnNetLost;
+            watch.NetConnectionPropertiesChange += OnNetConnectionPropertiesChange;
+            _ = ObserveWatcherTask(watch.RegisterAsync(), "register");
             _watch = watch;
             _lastAccess = NetworkAccess;
             _lastProfiles = new List<ConnectionProfile>(ConnectionProfiles);
@@ -100,8 +108,30 @@ public class HarmonyConnectivity : IConnectivity
     {
         if (_watch is not null)
         {
-            _ = _watch.UnregisterAsync();
+            _watch.NetAvailable -= OnNetAvailable;
+            _watch.NetLost -= OnNetLost;
+            _watch.NetConnectionPropertiesChange -= OnNetConnectionPropertiesChange;
+            _ = ObserveWatcherTask(_watch.UnregisterAsync(), "unregister");
             _watch = null;
+        }
+    }
+
+    private void OnNetAvailable(HNetHandle _) => OnNetChanged();
+
+    private void OnNetLost(HNetHandle _) => OnNetChanged();
+
+    private void OnNetConnectionPropertiesChange(IntPtr _) => OnNetChanged();
+
+    private static async Task ObserveWatcherTask(Task operation, string operationName)
+    {
+        try
+        {
+            await operation.ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            HiLog.Warn("Essentials",
+                $"[connectivity] {operationName} failed: {ex.GetType().Name}: {ex.Message}");
         }
     }
 
