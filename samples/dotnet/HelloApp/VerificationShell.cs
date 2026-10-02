@@ -272,6 +272,15 @@ public class GridProbePage : ContentPage
         back.Clicked += async (_, _) => await HarmonyShellNavigation.GoToAsync(AppShell.Instance!, "..");
         root.Children.Add(back);
 
+        // MCT 平台无关组件验证：InvertedBoolConverter（纯托管 IValueConverter，无需注册）
+        var toggle = new Microsoft.Maui.Controls.Switch { IsToggled = true };
+        var dependent = new Label { Text = "MCT InvertedBoolConverter: visible when OFF" };
+        dependent.SetBinding(VisualElement.IsVisibleProperty, new Microsoft.Maui.Controls.Binding(
+            nameof(Switch.IsToggled), source: toggle,
+            converter: new CommunityToolkit.Maui.Converters.InvertedBoolConverter()));
+        root.Children.Add(toggle);
+        root.Children.Add(dependent);
+
         Content = root;
     }
 }

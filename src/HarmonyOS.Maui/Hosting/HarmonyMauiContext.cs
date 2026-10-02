@@ -46,33 +46,48 @@ public sealed class HarmonyTicker : ITicker
 }
 
 /// <summary>鸿蒙宿主的 MauiContext（动画服务等托管服务的解析口）。</summary>
-public sealed class HarmonyMauiContext : MauiContext
-{
-    public static readonly HarmonyMauiContext Shared = new();
+    public sealed class HarmonyMauiContext : MauiContext
+    {
+        private static readonly HarmonyServices ServiceStore = new();
 
-    private HarmonyMauiContext() : base(new HarmonyServices()) { }
+        public static readonly HarmonyMauiContext Shared = new();
+
+        private HarmonyMauiContext() : base(ServiceStore) { }
 
     /// <summary>
     /// 注册托管服务（第三方库/应用扩展点：鸿蒙宿主无 UseMauiApp 的 IServiceCollection，
     /// 此为最小等价物）。同类型后注册覆盖先注册；AnimationManager 为内置服务不可覆盖。
     /// </summary>
-    public static void RegisterService<T>(T instance) where T : notnull
-    {
-        ArgumentNullException.ThrowIfNull(instance);
-        ((HarmonyServices)Shared.Services).Register(typeof(T), instance);
-    }
+        public static void RegisterService<T>(T instance) where T : notnull
+        {
+            ArgumentNullException.ThrowIfNull(instance);
+            ServiceStore.Register(typeof(T), instance);
+        }
+
+    /// <summary>
+    /// 接入应用级 DI 容器（HarmonyMauiAppBuilder.Build 的产物）：解析顺序
+    /// 内置 AnimationManager → RegisterService 注册表 → 本容器。可多次调用，后者覆盖前者。
+    /// </summary>
+        public static void RegisterServiceProvider(IServiceProvider provider)
+        {
+            ArgumentNullException.ThrowIfNull(provider);
+            ServiceStore.ChainProvider(provider);
+        }
 
     private sealed class HarmonyServices : IServiceProvider
     {
         private AnimationManager? _animations;
         private readonly System.Collections.Generic.Dictionary<Type, object> _services = new();
         private readonly object _lock = new();
+        private volatile IServiceProvider? _chained;
 
         public void Register(Type serviceType, object instance)
         {
             lock (_lock)
                 _services[serviceType] = instance;
         }
+
+        public void ChainProvider(IServiceProvider provider) => _chained = provider;
 
         public object? GetService(Type serviceType)
         {
@@ -83,7 +98,7 @@ public sealed class HarmonyMauiContext : MauiContext
                 if (_services.TryGetValue(serviceType, out var service))
                     return service;
             }
-            return null;
+            return _chained?.GetService(serviceType);
         }
     }
 }

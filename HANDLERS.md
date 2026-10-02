@@ -194,6 +194,27 @@ HarmonyHandlerFactory.Register<MyCustomView>(() => new MyCustomViewHandler());
 HarmonyMauiContext.RegisterService<IMyService>(new MyService());
 ```
 
+**C. 最小 UseMauiApp 等价引导（HarmonyMauiAppBuilder）**：API 形状对齐 MAUI 模板——
+`ConfigureMauiHandlers`（`AddHandler<TView, THandler>`，落到上面的开放注册表）+ `ConfigureServices`
+（标准 `IServiceCollection`，Build 后作为 `HarmonyMauiContext` 链式解析末段：
+内置 AnimationManager → RegisterService 注册表 → DI 容器）：
+
+```csharp
+var builder = HarmonyMauiAppBuilder.CreateBuilder();
+builder.ConfigureMauiHandlers(handlers => handlers.AddHandler<MyView, MyHandler>());
+builder.ConfigureServices(services => services.AddSingleton<IMyService, MyService>());
+builder.Build();
+MauiHarmonyHost.RunApplication(() => new App());
+```
+
+**CommunityToolkit 兼容性**（实测 CommunityToolkit.Maui 15.0.1，net10.0 + NativeAOT）：
+平台无关组件（Converters / Behaviors / `CommunityToolkit.Mvvm`）开箱即用，无需任何注册
+（见 HelloApp GridProbe 页的 `InvertedBoolConverter` 实机验证）；带平台 Handler 的控件
+（DrawingView/Popup/CameraView/MediaElement 等）在 net10.0 基础包中只有 stub，
+会抛 `PlatformNotSupportedException`——需按本指南 B/C 路径逐个编写鸿蒙 Handler 后才可用。
+MCT 的 `UseMauiCommunityToolkit()` 扩展绑定 `MauiAppBuilder` 类型，不能直接用于
+`HarmonyMauiAppBuilder`；其内部注册逻辑可手工展开为 `ConfigureMauiHandlers` 委托。
+
 ### Step 4：属性映射核对清单
 
 > **基座收口（HarmonyViewMapper.Base）**：所有 Handler 的 `Mapper` 一律 `new(HarmonyViewMapper.Base)`，

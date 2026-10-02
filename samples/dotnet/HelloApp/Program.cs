@@ -16,5 +16,19 @@ public static class Program
     /// <summary>双入口开关：true = AppShell；false = NavigationPage。</summary>
     internal static bool UseShell = true;
 
-    public static void Register() => MauiHarmonyHost.RunApplication(() => new VerificationApp());
+    public static void Register()
+    {
+        // 最小 UseMauiApp 等价引导：自定义 Handler / 应用服务在此注册
+        var builder = HarmonyMauiAppBuilder.CreateBuilder();
+        builder.ConfigureMauiHandlers(handlers =>
+        {
+            // handlers.AddHandler<MyView, MyHandler>();
+        });
+        builder.ConfigureServices(services =>
+        {
+            // services.AddSingleton<IMyService, MyService>();
+        });
+        builder.Build();
+        MauiHarmonyHost.RunApplication(() => new VerificationApp());
+    }
 }

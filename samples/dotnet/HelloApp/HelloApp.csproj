@@ -35,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
     <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
+    <PackageReference Include="CommunityToolkit.Maui" />
   </ItemGroup>
 
   <!-- HarmonyStageResources 验证：MauiImage 按逻辑名暂存到宿主 HAP rawfile/maui/，
