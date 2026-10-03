@@ -106,7 +106,7 @@ public static unsafe partial class HiTraceMeter
     /// </summary>
     public static void StartSyncTrace(global::HarmonyOS.ArkUI.HiTraceOutputLevel level, string name, string? customArgs = null)
     {
-        NodeApi.CallMethodVoid(Module, _startSyncTrace, level, name, customArgs);
+        NodeApi.CallMethodVoid(Module, _startSyncTrace, (int)level, name, customArgs);
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public static unsafe partial class HiTraceMeter
     /// </summary>
     public static void FinishSyncTrace(global::HarmonyOS.ArkUI.HiTraceOutputLevel level)
     {
-        NodeApi.CallMethodVoid(Module, _finishSyncTrace, level);
+        NodeApi.CallMethodVoid(Module, _finishSyncTrace, (int)level);
     }
 
     /// <summary>
@@ -122,7 +122,7 @@ public static unsafe partial class HiTraceMeter
     /// </summary>
     public static void StartAsyncTrace(global::HarmonyOS.ArkUI.HiTraceOutputLevel level, string name, double taskId, string customCategory, string? customArgs = null)
     {
-        NodeApi.CallMethodVoid(Module, _startAsyncTrace, level, name, taskId, customCategory, customArgs);
+        NodeApi.CallMethodVoid(Module, _startAsyncTrace, (int)level, name, taskId, customCategory, customArgs);
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ public static unsafe partial class HiTraceMeter
     /// </summary>
     public static void FinishAsyncTrace(global::HarmonyOS.ArkUI.HiTraceOutputLevel level, string name, double taskId)
     {
-        NodeApi.CallMethodVoid(Module, _finishAsyncTrace, level, name, taskId);
+        NodeApi.CallMethodVoid(Module, _finishAsyncTrace, (int)level, name, taskId);
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public static unsafe partial class HiTraceMeter
     /// </summary>
     public static void TraceByValue(global::HarmonyOS.ArkUI.HiTraceOutputLevel level, string name, double count)
     {
-        NodeApi.CallMethodVoid(Module, _traceByValue, level, name, count);
+        NodeApi.CallMethodVoid(Module, _traceByValue, (int)level, name, count);
     }
 
     /// <summary>

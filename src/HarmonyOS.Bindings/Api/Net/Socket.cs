@@ -2475,27 +2475,27 @@ public sealed partial class UDPExtraOptions : JsObject
     /// <summary>
     /// receiveBufferSize
     /// </summary>
-    public double? ReceiveBufferSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_receiveBufferSize));
+    public double? ReceiveBufferSize => NativeValue.IsNullOrUndefined(GetPropertyRaw(_receiveBufferSize)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_receiveBufferSize));
 
     /// <summary>
     /// sendBufferSize
     /// </summary>
-    public double? SendBufferSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_sendBufferSize));
+    public double? SendBufferSize => NativeValue.IsNullOrUndefined(GetPropertyRaw(_sendBufferSize)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_sendBufferSize));
 
     /// <summary>
     /// reuseAddress
     /// </summary>
-    public bool? ReuseAddress => (bool?)NativeValue.ToBool(GetPropertyRaw(_reuseAddress));
+    public bool? ReuseAddress => NativeValue.IsNullOrUndefined(GetPropertyRaw(_reuseAddress)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_reuseAddress));
 
     /// <summary>
     /// socketTimeout
     /// </summary>
-    public double? SocketTimeout => (double?)NativeValue.ToDouble(GetPropertyRaw(_socketTimeout));
+    public double? SocketTimeout => NativeValue.IsNullOrUndefined(GetPropertyRaw(_socketTimeout)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_socketTimeout));
 
     /// <summary>
     /// broadcast
     /// </summary>
-    public bool? Broadcast => (bool?)NativeValue.ToBool(GetPropertyRaw(_broadcast));
+    public bool? Broadcast => NativeValue.IsNullOrUndefined(GetPropertyRaw(_broadcast)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_broadcast));
 
 }
 
@@ -2516,7 +2516,7 @@ public sealed partial class TCPSendOptions : JsObject
     /// <summary>
     /// encoding
     /// </summary>
-    public string? Encoding => (string?)NativeValue.ToString(GetPropertyRaw(_encoding)) ?? string.Empty;
+    public string? Encoding => NativeValue.IsNullOrUndefined(GetPropertyRaw(_encoding)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_encoding));
 
 }
 
@@ -2552,7 +2552,7 @@ public sealed partial class LocalConnectOptions : JsObject
     /// <summary>
     /// timeout
     /// </summary>
-    public double? Timeout => (double?)NativeValue.ToDouble(GetPropertyRaw(_timeout));
+    public double? Timeout => NativeValue.IsNullOrUndefined(GetPropertyRaw(_timeout)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_timeout));
 
 }
 
@@ -2573,7 +2573,7 @@ public sealed partial class LocalSendOptions : JsObject
     /// <summary>
     /// encoding
     /// </summary>
-    public string? Encoding => (string?)NativeValue.ToString(GetPropertyRaw(_encoding)) ?? string.Empty;
+    public string? Encoding => NativeValue.IsNullOrUndefined(GetPropertyRaw(_encoding)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_encoding));
 
 }
 
@@ -2591,22 +2591,22 @@ public sealed partial class ExtraOptionsBase : JsObject
     /// <summary>
     /// receiveBufferSize
     /// </summary>
-    public double? ReceiveBufferSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_receiveBufferSize));
+    public double? ReceiveBufferSize => NativeValue.IsNullOrUndefined(GetPropertyRaw(_receiveBufferSize)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_receiveBufferSize));
 
     /// <summary>
     /// sendBufferSize
     /// </summary>
-    public double? SendBufferSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_sendBufferSize));
+    public double? SendBufferSize => NativeValue.IsNullOrUndefined(GetPropertyRaw(_sendBufferSize)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_sendBufferSize));
 
     /// <summary>
     /// reuseAddress
     /// </summary>
-    public bool? ReuseAddress => (bool?)NativeValue.ToBool(GetPropertyRaw(_reuseAddress));
+    public bool? ReuseAddress => NativeValue.IsNullOrUndefined(GetPropertyRaw(_reuseAddress)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_reuseAddress));
 
     /// <summary>
     /// socketTimeout
     /// </summary>
-    public double? SocketTimeout => (double?)NativeValue.ToDouble(GetPropertyRaw(_socketTimeout));
+    public double? SocketTimeout => NativeValue.IsNullOrUndefined(GetPropertyRaw(_socketTimeout)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_socketTimeout));
 
 }
 

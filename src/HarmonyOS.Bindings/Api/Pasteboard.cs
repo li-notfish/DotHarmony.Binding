@@ -152,7 +152,7 @@ public static unsafe partial class Pasteboard
     /// </summary>
     public static PasteData CreateData(string mimeType, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return NodeApi.CallMethod(Module, _createData, static h => new PasteData(h), mimeType, value);
+        return NodeApi.CallMethod(Module, _createData, static h => new PasteData(h), mimeType, (int)value);
     }
 
     /// <summary>
@@ -200,7 +200,7 @@ public static unsafe partial class Pasteboard
     /// </summary>
     public static PasteDataRecord CreateRecord(string mimeType, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return NodeApi.CallMethod(Module, _createRecord, static h => new PasteDataRecord(h), mimeType, value);
+        return NodeApi.CallMethod(Module, _createRecord, static h => new PasteDataRecord(h), mimeType, (int)value);
     }
 
     /// <summary>
@@ -291,7 +291,7 @@ public sealed partial class PasteData : JsObject
     /// </summary>
     public void AddRecord(string mimeType, global::HarmonyOS.ArkUI.ValueType value)
     {
-        CallMethodVoid(_addRecord, mimeType, value);
+        CallMethodVoid(_addRecord, mimeType, (int)value);
     }
 
     /// <summary>
@@ -539,7 +539,7 @@ public sealed partial class PasteDataRecord : JsObject
     /// </summary>
     public void AddEntry(string type, global::HarmonyOS.ArkUI.ValueType value)
     {
-        CallMethodVoid(_addEntry, type, value);
+        CallMethodVoid(_addEntry, type, (int)value);
     }
 
     /// <summary>
@@ -794,7 +794,7 @@ public sealed partial class SystemPasteboard : JsObject
     /// </summary>
     public void SetAppShareOptions(global::HarmonyOS.ArkUI.ShareOption shareOptions)
     {
-        CallMethodVoid(_setAppShareOptions, shareOptions);
+        CallMethodVoid(_setAppShareOptions, (int)shareOptions);
     }
 
     /// <summary>

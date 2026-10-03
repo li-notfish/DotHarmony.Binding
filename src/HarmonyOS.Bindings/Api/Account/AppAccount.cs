@@ -766,7 +766,7 @@ public sealed partial class AuthTokenInfo : JsObject
     /// <summary>
     /// account
     /// </summary>
-    public AppAccountInfo? Account => GetPropertyRaw(_account) == IntPtr.Zero ? null : new AppAccountInfo(GetPropertyRaw(_account));
+    public AppAccountInfo? Account => NativeValue.IsNullOrUndefined(GetPropertyRaw(_account)) ? null : new AppAccountInfo(GetPropertyRaw(_account));
 
 }
 

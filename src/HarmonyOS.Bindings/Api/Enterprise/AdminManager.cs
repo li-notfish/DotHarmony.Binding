@@ -140,7 +140,7 @@ public static unsafe partial class AdminManager
     /// </summary>
     public static void StartAdminProvision(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.AdminType type, IntPtr context, IntPtr parameters)
     {
-        NodeApi.CallMethodVoid(Module, _startAdminProvision, NapiArg.Of(admin), type, context, parameters);
+        NodeApi.CallMethodVoid(Module, _startAdminProvision, NapiArg.Of(admin), (int)type, context, parameters);
     }
 
     /// <summary>

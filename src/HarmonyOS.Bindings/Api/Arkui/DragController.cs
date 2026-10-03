@@ -199,7 +199,7 @@ public sealed partial class DragPreview : JsObject
     /// </summary>
     public void Animate(IntPtr options, global::HarmonyOS.ArkUI.Action handler)
     {
-        CallMethodVoid(_animate, options, handler);
+        CallMethodVoid(_animate, options, (int)handler);
     }
 
 }

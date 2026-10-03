@@ -1426,27 +1426,27 @@ public sealed partial class UIElementInfo : JsObject
     /// <summary>
     /// windowChangeType
     /// </summary>
-    public global::HarmonyOS.ArkUI.WindowChangeType? WindowChangeType => (global::HarmonyOS.ArkUI.WindowChangeType?)(global::HarmonyOS.ArkUI.WindowChangeType)NativeValue.ToInt(GetPropertyRaw(_windowChangeType));
+    public global::HarmonyOS.ArkUI.WindowChangeType? WindowChangeType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_windowChangeType)) ? null : (global::HarmonyOS.ArkUI.WindowChangeType?)(global::HarmonyOS.ArkUI.WindowChangeType)NativeValue.ToInt(GetPropertyRaw(_windowChangeType));
 
     /// <summary>
     /// componentEventType
     /// </summary>
-    public global::HarmonyOS.ArkUI.ComponentEventType? ComponentEventType => (global::HarmonyOS.ArkUI.ComponentEventType?)(global::HarmonyOS.ArkUI.ComponentEventType)NativeValue.ToInt(GetPropertyRaw(_componentEventType));
+    public global::HarmonyOS.ArkUI.ComponentEventType? ComponentEventType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_componentEventType)) ? null : (global::HarmonyOS.ArkUI.ComponentEventType?)(global::HarmonyOS.ArkUI.ComponentEventType)NativeValue.ToInt(GetPropertyRaw(_componentEventType));
 
     /// <summary>
     /// windowId
     /// </summary>
-    public double? WindowId => (double?)NativeValue.ToDouble(GetPropertyRaw(_windowId));
+    public double? WindowId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_windowId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_windowId));
 
     /// <summary>
     /// componentId
     /// </summary>
-    public string? ComponentId => (string?)NativeValue.ToString(GetPropertyRaw(_componentId)) ?? string.Empty;
+    public string? ComponentId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_componentId)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_componentId));
 
     /// <summary>
     /// componentRect
     /// </summary>
-    public Rect? ComponentRect => GetPropertyRaw(_componentRect) == IntPtr.Zero ? null : new Rect(GetPropertyRaw(_componentRect));
+    public Rect? ComponentRect => NativeValue.IsNullOrUndefined(GetPropertyRaw(_componentRect)) ? null : new Rect(GetPropertyRaw(_componentRect));
 
 }
 
@@ -1485,6 +1485,6 @@ public sealed partial class Rect : JsObject
     /// <summary>
     /// displayId
     /// </summary>
-    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+    public double? DisplayId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_displayId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
 
 }

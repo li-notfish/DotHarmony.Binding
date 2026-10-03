@@ -84,7 +84,7 @@ public static unsafe partial class Curves
     /// </summary>
     public static ICurve InitCurve(global::HarmonyOS.ArkUI.Curve? curve = null)
     {
-        return NodeApi.CallMethod(Module, _initCurve, static h => new ICurve(h), curve);
+        return NodeApi.CallMethod(Module, _initCurve, static h => new ICurve(h), NapiArg.Of(curve));
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static unsafe partial class Curves
     /// </summary>
     public static string Init(global::HarmonyOS.ArkUI.Curve? curve = null)
     {
-        return NodeApi.CallMethod<string>(Module, _init, curve);
+        return NodeApi.CallMethod<string>(Module, _init, NapiArg.Of(curve));
     }
 
     /// <summary>

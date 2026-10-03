@@ -93,7 +93,7 @@ public static unsafe partial class Vibrator
     /// </summary>
     public static Task VibrateAsync(global::HarmonyOS.ArkUI.EffectId effectId)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _vibrate, effectId);
+        return NodeApi.CallMethodAsyncVoid(Module, _vibrate, (int)effectId);
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public static unsafe partial class Vibrator
     /// </summary>
     public static Task StopVibrationAsync(global::HarmonyOS.ArkUI.VibratorStopMode stopMode)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, stopMode);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, (int)stopMode);
     }
 
     /// <summary>
@@ -165,7 +165,7 @@ public static unsafe partial class Vibrator
     /// </summary>
     public static Task StopAsync(global::HarmonyOS.ArkUI.VibratorStopMode stopMode)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stop, stopMode);
+        return NodeApi.CallMethodAsyncVoid(Module, _stop, (int)stopMode);
     }
 
     /// <summary>

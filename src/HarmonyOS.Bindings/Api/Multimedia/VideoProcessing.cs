@@ -125,7 +125,7 @@ public sealed partial class VideoProcessorStatus : JsObject
     /// <summary>
     /// aiHdr
     /// </summary>
-    public VideoProcessorAiHdrStatus? AIHdr => GetPropertyRaw(_aiHdr) == IntPtr.Zero ? null : new VideoProcessorAiHdrStatus(GetPropertyRaw(_aiHdr));
+    public VideoProcessorAiHdrStatus? AIHdr => NativeValue.IsNullOrUndefined(GetPropertyRaw(_aiHdr)) ? null : new VideoProcessorAiHdrStatus(GetPropertyRaw(_aiHdr));
 
 }
 
@@ -140,6 +140,6 @@ public sealed partial class VideoProcessorAiHdrStatus : JsObject
     /// <summary>
     /// enabled
     /// </summary>
-    public bool? Enabled => (bool?)NativeValue.ToBool(GetPropertyRaw(_enabled));
+    public bool? Enabled => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enabled)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enabled));
 
 }

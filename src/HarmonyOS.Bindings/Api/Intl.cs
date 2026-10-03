@@ -435,97 +435,97 @@ public sealed partial class DateTimeOptions : JsObject
     /// <summary>
     /// locale
     /// </summary>
-    public string? Locale => (string?)NativeValue.ToString(GetPropertyRaw(_locale)) ?? string.Empty;
+    public string? Locale => NativeValue.IsNullOrUndefined(GetPropertyRaw(_locale)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_locale));
 
     /// <summary>
     /// dateStyle
     /// </summary>
-    public string? DateStyle => (string?)NativeValue.ToString(GetPropertyRaw(_dateStyle)) ?? string.Empty;
+    public string? DateStyle => NativeValue.IsNullOrUndefined(GetPropertyRaw(_dateStyle)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_dateStyle));
 
     /// <summary>
     /// timeStyle
     /// </summary>
-    public string? TimeStyle => (string?)NativeValue.ToString(GetPropertyRaw(_timeStyle)) ?? string.Empty;
+    public string? TimeStyle => NativeValue.IsNullOrUndefined(GetPropertyRaw(_timeStyle)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_timeStyle));
 
     /// <summary>
     /// hourCycle
     /// </summary>
-    public string? HourCycle => (string?)NativeValue.ToString(GetPropertyRaw(_hourCycle)) ?? string.Empty;
+    public string? HourCycle => NativeValue.IsNullOrUndefined(GetPropertyRaw(_hourCycle)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_hourCycle));
 
     /// <summary>
     /// timeZone
     /// </summary>
-    public string? TimeZone => (string?)NativeValue.ToString(GetPropertyRaw(_timeZone)) ?? string.Empty;
+    public string? TimeZone => NativeValue.IsNullOrUndefined(GetPropertyRaw(_timeZone)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_timeZone));
 
     /// <summary>
     /// numberingSystem
     /// </summary>
-    public string? NumberingSystem => (string?)NativeValue.ToString(GetPropertyRaw(_numberingSystem)) ?? string.Empty;
+    public string? NumberingSystem => NativeValue.IsNullOrUndefined(GetPropertyRaw(_numberingSystem)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_numberingSystem));
 
     /// <summary>
     /// hour12
     /// </summary>
-    public bool? Hour12 => (bool?)NativeValue.ToBool(GetPropertyRaw(_hour12));
+    public bool? Hour12 => NativeValue.IsNullOrUndefined(GetPropertyRaw(_hour12)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_hour12));
 
     /// <summary>
     /// weekday
     /// </summary>
-    public string? Weekday => (string?)NativeValue.ToString(GetPropertyRaw(_weekday)) ?? string.Empty;
+    public string? Weekday => NativeValue.IsNullOrUndefined(GetPropertyRaw(_weekday)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_weekday));
 
     /// <summary>
     /// era
     /// </summary>
-    public string? Era => (string?)NativeValue.ToString(GetPropertyRaw(_era)) ?? string.Empty;
+    public string? Era => NativeValue.IsNullOrUndefined(GetPropertyRaw(_era)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_era));
 
     /// <summary>
     /// year
     /// </summary>
-    public string? Year => (string?)NativeValue.ToString(GetPropertyRaw(_year)) ?? string.Empty;
+    public string? Year => NativeValue.IsNullOrUndefined(GetPropertyRaw(_year)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_year));
 
     /// <summary>
     /// month
     /// </summary>
-    public string? Month => (string?)NativeValue.ToString(GetPropertyRaw(_month)) ?? string.Empty;
+    public string? Month => NativeValue.IsNullOrUndefined(GetPropertyRaw(_month)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_month));
 
     /// <summary>
     /// day
     /// </summary>
-    public string? Day => (string?)NativeValue.ToString(GetPropertyRaw(_day)) ?? string.Empty;
+    public string? Day => NativeValue.IsNullOrUndefined(GetPropertyRaw(_day)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_day));
 
     /// <summary>
     /// hour
     /// </summary>
-    public string? Hour => (string?)NativeValue.ToString(GetPropertyRaw(_hour)) ?? string.Empty;
+    public string? Hour => NativeValue.IsNullOrUndefined(GetPropertyRaw(_hour)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_hour));
 
     /// <summary>
     /// minute
     /// </summary>
-    public string? Minute => (string?)NativeValue.ToString(GetPropertyRaw(_minute)) ?? string.Empty;
+    public string? Minute => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minute)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_minute));
 
     /// <summary>
     /// second
     /// </summary>
-    public string? Second => (string?)NativeValue.ToString(GetPropertyRaw(_second)) ?? string.Empty;
+    public string? Second => NativeValue.IsNullOrUndefined(GetPropertyRaw(_second)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_second));
 
     /// <summary>
     /// timeZoneName
     /// </summary>
-    public string? TimeZoneName => (string?)NativeValue.ToString(GetPropertyRaw(_timeZoneName)) ?? string.Empty;
+    public string? TimeZoneName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_timeZoneName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_timeZoneName));
 
     /// <summary>
     /// dayPeriod
     /// </summary>
-    public string? DayPeriod => (string?)NativeValue.ToString(GetPropertyRaw(_dayPeriod)) ?? string.Empty;
+    public string? DayPeriod => NativeValue.IsNullOrUndefined(GetPropertyRaw(_dayPeriod)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_dayPeriod));
 
     /// <summary>
     /// localeMatcher
     /// </summary>
-    public string? LocaleMatcher => (string?)NativeValue.ToString(GetPropertyRaw(_localeMatcher)) ?? string.Empty;
+    public string? LocaleMatcher => NativeValue.IsNullOrUndefined(GetPropertyRaw(_localeMatcher)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_localeMatcher));
 
     /// <summary>
     /// formatMatcher
     /// </summary>
-    public string? FormatMatcher => (string?)NativeValue.ToString(GetPropertyRaw(_formatMatcher)) ?? string.Empty;
+    public string? FormatMatcher => NativeValue.IsNullOrUndefined(GetPropertyRaw(_formatMatcher)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_formatMatcher));
 
 }
 
@@ -561,112 +561,112 @@ public sealed partial class NumberOptions : JsObject
     /// <summary>
     /// locale
     /// </summary>
-    public string? Locale => (string?)NativeValue.ToString(GetPropertyRaw(_locale)) ?? string.Empty;
+    public string? Locale => NativeValue.IsNullOrUndefined(GetPropertyRaw(_locale)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_locale));
 
     /// <summary>
     /// currency
     /// </summary>
-    public string? Currency => (string?)NativeValue.ToString(GetPropertyRaw(_currency)) ?? string.Empty;
+    public string? Currency => NativeValue.IsNullOrUndefined(GetPropertyRaw(_currency)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_currency));
 
     /// <summary>
     /// currencySign
     /// </summary>
-    public string? CurrencySign => (string?)NativeValue.ToString(GetPropertyRaw(_currencySign)) ?? string.Empty;
+    public string? CurrencySign => NativeValue.IsNullOrUndefined(GetPropertyRaw(_currencySign)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_currencySign));
 
     /// <summary>
     /// currencyDisplay
     /// </summary>
-    public string? CurrencyDisplay => (string?)NativeValue.ToString(GetPropertyRaw(_currencyDisplay)) ?? string.Empty;
+    public string? CurrencyDisplay => NativeValue.IsNullOrUndefined(GetPropertyRaw(_currencyDisplay)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_currencyDisplay));
 
     /// <summary>
     /// unit
     /// </summary>
-    public string? Unit => (string?)NativeValue.ToString(GetPropertyRaw(_unit)) ?? string.Empty;
+    public string? Unit => NativeValue.IsNullOrUndefined(GetPropertyRaw(_unit)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_unit));
 
     /// <summary>
     /// unitDisplay
     /// </summary>
-    public string? UnitDisplay => (string?)NativeValue.ToString(GetPropertyRaw(_unitDisplay)) ?? string.Empty;
+    public string? UnitDisplay => NativeValue.IsNullOrUndefined(GetPropertyRaw(_unitDisplay)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_unitDisplay));
 
     /// <summary>
     /// unitUsage
     /// </summary>
-    public string? UnitUsage => (string?)NativeValue.ToString(GetPropertyRaw(_unitUsage)) ?? string.Empty;
+    public string? UnitUsage => NativeValue.IsNullOrUndefined(GetPropertyRaw(_unitUsage)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_unitUsage));
 
     /// <summary>
     /// signDisplay
     /// </summary>
-    public string? SignDisplay => (string?)NativeValue.ToString(GetPropertyRaw(_signDisplay)) ?? string.Empty;
+    public string? SignDisplay => NativeValue.IsNullOrUndefined(GetPropertyRaw(_signDisplay)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_signDisplay));
 
     /// <summary>
     /// compactDisplay
     /// </summary>
-    public string? CompactDisplay => (string?)NativeValue.ToString(GetPropertyRaw(_compactDisplay)) ?? string.Empty;
+    public string? CompactDisplay => NativeValue.IsNullOrUndefined(GetPropertyRaw(_compactDisplay)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_compactDisplay));
 
     /// <summary>
     /// notation
     /// </summary>
-    public string? Notation => (string?)NativeValue.ToString(GetPropertyRaw(_notation)) ?? string.Empty;
+    public string? Notation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_notation)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_notation));
 
     /// <summary>
     /// localeMatcher
     /// </summary>
-    public string? LocaleMatcher => (string?)NativeValue.ToString(GetPropertyRaw(_localeMatcher)) ?? string.Empty;
+    public string? LocaleMatcher => NativeValue.IsNullOrUndefined(GetPropertyRaw(_localeMatcher)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_localeMatcher));
 
     /// <summary>
     /// style
     /// </summary>
-    public string? Style => (string?)NativeValue.ToString(GetPropertyRaw(_style)) ?? string.Empty;
+    public string? Style => NativeValue.IsNullOrUndefined(GetPropertyRaw(_style)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_style));
 
     /// <summary>
     /// numberingSystem
     /// </summary>
-    public string? NumberingSystem => (string?)NativeValue.ToString(GetPropertyRaw(_numberingSystem)) ?? string.Empty;
+    public string? NumberingSystem => NativeValue.IsNullOrUndefined(GetPropertyRaw(_numberingSystem)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_numberingSystem));
 
     /// <summary>
     /// useGrouping
     /// </summary>
-    public bool? UseGrouping => (bool?)NativeValue.ToBool(GetPropertyRaw(_useGrouping));
+    public bool? UseGrouping => NativeValue.IsNullOrUndefined(GetPropertyRaw(_useGrouping)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_useGrouping));
 
     /// <summary>
     /// minimumIntegerDigits
     /// </summary>
-    public double? MinimumIntegerDigits => (double?)NativeValue.ToDouble(GetPropertyRaw(_minimumIntegerDigits));
+    public double? MinimumIntegerDigits => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minimumIntegerDigits)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_minimumIntegerDigits));
 
     /// <summary>
     /// minimumFractionDigits
     /// </summary>
-    public double? MinimumFractionDigits => (double?)NativeValue.ToDouble(GetPropertyRaw(_minimumFractionDigits));
+    public double? MinimumFractionDigits => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minimumFractionDigits)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_minimumFractionDigits));
 
     /// <summary>
     /// maximumFractionDigits
     /// </summary>
-    public double? MaximumFractionDigits => (double?)NativeValue.ToDouble(GetPropertyRaw(_maximumFractionDigits));
+    public double? MaximumFractionDigits => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maximumFractionDigits)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_maximumFractionDigits));
 
     /// <summary>
     /// minimumSignificantDigits
     /// </summary>
-    public double? MinimumSignificantDigits => (double?)NativeValue.ToDouble(GetPropertyRaw(_minimumSignificantDigits));
+    public double? MinimumSignificantDigits => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minimumSignificantDigits)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_minimumSignificantDigits));
 
     /// <summary>
     /// maximumSignificantDigits
     /// </summary>
-    public double? MaximumSignificantDigits => (double?)NativeValue.ToDouble(GetPropertyRaw(_maximumSignificantDigits));
+    public double? MaximumSignificantDigits => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maximumSignificantDigits)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_maximumSignificantDigits));
 
     /// <summary>
     /// roundingPriority
     /// </summary>
-    public string? RoundingPriority => (string?)NativeValue.ToString(GetPropertyRaw(_roundingPriority)) ?? string.Empty;
+    public string? RoundingPriority => NativeValue.IsNullOrUndefined(GetPropertyRaw(_roundingPriority)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_roundingPriority));
 
     /// <summary>
     /// roundingIncrement
     /// </summary>
-    public double? RoundingIncrement => (double?)NativeValue.ToDouble(GetPropertyRaw(_roundingIncrement));
+    public double? RoundingIncrement => NativeValue.IsNullOrUndefined(GetPropertyRaw(_roundingIncrement)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_roundingIncrement));
 
     /// <summary>
     /// roundingMode
     /// </summary>
-    public string? RoundingMode => (string?)NativeValue.ToString(GetPropertyRaw(_roundingMode)) ?? string.Empty;
+    public string? RoundingMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_roundingMode)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_roundingMode));
 
 }
 
@@ -687,37 +687,37 @@ public sealed partial class CollatorOptions : JsObject
     /// <summary>
     /// localeMatcher
     /// </summary>
-    public string? LocaleMatcher => (string?)NativeValue.ToString(GetPropertyRaw(_localeMatcher)) ?? string.Empty;
+    public string? LocaleMatcher => NativeValue.IsNullOrUndefined(GetPropertyRaw(_localeMatcher)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_localeMatcher));
 
     /// <summary>
     /// usage
     /// </summary>
-    public string? Usage => (string?)NativeValue.ToString(GetPropertyRaw(_usage)) ?? string.Empty;
+    public string? Usage => NativeValue.IsNullOrUndefined(GetPropertyRaw(_usage)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_usage));
 
     /// <summary>
     /// sensitivity
     /// </summary>
-    public string? Sensitivity => (string?)NativeValue.ToString(GetPropertyRaw(_sensitivity)) ?? string.Empty;
+    public string? Sensitivity => NativeValue.IsNullOrUndefined(GetPropertyRaw(_sensitivity)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_sensitivity));
 
     /// <summary>
     /// ignorePunctuation
     /// </summary>
-    public bool? IgnorePunctuation => (bool?)NativeValue.ToBool(GetPropertyRaw(_ignorePunctuation));
+    public bool? IgnorePunctuation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_ignorePunctuation)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_ignorePunctuation));
 
     /// <summary>
     /// collation
     /// </summary>
-    public string? Collation => (string?)NativeValue.ToString(GetPropertyRaw(_collation)) ?? string.Empty;
+    public string? Collation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_collation)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_collation));
 
     /// <summary>
     /// numeric
     /// </summary>
-    public bool? Numeric => (bool?)NativeValue.ToBool(GetPropertyRaw(_numeric));
+    public bool? Numeric => NativeValue.IsNullOrUndefined(GetPropertyRaw(_numeric)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_numeric));
 
     /// <summary>
     /// caseFirst
     /// </summary>
-    public string? CaseFirst => (string?)NativeValue.ToString(GetPropertyRaw(_caseFirst)) ?? string.Empty;
+    public string? CaseFirst => NativeValue.IsNullOrUndefined(GetPropertyRaw(_caseFirst)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_caseFirst));
 
 }
 

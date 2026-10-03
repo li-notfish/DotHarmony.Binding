@@ -646,6 +646,6 @@ public sealed partial class TabContentInfo : JsObject
     /// <summary>
     /// lastIndex
     /// </summary>
-    public double? LastIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_lastIndex));
+    public double? LastIndex => NativeValue.IsNullOrUndefined(GetPropertyRaw(_lastIndex)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_lastIndex));
 
 }

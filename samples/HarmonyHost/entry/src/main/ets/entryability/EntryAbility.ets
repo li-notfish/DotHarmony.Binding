@@ -5,6 +5,15 @@ import native from 'libentry.so';
 
 const TAG: string = 'HarmonyHost';
 
+interface OptionalBindingInfo {
+  adId: string;
+}
+
+interface CallbackError {
+  code: number;
+  message: string;
+}
+
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, TAG, 'Ability onCreate');
@@ -12,17 +21,25 @@ export default class EntryAbility extends UIAbility {
     // 等 ability 级系统能力需要它，经 globalThis 跨 napi 边界传递
     globalThis.abilityContext = this.context;
     // .NET 侧 Promise 桥测试用的全局函数：
-    // somePromiseApi → resolve(number)；willFail → reject(string reason)
+    // somePromiseApi → resolve(number)；willFail → reject(BusinessError)
     globalThis.somePromiseApi = (): Promise<number> => {
       return new Promise<number>((resolve) => { resolve(42); });
     };
     globalThis.willFail = (): Promise<string> => {
-      return new Promise<string>((_, reject) => { reject('intentional failure for test'); });
+      return new Promise<string>((_, reject) => {
+        reject({ code: 4097, message: 'intentional failure for test' });
+      });
+    };
+    globalThis.willFailCallback = (callback: (error: CallbackError) => void): void => {
+      callback({ code: 4098, message: 'intentional callback failure for test' });
     };
     // 封送专项测试：ArrayBuffer 原样返回（校验 byte[] → ArrayBuffer → byte[] 内容一致）；
     // makeMap → Map<number, string>（校验 JsMap 活视图迭代/查询）；sumMap → 遍历 Map 求和
     //（校验 JsMap 写入侧经 JsObject 引用传递）。
     globalThis.echoArrayBuffer = (ab: ArrayBuffer): ArrayBuffer => { return ab; };
+    globalThis.makeOptionalInfo = (): OptionalBindingInfo => {
+      return { adId: 'optional-test' };
+    };
     globalThis.makeMap = (): Map<number, string> => {
       const m = new Map<number, string>();
       m.set(1, 'one');

@@ -80,11 +80,11 @@ public sealed partial class StartupConfigObject : JsObject
     /// <summary>
     /// timeoutMs
     /// </summary>
-    public double? TimeoutMs => (double?)NativeValue.ToDouble(GetPropertyRaw(_timeoutMs));
+    public double? TimeoutMs => NativeValue.IsNullOrUndefined(GetPropertyRaw(_timeoutMs)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_timeoutMs));
 
     /// <summary>
     /// startupListener
     /// </summary>
-    public global::HarmonyOS.Bindings.Api.App.Appstartup.StartupListenerObject? StartupListener => GetPropertyRaw(_startupListener) == IntPtr.Zero ? null : new global::HarmonyOS.Bindings.Api.App.Appstartup.StartupListenerObject(GetPropertyRaw(_startupListener));
+    public global::HarmonyOS.Bindings.Api.App.Appstartup.StartupListenerObject? StartupListener => NativeValue.IsNullOrUndefined(GetPropertyRaw(_startupListener)) ? null : new global::HarmonyOS.Bindings.Api.App.Appstartup.StartupListenerObject(GetPropertyRaw(_startupListener));
 
 }

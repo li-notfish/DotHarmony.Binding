@@ -384,17 +384,17 @@ public sealed partial class HuksResult : JsObject
     /// <summary>
     /// outData
     /// </summary>
-    public byte[] OutData => ValueConverter.ConvertArray(GetPropertyRaw(_outData), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? OutData => NativeValue.IsNullOrUndefined(GetPropertyRaw(_outData)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_outData), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// properties
     /// </summary>
-    public HuksParam[] Properties => ValueConverter.ConvertArray(GetPropertyRaw(_properties), static e => new HuksParam(e));
+    public HuksParam[]? Properties => NativeValue.IsNullOrUndefined(GetPropertyRaw(_properties)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_properties), static e => new HuksParam(e));
 
     /// <summary>
     /// certChains
     /// </summary>
-    public string[] CertChains => ValueConverter.ConvertArray(GetPropertyRaw(_certChains), static e => ValueConverter.Convert<string>(e));
+    public string[]? CertChains => NativeValue.IsNullOrUndefined(GetPropertyRaw(_certChains)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_certChains), static e => ValueConverter.Convert<string>(e));
 
 }
 
@@ -433,22 +433,22 @@ public sealed partial class HuksReturnResult : JsObject
     /// <summary>
     /// outData
     /// </summary>
-    public byte[] OutData => ValueConverter.ConvertArray(GetPropertyRaw(_outData), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? OutData => NativeValue.IsNullOrUndefined(GetPropertyRaw(_outData)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_outData), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// properties
     /// </summary>
-    public HuksParam[] Properties => ValueConverter.ConvertArray(GetPropertyRaw(_properties), static e => new HuksParam(e));
+    public HuksParam[]? Properties => NativeValue.IsNullOrUndefined(GetPropertyRaw(_properties)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_properties), static e => new HuksParam(e));
 
     /// <summary>
     /// certChains
     /// </summary>
-    public string[] CertChains => ValueConverter.ConvertArray(GetPropertyRaw(_certChains), static e => ValueConverter.Convert<string>(e));
+    public string[]? CertChains => NativeValue.IsNullOrUndefined(GetPropertyRaw(_certChains)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_certChains), static e => ValueConverter.Convert<string>(e));
 
     /// <summary>
     /// sharedSecret
     /// </summary>
-    public byte[] SharedSecret => ValueConverter.ConvertArray(GetPropertyRaw(_sharedSecret), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? SharedSecret => NativeValue.IsNullOrUndefined(GetPropertyRaw(_sharedSecret)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_sharedSecret), static e => ValueConverter.Convert<byte>(e));
 
 }
 
@@ -475,7 +475,7 @@ public sealed partial class HuksHandle : JsObject
     /// <summary>
     /// token
     /// </summary>
-    public byte[] Token => ValueConverter.ConvertArray(GetPropertyRaw(_token), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? Token => NativeValue.IsNullOrUndefined(GetPropertyRaw(_token)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_token), static e => ValueConverter.Convert<byte>(e));
 
 }
 
@@ -496,7 +496,7 @@ public sealed partial class HuksSessionHandle : JsObject
     /// <summary>
     /// challenge
     /// </summary>
-    public byte[] Challenge => ValueConverter.ConvertArray(GetPropertyRaw(_challenge), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? Challenge => NativeValue.IsNullOrUndefined(GetPropertyRaw(_challenge)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_challenge), static e => ValueConverter.Convert<byte>(e));
 
 }
 

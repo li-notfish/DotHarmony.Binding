@@ -206,7 +206,7 @@ public static unsafe partial class Connection
     /// </summary>
     public static void SetBluetoothScanMode(global::HarmonyOS.ArkUI.ScanMode mode, double duration)
     {
-        NodeApi.CallMethodVoid(Module, _setBluetoothScanMode, mode, duration);
+        NodeApi.CallMethodVoid(Module, _setBluetoothScanMode, (int)mode, duration);
     }
 
     /// <summary>
@@ -294,7 +294,7 @@ public static unsafe partial class Connection
     /// </summary>
     public static string GetVirtualAddressByHash(global::HarmonyOS.ArkUI.HashAlgorithmType algorithmType, string hashValue)
     {
-        return NodeApi.CallMethod<string>(Module, _getVirtualAddressByHash, algorithmType, hashValue);
+        return NodeApi.CallMethod<string>(Module, _getVirtualAddressByHash, (int)algorithmType, hashValue);
     }
 
     /// <summary>
@@ -612,7 +612,7 @@ public sealed partial class BondStateParam : JsObject
     /// <summary>
     /// causeMessage
     /// </summary>
-    public string? CauseMessage => (string?)NativeValue.ToString(GetPropertyRaw(_causeMessage)) ?? string.Empty;
+    public string? CauseMessage => NativeValue.IsNullOrUndefined(GetPropertyRaw(_causeMessage)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_causeMessage));
 
 }
 

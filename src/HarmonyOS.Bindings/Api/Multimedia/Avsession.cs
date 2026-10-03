@@ -403,7 +403,7 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public Task SetBackgroundPlayModeAsync(global::HarmonyOS.ArkUI.BackgroundPlayMode mode)
     {
-        return CallMethodAsyncVoid(_setBackgroundPlayMode, mode);
+        return CallMethodAsyncVoid(_setBackgroundPlayMode, (int)mode);
     }
 
     /// <summary>
@@ -2053,7 +2053,7 @@ public sealed partial class AVCastController : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ResolutionLevel> GetRecommendedResolutionLevelAsync(global::HarmonyOS.ArkUI.DecoderType decoderType)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ResolutionLevel>(_getRecommendedResolutionLevel, decoderType);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ResolutionLevel>(_getRecommendedResolutionLevel, (int)decoderType);
     }
 
     /// <summary>

@@ -660,27 +660,27 @@ public sealed partial class DisplayObject : JsObject
     /// <summary>
     /// sourceMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.DisplaySourceMode? SourceMode => (global::HarmonyOS.ArkUI.DisplaySourceMode?)(global::HarmonyOS.ArkUI.DisplaySourceMode)NativeValue.ToInt(GetPropertyRaw(_sourceMode));
+    public global::HarmonyOS.ArkUI.DisplaySourceMode? SourceMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_sourceMode)) ? null : (global::HarmonyOS.ArkUI.DisplaySourceMode?)(global::HarmonyOS.ArkUI.DisplaySourceMode)NativeValue.ToInt(GetPropertyRaw(_sourceMode));
 
     /// <summary>
     /// screenShape
     /// </summary>
-    public global::HarmonyOS.ArkUI.ScreenShape? ScreenShape => (global::HarmonyOS.ArkUI.ScreenShape?)(global::HarmonyOS.ArkUI.ScreenShape)NativeValue.ToInt(GetPropertyRaw(_screenShape));
+    public global::HarmonyOS.ArkUI.ScreenShape? ScreenShape => NativeValue.IsNullOrUndefined(GetPropertyRaw(_screenShape)) ? null : (global::HarmonyOS.ArkUI.ScreenShape?)(global::HarmonyOS.ArkUI.ScreenShape)NativeValue.ToInt(GetPropertyRaw(_screenShape));
 
     /// <summary>
     /// x
     /// </summary>
-    public double? X => (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
+    public double? X => NativeValue.IsNullOrUndefined(GetPropertyRaw(_x)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
 
     /// <summary>
     /// y
     /// </summary>
-    public double? Y => (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
+    public double? Y => NativeValue.IsNullOrUndefined(GetPropertyRaw(_y)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
 
     /// <summary>
     /// supportedRefreshRates
     /// </summary>
-    public double[] SupportedRefreshRates => ValueConverter.ConvertArray(GetPropertyRaw(_supportedRefreshRates), static e => ValueConverter.Convert<double>(e));
+    public double[]? SupportedRefreshRates => NativeValue.IsNullOrUndefined(GetPropertyRaw(_supportedRefreshRates)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_supportedRefreshRates), static e => ValueConverter.Convert<double>(e));
 
     /// <summary>
     /// getCutoutInfo
@@ -924,7 +924,7 @@ public sealed partial class BrightnessInfo : JsObject
     /// <summary>
     /// brightnessPosition
     /// </summary>
-    public double? BrightnessPosition => (double?)NativeValue.ToDouble(GetPropertyRaw(_brightnessPosition));
+    public double? BrightnessPosition => NativeValue.IsNullOrUndefined(GetPropertyRaw(_brightnessPosition)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_brightnessPosition));
 
 }
 

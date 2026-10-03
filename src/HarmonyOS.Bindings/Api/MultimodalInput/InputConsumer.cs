@@ -215,7 +215,7 @@ public sealed partial class HotkeyOptions : JsObject
     /// <summary>
     /// isRepeat
     /// </summary>
-    public bool? IsRepeat => (bool?)NativeValue.ToBool(GetPropertyRaw(_isRepeat));
+    public bool? IsRepeat => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isRepeat)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isRepeat));
 
 }
 

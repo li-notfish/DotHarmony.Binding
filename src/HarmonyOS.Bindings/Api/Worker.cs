@@ -313,7 +313,7 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessageAtFront(IntPtr message, global::HarmonyOS.ArkUI.WorkerPriority priority, byte[][]? transfer = null)
     {
-        CallMethodVoid(_postMessageAtFront, message, priority, NapiArg.Of(transfer));
+        CallMethodVoid(_postMessageAtFront, message, (int)priority, NapiArg.Of(transfer));
     }
 
 }
@@ -687,7 +687,7 @@ public sealed partial class PostMessageOptions : JsObject
     /// <summary>
     /// transfer
     /// </summary>
-    public IntPtr[] Transfer => ValueConverter.ConvertArray(GetPropertyRaw(_transfer), static e => ValueConverter.Convert<IntPtr>(e));
+    public IntPtr[]? Transfer => NativeValue.IsNullOrUndefined(GetPropertyRaw(_transfer)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_transfer), static e => ValueConverter.Convert<IntPtr>(e));
 
 }
 

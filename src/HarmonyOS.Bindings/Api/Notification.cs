@@ -118,7 +118,7 @@ public static unsafe partial class Notification
     /// </summary>
     public static Task AddSlotAsync(global::HarmonyOS.ArkUI.SlotType type)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _addSlot, type);
+        return NodeApi.CallMethodAsyncVoid(Module, _addSlot, (int)type);
     }
 
     /// <summary>
@@ -126,7 +126,7 @@ public static unsafe partial class Notification
     /// </summary>
     public static Task<IntPtr> GetSlotAsync(global::HarmonyOS.ArkUI.SlotType slotType)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getSlot, slotType);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getSlot, (int)slotType);
     }
 
     /// <summary>
@@ -142,7 +142,7 @@ public static unsafe partial class Notification
     /// </summary>
     public static Task RemoveSlotAsync(global::HarmonyOS.ArkUI.SlotType slotType)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeSlot, slotType);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeSlot, (int)slotType);
     }
 
     /// <summary>

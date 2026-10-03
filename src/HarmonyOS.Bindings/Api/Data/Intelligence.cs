@@ -259,6 +259,6 @@ public sealed partial class CloudModelInfo : JsObject
     /// <summary>
     /// modelVersionCode
     /// </summary>
-    public string? ModelVersionCode => (string?)NativeValue.ToString(GetPropertyRaw(_modelVersionCode)) ?? string.Empty;
+    public string? ModelVersionCode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_modelVersionCode)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_modelVersionCode));
 
 }

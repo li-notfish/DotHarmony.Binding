@@ -103,7 +103,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static Task<Model> LoadModelFromBufferAsync(byte[] model, IntPtr? context = null)
     {
-        return NodeApi.CallMethodAsync(Module, _loadModelFromBuffer, static h => new Model(h), NapiArg.Of(model), NapiArg.Of(context));
+        return NodeApi.CallMethodAsync(Module, _loadModelFromBuffer, static h => new Model(h), NapiArg.OfArrayBuffer(model), NapiArg.Of(context));
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static void LoadModelFromBuffer(byte[] model, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _loadModelFromBuffer, NapiArg.Of(model), callback);
+        NodeApi.CallMethodVoid(Module, _loadModelFromBuffer, NapiArg.OfArrayBuffer(model), callback);
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static void LoadModelFromBuffer(byte[] model, IntPtr context, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _loadModelFromBuffer, NapiArg.Of(model), context, callback);
+        NodeApi.CallMethodVoid(Module, _loadModelFromBuffer, NapiArg.OfArrayBuffer(model), context, callback);
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public static unsafe partial class MindSporeLite
     /// </summary>
     public static Task<Model> LoadTrainModelFromBufferAsync(byte[] model, TrainCfg? trainCfg = null, IntPtr? context = null)
     {
-        return NodeApi.CallMethodAsync(Module, _loadTrainModelFromBuffer, static h => new Model(h), NapiArg.Of(model), NapiArg.Of(trainCfg), NapiArg.Of(context));
+        return NodeApi.CallMethodAsync(Module, _loadTrainModelFromBuffer, static h => new Model(h), NapiArg.OfArrayBuffer(model), NapiArg.Of(trainCfg), NapiArg.Of(context));
     }
 
     /// <summary>
@@ -201,12 +201,12 @@ public sealed partial class Model : JsObject
     /// <summary>
     /// learningRate
     /// </summary>
-    public double? LearningRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_learningRate));
+    public double? LearningRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_learningRate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_learningRate));
 
     /// <summary>
     /// trainMode
     /// </summary>
-    public bool? TrainMode => (bool?)NativeValue.ToBool(GetPropertyRaw(_trainMode));
+    public bool? TrainMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_trainMode)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_trainMode));
 
     /// <summary>
     /// getInputs
@@ -277,7 +277,7 @@ public sealed partial class Model : JsObject
     /// </summary>
     public bool ExportModel(string modelFile, global::HarmonyOS.ArkUI.QuantizationType? quantizationType = null, bool? exportInferenceOnly = null, string[]? outputTensorName = null)
     {
-        return CallMethod<bool>(_exportModel, modelFile, quantizationType, NapiArg.Of(exportInferenceOnly), NapiArg.Of(outputTensorName));
+        return CallMethod<bool>(_exportModel, modelFile, NapiArg.Of(quantizationType), NapiArg.Of(exportInferenceOnly), NapiArg.Of(outputTensorName));
     }
 
     /// <summary>
@@ -405,7 +405,7 @@ public sealed partial class MSTensor : JsObject
     /// </summary>
     public void SetData(byte[] inputArray)
     {
-        CallMethodVoid(_setData, NapiArg.Of(inputArray));
+        CallMethodVoid(_setData, NapiArg.OfArrayBuffer(inputArray));
     }
 
 }

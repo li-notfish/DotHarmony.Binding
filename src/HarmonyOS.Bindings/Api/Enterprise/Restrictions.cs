@@ -172,7 +172,7 @@ public static unsafe partial class Restrictions
     /// </summary>
     public static void SetDisallowedPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.FeatureForDevice feature, bool disallow)
     {
-        NodeApi.CallMethodVoid(Module, _setDisallowedPolicy, NapiArg.Of(admin), feature, disallow);
+        NodeApi.CallMethodVoid(Module, _setDisallowedPolicy, NapiArg.Of(admin), (int)feature, disallow);
     }
 
     /// <summary>
@@ -180,7 +180,7 @@ public static unsafe partial class Restrictions
     /// </summary>
     public static bool GetDisallowedPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.FeatureForDevice feature)
     {
-        return NodeApi.CallMethod<bool>(Module, _getDisallowedPolicy, NapiArg.Of(admin), feature);
+        return NodeApi.CallMethod<bool>(Module, _getDisallowedPolicy, NapiArg.Of(admin), (int)feature);
     }
 
     /// <summary>
@@ -188,7 +188,7 @@ public static unsafe partial class Restrictions
     /// </summary>
     public static void SetDisallowedPolicyForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.FeatureForAccount feature, bool disallow, double accountId)
     {
-        NodeApi.CallMethodVoid(Module, _setDisallowedPolicyForAccount, NapiArg.Of(admin), feature, disallow, accountId);
+        NodeApi.CallMethodVoid(Module, _setDisallowedPolicyForAccount, NapiArg.Of(admin), (int)feature, disallow, accountId);
     }
 
     /// <summary>
@@ -196,7 +196,7 @@ public static unsafe partial class Restrictions
     /// </summary>
     public static bool GetDisallowedPolicyForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.FeatureForAccount feature, double accountId)
     {
-        return NodeApi.CallMethod<bool>(Module, _getDisallowedPolicyForAccount, NapiArg.Of(admin), feature, accountId);
+        return NodeApi.CallMethod<bool>(Module, _getDisallowedPolicyForAccount, NapiArg.Of(admin), (int)feature, accountId);
     }
 
     /// <summary>
@@ -204,7 +204,7 @@ public static unsafe partial class Restrictions
     /// </summary>
     public static void SetUserRestriction(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsForDevice settingsItem, bool restricted)
     {
-        NodeApi.CallMethodVoid(Module, _setUserRestriction, NapiArg.Of(admin), settingsItem, restricted);
+        NodeApi.CallMethodVoid(Module, _setUserRestriction, NapiArg.Of(admin), (int)settingsItem, restricted);
     }
 
     /// <summary>
@@ -212,7 +212,7 @@ public static unsafe partial class Restrictions
     /// </summary>
     public static bool GetUserRestricted(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsForDevice settingsItem)
     {
-        return NodeApi.CallMethod<bool>(Module, _getUserRestricted, NapiArg.Of(admin), settingsItem);
+        return NodeApi.CallMethod<bool>(Module, _getUserRestricted, NapiArg.Of(admin), (int)settingsItem);
     }
 
     /// <summary>
@@ -220,7 +220,7 @@ public static unsafe partial class Restrictions
     /// </summary>
     public static void SetUserRestrictionForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsForAccount settingsItem, double accountId, bool restricted)
     {
-        NodeApi.CallMethodVoid(Module, _setUserRestrictionForAccount, NapiArg.Of(admin), settingsItem, accountId, restricted);
+        NodeApi.CallMethodVoid(Module, _setUserRestrictionForAccount, NapiArg.Of(admin), (int)settingsItem, accountId, restricted);
     }
 
     /// <summary>
@@ -228,7 +228,7 @@ public static unsafe partial class Restrictions
     /// </summary>
     public static bool GetUserRestrictedForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsForAccount settingsItem, double accountId)
     {
-        return NodeApi.CallMethod<bool>(Module, _getUserRestrictedForAccount, NapiArg.Of(admin), settingsItem, accountId);
+        return NodeApi.CallMethod<bool>(Module, _getUserRestrictedForAccount, NapiArg.Of(admin), (int)settingsItem, accountId);
     }
 
 }

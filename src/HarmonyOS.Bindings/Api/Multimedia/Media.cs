@@ -303,12 +303,12 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// url
     /// </summary>
-    public string? Url => (string?)NativeValue.ToString(GetPropertyRaw(_url)) ?? string.Empty;
+    public string? Url => NativeValue.IsNullOrUndefined(GetPropertyRaw(_url)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_url));
 
     /// <summary>
     /// fdSrc
     /// </summary>
-    public AVFileDescriptor? FdSrc => GetPropertyRaw(_fdSrc) == IntPtr.Zero ? null : new AVFileDescriptor(GetPropertyRaw(_fdSrc));
+    public AVFileDescriptor? FdSrc => NativeValue.IsNullOrUndefined(GetPropertyRaw(_fdSrc)) ? null : new AVFileDescriptor(GetPropertyRaw(_fdSrc));
 
     /// <summary>
     /// dataSrc
@@ -323,7 +323,7 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// playlistLoopMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.PlaylistLoopMode? PlaylistLoopMode => (global::HarmonyOS.ArkUI.PlaylistLoopMode?)(global::HarmonyOS.ArkUI.PlaylistLoopMode)NativeValue.ToInt(GetPropertyRaw(_playlistLoopMode));
+    public global::HarmonyOS.ArkUI.PlaylistLoopMode? PlaylistLoopMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_playlistLoopMode)) ? null : (global::HarmonyOS.ArkUI.PlaylistLoopMode?)(global::HarmonyOS.ArkUI.PlaylistLoopMode)NativeValue.ToInt(GetPropertyRaw(_playlistLoopMode));
 
     /// <summary>
     /// audioInterruptMode
@@ -358,7 +358,7 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// surfaceId
     /// </summary>
-    public string? SurfaceId => (string?)NativeValue.ToString(GetPropertyRaw(_surfaceId)) ?? string.Empty;
+    public string? SurfaceId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_surfaceId)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_surfaceId));
 
     /// <summary>
     /// width
@@ -373,7 +373,7 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// videoScaleType
     /// </summary>
-    public global::HarmonyOS.ArkUI.VideoScaleType? VideoScaleType => (global::HarmonyOS.ArkUI.VideoScaleType?)(global::HarmonyOS.ArkUI.VideoScaleType)NativeValue.ToInt(GetPropertyRaw(_videoScaleType));
+    public global::HarmonyOS.ArkUI.VideoScaleType? VideoScaleType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_videoScaleType)) ? null : (global::HarmonyOS.ArkUI.VideoScaleType?)(global::HarmonyOS.ArkUI.VideoScaleType)NativeValue.ToInt(GetPropertyRaw(_videoScaleType));
 
     /// <summary>
     /// privacyType
@@ -433,7 +433,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void Seek(double timeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null)
     {
-        CallMethodVoid(_seek, timeMs, mode);
+        CallMethodVoid(_seek, timeMs, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -465,7 +465,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SelectTrackAsync(double index, global::HarmonyOS.ArkUI.SwitchMode? mode = null)
     {
-        return CallMethodAsyncVoid(_selectTrack, index, mode);
+        return CallMethodAsyncVoid(_selectTrack, index, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -481,7 +481,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task<double> GetCurrentTrackAsync(global::HarmonyOS.ArkUI.MediaType trackType)
     {
-        return CallMethodAsync<double>(_getCurrentTrack, trackType);
+        return CallMethodAsync<double>(_getCurrentTrack, (int)trackType);
     }
 
     /// <summary>
@@ -585,7 +585,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SetMediaMutedAsync(global::HarmonyOS.ArkUI.MediaType mediaType, bool muted)
     {
-        return CallMethodAsyncVoid(_setMediaMuted, mediaType, muted);
+        return CallMethodAsyncVoid(_setMediaMuted, (int)mediaType, muted);
     }
 
     /// <summary>
@@ -593,7 +593,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SetPlaybackRangeAsync(double startTimeMs, double endTimeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null)
     {
-        return CallMethodAsyncVoid(_setPlaybackRange, startTimeMs, endTimeMs, mode);
+        return CallMethodAsyncVoid(_setPlaybackRange, startTimeMs, endTimeMs, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -705,7 +705,7 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void SetSpeed(global::HarmonyOS.ArkUI.PlaybackSpeed speed)
     {
-        CallMethodVoid(_setSpeed, speed);
+        CallMethodVoid(_setSpeed, (int)speed);
     }
 
     /// <summary>
@@ -2256,7 +2256,7 @@ public sealed partial class MediaSource : JsObject
     /// </summary>
     public void SetMimeType(global::HarmonyOS.ArkUI.AVMimeTypes mimeType)
     {
-        CallMethodVoid(_setMimeType, mimeType);
+        CallMethodVoid(_setMimeType, (int)mimeType);
     }
 
     /// <summary>
@@ -2303,12 +2303,12 @@ public sealed partial class AVFileDescriptor : JsObject
     /// <summary>
     /// offset
     /// </summary>
-    public double? Offset => (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
+    public double? Offset => NativeValue.IsNullOrUndefined(GetPropertyRaw(_offset)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
 
     /// <summary>
     /// length
     /// </summary>
-    public double? Length => (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
+    public double? Length => NativeValue.IsNullOrUndefined(GetPropertyRaw(_length)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
 
 }
 
@@ -2546,7 +2546,7 @@ public sealed partial class VideoPlayer : JsObject
     /// <summary>
     /// videoScaleType
     /// </summary>
-    public global::HarmonyOS.ArkUI.VideoScaleType? VideoScaleType => (global::HarmonyOS.ArkUI.VideoScaleType?)(global::HarmonyOS.ArkUI.VideoScaleType)NativeValue.ToInt(GetPropertyRaw(_videoScaleType));
+    public global::HarmonyOS.ArkUI.VideoScaleType? VideoScaleType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_videoScaleType)) ? null : (global::HarmonyOS.ArkUI.VideoScaleType?)(global::HarmonyOS.ArkUI.VideoScaleType)NativeValue.ToInt(GetPropertyRaw(_videoScaleType));
 
     /// <summary>
     /// setDisplaySurface
@@ -2609,7 +2609,7 @@ public sealed partial class VideoPlayer : JsObject
     /// </summary>
     public Task<double> SeekAsync(double timeMs, global::HarmonyOS.ArkUI.SeekMode mode)
     {
-        return CallMethodAsync<double>(_seek, timeMs, mode);
+        return CallMethodAsync<double>(_seek, timeMs, (int)mode);
     }
 
     /// <summary>
@@ -2845,7 +2845,7 @@ public sealed partial class AVScreenCaptureRecorder : JsObject
     /// </summary>
     public Task SetPickerModeAsync(global::HarmonyOS.ArkUI.PickerMode pickerMode)
     {
-        return CallMethodAsyncVoid(_setPickerMode, pickerMode);
+        return CallMethodAsyncVoid(_setPickerMode, (int)pickerMode);
     }
 
     /// <summary>
@@ -3215,7 +3215,7 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// <summary>
     /// fdSrc
     /// </summary>
-    public AVFileDescriptor? FdSrc => GetPropertyRaw(_fdSrc) == IntPtr.Zero ? null : new AVFileDescriptor(GetPropertyRaw(_fdSrc));
+    public AVFileDescriptor? FdSrc => NativeValue.IsNullOrUndefined(GetPropertyRaw(_fdSrc)) ? null : new AVFileDescriptor(GetPropertyRaw(_fdSrc));
 
     /// <summary>
     /// dataSrc
@@ -3259,7 +3259,7 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public Task<IntPtr> FetchFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param)
     {
-        return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, options, NapiArg.Of(param));
+        return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, (int)options, NapiArg.Of(param));
     }
 
     /// <summary>
@@ -3267,7 +3267,7 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public Task<IntPtr> FetchFrameByTimeWithTimeoutAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param, double timeoutMs)
     {
-        return CallMethodAsync<IntPtr>(_fetchFrameByTimeWithTimeout, timeUs, options, NapiArg.Of(param), timeoutMs);
+        return CallMethodAsync<IntPtr>(_fetchFrameByTimeWithTimeout, timeUs, (int)options, NapiArg.Of(param), timeoutMs);
     }
 
     /// <summary>
@@ -3275,7 +3275,7 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public void FetchFramesByTimes(double[] timesUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryOption, PixelMapParams param, IntPtr callback)
     {
-        CallMethodVoid(_fetchFramesByTimes, NapiArg.Of(timesUs), queryOption, NapiArg.Of(param), callback);
+        CallMethodVoid(_fetchFramesByTimes, NapiArg.Of(timesUs), (int)queryOption, NapiArg.Of(param), callback);
     }
 
     /// <summary>
@@ -3283,7 +3283,7 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public void FetchFramesByTimesWithTimeout(double[] timesUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryOption, PixelMapParams param, double timeoutMs, IntPtr callback)
     {
-        CallMethodVoid(_fetchFramesByTimesWithTimeout, NapiArg.Of(timesUs), queryOption, NapiArg.Of(param), timeoutMs, callback);
+        CallMethodVoid(_fetchFramesByTimesWithTimeout, NapiArg.Of(timesUs), (int)queryOption, NapiArg.Of(param), timeoutMs, callback);
     }
 
     /// <summary>
@@ -3318,14 +3318,14 @@ public sealed partial class AVImageGenerator : JsObject
     /// <summary>
     /// fdSrc
     /// </summary>
-    public AVFileDescriptor? FdSrc => GetPropertyRaw(_fdSrc) == IntPtr.Zero ? null : new AVFileDescriptor(GetPropertyRaw(_fdSrc));
+    public AVFileDescriptor? FdSrc => NativeValue.IsNullOrUndefined(GetPropertyRaw(_fdSrc)) ? null : new AVFileDescriptor(GetPropertyRaw(_fdSrc));
 
     /// <summary>
     /// fetchFrameByTime
     /// </summary>
     public Task<IntPtr> FetchFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions options, PixelMapParams param)
     {
-        return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, options, NapiArg.Of(param));
+        return CallMethodAsync<IntPtr>(_fetchFrameByTime, timeUs, (int)options, NapiArg.Of(param));
     }
 
     /// <summary>
@@ -3333,7 +3333,7 @@ public sealed partial class AVImageGenerator : JsObject
     /// </summary>
     public Task<IntPtr> FetchScaledFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryMode, OutputSize? outputSize = null)
     {
-        return CallMethodAsync<IntPtr>(_fetchScaledFrameByTime, timeUs, queryMode, NapiArg.Of(outputSize));
+        return CallMethodAsync<IntPtr>(_fetchScaledFrameByTime, timeUs, (int)queryMode, NapiArg.Of(outputSize));
     }
 
     /// <summary>
@@ -3503,17 +3503,17 @@ public sealed partial class SubtitleInfo : JsObject
     /// <summary>
     /// duration
     /// </summary>
-    public double? Duration => (double?)NativeValue.ToDouble(GetPropertyRaw(_duration));
+    public double? Duration => NativeValue.IsNullOrUndefined(GetPropertyRaw(_duration)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_duration));
 
     /// <summary>
     /// startTime
     /// </summary>
-    public double? StartTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_startTime));
+    public double? StartTime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_startTime)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_startTime));
 
     /// <summary>
     /// text
     /// </summary>
-    public string? Text => (string?)NativeValue.ToString(GetPropertyRaw(_text)) ?? string.Empty;
+    public string? Text => NativeValue.IsNullOrUndefined(GetPropertyRaw(_text)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_text));
 
 }
 
@@ -3548,62 +3548,62 @@ public sealed partial class PlaybackStrategy : JsObject
     /// <summary>
     /// preferredWidth
     /// </summary>
-    public double? PreferredWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredWidth));
+    public double? PreferredWidth => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredWidth)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredWidth));
 
     /// <summary>
     /// preferredHeight
     /// </summary>
-    public double? PreferredHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredHeight));
+    public double? PreferredHeight => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredHeight)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredHeight));
 
     /// <summary>
     /// preferredBufferDuration
     /// </summary>
-    public double? PreferredBufferDuration => (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredBufferDuration));
+    public double? PreferredBufferDuration => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredBufferDuration)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredBufferDuration));
 
     /// <summary>
     /// preferredHdr
     /// </summary>
-    public bool? PreferredHdr => (bool?)NativeValue.ToBool(GetPropertyRaw(_preferredHdr));
+    public bool? PreferredHdr => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredHdr)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_preferredHdr));
 
     /// <summary>
     /// mutedMediaType
     /// </summary>
-    public global::HarmonyOS.ArkUI.MediaType? MutedMediaType => (global::HarmonyOS.ArkUI.MediaType?)(global::HarmonyOS.ArkUI.MediaType)NativeValue.ToInt(GetPropertyRaw(_mutedMediaType));
+    public global::HarmonyOS.ArkUI.MediaType? MutedMediaType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_mutedMediaType)) ? null : (global::HarmonyOS.ArkUI.MediaType?)(global::HarmonyOS.ArkUI.MediaType)NativeValue.ToInt(GetPropertyRaw(_mutedMediaType));
 
     /// <summary>
     /// preferredAudioLanguage
     /// </summary>
-    public string? PreferredAudioLanguage => (string?)NativeValue.ToString(GetPropertyRaw(_preferredAudioLanguage)) ?? string.Empty;
+    public string? PreferredAudioLanguage => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredAudioLanguage)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_preferredAudioLanguage));
 
     /// <summary>
     /// preferredSubtitleLanguage
     /// </summary>
-    public string? PreferredSubtitleLanguage => (string?)NativeValue.ToString(GetPropertyRaw(_preferredSubtitleLanguage)) ?? string.Empty;
+    public string? PreferredSubtitleLanguage => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredSubtitleLanguage)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_preferredSubtitleLanguage));
 
     /// <summary>
     /// showFirstFrameOnPrepare
     /// </summary>
-    public bool? ShowFirstFrameOnPrepare => (bool?)NativeValue.ToBool(GetPropertyRaw(_showFirstFrameOnPrepare));
+    public bool? ShowFirstFrameOnPrepare => NativeValue.IsNullOrUndefined(GetPropertyRaw(_showFirstFrameOnPrepare)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_showFirstFrameOnPrepare));
 
     /// <summary>
     /// preferredBufferDurationForPlaying
     /// </summary>
-    public double? PreferredBufferDurationForPlaying => (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredBufferDurationForPlaying));
+    public double? PreferredBufferDurationForPlaying => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredBufferDurationForPlaying)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_preferredBufferDurationForPlaying));
 
     /// <summary>
     /// enableSuperResolution
     /// </summary>
-    public bool? EnableSuperResolution => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableSuperResolution));
+    public bool? EnableSuperResolution => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enableSuperResolution)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enableSuperResolution));
 
     /// <summary>
     /// thresholdForAutoQuickPlay
     /// </summary>
-    public double? ThresholdForAutoQuickPlay => (double?)NativeValue.ToDouble(GetPropertyRaw(_thresholdForAutoQuickPlay));
+    public double? ThresholdForAutoQuickPlay => NativeValue.IsNullOrUndefined(GetPropertyRaw(_thresholdForAutoQuickPlay)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_thresholdForAutoQuickPlay));
 
     /// <summary>
     /// keepDecodingOnMute
     /// </summary>
-    public bool? KeepDecodingOnMute => (bool?)NativeValue.ToBool(GetPropertyRaw(_keepDecodingOnMute));
+    public bool? KeepDecodingOnMute => NativeValue.IsNullOrUndefined(GetPropertyRaw(_keepDecodingOnMute)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_keepDecodingOnMute));
 
 }
 
@@ -3630,67 +3630,67 @@ public sealed partial class TrackSelectionFilter : JsObject
     /// <summary>
     /// maxVideoBitrate
     /// </summary>
-    public double? MaxVideoBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxVideoBitrate));
+    public double? MaxVideoBitrate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maxVideoBitrate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_maxVideoBitrate));
 
     /// <summary>
     /// minVideoBitrate
     /// </summary>
-    public double? MinVideoBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_minVideoBitrate));
+    public double? MinVideoBitrate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minVideoBitrate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_minVideoBitrate));
 
     /// <summary>
     /// maxVideoFrameRate
     /// </summary>
-    public double? MaxVideoFrameRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxVideoFrameRate));
+    public double? MaxVideoFrameRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maxVideoFrameRate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_maxVideoFrameRate));
 
     /// <summary>
     /// minVideoFrameRate
     /// </summary>
-    public double? MinVideoFrameRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_minVideoFrameRate));
+    public double? MinVideoFrameRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minVideoFrameRate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_minVideoFrameRate));
 
     /// <summary>
     /// maxVideoResolution
     /// </summary>
-    public VideoSize? MaxVideoResolution => GetPropertyRaw(_maxVideoResolution) == IntPtr.Zero ? null : new VideoSize(GetPropertyRaw(_maxVideoResolution));
+    public VideoSize? MaxVideoResolution => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maxVideoResolution)) ? null : new VideoSize(GetPropertyRaw(_maxVideoResolution));
 
     /// <summary>
     /// minVideoResolution
     /// </summary>
-    public VideoSize? MinVideoResolution => GetPropertyRaw(_minVideoResolution) == IntPtr.Zero ? null : new VideoSize(GetPropertyRaw(_minVideoResolution));
+    public VideoSize? MinVideoResolution => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minVideoResolution)) ? null : new VideoSize(GetPropertyRaw(_minVideoResolution));
 
     /// <summary>
     /// preferredVideoMimeTypes
     /// </summary>
-    public string[] PreferredVideoMimeTypes => ValueConverter.ConvertArray(GetPropertyRaw(_preferredVideoMimeTypes), static e => ValueConverter.Convert<string>(e));
+    public string[]? PreferredVideoMimeTypes => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredVideoMimeTypes)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_preferredVideoMimeTypes), static e => ValueConverter.Convert<string>(e));
 
     /// <summary>
     /// maxAudioBitrate
     /// </summary>
-    public double? MaxAudioBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxAudioBitrate));
+    public double? MaxAudioBitrate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maxAudioBitrate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_maxAudioBitrate));
 
     /// <summary>
     /// minAudioBitrate
     /// </summary>
-    public double? MinAudioBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_minAudioBitrate));
+    public double? MinAudioBitrate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minAudioBitrate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_minAudioBitrate));
 
     /// <summary>
     /// maxAudioChannels
     /// </summary>
-    public double? MaxAudioChannels => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxAudioChannels));
+    public double? MaxAudioChannels => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maxAudioChannels)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_maxAudioChannels));
 
     /// <summary>
     /// preferredAudioMimeTypes
     /// </summary>
-    public string[] PreferredAudioMimeTypes => ValueConverter.ConvertArray(GetPropertyRaw(_preferredAudioMimeTypes), static e => ValueConverter.Convert<string>(e));
+    public string[]? PreferredAudioMimeTypes => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredAudioMimeTypes)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_preferredAudioMimeTypes), static e => ValueConverter.Convert<string>(e));
 
     /// <summary>
     /// preferredAudioLanguages
     /// </summary>
-    public string[] PreferredAudioLanguages => ValueConverter.ConvertArray(GetPropertyRaw(_preferredAudioLanguages), static e => ValueConverter.Convert<string>(e));
+    public string[]? PreferredAudioLanguages => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredAudioLanguages)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_preferredAudioLanguages), static e => ValueConverter.Convert<string>(e));
 
     /// <summary>
     /// preferredSubtitleLanguages
     /// </summary>
-    public string[] PreferredSubtitleLanguages => ValueConverter.ConvertArray(GetPropertyRaw(_preferredSubtitleLanguages), static e => ValueConverter.Convert<string>(e));
+    public string[]? PreferredSubtitleLanguages => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferredSubtitleLanguages)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_preferredSubtitleLanguages), static e => ValueConverter.Convert<string>(e));
 
 }
 
@@ -3748,12 +3748,12 @@ public sealed partial class WatermarkConfiguration : JsObject
     /// <summary>
     /// width
     /// </summary>
-    public double? Width => (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
+    public double? Width => NativeValue.IsNullOrUndefined(GetPropertyRaw(_width)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
 
     /// <summary>
     /// height
     /// </summary>
-    public double? Height => (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
+    public double? Height => NativeValue.IsNullOrUndefined(GetPropertyRaw(_height)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
 
 }
 
@@ -3785,32 +3785,32 @@ public sealed partial class EncoderInfo : JsObject
     /// <summary>
     /// bitRate
     /// </summary>
-    public MediaRange? BitRate => GetPropertyRaw(_bitRate) == IntPtr.Zero ? null : new MediaRange(GetPropertyRaw(_bitRate));
+    public MediaRange? BitRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_bitRate)) ? null : new MediaRange(GetPropertyRaw(_bitRate));
 
     /// <summary>
     /// frameRate
     /// </summary>
-    public MediaRange? FrameRate => GetPropertyRaw(_frameRate) == IntPtr.Zero ? null : new MediaRange(GetPropertyRaw(_frameRate));
+    public MediaRange? FrameRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_frameRate)) ? null : new MediaRange(GetPropertyRaw(_frameRate));
 
     /// <summary>
     /// width
     /// </summary>
-    public MediaRange? Width => GetPropertyRaw(_width) == IntPtr.Zero ? null : new MediaRange(GetPropertyRaw(_width));
+    public MediaRange? Width => NativeValue.IsNullOrUndefined(GetPropertyRaw(_width)) ? null : new MediaRange(GetPropertyRaw(_width));
 
     /// <summary>
     /// height
     /// </summary>
-    public MediaRange? Height => GetPropertyRaw(_height) == IntPtr.Zero ? null : new MediaRange(GetPropertyRaw(_height));
+    public MediaRange? Height => NativeValue.IsNullOrUndefined(GetPropertyRaw(_height)) ? null : new MediaRange(GetPropertyRaw(_height));
 
     /// <summary>
     /// channels
     /// </summary>
-    public MediaRange? Channels => GetPropertyRaw(_channels) == IntPtr.Zero ? null : new MediaRange(GetPropertyRaw(_channels));
+    public MediaRange? Channels => NativeValue.IsNullOrUndefined(GetPropertyRaw(_channels)) ? null : new MediaRange(GetPropertyRaw(_channels));
 
     /// <summary>
     /// sampleRate
     /// </summary>
-    public double[] SampleRate => ValueConverter.ConvertArray(GetPropertyRaw(_sampleRate), static e => ValueConverter.Convert<double>(e));
+    public double[]? SampleRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_sampleRate)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_sampleRate), static e => ValueConverter.Convert<double>(e));
 
 }
 
@@ -3833,27 +3833,27 @@ public sealed partial class AudioRecorderConfig : JsObject
     /// <summary>
     /// audioEncoder
     /// </summary>
-    public global::HarmonyOS.ArkUI.AudioEncoder? AudioEncoder => (global::HarmonyOS.ArkUI.AudioEncoder?)(global::HarmonyOS.ArkUI.AudioEncoder)NativeValue.ToInt(GetPropertyRaw(_audioEncoder));
+    public global::HarmonyOS.ArkUI.AudioEncoder? AudioEncoder => NativeValue.IsNullOrUndefined(GetPropertyRaw(_audioEncoder)) ? null : (global::HarmonyOS.ArkUI.AudioEncoder?)(global::HarmonyOS.ArkUI.AudioEncoder)NativeValue.ToInt(GetPropertyRaw(_audioEncoder));
 
     /// <summary>
     /// audioEncodeBitRate
     /// </summary>
-    public double? AudioEncodeBitRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioEncodeBitRate));
+    public double? AudioEncodeBitRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_audioEncodeBitRate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_audioEncodeBitRate));
 
     /// <summary>
     /// audioSampleRate
     /// </summary>
-    public double? AudioSampleRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioSampleRate));
+    public double? AudioSampleRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_audioSampleRate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_audioSampleRate));
 
     /// <summary>
     /// numberOfChannels
     /// </summary>
-    public double? NumberOfChannels => (double?)NativeValue.ToDouble(GetPropertyRaw(_numberOfChannels));
+    public double? NumberOfChannels => NativeValue.IsNullOrUndefined(GetPropertyRaw(_numberOfChannels)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_numberOfChannels));
 
     /// <summary>
     /// format
     /// </summary>
-    public global::HarmonyOS.ArkUI.AudioOutputFormat? Format => (global::HarmonyOS.ArkUI.AudioOutputFormat?)(global::HarmonyOS.ArkUI.AudioOutputFormat)NativeValue.ToInt(GetPropertyRaw(_format));
+    public global::HarmonyOS.ArkUI.AudioOutputFormat? Format => NativeValue.IsNullOrUndefined(GetPropertyRaw(_format)) ? null : (global::HarmonyOS.ArkUI.AudioOutputFormat?)(global::HarmonyOS.ArkUI.AudioOutputFormat)NativeValue.ToInt(GetPropertyRaw(_format));
 
     /// <summary>
     /// uri
@@ -3863,17 +3863,17 @@ public sealed partial class AudioRecorderConfig : JsObject
     /// <summary>
     /// location
     /// </summary>
-    public MediaLocation? Location => GetPropertyRaw(_location) == IntPtr.Zero ? null : new MediaLocation(GetPropertyRaw(_location));
+    public MediaLocation? Location => NativeValue.IsNullOrUndefined(GetPropertyRaw(_location)) ? null : new MediaLocation(GetPropertyRaw(_location));
 
     /// <summary>
     /// audioEncoderMime
     /// </summary>
-    public global::HarmonyOS.ArkUI.CodecMimeType? AudioEncoderMime => (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_audioEncoderMime));
+    public global::HarmonyOS.ArkUI.CodecMimeType? AudioEncoderMime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_audioEncoderMime)) ? null : (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_audioEncoderMime));
 
     /// <summary>
     /// fileFormat
     /// </summary>
-    public global::HarmonyOS.ArkUI.ContainerFormatType? FileFormat => (global::HarmonyOS.ArkUI.ContainerFormatType?)(global::HarmonyOS.ArkUI.ContainerFormatType)NativeValue.ToInt(GetPropertyRaw(_fileFormat));
+    public global::HarmonyOS.ArkUI.ContainerFormatType? FileFormat => NativeValue.IsNullOrUndefined(GetPropertyRaw(_fileFormat)) ? null : (global::HarmonyOS.ArkUI.ContainerFormatType?)(global::HarmonyOS.ArkUI.ContainerFormatType)NativeValue.ToInt(GetPropertyRaw(_fileFormat));
 
 }
 
@@ -3903,52 +3903,52 @@ public sealed partial class AVScreenCaptureRecordConfig : JsObject
     /// <summary>
     /// frameWidth
     /// </summary>
-    public double? FrameWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_frameWidth));
+    public double? FrameWidth => NativeValue.IsNullOrUndefined(GetPropertyRaw(_frameWidth)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_frameWidth));
 
     /// <summary>
     /// frameHeight
     /// </summary>
-    public double? FrameHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_frameHeight));
+    public double? FrameHeight => NativeValue.IsNullOrUndefined(GetPropertyRaw(_frameHeight)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_frameHeight));
 
     /// <summary>
     /// videoBitrate
     /// </summary>
-    public double? VideoBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_videoBitrate));
+    public double? VideoBitrate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_videoBitrate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_videoBitrate));
 
     /// <summary>
     /// audioSampleRate
     /// </summary>
-    public double? AudioSampleRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioSampleRate));
+    public double? AudioSampleRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_audioSampleRate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_audioSampleRate));
 
     /// <summary>
     /// audioChannelCount
     /// </summary>
-    public double? AudioChannelCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioChannelCount));
+    public double? AudioChannelCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_audioChannelCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_audioChannelCount));
 
     /// <summary>
     /// audioBitrate
     /// </summary>
-    public double? AudioBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioBitrate));
+    public double? AudioBitrate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_audioBitrate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_audioBitrate));
 
     /// <summary>
     /// preset
     /// </summary>
-    public global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset? Preset => (global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset?)(global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset)NativeValue.ToInt(GetPropertyRaw(_preset));
+    public global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset? Preset => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preset)) ? null : (global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset?)(global::HarmonyOS.ArkUI.AVScreenCaptureRecordPreset)NativeValue.ToInt(GetPropertyRaw(_preset));
 
     /// <summary>
     /// displayId
     /// </summary>
-    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+    public double? DisplayId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_displayId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
 
     /// <summary>
     /// fillMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.AVScreenCaptureFillMode? FillMode => (global::HarmonyOS.ArkUI.AVScreenCaptureFillMode?)(global::HarmonyOS.ArkUI.AVScreenCaptureFillMode)NativeValue.ToInt(GetPropertyRaw(_fillMode));
+    public global::HarmonyOS.ArkUI.AVScreenCaptureFillMode? FillMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_fillMode)) ? null : (global::HarmonyOS.ArkUI.AVScreenCaptureFillMode?)(global::HarmonyOS.ArkUI.AVScreenCaptureFillMode)NativeValue.ToInt(GetPropertyRaw(_fillMode));
 
     /// <summary>
     /// strategy
     /// </summary>
-    public AVScreenCaptureStrategy? Strategy => GetPropertyRaw(_strategy) == IntPtr.Zero ? null : new AVScreenCaptureStrategy(GetPropertyRaw(_strategy));
+    public AVScreenCaptureStrategy? Strategy => NativeValue.IsNullOrUndefined(GetPropertyRaw(_strategy)) ? null : new AVScreenCaptureStrategy(GetPropertyRaw(_strategy));
 
 }
 
@@ -3971,17 +3971,17 @@ public sealed partial class AVTranscoderConfig : JsObject
     /// <summary>
     /// audioBitrate
     /// </summary>
-    public double? AudioBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_audioBitrate));
+    public double? AudioBitrate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_audioBitrate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_audioBitrate));
 
     /// <summary>
     /// audioCodec
     /// </summary>
-    public global::HarmonyOS.ArkUI.CodecMimeType? AudioCodec => (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_audioCodec));
+    public global::HarmonyOS.ArkUI.CodecMimeType? AudioCodec => NativeValue.IsNullOrUndefined(GetPropertyRaw(_audioCodec)) ? null : (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_audioCodec));
 
     /// <summary>
     /// audioCodecV2
     /// </summary>
-    public global::HarmonyOS.ArkUI.CodecMimeType? AudioCodecV2 => (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_audioCodecV2));
+    public global::HarmonyOS.ArkUI.CodecMimeType? AudioCodecV2 => NativeValue.IsNullOrUndefined(GetPropertyRaw(_audioCodecV2)) ? null : (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_audioCodecV2));
 
     /// <summary>
     /// fileFormat
@@ -3991,27 +3991,27 @@ public sealed partial class AVTranscoderConfig : JsObject
     /// <summary>
     /// videoBitrate
     /// </summary>
-    public double? VideoBitrate => (double?)NativeValue.ToDouble(GetPropertyRaw(_videoBitrate));
+    public double? VideoBitrate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_videoBitrate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_videoBitrate));
 
     /// <summary>
     /// videoCodec
     /// </summary>
-    public global::HarmonyOS.ArkUI.CodecMimeType? VideoCodec => (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_videoCodec));
+    public global::HarmonyOS.ArkUI.CodecMimeType? VideoCodec => NativeValue.IsNullOrUndefined(GetPropertyRaw(_videoCodec)) ? null : (global::HarmonyOS.ArkUI.CodecMimeType?)(global::HarmonyOS.ArkUI.CodecMimeType)NativeValue.ToInt(GetPropertyRaw(_videoCodec));
 
     /// <summary>
     /// videoFrameWidth
     /// </summary>
-    public double? VideoFrameWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_videoFrameWidth));
+    public double? VideoFrameWidth => NativeValue.IsNullOrUndefined(GetPropertyRaw(_videoFrameWidth)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_videoFrameWidth));
 
     /// <summary>
     /// videoFrameHeight
     /// </summary>
-    public double? VideoFrameHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_videoFrameHeight));
+    public double? VideoFrameHeight => NativeValue.IsNullOrUndefined(GetPropertyRaw(_videoFrameHeight)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_videoFrameHeight));
 
     /// <summary>
     /// enableBFrame
     /// </summary>
-    public bool? EnableBFrame => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableBFrame));
+    public bool? EnableBFrame => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enableBFrame)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enableBFrame));
 
 }
 
@@ -4027,12 +4027,12 @@ public sealed partial class PixelMapParams : JsObject
     /// <summary>
     /// width
     /// </summary>
-    public double? Width => (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
+    public double? Width => NativeValue.IsNullOrUndefined(GetPropertyRaw(_width)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
 
     /// <summary>
     /// height
     /// </summary>
-    public double? Height => (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
+    public double? Height => NativeValue.IsNullOrUndefined(GetPropertyRaw(_height)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
 
 }
 
@@ -4048,12 +4048,12 @@ public sealed partial class OutputSize : JsObject
     /// <summary>
     /// width
     /// </summary>
-    public double? Width => (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
+    public double? Width => NativeValue.IsNullOrUndefined(GetPropertyRaw(_width)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
 
     /// <summary>
     /// height
     /// </summary>
-    public double? Height => (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
+    public double? Height => NativeValue.IsNullOrUndefined(GetPropertyRaw(_height)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
 
 }
 
@@ -4069,12 +4069,12 @@ public sealed partial class VideoSize : JsObject
     /// <summary>
     /// width
     /// </summary>
-    public double? Width => (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
+    public double? Width => NativeValue.IsNullOrUndefined(GetPropertyRaw(_width)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_width));
 
     /// <summary>
     /// height
     /// </summary>
-    public double? Height => (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
+    public double? Height => NativeValue.IsNullOrUndefined(GetPropertyRaw(_height)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_height));
 
 }
 
@@ -4113,21 +4113,21 @@ public sealed partial class AVScreenCaptureStrategy : JsObject
     /// <summary>
     /// keepCaptureDuringCall
     /// </summary>
-    public bool? KeepCaptureDuringCall => (bool?)NativeValue.ToBool(GetPropertyRaw(_keepCaptureDuringCall));
+    public bool? KeepCaptureDuringCall => NativeValue.IsNullOrUndefined(GetPropertyRaw(_keepCaptureDuringCall)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_keepCaptureDuringCall));
 
     /// <summary>
     /// enableBFrame
     /// </summary>
-    public bool? EnableBFrame => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableBFrame));
+    public bool? EnableBFrame => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enableBFrame)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enableBFrame));
 
     /// <summary>
     /// privacyMaskMode
     /// </summary>
-    public double? PrivacyMaskMode => (double?)NativeValue.ToDouble(GetPropertyRaw(_privacyMaskMode));
+    public double? PrivacyMaskMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_privacyMaskMode)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_privacyMaskMode));
 
     /// <summary>
     /// enablePause
     /// </summary>
-    public bool? EnablePause => (bool?)NativeValue.ToBool(GetPropertyRaw(_enablePause));
+    public bool? EnablePause => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enablePause)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enablePause));
 
 }

@@ -396,7 +396,7 @@ public static unsafe partial class Connection
     /// </summary>
     public static Task<double> GetConnectOwnerUidAsync(global::HarmonyOS.ArkUI.NetConnectionProtocolType protocol, NetAddress local, NetAddress remote)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _getConnectOwnerUid, protocol, NapiArg.Of(local), NapiArg.Of(remote));
+        return NodeApi.CallMethodAsync<double>(Module, _getConnectOwnerUid, (int)protocol, NapiArg.Of(local), NapiArg.Of(remote));
     }
 
     /// <summary>
@@ -404,7 +404,7 @@ public static unsafe partial class Connection
     /// </summary>
     public static double GetConnectOwnerUidSync(global::HarmonyOS.ArkUI.NetConnectionProtocolType protocol, NetAddress local, NetAddress remote)
     {
-        return NodeApi.CallMethod<double>(Module, _getConnectOwnerUidSync, protocol, NapiArg.Of(local), NapiArg.Of(remote));
+        return NodeApi.CallMethod<double>(Module, _getConnectOwnerUidSync, (int)protocol, NapiArg.Of(local), NapiArg.Of(remote));
     }
 
     /// <summary>
@@ -420,7 +420,7 @@ public static unsafe partial class Connection
     /// </summary>
     public static string GetDnsAscii(string host, global::HarmonyOS.ArkUI.ConversionProcess? flag = null)
     {
-        return NodeApi.CallMethod<string>(Module, _getDnsAscii, host, flag);
+        return NodeApi.CallMethod<string>(Module, _getDnsAscii, host, NapiArg.Of(flag));
     }
 
     /// <summary>
@@ -428,7 +428,7 @@ public static unsafe partial class Connection
     /// </summary>
     public static string GetDnsUnicode(string host, global::HarmonyOS.ArkUI.ConversionProcess? flag = null)
     {
-        return NodeApi.CallMethod<string>(Module, _getDnsUnicode, host, flag);
+        return NodeApi.CallMethod<string>(Module, _getDnsUnicode, host, NapiArg.Of(flag));
     }
 
     /// <summary>
@@ -735,17 +735,17 @@ public sealed partial class NetCapabilities : JsObject
     /// <summary>
     /// linkUpBandwidthKbps
     /// </summary>
-    public double? LinkUpBandwidthKbps => (double?)NativeValue.ToDouble(GetPropertyRaw(_linkUpBandwidthKbps));
+    public double? LinkUpBandwidthKbps => NativeValue.IsNullOrUndefined(GetPropertyRaw(_linkUpBandwidthKbps)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_linkUpBandwidthKbps));
 
     /// <summary>
     /// linkDownBandwidthKbps
     /// </summary>
-    public double? LinkDownBandwidthKbps => (double?)NativeValue.ToDouble(GetPropertyRaw(_linkDownBandwidthKbps));
+    public double? LinkDownBandwidthKbps => NativeValue.IsNullOrUndefined(GetPropertyRaw(_linkDownBandwidthKbps)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_linkDownBandwidthKbps));
 
     /// <summary>
     /// networkCap
     /// </summary>
-    public global::HarmonyOS.ArkUI.NetCap[] NetworkCap => ValueConverter.ConvertArray(GetPropertyRaw(_networkCap), static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.NetCap>(e));
+    public global::HarmonyOS.ArkUI.NetCap[]? NetworkCap => NativeValue.IsNullOrUndefined(GetPropertyRaw(_networkCap)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_networkCap), static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.NetCap>(e));
 
     /// <summary>
     /// bearerTypes
@@ -772,12 +772,12 @@ public sealed partial class NetAddress : JsObject
     /// <summary>
     /// family
     /// </summary>
-    public double? Family => (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
+    public double? Family => NativeValue.IsNullOrUndefined(GetPropertyRaw(_family)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
 
     /// <summary>
     /// port
     /// </summary>
-    public double? Port => (double?)NativeValue.ToDouble(GetPropertyRaw(_port));
+    public double? Port => NativeValue.IsNullOrUndefined(GetPropertyRaw(_port)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_port));
 
 }
 
@@ -792,7 +792,7 @@ public sealed partial class QueryOptions : JsObject
     /// <summary>
     /// family
     /// </summary>
-    public global::HarmonyOS.ArkUI.FamilyType? Family => (global::HarmonyOS.ArkUI.FamilyType?)(global::HarmonyOS.ArkUI.FamilyType)NativeValue.ToInt(GetPropertyRaw(_family));
+    public global::HarmonyOS.ArkUI.FamilyType? Family => NativeValue.IsNullOrUndefined(GetPropertyRaw(_family)) ? null : (global::HarmonyOS.ArkUI.FamilyType?)(global::HarmonyOS.ArkUI.FamilyType)NativeValue.ToInt(GetPropertyRaw(_family));
 
 }
 
@@ -821,12 +821,12 @@ public sealed partial class HttpProxy : JsObject
     /// <summary>
     /// username
     /// </summary>
-    public string? Username => (string?)NativeValue.ToString(GetPropertyRaw(_username)) ?? string.Empty;
+    public string? Username => NativeValue.IsNullOrUndefined(GetPropertyRaw(_username)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_username));
 
     /// <summary>
     /// password
     /// </summary>
-    public string? Password => (string?)NativeValue.ToString(GetPropertyRaw(_password)) ?? string.Empty;
+    public string? Password => NativeValue.IsNullOrUndefined(GetPropertyRaw(_password)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_password));
 
     /// <summary>
     /// exclusionList

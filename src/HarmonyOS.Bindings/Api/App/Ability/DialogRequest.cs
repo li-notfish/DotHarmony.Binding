@@ -98,7 +98,7 @@ public sealed partial class RequestInfo : JsObject
     /// <summary>
     /// windowRect
     /// </summary>
-    public WindowRect? WindowRect => GetPropertyRaw(_windowRect) == IntPtr.Zero ? null : new WindowRect(GetPropertyRaw(_windowRect));
+    public WindowRect? WindowRect => NativeValue.IsNullOrUndefined(GetPropertyRaw(_windowRect)) ? null : new WindowRect(GetPropertyRaw(_windowRect));
 
 }
 

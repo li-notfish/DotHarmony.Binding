@@ -411,7 +411,7 @@ public static unsafe partial class GeoLocationManager
     /// </summary>
     public static Task<IntPtr[]> GetPostProcessingTrackAsync(global::HarmonyOS.ArkUI.SportsType sportsType)
     {
-        return NodeApi.CallMethodAsync(Module, _getPostProcessingTrack, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), sportsType);
+        return NodeApi.CallMethodAsync(Module, _getPostProcessingTrack, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), (int)sportsType);
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();
@@ -878,92 +878,92 @@ public sealed partial class GeoAddress : JsObject
     /// <summary>
     /// latitude
     /// </summary>
-    public double? Latitude => (double?)NativeValue.ToDouble(GetPropertyRaw(_latitude));
+    public double? Latitude => NativeValue.IsNullOrUndefined(GetPropertyRaw(_latitude)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_latitude));
 
     /// <summary>
     /// longitude
     /// </summary>
-    public double? Longitude => (double?)NativeValue.ToDouble(GetPropertyRaw(_longitude));
+    public double? Longitude => NativeValue.IsNullOrUndefined(GetPropertyRaw(_longitude)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_longitude));
 
     /// <summary>
     /// locale
     /// </summary>
-    public string? Locale => (string?)NativeValue.ToString(GetPropertyRaw(_locale)) ?? string.Empty;
+    public string? Locale => NativeValue.IsNullOrUndefined(GetPropertyRaw(_locale)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_locale));
 
     /// <summary>
     /// placeName
     /// </summary>
-    public string? PlaceName => (string?)NativeValue.ToString(GetPropertyRaw(_placeName)) ?? string.Empty;
+    public string? PlaceName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_placeName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_placeName));
 
     /// <summary>
     /// countryCode
     /// </summary>
-    public string? CountryCode => (string?)NativeValue.ToString(GetPropertyRaw(_countryCode)) ?? string.Empty;
+    public string? CountryCode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_countryCode)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_countryCode));
 
     /// <summary>
     /// countryName
     /// </summary>
-    public string? CountryName => (string?)NativeValue.ToString(GetPropertyRaw(_countryName)) ?? string.Empty;
+    public string? CountryName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_countryName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_countryName));
 
     /// <summary>
     /// administrativeArea
     /// </summary>
-    public string? AdministrativeArea => (string?)NativeValue.ToString(GetPropertyRaw(_administrativeArea)) ?? string.Empty;
+    public string? AdministrativeArea => NativeValue.IsNullOrUndefined(GetPropertyRaw(_administrativeArea)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_administrativeArea));
 
     /// <summary>
     /// subAdministrativeArea
     /// </summary>
-    public string? SubAdministrativeArea => (string?)NativeValue.ToString(GetPropertyRaw(_subAdministrativeArea)) ?? string.Empty;
+    public string? SubAdministrativeArea => NativeValue.IsNullOrUndefined(GetPropertyRaw(_subAdministrativeArea)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_subAdministrativeArea));
 
     /// <summary>
     /// locality
     /// </summary>
-    public string? Locality => (string?)NativeValue.ToString(GetPropertyRaw(_locality)) ?? string.Empty;
+    public string? Locality => NativeValue.IsNullOrUndefined(GetPropertyRaw(_locality)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_locality));
 
     /// <summary>
     /// subLocality
     /// </summary>
-    public string? SubLocality => (string?)NativeValue.ToString(GetPropertyRaw(_subLocality)) ?? string.Empty;
+    public string? SubLocality => NativeValue.IsNullOrUndefined(GetPropertyRaw(_subLocality)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_subLocality));
 
     /// <summary>
     /// roadName
     /// </summary>
-    public string? RoadName => (string?)NativeValue.ToString(GetPropertyRaw(_roadName)) ?? string.Empty;
+    public string? RoadName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_roadName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_roadName));
 
     /// <summary>
     /// subRoadName
     /// </summary>
-    public string? SubRoadName => (string?)NativeValue.ToString(GetPropertyRaw(_subRoadName)) ?? string.Empty;
+    public string? SubRoadName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_subRoadName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_subRoadName));
 
     /// <summary>
     /// premises
     /// </summary>
-    public string? Premises => (string?)NativeValue.ToString(GetPropertyRaw(_premises)) ?? string.Empty;
+    public string? Premises => NativeValue.IsNullOrUndefined(GetPropertyRaw(_premises)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_premises));
 
     /// <summary>
     /// postalCode
     /// </summary>
-    public string? PostalCode => (string?)NativeValue.ToString(GetPropertyRaw(_postalCode)) ?? string.Empty;
+    public string? PostalCode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_postalCode)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_postalCode));
 
     /// <summary>
     /// phoneNumber
     /// </summary>
-    public string? PhoneNumber => (string?)NativeValue.ToString(GetPropertyRaw(_phoneNumber)) ?? string.Empty;
+    public string? PhoneNumber => NativeValue.IsNullOrUndefined(GetPropertyRaw(_phoneNumber)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_phoneNumber));
 
     /// <summary>
     /// addressUrl
     /// </summary>
-    public string? AddressUrl => (string?)NativeValue.ToString(GetPropertyRaw(_addressUrl)) ?? string.Empty;
+    public string? AddressUrl => NativeValue.IsNullOrUndefined(GetPropertyRaw(_addressUrl)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_addressUrl));
 
     /// <summary>
     /// descriptions
     /// </summary>
-    public string[] Descriptions => ValueConverter.ConvertArray(GetPropertyRaw(_descriptions), static e => ValueConverter.Convert<string>(e));
+    public string[]? Descriptions => NativeValue.IsNullOrUndefined(GetPropertyRaw(_descriptions)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_descriptions), static e => ValueConverter.Convert<string>(e));
 
     /// <summary>
     /// descriptionsSize
     /// </summary>
-    public double? DescriptionsSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_descriptionsSize));
+    public double? DescriptionsSize => NativeValue.IsNullOrUndefined(GetPropertyRaw(_descriptionsSize)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_descriptionsSize));
 
 }
 
@@ -1121,7 +1121,7 @@ public sealed partial class Geofence : JsObject
     /// <summary>
     /// coordinateSystemType
     /// </summary>
-    public global::HarmonyOS.ArkUI.CoordinateSystemType? CoordinateSystemType => (global::HarmonyOS.ArkUI.CoordinateSystemType?)(global::HarmonyOS.ArkUI.CoordinateSystemType)NativeValue.ToInt(GetPropertyRaw(_coordinateSystemType));
+    public global::HarmonyOS.ArkUI.CoordinateSystemType? CoordinateSystemType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_coordinateSystemType)) ? null : (global::HarmonyOS.ArkUI.CoordinateSystemType?)(global::HarmonyOS.ArkUI.CoordinateSystemType)NativeValue.ToInt(GetPropertyRaw(_coordinateSystemType));
 
     /// <summary>
     /// radius
@@ -1199,37 +1199,37 @@ public sealed partial class DistrictInfo : JsObject
     /// <summary>
     /// locale
     /// </summary>
-    public string? Locale => (string?)NativeValue.ToString(GetPropertyRaw(_locale)) ?? string.Empty;
+    public string? Locale => NativeValue.IsNullOrUndefined(GetPropertyRaw(_locale)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_locale));
 
     /// <summary>
     /// countryCode
     /// </summary>
-    public string? CountryCode => (string?)NativeValue.ToString(GetPropertyRaw(_countryCode)) ?? string.Empty;
+    public string? CountryCode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_countryCode)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_countryCode));
 
     /// <summary>
     /// countryName
     /// </summary>
-    public string? CountryName => (string?)NativeValue.ToString(GetPropertyRaw(_countryName)) ?? string.Empty;
+    public string? CountryName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_countryName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_countryName));
 
     /// <summary>
     /// administrativeArea
     /// </summary>
-    public string? AdministrativeArea => (string?)NativeValue.ToString(GetPropertyRaw(_administrativeArea)) ?? string.Empty;
+    public string? AdministrativeArea => NativeValue.IsNullOrUndefined(GetPropertyRaw(_administrativeArea)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_administrativeArea));
 
     /// <summary>
     /// subAdministrativeArea
     /// </summary>
-    public string? SubAdministrativeArea => (string?)NativeValue.ToString(GetPropertyRaw(_subAdministrativeArea)) ?? string.Empty;
+    public string? SubAdministrativeArea => NativeValue.IsNullOrUndefined(GetPropertyRaw(_subAdministrativeArea)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_subAdministrativeArea));
 
     /// <summary>
     /// locality
     /// </summary>
-    public string? Locality => (string?)NativeValue.ToString(GetPropertyRaw(_locality)) ?? string.Empty;
+    public string? Locality => NativeValue.IsNullOrUndefined(GetPropertyRaw(_locality)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_locality));
 
     /// <summary>
     /// subLocality
     /// </summary>
-    public string? SubLocality => (string?)NativeValue.ToString(GetPropertyRaw(_subLocality)) ?? string.Empty;
+    public string? SubLocality => NativeValue.IsNullOrUndefined(GetPropertyRaw(_subLocality)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_subLocality));
 
 }
 
@@ -1323,12 +1323,12 @@ public sealed partial class SatelliteStatusInfo : JsObject
     /// <summary>
     /// satelliteConstellation
     /// </summary>
-    public global::HarmonyOS.ArkUI.SatelliteConstellationCategory[] SatelliteConstellation => ValueConverter.ConvertArray(GetPropertyRaw(_satelliteConstellation), static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.SatelliteConstellationCategory>(e));
+    public global::HarmonyOS.ArkUI.SatelliteConstellationCategory[]? SatelliteConstellation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_satelliteConstellation)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_satelliteConstellation), static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.SatelliteConstellationCategory>(e));
 
     /// <summary>
     /// satelliteAdditionalInfo
     /// </summary>
-    public double[] SatelliteAdditionalInfo => ValueConverter.ConvertArray(GetPropertyRaw(_satelliteAdditionalInfo), static e => ValueConverter.Convert<double>(e));
+    public double[]? SatelliteAdditionalInfo => NativeValue.IsNullOrUndefined(GetPropertyRaw(_satelliteAdditionalInfo)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_satelliteAdditionalInfo), static e => ValueConverter.Convert<double>(e));
 
 }
 
@@ -1357,7 +1357,7 @@ public sealed partial class GeoLocationManagerBluetoothScanResult : JsObject
     /// <summary>
     /// data
     /// </summary>
-    public byte[] Data => ValueConverter.ConvertArray(GetPropertyRaw(_data), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? Data => NativeValue.IsNullOrUndefined(GetPropertyRaw(_data)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_data), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// deviceName

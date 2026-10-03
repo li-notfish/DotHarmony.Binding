@@ -123,11 +123,11 @@ public sealed partial class PickerProfile : JsObject
     /// <summary>
     /// saveUri
     /// </summary>
-    public string? SaveUri => (string?)NativeValue.ToString(GetPropertyRaw(_saveUri)) ?? string.Empty;
+    public string? SaveUri => NativeValue.IsNullOrUndefined(GetPropertyRaw(_saveUri)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_saveUri));
 
     /// <summary>
     /// videoDuration
     /// </summary>
-    public double? VideoDuration => (double?)NativeValue.ToDouble(GetPropertyRaw(_videoDuration));
+    public double? VideoDuration => NativeValue.IsNullOrUndefined(GetPropertyRaw(_videoDuration)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_videoDuration));
 
 }

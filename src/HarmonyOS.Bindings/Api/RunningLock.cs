@@ -77,7 +77,7 @@ public static unsafe partial class RunningLock
     /// </summary>
     public static Task<bool> IsRunningLockTypeSupportedAsync(global::HarmonyOS.ArkUI.RunningLockType type)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _isRunningLockTypeSupported, type);
+        return NodeApi.CallMethodAsync<bool>(Module, _isRunningLockTypeSupported, (int)type);
     }
 
     /// <summary>
@@ -85,7 +85,7 @@ public static unsafe partial class RunningLock
     /// </summary>
     public static bool IsSupported(global::HarmonyOS.ArkUI.RunningLockType type)
     {
-        return NodeApi.CallMethod<bool>(Module, _isSupported, type);
+        return NodeApi.CallMethod<bool>(Module, _isSupported, (int)type);
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ public static unsafe partial class RunningLock
     /// </summary>
     public static Task<RunningLockObject> CreateRunningLockAsync(string name, global::HarmonyOS.ArkUI.RunningLockType type)
     {
-        return NodeApi.CallMethodAsync(Module, _createRunningLock, static h => new RunningLockObject(h), name, type);
+        return NodeApi.CallMethodAsync(Module, _createRunningLock, static h => new RunningLockObject(h), name, (int)type);
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public static unsafe partial class RunningLock
     /// </summary>
     public static Task<RunningLockObject> CreateAsync(string name, global::HarmonyOS.ArkUI.RunningLockType type)
     {
-        return NodeApi.CallMethodAsync(Module, _create, static h => new RunningLockObject(h), name, type);
+        return NodeApi.CallMethodAsync(Module, _create, static h => new RunningLockObject(h), name, (int)type);
     }
 
 }

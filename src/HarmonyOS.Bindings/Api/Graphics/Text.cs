@@ -82,7 +82,7 @@ public static unsafe partial class Text
     /// </summary>
     public static Task<string[]> GetSystemFontFullNamesByTypeAsync(global::HarmonyOS.ArkUI.SystemFontType fontType)
     {
-        return NodeApi.CallMethodAsync(Module, _getSystemFontFullNamesByType, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), fontType);
+        return NodeApi.CallMethodAsync(Module, _getSystemFontFullNamesByType, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), (int)fontType);
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public static unsafe partial class Text
     /// </summary>
     public static string[] GetFontPathsByType(global::HarmonyOS.ArkUI.SystemFontType fontType)
     {
-        return NodeApi.CallMethod(Module, _getFontPathsByType, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), fontType);
+        return NodeApi.CallMethod(Module, _getFontPathsByType, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), (int)fontType);
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ public static unsafe partial class Text
     /// </summary>
     public static Task<IntPtr> GetFontDescriptorByFullNameAsync(string fullName, global::HarmonyOS.ArkUI.SystemFontType fontType)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getFontDescriptorByFullName, fullName, fontType);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getFontDescriptorByFullName, fullName, (int)fontType);
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public static unsafe partial class Text
     /// </summary>
     public static void SetTextHighContrast(global::HarmonyOS.ArkUI.TextHighContrast action)
     {
-        NodeApi.CallMethodVoid(Module, _setTextHighContrast, action);
+        NodeApi.CallMethodVoid(Module, _setTextHighContrast, (int)action);
     }
 
     /// <summary>
@@ -122,7 +122,7 @@ public static unsafe partial class Text
     /// </summary>
     public static void SetTextUndefinedGlyphDisplay(global::HarmonyOS.ArkUI.TextUndefinedGlyphDisplay noGlyphShow)
     {
-        NodeApi.CallMethodVoid(Module, _setTextUndefinedGlyphDisplay, noGlyphShow);
+        NodeApi.CallMethodVoid(Module, _setTextUndefinedGlyphDisplay, (int)noGlyphShow);
     }
 
     /// <summary>
@@ -425,7 +425,7 @@ public sealed partial class Paragraph : JsObject
     /// </summary>
     public IntPtr[] GetRectsForRange(Range range, global::HarmonyOS.ArkUI.RectWidthStyle widthStyle, global::HarmonyOS.ArkUI.RectHeightStyle heightStyle)
     {
-        return CallMethod(_getRectsForRange, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(range), widthStyle, heightStyle);
+        return CallMethod(_getRectsForRange, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(range), (int)widthStyle, (int)heightStyle);
     }
 
     /// <summary>
@@ -843,7 +843,7 @@ public sealed partial class TextLine : JsObject
     /// </summary>
     public TextLine CreateTruncatedLine(double width, global::HarmonyOS.ArkUI.EllipsisMode ellipsisMode, string ellipsis)
     {
-        return CallMethod(_createTruncatedLine, static h => new TextLine(h), width, ellipsisMode, ellipsis);
+        return CallMethod(_createTruncatedLine, static h => new TextLine(h), width, (int)ellipsisMode, ellipsis);
     }
 
     /// <summary>

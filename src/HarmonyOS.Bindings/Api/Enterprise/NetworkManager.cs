@@ -305,52 +305,52 @@ public sealed partial class FirewallRule : JsObject
     /// <summary>
     /// srcAddr
     /// </summary>
-    public string? SrcAddr => (string?)NativeValue.ToString(GetPropertyRaw(_srcAddr)) ?? string.Empty;
+    public string? SrcAddr => NativeValue.IsNullOrUndefined(GetPropertyRaw(_srcAddr)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_srcAddr));
 
     /// <summary>
     /// destAddr
     /// </summary>
-    public string? DestAddr => (string?)NativeValue.ToString(GetPropertyRaw(_destAddr)) ?? string.Empty;
+    public string? DestAddr => NativeValue.IsNullOrUndefined(GetPropertyRaw(_destAddr)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_destAddr));
 
     /// <summary>
     /// srcPort
     /// </summary>
-    public string? SrcPort => (string?)NativeValue.ToString(GetPropertyRaw(_srcPort)) ?? string.Empty;
+    public string? SrcPort => NativeValue.IsNullOrUndefined(GetPropertyRaw(_srcPort)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_srcPort));
 
     /// <summary>
     /// destPort
     /// </summary>
-    public string? DestPort => (string?)NativeValue.ToString(GetPropertyRaw(_destPort)) ?? string.Empty;
+    public string? DestPort => NativeValue.IsNullOrUndefined(GetPropertyRaw(_destPort)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_destPort));
 
     /// <summary>
     /// appUid
     /// </summary>
-    public string? AppUid => (string?)NativeValue.ToString(GetPropertyRaw(_appUid)) ?? string.Empty;
+    public string? AppUid => NativeValue.IsNullOrUndefined(GetPropertyRaw(_appUid)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_appUid));
 
     /// <summary>
     /// direction
     /// </summary>
-    public global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection? Direction => (global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection?)(global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection)NativeValue.ToInt(GetPropertyRaw(_direction));
+    public global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection? Direction => NativeValue.IsNullOrUndefined(GetPropertyRaw(_direction)) ? null : (global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection?)(global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection)NativeValue.ToInt(GetPropertyRaw(_direction));
 
     /// <summary>
     /// action
     /// </summary>
-    public global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction? Action => (global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction?)(global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction)NativeValue.ToInt(GetPropertyRaw(_action));
+    public global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction? Action => NativeValue.IsNullOrUndefined(GetPropertyRaw(_action)) ? null : (global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction?)(global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction)NativeValue.ToInt(GetPropertyRaw(_action));
 
     /// <summary>
     /// protocol
     /// </summary>
-    public global::HarmonyOS.ArkUI.EnterpriseNetworkManagerProtocol? Protocol => (global::HarmonyOS.ArkUI.EnterpriseNetworkManagerProtocol?)(global::HarmonyOS.ArkUI.EnterpriseNetworkManagerProtocol)NativeValue.ToInt(GetPropertyRaw(_protocol));
+    public global::HarmonyOS.ArkUI.EnterpriseNetworkManagerProtocol? Protocol => NativeValue.IsNullOrUndefined(GetPropertyRaw(_protocol)) ? null : (global::HarmonyOS.ArkUI.EnterpriseNetworkManagerProtocol?)(global::HarmonyOS.ArkUI.EnterpriseNetworkManagerProtocol)NativeValue.ToInt(GetPropertyRaw(_protocol));
 
     /// <summary>
     /// family
     /// </summary>
-    public double? Family => (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
+    public double? Family => NativeValue.IsNullOrUndefined(GetPropertyRaw(_family)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
 
     /// <summary>
     /// logType
     /// </summary>
-    public global::HarmonyOS.ArkUI.LogType? LogType => (global::HarmonyOS.ArkUI.LogType?)(global::HarmonyOS.ArkUI.LogType)NativeValue.ToInt(GetPropertyRaw(_logType));
+    public global::HarmonyOS.ArkUI.LogType? LogType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_logType)) ? null : (global::HarmonyOS.ArkUI.LogType?)(global::HarmonyOS.ArkUI.LogType)NativeValue.ToInt(GetPropertyRaw(_logType));
 
 }
 
@@ -370,32 +370,32 @@ public sealed partial class DomainFilterRule : JsObject
     /// <summary>
     /// domainName
     /// </summary>
-    public string? DomainName => (string?)NativeValue.ToString(GetPropertyRaw(_domainName)) ?? string.Empty;
+    public string? DomainName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_domainName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_domainName));
 
     /// <summary>
     /// appUid
     /// </summary>
-    public string? AppUid => (string?)NativeValue.ToString(GetPropertyRaw(_appUid)) ?? string.Empty;
+    public string? AppUid => NativeValue.IsNullOrUndefined(GetPropertyRaw(_appUid)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_appUid));
 
     /// <summary>
     /// action
     /// </summary>
-    public global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction? Action => (global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction?)(global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction)NativeValue.ToInt(GetPropertyRaw(_action));
+    public global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction? Action => NativeValue.IsNullOrUndefined(GetPropertyRaw(_action)) ? null : (global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction?)(global::HarmonyOS.ArkUI.EnterpriseNetworkManagerAction)NativeValue.ToInt(GetPropertyRaw(_action));
 
     /// <summary>
     /// direction
     /// </summary>
-    public global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection? Direction => (global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection?)(global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection)NativeValue.ToInt(GetPropertyRaw(_direction));
+    public global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection? Direction => NativeValue.IsNullOrUndefined(GetPropertyRaw(_direction)) ? null : (global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection?)(global::HarmonyOS.ArkUI.EnterpriseNetworkManagerDirection)NativeValue.ToInt(GetPropertyRaw(_direction));
 
     /// <summary>
     /// family
     /// </summary>
-    public double? Family => (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
+    public double? Family => NativeValue.IsNullOrUndefined(GetPropertyRaw(_family)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
 
     /// <summary>
     /// logType
     /// </summary>
-    public global::HarmonyOS.ArkUI.LogType? LogType => (global::HarmonyOS.ArkUI.LogType?)(global::HarmonyOS.ArkUI.LogType)NativeValue.ToInt(GetPropertyRaw(_logType));
+    public global::HarmonyOS.ArkUI.LogType? LogType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_logType)) ? null : (global::HarmonyOS.ArkUI.LogType?)(global::HarmonyOS.ArkUI.LogType)NativeValue.ToInt(GetPropertyRaw(_logType));
 
 }
 

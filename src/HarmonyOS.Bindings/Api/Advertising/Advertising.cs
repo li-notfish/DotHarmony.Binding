@@ -179,27 +179,27 @@ public sealed partial class AdRequestParams : JsObject
     /// <summary>
     /// adType
     /// </summary>
-    public double? AdType => (double?)NativeValue.ToDouble(GetPropertyRaw(_adType));
+    public double? AdType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_adType)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_adType));
 
     /// <summary>
     /// adCount
     /// </summary>
-    public double? AdCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_adCount));
+    public double? AdCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_adCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_adCount));
 
     /// <summary>
     /// adWidth
     /// </summary>
-    public double? AdWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_adWidth));
+    public double? AdWidth => NativeValue.IsNullOrUndefined(GetPropertyRaw(_adWidth)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_adWidth));
 
     /// <summary>
     /// adHeight
     /// </summary>
-    public double? AdHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_adHeight));
+    public double? AdHeight => NativeValue.IsNullOrUndefined(GetPropertyRaw(_adHeight)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_adHeight));
 
     /// <summary>
     /// adSearchKeyword
     /// </summary>
-    public string? AdSearchKeyword => (string?)NativeValue.ToString(GetPropertyRaw(_adSearchKeyword)) ?? string.Empty;
+    public string? AdSearchKeyword => NativeValue.IsNullOrUndefined(GetPropertyRaw(_adSearchKeyword)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_adSearchKeyword));
 
 }
 
@@ -216,17 +216,17 @@ public sealed partial class AdOptions : JsObject
     /// <summary>
     /// tagForChildProtection
     /// </summary>
-    public double? TagForChildProtection => (double?)NativeValue.ToDouble(GetPropertyRaw(_tagForChildProtection));
+    public double? TagForChildProtection => NativeValue.IsNullOrUndefined(GetPropertyRaw(_tagForChildProtection)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_tagForChildProtection));
 
     /// <summary>
     /// adContentClassification
     /// </summary>
-    public string? AdContentClassification => (string?)NativeValue.ToString(GetPropertyRaw(_adContentClassification)) ?? string.Empty;
+    public string? AdContentClassification => NativeValue.IsNullOrUndefined(GetPropertyRaw(_adContentClassification)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_adContentClassification));
 
     /// <summary>
     /// nonPersonalizedAd
     /// </summary>
-    public double? NonPersonalizedAd => (double?)NativeValue.ToDouble(GetPropertyRaw(_nonPersonalizedAd));
+    public double? NonPersonalizedAd => NativeValue.IsNullOrUndefined(GetPropertyRaw(_nonPersonalizedAd)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_nonPersonalizedAd));
 
 }
 

@@ -92,7 +92,7 @@ public static unsafe partial class CardEmulation
     /// </summary>
     public static bool IsDefaultService(IntPtr elementName, global::HarmonyOS.ArkUI.CardType type)
     {
-        return NodeApi.CallMethod<bool>(Module, _isDefaultService, elementName, type);
+        return NodeApi.CallMethod<bool>(Module, _isDefaultService, elementName, (int)type);
     }
 
 }

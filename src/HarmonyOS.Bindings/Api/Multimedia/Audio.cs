@@ -113,7 +113,7 @@ public static unsafe partial class Audio
     /// </summary>
     public static Task<AudioLoopback> CreateAudioLoopbackAsync(global::HarmonyOS.ArkUI.AudioLoopbackMode mode)
     {
-        return NodeApi.CallMethodAsync(Module, _createAudioLoopback, static h => new AudioLoopback(h), mode);
+        return NodeApi.CallMethodAsync(Module, _createAudioLoopback, static h => new AudioLoopback(h), (int)mode);
     }
 
 }
@@ -158,7 +158,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task SetVolumeAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType, double volume)
     {
-        return CallMethodAsyncVoid(_setVolume, volumeType, volume);
+        return CallMethodAsyncVoid(_setVolume, (int)volumeType, volume);
     }
 
     /// <summary>
@@ -166,7 +166,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task<double> GetVolumeAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethodAsync<double>(_getVolume, volumeType);
+        return CallMethodAsync<double>(_getVolume, (int)volumeType);
     }
 
     /// <summary>
@@ -174,7 +174,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task<double> GetMinVolumeAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethodAsync<double>(_getMinVolume, volumeType);
+        return CallMethodAsync<double>(_getMinVolume, (int)volumeType);
     }
 
     /// <summary>
@@ -182,7 +182,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task<double> GetMaxVolumeAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethodAsync<double>(_getMaxVolume, volumeType);
+        return CallMethodAsync<double>(_getMaxVolume, (int)volumeType);
     }
 
     /// <summary>
@@ -190,7 +190,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task<IntPtr> GetDevicesAsync(global::HarmonyOS.ArkUI.DeviceFlag deviceFlag)
     {
-        return CallMethodAsync<IntPtr>(_getDevices, deviceFlag);
+        return CallMethodAsync<IntPtr>(_getDevices, (int)deviceFlag);
     }
 
     /// <summary>
@@ -198,7 +198,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task MuteAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType, bool mute)
     {
-        return CallMethodAsyncVoid(_mute, volumeType, mute);
+        return CallMethodAsyncVoid(_mute, (int)volumeType, mute);
     }
 
     /// <summary>
@@ -206,7 +206,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task<bool> IsMuteAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethodAsync<bool>(_isMute, volumeType);
+        return CallMethodAsync<bool>(_isMute, (int)volumeType);
     }
 
     /// <summary>
@@ -214,7 +214,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task<bool> IsActiveAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethodAsync<bool>(_isActive, volumeType);
+        return CallMethodAsync<bool>(_isActive, (int)volumeType);
     }
 
     /// <summary>
@@ -238,7 +238,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task SetRingerModeAsync(global::HarmonyOS.ArkUI.AudioRingMode mode)
     {
-        return CallMethodAsyncVoid(_setRingerMode, mode);
+        return CallMethodAsyncVoid(_setRingerMode, (int)mode);
     }
 
     /// <summary>
@@ -270,7 +270,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task SetDeviceActiveAsync(global::HarmonyOS.ArkUI.ActiveDeviceType deviceType, bool active)
     {
-        return CallMethodAsyncVoid(_setDeviceActive, deviceType, active);
+        return CallMethodAsyncVoid(_setDeviceActive, (int)deviceType, active);
     }
 
     /// <summary>
@@ -278,7 +278,7 @@ public sealed partial class AudioManager : JsObject
     /// </summary>
     public Task<bool> IsDeviceActiveAsync(global::HarmonyOS.ArkUI.ActiveDeviceType deviceType)
     {
-        return CallMethodAsync<bool>(_isDeviceActive, deviceType);
+        return CallMethodAsync<bool>(_isDeviceActive, (int)deviceType);
     }
 
     /// <summary>
@@ -781,7 +781,7 @@ public sealed partial class AudioCapturer : JsObject
     /// </summary>
     public void SetNoiseReductionMode(global::HarmonyOS.ArkUI.NoiseReductionMode noiseReductionMode)
     {
-        CallMethodVoid(_setNoiseReductionMode, noiseReductionMode);
+        CallMethodVoid(_setNoiseReductionMode, (int)noiseReductionMode);
     }
 
     /// <summary>
@@ -1167,7 +1167,7 @@ public sealed partial class AudioRenderer : JsObject
     /// </summary>
     public Task SetAudioEffectModeAsync(global::HarmonyOS.ArkUI.AudioEffectMode mode)
     {
-        return CallMethodAsyncVoid(_setAudioEffectMode, mode);
+        return CallMethodAsyncVoid(_setAudioEffectMode, (int)mode);
     }
 
     /// <summary>
@@ -1183,7 +1183,7 @@ public sealed partial class AudioRenderer : JsObject
     /// </summary>
     public Task<double> WriteAsync(byte[] buffer)
     {
-        return CallMethodAsync<double>(_write, NapiArg.Of(buffer));
+        return CallMethodAsync<double>(_write, NapiArg.OfArrayBuffer(buffer));
     }
 
     /// <summary>
@@ -1279,7 +1279,7 @@ public sealed partial class AudioRenderer : JsObject
     /// </summary>
     public Task SetRenderRateAsync(global::HarmonyOS.ArkUI.AudioRendererRate rate)
     {
-        return CallMethodAsyncVoid(_setRenderRate, rate);
+        return CallMethodAsyncVoid(_setRenderRate, (int)rate);
     }
 
     /// <summary>
@@ -1319,7 +1319,7 @@ public sealed partial class AudioRenderer : JsObject
     /// </summary>
     public Task SetInterruptModeAsync(global::HarmonyOS.ArkUI.InterruptMode mode)
     {
-        return CallMethodAsyncVoid(_setInterruptMode, mode);
+        return CallMethodAsyncVoid(_setInterruptMode, (int)mode);
     }
 
     /// <summary>
@@ -1327,7 +1327,7 @@ public sealed partial class AudioRenderer : JsObject
     /// </summary>
     public void SetInterruptModeSync(global::HarmonyOS.ArkUI.InterruptMode mode)
     {
-        CallMethodVoid(_setInterruptModeSync, mode);
+        CallMethodVoid(_setInterruptModeSync, (int)mode);
     }
 
     /// <summary>
@@ -1423,7 +1423,7 @@ public sealed partial class AudioRenderer : JsObject
     /// </summary>
     public void SetChannelBlendMode(global::HarmonyOS.ArkUI.ChannelBlendMode mode)
     {
-        CallMethodVoid(_setChannelBlendMode, mode);
+        CallMethodVoid(_setChannelBlendMode, (int)mode);
     }
 
     /// <summary>
@@ -1447,7 +1447,7 @@ public sealed partial class AudioRenderer : JsObject
     /// </summary>
     public Task SetDefaultOutputDeviceAsync(global::HarmonyOS.ArkUI.DeviceType deviceType)
     {
-        return CallMethodAsyncVoid(_setDefaultOutputDevice, deviceType);
+        return CallMethodAsyncVoid(_setDefaultOutputDevice, (int)deviceType);
     }
 
     /// <summary>
@@ -1495,7 +1495,7 @@ public sealed partial class AudioRenderer : JsObject
     /// </summary>
     public double GetLatency(global::HarmonyOS.ArkUI.AudioLatencyType type)
     {
-        return CallMethod<double>(_getLatency, type);
+        return CallMethod<double>(_getLatency, (int)type);
     }
 
     /// <summary>
@@ -1841,7 +1841,7 @@ public sealed partial class AudioLoopback : JsObject
     /// </summary>
     public bool SetReverbPreset(global::HarmonyOS.ArkUI.AudioLoopbackReverbPreset preset)
     {
-        return CallMethod<bool>(_setReverbPreset, preset);
+        return CallMethod<bool>(_setReverbPreset, (int)preset);
     }
 
     /// <summary>
@@ -1857,7 +1857,7 @@ public sealed partial class AudioLoopback : JsObject
     /// </summary>
     public bool SetEqualizerPreset(global::HarmonyOS.ArkUI.AudioLoopbackEqualizerPreset preset)
     {
-        return CallMethod<bool>(_setEqualizerPreset, preset);
+        return CallMethod<bool>(_setEqualizerPreset, (int)preset);
     }
 
     /// <summary>
@@ -1934,17 +1934,17 @@ public sealed partial class InterruptAction : JsObject
     /// <summary>
     /// type
     /// </summary>
-    public global::HarmonyOS.ArkUI.InterruptType? Type => (global::HarmonyOS.ArkUI.InterruptType?)(global::HarmonyOS.ArkUI.InterruptType)NativeValue.ToInt(GetPropertyRaw(_type));
+    public global::HarmonyOS.ArkUI.InterruptType? Type => NativeValue.IsNullOrUndefined(GetPropertyRaw(_type)) ? null : (global::HarmonyOS.ArkUI.InterruptType?)(global::HarmonyOS.ArkUI.InterruptType)NativeValue.ToInt(GetPropertyRaw(_type));
 
     /// <summary>
     /// hint
     /// </summary>
-    public global::HarmonyOS.ArkUI.InterruptHint? Hint => (global::HarmonyOS.ArkUI.InterruptHint?)(global::HarmonyOS.ArkUI.InterruptHint)NativeValue.ToInt(GetPropertyRaw(_hint));
+    public global::HarmonyOS.ArkUI.InterruptHint? Hint => NativeValue.IsNullOrUndefined(GetPropertyRaw(_hint)) ? null : (global::HarmonyOS.ArkUI.InterruptHint?)(global::HarmonyOS.ArkUI.InterruptHint)NativeValue.ToInt(GetPropertyRaw(_hint));
 
     /// <summary>
     /// activated
     /// </summary>
-    public bool? Activated => (bool?)NativeValue.ToBool(GetPropertyRaw(_activated));
+    public bool? Activated => NativeValue.IsNullOrUndefined(GetPropertyRaw(_activated)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_activated));
 
 }
 
@@ -2007,7 +2007,7 @@ public sealed partial class VolumeEvent : JsObject
     /// <summary>
     /// volumeMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.AudioVolumeMode? VolumeMode => (global::HarmonyOS.ArkUI.AudioVolumeMode?)(global::HarmonyOS.ArkUI.AudioVolumeMode)NativeValue.ToInt(GetPropertyRaw(_volumeMode));
+    public global::HarmonyOS.ArkUI.AudioVolumeMode? VolumeMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_volumeMode)) ? null : (global::HarmonyOS.ArkUI.AudioVolumeMode?)(global::HarmonyOS.ArkUI.AudioVolumeMode)NativeValue.ToInt(GetPropertyRaw(_volumeMode));
 
 }
 
@@ -2040,7 +2040,7 @@ public sealed partial class StreamVolumeEvent : JsObject
     /// <summary>
     /// previousVolume
     /// </summary>
-    public double? PreviousVolume => (double?)NativeValue.ToDouble(GetPropertyRaw(_previousVolume));
+    public double? PreviousVolume => NativeValue.IsNullOrUndefined(GetPropertyRaw(_previousVolume)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_previousVolume));
 
 }
 
@@ -2184,7 +2184,7 @@ public sealed partial class AudioVolumeManager : JsObject
     /// </summary>
     public double GetVolumeByStream(global::HarmonyOS.ArkUI.StreamUsage streamUsage)
     {
-        return CallMethod<double>(_getVolumeByStream, streamUsage);
+        return CallMethod<double>(_getVolumeByStream, (int)streamUsage);
     }
 
     /// <summary>
@@ -2192,7 +2192,7 @@ public sealed partial class AudioVolumeManager : JsObject
     /// </summary>
     public double GetMinVolumeByStream(global::HarmonyOS.ArkUI.StreamUsage streamUsage)
     {
-        return CallMethod<double>(_getMinVolumeByStream, streamUsage);
+        return CallMethod<double>(_getMinVolumeByStream, (int)streamUsage);
     }
 
     /// <summary>
@@ -2200,7 +2200,7 @@ public sealed partial class AudioVolumeManager : JsObject
     /// </summary>
     public double GetMaxVolumeByStream(global::HarmonyOS.ArkUI.StreamUsage streamUsage)
     {
-        return CallMethod<double>(_getMaxVolumeByStream, streamUsage);
+        return CallMethod<double>(_getMaxVolumeByStream, (int)streamUsage);
     }
 
     /// <summary>
@@ -2208,7 +2208,7 @@ public sealed partial class AudioVolumeManager : JsObject
     /// </summary>
     public bool IsSystemMutedForStream(global::HarmonyOS.ArkUI.StreamUsage streamUsage)
     {
-        return CallMethod<bool>(_isSystemMutedForStream, streamUsage);
+        return CallMethod<bool>(_isSystemMutedForStream, (int)streamUsage);
     }
 
     /// <summary>
@@ -2216,7 +2216,7 @@ public sealed partial class AudioVolumeManager : JsObject
     /// </summary>
     public double GetVolumeInUnitOfDbByStream(global::HarmonyOS.ArkUI.StreamUsage streamUsage, double volumeLevel, global::HarmonyOS.ArkUI.DeviceType device)
     {
-        return CallMethod<double>(_getVolumeInUnitOfDbByStream, streamUsage, volumeLevel, device);
+        return CallMethod<double>(_getVolumeInUnitOfDbByStream, (int)streamUsage, volumeLevel, (int)device);
     }
 
     /// <summary>
@@ -2224,7 +2224,7 @@ public sealed partial class AudioVolumeManager : JsObject
     /// </summary>
     public void On(string type, global::HarmonyOS.ArkUI.StreamUsage streamUsage, IntPtr callback)
     {
-        CallMethodVoid(_on, type, streamUsage, callback);
+        CallMethodVoid(_on, type, (int)streamUsage, callback);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -2262,7 +2262,7 @@ public sealed partial class AudioVolumeManager : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(new StreamVolumeEvent(args[0])),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, streamUsage));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, (int)streamUsage));
     }
 
     /// <summary>
@@ -2390,7 +2390,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public Task<IntPtr> GetAudioEffectInfoArrayAsync(global::HarmonyOS.ArkUI.StreamUsage usage)
     {
-        return CallMethodAsync<IntPtr>(_getAudioEffectInfoArray, usage);
+        return CallMethodAsync<IntPtr>(_getAudioEffectInfoArray, (int)usage);
     }
 
     /// <summary>
@@ -2398,7 +2398,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public IntPtr GetAudioEffectInfoArraySync(global::HarmonyOS.ArkUI.StreamUsage usage)
     {
-        return CallMethod<IntPtr>(_getAudioEffectInfoArraySync, usage);
+        return CallMethod<IntPtr>(_getAudioEffectInfoArraySync, (int)usage);
     }
 
     /// <summary>
@@ -2422,7 +2422,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public Task<bool> IsActiveAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethodAsync<bool>(_isActive, volumeType);
+        return CallMethodAsync<bool>(_isActive, (int)volumeType);
     }
 
     /// <summary>
@@ -2430,7 +2430,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsActiveSync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethod<bool>(_isActiveSync, volumeType);
+        return CallMethod<bool>(_isActiveSync, (int)volumeType);
     }
 
     /// <summary>
@@ -2438,7 +2438,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsStreamActive(global::HarmonyOS.ArkUI.StreamUsage streamUsage)
     {
-        return CallMethod<bool>(_isStreamActive, streamUsage);
+        return CallMethod<bool>(_isStreamActive, (int)streamUsage);
     }
 
     /// <summary>
@@ -2446,7 +2446,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsAcousticEchoCancelerSupported(global::HarmonyOS.ArkUI.SourceType sourceType)
     {
-        return CallMethod<bool>(_isAcousticEchoCancelerSupported, sourceType);
+        return CallMethod<bool>(_isAcousticEchoCancelerSupported, (int)sourceType);
     }
 
     /// <summary>
@@ -2454,7 +2454,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsAudioLoopbackSupported(global::HarmonyOS.ArkUI.AudioLoopbackMode mode)
     {
-        return CallMethod<bool>(_isAudioLoopbackSupported, mode);
+        return CallMethod<bool>(_isAudioLoopbackSupported, (int)mode);
     }
 
     /// <summary>
@@ -2470,7 +2470,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsIntelligentNoiseReductionEnabledForCurrentDevice(global::HarmonyOS.ArkUI.SourceType sourceType)
     {
-        return CallMethod<bool>(_isIntelligentNoiseReductionEnabledForCurrentDevice, sourceType);
+        return CallMethod<bool>(_isIntelligentNoiseReductionEnabledForCurrentDevice, (int)sourceType);
     }
 
     /// <summary>
@@ -2478,7 +2478,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsFastPlaybackSupported(AudioStreamInfo streamInfo, global::HarmonyOS.ArkUI.StreamUsage usage)
     {
-        return CallMethod<bool>(_isFastPlaybackSupported, NapiArg.Of(streamInfo), usage);
+        return CallMethod<bool>(_isFastPlaybackSupported, NapiArg.Of(streamInfo), (int)usage);
     }
 
     /// <summary>
@@ -2486,7 +2486,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsOffloadPlaybackSupported(AudioStreamInfo streamInfo, global::HarmonyOS.ArkUI.StreamUsage usage)
     {
-        return CallMethod<bool>(_isOffloadPlaybackSupported, NapiArg.Of(streamInfo), usage);
+        return CallMethod<bool>(_isOffloadPlaybackSupported, NapiArg.Of(streamInfo), (int)usage);
     }
 
     /// <summary>
@@ -2494,7 +2494,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsDirectPlaybackSupported(AudioStreamInfo streamInfo, global::HarmonyOS.ArkUI.StreamUsage usage)
     {
-        return CallMethod<bool>(_isDirectPlaybackSupported, NapiArg.Of(streamInfo), usage);
+        return CallMethod<bool>(_isDirectPlaybackSupported, NapiArg.Of(streamInfo), (int)usage);
     }
 
     /// <summary>
@@ -2502,7 +2502,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsFastRecordingSupported(AudioStreamInfo streamInfo, global::HarmonyOS.ArkUI.SourceType source)
     {
-        return CallMethod<bool>(_isFastRecordingSupported, NapiArg.Of(streamInfo), source);
+        return CallMethod<bool>(_isFastRecordingSupported, NapiArg.Of(streamInfo), (int)source);
     }
 
     /// <summary>
@@ -2510,7 +2510,7 @@ public sealed partial class AudioStreamManager : JsObject
     /// </summary>
     public bool IsMultichannelPlaybackSupported(AudioStreamInfo streamInfo, global::HarmonyOS.ArkUI.StreamUsage usage)
     {
-        return CallMethod<bool>(_isMultichannelPlaybackSupported, NapiArg.Of(streamInfo), usage);
+        return CallMethod<bool>(_isMultichannelPlaybackSupported, NapiArg.Of(streamInfo), (int)usage);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -2603,7 +2603,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public Task<IntPtr> GetDevicesAsync(global::HarmonyOS.ArkUI.DeviceFlag deviceFlag)
     {
-        return CallMethodAsync<IntPtr>(_getDevices, deviceFlag);
+        return CallMethodAsync<IntPtr>(_getDevices, (int)deviceFlag);
     }
 
     /// <summary>
@@ -2611,7 +2611,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public IntPtr GetDevicesSync(global::HarmonyOS.ArkUI.DeviceFlag deviceFlag)
     {
-        return CallMethod<IntPtr>(_getDevicesSync, deviceFlag);
+        return CallMethod<IntPtr>(_getDevicesSync, (int)deviceFlag);
     }
 
     /// <summary>
@@ -2619,7 +2619,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public void On(string type, global::HarmonyOS.ArkUI.DeviceFlag deviceFlag, IntPtr callback)
     {
-        CallMethodVoid(_on, type, deviceFlag, callback);
+        CallMethodVoid(_on, type, (int)deviceFlag, callback);
     }
 
     /// <summary>
@@ -2635,7 +2635,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public IntPtr GetAvailableDevices(global::HarmonyOS.ArkUI.DeviceUsage deviceUsage)
     {
-        return CallMethod<IntPtr>(_getAvailableDevices, deviceUsage);
+        return CallMethod<IntPtr>(_getAvailableDevices, (int)deviceUsage);
     }
 
     /// <summary>
@@ -2643,7 +2643,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public void On(string type, global::HarmonyOS.ArkUI.DeviceUsage deviceUsage, IntPtr callback)
     {
-        CallMethodVoid(_on, type, deviceUsage, callback);
+        CallMethodVoid(_on, type, (int)deviceUsage, callback);
     }
 
     /// <summary>
@@ -2651,7 +2651,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public Task SetCommunicationDeviceAsync(global::HarmonyOS.ArkUI.CommunicationDeviceType deviceType, bool active)
     {
-        return CallMethodAsyncVoid(_setCommunicationDevice, deviceType, active);
+        return CallMethodAsyncVoid(_setCommunicationDevice, (int)deviceType, active);
     }
 
     /// <summary>
@@ -2659,7 +2659,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public Task<bool> IsCommunicationDeviceActiveAsync(global::HarmonyOS.ArkUI.CommunicationDeviceType deviceType)
     {
-        return CallMethodAsync<bool>(_isCommunicationDeviceActive, deviceType);
+        return CallMethodAsync<bool>(_isCommunicationDeviceActive, (int)deviceType);
     }
 
     /// <summary>
@@ -2667,7 +2667,7 @@ public sealed partial class AudioRoutingManager : JsObject
     /// </summary>
     public bool IsCommunicationDeviceActiveSync(global::HarmonyOS.ArkUI.CommunicationDeviceType deviceType)
     {
-        return CallMethod<bool>(_isCommunicationDeviceActiveSync, deviceType);
+        return CallMethod<bool>(_isCommunicationDeviceActiveSync, (int)deviceType);
     }
 
     /// <summary>
@@ -2751,7 +2751,7 @@ public sealed partial class AudioRoutingManager : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, deviceFlag));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, (int)deviceFlag));
     }
 
     /// <summary>
@@ -2777,7 +2777,7 @@ public sealed partial class AudioRoutingManager : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, deviceUsage));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, (int)deviceUsage));
     }
 
     /// <summary>
@@ -2968,7 +2968,7 @@ public sealed partial class AudioSessionManager : JsObject
     /// </summary>
     public void SetAudioSessionScene(global::HarmonyOS.ArkUI.AudioSessionScene scene)
     {
-        CallMethodVoid(_setAudioSessionScene, scene);
+        CallMethodVoid(_setAudioSessionScene, (int)scene);
     }
 
     /// <summary>
@@ -2992,7 +2992,7 @@ public sealed partial class AudioSessionManager : JsObject
     /// </summary>
     public Task SetDefaultOutputDeviceAsync(global::HarmonyOS.ArkUI.DeviceType deviceType)
     {
-        return CallMethodAsyncVoid(_setDefaultOutputDevice, deviceType);
+        return CallMethodAsyncVoid(_setDefaultOutputDevice, (int)deviceType);
     }
 
     /// <summary>
@@ -3000,7 +3000,7 @@ public sealed partial class AudioSessionManager : JsObject
     /// </summary>
     public Task SetMediaOutputDeviceAsync(global::HarmonyOS.ArkUI.DeviceType deviceType)
     {
-        return CallMethodAsyncVoid(_setMediaOutputDevice, deviceType);
+        return CallMethodAsyncVoid(_setMediaOutputDevice, (int)deviceType);
     }
 
     /// <summary>
@@ -3008,7 +3008,7 @@ public sealed partial class AudioSessionManager : JsObject
     /// </summary>
     public IntPtr GetAvailableDevices(global::HarmonyOS.ArkUI.DeviceUsage deviceUsage)
     {
-        return CallMethod<IntPtr>(_getAvailableDevices, deviceUsage);
+        return CallMethod<IntPtr>(_getAvailableDevices, (int)deviceUsage);
     }
 
     /// <summary>
@@ -3016,7 +3016,7 @@ public sealed partial class AudioSessionManager : JsObject
     /// </summary>
     public void On(string type, global::HarmonyOS.ArkUI.DeviceUsage deviceUsage, IntPtr callback)
     {
-        CallMethodVoid(_on, type, deviceUsage, callback);
+        CallMethodVoid(_on, type, (int)deviceUsage, callback);
     }
 
     /// <summary>
@@ -3048,7 +3048,7 @@ public sealed partial class AudioSessionManager : JsObject
     /// </summary>
     public Task SetBluetoothAndNearlinkPreferredRecordCategoryAsync(global::HarmonyOS.ArkUI.BluetoothAndNearlinkPreferredRecordCategory category)
     {
-        return CallMethodAsyncVoid(_setBluetoothAndNearlinkPreferredRecordCategory, category);
+        return CallMethodAsyncVoid(_setBluetoothAndNearlinkPreferredRecordCategory, (int)category);
     }
 
     /// <summary>
@@ -3154,7 +3154,7 @@ public sealed partial class AudioSessionManager : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(args[0]),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, deviceUsage));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, (int)deviceUsage));
     }
 
     /// <summary>
@@ -3507,7 +3507,7 @@ public sealed partial class AudioStreamInfo : JsObject
     /// <summary>
     /// channelLayout
     /// </summary>
-    public global::HarmonyOS.ArkUI.AudioChannelLayout? ChannelLayout => (global::HarmonyOS.ArkUI.AudioChannelLayout?)(global::HarmonyOS.ArkUI.AudioChannelLayout)NativeValue.ToInt(GetPropertyRaw(_channelLayout));
+    public global::HarmonyOS.ArkUI.AudioChannelLayout? ChannelLayout => NativeValue.IsNullOrUndefined(GetPropertyRaw(_channelLayout)) ? null : (global::HarmonyOS.ArkUI.AudioChannelLayout?)(global::HarmonyOS.ArkUI.AudioChannelLayout)NativeValue.ToInt(GetPropertyRaw(_channelLayout));
 
 }
 
@@ -3577,7 +3577,7 @@ public sealed partial class AudioRendererInfo : JsObject
     /// <summary>
     /// content
     /// </summary>
-    public global::HarmonyOS.ArkUI.ContentType? Content => (global::HarmonyOS.ArkUI.ContentType?)(global::HarmonyOS.ArkUI.ContentType)NativeValue.ToInt(GetPropertyRaw(_content));
+    public global::HarmonyOS.ArkUI.ContentType? Content => NativeValue.IsNullOrUndefined(GetPropertyRaw(_content)) ? null : (global::HarmonyOS.ArkUI.ContentType?)(global::HarmonyOS.ArkUI.ContentType)NativeValue.ToInt(GetPropertyRaw(_content));
 
     /// <summary>
     /// usage
@@ -3592,7 +3592,7 @@ public sealed partial class AudioRendererInfo : JsObject
     /// <summary>
     /// volumeMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.AudioVolumeMode? VolumeMode => (global::HarmonyOS.ArkUI.AudioVolumeMode?)(global::HarmonyOS.ArkUI.AudioVolumeMode)NativeValue.ToInt(GetPropertyRaw(_volumeMode));
+    public global::HarmonyOS.ArkUI.AudioVolumeMode? VolumeMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_volumeMode)) ? null : (global::HarmonyOS.ArkUI.AudioVolumeMode?)(global::HarmonyOS.ArkUI.AudioVolumeMode)NativeValue.ToInt(GetPropertyRaw(_volumeMode));
 
 }
 
@@ -3628,7 +3628,7 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// </summary>
     public Task<double> GetVolumeAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethodAsync<double>(_getVolume, volumeType);
+        return CallMethodAsync<double>(_getVolume, (int)volumeType);
     }
 
     /// <summary>
@@ -3636,7 +3636,7 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// </summary>
     public double GetVolumeSync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethod<double>(_getVolumeSync, volumeType);
+        return CallMethod<double>(_getVolumeSync, (int)volumeType);
     }
 
     /// <summary>
@@ -3644,7 +3644,7 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// </summary>
     public Task<double> GetMinVolumeAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethodAsync<double>(_getMinVolume, volumeType);
+        return CallMethodAsync<double>(_getMinVolume, (int)volumeType);
     }
 
     /// <summary>
@@ -3652,7 +3652,7 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// </summary>
     public double GetMinVolumeSync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethod<double>(_getMinVolumeSync, volumeType);
+        return CallMethod<double>(_getMinVolumeSync, (int)volumeType);
     }
 
     /// <summary>
@@ -3660,7 +3660,7 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// </summary>
     public Task<double> GetMaxVolumeAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethodAsync<double>(_getMaxVolume, volumeType);
+        return CallMethodAsync<double>(_getMaxVolume, (int)volumeType);
     }
 
     /// <summary>
@@ -3668,7 +3668,7 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// </summary>
     public double GetMaxVolumeSync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethod<double>(_getMaxVolumeSync, volumeType);
+        return CallMethod<double>(_getMaxVolumeSync, (int)volumeType);
     }
 
     /// <summary>
@@ -3676,7 +3676,7 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// </summary>
     public Task<bool> IsMuteAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethodAsync<bool>(_isMute, volumeType);
+        return CallMethodAsync<bool>(_isMute, (int)volumeType);
     }
 
     /// <summary>
@@ -3684,7 +3684,7 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// </summary>
     public bool IsMuteSync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType)
     {
-        return CallMethod<bool>(_isMuteSync, volumeType);
+        return CallMethod<bool>(_isMuteSync, (int)volumeType);
     }
 
     /// <summary>
@@ -3756,7 +3756,7 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// </summary>
     public Task<double> GetSystemVolumeInDbAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType, double volumeLevel, global::HarmonyOS.ArkUI.DeviceType device)
     {
-        return CallMethodAsync<double>(_getSystemVolumeInDb, volumeType, volumeLevel, device);
+        return CallMethodAsync<double>(_getSystemVolumeInDb, (int)volumeType, volumeLevel, (int)device);
     }
 
     /// <summary>
@@ -3764,7 +3764,7 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// </summary>
     public double GetSystemVolumeInDbSync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType, double volumeLevel, global::HarmonyOS.ArkUI.DeviceType device)
     {
-        return CallMethod<double>(_getSystemVolumeInDbSync, volumeType, volumeLevel, device);
+        return CallMethod<double>(_getSystemVolumeInDbSync, (int)volumeType, volumeLevel, (int)device);
     }
 
     /// <summary>

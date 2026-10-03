@@ -113,7 +113,7 @@ public static unsafe partial class Ranging
     /// </summary>
     public static Task<double> StartPassiveRangingAsync(global::HarmonyOS.ArkUI.RangingTypes capabilityType)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _startPassiveRanging, capabilityType);
+        return NodeApi.CallMethodAsync<double>(Module, _startPassiveRanging, (int)capabilityType);
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public static unsafe partial class Ranging
     /// </summary>
     public static void StopPassiveRanging(double handle, global::HarmonyOS.ArkUI.RangingTypes capabilityType)
     {
-        NodeApi.CallMethodVoid(Module, _stopPassiveRanging, handle, capabilityType);
+        NodeApi.CallMethodVoid(Module, _stopPassiveRanging, handle, (int)capabilityType);
     }
 
     /// <summary>

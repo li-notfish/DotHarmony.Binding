@@ -150,7 +150,7 @@ public sealed partial class MouseController : JsObject
     /// </summary>
     public Task PressButtonAsync(global::HarmonyOS.ArkUI.MultimodalInputMouseEventButton button)
     {
-        return CallMethodAsyncVoid(_pressButton, button);
+        return CallMethodAsyncVoid(_pressButton, (int)button);
     }
 
     /// <summary>
@@ -158,7 +158,7 @@ public sealed partial class MouseController : JsObject
     /// </summary>
     public Task ReleaseButtonAsync(global::HarmonyOS.ArkUI.MultimodalInputMouseEventButton button)
     {
-        return CallMethodAsyncVoid(_releaseButton, button);
+        return CallMethodAsyncVoid(_releaseButton, (int)button);
     }
 
     /// <summary>
@@ -166,7 +166,7 @@ public sealed partial class MouseController : JsObject
     /// </summary>
     public Task BeginAxisAsync(global::HarmonyOS.ArkUI.Axis axis, double value)
     {
-        return CallMethodAsyncVoid(_beginAxis, axis, value);
+        return CallMethodAsyncVoid(_beginAxis, (int)axis, value);
     }
 
     /// <summary>
@@ -174,7 +174,7 @@ public sealed partial class MouseController : JsObject
     /// </summary>
     public Task UpdateAxisAsync(global::HarmonyOS.ArkUI.Axis axis, double value)
     {
-        return CallMethodAsyncVoid(_updateAxis, axis, value);
+        return CallMethodAsyncVoid(_updateAxis, (int)axis, value);
     }
 
     /// <summary>
@@ -182,7 +182,7 @@ public sealed partial class MouseController : JsObject
     /// </summary>
     public Task EndAxisAsync(global::HarmonyOS.ArkUI.Axis axis)
     {
-        return CallMethodAsyncVoid(_endAxis, axis);
+        return CallMethodAsyncVoid(_endAxis, (int)axis);
     }
 
 }

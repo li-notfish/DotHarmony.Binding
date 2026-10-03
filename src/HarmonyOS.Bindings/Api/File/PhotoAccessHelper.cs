@@ -138,7 +138,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string> CreateAssetAsync(global::HarmonyOS.ArkUI.PhotoType photoType, string extension, CreateOptions options)
     {
-        return CallMethodAsync<string>(_createAsset, photoType, extension, NapiArg.Of(options));
+        return CallMethodAsync<string>(_createAsset, (int)photoType, extension, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string> CreateAssetAsync(global::HarmonyOS.ArkUI.PhotoType photoType, string extension)
     {
-        return CallMethodAsyncCallback<string>(_createAsset, null, photoType, extension);
+        return CallMethodAsyncCallback<string>(_createAsset, null, (int)photoType, extension);
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string> CreatePhotoAssetAsync(global::HarmonyOS.ArkUI.PhotoType photoType, string extension, string? title = null)
     {
-        return CallMethodAsync<string>(_createPhotoAsset, photoType, extension, title);
+        return CallMethodAsync<string>(_createPhotoAsset, (int)photoType, extension, title);
     }
 
     /// <summary>
@@ -162,7 +162,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<IntPtr> GetAlbumsAsync(global::HarmonyOS.ArkUI.AlbumType type, global::HarmonyOS.ArkUI.AlbumSubtype subtype, IntPtr options)
     {
-        return CallMethodAsync<IntPtr>(_getAlbums, type, subtype, options);
+        return CallMethodAsync<IntPtr>(_getAlbums, (int)type, (int)subtype, options);
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<IntPtr> GetAlbumsAsync(global::HarmonyOS.ArkUI.AlbumType type, global::HarmonyOS.ArkUI.AlbumSubtype subtype)
     {
-        return CallMethodAsyncCallback<IntPtr>(_getAlbums, null, type, subtype);
+        return CallMethodAsyncCallback<IntPtr>(_getAlbums, null, (int)type, (int)subtype);
     }
 
     /// <summary>
@@ -274,7 +274,7 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string[]> GetSupportedPhotoFormatsAsync(global::HarmonyOS.ArkUI.PhotoType photoType)
     {
-        return CallMethodAsync(_getSupportedPhotoFormats, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), photoType);
+        return CallMethodAsync(_getSupportedPhotoFormats, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), (int)photoType);
     }
 
     /// <summary>
@@ -496,7 +496,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// </summary>
     public MediaAssetChangeRequest CreateAssetRequest(IntPtr context, global::HarmonyOS.ArkUI.PhotoType photoType, string extension, CreateOptions? options = null)
     {
-        return CallMethod(_createAssetRequest, static h => new MediaAssetChangeRequest(h), context, photoType, extension, NapiArg.Of(options));
+        return CallMethod(_createAssetRequest, static h => new MediaAssetChangeRequest(h), context, (int)photoType, extension, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -552,7 +552,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// </summary>
     public void AddResource(global::HarmonyOS.ArkUI.FilePhotoAccessHelperResourceType type, string fileUri)
     {
-        CallMethodVoid(_addResource, type, fileUri);
+        CallMethodVoid(_addResource, (int)type, fileUri);
     }
 
     /// <summary>
@@ -560,7 +560,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// </summary>
     public void AddResource(global::HarmonyOS.ArkUI.FilePhotoAccessHelperResourceType type, byte[] data)
     {
-        CallMethodVoid(_addResource, type, NapiArg.Of(data));
+        CallMethodVoid(_addResource, (int)type, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>
@@ -576,7 +576,7 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// </summary>
     public void SaveCameraPhoto(global::HarmonyOS.ArkUI.ImageFileType imageFileType)
     {
-        CallMethodVoid(_saveCameraPhoto, imageFileType);
+        CallMethodVoid(_saveCameraPhoto, (int)imageFileType);
     }
 
     /// <summary>
@@ -688,12 +688,12 @@ public sealed partial class CreateOptions : JsObject
     /// <summary>
     /// title
     /// </summary>
-    public string? Title => (string?)NativeValue.ToString(GetPropertyRaw(_title)) ?? string.Empty;
+    public string? Title => NativeValue.IsNullOrUndefined(GetPropertyRaw(_title)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_title));
 
     /// <summary>
     /// subtype
     /// </summary>
-    public global::HarmonyOS.ArkUI.PhotoSubtype? Subtype => (global::HarmonyOS.ArkUI.PhotoSubtype?)(global::HarmonyOS.ArkUI.PhotoSubtype)NativeValue.ToInt(GetPropertyRaw(_subtype));
+    public global::HarmonyOS.ArkUI.PhotoSubtype? Subtype => NativeValue.IsNullOrUndefined(GetPropertyRaw(_subtype)) ? null : (global::HarmonyOS.ArkUI.PhotoSubtype?)(global::HarmonyOS.ArkUI.PhotoSubtype)NativeValue.ToInt(GetPropertyRaw(_subtype));
 
 }
 
@@ -711,7 +711,7 @@ public sealed partial class PhotoCreationConfig : JsObject
     /// <summary>
     /// title
     /// </summary>
-    public string? Title => (string?)NativeValue.ToString(GetPropertyRaw(_title)) ?? string.Empty;
+    public string? Title => NativeValue.IsNullOrUndefined(GetPropertyRaw(_title)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_title));
 
     /// <summary>
     /// fileNameExtension
@@ -726,7 +726,7 @@ public sealed partial class PhotoCreationConfig : JsObject
     /// <summary>
     /// subtype
     /// </summary>
-    public global::HarmonyOS.ArkUI.PhotoSubtype? Subtype => (global::HarmonyOS.ArkUI.PhotoSubtype?)(global::HarmonyOS.ArkUI.PhotoSubtype)NativeValue.ToInt(GetPropertyRaw(_subtype));
+    public global::HarmonyOS.ArkUI.PhotoSubtype? Subtype => NativeValue.IsNullOrUndefined(GetPropertyRaw(_subtype)) ? null : (global::HarmonyOS.ArkUI.PhotoSubtype?)(global::HarmonyOS.ArkUI.PhotoSubtype)NativeValue.ToInt(GetPropertyRaw(_subtype));
 
 }
 
@@ -743,7 +743,7 @@ public sealed partial class CreationSetting : JsObject
     /// <summary>
     /// title
     /// </summary>
-    public string? Title => (string?)NativeValue.ToString(GetPropertyRaw(_title)) ?? string.Empty;
+    public string? Title => NativeValue.IsNullOrUndefined(GetPropertyRaw(_title)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_title));
 
     /// <summary>
     /// fileNameExtension
@@ -769,12 +769,12 @@ public sealed partial class RequestReadPermissionResult : JsObject
     /// <summary>
     /// authorizedUris
     /// </summary>
-    public string[] AuthorizedUris => ValueConverter.ConvertArray(GetPropertyRaw(_authorizedUris), static e => ValueConverter.Convert<string>(e));
+    public string[]? AuthorizedUris => NativeValue.IsNullOrUndefined(GetPropertyRaw(_authorizedUris)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_authorizedUris), static e => ValueConverter.Convert<string>(e));
 
     /// <summary>
     /// invalidUris
     /// </summary>
-    public string[] InvalidUris => ValueConverter.ConvertArray(GetPropertyRaw(_invalidUris), static e => ValueConverter.Convert<string>(e));
+    public string[]? InvalidUris => NativeValue.IsNullOrUndefined(GetPropertyRaw(_invalidUris)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_invalidUris), static e => ValueConverter.Convert<string>(e));
 
 }
 
@@ -847,22 +847,22 @@ public sealed partial class Album : JsObject
     /// <summary>
     /// lpath
     /// </summary>
-    public string? Lpath => (string?)NativeValue.ToString(GetPropertyRaw(_lpath)) ?? string.Empty;
+    public string? Lpath => NativeValue.IsNullOrUndefined(GetPropertyRaw(_lpath)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_lpath));
 
     /// <summary>
     /// changeTime
     /// </summary>
-    public double? ChangeTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_changeTime));
+    public double? ChangeTime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_changeTime)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_changeTime));
 
     /// <summary>
     /// imageCount
     /// </summary>
-    public double? ImageCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_imageCount));
+    public double? ImageCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_imageCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_imageCount));
 
     /// <summary>
     /// videoCount
     /// </summary>
-    public double? VideoCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_videoCount));
+    public double? VideoCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_videoCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_videoCount));
 
     /// <summary>
     /// getAssets
@@ -1008,12 +1008,12 @@ public sealed partial class RecentPhotoInfo : JsObject
     /// <summary>
     /// dateTaken
     /// </summary>
-    public double? DateTaken => (double?)NativeValue.ToDouble(GetPropertyRaw(_dateTaken));
+    public double? DateTaken => NativeValue.IsNullOrUndefined(GetPropertyRaw(_dateTaken)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_dateTaken));
 
     /// <summary>
     /// identifier
     /// </summary>
-    public string? Identifier => (string?)NativeValue.ToString(GetPropertyRaw(_identifier)) ?? string.Empty;
+    public string? Identifier => NativeValue.IsNullOrUndefined(GetPropertyRaw(_identifier)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_identifier));
 
 }
 
@@ -1030,7 +1030,7 @@ public sealed partial class RecentPhotoOptions : JsObject
     /// <summary>
     /// period
     /// </summary>
-    public double? Period => (double?)NativeValue.ToDouble(GetPropertyRaw(_period));
+    public double? Period => NativeValue.IsNullOrUndefined(GetPropertyRaw(_period)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_period));
 
     /// <summary>
     /// MIMEType
@@ -1040,7 +1040,7 @@ public sealed partial class RecentPhotoOptions : JsObject
     /// <summary>
     /// photoSource
     /// </summary>
-    public global::HarmonyOS.ArkUI.PhotoSource? PhotoSource => (global::HarmonyOS.ArkUI.PhotoSource?)(global::HarmonyOS.ArkUI.PhotoSource)NativeValue.ToInt(GetPropertyRaw(_photoSource));
+    public global::HarmonyOS.ArkUI.PhotoSource? PhotoSource => NativeValue.IsNullOrUndefined(GetPropertyRaw(_photoSource)) ? null : (global::HarmonyOS.ArkUI.PhotoSource?)(global::HarmonyOS.ArkUI.PhotoSource)NativeValue.ToInt(GetPropertyRaw(_photoSource));
 
 }
 
@@ -1061,6 +1061,6 @@ public sealed partial class AssetCompatibleCapability : JsObject
     /// <summary>
     /// supportedMimeType
     /// </summary>
-    public string[] SupportedMimeType => ValueConverter.ConvertArray(GetPropertyRaw(_supportedMimeType), static e => ValueConverter.Convert<string>(e));
+    public string[]? SupportedMimeType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_supportedMimeType)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_supportedMimeType), static e => ValueConverter.Convert<string>(e));
 
 }

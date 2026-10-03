@@ -154,7 +154,7 @@ public sealed partial class Client : JsObject
     /// </summary>
     public Task WritePropertyAsync(IntPtr property, global::HarmonyOS.ArkUI.PropertyWriteType writeType)
     {
-        return CallMethodAsyncVoid(_writeProperty, property, writeType);
+        return CallMethodAsyncVoid(_writeProperty, property, (int)writeType);
     }
 
     /// <summary>

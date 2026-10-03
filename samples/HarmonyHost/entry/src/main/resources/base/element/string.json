@@ -1,16 +1,55 @@
 {
   "string": [
-    {
-      "name": "module_desc",
-      "value": "HarmonyOS host module"
-    },
-    {
-      "name": "EntryAbility_label",
-      "value": "HarmonyHost"
-    },
-    {
-      "name": "ability_desc",
-      "value": "HarmonyOS host ability"
-    }
+    {"name":"module_desc","value":"HarmonyOS host module"},
+    {"name":"EntryAbility_label","value":"HarmonyHost"},
+    {"name":"ability_desc","value":"HarmonyOS host ability"},
+    {"name":"permission_ACCELEROMETER_reason","value":"Allow the app to use ohos.permission.ACCELEROMETER"},
+    {"name":"permission_ACCESS_BIOMETRIC_reason","value":"Allow the app to use ohos.permission.ACCESS_BIOMETRIC"},
+    {"name":"permission_ACCESS_BLUETOOTH_reason","value":"Allow the app to use ohos.permission.ACCESS_BLUETOOTH"},
+    {"name":"permission_ACCESS_CERT_MANAGER_reason","value":"Allow the app to use ohos.permission.ACCESS_CERT_MANAGER"},
+    {"name":"permission_ACCESS_EXTENSIONAL_DEVICE_DRIVER_reason","value":"Allow the app to use ohos.permission.ACCESS_EXTENSIONAL_DEVICE_DRIVER"},
+    {"name":"permission_ACCESS_NEARLINK_reason","value":"Allow the app to use ohos.permission.ACCESS_NEARLINK"},
+    {"name":"permission_ACCESS_NOTIFICATION_POLICY_reason","value":"Allow the app to use ohos.permission.ACCESS_NOTIFICATION_POLICY"},
+    {"name":"permission_ACTIVITY_MOTION_reason","value":"Allow the app to use ohos.permission.ACTIVITY_MOTION"},
+    {"name":"permission_APPROXIMATELY_LOCATION_reason","value":"Allow the app to use ohos.permission.APPROXIMATELY_LOCATION"},
+    {"name":"permission_APP_TRACKING_CONSENT_reason","value":"Allow the app to use ohos.permission.APP_TRACKING_CONSENT"},
+    {"name":"permission_BACKGROUND_MANAGER_POWER_SAVE_MODE_reason","value":"Allow the app to use ohos.permission.BACKGROUND_MANAGER_POWER_SAVE_MODE"},
+    {"name":"permission_CAMERA_reason","value":"Allow the app to use ohos.permission.CAMERA"},
+    {"name":"permission_CUSTOM_SCREEN_CAPTURE_reason","value":"Allow the app to use ohos.permission.CUSTOM_SCREEN_CAPTURE"},
+    {"name":"permission_DETECT_GESTURE_reason","value":"Allow the app to use ohos.permission.DETECT_GESTURE"},
+    {"name":"permission_DISCOVER_BLUETOOTH_reason","value":"Allow the app to use ohos.permission.DISCOVER_BLUETOOTH"},
+    {"name":"permission_DISTRIBUTED_DATASYNC_reason","value":"Allow the app to use ohos.permission.DISTRIBUTED_DATASYNC"},
+    {"name":"permission_FILE_ACCESS_PERSIST_reason","value":"Allow the app to use ohos.permission.FILE_ACCESS_PERSIST"},
+    {"name":"permission_GET_DONOTDISTURB_STATE_reason","value":"Allow the app to use ohos.permission.GET_DONOTDISTURB_STATE"},
+    {"name":"permission_GET_NETWORK_INFO_reason","value":"Allow the app to use ohos.permission.GET_NETWORK_INFO"},
+    {"name":"permission_GET_WIFI_INFO_reason","value":"Allow the app to use ohos.permission.GET_WIFI_INFO"},
+    {"name":"permission_GYROSCOPE_reason","value":"Allow the app to use ohos.permission.GYROSCOPE"},
+    {"name":"permission_HDR_BRIGHTNESS_reason","value":"Allow the app to use ohos.permission.HDR_BRIGHTNESS"},
+    {"name":"permission_INPUT_KEYBOARD_CONTROLLER_reason","value":"Allow the app to use ohos.permission.INPUT_KEYBOARD_CONTROLLER"},
+    {"name":"permission_INTERNET_reason","value":"Allow the app to use ohos.permission.INTERNET"},
+    {"name":"permission_KEEP_BACKGROUND_RUNNING_reason","value":"Allow the app to use ohos.permission.KEEP_BACKGROUND_RUNNING"},
+    {"name":"permission_LOCATION_reason","value":"Allow the app to use ohos.permission.LOCATION"},
+    {"name":"permission_MANAGE_INPUT_INFRARED_EMITTER_reason","value":"Allow the app to use ohos.permission.MANAGE_INPUT_INFRARED_EMITTER"},
+    {"name":"permission_MICROPHONE_reason","value":"Allow the app to use ohos.permission.MICROPHONE"},
+    {"name":"permission_MODIFY_AUDIO_SETTINGS_reason","value":"Allow the app to use ohos.permission.MODIFY_AUDIO_SETTINGS"},
+    {"name":"permission_NFC_CARD_EMULATION_reason","value":"Allow the app to use ohos.permission.NFC_CARD_EMULATION"},
+    {"name":"permission_NFC_TAG_reason","value":"Allow the app to use ohos.permission.NFC_TAG"},
+    {"name":"permission_PREPARE_APP_TERMINATE_reason","value":"Allow the app to use ohos.permission.PREPARE_APP_TERMINATE"},
+    {"name":"permission_PRINT_reason","value":"Allow the app to use ohos.permission.PRINT"},
+    {"name":"permission_PRIVACY_WINDOW_reason","value":"Allow the app to use ohos.permission.PRIVACY_WINDOW"},
+    {"name":"permission_PUBLISH_AGENT_REMINDER_reason","value":"Allow the app to use ohos.permission.PUBLISH_AGENT_REMINDER"},
+    {"name":"permission_READ_CALENDAR_reason","value":"Allow the app to use ohos.permission.READ_CALENDAR"},
+    {"name":"permission_READ_HEALTH_DATA_reason","value":"Allow the app to use ohos.permission.READ_HEALTH_DATA"},
+    {"name":"permission_READ_MEDIA_reason","value":"Allow the app to use ohos.permission.READ_MEDIA"},
+    {"name":"permission_READ_WRITE_DOCUMENTS_DIRECTORY_reason","value":"Allow the app to use ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY"},
+    {"name":"permission_READ_WRITE_DOWNLOAD_DIRECTORY_reason","value":"Allow the app to use ohos.permission.READ_WRITE_DOWNLOAD_DIRECTORY"},
+    {"name":"permission_RUNNING_LOCK_reason","value":"Allow the app to use ohos.permission.RUNNING_LOCK"},
+    {"name":"permission_SET_WALLPAPER_reason","value":"Allow the app to use ohos.permission.SET_WALLPAPER"},
+    {"name":"permission_SET_WIFI_INFO_reason","value":"Allow the app to use ohos.permission.SET_WIFI_INFO"},
+    {"name":"permission_SET_WINDOW_TRANSPARENT_reason","value":"Allow the app to use ohos.permission.SET_WINDOW_TRANSPARENT"},
+    {"name":"permission_USE_BLUETOOTH_reason","value":"Allow the app to use ohos.permission.USE_BLUETOOTH"},
+    {"name":"permission_VIBRATE_reason","value":"Allow the app to use ohos.permission.VIBRATE"},
+    {"name":"permission_WINDOW_TOPMOST_reason","value":"Allow the app to use ohos.permission.WINDOW_TOPMOST"},
+    {"name":"permission_WRITE_CALENDAR_reason","value":"Allow the app to use ohos.permission.WRITE_CALENDAR"}
   ]
 }

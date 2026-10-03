@@ -191,7 +191,7 @@ public static unsafe partial class Cert
     /// </summary>
     public static CmsGenerator CreateCmsGenerator(global::HarmonyOS.ArkUI.CmsContentType contentType)
     {
-        return NodeApi.CallMethod(Module, _createCmsGenerator, static h => new CmsGenerator(h), contentType);
+        return NodeApi.CallMethod(Module, _createCmsGenerator, static h => new CmsGenerator(h), (int)contentType);
     }
 
     /// <summary>
@@ -332,7 +332,7 @@ public sealed partial class X509Cert : JsObject
     /// </summary>
     public string GetIssuerName(global::HarmonyOS.ArkUI.EncodingType encodingType)
     {
-        return CallMethod<string>(_getIssuerName, encodingType);
+        return CallMethod<string>(_getIssuerName, (int)encodingType);
     }
 
     /// <summary>
@@ -340,7 +340,7 @@ public sealed partial class X509Cert : JsObject
     /// </summary>
     public DataBlob GetSubjectName(global::HarmonyOS.ArkUI.EncodingType? encodingType = null)
     {
-        return CallMethod(_getSubjectName, static h => new DataBlob(h), encodingType);
+        return CallMethod(_getSubjectName, static h => new DataBlob(h), NapiArg.Of(encodingType));
     }
 
     /// <summary>
@@ -436,7 +436,7 @@ public sealed partial class X509Cert : JsObject
     /// </summary>
     public DataBlob GetItem(global::HarmonyOS.ArkUI.CertItemType itemType)
     {
-        return CallMethod(_getItem, static h => new DataBlob(h), itemType);
+        return CallMethod(_getItem, static h => new DataBlob(h), (int)itemType);
     }
 
     /// <summary>
@@ -484,7 +484,7 @@ public sealed partial class X509Cert : JsObject
     /// </summary>
     public string ToString(global::HarmonyOS.ArkUI.EncodingType encodingType)
     {
-        return CallMethod<string>(_toString, encodingType);
+        return CallMethod<string>(_toString, (int)encodingType);
     }
 
     /// <summary>
@@ -551,7 +551,7 @@ public sealed partial class CertExtension : JsObject
     /// </summary>
     public IntPtr GetOidList(global::HarmonyOS.ArkUI.ExtensionOidType valueType)
     {
-        return CallMethod<IntPtr>(_getOidList, valueType);
+        return CallMethod<IntPtr>(_getOidList, (int)valueType);
     }
 
     /// <summary>
@@ -559,7 +559,7 @@ public sealed partial class CertExtension : JsObject
     /// </summary>
     public DataBlob GetEntry(global::HarmonyOS.ArkUI.ExtensionEntryType valueType, DataBlob oid)
     {
-        return CallMethod(_getEntry, static h => new DataBlob(h), valueType, NapiArg.Of(oid));
+        return CallMethod(_getEntry, static h => new DataBlob(h), (int)valueType, NapiArg.Of(oid));
     }
 
     /// <summary>
@@ -875,7 +875,7 @@ public sealed partial class X509CRL : JsObject
     /// </summary>
     public string GetIssuerName(global::HarmonyOS.ArkUI.EncodingType encodingType)
     {
-        return CallMethod<string>(_getIssuerName, encodingType);
+        return CallMethod<string>(_getIssuerName, (int)encodingType);
     }
 
     /// <summary>
@@ -995,7 +995,7 @@ public sealed partial class X509CRL : JsObject
     /// </summary>
     public string ToString(global::HarmonyOS.ArkUI.EncodingType encodingType)
     {
-        return CallMethod<string>(_toString, encodingType);
+        return CallMethod<string>(_toString, (int)encodingType);
     }
 
     /// <summary>
@@ -1132,22 +1132,22 @@ public sealed partial class X509TrustAnchor : JsObject
     /// <summary>
     /// CACert
     /// </summary>
-    public X509Cert? CaCert => GetPropertyRaw(_CACert) == IntPtr.Zero ? null : new X509Cert(GetPropertyRaw(_CACert));
+    public X509Cert? CaCert => NativeValue.IsNullOrUndefined(GetPropertyRaw(_CACert)) ? null : new X509Cert(GetPropertyRaw(_CACert));
 
     /// <summary>
     /// CAPubKey
     /// </summary>
-    public byte[] CaPubKey => ValueConverter.ConvertArray(GetPropertyRaw(_CAPubKey), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? CaPubKey => NativeValue.IsNullOrUndefined(GetPropertyRaw(_CAPubKey)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_CAPubKey), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// CASubject
     /// </summary>
-    public byte[] CaSubject => ValueConverter.ConvertArray(GetPropertyRaw(_CASubject), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? CaSubject => NativeValue.IsNullOrUndefined(GetPropertyRaw(_CASubject)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_CASubject), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// nameConstraints
     /// </summary>
-    public byte[] NameConstraints => ValueConverter.ConvertArray(GetPropertyRaw(_nameConstraints), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? NameConstraints => NativeValue.IsNullOrUndefined(GetPropertyRaw(_nameConstraints)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_nameConstraints), static e => ValueConverter.Convert<byte>(e));
 
 }
 
@@ -1173,7 +1173,7 @@ public sealed partial class X500DistinguishedName : JsObject
     /// </summary>
     public string GetName(global::HarmonyOS.ArkUI.EncodingType encodingType)
     {
-        return CallMethod<string>(_getName, encodingType);
+        return CallMethod<string>(_getName, (int)encodingType);
     }
 
     /// <summary>
@@ -1189,7 +1189,7 @@ public sealed partial class X500DistinguishedName : JsObject
     /// </summary>
     public string[] GetName(string type, global::HarmonyOS.ArkUI.EncodingType encodingType)
     {
-        return CallMethod(_getName, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), type, encodingType);
+        return CallMethod(_getName, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), type, (int)encodingType);
     }
 
     /// <summary>
@@ -1237,7 +1237,7 @@ public sealed partial class CmsGenerator : JsObject
     /// </summary>
     public void SetRecipientEncryptionAlgorithm(global::HarmonyOS.ArkUI.CmsRecipientEncryptionAlgorithm algorithm)
     {
-        CallMethodVoid(_setRecipientEncryptionAlgorithm, algorithm);
+        CallMethodVoid(_setRecipientEncryptionAlgorithm, (int)algorithm);
     }
 
     /// <summary>
@@ -1292,7 +1292,7 @@ public sealed partial class CmsParser : JsObject
     /// </summary>
     public Task SetRawDataAsync(byte[] data, global::HarmonyOS.ArkUI.CmsFormat cmsFormat)
     {
-        return CallMethodAsyncVoid(_setRawData, NapiArg.Of(data), cmsFormat);
+        return CallMethodAsyncVoid(_setRawData, NapiArg.Of(data), (int)cmsFormat);
     }
 
     /// <summary>
@@ -1324,7 +1324,7 @@ public sealed partial class CmsParser : JsObject
     /// </summary>
     public Task<X509Cert[]> GetCertsAsync(global::HarmonyOS.ArkUI.CmsCertType type)
     {
-        return CallMethodAsync(_getCerts, h => ValueConverter.ConvertArray(h, static e => new X509Cert(e)), type);
+        return CallMethodAsync(_getCerts, h => ValueConverter.ConvertArray(h, static e => new X509Cert(e)), (int)type);
     }
 
     /// <summary>
@@ -1354,7 +1354,7 @@ public sealed partial class PrivateKeyInfo : JsObject
     /// <summary>
     /// password
     /// </summary>
-    public string? Password => (string?)NativeValue.ToString(GetPropertyRaw(_password)) ?? string.Empty;
+    public string? Password => NativeValue.IsNullOrUndefined(GetPropertyRaw(_password)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_password));
 
 }
 
@@ -1537,7 +1537,7 @@ public sealed partial class X509CRLEntry : JsObject
     /// </summary>
     public string GetCertIssuer(global::HarmonyOS.ArkUI.EncodingType encodingType)
     {
-        return CallMethod<string>(_getCertIssuer, encodingType);
+        return CallMethod<string>(_getCertIssuer, (int)encodingType);
     }
 
     /// <summary>
@@ -1639,22 +1639,22 @@ public sealed partial class CmsSignerConfig : JsObject
     /// <summary>
     /// rsaSignaturePadding
     /// </summary>
-    public global::HarmonyOS.ArkUI.CmsRsaSignaturePadding? RsaSignaturePadding => (global::HarmonyOS.ArkUI.CmsRsaSignaturePadding?)(global::HarmonyOS.ArkUI.CmsRsaSignaturePadding)NativeValue.ToInt(GetPropertyRaw(_rsaSignaturePadding));
+    public global::HarmonyOS.ArkUI.CmsRsaSignaturePadding? RsaSignaturePadding => NativeValue.IsNullOrUndefined(GetPropertyRaw(_rsaSignaturePadding)) ? null : (global::HarmonyOS.ArkUI.CmsRsaSignaturePadding?)(global::HarmonyOS.ArkUI.CmsRsaSignaturePadding)NativeValue.ToInt(GetPropertyRaw(_rsaSignaturePadding));
 
     /// <summary>
     /// addCert
     /// </summary>
-    public bool? AddCert => (bool?)NativeValue.ToBool(GetPropertyRaw(_addCert));
+    public bool? AddCert => NativeValue.IsNullOrUndefined(GetPropertyRaw(_addCert)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_addCert));
 
     /// <summary>
     /// addAttr
     /// </summary>
-    public bool? AddAttr => (bool?)NativeValue.ToBool(GetPropertyRaw(_addAttr));
+    public bool? AddAttr => NativeValue.IsNullOrUndefined(GetPropertyRaw(_addAttr)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_addAttr));
 
     /// <summary>
     /// addSmimeCapAttr
     /// </summary>
-    public bool? AddSmimeCapAttr => (bool?)NativeValue.ToBool(GetPropertyRaw(_addSmimeCapAttr));
+    public bool? AddSmimeCapAttr => NativeValue.IsNullOrUndefined(GetPropertyRaw(_addSmimeCapAttr)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_addSmimeCapAttr));
 
 }
 
@@ -1670,12 +1670,12 @@ public sealed partial class CmsRecipientInfo : JsObject
     /// <summary>
     /// keyTransInfo
     /// </summary>
-    public CmsKeyTransRecipientInfo? KeyTransInfo => GetPropertyRaw(_keyTransInfo) == IntPtr.Zero ? null : new CmsKeyTransRecipientInfo(GetPropertyRaw(_keyTransInfo));
+    public CmsKeyTransRecipientInfo? KeyTransInfo => NativeValue.IsNullOrUndefined(GetPropertyRaw(_keyTransInfo)) ? null : new CmsKeyTransRecipientInfo(GetPropertyRaw(_keyTransInfo));
 
     /// <summary>
     /// keyAgreeInfo
     /// </summary>
-    public CmsKeyAgreeRecipientInfo? KeyAgreeInfo => GetPropertyRaw(_keyAgreeInfo) == IntPtr.Zero ? null : new CmsKeyAgreeRecipientInfo(GetPropertyRaw(_keyAgreeInfo));
+    public CmsKeyAgreeRecipientInfo? KeyAgreeInfo => NativeValue.IsNullOrUndefined(GetPropertyRaw(_keyAgreeInfo)) ? null : new CmsKeyAgreeRecipientInfo(GetPropertyRaw(_keyAgreeInfo));
 
 }
 
@@ -1692,17 +1692,17 @@ public sealed partial class CmsGeneratorOptions : JsObject
     /// <summary>
     /// contentDataFormat
     /// </summary>
-    public global::HarmonyOS.ArkUI.CmsContentDataFormat? ContentDataFormat => (global::HarmonyOS.ArkUI.CmsContentDataFormat?)(global::HarmonyOS.ArkUI.CmsContentDataFormat)NativeValue.ToInt(GetPropertyRaw(_contentDataFormat));
+    public global::HarmonyOS.ArkUI.CmsContentDataFormat? ContentDataFormat => NativeValue.IsNullOrUndefined(GetPropertyRaw(_contentDataFormat)) ? null : (global::HarmonyOS.ArkUI.CmsContentDataFormat?)(global::HarmonyOS.ArkUI.CmsContentDataFormat)NativeValue.ToInt(GetPropertyRaw(_contentDataFormat));
 
     /// <summary>
     /// outFormat
     /// </summary>
-    public global::HarmonyOS.ArkUI.CmsFormat? OutFormat => (global::HarmonyOS.ArkUI.CmsFormat?)(global::HarmonyOS.ArkUI.CmsFormat)NativeValue.ToInt(GetPropertyRaw(_outFormat));
+    public global::HarmonyOS.ArkUI.CmsFormat? OutFormat => NativeValue.IsNullOrUndefined(GetPropertyRaw(_outFormat)) ? null : (global::HarmonyOS.ArkUI.CmsFormat?)(global::HarmonyOS.ArkUI.CmsFormat)NativeValue.ToInt(GetPropertyRaw(_outFormat));
 
     /// <summary>
     /// isDetached
     /// </summary>
-    public bool? IsDetached => (bool?)NativeValue.ToBool(GetPropertyRaw(_isDetached));
+    public bool? IsDetached => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isDetached)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isDetached));
 
 }
 
@@ -1720,22 +1720,22 @@ public sealed partial class CmsEnvelopedDecryptionConfig : JsObject
     /// <summary>
     /// keyInfo
     /// </summary>
-    public PrivateKeyInfo? KeyInfo => GetPropertyRaw(_keyInfo) == IntPtr.Zero ? null : new PrivateKeyInfo(GetPropertyRaw(_keyInfo));
+    public PrivateKeyInfo? KeyInfo => NativeValue.IsNullOrUndefined(GetPropertyRaw(_keyInfo)) ? null : new PrivateKeyInfo(GetPropertyRaw(_keyInfo));
 
     /// <summary>
     /// cert
     /// </summary>
-    public X509Cert? Cert => GetPropertyRaw(_cert) == IntPtr.Zero ? null : new X509Cert(GetPropertyRaw(_cert));
+    public X509Cert? Cert => NativeValue.IsNullOrUndefined(GetPropertyRaw(_cert)) ? null : new X509Cert(GetPropertyRaw(_cert));
 
     /// <summary>
     /// encryptedContentData
     /// </summary>
-    public byte[] EncryptedContentData => ValueConverter.ConvertArray(GetPropertyRaw(_encryptedContentData), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? EncryptedContentData => NativeValue.IsNullOrUndefined(GetPropertyRaw(_encryptedContentData)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_encryptedContentData), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// contentDataFormat
     /// </summary>
-    public global::HarmonyOS.ArkUI.CmsContentDataFormat? ContentDataFormat => (global::HarmonyOS.ArkUI.CmsContentDataFormat?)(global::HarmonyOS.ArkUI.CmsContentDataFormat)NativeValue.ToInt(GetPropertyRaw(_contentDataFormat));
+    public global::HarmonyOS.ArkUI.CmsContentDataFormat? ContentDataFormat => NativeValue.IsNullOrUndefined(GetPropertyRaw(_contentDataFormat)) ? null : (global::HarmonyOS.ArkUI.CmsContentDataFormat?)(global::HarmonyOS.ArkUI.CmsContentDataFormat)NativeValue.ToInt(GetPropertyRaw(_contentDataFormat));
 
 }
 
@@ -1797,6 +1797,6 @@ public sealed partial class CmsKeyAgreeRecipientInfo : JsObject
     /// <summary>
     /// digestAlgorithm
     /// </summary>
-    public global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm? DigestAlgorithm => (global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm?)(global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm)NativeValue.ToInt(GetPropertyRaw(_digestAlgorithm));
+    public global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm? DigestAlgorithm => NativeValue.IsNullOrUndefined(GetPropertyRaw(_digestAlgorithm)) ? null : (global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm?)(global::HarmonyOS.ArkUI.CmsKeyAgreeRecipientDigestAlgorithm)NativeValue.ToInt(GetPropertyRaw(_digestAlgorithm));
 
 }

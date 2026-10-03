@@ -208,7 +208,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<bool> AccessAsync(string path, global::HarmonyOS.ArkUI.AccessModeType? mode = null)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _access, path, mode);
+        return NodeApi.CallMethodAsync<bool>(Module, _access, path, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<bool> AccessAsync(string path, global::HarmonyOS.ArkUI.AccessModeType mode, global::HarmonyOS.ArkUI.AccessFlagType flag)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _access, path, mode, flag);
+        return NodeApi.CallMethodAsync<bool>(Module, _access, path, (int)mode, (int)flag);
     }
 
     /// <summary>
@@ -232,7 +232,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static bool AccessSync(string path, global::HarmonyOS.ArkUI.AccessModeType? mode = null)
     {
-        return NodeApi.CallMethod<bool>(Module, _accessSync, path, mode);
+        return NodeApi.CallMethod<bool>(Module, _accessSync, path, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -240,7 +240,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static bool AccessSync(string path, global::HarmonyOS.ArkUI.AccessModeType mode, global::HarmonyOS.ArkUI.AccessFlagType flag)
     {
-        return NodeApi.CallMethod<bool>(Module, _accessSync, path, mode, flag);
+        return NodeApi.CallMethod<bool>(Module, _accessSync, path, (int)mode, (int)flag);
     }
 
     /// <summary>
@@ -496,7 +496,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static double Lseek(double fd, double offset, global::HarmonyOS.ArkUI.WhenceType? whence = null)
     {
-        return NodeApi.CallMethod<double>(Module, _lseek, fd, offset, whence);
+        return NodeApi.CallMethod<double>(Module, _lseek, fd, offset, NapiArg.Of(whence));
     }
 
     /// <summary>
@@ -568,7 +568,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<IntPtr> MmapAsync(double file, global::HarmonyOS.ArkUI.MappingMode mode, double offset, double size)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _mmap, file, mode, offset, size);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _mmap, file, (int)mode, offset, size);
     }
 
     /// <summary>
@@ -576,7 +576,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static IntPtr MmapSync(double file, global::HarmonyOS.ArkUI.MappingMode mode, double offset, double size)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _mmapSync, file, mode, offset, size);
+        return NodeApi.CallMethod<IntPtr>(Module, _mmapSync, file, (int)mode, offset, size);
     }
 
     /// <summary>
@@ -656,7 +656,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<double> ReadAsync(double fd, byte[] buffer, ReadOptions? options = null)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _read, fd, NapiArg.Of(buffer), NapiArg.Of(options));
+        return NodeApi.CallMethodAsync<double>(Module, _read, fd, NapiArg.OfArrayBuffer(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -664,7 +664,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static Task<double> ReadAsync(double fd, byte[] buffer)
     {
-        return NodeApi.CallMethodAsyncCallback<double>(Module, _read, null, fd, NapiArg.Of(buffer));
+        return NodeApi.CallMethodAsyncCallback<double>(Module, _read, null, fd, NapiArg.OfArrayBuffer(buffer));
     }
 
     /// <summary>
@@ -672,7 +672,7 @@ public static unsafe partial class Fs
     /// </summary>
     public static double ReadSync(double fd, byte[] buffer, ReadOptions? options = null)
     {
-        return NodeApi.CallMethod<double>(Module, _readSync, fd, NapiArg.Of(buffer), NapiArg.Of(options));
+        return NodeApi.CallMethod<double>(Module, _readSync, fd, NapiArg.OfArrayBuffer(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1002,7 +1002,7 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public Task<double> ReadAsync(byte[] buffer, ReadOptions? options = null)
     {
-        return CallMethodAsync<double>(_read, NapiArg.Of(buffer), NapiArg.Of(options));
+        return CallMethodAsync<double>(_read, NapiArg.OfArrayBuffer(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1010,7 +1010,7 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public Task<double> ReadAsync(byte[] buffer)
     {
-        return CallMethodAsyncCallback<double>(_read, null, NapiArg.Of(buffer));
+        return CallMethodAsyncCallback<double>(_read, null, NapiArg.OfArrayBuffer(buffer));
     }
 
     /// <summary>
@@ -1018,7 +1018,7 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public double ReadSync(byte[] buffer, ReadOptions? options = null)
     {
-        return CallMethod<double>(_readSync, NapiArg.Of(buffer), NapiArg.Of(options));
+        return CallMethod<double>(_readSync, NapiArg.OfArrayBuffer(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1226,12 +1226,12 @@ public sealed partial class ReadOptions : JsObject
     /// <summary>
     /// offset
     /// </summary>
-    public double? Offset => (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
+    public double? Offset => NativeValue.IsNullOrUndefined(GetPropertyRaw(_offset)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
 
     /// <summary>
     /// length
     /// </summary>
-    public double? Length => (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
+    public double? Length => NativeValue.IsNullOrUndefined(GetPropertyRaw(_length)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
 
 }
 
@@ -1308,17 +1308,17 @@ public sealed partial class WriteOptions : JsObject
     /// <summary>
     /// encoding
     /// </summary>
-    public string? Encoding => (string?)NativeValue.ToString(GetPropertyRaw(_encoding)) ?? string.Empty;
+    public string? Encoding => NativeValue.IsNullOrUndefined(GetPropertyRaw(_encoding)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_encoding));
 
     /// <summary>
     /// offset
     /// </summary>
-    public double? Offset => (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
+    public double? Offset => NativeValue.IsNullOrUndefined(GetPropertyRaw(_offset)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
 
     /// <summary>
     /// length
     /// </summary>
-    public double? Length => (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
+    public double? Length => NativeValue.IsNullOrUndefined(GetPropertyRaw(_length)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
 
 }
 
@@ -1371,7 +1371,7 @@ public sealed partial class ReadStream : JsObject
     /// </summary>
     public double Seek(double offset, global::HarmonyOS.ArkUI.WhenceType? whence = null)
     {
-        return CallMethod<double>(_seek, offset, whence);
+        return CallMethod<double>(_seek, offset, NapiArg.Of(whence));
     }
 
     /// <summary>
@@ -1415,7 +1415,7 @@ public sealed partial class WriteStream : JsObject
     /// </summary>
     public double Seek(double offset, global::HarmonyOS.ArkUI.WhenceType? whence = null)
     {
-        return CallMethod<double>(_seek, offset, whence);
+        return CallMethod<double>(_seek, offset, NapiArg.Of(whence));
     }
 
     /// <summary>

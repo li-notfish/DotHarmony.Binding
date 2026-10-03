@@ -161,7 +161,7 @@ public sealed partial class StorageObject : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.ValueType GetSync(string key, global::HarmonyOS.ArkUI.ValueType defValue)
     {
-        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_getSync, key, defValue);
+        return CallMethod<global::HarmonyOS.ArkUI.ValueType>(_getSync, key, (int)defValue);
     }
 
     /// <summary>
@@ -169,7 +169,7 @@ public sealed partial class StorageObject : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ValueType> GetAsync(string key, global::HarmonyOS.ArkUI.ValueType defValue)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_get, key, defValue);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ValueType>(_get, key, (int)defValue);
     }
 
     /// <summary>
@@ -193,7 +193,7 @@ public sealed partial class StorageObject : JsObject
     /// </summary>
     public void PutSync(string key, global::HarmonyOS.ArkUI.ValueType value)
     {
-        CallMethodVoid(_putSync, key, value);
+        CallMethodVoid(_putSync, key, (int)value);
     }
 
     /// <summary>
@@ -201,7 +201,7 @@ public sealed partial class StorageObject : JsObject
     /// </summary>
     public Task PutAsync(string key, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethodAsyncVoid(_put, key, value);
+        return CallMethodAsyncVoid(_put, key, (int)value);
     }
 
     /// <summary>

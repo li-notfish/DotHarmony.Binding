@@ -274,7 +274,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetActiveWebEngineVersion(global::HarmonyOS.ArkUI.ArkWebEngineVersion engineVersion)
     {
-        CallMethodVoid(_setActiveWebEngineVersion, engineVersion);
+        CallMethodVoid(_setActiveWebEngineVersion, (int)engineVersion);
     }
 
     /// <summary>
@@ -298,7 +298,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetHttpDns(global::HarmonyOS.ArkUI.SecureDnsMode secureDnsMode, string secureDnsConfig)
     {
-        CallMethodVoid(_setHttpDns, secureDnsMode, secureDnsConfig);
+        CallMethodVoid(_setHttpDns, (int)secureDnsMode, secureDnsConfig);
     }
 
     /// <summary>
@@ -842,7 +842,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PostUrl(string url, byte[] postData)
     {
-        CallMethodVoid(_postUrl, url, NapiArg.Of(postData));
+        CallMethodVoid(_postUrl, url, NapiArg.OfArrayBuffer(postData));
     }
 
     /// <summary>
@@ -874,7 +874,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetScrollable(bool enable, global::HarmonyOS.ArkUI.ScrollType? type = null)
     {
-        CallMethodVoid(_setScrollable, enable, type);
+        CallMethodVoid(_setScrollable, enable, NapiArg.Of(type));
     }
 
     /// <summary>
@@ -1114,7 +1114,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetRenderProcessMode(global::HarmonyOS.ArkUI.RenderProcessMode mode)
     {
-        CallMethodVoid(_setRenderProcessMode, mode);
+        CallMethodVoid(_setRenderProcessMode, (int)mode);
     }
 
     /// <summary>
@@ -1234,7 +1234,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void TrimMemoryByPressureLevel(global::HarmonyOS.ArkUI.PressureLevel level)
     {
-        CallMethodVoid(_trimMemoryByPressureLevel, level);
+        CallMethodVoid(_trimMemoryByPressureLevel, (int)level);
     }
 
     /// <summary>
@@ -1482,7 +1482,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetWebDestroyMode(global::HarmonyOS.ArkUI.WebDestroyMode mode)
     {
-        CallMethodVoid(_setWebDestroyMode, mode);
+        CallMethodVoid(_setWebDestroyMode, (int)mode);
     }
 
     /// <summary>
@@ -1506,7 +1506,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetSiteIsolationMode(global::HarmonyOS.ArkUI.SiteIsolationMode mode)
     {
-        CallMethodVoid(_setSiteIsolationMode, mode);
+        CallMethodVoid(_setSiteIsolationMode, (int)mode);
     }
 
     /// <summary>
@@ -1530,7 +1530,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetSoftKeyboardBehaviorMode(global::HarmonyOS.ArkUI.WebSoftKeyboardBehaviorMode mode)
     {
-        CallMethodVoid(_setSoftKeyboardBehaviorMode, mode);
+        CallMethodVoid(_setSoftKeyboardBehaviorMode, (int)mode);
     }
 
     /// <summary>
@@ -1538,7 +1538,7 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetScrollbarMode(global::HarmonyOS.ArkUI.ScrollbarMode scrollbarMode)
     {
-        CallMethodVoid(_setScrollbarMode, scrollbarMode);
+        CallMethodVoid(_setScrollbarMode, (int)scrollbarMode);
     }
 
     /// <summary>
@@ -1904,7 +1904,7 @@ public sealed partial class WebMessagePort : JsObject
     /// <summary>
     /// isExtentionType
     /// </summary>
-    public bool? IsExtentionType => (bool?)NativeValue.ToBool(GetPropertyRaw(_isExtentionType));
+    public bool? IsExtentionType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isExtentionType)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isExtentionType));
 
     /// <summary>
     /// close
@@ -2068,12 +2068,12 @@ public sealed partial class PdfConfiguration : JsObject
     /// <summary>
     /// scale
     /// </summary>
-    public double? Scale => (double?)NativeValue.ToDouble(GetPropertyRaw(_scale));
+    public double? Scale => NativeValue.IsNullOrUndefined(GetPropertyRaw(_scale)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_scale));
 
     /// <summary>
     /// shouldPrintBackground
     /// </summary>
-    public bool? ShouldPrintBackground => (bool?)NativeValue.ToBool(GetPropertyRaw(_shouldPrintBackground));
+    public bool? ShouldPrintBackground => NativeValue.IsNullOrUndefined(GetPropertyRaw(_shouldPrintBackground)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_shouldPrintBackground));
 
 }
 
@@ -2159,32 +2159,32 @@ public sealed partial class WebCustomScheme : JsObject
     /// <summary>
     /// isStandard
     /// </summary>
-    public bool? IsStandard => (bool?)NativeValue.ToBool(GetPropertyRaw(_isStandard));
+    public bool? IsStandard => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isStandard)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isStandard));
 
     /// <summary>
     /// isLocal
     /// </summary>
-    public bool? IsLocal => (bool?)NativeValue.ToBool(GetPropertyRaw(_isLocal));
+    public bool? IsLocal => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isLocal)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isLocal));
 
     /// <summary>
     /// isDisplayIsolated
     /// </summary>
-    public bool? IsDisplayIsolated => (bool?)NativeValue.ToBool(GetPropertyRaw(_isDisplayIsolated));
+    public bool? IsDisplayIsolated => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isDisplayIsolated)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isDisplayIsolated));
 
     /// <summary>
     /// isSecure
     /// </summary>
-    public bool? IsSecure => (bool?)NativeValue.ToBool(GetPropertyRaw(_isSecure));
+    public bool? IsSecure => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isSecure)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isSecure));
 
     /// <summary>
     /// isCspBypassing
     /// </summary>
-    public bool? IsCspBypassing => (bool?)NativeValue.ToBool(GetPropertyRaw(_isCspBypassing));
+    public bool? IsCspBypassing => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isCspBypassing)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isCspBypassing));
 
     /// <summary>
     /// isCodeCacheSupported
     /// </summary>
-    public bool? IsCodeCacheSupported => (bool?)NativeValue.ToBool(GetPropertyRaw(_isCodeCacheSupported));
+    public bool? IsCodeCacheSupported => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isCodeCacheSupported)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isCodeCacheSupported));
 
 }
 
@@ -2541,37 +2541,37 @@ public sealed partial class SecurityParams : JsObject
     /// <summary>
     /// disableJITCompilation
     /// </summary>
-    public bool? DisableJitCompilation => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableJITCompilation));
+    public bool? DisableJitCompilation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_disableJITCompilation)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_disableJITCompilation));
 
     /// <summary>
     /// disableWebAssembly
     /// </summary>
-    public bool? DisableWebAssembly => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableWebAssembly));
+    public bool? DisableWebAssembly => NativeValue.IsNullOrUndefined(GetPropertyRaw(_disableWebAssembly)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_disableWebAssembly));
 
     /// <summary>
     /// disableWebGL
     /// </summary>
-    public bool? DisableWebGl => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableWebGL));
+    public bool? DisableWebGl => NativeValue.IsNullOrUndefined(GetPropertyRaw(_disableWebGL)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_disableWebGL));
 
     /// <summary>
     /// disablePDFViewer
     /// </summary>
-    public bool? DisablePdfViewer => (bool?)NativeValue.ToBool(GetPropertyRaw(_disablePDFViewer));
+    public bool? DisablePdfViewer => NativeValue.IsNullOrUndefined(GetPropertyRaw(_disablePDFViewer)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_disablePDFViewer));
 
     /// <summary>
     /// disableMathML
     /// </summary>
-    public bool? DisableMathMl => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableMathML));
+    public bool? DisableMathMl => NativeValue.IsNullOrUndefined(GetPropertyRaw(_disableMathML)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_disableMathML));
 
     /// <summary>
     /// disableServiceWorker
     /// </summary>
-    public bool? DisableServiceWorker => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableServiceWorker));
+    public bool? DisableServiceWorker => NativeValue.IsNullOrUndefined(GetPropertyRaw(_disableServiceWorker)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_disableServiceWorker));
 
     /// <summary>
     /// disableNonProxyUDP
     /// </summary>
-    public bool? DisableNonProxyUdp => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableNonProxyUDP));
+    public bool? DisableNonProxyUdp => NativeValue.IsNullOrUndefined(GetPropertyRaw(_disableNonProxyUDP)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_disableNonProxyUDP));
 
 }
 
@@ -2657,7 +2657,7 @@ public sealed partial class WebMessageExt : JsObject
     /// </summary>
     public void SetType(global::HarmonyOS.ArkUI.WebMessageType type)
     {
-        CallMethodVoid(_setType, type);
+        CallMethodVoid(_setType, (int)type);
     }
 
     /// <summary>
@@ -2689,7 +2689,7 @@ public sealed partial class WebMessageExt : JsObject
     /// </summary>
     public void SetArrayBuffer(byte[] message)
     {
-        CallMethodVoid(_setArrayBuffer, NapiArg.Of(message));
+        CallMethodVoid(_setArrayBuffer, NapiArg.OfArrayBuffer(message));
     }
 
     /// <summary>
@@ -2824,7 +2824,7 @@ public sealed partial class WebResourceHandler : JsObject
     /// </summary>
     public void DidReceiveResponseBody(byte[] data)
     {
-        CallMethodVoid(_didReceiveResponseBody, NapiArg.Of(data));
+        CallMethodVoid(_didReceiveResponseBody, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>

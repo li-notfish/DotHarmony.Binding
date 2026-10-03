@@ -181,7 +181,7 @@ public static unsafe partial class BluetoothManager
     /// </summary>
     public static void AddDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, global::HarmonyOS.ArkUI.Protocol[] protocols, global::HarmonyOS.ArkUI.TransferPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols), policy);
+        NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols), (int)policy);
     }
 
     /// <summary>
@@ -189,7 +189,7 @@ public static unsafe partial class BluetoothManager
     /// </summary>
     public static void RemoveDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, global::HarmonyOS.ArkUI.Protocol[] protocols, global::HarmonyOS.ArkUI.TransferPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols), policy);
+        NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols), (int)policy);
     }
 
     /// <summary>
@@ -197,7 +197,7 @@ public static unsafe partial class BluetoothManager
     /// </summary>
     public static global::HarmonyOS.ArkUI.Protocol[] GetDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, global::HarmonyOS.ArkUI.TransferPolicy policy)
     {
-        return NodeApi.CallMethod(Module, _getDisallowedBluetoothProtocols, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Protocol>(e)), NapiArg.Of(admin), accountId, policy);
+        return NodeApi.CallMethod(Module, _getDisallowedBluetoothProtocols, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Protocol>(e)), NapiArg.Of(admin), accountId, (int)policy);
     }
 
 }

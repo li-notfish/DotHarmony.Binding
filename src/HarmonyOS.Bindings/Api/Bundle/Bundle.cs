@@ -142,7 +142,7 @@ public static unsafe partial class Bundle
     /// </summary>
     public static Task<IntPtr[]> GetAllBundleInfoAsync(global::HarmonyOS.ArkUI.BundleBundleBundleFlag bundleFlag, double userId)
     {
-        return NodeApi.CallMethodAsync(Module, _getAllBundleInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), bundleFlag, userId);
+        return NodeApi.CallMethodAsync(Module, _getAllBundleInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), (int)bundleFlag, userId);
     }
 
     /// <summary>
@@ -150,7 +150,7 @@ public static unsafe partial class Bundle
     /// </summary>
     public static Task<IntPtr[]> GetAllBundleInfoAsync(global::HarmonyOS.ArkUI.BundleBundleBundleFlag bundleFlag)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _getAllBundleInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), bundleFlag);
+        return NodeApi.CallMethodAsyncCallback(Module, _getAllBundleInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), (int)bundleFlag);
     }
 
     /// <summary>

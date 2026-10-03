@@ -151,7 +151,7 @@ public sealed partial class PiPController : JsObject
     /// </summary>
     public void UpdatePiPControlStatus(global::HarmonyOS.ArkUI.PiPControlType controlType, global::HarmonyOS.ArkUI.PiPControlStatus status)
     {
-        CallMethodVoid(_updatePiPControlStatus, controlType, status);
+        CallMethodVoid(_updatePiPControlStatus, (int)controlType, (int)status);
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public sealed partial class PiPController : JsObject
     /// </summary>
     public void SetPiPControlEnabled(global::HarmonyOS.ArkUI.PiPControlType controlType, bool enabled)
     {
-        CallMethodVoid(_setPiPControlEnabled, controlType, enabled);
+        CallMethodVoid(_setPiPControlEnabled, (int)controlType, enabled);
     }
 
     /// <summary>
@@ -396,7 +396,7 @@ public sealed partial class ControlEventParam : JsObject
     /// <summary>
     /// status
     /// </summary>
-    public global::HarmonyOS.ArkUI.PiPControlStatus? Status => (global::HarmonyOS.ArkUI.PiPControlStatus?)(global::HarmonyOS.ArkUI.PiPControlStatus)NativeValue.ToInt(GetPropertyRaw(_status));
+    public global::HarmonyOS.ArkUI.PiPControlStatus? Status => NativeValue.IsNullOrUndefined(GetPropertyRaw(_status)) ? null : (global::HarmonyOS.ArkUI.PiPControlStatus?)(global::HarmonyOS.ArkUI.PiPControlStatus)NativeValue.ToInt(GetPropertyRaw(_status));
 
 }
 

@@ -80,7 +80,7 @@ public static unsafe partial class CertManagerDialog
     /// </summary>
     public static Task OpenCertificateManagerDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateDialogPageType pageType)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openCertificateManagerDialog, context, pageType);
+        return NodeApi.CallMethodAsyncVoid(Module, _openCertificateManagerDialog, context, (int)pageType);
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public static unsafe partial class CertManagerDialog
     /// </summary>
     public static Task<string> OpenInstallCertificateDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateType certType, global::HarmonyOS.ArkUI.CertificateScope certScope, byte[] cert)
     {
-        return NodeApi.CallMethodAsync<string>(Module, _openInstallCertificateDialog, context, certType, certScope, NapiArg.Of(cert));
+        return NodeApi.CallMethodAsync<string>(Module, _openInstallCertificateDialog, context, (int)certType, (int)certScope, NapiArg.Of(cert));
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public static unsafe partial class CertManagerDialog
     /// </summary>
     public static Task OpenUninstallCertificateDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateType certType, string certUri)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openUninstallCertificateDialog, context, certType, certUri);
+        return NodeApi.CallMethodAsyncVoid(Module, _openUninstallCertificateDialog, context, (int)certType, certUri);
     }
 
     /// <summary>

@@ -108,7 +108,7 @@ public static unsafe partial class UsbManager
     /// </summary>
     public static void SetUsbStorageDeviceAccessPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.UsbPolicy usbPolicy)
     {
-        NodeApi.CallMethodVoid(Module, _setUsbStorageDeviceAccessPolicy, NapiArg.Of(admin), usbPolicy);
+        NodeApi.CallMethodVoid(Module, _setUsbStorageDeviceAccessPolicy, NapiArg.Of(admin), (int)usbPolicy);
     }
 
     /// <summary>
@@ -242,16 +242,16 @@ public sealed partial class PermissiveUsbDeviceType : JsObject
     /// <summary>
     /// subClass
     /// </summary>
-    public double? SubClass => (double?)NativeValue.ToDouble(GetPropertyRaw(_subClass));
+    public double? SubClass => NativeValue.IsNullOrUndefined(GetPropertyRaw(_subClass)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_subClass));
 
     /// <summary>
     /// protocol
     /// </summary>
-    public double? Protocol => (double?)NativeValue.ToDouble(GetPropertyRaw(_protocol));
+    public double? Protocol => NativeValue.IsNullOrUndefined(GetPropertyRaw(_protocol)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_protocol));
 
     /// <summary>
     /// descriptor
     /// </summary>
-    public global::HarmonyOS.ArkUI.Descriptor? Descriptor => (global::HarmonyOS.ArkUI.Descriptor?)(global::HarmonyOS.ArkUI.Descriptor)NativeValue.ToInt(GetPropertyRaw(_descriptor));
+    public global::HarmonyOS.ArkUI.Descriptor? Descriptor => NativeValue.IsNullOrUndefined(GetPropertyRaw(_descriptor)) ? null : (global::HarmonyOS.ArkUI.Descriptor?)(global::HarmonyOS.ArkUI.Descriptor)NativeValue.ToInt(GetPropertyRaw(_descriptor));
 
 }

@@ -100,7 +100,7 @@ public static unsafe partial class Drm
     /// </summary>
     public static bool IsMediaKeySystemSupported(string name, string mimeType, global::HarmonyOS.ArkUI.ContentProtectionLevel level)
     {
-        return NodeApi.CallMethod<bool>(Module, _isMediaKeySystemSupported, name, mimeType, level);
+        return NodeApi.CallMethod<bool>(Module, _isMediaKeySystemSupported, name, mimeType, (int)level);
     }
 
     /// <summary>
@@ -258,7 +258,7 @@ public sealed partial class MediaKeySystem : JsObject
     /// </summary>
     public MediaKeySession CreateMediaKeySession(global::HarmonyOS.ArkUI.ContentProtectionLevel level)
     {
-        return CallMethod(_createMediaKeySession, static h => new MediaKeySession(h), level);
+        return CallMethod(_createMediaKeySession, static h => new MediaKeySession(h), (int)level);
     }
 
     /// <summary>

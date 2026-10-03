@@ -240,7 +240,7 @@ public sealed partial class EmitterOptions : JsObject
     /// <summary>
     /// priority
     /// </summary>
-    public global::HarmonyOS.ArkUI.EventPriority? Priority => (global::HarmonyOS.ArkUI.EventPriority?)(global::HarmonyOS.ArkUI.EventPriority)NativeValue.ToInt(GetPropertyRaw(_priority));
+    public global::HarmonyOS.ArkUI.EventPriority? Priority => NativeValue.IsNullOrUndefined(GetPropertyRaw(_priority)) ? null : (global::HarmonyOS.ArkUI.EventPriority?)(global::HarmonyOS.ArkUI.EventPriority)NativeValue.ToInt(GetPropertyRaw(_priority));
 
 }
 

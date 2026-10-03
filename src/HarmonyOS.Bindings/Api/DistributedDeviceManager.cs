@@ -383,6 +383,6 @@ public sealed partial class DeviceBasicInfo : JsObject
     /// <summary>
     /// networkId
     /// </summary>
-    public string? NetworkId => (string?)NativeValue.ToString(GetPropertyRaw(_networkId)) ?? string.Empty;
+    public string? NetworkId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_networkId)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_networkId));
 
 }

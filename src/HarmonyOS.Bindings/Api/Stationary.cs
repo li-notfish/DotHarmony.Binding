@@ -75,7 +75,7 @@ public static unsafe partial class Stationary
     /// </summary>
     public static void On(IntPtr activity, global::HarmonyOS.ArkUI.ActivityEvent @event, double reportLatencyNs, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _on, activity, @event, reportLatencyNs, callback);
+        NodeApi.CallMethodVoid(Module, _on, activity, (int)@event, reportLatencyNs, callback);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public static unsafe partial class Stationary
     /// </summary>
     public static void Off(IntPtr activity, global::HarmonyOS.ArkUI.ActivityEvent @event, IntPtr callback)
     {
-        NodeApi.CallMethodVoid(Module, _off, activity, @event, callback);
+        NodeApi.CallMethodVoid(Module, _off, activity, (int)@event, callback);
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();
@@ -103,7 +103,7 @@ public static unsafe partial class Stationary
     {
         _eventListeners.Add((type, callback),
             args => callback(new ActivityResponse(args[0])),
-            js => NodeApi.CallMethodVoid(Module, _on, type, js, @event, reportLatencyNs));
+            js => NodeApi.CallMethodVoid(Module, _on, type, js, (int)@event, reportLatencyNs));
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public static unsafe partial class Stationary
     /// </summary>
     public static void Off(string type, System.Action<ActivityResponse> callback, global::HarmonyOS.ArkUI.ActivityEvent @event)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, @event));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Module, _off, type, js, (int)@event));
     }
 
 }

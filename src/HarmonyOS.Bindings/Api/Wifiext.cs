@@ -110,7 +110,7 @@ public static unsafe partial class Wifiext
     /// </summary>
     public static bool SetPowerModel(global::HarmonyOS.ArkUI.PowerModel model)
     {
-        return NodeApi.CallMethod<bool>(Module, _setPowerModel, model);
+        return NodeApi.CallMethod<bool>(Module, _setPowerModel, (int)model);
     }
 
 }

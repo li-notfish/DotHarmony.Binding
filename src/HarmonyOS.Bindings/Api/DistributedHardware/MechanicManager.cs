@@ -127,7 +127,7 @@ public static unsafe partial class MechanicManager
     /// </summary>
     public static bool IsControlSupported(global::HarmonyOS.ArkUI.MechDeviceType? mechDeviceType = null)
     {
-        return NodeApi.CallMethod<bool>(Module, _isControlSupported, mechDeviceType);
+        return NodeApi.CallMethod<bool>(Module, _isControlSupported, NapiArg.Of(mechDeviceType));
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();

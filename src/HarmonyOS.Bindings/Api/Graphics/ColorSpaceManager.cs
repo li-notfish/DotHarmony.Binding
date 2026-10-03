@@ -73,7 +73,7 @@ public static unsafe partial class ColorSpaceManager
     /// </summary>
     public static ColorSpaceManagerObject Create(global::HarmonyOS.ArkUI.ColorSpace colorSpaceName)
     {
-        return NodeApi.CallMethod(Module, _create, static h => new ColorSpaceManagerObject(h), colorSpaceName);
+        return NodeApi.CallMethod(Module, _create, static h => new ColorSpaceManagerObject(h), (int)colorSpaceName);
     }
 
     /// <summary>

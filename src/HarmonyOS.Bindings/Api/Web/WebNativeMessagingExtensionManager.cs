@@ -119,7 +119,7 @@ public sealed partial class WebExtensionConnectionCallback : JsObject
     /// </summary>
     public void OnFailed(global::HarmonyOS.ArkUI.NmErrorCode code, string errMsg)
     {
-        CallMethodVoid(_onFailed, code, errMsg);
+        CallMethodVoid(_onFailed, (int)code, errMsg);
     }
 
 }

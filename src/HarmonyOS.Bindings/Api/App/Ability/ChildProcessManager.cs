@@ -77,7 +77,7 @@ public static unsafe partial class ChildProcessManager
     /// </summary>
     public static Task<double> StartChildProcessAsync(string srcEntry, global::HarmonyOS.ArkUI.StartMode startMode)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _startChildProcess, srcEntry, startMode);
+        return NodeApi.CallMethodAsync<double>(Module, _startChildProcess, srcEntry, (int)startMode);
     }
 
     /// <summary>

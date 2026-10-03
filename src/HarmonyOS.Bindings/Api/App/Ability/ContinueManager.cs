@@ -149,6 +149,6 @@ public sealed partial class ContinueResultInfo : JsObject
     /// <summary>
     /// resultInfo
     /// </summary>
-    public string? ResultInfo => (string?)NativeValue.ToString(GetPropertyRaw(_resultInfo)) ?? string.Empty;
+    public string? ResultInfo => NativeValue.IsNullOrUndefined(GetPropertyRaw(_resultInfo)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_resultInfo));
 
 }

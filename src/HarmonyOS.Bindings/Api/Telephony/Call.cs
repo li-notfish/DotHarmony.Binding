@@ -240,7 +240,7 @@ public static unsafe partial class Call
     /// </summary>
     public static Task<CallTransferResult> GetCallTransferInfoAsync(global::HarmonyOS.ArkUI.CallTransferType type, string number)
     {
-        return NodeApi.CallMethodAsync(Module, _getCallTransferInfo, static h => new CallTransferResult(h), type, number);
+        return NodeApi.CallMethodAsync(Module, _getCallTransferInfo, static h => new CallTransferResult(h), (int)type, number);
     }
 
 }

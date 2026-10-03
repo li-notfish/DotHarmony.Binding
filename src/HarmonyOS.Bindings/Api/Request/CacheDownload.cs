@@ -292,7 +292,7 @@ public sealed partial class CacheDownloadNetworkInfo : JsObject
     /// <summary>
     /// ip
     /// </summary>
-    public string? IP => (string?)NativeValue.ToString(GetPropertyRaw(_ip)) ?? string.Empty;
+    public string? IP => NativeValue.IsNullOrUndefined(GetPropertyRaw(_ip)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_ip));
 
 }
 

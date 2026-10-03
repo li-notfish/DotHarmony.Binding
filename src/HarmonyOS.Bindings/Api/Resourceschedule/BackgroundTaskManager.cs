@@ -115,7 +115,7 @@ public static unsafe partial class BackgroundTaskManager
     /// </summary>
     public static Task StartBackgroundRunningAsync(IntPtr context, global::HarmonyOS.ArkUI.ResourcescheduleBackgroundTaskManagerBackgroundMode bgMode, IntPtr wantAgent)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, context, bgMode, wantAgent);
+        return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, context, (int)bgMode, wantAgent);
     }
 
     /// <summary>
@@ -353,12 +353,12 @@ public sealed partial class ContinuousTaskRequest : JsObject
     /// <summary>
     /// combinedTaskNotification
     /// </summary>
-    public bool? CombinedTaskNotification => (bool?)NativeValue.ToBool(GetPropertyRaw(_combinedTaskNotification));
+    public bool? CombinedTaskNotification => NativeValue.IsNullOrUndefined(GetPropertyRaw(_combinedTaskNotification)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_combinedTaskNotification));
 
     /// <summary>
     /// continuousTaskId
     /// </summary>
-    public double? ContinuousTaskId => (double?)NativeValue.ToDouble(GetPropertyRaw(_continuousTaskId));
+    public double? ContinuousTaskId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_continuousTaskId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_continuousTaskId));
 
     /// <summary>
     /// isModeSupported
@@ -486,12 +486,12 @@ public sealed partial class ContinuousTaskInfo : JsObject
     /// <summary>
     /// bundleName
     /// </summary>
-    public string? BundleName => (string?)NativeValue.ToString(GetPropertyRaw(_bundleName)) ?? string.Empty;
+    public string? BundleName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_bundleName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_bundleName));
 
     /// <summary>
     /// appIndex
     /// </summary>
-    public double? AppIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_appIndex));
+    public double? AppIndex => NativeValue.IsNullOrUndefined(GetPropertyRaw(_appIndex)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_appIndex));
 
 }
 
@@ -518,7 +518,7 @@ public sealed partial class ContinuousTaskCancelInfo : JsObject
     /// <summary>
     /// detailedReason
     /// </summary>
-    public global::HarmonyOS.ArkUI.ContinuousTaskDetailedCancelReason? DetailedReason => (global::HarmonyOS.ArkUI.ContinuousTaskDetailedCancelReason?)(global::HarmonyOS.ArkUI.ContinuousTaskDetailedCancelReason)NativeValue.ToInt(GetPropertyRaw(_detailedReason));
+    public global::HarmonyOS.ArkUI.ContinuousTaskDetailedCancelReason? DetailedReason => NativeValue.IsNullOrUndefined(GetPropertyRaw(_detailedReason)) ? null : (global::HarmonyOS.ArkUI.ContinuousTaskDetailedCancelReason?)(global::HarmonyOS.ArkUI.ContinuousTaskDetailedCancelReason)NativeValue.ToInt(GetPropertyRaw(_detailedReason));
 
 }
 
@@ -551,7 +551,7 @@ public sealed partial class ContinuousTaskSuspendInfo : JsObject
     /// <summary>
     /// suspendMessage
     /// </summary>
-    public SuspendMessage? SuspendMessage => GetPropertyRaw(_suspendMessage) == IntPtr.Zero ? null : new SuspendMessage(GetPropertyRaw(_suspendMessage));
+    public SuspendMessage? SuspendMessage => NativeValue.IsNullOrUndefined(GetPropertyRaw(_suspendMessage)) ? null : new SuspendMessage(GetPropertyRaw(_suspendMessage));
 
 }
 

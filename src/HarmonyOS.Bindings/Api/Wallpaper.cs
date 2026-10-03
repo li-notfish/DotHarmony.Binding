@@ -84,7 +84,7 @@ public static unsafe partial class Wallpaper
     /// </summary>
     public static Task<RgbaColor[]> GetColorsAsync(global::HarmonyOS.ArkUI.WallpaperType wallpaperType)
     {
-        return NodeApi.CallMethodAsync(Module, _getColors, h => ValueConverter.ConvertArray(h, static e => new RgbaColor(e)), wallpaperType);
+        return NodeApi.CallMethodAsync(Module, _getColors, h => ValueConverter.ConvertArray(h, static e => new RgbaColor(e)), (int)wallpaperType);
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static unsafe partial class Wallpaper
     /// </summary>
     public static Task<double> GetIdAsync(global::HarmonyOS.ArkUI.WallpaperType wallpaperType)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _getId, wallpaperType);
+        return NodeApi.CallMethodAsync<double>(Module, _getId, (int)wallpaperType);
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public static unsafe partial class Wallpaper
     /// </summary>
     public static Task<double> GetFileAsync(global::HarmonyOS.ArkUI.WallpaperType wallpaperType)
     {
-        return NodeApi.CallMethodAsync<double>(Module, _getFile, wallpaperType);
+        return NodeApi.CallMethodAsync<double>(Module, _getFile, (int)wallpaperType);
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public static unsafe partial class Wallpaper
     /// </summary>
     public static Task ResetAsync(global::HarmonyOS.ArkUI.WallpaperType wallpaperType)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _reset, wallpaperType);
+        return NodeApi.CallMethodAsyncVoid(Module, _reset, (int)wallpaperType);
     }
 
     /// <summary>
@@ -148,7 +148,7 @@ public static unsafe partial class Wallpaper
     /// </summary>
     public static Task SetWallpaperAsync(string source, global::HarmonyOS.ArkUI.WallpaperType wallpaperType)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setWallpaper, source, wallpaperType);
+        return NodeApi.CallMethodAsyncVoid(Module, _setWallpaper, source, (int)wallpaperType);
     }
 
     /// <summary>

@@ -252,7 +252,7 @@ public partial class ModuleVerifyPage : ContentPage
         try
         {
             byte[] payload = [0x01, 0x02, 0x03, 0xF0, 0x0F, 0x7F, 0x80, 0xFF];
-            var echoed = await NodeApi.CallMethodAsync<byte[]>(NodeApi.GetGlobal(), "echoArrayBuffer", NapiArg.Of(payload));
+            var echoed = await NodeApi.CallMethodAsync<byte[]>(NodeApi.GetGlobal(), "echoArrayBuffer", NapiArg.OfArrayBuffer(payload));
             bool ok = echoed.AsSpan().SequenceEqual(payload);
             ShowResult("ArrayBuffer", ok
                 ? $"byte[{payload.Length}] round-trip OK: {Convert.ToHexString(echoed)}"
@@ -284,5 +284,17 @@ public partial class ModuleVerifyPage : ContentPage
             ShowResult("JsMap", $"{readMsg} · readOk={readOk} · write sum={sum} writeOk={writeOk}");
         }
         catch (Exception ex) { ShowError("JsMap", ex); }
+    }
+
+    private void OnVerifyOptionalFields(object? sender, EventArgs e)
+    {
+        try
+        {
+            var handle = NodeApi.CallMethod<IntPtr>(NodeApi.GetGlobal(), "makeOptionalInfo");
+            var info = new global::HarmonyOS.Bindings.Api.Advertising.AdRequestParams(handle);
+            ShowResult("OptionalFields",
+                $"AdId={info.AdId}, AdType={info.AdType?.ToString() ?? "null"}, Keyword={info.AdSearchKeyword ?? "null"}");
+        }
+        catch (Exception ex) { ShowError("OptionalFields", ex); }
     }
 }

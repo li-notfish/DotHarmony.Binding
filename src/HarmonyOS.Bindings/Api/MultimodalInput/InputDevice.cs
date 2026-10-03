@@ -183,7 +183,7 @@ public static unsafe partial class InputDevice
     /// </summary>
     public static Task SetFunctionKeyEnabledAsync(global::HarmonyOS.ArkUI.FunctionKey functionKey, bool enabled)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setFunctionKeyEnabled, functionKey, enabled);
+        return NodeApi.CallMethodAsyncVoid(Module, _setFunctionKeyEnabled, (int)functionKey, enabled);
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public static unsafe partial class InputDevice
     /// </summary>
     public static Task<bool> IsFunctionKeyEnabledAsync(global::HarmonyOS.ArkUI.FunctionKey functionKey)
     {
-        return NodeApi.CallMethodAsync<bool>(Module, _isFunctionKeyEnabled, functionKey);
+        return NodeApi.CallMethodAsync<bool>(Module, _isFunctionKeyEnabled, (int)functionKey);
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();

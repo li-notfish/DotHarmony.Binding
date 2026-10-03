@@ -102,7 +102,7 @@ public static unsafe partial class BackgroundTaskManager
     /// </summary>
     public static Task StartBackgroundRunningAsync(IntPtr context, global::HarmonyOS.ArkUI.BackgroundMode bgMode, IntPtr wantAgent)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, context, bgMode, wantAgent);
+        return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, context, (int)bgMode, wantAgent);
     }
 
     /// <summary>

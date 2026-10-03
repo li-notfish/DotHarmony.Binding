@@ -245,7 +245,7 @@ public sealed partial class Checksum : JsObject
     /// </summary>
     public Task<double> Adler32Async(double adler, byte[] buf)
     {
-        return CallMethodAsync<double>(_adler32, adler, NapiArg.Of(buf));
+        return CallMethodAsync<double>(_adler32, adler, NapiArg.OfArrayBuffer(buf));
     }
 
     /// <summary>
@@ -261,7 +261,7 @@ public sealed partial class Checksum : JsObject
     /// </summary>
     public Task<double> Crc32Async(double crc, byte[] buf)
     {
-        return CallMethodAsync<double>(_crc32, crc, NapiArg.Of(buf));
+        return CallMethodAsync<double>(_crc32, crc, NapiArg.OfArrayBuffer(buf));
     }
 
     /// <summary>
@@ -277,7 +277,7 @@ public sealed partial class Checksum : JsObject
     /// </summary>
     public Task<double> Crc64Async(double crc, byte[] buf)
     {
-        return CallMethodAsync<double>(_crc64, crc, NapiArg.Of(buf));
+        return CallMethodAsync<double>(_crc64, crc, NapiArg.OfArrayBuffer(buf));
     }
 
     /// <summary>
@@ -377,7 +377,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<ZipOutputInfo> CompressAsync(byte[] dest, byte[] source, double? sourceLen = null)
     {
-        return CallMethodAsync(_compress, static h => new ZipOutputInfo(h), NapiArg.Of(dest), NapiArg.Of(source), NapiArg.Of(sourceLen));
+        return CallMethodAsync(_compress, static h => new ZipOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source), NapiArg.Of(sourceLen));
     }
 
     /// <summary>
@@ -385,7 +385,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<ZipOutputInfo> Compress2Async(byte[] dest, byte[] source, global::HarmonyOS.ArkUI.CompressLevel level, double? sourceLen = null)
     {
-        return CallMethodAsync(_compress2, static h => new ZipOutputInfo(h), NapiArg.Of(dest), NapiArg.Of(source), level, NapiArg.Of(sourceLen));
+        return CallMethodAsync(_compress2, static h => new ZipOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source), (int)level, NapiArg.Of(sourceLen));
     }
 
     /// <summary>
@@ -401,7 +401,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<ZipOutputInfo> UncompressAsync(byte[] dest, byte[] source, double? sourceLen = null)
     {
-        return CallMethodAsync(_uncompress, static h => new ZipOutputInfo(h), NapiArg.Of(dest), NapiArg.Of(source), NapiArg.Of(sourceLen));
+        return CallMethodAsync(_uncompress, static h => new ZipOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source), NapiArg.Of(sourceLen));
     }
 
     /// <summary>
@@ -409,7 +409,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<DecompressionOutputInfo> Uncompress2Async(byte[] dest, byte[] source, double? sourceLen = null)
     {
-        return CallMethodAsync(_uncompress2, static h => new DecompressionOutputInfo(h), NapiArg.Of(dest), NapiArg.Of(source), NapiArg.Of(sourceLen));
+        return CallMethodAsync(_uncompress2, static h => new DecompressionOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source), NapiArg.Of(sourceLen));
     }
 
     /// <summary>
@@ -441,7 +441,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateSetDictionaryAsync(ZStream strm, byte[] dictionary)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateSetDictionary, NapiArg.Of(strm), NapiArg.Of(dictionary));
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateSetDictionary, NapiArg.Of(strm), NapiArg.OfArrayBuffer(dictionary));
     }
 
     /// <summary>
@@ -513,7 +513,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<DictionaryOutputInfo> InflateGetDictionaryAsync(ZStream strm, byte[] dictionary)
     {
-        return CallMethodAsync(_inflateGetDictionary, static h => new DictionaryOutputInfo(h), NapiArg.Of(strm), NapiArg.Of(dictionary));
+        return CallMethodAsync(_inflateGetDictionary, static h => new DictionaryOutputInfo(h), NapiArg.Of(strm), NapiArg.OfArrayBuffer(dictionary));
     }
 
     /// <summary>
@@ -545,7 +545,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateBackInitAsync(ZStream strm, double windowBits, byte[] window)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateBackInit, NapiArg.Of(strm), windowBits, NapiArg.Of(window));
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflateBackInit, NapiArg.Of(strm), windowBits, NapiArg.OfArrayBuffer(window));
     }
 
     /// <summary>
@@ -569,7 +569,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> InflateAsync(ZStream strm, global::HarmonyOS.ArkUI.CompressFlushMode flush)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflate, NapiArg.Of(strm), flush);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_inflate, NapiArg.Of(strm), (int)flush);
     }
 
     /// <summary>
@@ -577,7 +577,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateInitAsync(ZStream strm, global::HarmonyOS.ArkUI.CompressLevel level)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateInit, NapiArg.Of(strm), level);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateInit, NapiArg.Of(strm), (int)level);
     }
 
     /// <summary>
@@ -585,7 +585,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateInit2Async(ZStream strm, global::HarmonyOS.ArkUI.CompressLevel level, global::HarmonyOS.ArkUI.CompressMethod method, double windowBits, global::HarmonyOS.ArkUI.MemLevel memLevel, global::HarmonyOS.ArkUI.CompressStrategy strategy)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateInit2, NapiArg.Of(strm), level, method, windowBits, memLevel, strategy);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateInit2, NapiArg.Of(strm), (int)level, (int)method, windowBits, (int)memLevel, (int)strategy);
     }
 
     /// <summary>
@@ -593,7 +593,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateAsync(ZStream strm, global::HarmonyOS.ArkUI.CompressFlushMode flush)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflate, NapiArg.Of(strm), flush);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflate, NapiArg.Of(strm), (int)flush);
     }
 
     /// <summary>
@@ -633,7 +633,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateSetDictionaryAsync(ZStream strm, byte[] dictionary)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateSetDictionary, NapiArg.Of(strm), NapiArg.Of(dictionary));
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateSetDictionary, NapiArg.Of(strm), NapiArg.OfArrayBuffer(dictionary));
     }
 
     /// <summary>
@@ -641,7 +641,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<DictionaryOutputInfo> DeflateGetDictionaryAsync(ZStream strm, byte[] dictionary)
     {
-        return CallMethodAsync(_deflateGetDictionary, static h => new DictionaryOutputInfo(h), NapiArg.Of(strm), NapiArg.Of(dictionary));
+        return CallMethodAsync(_deflateGetDictionary, static h => new DictionaryOutputInfo(h), NapiArg.Of(strm), NapiArg.OfArrayBuffer(dictionary));
     }
 
     /// <summary>
@@ -681,7 +681,7 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> DeflateParamsAsync(ZStream strm, global::HarmonyOS.ArkUI.CompressLevel level, global::HarmonyOS.ArkUI.CompressStrategy strategy)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateParams, NapiArg.Of(strm), level, strategy);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_deflateParams, NapiArg.Of(strm), (int)level, (int)strategy);
     }
 
     /// <summary>
@@ -804,7 +804,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> GzflushAsync(global::HarmonyOS.ArkUI.CompressFlushMode flush)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_gzflush, flush);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_gzflush, (int)flush);
     }
 
     /// <summary>
@@ -812,7 +812,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<double> GzfwriteAsync(byte[] buf, double size, double nitems)
     {
-        return CallMethodAsync<double>(_gzfwrite, NapiArg.Of(buf), size, nitems);
+        return CallMethodAsync<double>(_gzfwrite, NapiArg.OfArrayBuffer(buf), size, nitems);
     }
 
     /// <summary>
@@ -820,7 +820,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<double> GzfreadAsync(byte[] buf, double size, double nitems)
     {
-        return CallMethodAsync<double>(_gzfread, NapiArg.Of(buf), size, nitems);
+        return CallMethodAsync<double>(_gzfread, NapiArg.OfArrayBuffer(buf), size, nitems);
     }
 
     /// <summary>
@@ -844,7 +844,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<double> GzwriteAsync(byte[] buf, double len)
     {
-        return CallMethodAsync<double>(_gzwrite, NapiArg.Of(buf), len);
+        return CallMethodAsync<double>(_gzwrite, NapiArg.OfArrayBuffer(buf), len);
     }
 
     /// <summary>
@@ -868,7 +868,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<global::HarmonyOS.ArkUI.ReturnStatus> GzsetparamsAsync(global::HarmonyOS.ArkUI.CompressLevel level, global::HarmonyOS.ArkUI.CompressStrategy strategy)
     {
-        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_gzsetparams, level, strategy);
+        return CallMethodAsync<global::HarmonyOS.ArkUI.ReturnStatus>(_gzsetparams, (int)level, (int)strategy);
     }
 
     /// <summary>
@@ -876,7 +876,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<double> GzseekAsync(double offset, global::HarmonyOS.ArkUI.OffsetReferencePoint whence)
     {
-        return CallMethodAsync<double>(_gzseek, offset, whence);
+        return CallMethodAsync<double>(_gzseek, offset, (int)whence);
     }
 
     /// <summary>
@@ -892,7 +892,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<double> GzreadAsync(byte[] buf)
     {
-        return CallMethodAsync<double>(_gzread, NapiArg.Of(buf));
+        return CallMethodAsync<double>(_gzread, NapiArg.OfArrayBuffer(buf));
     }
 
     /// <summary>
@@ -932,7 +932,7 @@ public sealed partial class GZip : JsObject
     /// </summary>
     public Task<string> GzgetsAsync(byte[] buf)
     {
-        return CallMethodAsync<string>(_gzgets, NapiArg.Of(buf));
+        return CallMethodAsync<string>(_gzgets, NapiArg.OfArrayBuffer(buf));
     }
 
 }
@@ -955,42 +955,42 @@ public sealed partial class ZStream : JsObject
     /// <summary>
     /// nextIn
     /// </summary>
-    public byte[] NextIn => ValueConverter.ConvertArray(GetPropertyRaw(_nextIn), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? NextIn => NativeValue.IsNullOrUndefined(GetPropertyRaw(_nextIn)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_nextIn), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// availableIn
     /// </summary>
-    public double? AvailableIn => (double?)NativeValue.ToDouble(GetPropertyRaw(_availableIn));
+    public double? AvailableIn => NativeValue.IsNullOrUndefined(GetPropertyRaw(_availableIn)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_availableIn));
 
     /// <summary>
     /// totalIn
     /// </summary>
-    public double? TotalIn => (double?)NativeValue.ToDouble(GetPropertyRaw(_totalIn));
+    public double? TotalIn => NativeValue.IsNullOrUndefined(GetPropertyRaw(_totalIn)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_totalIn));
 
     /// <summary>
     /// nextOut
     /// </summary>
-    public byte[] NextOut => ValueConverter.ConvertArray(GetPropertyRaw(_nextOut), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? NextOut => NativeValue.IsNullOrUndefined(GetPropertyRaw(_nextOut)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_nextOut), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// availableOut
     /// </summary>
-    public double? AvailableOut => (double?)NativeValue.ToDouble(GetPropertyRaw(_availableOut));
+    public double? AvailableOut => NativeValue.IsNullOrUndefined(GetPropertyRaw(_availableOut)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_availableOut));
 
     /// <summary>
     /// totalOut
     /// </summary>
-    public double? TotalOut => (double?)NativeValue.ToDouble(GetPropertyRaw(_totalOut));
+    public double? TotalOut => NativeValue.IsNullOrUndefined(GetPropertyRaw(_totalOut)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_totalOut));
 
     /// <summary>
     /// dataType
     /// </summary>
-    public double? DataType => (double?)NativeValue.ToDouble(GetPropertyRaw(_dataType));
+    public double? DataType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_dataType)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_dataType));
 
     /// <summary>
     /// adler
     /// </summary>
-    public double? Adler => (double?)NativeValue.ToDouble(GetPropertyRaw(_adler));
+    public double? Adler => NativeValue.IsNullOrUndefined(GetPropertyRaw(_adler)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_adler));
 
 }
 
@@ -1062,52 +1062,52 @@ public sealed partial class GzHeader : JsObject
     /// <summary>
     /// isText
     /// </summary>
-    public bool? IsText => (bool?)NativeValue.ToBool(GetPropertyRaw(_isText));
+    public bool? IsText => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isText)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isText));
 
     /// <summary>
     /// os
     /// </summary>
-    public double? Os => (double?)NativeValue.ToDouble(GetPropertyRaw(_os));
+    public double? Os => NativeValue.IsNullOrUndefined(GetPropertyRaw(_os)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_os));
 
     /// <summary>
     /// time
     /// </summary>
-    public double? Time => (double?)NativeValue.ToDouble(GetPropertyRaw(_time));
+    public double? Time => NativeValue.IsNullOrUndefined(GetPropertyRaw(_time)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_time));
 
     /// <summary>
     /// xflags
     /// </summary>
-    public double? Xflags => (double?)NativeValue.ToDouble(GetPropertyRaw(_xflags));
+    public double? Xflags => NativeValue.IsNullOrUndefined(GetPropertyRaw(_xflags)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_xflags));
 
     /// <summary>
     /// extra
     /// </summary>
-    public byte[] Extra => ValueConverter.ConvertArray(GetPropertyRaw(_extra), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? Extra => NativeValue.IsNullOrUndefined(GetPropertyRaw(_extra)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_extra), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// extraLen
     /// </summary>
-    public double? ExtraLen => (double?)NativeValue.ToDouble(GetPropertyRaw(_extraLen));
+    public double? ExtraLen => NativeValue.IsNullOrUndefined(GetPropertyRaw(_extraLen)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_extraLen));
 
     /// <summary>
     /// name
     /// </summary>
-    public byte[] Name => ValueConverter.ConvertArray(GetPropertyRaw(_name), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? Name => NativeValue.IsNullOrUndefined(GetPropertyRaw(_name)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_name), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// comment
     /// </summary>
-    public byte[] Comment => ValueConverter.ConvertArray(GetPropertyRaw(_comment), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? Comment => NativeValue.IsNullOrUndefined(GetPropertyRaw(_comment)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_comment), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// hcrc
     /// </summary>
-    public bool? Hcrc => (bool?)NativeValue.ToBool(GetPropertyRaw(_hcrc));
+    public bool? Hcrc => NativeValue.IsNullOrUndefined(GetPropertyRaw(_hcrc)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_hcrc));
 
     /// <summary>
     /// done
     /// </summary>
-    public bool? Done => (bool?)NativeValue.ToBool(GetPropertyRaw(_done));
+    public bool? Done => NativeValue.IsNullOrUndefined(GetPropertyRaw(_done)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_done));
 
 }
 

@@ -89,37 +89,37 @@ public sealed partial class WantObject : JsObject
     /// <summary>
     /// bundleName
     /// </summary>
-    public string? BundleName => (string?)NativeValue.ToString(GetPropertyRaw(_bundleName)) ?? string.Empty;
+    public string? BundleName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_bundleName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_bundleName));
 
     /// <summary>
     /// abilityName
     /// </summary>
-    public string? AbilityName => (string?)NativeValue.ToString(GetPropertyRaw(_abilityName)) ?? string.Empty;
+    public string? AbilityName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_abilityName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_abilityName));
 
     /// <summary>
     /// deviceId
     /// </summary>
-    public string? DeviceId => (string?)NativeValue.ToString(GetPropertyRaw(_deviceId)) ?? string.Empty;
+    public string? DeviceId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_deviceId)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_deviceId));
 
     /// <summary>
     /// uri
     /// </summary>
-    public string? Uri => (string?)NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
+    public string? Uri => NativeValue.IsNullOrUndefined(GetPropertyRaw(_uri)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_uri));
 
     /// <summary>
     /// type
     /// </summary>
-    public string? Type => (string?)NativeValue.ToString(GetPropertyRaw(_type)) ?? string.Empty;
+    public string? Type => NativeValue.IsNullOrUndefined(GetPropertyRaw(_type)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_type));
 
     /// <summary>
     /// flags
     /// </summary>
-    public double? Flags => (double?)NativeValue.ToDouble(GetPropertyRaw(_flags));
+    public double? Flags => NativeValue.IsNullOrUndefined(GetPropertyRaw(_flags)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_flags));
 
     /// <summary>
     /// action
     /// </summary>
-    public string? Action => (string?)NativeValue.ToString(GetPropertyRaw(_action)) ?? string.Empty;
+    public string? Action => NativeValue.IsNullOrUndefined(GetPropertyRaw(_action)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_action));
 
     /// <summary>
     /// parameters
@@ -129,12 +129,12 @@ public sealed partial class WantObject : JsObject
     /// <summary>
     /// entities
     /// </summary>
-    public string[] Entities => ValueConverter.ConvertArray(GetPropertyRaw(_entities), static e => ValueConverter.Convert<string>(e));
+    public string[]? Entities => NativeValue.IsNullOrUndefined(GetPropertyRaw(_entities)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_entities), static e => ValueConverter.Convert<string>(e));
 
     /// <summary>
     /// moduleName
     /// </summary>
-    public string? ModuleName => (string?)NativeValue.ToString(GetPropertyRaw(_moduleName)) ?? string.Empty;
+    public string? ModuleName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_moduleName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_moduleName));
 
     /// <summary>
     /// fds

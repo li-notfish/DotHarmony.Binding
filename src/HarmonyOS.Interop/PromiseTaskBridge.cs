@@ -157,10 +157,10 @@ internal static class PromiseTaskBridge
                 return CallbackTrampolines.SafeReturnUndefined(env);
             }
             state.Done = true;
-            string? reason = null;
-            try { reason = NativeValue.ToString(reasonArg); }
-            catch { /* reason 可能不是字符串，忽略转换失败 */ }
-            state.SetException(new ArkTSException($"ArkTS promise rejected: {reason ?? "unknown"}", reason, reasonArg));
+            var (code, message) = BusinessErrorReader.Read(env, reasonArg);
+            state.SetException(new ArkTSException(
+                $"ArkTS promise rejected (code {code?.ToString() ?? "unknown"}): {message ?? "unknown"}",
+                message, reasonArg, code));
         }
         catch (Exception ex)
         {

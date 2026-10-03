@@ -211,7 +211,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public Task<object[]> SyncAsync(global::HarmonyOS.ArkUI.DataRdbSyncMode mode, RdbPredicates predicates)
     {
-        return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), mode, NapiArg.Of(predicates));
+        return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), (int)mode, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -219,7 +219,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public void On(string @event, global::HarmonyOS.ArkUI.DataRdbSubscribeType type, IntPtr observer)
     {
-        CallMethodVoid(_on, @event, type, observer);
+        CallMethodVoid(_on, @event, (int)type, observer);
     }
 
     /// <summary>
@@ -227,7 +227,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public void Off(string @event, global::HarmonyOS.ArkUI.DataRdbSubscribeType type, IntPtr observer)
     {
-        CallMethodVoid(_off, @event, type, observer);
+        CallMethodVoid(_off, @event, (int)type, observer);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -239,7 +239,7 @@ public sealed partial class RdbStore : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<string>(e))),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, type2));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, (int)type2));
     }
 
     /// <summary>
@@ -255,7 +255,7 @@ public sealed partial class RdbStore : JsObject
     /// </summary>
     public void Off(string type, System.Action<string[]> callback, global::HarmonyOS.ArkUI.DataRdbSubscribeType type2)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, type2));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, (int)type2));
     }
 
     /// <summary>
@@ -356,7 +356,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates EqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_equalTo, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_equalTo, static h => new RdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -364,7 +364,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates NotEqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_notEqualTo, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_notEqualTo, static h => new RdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -460,7 +460,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates Between(string field, global::HarmonyOS.ArkUI.ValueType low, global::HarmonyOS.ArkUI.ValueType high)
     {
-        return CallMethod(_between, static h => new RdbPredicates(h), field, low, high);
+        return CallMethod(_between, static h => new RdbPredicates(h), field, (int)low, (int)high);
     }
 
     /// <summary>
@@ -468,7 +468,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates NotBetween(string field, global::HarmonyOS.ArkUI.ValueType low, global::HarmonyOS.ArkUI.ValueType high)
     {
-        return CallMethod(_notBetween, static h => new RdbPredicates(h), field, low, high);
+        return CallMethod(_notBetween, static h => new RdbPredicates(h), field, (int)low, (int)high);
     }
 
     /// <summary>
@@ -476,7 +476,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates GreaterThan(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_greaterThan, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_greaterThan, static h => new RdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -484,7 +484,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates LessThan(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_lessThan, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_lessThan, static h => new RdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -492,7 +492,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates GreaterThanOrEqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_greaterThanOrEqualTo, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_greaterThanOrEqualTo, static h => new RdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -500,7 +500,7 @@ public sealed partial class RdbPredicates : JsObject
     /// </summary>
     public RdbPredicates LessThanOrEqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_lessThanOrEqualTo, static h => new RdbPredicates(h), field, value);
+        return CallMethod(_lessThanOrEqualTo, static h => new RdbPredicates(h), field, (int)value);
     }
 
     /// <summary>

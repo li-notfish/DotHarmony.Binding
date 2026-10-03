@@ -4,6 +4,7 @@ export class TypeMapper {
     private static readonly TYPE_MAP: Record<string, TypeMapping> = {
         'string': { typescript: 'string', csharp: 'string', isNative: false },
         'number': { typescript: 'number', csharp: 'double', isNative: false },
+        'int': { typescript: 'int', csharp: 'int', isNative: false },
         'boolean': { typescript: 'boolean', csharp: 'bool', isNative: false },
         'void': { typescript: 'void', csharp: 'void', isNative: false },
         // 数值类型扩展
@@ -133,7 +134,7 @@ export class TypeMapper {
         if (match) {
             const innerType = this.mapType(match[1]);
             // 对于值类型，添加可空标记
-            if (innerType === 'double' || innerType === 'bool' || innerType === 'int') {
+            if (this.isNullableValueType(innerType)) {
                 return `${innerType}?`;
             }
             // 对于引用类型，直接使用
@@ -189,7 +190,7 @@ export class TypeMapper {
 
         if (nonNullParts.length === 1) {
             const mappedType = this.mapType(nonNullParts[0]);
-            if (hasUndefined && (mappedType === 'double' || mappedType === 'bool' || mappedType === 'int')) {
+            if (hasUndefined && this.isNullableValueType(mappedType)) {
                 return `${mappedType}?`;
             }
             return mappedType;
@@ -217,6 +218,10 @@ export class TypeMapper {
         }
         
         return 'IntPtr';
+    }
+
+    private static isNullableValueType(mappedType: string): boolean {
+        return ['bool', 'double', 'float', 'int', 'uint', 'long', 'ulong', 'byte'].includes(mappedType);
     }
 
     private static mapTupleType(tupleType: string): string {

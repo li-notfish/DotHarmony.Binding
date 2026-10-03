@@ -501,6 +501,7 @@ export class AstParser {
                 const paramInfo: ParameterInfo = {
                     name: param.name.getText(),
                     type: this.getTypeName(param.type),
+                    tsType: this.getTypeName(param.type),
                     optional: !!param.questionToken,
                     defaultValue: param.initializer ? param.initializer.getText() : undefined
                 };
@@ -549,6 +550,7 @@ export class AstParser {
                 const paramInfo: ParameterInfo = {
                     name: param.name.getText(),
                     type: this.getTypeName(param.type),
+                    tsType: this.getTypeName(param.type),
                     optional: !!param.questionToken,
                     defaultValue: param.initializer ? param.initializer.getText() : undefined
                 };
@@ -1082,6 +1084,7 @@ export class AstParser {
                     parameters: member.parameters.map(p => ({
                         name: p.name.getText(),
                         type: this.getTypeName(p.type),
+                        tsType: this.getTypeName(p.type),
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     })),
@@ -1098,6 +1101,7 @@ export class AstParser {
                     parameters: member.parameters.map(p => ({
                         name: p.name.getText(),
                         type: raw ? this.getTypeName(p.type) : TypeMapper.mapType(this.getTypeName(p.type)),
+                        tsType: this.getTypeName(p.type),
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     })),
@@ -1157,6 +1161,7 @@ export class AstParser {
                     parameters: member.parameters.map(p => ({
                         name: p.name.getText(),
                         type: raw ? this.getTypeName(p.type) : TypeMapper.mapType(this.getTypeName(p.type)),
+                        tsType: this.getTypeName(p.type),
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     })),
@@ -1171,6 +1176,7 @@ export class AstParser {
                     parameters: member.parameters.map(p => ({
                         name: p.name.getText(),
                         type: raw ? this.getTypeName(p.type) : TypeMapper.mapType(this.getTypeName(p.type)),
+                        tsType: this.getTypeName(p.type),
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     }))

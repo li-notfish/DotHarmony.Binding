@@ -74,7 +74,7 @@ public static unsafe partial class FaultLogger
     /// </summary>
     public static Task<FaultLogInfo[]> QuerySelfFaultLogAsync(global::HarmonyOS.ArkUI.FaultType faultType)
     {
-        return NodeApi.CallMethodAsync(Module, _querySelfFaultLog, h => ValueConverter.ConvertArray(h, static e => new FaultLogInfo(e)), faultType);
+        return NodeApi.CallMethodAsync(Module, _querySelfFaultLog, h => ValueConverter.ConvertArray(h, static e => new FaultLogInfo(e)), (int)faultType);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public static unsafe partial class FaultLogger
     /// </summary>
     public static Task<FaultLogInfo[]> QueryAsync(global::HarmonyOS.ArkUI.FaultType faultType)
     {
-        return NodeApi.CallMethodAsync(Module, _query, h => ValueConverter.ConvertArray(h, static e => new FaultLogInfo(e)), faultType);
+        return NodeApi.CallMethodAsync(Module, _query, h => ValueConverter.ConvertArray(h, static e => new FaultLogInfo(e)), (int)faultType);
     }
 
 }

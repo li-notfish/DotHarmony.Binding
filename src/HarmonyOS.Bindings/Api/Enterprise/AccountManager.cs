@@ -155,16 +155,16 @@ public sealed partial class DomainAccountPolicy : JsObject
     /// <summary>
     /// authenticationValidityPeriod
     /// </summary>
-    public double? AuthenticationValidityPeriod => (double?)NativeValue.ToDouble(GetPropertyRaw(_authenticationValidityPeriod));
+    public double? AuthenticationValidityPeriod => NativeValue.IsNullOrUndefined(GetPropertyRaw(_authenticationValidityPeriod)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_authenticationValidityPeriod));
 
     /// <summary>
     /// passwordValidityPeriod
     /// </summary>
-    public double? PasswordValidityPeriod => (double?)NativeValue.ToDouble(GetPropertyRaw(_passwordValidityPeriod));
+    public double? PasswordValidityPeriod => NativeValue.IsNullOrUndefined(GetPropertyRaw(_passwordValidityPeriod)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_passwordValidityPeriod));
 
     /// <summary>
     /// passwordExpirationNotification
     /// </summary>
-    public double? PasswordExpirationNotification => (double?)NativeValue.ToDouble(GetPropertyRaw(_passwordExpirationNotification));
+    public double? PasswordExpirationNotification => NativeValue.IsNullOrUndefined(GetPropertyRaw(_passwordExpirationNotification)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_passwordExpirationNotification));
 
 }

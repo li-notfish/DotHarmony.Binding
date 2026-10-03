@@ -130,7 +130,7 @@ public static unsafe partial class HiTraceChain
     /// </summary>
     public static void Tracepoint(global::HarmonyOS.ArkUI.HiTraceCommunicationMode mode, global::HarmonyOS.ArkUI.HiTraceTracepointType type, IntPtr id, string? msg = null)
     {
-        NodeApi.CallMethodVoid(Module, _tracepoint, mode, type, id, msg);
+        NodeApi.CallMethodVoid(Module, _tracepoint, (int)mode, (int)type, id, msg);
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public static unsafe partial class HiTraceChain
     /// </summary>
     public static bool IsFlagEnabled(IntPtr id, global::HarmonyOS.ArkUI.HiTraceFlag flag)
     {
-        return NodeApi.CallMethod<bool>(Module, _isFlagEnabled, id, flag);
+        return NodeApi.CallMethod<bool>(Module, _isFlagEnabled, id, (int)flag);
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ public static unsafe partial class HiTraceChain
     /// </summary>
     public static void EnableFlag(IntPtr id, global::HarmonyOS.ArkUI.HiTraceFlag flag)
     {
-        NodeApi.CallMethodVoid(Module, _enableFlag, id, flag);
+        NodeApi.CallMethodVoid(Module, _enableFlag, id, (int)flag);
     }
 
 }

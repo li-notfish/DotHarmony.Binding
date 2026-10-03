@@ -122,7 +122,7 @@ public sealed partial class Filter : JsObject
     /// </summary>
     public Filter Blur(double radius, global::HarmonyOS.ArkUI.TileMode tileMode)
     {
-        return CallMethod(_blur, static h => new Filter(h), radius, tileMode);
+        return CallMethod(_blur, static h => new Filter(h), radius, (int)tileMode);
     }
 
     /// <summary>

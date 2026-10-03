@@ -105,7 +105,7 @@ public static unsafe partial class Router
     /// </summary>
     public static Task PushUrlAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, options, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, options, (int)mode);
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public static unsafe partial class Router
     /// </summary>
     public static Task ReplaceUrlAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, options, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, options, (int)mode);
     }
 
     /// <summary>
@@ -241,7 +241,7 @@ public static unsafe partial class Router
     /// </summary>
     public static Task PushNamedRouteAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, options, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, options, (int)mode);
     }
 
     /// <summary>
@@ -257,7 +257,7 @@ public static unsafe partial class Router
     /// </summary>
     public static Task ReplaceNamedRouteAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, options, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, options, (int)mode);
     }
 
 }

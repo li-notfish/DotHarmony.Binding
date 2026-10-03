@@ -125,7 +125,7 @@ public static unsafe partial class Ble
     /// </summary>
     public static string[] GetConnectedBleDevices(global::HarmonyOS.ArkUI.BleProfile profile)
     {
-        return NodeApi.CallMethod(Module, _getConnectedBLEDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), profile);
+        return NodeApi.CallMethod(Module, _getConnectedBLEDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), (int)profile);
     }
 
     /// <summary>
@@ -762,7 +762,7 @@ public sealed partial class GattClientDevice : JsObject
     /// </summary>
     public Task WriteCharacteristicValueAsync(IntPtr characteristic, global::HarmonyOS.ArkUI.GattWriteType writeType)
     {
-        return CallMethodAsyncVoid(_writeCharacteristicValue, characteristic, writeType);
+        return CallMethodAsyncVoid(_writeCharacteristicValue, characteristic, (int)writeType);
     }
 
     /// <summary>
@@ -826,7 +826,7 @@ public sealed partial class GattClientDevice : JsObject
     /// </summary>
     public Task UpdateConnectionParamAsync(global::HarmonyOS.ArkUI.ConnectionParam param)
     {
-        return CallMethodAsyncVoid(_updateConnectionParam, param);
+        return CallMethodAsyncVoid(_updateConnectionParam, (int)param);
     }
 
     /// <summary>
@@ -1117,32 +1117,32 @@ public sealed partial class ScanOptions : JsObject
     /// <summary>
     /// interval
     /// </summary>
-    public double? Interval => (double?)NativeValue.ToDouble(GetPropertyRaw(_interval));
+    public double? Interval => NativeValue.IsNullOrUndefined(GetPropertyRaw(_interval)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_interval));
 
     /// <summary>
     /// dutyMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.ScanDuty? DutyMode => (global::HarmonyOS.ArkUI.ScanDuty?)(global::HarmonyOS.ArkUI.ScanDuty)NativeValue.ToInt(GetPropertyRaw(_dutyMode));
+    public global::HarmonyOS.ArkUI.ScanDuty? DutyMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_dutyMode)) ? null : (global::HarmonyOS.ArkUI.ScanDuty?)(global::HarmonyOS.ArkUI.ScanDuty)NativeValue.ToInt(GetPropertyRaw(_dutyMode));
 
     /// <summary>
     /// matchMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.MatchMode? MatchMode => (global::HarmonyOS.ArkUI.MatchMode?)(global::HarmonyOS.ArkUI.MatchMode)NativeValue.ToInt(GetPropertyRaw(_matchMode));
+    public global::HarmonyOS.ArkUI.MatchMode? MatchMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_matchMode)) ? null : (global::HarmonyOS.ArkUI.MatchMode?)(global::HarmonyOS.ArkUI.MatchMode)NativeValue.ToInt(GetPropertyRaw(_matchMode));
 
     /// <summary>
     /// phyType
     /// </summary>
-    public global::HarmonyOS.ArkUI.PhyType? PhyType => (global::HarmonyOS.ArkUI.PhyType?)(global::HarmonyOS.ArkUI.PhyType)NativeValue.ToInt(GetPropertyRaw(_phyType));
+    public global::HarmonyOS.ArkUI.PhyType? PhyType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_phyType)) ? null : (global::HarmonyOS.ArkUI.PhyType?)(global::HarmonyOS.ArkUI.PhyType)NativeValue.ToInt(GetPropertyRaw(_phyType));
 
     /// <summary>
     /// reportMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.ScanReportMode? ReportMode => (global::HarmonyOS.ArkUI.ScanReportMode?)(global::HarmonyOS.ArkUI.ScanReportMode)NativeValue.ToInt(GetPropertyRaw(_reportMode));
+    public global::HarmonyOS.ArkUI.ScanReportMode? ReportMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_reportMode)) ? null : (global::HarmonyOS.ArkUI.ScanReportMode?)(global::HarmonyOS.ArkUI.ScanReportMode)NativeValue.ToInt(GetPropertyRaw(_reportMode));
 
     /// <summary>
     /// isExtended
     /// </summary>
-    public bool? IsExtended => (bool?)NativeValue.ToBool(GetPropertyRaw(_isExtended));
+    public bool? IsExtended => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isExtended)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isExtended));
 
 }
 
@@ -1555,7 +1555,7 @@ public sealed partial class PhyValue : JsObject
     /// <summary>
     /// phyMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.CodedPhyMode? PhyMode => (global::HarmonyOS.ArkUI.CodedPhyMode?)(global::HarmonyOS.ArkUI.CodedPhyMode)NativeValue.ToInt(GetPropertyRaw(_phyMode));
+    public global::HarmonyOS.ArkUI.CodedPhyMode? PhyMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_phyMode)) ? null : (global::HarmonyOS.ArkUI.CodedPhyMode?)(global::HarmonyOS.ArkUI.CodedPhyMode)NativeValue.ToInt(GetPropertyRaw(_phyMode));
 
 }
 
@@ -1595,12 +1595,12 @@ public sealed partial class BLEDescriptor : JsObject
     /// <summary>
     /// descriptorHandle
     /// </summary>
-    public double? DescriptorHandle => (double?)NativeValue.ToDouble(GetPropertyRaw(_descriptorHandle));
+    public double? DescriptorHandle => NativeValue.IsNullOrUndefined(GetPropertyRaw(_descriptorHandle)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_descriptorHandle));
 
     /// <summary>
     /// permissions
     /// </summary>
-    public GattPermissions? Permissions => GetPropertyRaw(_permissions) == IntPtr.Zero ? null : new GattPermissions(GetPropertyRaw(_permissions));
+    public GattPermissions? Permissions => NativeValue.IsNullOrUndefined(GetPropertyRaw(_permissions)) ? null : new GattPermissions(GetPropertyRaw(_permissions));
 
 }
 
@@ -1622,41 +1622,41 @@ public sealed partial class GattPermissions : JsObject
     /// <summary>
     /// read
     /// </summary>
-    public bool? Read => (bool?)NativeValue.ToBool(GetPropertyRaw(_read));
+    public bool? Read => NativeValue.IsNullOrUndefined(GetPropertyRaw(_read)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_read));
 
     /// <summary>
     /// readEncrypted
     /// </summary>
-    public bool? ReadEncrypted => (bool?)NativeValue.ToBool(GetPropertyRaw(_readEncrypted));
+    public bool? ReadEncrypted => NativeValue.IsNullOrUndefined(GetPropertyRaw(_readEncrypted)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_readEncrypted));
 
     /// <summary>
     /// readEncryptedMitm
     /// </summary>
-    public bool? ReadEncryptedMitm => (bool?)NativeValue.ToBool(GetPropertyRaw(_readEncryptedMitm));
+    public bool? ReadEncryptedMitm => NativeValue.IsNullOrUndefined(GetPropertyRaw(_readEncryptedMitm)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_readEncryptedMitm));
 
     /// <summary>
     /// write
     /// </summary>
-    public bool? Write => (bool?)NativeValue.ToBool(GetPropertyRaw(_write));
+    public bool? Write => NativeValue.IsNullOrUndefined(GetPropertyRaw(_write)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_write));
 
     /// <summary>
     /// writeEncrypted
     /// </summary>
-    public bool? WriteEncrypted => (bool?)NativeValue.ToBool(GetPropertyRaw(_writeEncrypted));
+    public bool? WriteEncrypted => NativeValue.IsNullOrUndefined(GetPropertyRaw(_writeEncrypted)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_writeEncrypted));
 
     /// <summary>
     /// writeEncryptedMitm
     /// </summary>
-    public bool? WriteEncryptedMitm => (bool?)NativeValue.ToBool(GetPropertyRaw(_writeEncryptedMitm));
+    public bool? WriteEncryptedMitm => NativeValue.IsNullOrUndefined(GetPropertyRaw(_writeEncryptedMitm)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_writeEncryptedMitm));
 
     /// <summary>
     /// writeSigned
     /// </summary>
-    public bool? WriteSigned => (bool?)NativeValue.ToBool(GetPropertyRaw(_writeSigned));
+    public bool? WriteSigned => NativeValue.IsNullOrUndefined(GetPropertyRaw(_writeSigned)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_writeSigned));
 
     /// <summary>
     /// writeSignedMitm
     /// </summary>
-    public bool? WriteSignedMitm => (bool?)NativeValue.ToBool(GetPropertyRaw(_writeSignedMitm));
+    public bool? WriteSignedMitm => NativeValue.IsNullOrUndefined(GetPropertyRaw(_writeSignedMitm)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_writeSignedMitm));
 
 }

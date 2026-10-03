@@ -78,7 +78,7 @@ public static unsafe partial class BackgroundProcessManager
     /// </summary>
     public static Task SetProcessPriorityAsync(double pid, global::HarmonyOS.ArkUI.ProcessPriority priority)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setProcessPriority, pid, priority);
+        return NodeApi.CallMethodAsyncVoid(Module, _setProcessPriority, pid, (int)priority);
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ public static unsafe partial class BackgroundProcessManager
     /// </summary>
     public static Task SetPowerSaveModeAsync(double pid, global::HarmonyOS.ArkUI.PowerSaveMode powerSaveMode)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setPowerSaveMode, pid, powerSaveMode);
+        return NodeApi.CallMethodAsyncVoid(Module, _setPowerSaveMode, pid, (int)powerSaveMode);
     }
 
     /// <summary>

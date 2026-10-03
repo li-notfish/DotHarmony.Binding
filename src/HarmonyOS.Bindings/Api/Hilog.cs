@@ -127,7 +127,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static bool IsLoggable(double domain, string tag, global::HarmonyOS.ArkUI.LogLevel level)
     {
-        return NodeApi.CallMethod<bool>(Module, _isLoggable, domain, tag, level);
+        return NodeApi.CallMethod<bool>(Module, _isLoggable, domain, tag, (int)level);
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static void SetMinLogLevel(global::HarmonyOS.ArkUI.LogLevel level)
     {
-        NodeApi.CallMethodVoid(Module, _setMinLogLevel, level);
+        NodeApi.CallMethodVoid(Module, _setMinLogLevel, (int)level);
     }
 
     /// <summary>
@@ -143,7 +143,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static void SetLogLevel(global::HarmonyOS.ArkUI.LogLevel level, global::HarmonyOS.ArkUI.PreferStrategy prefer)
     {
-        NodeApi.CallMethodVoid(Module, _setLogLevel, level, prefer);
+        NodeApi.CallMethodVoid(Module, _setLogLevel, (int)level, (int)prefer);
     }
 
     /// <summary>
@@ -151,7 +151,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static global::HarmonyOS.ArkUI.OutputType SetOutputType(global::HarmonyOS.ArkUI.OutputType type)
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.OutputType>(Module, _setOutputType, type);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.OutputType>(Module, _setOutputType, (int)type);
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public static unsafe partial class Hilog
     /// </summary>
     public static global::HarmonyOS.ArkUI.OutputType SetOutputTypeByDomainId(global::HarmonyOS.ArkUI.OutputType type, double[] domainIDs, bool isExclude)
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.OutputType>(Module, _setOutputTypeByDomainID, type, NapiArg.Of(domainIDs), isExclude);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.OutputType>(Module, _setOutputTypeByDomainID, (int)type, NapiArg.Of(domainIDs), isExclude);
     }
 
     /// <summary>

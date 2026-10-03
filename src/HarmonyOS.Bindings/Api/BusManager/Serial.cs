@@ -237,42 +237,42 @@ public sealed partial class SerialConfigs : JsObject
     /// <summary>
     /// baudRate
     /// </summary>
-    public double? BaudRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_baudRate));
+    public double? BaudRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_baudRate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_baudRate));
 
     /// <summary>
     /// dataBits
     /// </summary>
-    public global::HarmonyOS.ArkUI.DataBits? DataBits => (global::HarmonyOS.ArkUI.DataBits?)(global::HarmonyOS.ArkUI.DataBits)NativeValue.ToInt(GetPropertyRaw(_dataBits));
+    public global::HarmonyOS.ArkUI.DataBits? DataBits => NativeValue.IsNullOrUndefined(GetPropertyRaw(_dataBits)) ? null : (global::HarmonyOS.ArkUI.DataBits?)(global::HarmonyOS.ArkUI.DataBits)NativeValue.ToInt(GetPropertyRaw(_dataBits));
 
     /// <summary>
     /// stopBits
     /// </summary>
-    public global::HarmonyOS.ArkUI.StopBits? StopBits => (global::HarmonyOS.ArkUI.StopBits?)(global::HarmonyOS.ArkUI.StopBits)NativeValue.ToInt(GetPropertyRaw(_stopBits));
+    public global::HarmonyOS.ArkUI.StopBits? StopBits => NativeValue.IsNullOrUndefined(GetPropertyRaw(_stopBits)) ? null : (global::HarmonyOS.ArkUI.StopBits?)(global::HarmonyOS.ArkUI.StopBits)NativeValue.ToInt(GetPropertyRaw(_stopBits));
 
     /// <summary>
     /// parity
     /// </summary>
-    public global::HarmonyOS.ArkUI.Parity? Parity => (global::HarmonyOS.ArkUI.Parity?)(global::HarmonyOS.ArkUI.Parity)NativeValue.ToInt(GetPropertyRaw(_parity));
+    public global::HarmonyOS.ArkUI.Parity? Parity => NativeValue.IsNullOrUndefined(GetPropertyRaw(_parity)) ? null : (global::HarmonyOS.ArkUI.Parity?)(global::HarmonyOS.ArkUI.Parity)NativeValue.ToInt(GetPropertyRaw(_parity));
 
     /// <summary>
     /// rtscts
     /// </summary>
-    public bool? Rtscts => (bool?)NativeValue.ToBool(GetPropertyRaw(_rtscts));
+    public bool? Rtscts => NativeValue.IsNullOrUndefined(GetPropertyRaw(_rtscts)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_rtscts));
 
     /// <summary>
     /// xon
     /// </summary>
-    public bool? Xon => (bool?)NativeValue.ToBool(GetPropertyRaw(_xon));
+    public bool? Xon => NativeValue.IsNullOrUndefined(GetPropertyRaw(_xon)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_xon));
 
     /// <summary>
     /// xoff
     /// </summary>
-    public bool? Xoff => (bool?)NativeValue.ToBool(GetPropertyRaw(_xoff));
+    public bool? Xoff => NativeValue.IsNullOrUndefined(GetPropertyRaw(_xoff)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_xoff));
 
     /// <summary>
     /// xany
     /// </summary>
-    public bool? Xany => (bool?)NativeValue.ToBool(GetPropertyRaw(_xany));
+    public bool? Xany => NativeValue.IsNullOrUndefined(GetPropertyRaw(_xany)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_xany));
 
 }
 
@@ -295,16 +295,16 @@ public sealed partial class SerialPortInfo : JsObject
     /// <summary>
     /// vendorId
     /// </summary>
-    public double? VendorId => (double?)NativeValue.ToDouble(GetPropertyRaw(_vendorId));
+    public double? VendorId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_vendorId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_vendorId));
 
     /// <summary>
     /// productId
     /// </summary>
-    public double? ProductId => (double?)NativeValue.ToDouble(GetPropertyRaw(_productId));
+    public double? ProductId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_productId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_productId));
 
     /// <summary>
     /// manufacturer
     /// </summary>
-    public string? Manufacturer => (string?)NativeValue.ToString(GetPropertyRaw(_manufacturer)) ?? string.Empty;
+    public string? Manufacturer => NativeValue.IsNullOrUndefined(GetPropertyRaw(_manufacturer)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_manufacturer));
 
 }

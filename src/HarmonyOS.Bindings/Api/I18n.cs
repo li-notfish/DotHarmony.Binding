@@ -1219,22 +1219,22 @@ public sealed partial class ChineseCalendarTime : JsObject
     /// <summary>
     /// isLeapMonth
     /// </summary>
-    public bool? IsLeapMonth => (bool?)NativeValue.ToBool(GetPropertyRaw(_isLeapMonth));
+    public bool? IsLeapMonth => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isLeapMonth)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isLeapMonth));
 
     /// <summary>
     /// hour
     /// </summary>
-    public double? Hour => (double?)NativeValue.ToDouble(GetPropertyRaw(_hour));
+    public double? Hour => NativeValue.IsNullOrUndefined(GetPropertyRaw(_hour)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_hour));
 
     /// <summary>
     /// minute
     /// </summary>
-    public double? Minute => (double?)NativeValue.ToDouble(GetPropertyRaw(_minute));
+    public double? Minute => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minute)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_minute));
 
     /// <summary>
     /// second
     /// </summary>
-    public double? Second => (double?)NativeValue.ToDouble(GetPropertyRaw(_second));
+    public double? Second => NativeValue.IsNullOrUndefined(GetPropertyRaw(_second)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_second));
 
 }
 
@@ -1308,7 +1308,7 @@ public sealed partial class ResolvedSymbolDateTimeFormatOptions : JsObject
     /// <summary>
     /// amPMSymbol
     /// </summary>
-    public string[] AmPmSymbol => ValueConverter.ConvertArray(GetPropertyRaw(_amPMSymbol), static e => ValueConverter.Convert<string>(e));
+    public string[]? AmPmSymbol => NativeValue.IsNullOrUndefined(GetPropertyRaw(_amPMSymbol)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_amPMSymbol), static e => ValueConverter.Convert<string>(e));
 
 }
 
@@ -1344,32 +1344,32 @@ public sealed partial class ResolvedSymbolNumberFormatOptions : JsObject
     /// <summary>
     /// zero
     /// </summary>
-    public string? Zero => (string?)NativeValue.ToString(GetPropertyRaw(_zero)) ?? string.Empty;
+    public string? Zero => NativeValue.IsNullOrUndefined(GetPropertyRaw(_zero)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_zero));
 
     /// <summary>
     /// nan
     /// </summary>
-    public string? Nan => (string?)NativeValue.ToString(GetPropertyRaw(_nan)) ?? string.Empty;
+    public string? Nan => NativeValue.IsNullOrUndefined(GetPropertyRaw(_nan)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_nan));
 
     /// <summary>
     /// minusSign
     /// </summary>
-    public string? MinusSign => (string?)NativeValue.ToString(GetPropertyRaw(_minusSign)) ?? string.Empty;
+    public string? MinusSign => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minusSign)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_minusSign));
 
     /// <summary>
     /// plusSign
     /// </summary>
-    public string? PlusSign => (string?)NativeValue.ToString(GetPropertyRaw(_plusSign)) ?? string.Empty;
+    public string? PlusSign => NativeValue.IsNullOrUndefined(GetPropertyRaw(_plusSign)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_plusSign));
 
     /// <summary>
     /// infinity
     /// </summary>
-    public string? Infinity => (string?)NativeValue.ToString(GetPropertyRaw(_infinity)) ?? string.Empty;
+    public string? Infinity => NativeValue.IsNullOrUndefined(GetPropertyRaw(_infinity)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_infinity));
 
     /// <summary>
     /// groupingSeparator
     /// </summary>
-    public string? GroupingSeparator => (string?)NativeValue.ToString(GetPropertyRaw(_groupingSeparator)) ?? string.Empty;
+    public string? GroupingSeparator => NativeValue.IsNullOrUndefined(GetPropertyRaw(_groupingSeparator)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_groupingSeparator));
 
 }
 

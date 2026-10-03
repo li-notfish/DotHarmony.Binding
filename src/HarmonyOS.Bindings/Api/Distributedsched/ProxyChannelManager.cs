@@ -94,7 +94,7 @@ public static unsafe partial class ProxyChannelManager
     /// </summary>
     public static Task SendDataAsync(double channelId, byte[] data)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendData, channelId, NapiArg.Of(data));
+        return NodeApi.CallMethodAsyncVoid(Module, _sendData, channelId, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>

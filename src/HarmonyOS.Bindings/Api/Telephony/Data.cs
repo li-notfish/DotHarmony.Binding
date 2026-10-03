@@ -234,21 +234,21 @@ public sealed partial class ApnInfo : JsObject
     /// <summary>
     /// user
     /// </summary>
-    public string? User => (string?)NativeValue.ToString(GetPropertyRaw(_user)) ?? string.Empty;
+    public string? User => NativeValue.IsNullOrUndefined(GetPropertyRaw(_user)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_user));
 
     /// <summary>
     /// type
     /// </summary>
-    public string? Type => (string?)NativeValue.ToString(GetPropertyRaw(_type)) ?? string.Empty;
+    public string? Type => NativeValue.IsNullOrUndefined(GetPropertyRaw(_type)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_type));
 
     /// <summary>
     /// proxy
     /// </summary>
-    public string? Proxy => (string?)NativeValue.ToString(GetPropertyRaw(_proxy)) ?? string.Empty;
+    public string? Proxy => NativeValue.IsNullOrUndefined(GetPropertyRaw(_proxy)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_proxy));
 
     /// <summary>
     /// mmsproxy
     /// </summary>
-    public string? Mmsproxy => (string?)NativeValue.ToString(GetPropertyRaw(_mmsproxy)) ?? string.Empty;
+    public string? Mmsproxy => NativeValue.IsNullOrUndefined(GetPropertyRaw(_mmsproxy)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_mmsproxy));
 
 }

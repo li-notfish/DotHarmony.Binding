@@ -1834,7 +1834,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteRawDataBuffer(byte[] rawData, double size)
     {
-        CallMethodVoid(_writeRawDataBuffer, NapiArg.Of(rawData), size);
+        CallMethodVoid(_writeRawDataBuffer, NapiArg.OfArrayBuffer(rawData), size);
     }
 
     /// <summary>
@@ -1858,7 +1858,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public void WriteArrayBuffer(byte[] buf, global::HarmonyOS.ArkUI.TypeCode typeCode)
     {
-        CallMethodVoid(_writeArrayBuffer, NapiArg.Of(buf), typeCode);
+        CallMethodVoid(_writeArrayBuffer, NapiArg.OfArrayBuffer(buf), (int)typeCode);
     }
 
     /// <summary>
@@ -1866,7 +1866,7 @@ public sealed partial class MessageSequence : JsObject
     /// </summary>
     public byte[] ReadArrayBuffer(global::HarmonyOS.ArkUI.TypeCode typeCode)
     {
-        return CallMethod(_readArrayBuffer, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), typeCode);
+        return CallMethod(_readArrayBuffer, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), (int)typeCode);
     }
 
 }
@@ -2302,7 +2302,7 @@ public sealed partial class Ashmem : JsObject
     /// </summary>
     public void WriteDataToAshmem(byte[] buf, double size, double offset)
     {
-        CallMethodVoid(_writeDataToAshmem, NapiArg.Of(buf), size, offset);
+        CallMethodVoid(_writeDataToAshmem, NapiArg.OfArrayBuffer(buf), size, offset);
     }
 
     /// <summary>

@@ -330,7 +330,7 @@ public sealed partial class ArcDotIndicator : JsObject
     /// </summary>
     public ArcDotIndicator ArcDirection(global::HarmonyOS.ArkUI.ArcDirection direction)
     {
-        return CallMethod(_arcDirection, static h => new ArcDotIndicator(h), direction);
+        return CallMethod(_arcDirection, static h => new ArcDotIndicator(h), (int)direction);
     }
 
     /// <summary>

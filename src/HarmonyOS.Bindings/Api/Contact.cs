@@ -632,7 +632,7 @@ public static unsafe partial class Contact
     /// </summary>
     public static Task<double[]> SyncContactsAsync(IntPtr context, global::HarmonyOS.ArkUI.ContactSyncMode mode, ContactSyncProgress progress, ContactObject[] contacts)
     {
-        return NodeApi.CallMethodAsync(Module, _syncContacts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, mode, NapiArg.Of(progress), NapiArg.Of(contacts));
+        return NodeApi.CallMethodAsync(Module, _syncContacts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, (int)mode, NapiArg.Of(progress), NapiArg.Of(contacts));
     }
 
     /// <summary>
@@ -686,87 +686,87 @@ public sealed partial class ContactObject : JsObject
     /// <summary>
     /// id
     /// </summary>
-    public double? Id => (double?)NativeValue.ToDouble(GetPropertyRaw(_id));
+    public double? Id => NativeValue.IsNullOrUndefined(GetPropertyRaw(_id)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_id));
 
     /// <summary>
     /// key
     /// </summary>
-    public string? Key => (string?)NativeValue.ToString(GetPropertyRaw(_key)) ?? string.Empty;
+    public string? Key => NativeValue.IsNullOrUndefined(GetPropertyRaw(_key)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_key));
 
     /// <summary>
     /// contactAttributes
     /// </summary>
-    public ContactAttributes? ContactAttributes => GetPropertyRaw(_contactAttributes) == IntPtr.Zero ? null : new ContactAttributes(GetPropertyRaw(_contactAttributes));
+    public ContactAttributes? ContactAttributes => NativeValue.IsNullOrUndefined(GetPropertyRaw(_contactAttributes)) ? null : new ContactAttributes(GetPropertyRaw(_contactAttributes));
 
     /// <summary>
     /// emails
     /// </summary>
-    public Email[] Emails => ValueConverter.ConvertArray(GetPropertyRaw(_emails), static e => new Email(e));
+    public Email[]? Emails => NativeValue.IsNullOrUndefined(GetPropertyRaw(_emails)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_emails), static e => new Email(e));
 
     /// <summary>
     /// events
     /// </summary>
-    public ContactEvent[] Events => ValueConverter.ConvertArray(GetPropertyRaw(_events), static e => new ContactEvent(e));
+    public ContactEvent[]? Events => NativeValue.IsNullOrUndefined(GetPropertyRaw(_events)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_events), static e => new ContactEvent(e));
 
     /// <summary>
     /// groups
     /// </summary>
-    public Group[] Groups => ValueConverter.ConvertArray(GetPropertyRaw(_groups), static e => new Group(e));
+    public Group[]? Groups => NativeValue.IsNullOrUndefined(GetPropertyRaw(_groups)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_groups), static e => new Group(e));
 
     /// <summary>
     /// imAddresses
     /// </summary>
-    public ImAddress[] ImAddresses => ValueConverter.ConvertArray(GetPropertyRaw(_imAddresses), static e => new ImAddress(e));
+    public ImAddress[]? ImAddresses => NativeValue.IsNullOrUndefined(GetPropertyRaw(_imAddresses)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_imAddresses), static e => new ImAddress(e));
 
     /// <summary>
     /// phoneNumbers
     /// </summary>
-    public PhoneNumber[] PhoneNumbers => ValueConverter.ConvertArray(GetPropertyRaw(_phoneNumbers), static e => new PhoneNumber(e));
+    public PhoneNumber[]? PhoneNumbers => NativeValue.IsNullOrUndefined(GetPropertyRaw(_phoneNumbers)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_phoneNumbers), static e => new PhoneNumber(e));
 
     /// <summary>
     /// portrait
     /// </summary>
-    public Portrait? Portrait => GetPropertyRaw(_portrait) == IntPtr.Zero ? null : new Portrait(GetPropertyRaw(_portrait));
+    public Portrait? Portrait => NativeValue.IsNullOrUndefined(GetPropertyRaw(_portrait)) ? null : new Portrait(GetPropertyRaw(_portrait));
 
     /// <summary>
     /// postalAddresses
     /// </summary>
-    public PostalAddress[] PostalAddresses => ValueConverter.ConvertArray(GetPropertyRaw(_postalAddresses), static e => new PostalAddress(e));
+    public PostalAddress[]? PostalAddresses => NativeValue.IsNullOrUndefined(GetPropertyRaw(_postalAddresses)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_postalAddresses), static e => new PostalAddress(e));
 
     /// <summary>
     /// relations
     /// </summary>
-    public Relation[] Relations => ValueConverter.ConvertArray(GetPropertyRaw(_relations), static e => new Relation(e));
+    public Relation[]? Relations => NativeValue.IsNullOrUndefined(GetPropertyRaw(_relations)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_relations), static e => new Relation(e));
 
     /// <summary>
     /// sipAddresses
     /// </summary>
-    public SipAddress[] SipAddresses => ValueConverter.ConvertArray(GetPropertyRaw(_sipAddresses), static e => new SipAddress(e));
+    public SipAddress[]? SipAddresses => NativeValue.IsNullOrUndefined(GetPropertyRaw(_sipAddresses)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_sipAddresses), static e => new SipAddress(e));
 
     /// <summary>
     /// websites
     /// </summary>
-    public Website[] Websites => ValueConverter.ConvertArray(GetPropertyRaw(_websites), static e => new Website(e));
+    public Website[]? Websites => NativeValue.IsNullOrUndefined(GetPropertyRaw(_websites)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_websites), static e => new Website(e));
 
     /// <summary>
     /// name
     /// </summary>
-    public Name? Name => GetPropertyRaw(_name) == IntPtr.Zero ? null : new Name(GetPropertyRaw(_name));
+    public Name? Name => NativeValue.IsNullOrUndefined(GetPropertyRaw(_name)) ? null : new Name(GetPropertyRaw(_name));
 
     /// <summary>
     /// nickName
     /// </summary>
-    public NickName? NickName => GetPropertyRaw(_nickName) == IntPtr.Zero ? null : new NickName(GetPropertyRaw(_nickName));
+    public NickName? NickName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_nickName)) ? null : new NickName(GetPropertyRaw(_nickName));
 
     /// <summary>
     /// note
     /// </summary>
-    public Note? Note => GetPropertyRaw(_note) == IntPtr.Zero ? null : new Note(GetPropertyRaw(_note));
+    public Note? Note => NativeValue.IsNullOrUndefined(GetPropertyRaw(_note)) ? null : new Note(GetPropertyRaw(_note));
 
     /// <summary>
     /// organization
     /// </summary>
-    public Organization? Organization => GetPropertyRaw(_organization) == IntPtr.Zero ? null : new Organization(GetPropertyRaw(_organization));
+    public Organization? Organization => NativeValue.IsNullOrUndefined(GetPropertyRaw(_organization)) ? null : new Organization(GetPropertyRaw(_organization));
 
 }
 
@@ -824,12 +824,12 @@ public sealed partial class Holder : JsObject
     /// <summary>
     /// displayName
     /// </summary>
-    public string? DisplayName => (string?)NativeValue.ToString(GetPropertyRaw(_displayName)) ?? string.Empty;
+    public string? DisplayName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_displayName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_displayName));
 
     /// <summary>
     /// holderId
     /// </summary>
-    public double? HolderId => (double?)NativeValue.ToDouble(GetPropertyRaw(_holderId));
+    public double? HolderId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_holderId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_holderId));
 
 }
 
@@ -860,7 +860,7 @@ public sealed partial class Group : JsObject
     /// <summary>
     /// groupId
     /// </summary>
-    public double? GroupId => (double?)NativeValue.ToDouble(GetPropertyRaw(_groupId));
+    public double? GroupId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_groupId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_groupId));
 
     /// <summary>
     /// title
@@ -978,17 +978,17 @@ public sealed partial class Email : JsObject
     /// <summary>
     /// labelName
     /// </summary>
-    public string? LabelName => (string?)NativeValue.ToString(GetPropertyRaw(_labelName)) ?? string.Empty;
+    public string? LabelName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_labelName));
 
     /// <summary>
     /// displayName
     /// </summary>
-    public string? DisplayName => (string?)NativeValue.ToString(GetPropertyRaw(_displayName)) ?? string.Empty;
+    public string? DisplayName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_displayName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_displayName));
 
     /// <summary>
     /// labelId
     /// </summary>
-    public double? LabelId => (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
+    public double? LabelId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
 
 }
 
@@ -1040,12 +1040,12 @@ public sealed partial class ContactEvent : JsObject
     /// <summary>
     /// labelName
     /// </summary>
-    public string? LabelName => (string?)NativeValue.ToString(GetPropertyRaw(_labelName)) ?? string.Empty;
+    public string? LabelName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_labelName));
 
     /// <summary>
     /// labelId
     /// </summary>
-    public double? LabelId => (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
+    public double? LabelId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
 
 }
 
@@ -1116,12 +1116,12 @@ public sealed partial class ImAddress : JsObject
     /// <summary>
     /// labelName
     /// </summary>
-    public string? LabelName => (string?)NativeValue.ToString(GetPropertyRaw(_labelName)) ?? string.Empty;
+    public string? LabelName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_labelName));
 
     /// <summary>
     /// labelId
     /// </summary>
-    public double? LabelId => (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
+    public double? LabelId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
 
 }
 
@@ -1270,12 +1270,12 @@ public sealed partial class PhoneNumber : JsObject
     /// <summary>
     /// labelName
     /// </summary>
-    public string? LabelName => (string?)NativeValue.ToString(GetPropertyRaw(_labelName)) ?? string.Empty;
+    public string? LabelName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_labelName));
 
     /// <summary>
     /// labelId
     /// </summary>
-    public double? LabelId => (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
+    public double? LabelId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
 
 }
 
@@ -1350,47 +1350,47 @@ public sealed partial class PostalAddress : JsObject
     /// <summary>
     /// city
     /// </summary>
-    public string? City => (string?)NativeValue.ToString(GetPropertyRaw(_city)) ?? string.Empty;
+    public string? City => NativeValue.IsNullOrUndefined(GetPropertyRaw(_city)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_city));
 
     /// <summary>
     /// country
     /// </summary>
-    public string? Country => (string?)NativeValue.ToString(GetPropertyRaw(_country)) ?? string.Empty;
+    public string? Country => NativeValue.IsNullOrUndefined(GetPropertyRaw(_country)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_country));
 
     /// <summary>
     /// labelName
     /// </summary>
-    public string? LabelName => (string?)NativeValue.ToString(GetPropertyRaw(_labelName)) ?? string.Empty;
+    public string? LabelName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_labelName));
 
     /// <summary>
     /// neighborhood
     /// </summary>
-    public string? Neighborhood => (string?)NativeValue.ToString(GetPropertyRaw(_neighborhood)) ?? string.Empty;
+    public string? Neighborhood => NativeValue.IsNullOrUndefined(GetPropertyRaw(_neighborhood)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_neighborhood));
 
     /// <summary>
     /// pobox
     /// </summary>
-    public string? Pobox => (string?)NativeValue.ToString(GetPropertyRaw(_pobox)) ?? string.Empty;
+    public string? Pobox => NativeValue.IsNullOrUndefined(GetPropertyRaw(_pobox)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_pobox));
 
     /// <summary>
     /// postcode
     /// </summary>
-    public string? Postcode => (string?)NativeValue.ToString(GetPropertyRaw(_postcode)) ?? string.Empty;
+    public string? Postcode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_postcode)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_postcode));
 
     /// <summary>
     /// region
     /// </summary>
-    public string? Region => (string?)NativeValue.ToString(GetPropertyRaw(_region)) ?? string.Empty;
+    public string? Region => NativeValue.IsNullOrUndefined(GetPropertyRaw(_region)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_region));
 
     /// <summary>
     /// street
     /// </summary>
-    public string? Street => (string?)NativeValue.ToString(GetPropertyRaw(_street)) ?? string.Empty;
+    public string? Street => NativeValue.IsNullOrUndefined(GetPropertyRaw(_street)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_street));
 
     /// <summary>
     /// labelId
     /// </summary>
-    public double? LabelId => (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
+    public double? LabelId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
 
 }
 
@@ -1503,7 +1503,7 @@ public sealed partial class Relation : JsObject
     /// <summary>
     /// labelName
     /// </summary>
-    public string? LabelName => (string?)NativeValue.ToString(GetPropertyRaw(_labelName)) ?? string.Empty;
+    public string? LabelName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_labelName));
 
     /// <summary>
     /// relationName
@@ -1513,7 +1513,7 @@ public sealed partial class Relation : JsObject
     /// <summary>
     /// labelId
     /// </summary>
-    public double? LabelId => (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
+    public double? LabelId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
 
 }
 
@@ -1560,12 +1560,12 @@ public sealed partial class SipAddress : JsObject
     /// <summary>
     /// labelName
     /// </summary>
-    public string? LabelName => (string?)NativeValue.ToString(GetPropertyRaw(_labelName)) ?? string.Empty;
+    public string? LabelName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_labelName));
 
     /// <summary>
     /// labelId
     /// </summary>
-    public double? LabelId => (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
+    public double? LabelId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
 
 }
 
@@ -1599,12 +1599,12 @@ public sealed partial class Name : JsObject
     /// <summary>
     /// familyName
     /// </summary>
-    public string? FamilyName => (string?)NativeValue.ToString(GetPropertyRaw(_familyName)) ?? string.Empty;
+    public string? FamilyName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_familyName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_familyName));
 
     /// <summary>
     /// familyNamePhonetic
     /// </summary>
-    public string? FamilyNamePhonetic => (string?)NativeValue.ToString(GetPropertyRaw(_familyNamePhonetic)) ?? string.Empty;
+    public string? FamilyNamePhonetic => NativeValue.IsNullOrUndefined(GetPropertyRaw(_familyNamePhonetic)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_familyNamePhonetic));
 
     /// <summary>
     /// fullName
@@ -1614,37 +1614,37 @@ public sealed partial class Name : JsObject
     /// <summary>
     /// givenName
     /// </summary>
-    public string? GivenName => (string?)NativeValue.ToString(GetPropertyRaw(_givenName)) ?? string.Empty;
+    public string? GivenName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_givenName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_givenName));
 
     /// <summary>
     /// givenNamePhonetic
     /// </summary>
-    public string? GivenNamePhonetic => (string?)NativeValue.ToString(GetPropertyRaw(_givenNamePhonetic)) ?? string.Empty;
+    public string? GivenNamePhonetic => NativeValue.IsNullOrUndefined(GetPropertyRaw(_givenNamePhonetic)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_givenNamePhonetic));
 
     /// <summary>
     /// middleName
     /// </summary>
-    public string? MiddleName => (string?)NativeValue.ToString(GetPropertyRaw(_middleName)) ?? string.Empty;
+    public string? MiddleName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_middleName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_middleName));
 
     /// <summary>
     /// middleNamePhonetic
     /// </summary>
-    public string? MiddleNamePhonetic => (string?)NativeValue.ToString(GetPropertyRaw(_middleNamePhonetic)) ?? string.Empty;
+    public string? MiddleNamePhonetic => NativeValue.IsNullOrUndefined(GetPropertyRaw(_middleNamePhonetic)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_middleNamePhonetic));
 
     /// <summary>
     /// namePrefix
     /// </summary>
-    public string? NamePrefix => (string?)NativeValue.ToString(GetPropertyRaw(_namePrefix)) ?? string.Empty;
+    public string? NamePrefix => NativeValue.IsNullOrUndefined(GetPropertyRaw(_namePrefix)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_namePrefix));
 
     /// <summary>
     /// nameSuffix
     /// </summary>
-    public string? NameSuffix => (string?)NativeValue.ToString(GetPropertyRaw(_nameSuffix)) ?? string.Empty;
+    public string? NameSuffix => NativeValue.IsNullOrUndefined(GetPropertyRaw(_nameSuffix)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_nameSuffix));
 
     /// <summary>
     /// hasName
     /// </summary>
-    public bool? HasName => (bool?)NativeValue.ToBool(GetPropertyRaw(_hasName));
+    public bool? HasName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_hasName)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_hasName));
 
 }
 
@@ -1690,7 +1690,7 @@ public sealed partial class Organization : JsObject
     /// <summary>
     /// title
     /// </summary>
-    public string? Title => (string?)NativeValue.ToString(GetPropertyRaw(_title)) ?? string.Empty;
+    public string? Title => NativeValue.IsNullOrUndefined(GetPropertyRaw(_title)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_title));
 
 }
 

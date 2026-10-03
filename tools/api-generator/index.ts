@@ -1082,6 +1082,7 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
         const writtenClassNames = new Set(boundModules.map(m => m.className));
         for (const f of fs.readdirSync(apiOutputDir)) {
             if (!f.endsWith('.cs')) continue;
+            if (f.endsWith('.custom.cs')) continue; // 手写扩展与生成产物共存，不允许清理
             const stem = f.replace(/\.Enums\.cs$/, '').replace(/\.cs$/, '');
             if (!writtenClassNames.has(stem)) {
                 fs.unlinkSync(path.join(apiOutputDir, f));

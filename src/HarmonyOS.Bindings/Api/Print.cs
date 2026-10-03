@@ -147,7 +147,7 @@ public static unsafe partial class Print
     /// </summary>
     public static Task UpdatePrintJobStateAsync(string jobId, global::HarmonyOS.ArkUI.PrintJobState state, global::HarmonyOS.ArkUI.PrintJobSubState subState)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updatePrintJobState, jobId, state, subState);
+        return NodeApi.CallMethodAsyncVoid(Module, _updatePrintJobState, jobId, (int)state, (int)subState);
     }
 
     /// <summary>
@@ -243,7 +243,7 @@ public static unsafe partial class Print
     /// </summary>
     public static void NotifyWatermarkComplete(string jobId, global::HarmonyOS.ArkUI.WatermarkHandleResult result)
     {
-        NodeApi.CallMethodVoid(Module, _notifyWatermarkComplete, jobId, result);
+        NodeApi.CallMethodVoid(Module, _notifyWatermarkComplete, jobId, (int)result);
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();
@@ -438,7 +438,7 @@ public sealed partial class PrintDocumentAdapter : JsObject
     /// </summary>
     public void OnJobStateChanged(string jobId, global::HarmonyOS.ArkUI.PrintDocumentAdapterState state)
     {
-        CallMethodVoid(_onJobStateChanged, jobId, state);
+        CallMethodVoid(_onJobStateChanged, jobId, (int)state);
     }
 
 }
@@ -459,32 +459,32 @@ public sealed partial class PrintAttributes : JsObject
     /// <summary>
     /// copyNumber
     /// </summary>
-    public double? CopyNumber => (double?)NativeValue.ToDouble(GetPropertyRaw(_copyNumber));
+    public double? CopyNumber => NativeValue.IsNullOrUndefined(GetPropertyRaw(_copyNumber)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_copyNumber));
 
     /// <summary>
     /// pageRange
     /// </summary>
-    public PrintPageRange? PageRange => GetPropertyRaw(_pageRange) == IntPtr.Zero ? null : new PrintPageRange(GetPropertyRaw(_pageRange));
+    public PrintPageRange? PageRange => NativeValue.IsNullOrUndefined(GetPropertyRaw(_pageRange)) ? null : new PrintPageRange(GetPropertyRaw(_pageRange));
 
     /// <summary>
     /// pageSize
     /// </summary>
-    public PrintPageSize? PageSize => GetPropertyRaw(_pageSize) == IntPtr.Zero ? null : new PrintPageSize(GetPropertyRaw(_pageSize));
+    public PrintPageSize? PageSize => NativeValue.IsNullOrUndefined(GetPropertyRaw(_pageSize)) ? null : new PrintPageSize(GetPropertyRaw(_pageSize));
 
     /// <summary>
     /// directionMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.PrintDirectionMode? DirectionMode => (global::HarmonyOS.ArkUI.PrintDirectionMode?)(global::HarmonyOS.ArkUI.PrintDirectionMode)NativeValue.ToInt(GetPropertyRaw(_directionMode));
+    public global::HarmonyOS.ArkUI.PrintDirectionMode? DirectionMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_directionMode)) ? null : (global::HarmonyOS.ArkUI.PrintDirectionMode?)(global::HarmonyOS.ArkUI.PrintDirectionMode)NativeValue.ToInt(GetPropertyRaw(_directionMode));
 
     /// <summary>
     /// colorMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.PrintColorMode? ColorMode => (global::HarmonyOS.ArkUI.PrintColorMode?)(global::HarmonyOS.ArkUI.PrintColorMode)NativeValue.ToInt(GetPropertyRaw(_colorMode));
+    public global::HarmonyOS.ArkUI.PrintColorMode? ColorMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_colorMode)) ? null : (global::HarmonyOS.ArkUI.PrintColorMode?)(global::HarmonyOS.ArkUI.PrintColorMode)NativeValue.ToInt(GetPropertyRaw(_colorMode));
 
     /// <summary>
     /// duplexMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.PrintDuplexMode? DuplexMode => (global::HarmonyOS.ArkUI.PrintDuplexMode?)(global::HarmonyOS.ArkUI.PrintDuplexMode)NativeValue.ToInt(GetPropertyRaw(_duplexMode));
+    public global::HarmonyOS.ArkUI.PrintDuplexMode? DuplexMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_duplexMode)) ? null : (global::HarmonyOS.ArkUI.PrintDuplexMode?)(global::HarmonyOS.ArkUI.PrintDuplexMode)NativeValue.ToInt(GetPropertyRaw(_duplexMode));
 
 }
 
@@ -641,7 +641,7 @@ public sealed partial class PrinterInformation : JsObject
     /// <summary>
     /// description
     /// </summary>
-    public string? Description => (string?)NativeValue.ToString(GetPropertyRaw(_description)) ?? string.Empty;
+    public string? Description => NativeValue.IsNullOrUndefined(GetPropertyRaw(_description)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_description));
 
     /// <summary>
     /// capability
@@ -651,37 +651,37 @@ public sealed partial class PrinterInformation : JsObject
     /// <summary>
     /// uri
     /// </summary>
-    public string? Uri => (string?)NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
+    public string? Uri => NativeValue.IsNullOrUndefined(GetPropertyRaw(_uri)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_uri));
 
     /// <summary>
     /// printerMake
     /// </summary>
-    public string? PrinterMake => (string?)NativeValue.ToString(GetPropertyRaw(_printerMake)) ?? string.Empty;
+    public string? PrinterMake => NativeValue.IsNullOrUndefined(GetPropertyRaw(_printerMake)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_printerMake));
 
     /// <summary>
     /// preferences
     /// </summary>
-    public PrinterPreferences? Preferences => GetPropertyRaw(_preferences) == IntPtr.Zero ? null : new PrinterPreferences(GetPropertyRaw(_preferences));
+    public PrinterPreferences? Preferences => NativeValue.IsNullOrUndefined(GetPropertyRaw(_preferences)) ? null : new PrinterPreferences(GetPropertyRaw(_preferences));
 
     /// <summary>
     /// alias
     /// </summary>
-    public string? Alias => (string?)NativeValue.ToString(GetPropertyRaw(_alias)) ?? string.Empty;
+    public string? Alias => NativeValue.IsNullOrUndefined(GetPropertyRaw(_alias)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_alias));
 
     /// <summary>
     /// selectedDriver
     /// </summary>
-    public PpdInfo? SelectedDriver => GetPropertyRaw(_selectedDriver) == IntPtr.Zero ? null : new PpdInfo(GetPropertyRaw(_selectedDriver));
+    public PpdInfo? SelectedDriver => NativeValue.IsNullOrUndefined(GetPropertyRaw(_selectedDriver)) ? null : new PpdInfo(GetPropertyRaw(_selectedDriver));
 
     /// <summary>
     /// selectedProtocol
     /// </summary>
-    public string? SelectedProtocol => (string?)NativeValue.ToString(GetPropertyRaw(_selectedProtocol)) ?? string.Empty;
+    public string? SelectedProtocol => NativeValue.IsNullOrUndefined(GetPropertyRaw(_selectedProtocol)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_selectedProtocol));
 
     /// <summary>
     /// options
     /// </summary>
-    public string? Options => (string?)NativeValue.ToString(GetPropertyRaw(_options)) ?? string.Empty;
+    public string? Options => NativeValue.IsNullOrUndefined(GetPropertyRaw(_options)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_options));
 
 }
 
@@ -698,17 +698,17 @@ public sealed partial class PrintPageRange : JsObject
     /// <summary>
     /// startPage
     /// </summary>
-    public double? StartPage => (double?)NativeValue.ToDouble(GetPropertyRaw(_startPage));
+    public double? StartPage => NativeValue.IsNullOrUndefined(GetPropertyRaw(_startPage)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_startPage));
 
     /// <summary>
     /// endPage
     /// </summary>
-    public double? EndPage => (double?)NativeValue.ToDouble(GetPropertyRaw(_endPage));
+    public double? EndPage => NativeValue.IsNullOrUndefined(GetPropertyRaw(_endPage)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_endPage));
 
     /// <summary>
     /// pages
     /// </summary>
-    public double[] Pages => ValueConverter.ConvertArray(GetPropertyRaw(_pages), static e => ValueConverter.Convert<double>(e));
+    public double[]? Pages => NativeValue.IsNullOrUndefined(GetPropertyRaw(_pages)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_pages), static e => ValueConverter.Convert<double>(e));
 
 }
 
@@ -766,57 +766,57 @@ public sealed partial class PrinterPreferences : JsObject
     /// <summary>
     /// defaultDuplexMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.PrintDuplexMode? DefaultDuplexMode => (global::HarmonyOS.ArkUI.PrintDuplexMode?)(global::HarmonyOS.ArkUI.PrintDuplexMode)NativeValue.ToInt(GetPropertyRaw(_defaultDuplexMode));
+    public global::HarmonyOS.ArkUI.PrintDuplexMode? DefaultDuplexMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_defaultDuplexMode)) ? null : (global::HarmonyOS.ArkUI.PrintDuplexMode?)(global::HarmonyOS.ArkUI.PrintDuplexMode)NativeValue.ToInt(GetPropertyRaw(_defaultDuplexMode));
 
     /// <summary>
     /// defaultPrintQuality
     /// </summary>
-    public global::HarmonyOS.ArkUI.PrintQuality? DefaultPrintQuality => (global::HarmonyOS.ArkUI.PrintQuality?)(global::HarmonyOS.ArkUI.PrintQuality)NativeValue.ToInt(GetPropertyRaw(_defaultPrintQuality));
+    public global::HarmonyOS.ArkUI.PrintQuality? DefaultPrintQuality => NativeValue.IsNullOrUndefined(GetPropertyRaw(_defaultPrintQuality)) ? null : (global::HarmonyOS.ArkUI.PrintQuality?)(global::HarmonyOS.ArkUI.PrintQuality)NativeValue.ToInt(GetPropertyRaw(_defaultPrintQuality));
 
     /// <summary>
     /// defaultMediaType
     /// </summary>
-    public string? DefaultMediaType => (string?)NativeValue.ToString(GetPropertyRaw(_defaultMediaType)) ?? string.Empty;
+    public string? DefaultMediaType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_defaultMediaType)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_defaultMediaType));
 
     /// <summary>
     /// defaultPageSizeId
     /// </summary>
-    public string? DefaultPageSizeId => (string?)NativeValue.ToString(GetPropertyRaw(_defaultPageSizeId)) ?? string.Empty;
+    public string? DefaultPageSizeId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_defaultPageSizeId)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_defaultPageSizeId));
 
     /// <summary>
     /// defaultOrientation
     /// </summary>
-    public global::HarmonyOS.ArkUI.PrintOrientationMode? DefaultOrientation => (global::HarmonyOS.ArkUI.PrintOrientationMode?)(global::HarmonyOS.ArkUI.PrintOrientationMode)NativeValue.ToInt(GetPropertyRaw(_defaultOrientation));
+    public global::HarmonyOS.ArkUI.PrintOrientationMode? DefaultOrientation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_defaultOrientation)) ? null : (global::HarmonyOS.ArkUI.PrintOrientationMode?)(global::HarmonyOS.ArkUI.PrintOrientationMode)NativeValue.ToInt(GetPropertyRaw(_defaultOrientation));
 
     /// <summary>
     /// borderless
     /// </summary>
-    public bool? Borderless => (bool?)NativeValue.ToBool(GetPropertyRaw(_borderless));
+    public bool? Borderless => NativeValue.IsNullOrUndefined(GetPropertyRaw(_borderless)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_borderless));
 
     /// <summary>
     /// defaultColorMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.PrintColorMode? DefaultColorMode => (global::HarmonyOS.ArkUI.PrintColorMode?)(global::HarmonyOS.ArkUI.PrintColorMode)NativeValue.ToInt(GetPropertyRaw(_defaultColorMode));
+    public global::HarmonyOS.ArkUI.PrintColorMode? DefaultColorMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_defaultColorMode)) ? null : (global::HarmonyOS.ArkUI.PrintColorMode?)(global::HarmonyOS.ArkUI.PrintColorMode)NativeValue.ToInt(GetPropertyRaw(_defaultColorMode));
 
     /// <summary>
     /// defaultCollate
     /// </summary>
-    public bool? DefaultCollate => (bool?)NativeValue.ToBool(GetPropertyRaw(_defaultCollate));
+    public bool? DefaultCollate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_defaultCollate)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_defaultCollate));
 
     /// <summary>
     /// defaultReverse
     /// </summary>
-    public bool? DefaultReverse => (bool?)NativeValue.ToBool(GetPropertyRaw(_defaultReverse));
+    public bool? DefaultReverse => NativeValue.IsNullOrUndefined(GetPropertyRaw(_defaultReverse)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_defaultReverse));
 
     /// <summary>
     /// options
     /// </summary>
-    public string? Options => (string?)NativeValue.ToString(GetPropertyRaw(_options)) ?? string.Empty;
+    public string? Options => NativeValue.IsNullOrUndefined(GetPropertyRaw(_options)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_options));
 
     /// <summary>
     /// vendorOptions
     /// </summary>
-    public string? VendorOptions => (string?)NativeValue.ToString(GetPropertyRaw(_vendorOptions)) ?? string.Empty;
+    public string? VendorOptions => NativeValue.IsNullOrUndefined(GetPropertyRaw(_vendorOptions)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_vendorOptions));
 
 }
 

@@ -75,7 +75,7 @@ public static unsafe partial class LocationManager
     /// </summary>
     public static void SetLocationPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.LocationPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _setLocationPolicy, NapiArg.Of(admin), policy);
+        NodeApi.CallMethodVoid(Module, _setLocationPolicy, NapiArg.Of(admin), (int)policy);
     }
 
     /// <summary>

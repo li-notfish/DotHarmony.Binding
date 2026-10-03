@@ -385,7 +385,7 @@ public sealed partial class CloudFileCache : JsObject
     /// </summary>
     public Task<double> StartBatchAsync(string[] uris, global::HarmonyOS.ArkUI.DownloadFileType? fileType = null)
     {
-        return CallMethodAsync<double>(_startBatch, NapiArg.Of(uris), fileType);
+        return CallMethodAsync<double>(_startBatch, NapiArg.Of(uris), NapiArg.Of(fileType));
     }
 
     /// <summary>

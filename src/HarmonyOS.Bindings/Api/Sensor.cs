@@ -130,7 +130,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static Task<SensorObject> GetSingleSensorAsync(global::HarmonyOS.ArkUI.SensorId type)
     {
-        return NodeApi.CallMethodAsync(Module, _getSingleSensor, static h => new SensorObject(h), type);
+        return NodeApi.CallMethodAsync(Module, _getSingleSensor, static h => new SensorObject(h), (int)type);
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static SensorObject GetSingleSensorSync(global::HarmonyOS.ArkUI.SensorId type)
     {
-        return NodeApi.CallMethod(Module, _getSingleSensorSync, static h => new SensorObject(h), type);
+        return NodeApi.CallMethod(Module, _getSingleSensorSync, static h => new SensorObject(h), (int)type);
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public static unsafe partial class Sensor
     /// </summary>
     public static SensorObject[] GetSingleSensorByDeviceSync(global::HarmonyOS.ArkUI.SensorId type, double? deviceId = null)
     {
-        return NodeApi.CallMethod(Module, _getSingleSensorByDeviceSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)), type, NapiArg.Of(deviceId));
+        return NodeApi.CallMethod(Module, _getSingleSensorByDeviceSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)), (int)type, NapiArg.Of(deviceId));
     }
 
     /// <summary>
@@ -2590,27 +2590,27 @@ public sealed partial class SensorObject : JsObject
     /// <summary>
     /// sensorIndex
     /// </summary>
-    public double? SensorIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_sensorIndex));
+    public double? SensorIndex => NativeValue.IsNullOrUndefined(GetPropertyRaw(_sensorIndex)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_sensorIndex));
 
     /// <summary>
     /// deviceId
     /// </summary>
-    public double? DeviceId => (double?)NativeValue.ToDouble(GetPropertyRaw(_deviceId));
+    public double? DeviceId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_deviceId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_deviceId));
 
     /// <summary>
     /// deviceName
     /// </summary>
-    public string? DeviceName => (string?)NativeValue.ToString(GetPropertyRaw(_deviceName)) ?? string.Empty;
+    public string? DeviceName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_deviceName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_deviceName));
 
     /// <summary>
     /// isLocalSensor
     /// </summary>
-    public bool? IsLocalSensor => (bool?)NativeValue.ToBool(GetPropertyRaw(_isLocalSensor));
+    public bool? IsLocalSensor => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isLocalSensor)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isLocalSensor));
 
     /// <summary>
     /// isMockSensor
     /// </summary>
-    public bool? IsMockSensor => (bool?)NativeValue.ToBool(GetPropertyRaw(_isMockSensor));
+    public bool? IsMockSensor => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isMockSensor)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isMockSensor));
 
 }
 
@@ -2859,12 +2859,12 @@ public sealed partial class LightResponse : JsObject
     /// <summary>
     /// colorTemperature
     /// </summary>
-    public double? ColorTemperature => (double?)NativeValue.ToDouble(GetPropertyRaw(_colorTemperature));
+    public double? ColorTemperature => NativeValue.IsNullOrUndefined(GetPropertyRaw(_colorTemperature)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_colorTemperature));
 
     /// <summary>
     /// infraredLuminance
     /// </summary>
-    public double? InfraredLuminance => (double?)NativeValue.ToDouble(GetPropertyRaw(_infraredLuminance));
+    public double? InfraredLuminance => NativeValue.IsNullOrUndefined(GetPropertyRaw(_infraredLuminance)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_infraredLuminance));
 
 }
 

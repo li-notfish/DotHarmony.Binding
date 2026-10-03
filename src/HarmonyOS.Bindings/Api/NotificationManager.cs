@@ -127,7 +127,7 @@ public static unsafe partial class NotificationManager
     /// </summary>
     public static Task AddSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType type)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _addSlot, type);
+        return NodeApi.CallMethodAsyncVoid(Module, _addSlot, (int)type);
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public static unsafe partial class NotificationManager
     /// </summary>
     public static Task<IntPtr> GetSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType slotType)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _getSlot, slotType);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _getSlot, (int)slotType);
     }
 
     /// <summary>
@@ -151,7 +151,7 @@ public static unsafe partial class NotificationManager
     /// </summary>
     public static Task RemoveSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType slotType)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeSlot, slotType);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeSlot, (int)slotType);
     }
 
     /// <summary>
@@ -318,21 +318,21 @@ public sealed partial class NotificationSetting : JsObject
     /// <summary>
     /// lockScreenEnabled
     /// </summary>
-    public bool? LockScreenEnabled => (bool?)NativeValue.ToBool(GetPropertyRaw(_lockScreenEnabled));
+    public bool? LockScreenEnabled => NativeValue.IsNullOrUndefined(GetPropertyRaw(_lockScreenEnabled)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_lockScreenEnabled));
 
     /// <summary>
     /// bannerEnabled
     /// </summary>
-    public bool? BannerEnabled => (bool?)NativeValue.ToBool(GetPropertyRaw(_bannerEnabled));
+    public bool? BannerEnabled => NativeValue.IsNullOrUndefined(GetPropertyRaw(_bannerEnabled)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_bannerEnabled));
 
     /// <summary>
     /// badgeNumberEnabled
     /// </summary>
-    public bool? BadgeNumberEnabled => (bool?)NativeValue.ToBool(GetPropertyRaw(_badgeNumberEnabled));
+    public bool? BadgeNumberEnabled => NativeValue.IsNullOrUndefined(GetPropertyRaw(_badgeNumberEnabled)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_badgeNumberEnabled));
 
     /// <summary>
     /// notificationEnabled
     /// </summary>
-    public bool? NotificationEnabled => (bool?)NativeValue.ToBool(GetPropertyRaw(_notificationEnabled));
+    public bool? NotificationEnabled => NativeValue.IsNullOrUndefined(GetPropertyRaw(_notificationEnabled)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_notificationEnabled));
 
 }

@@ -14,13 +14,13 @@ namespace HarmonyOS.Interop;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct NapiArg
 {
-    /// <summary>值域标签：Null 空值；Number double/float；Int 整数；Bool；Native 句柄直传；Ref 引用类型</summary>
-    public enum Tag : byte { Null, Number, Int, UInt64, Bool, Native, Ref }
+    /// <summary>值域标签：Null 空值；Number double/float；Int32/UInt32/Int64/UInt64 整数；Bool；Native 句柄直传；Ref 引用类型</summary>
+    public enum Tag : byte { Null, Number, Int32, UInt32, Int64, UInt64, Bool, Native, ArrayBuffer, Ref }
 
     public readonly Tag Kind;
     /// <summary>Number 值域（double/float）</summary>
     public readonly double Number;
-    /// <summary>Int/UInt64/Bool/Native 值域（long、ulong 位、bool 位、IntPtr.ToInt64）</summary>
+    /// <summary>整数/Bool/Native 值域（long、ulong 位、bool 位、IntPtr.ToInt64）</summary>
     public readonly long Integer;
     /// <summary>Ref 值域（string/JsObject/INapiRecord/Delegate/Enum/object）</summary>
     public readonly object? RefValue;
@@ -35,14 +35,14 @@ public readonly struct NapiArg
 
     public static implicit operator NapiArg(double v) => new(Tag.Number, num: v);
     public static implicit operator NapiArg(float v) => new(Tag.Number, num: v);
-    public static implicit operator NapiArg(int v) => new(Tag.Int, integer: v);
-    public static implicit operator NapiArg(uint v) => new(Tag.Int, integer: v);
-    public static implicit operator NapiArg(long v) => new(Tag.Int, integer: v);
+    public static implicit operator NapiArg(int v) => new(Tag.Int32, integer: v);
+    public static implicit operator NapiArg(uint v) => new(Tag.UInt32, integer: v);
+    public static implicit operator NapiArg(long v) => new(Tag.Int64, integer: v);
     public static implicit operator NapiArg(ulong v) => new(Tag.UInt64, integer: unchecked((long)v));
-    public static implicit operator NapiArg(short v) => new(Tag.Int, integer: v);
-    public static implicit operator NapiArg(ushort v) => new(Tag.Int, integer: v);
-    public static implicit operator NapiArg(sbyte v) => new(Tag.Int, integer: v);
-    public static implicit operator NapiArg(byte v) => new(Tag.Int, integer: v);
+    public static implicit operator NapiArg(short v) => new(Tag.Int32, integer: v);
+    public static implicit operator NapiArg(ushort v) => new(Tag.Int32, integer: v);
+    public static implicit operator NapiArg(sbyte v) => new(Tag.Int32, integer: v);
+    public static implicit operator NapiArg(byte v) => new(Tag.Int32, integer: v);
     public static implicit operator NapiArg(bool v) => new(Tag.Bool, integer: v ? 1 : 0);
     public static implicit operator NapiArg(IntPtr v) => new(Tag.Native, integer: v.ToInt64());
     public static implicit operator NapiArg(string? s) => new(Tag.Ref, refValue: s);
@@ -53,4 +53,7 @@ public readonly struct NapiArg
     /// <summary>object 类型值的显式工厂（C# 禁止基类/接口自定义转换——object/INapiRecord
     /// 类型的调用点经此入 Ref 路径，运行时 From(object) 分派 INapiRecord/IDictionary）</summary>
     public static NapiArg Of(object? o) => new(Tag.Ref, refValue: o);
+
+    /// <summary>Explicitly marshals byte[] as JS ArrayBuffer instead of the default Uint8Array.</summary>
+    public static NapiArg OfArrayBuffer(byte[]? value) => new(Tag.ArrayBuffer, refValue: value);
 }

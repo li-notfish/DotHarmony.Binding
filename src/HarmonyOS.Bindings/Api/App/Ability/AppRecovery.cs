@@ -76,7 +76,7 @@ public static unsafe partial class AppRecovery
     /// </summary>
     public static void EnableAppRecovery(global::HarmonyOS.ArkUI.RestartFlag? restart = null, global::HarmonyOS.ArkUI.SaveOccasionFlag? saveOccasion = null, global::HarmonyOS.ArkUI.SaveModeFlag? saveMode = null)
     {
-        NodeApi.CallMethodVoid(Module, _enableAppRecovery, restart, saveOccasion, saveMode);
+        NodeApi.CallMethodVoid(Module, _enableAppRecovery, NapiArg.Of(restart), NapiArg.Of(saveOccasion), NapiArg.Of(saveMode));
     }
 
     /// <summary>

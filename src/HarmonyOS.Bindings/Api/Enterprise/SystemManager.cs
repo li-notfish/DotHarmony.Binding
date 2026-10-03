@@ -322,27 +322,27 @@ public sealed partial class OtaUpdatePolicy : JsObject
     /// <summary>
     /// latestUpdateTime
     /// </summary>
-    public double? LatestUpdateTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_latestUpdateTime));
+    public double? LatestUpdateTime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_latestUpdateTime)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_latestUpdateTime));
 
     /// <summary>
     /// delayUpdateTime
     /// </summary>
-    public double? DelayUpdateTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_delayUpdateTime));
+    public double? DelayUpdateTime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_delayUpdateTime)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_delayUpdateTime));
 
     /// <summary>
     /// installStartTime
     /// </summary>
-    public double? InstallStartTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_installStartTime));
+    public double? InstallStartTime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_installStartTime)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_installStartTime));
 
     /// <summary>
     /// installEndTime
     /// </summary>
-    public double? InstallEndTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_installEndTime));
+    public double? InstallEndTime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_installEndTime)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_installEndTime));
 
     /// <summary>
     /// disableSystemOtaUpdate
     /// </summary>
-    public bool? DisableSystemOtaUpdate => (bool?)NativeValue.ToBool(GetPropertyRaw(_disableSystemOtaUpdate));
+    public bool? DisableSystemOtaUpdate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_disableSystemOtaUpdate)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_disableSystemOtaUpdate));
 
 }
 

@@ -139,7 +139,7 @@ public static unsafe partial class ContinuationManager
     /// </summary>
     public static Task UpdateConnectStatusAsync(double token, string deviceId, global::HarmonyOS.ArkUI.DeviceConnectState status)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateConnectStatus, token, deviceId, status);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateConnectStatus, token, deviceId, (int)status);
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ public static unsafe partial class ContinuationManager
     /// </summary>
     public static Task UpdateContinuationStateAsync(double token, string deviceId, global::HarmonyOS.ArkUI.DeviceConnectState status)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateContinuationState, token, deviceId, status);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateContinuationState, token, deviceId, (int)status);
     }
 
     /// <summary>

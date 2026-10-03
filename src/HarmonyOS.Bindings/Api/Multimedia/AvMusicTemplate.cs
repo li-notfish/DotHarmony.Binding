@@ -73,7 +73,7 @@ public static unsafe partial class AvMusicTemplate
     /// </summary>
     public static AVMusicTemplate CreateAVMusicTemplate(global::HarmonyOS.ArkUI.AVMusicTemplateType accessType)
     {
-        return NodeApi.CallMethod(Module, _createAVMusicTemplate, static h => new AVMusicTemplate(h), accessType);
+        return NodeApi.CallMethod(Module, _createAVMusicTemplate, static h => new AVMusicTemplate(h), (int)accessType);
     }
 
 }
@@ -611,7 +611,7 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public Task SetCustomElementsAsync(global::HarmonyOS.ArkUI.ActionType actionType, IntPtr customType, IntPtr customElement)
     {
-        return CallMethodAsyncVoid(_setCustomElements, actionType, customType, customElement);
+        return CallMethodAsyncVoid(_setCustomElements, (int)actionType, customType, customElement);
     }
 
     /// <summary>
@@ -665,7 +665,7 @@ public sealed partial class OperResult : JsObject
     /// <summary>
     /// errorMsg
     /// </summary>
-    public string? ErrorMsg => (string?)NativeValue.ToString(GetPropertyRaw(_errorMsg)) ?? string.Empty;
+    public string? ErrorMsg => NativeValue.IsNullOrUndefined(GetPropertyRaw(_errorMsg)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_errorMsg));
 
 }
 
@@ -757,7 +757,7 @@ public sealed partial class MediaEntity : JsObject
     /// <summary>
     /// desc
     /// </summary>
-    public string? Desc => (string?)NativeValue.ToString(GetPropertyRaw(_desc)) ?? string.Empty;
+    public string? Desc => NativeValue.IsNullOrUndefined(GetPropertyRaw(_desc)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_desc));
 
     /// <summary>
     /// imageUrl
@@ -802,12 +802,12 @@ public sealed partial class SettingItem : JsObject
     /// <summary>
     /// settingType
     /// </summary>
-    public global::HarmonyOS.ArkUI.SettingType? SettingType => (global::HarmonyOS.ArkUI.SettingType?)(global::HarmonyOS.ArkUI.SettingType)NativeValue.ToInt(GetPropertyRaw(_settingType));
+    public global::HarmonyOS.ArkUI.SettingType? SettingType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_settingType)) ? null : (global::HarmonyOS.ArkUI.SettingType?)(global::HarmonyOS.ArkUI.SettingType)NativeValue.ToInt(GetPropertyRaw(_settingType));
 
     /// <summary>
     /// settingValue
     /// </summary>
-    public string? SettingValue => (string?)NativeValue.ToString(GetPropertyRaw(_settingValue)) ?? string.Empty;
+    public string? SettingValue => NativeValue.IsNullOrUndefined(GetPropertyRaw(_settingValue)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_settingValue));
 
     /// <summary>
     /// mediaId

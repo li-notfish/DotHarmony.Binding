@@ -402,7 +402,7 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task AttachAsync(bool showKeyboard, TextConfig textConfig, global::HarmonyOS.ArkUI.RequestKeyboardReason requestKeyboardReason)
     {
-        return CallMethodAsyncVoid(_attach, showKeyboard, NapiArg.Of(textConfig), requestKeyboardReason);
+        return CallMethodAsyncVoid(_attach, showKeyboard, NapiArg.Of(textConfig), (int)requestKeyboardReason);
     }
 
     /// <summary>
@@ -434,7 +434,7 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task ShowTextInputAsync(global::HarmonyOS.ArkUI.RequestKeyboardReason requestKeyboardReason)
     {
-        return CallMethodAsyncVoid(_showTextInput, requestKeyboardReason);
+        return CallMethodAsyncVoid(_showTextInput, (int)requestKeyboardReason);
     }
 
     /// <summary>
@@ -522,7 +522,7 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task SendMessageAsync(string msgId, byte[]? msgParam = null)
     {
-        return CallMethodAsyncVoid(_sendMessage, msgId, NapiArg.Of(msgParam));
+        return CallMethodAsyncVoid(_sendMessage, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 
     /// <summary>
@@ -910,27 +910,27 @@ public sealed partial class TextConfig : JsObject
     /// <summary>
     /// cursorInfo
     /// </summary>
-    public CursorInfo? CursorInfo => GetPropertyRaw(_cursorInfo) == IntPtr.Zero ? null : new CursorInfo(GetPropertyRaw(_cursorInfo));
+    public CursorInfo? CursorInfo => NativeValue.IsNullOrUndefined(GetPropertyRaw(_cursorInfo)) ? null : new CursorInfo(GetPropertyRaw(_cursorInfo));
 
     /// <summary>
     /// selection
     /// </summary>
-    public InputMethodRange? Selection => GetPropertyRaw(_selection) == IntPtr.Zero ? null : new InputMethodRange(GetPropertyRaw(_selection));
+    public InputMethodRange? Selection => NativeValue.IsNullOrUndefined(GetPropertyRaw(_selection)) ? null : new InputMethodRange(GetPropertyRaw(_selection));
 
     /// <summary>
     /// windowId
     /// </summary>
-    public double? WindowId => (double?)NativeValue.ToDouble(GetPropertyRaw(_windowId));
+    public double? WindowId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_windowId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_windowId));
 
     /// <summary>
     /// newEditBox
     /// </summary>
-    public bool? NewEditBox => (bool?)NativeValue.ToBool(GetPropertyRaw(_newEditBox));
+    public bool? NewEditBox => NativeValue.IsNullOrUndefined(GetPropertyRaw(_newEditBox)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_newEditBox));
 
     /// <summary>
     /// capitalizeMode
     /// </summary>
-    public global::HarmonyOS.ArkUI.CapitalizeMode? CapitalizeMode => (global::HarmonyOS.ArkUI.CapitalizeMode?)(global::HarmonyOS.ArkUI.CapitalizeMode)NativeValue.ToInt(GetPropertyRaw(_capitalizeMode));
+    public global::HarmonyOS.ArkUI.CapitalizeMode? CapitalizeMode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_capitalizeMode)) ? null : (global::HarmonyOS.ArkUI.CapitalizeMode?)(global::HarmonyOS.ArkUI.CapitalizeMode)NativeValue.ToInt(GetPropertyRaw(_capitalizeMode));
 
 }
 
@@ -946,12 +946,12 @@ public sealed partial class AttachOptions : JsObject
     /// <summary>
     /// showKeyboard
     /// </summary>
-    public bool? ShowKeyboard => (bool?)NativeValue.ToBool(GetPropertyRaw(_showKeyboard));
+    public bool? ShowKeyboard => NativeValue.IsNullOrUndefined(GetPropertyRaw(_showKeyboard)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_showKeyboard));
 
     /// <summary>
     /// requestKeyboardReason
     /// </summary>
-    public global::HarmonyOS.ArkUI.RequestKeyboardReason? RequestKeyboardReason => (global::HarmonyOS.ArkUI.RequestKeyboardReason?)(global::HarmonyOS.ArkUI.RequestKeyboardReason)NativeValue.ToInt(GetPropertyRaw(_requestKeyboardReason));
+    public global::HarmonyOS.ArkUI.RequestKeyboardReason? RequestKeyboardReason => NativeValue.IsNullOrUndefined(GetPropertyRaw(_requestKeyboardReason)) ? null : (global::HarmonyOS.ArkUI.RequestKeyboardReason?)(global::HarmonyOS.ArkUI.RequestKeyboardReason)NativeValue.ToInt(GetPropertyRaw(_requestKeyboardReason));
 
 }
 
@@ -990,7 +990,7 @@ public sealed partial class CursorInfo : JsObject
     /// <summary>
     /// displayId
     /// </summary>
-    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+    public double? DisplayId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_displayId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
 
 }
 
@@ -1019,17 +1019,17 @@ public sealed partial class InputAttribute : JsObject
     /// <summary>
     /// placeholder
     /// </summary>
-    public string? Placeholder => (string?)NativeValue.ToString(GetPropertyRaw(_placeholder)) ?? string.Empty;
+    public string? Placeholder => NativeValue.IsNullOrUndefined(GetPropertyRaw(_placeholder)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_placeholder));
 
     /// <summary>
     /// abilityName
     /// </summary>
-    public string? AbilityName => (string?)NativeValue.ToString(GetPropertyRaw(_abilityName)) ?? string.Empty;
+    public string? AbilityName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_abilityName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_abilityName));
 
     /// <summary>
     /// consumeKeyEvents
     /// </summary>
-    public bool? ConsumeKeyEvents => (bool?)NativeValue.ToBool(GetPropertyRaw(_consumeKeyEvents));
+    public bool? ConsumeKeyEvents => NativeValue.IsNullOrUndefined(GetPropertyRaw(_consumeKeyEvents)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_consumeKeyEvents));
 
 }
 
@@ -1047,7 +1047,7 @@ public sealed partial class MessageHandler : JsObject
     /// </summary>
     public void OnMessage(string msgId, byte[]? msgParam = null)
     {
-        CallMethodVoid(_onMessage, msgId, NapiArg.Of(msgParam));
+        CallMethodVoid(_onMessage, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 
     /// <summary>

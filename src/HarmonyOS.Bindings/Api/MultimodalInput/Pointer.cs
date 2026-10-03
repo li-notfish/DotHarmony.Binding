@@ -82,7 +82,7 @@ public static unsafe partial class Pointer
     /// </summary>
     public static Task SetPointerStyleAsync(double windowId, global::HarmonyOS.ArkUI.PointerStyle pointerStyle)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setPointerStyle, windowId, pointerStyle);
+        return NodeApi.CallMethodAsyncVoid(Module, _setPointerStyle, windowId, (int)pointerStyle);
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public static unsafe partial class Pointer
     /// </summary>
     public static void SetPointerStyleSync(double windowId, global::HarmonyOS.ArkUI.PointerStyle pointerStyle)
     {
-        NodeApi.CallMethodVoid(Module, _setPointerStyleSync, windowId, pointerStyle);
+        NodeApi.CallMethodVoid(Module, _setPointerStyleSync, windowId, (int)pointerStyle);
     }
 
     /// <summary>

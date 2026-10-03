@@ -180,7 +180,7 @@ public static unsafe partial class CryptoFramework
     /// </summary>
     public static Kem CreateKem(global::HarmonyOS.ArkUI.KemAlgNameId algNameId)
     {
-        return NodeApi.CallMethod(Module, _createKem, static h => new Kem(h), algNameId);
+        return NodeApi.CallMethod(Module, _createKem, static h => new Kem(h), (int)algNameId);
     }
 
 }
@@ -552,7 +552,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public Task InitAsync(global::HarmonyOS.ArkUI.CryptoMode opMode, CryptoFrameworkKey key, ParamsSpec @params)
     {
-        return CallMethodAsyncVoid(_init, opMode, NapiArg.Of(key), NapiArg.Of(@params));
+        return CallMethodAsyncVoid(_init, (int)opMode, NapiArg.Of(key), NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -560,7 +560,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public void InitSync(global::HarmonyOS.ArkUI.CryptoMode opMode, CryptoFrameworkKey key, ParamsSpec @params)
     {
-        CallMethodVoid(_initSync, opMode, NapiArg.Of(key), NapiArg.Of(@params));
+        CallMethodVoid(_initSync, (int)opMode, NapiArg.Of(key), NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -600,7 +600,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public void SetCipherSpec(global::HarmonyOS.ArkUI.CipherSpecItem itemType, byte[] itemValue)
     {
-        CallMethodVoid(_setCipherSpec, itemType, NapiArg.Of(itemValue));
+        CallMethodVoid(_setCipherSpec, (int)itemType, NapiArg.Of(itemValue));
     }
 
     /// <summary>
@@ -608,7 +608,7 @@ public sealed partial class Cipher : JsObject
     /// </summary>
     public string GetCipherSpec(global::HarmonyOS.ArkUI.CipherSpecItem itemType)
     {
-        return CallMethod<string>(_getCipherSpec, itemType);
+        return CallMethod<string>(_getCipherSpec, (int)itemType);
     }
 
 }
@@ -687,7 +687,7 @@ public sealed partial class Sign : JsObject
     /// </summary>
     public void SetSignSpec(global::HarmonyOS.ArkUI.SignSpecItem itemType, double itemValue)
     {
-        CallMethodVoid(_setSignSpec, itemType, itemValue);
+        CallMethodVoid(_setSignSpec, (int)itemType, itemValue);
     }
 
     /// <summary>
@@ -695,7 +695,7 @@ public sealed partial class Sign : JsObject
     /// </summary>
     public string GetSignSpec(global::HarmonyOS.ArkUI.SignSpecItem itemType)
     {
-        return CallMethod<string>(_getSignSpec, itemType);
+        return CallMethod<string>(_getSignSpec, (int)itemType);
     }
 
 }
@@ -792,7 +792,7 @@ public sealed partial class Verify : JsObject
     /// </summary>
     public void SetVerifySpec(global::HarmonyOS.ArkUI.SignSpecItem itemType, double itemValue)
     {
-        CallMethodVoid(_setVerifySpec, itemType, itemValue);
+        CallMethodVoid(_setVerifySpec, (int)itemType, itemValue);
     }
 
     /// <summary>
@@ -800,7 +800,7 @@ public sealed partial class Verify : JsObject
     /// </summary>
     public string GetVerifySpec(global::HarmonyOS.ArkUI.SignSpecItem itemType)
     {
-        return CallMethod<string>(_getVerifySpec, itemType);
+        return CallMethod<string>(_getVerifySpec, (int)itemType);
     }
 
 }
@@ -1202,7 +1202,7 @@ public sealed partial class PriKey : JsObject
     /// </summary>
     public JsBigInt GetAsyKeySpec(global::HarmonyOS.ArkUI.AsyKeySpecItem itemType)
     {
-        return CallMethod<JsBigInt>(_getAsyKeySpec, itemType);
+        return CallMethod<JsBigInt>(_getAsyKeySpec, (int)itemType);
     }
 
     /// <summary>
@@ -1250,7 +1250,7 @@ public sealed partial class PriKey : JsObject
     /// </summary>
     public Task<byte[]> GetKeyDataAsync(global::HarmonyOS.ArkUI.AsyKeyDataItem itemType)
     {
-        return CallMethodAsync(_getKeyData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), itemType);
+        return CallMethodAsync(_getKeyData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), (int)itemType);
     }
 
     /// <summary>
@@ -1258,7 +1258,7 @@ public sealed partial class PriKey : JsObject
     /// </summary>
     public byte[] GetKeyDataSync(global::HarmonyOS.ArkUI.AsyKeyDataItem itemType)
     {
-        return CallMethod(_getKeyDataSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), itemType);
+        return CallMethod(_getKeyDataSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), (int)itemType);
     }
 
 }
@@ -1310,7 +1310,7 @@ public sealed partial class PubKey : JsObject
     /// </summary>
     public JsBigInt GetAsyKeySpec(global::HarmonyOS.ArkUI.AsyKeySpecItem itemType)
     {
-        return CallMethod<JsBigInt>(_getAsyKeySpec, itemType);
+        return CallMethod<JsBigInt>(_getAsyKeySpec, (int)itemType);
     }
 
     /// <summary>
@@ -1334,7 +1334,7 @@ public sealed partial class PubKey : JsObject
     /// </summary>
     public Task<byte[]> GetKeyDataAsync(global::HarmonyOS.ArkUI.AsyKeyDataItem itemType)
     {
-        return CallMethodAsync(_getKeyData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), itemType);
+        return CallMethodAsync(_getKeyData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), (int)itemType);
     }
 
     /// <summary>
@@ -1342,7 +1342,7 @@ public sealed partial class PubKey : JsObject
     /// </summary>
     public byte[] GetKeyDataSync(global::HarmonyOS.ArkUI.AsyKeyDataItem itemType)
     {
-        return CallMethod(_getKeyDataSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), itemType);
+        return CallMethod(_getKeyDataSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), (int)itemType);
     }
 
 }

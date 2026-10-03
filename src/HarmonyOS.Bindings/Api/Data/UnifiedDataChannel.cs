@@ -112,7 +112,7 @@ public static unsafe partial class UnifiedDataChannel
     /// </summary>
     public static void SetAppShareOptions(global::HarmonyOS.ArkUI.Intention intention, global::HarmonyOS.ArkUI.ShareOptions shareOptions)
     {
-        NodeApi.CallMethodVoid(Module, _setAppShareOptions, intention, shareOptions);
+        NodeApi.CallMethodVoid(Module, _setAppShareOptions, (int)intention, (int)shareOptions);
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public static unsafe partial class UnifiedDataChannel
     /// </summary>
     public static void RemoveAppShareOptions(global::HarmonyOS.ArkUI.Intention intention)
     {
-        NodeApi.CallMethodVoid(Module, _removeAppShareOptions, intention);
+        NodeApi.CallMethodVoid(Module, _removeAppShareOptions, (int)intention);
     }
 
     /// <summary>
@@ -226,7 +226,7 @@ public sealed partial class UnifiedRecord : JsObject
         : this(NodeApi.CreateInstance(UnifiedDataChannel.Module, _UnifiedRecord)) { }
 
     public UnifiedRecord(string type, global::HarmonyOS.ArkUI.ValueType value)
-        : this(NodeApi.CreateInstance(UnifiedDataChannel.Module, _UnifiedRecord, type, value)) { }
+        : this(NodeApi.CreateInstance(UnifiedDataChannel.Module, _UnifiedRecord, type, (int)value)) { }
     private static ReadOnlySpan<byte> _getType => "getType"u8;
     private static ReadOnlySpan<byte> _getValue => "getValue"u8;
     private static ReadOnlySpan<byte> _getTypes => "getTypes"u8;
@@ -262,7 +262,7 @@ public sealed partial class UnifiedRecord : JsObject
     /// </summary>
     public void AddEntry(string type, global::HarmonyOS.ArkUI.ValueType value)
     {
-        CallMethodVoid(_addEntry, type, value);
+        CallMethodVoid(_addEntry, type, (int)value);
     }
 
     /// <summary>

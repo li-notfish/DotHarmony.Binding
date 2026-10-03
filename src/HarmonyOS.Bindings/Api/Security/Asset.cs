@@ -252,12 +252,12 @@ public sealed partial class AssetSyncResult : JsObject
     /// <summary>
     /// totalCount
     /// </summary>
-    public double? TotalCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_totalCount));
+    public double? TotalCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_totalCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_totalCount));
 
     /// <summary>
     /// failedCount
     /// </summary>
-    public double? FailedCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_failedCount));
+    public double? FailedCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_failedCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_failedCount));
 
 }
 

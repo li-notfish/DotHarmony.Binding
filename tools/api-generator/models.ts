@@ -19,6 +19,8 @@ export interface ConstructorOverload {
 export interface ParameterInfo {
     name: string;
     type: string;
+    /** Original TypeScript type retained for marshaling decisions lost by C# mapping (e.g. ArrayBuffer). */
+    tsType?: string;
     optional: boolean;
     defaultValue?: string;
 }

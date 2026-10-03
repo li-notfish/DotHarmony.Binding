@@ -506,7 +506,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task<IntPtr> ReadAsync(double fd, byte[] buffer, IntPtr? options = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _read, fd, NapiArg.Of(buffer), NapiArg.Of(options));
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _read, fd, NapiArg.OfArrayBuffer(buffer), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -514,7 +514,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static Task<ReadOut> ReadAsync(double fd, byte[] buffer)
     {
-        return NodeApi.CallMethodAsyncCallback(Module, _read, static h => new ReadOut(h), fd, NapiArg.Of(buffer));
+        return NodeApi.CallMethodAsyncCallback(Module, _read, static h => new ReadOut(h), fd, NapiArg.OfArrayBuffer(buffer));
     }
 
     /// <summary>
@@ -522,7 +522,7 @@ public static unsafe partial class Fileio
     /// </summary>
     public static double ReadSync(double fd, byte[] buffer, IntPtr? options = null)
     {
-        return NodeApi.CallMethod<double>(Module, _readSync, fd, NapiArg.Of(buffer), NapiArg.Of(options));
+        return NodeApi.CallMethod<double>(Module, _readSync, fd, NapiArg.OfArrayBuffer(buffer), NapiArg.Of(options));
     }
 
     /// <summary>

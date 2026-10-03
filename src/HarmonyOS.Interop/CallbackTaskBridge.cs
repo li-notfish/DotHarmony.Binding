@@ -90,23 +90,6 @@ internal static class CallbackTaskBridge
         return CallbackTrampolines.SafeReturnUndefined(env);
     }
 
-    private static long? ReadErrorInt64(IntPtr env, IntPtr err, byte[] key)
-    {
-        NativeNodeApi.napi_get_named_property(env, err, key, out var value);
-        NativeNodeApi.napi_typeof(env, value, out var valueType).ThrowIfFailed();
-        if (valueType != NativeNodeApi.napi_valuetype.napi_number) return null;
-        NativeNodeApi.napi_get_value_int64(env, value, out var result).ThrowIfFailed();
-        return result;
-    }
-
-    private static string? ReadErrorString(IntPtr env, IntPtr err, byte[] key)
-    {
-        NativeNodeApi.napi_get_named_property(env, err, key, out var value);
-        NativeNodeApi.napi_typeof(env, value, out var valueType).ThrowIfFailed();
-        if (valueType != NativeNodeApi.napi_valuetype.napi_string) return null;
-        return NativeValue.ToString(value);
-    }
-
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static IntPtr CallbackTrampoline(IntPtr env, IntPtr info)
     {
@@ -137,17 +120,7 @@ internal static class CallbackTaskBridge
             else
             {
                 // BusinessError：{ code: number, message: string }
-                long? code = null;
-                string? message = null;
-                if (errType == NativeNodeApi.napi_valuetype.napi_object)
-                {
-                    try { code = ReadErrorInt64(env, err, "code"u8.ToArray()); } catch { }
-                    try { message = ReadErrorString(env, err, "message"u8.ToArray()); } catch { }
-                }
-                else
-                {
-                    try { message = NativeValue.ToString(err); } catch { }
-                }
+                var (code, message) = BusinessErrorReader.Read(env, err);
                 state.SetException(new ArkTSException(
                     $"ArkTS callback error (code {code?.ToString() ?? "unknown"}): {message ?? "unknown"}",
                     message, err, code));

@@ -438,6 +438,7 @@ export class ApiGenerator {
             const mappedParams: ParameterInfo[] = params.map(p => ({
                 name: p.name,
                 type: this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(p.type))),
+                tsType: p.tsType,
                 optional: p.optional,
                 defaultValue: p.defaultValue
             }));
@@ -882,6 +883,7 @@ export class ApiGenerator {
                 const mappedParams: ParameterInfo[] = this.demoteOptionals(ctor.parameters).map(p => ({
                     name: p.name,
                     type: this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(p.type))),
+                    tsType: p.tsType,
                     optional: p.optional,
                     defaultValue: p.defaultValue
                 }));
@@ -937,6 +939,7 @@ export class ApiGenerator {
             const mappedParams = this.demoteOptionals(rawParams).map(p => ({
                 name: p.name,
                 type: this.normalize(TypeMapper.mapType(TypeMapper.cleanOptional(p.type))),
+                tsType: p.tsType,
                 optional: p.optional,
                 defaultValue: p.defaultValue
             }));
@@ -991,8 +994,12 @@ export class ApiGenerator {
             return;
         }
         if (p.optional && (PRIMITIVE_TYPES.has(mapped) || this.enumNames.has(mapped))) {
-            // 可选值类型属性：undefined 语义降级为默认值，避免引入 UndefinedValue 概念
-            lines.push(`    public ${mapped}? ${pascal} => (${mapped}?)${this.primitiveGetterExpr(mapped, `GetPropertyRaw(${u8})`)};`);
+            // JS undefined/null must become C# null before NAPI value conversion.
+            const raw = `GetPropertyRaw(${u8})`;
+            const getter = mapped === 'string'
+                ? `NativeValue.ToString(${raw})`
+                : this.primitiveGetterExpr(mapped, raw);
+            lines.push(`    public ${mapped}? ${pascal} => NativeValue.IsNullOrUndefined(${raw}) ? null : (${mapped}?)${getter};`);
             lines.push('');
             return;
         }
@@ -1000,7 +1007,14 @@ export class ApiGenerator {
         if (p.optional && wrapperSpec) {
             // 可选包装属性：undefined → null
             const raw = `GetPropertyRaw(${u8})`;
-            lines.push(`    public ${wrapperSpec}? ${pascal} => ${raw} == IntPtr.Zero ? null : new ${wrapperSpec}(${raw});`);
+            lines.push(`    public ${wrapperSpec}? ${pascal} => NativeValue.IsNullOrUndefined(${raw}) ? null : new ${wrapperSpec}(${raw});`);
+            lines.push('');
+            return;
+        }
+        if (p.optional && /^[\w.:]+\[\]$/.test(mapped)) {
+            const raw = `GetPropertyRaw(${u8})`;
+            const { expr } = this.getterExpr(mapped, 'this', u8, true);
+            lines.push(`    public ${mapped}? ${pascal} => NativeValue.IsNullOrUndefined(${raw}) ? null : ${expr};`);
             lines.push('');
             return;
         }
@@ -1173,8 +1187,12 @@ export class ApiGenerator {
         const nullable = param.optional || param.type.endsWith('?');
         const t = param.type.replace(/\?$/, '');
         if (t === 'string') return expr;
+        if (t === 'byte[]' && param.tsType === 'ArrayBuffer') return `NapiArg.OfArrayBuffer(${expr})`;
         if (t === 'IntPtr') return nullable ? `NapiArg.Of(${expr})` : expr;
-        if (t.startsWith('global::HarmonyOS.ArkUI.') && !t.endsWith('[]')) return `(int)${expr}`; // 枚举强制 int，避免 Enum 装箱；枚举数组走 Of
+        if (t.startsWith('global::HarmonyOS.ArkUI.') && !t.endsWith('[]')) {
+            // 可空枚举装箱后是 enum 值或 null；必需枚举保持 int 零装箱路径。
+            return nullable ? `NapiArg.Of(${expr})` : `(int)${expr}`;
+        }
         if (PRIMITIVE_TYPES.has(t) && !nullable) return expr;
         return `NapiArg.Of(${expr})`;
     }

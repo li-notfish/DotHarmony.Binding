@@ -604,7 +604,7 @@ public sealed partial class WebSocketOpenInfo : JsObject
     /// <summary>
     /// protocol
     /// </summary>
-    public string? Protocol => (string?)NativeValue.ToString(GetPropertyRaw(_protocol)) ?? string.Empty;
+    public string? Protocol => NativeValue.IsNullOrUndefined(GetPropertyRaw(_protocol)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_protocol));
 
 }
 
@@ -683,12 +683,12 @@ public sealed partial class WebSocketCloseOptions : JsObject
     /// <summary>
     /// code
     /// </summary>
-    public double? Code => (double?)NativeValue.ToDouble(GetPropertyRaw(_code));
+    public double? Code => NativeValue.IsNullOrUndefined(GetPropertyRaw(_code)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_code));
 
     /// <summary>
     /// reason
     /// </summary>
-    public string? Reason => (string?)NativeValue.ToString(GetPropertyRaw(_reason)) ?? string.Empty;
+    public string? Reason => NativeValue.IsNullOrUndefined(GetPropertyRaw(_reason)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_reason));
 
 }
 
@@ -723,17 +723,17 @@ public sealed partial class WebSocketServerConfig : JsObject
     /// <summary>
     /// serverIP
     /// </summary>
-    public string? ServerIP => (string?)NativeValue.ToString(GetPropertyRaw(_serverIP)) ?? string.Empty;
+    public string? ServerIP => NativeValue.IsNullOrUndefined(GetPropertyRaw(_serverIP)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_serverIP));
 
     /// <summary>
     /// serverCert
     /// </summary>
-    public ServerCert? ServerCert => GetPropertyRaw(_serverCert) == IntPtr.Zero ? null : new ServerCert(GetPropertyRaw(_serverCert));
+    public ServerCert? ServerCert => NativeValue.IsNullOrUndefined(GetPropertyRaw(_serverCert)) ? null : new ServerCert(GetPropertyRaw(_serverCert));
 
     /// <summary>
     /// protocol
     /// </summary>
-    public string? Protocol => (string?)NativeValue.ToString(GetPropertyRaw(_protocol)) ?? string.Empty;
+    public string? Protocol => NativeValue.IsNullOrUndefined(GetPropertyRaw(_protocol)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_protocol));
 
 }
 

@@ -99,7 +99,7 @@ public static unsafe partial class UserAuth
     /// </summary>
     public static void GetAvailableStatus(global::HarmonyOS.ArkUI.UserAuthType authType, global::HarmonyOS.ArkUI.AuthTrustLevel authTrustLevel)
     {
-        NodeApi.CallMethodVoid(Module, _getAvailableStatus, authType, authTrustLevel);
+        NodeApi.CallMethodVoid(Module, _getAvailableStatus, (int)authType, (int)authTrustLevel);
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public static unsafe partial class UserAuth
     /// </summary>
     public static EnrolledState GetEnrolledState(global::HarmonyOS.ArkUI.UserAuthType authType)
     {
-        return NodeApi.CallMethod(Module, _getEnrolledState, static h => new EnrolledState(h), authType);
+        return NodeApi.CallMethod(Module, _getEnrolledState, static h => new EnrolledState(h), (int)authType);
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public static unsafe partial class UserAuth
     /// </summary>
     public static Task<AuthLockState> GetAuthLockStateAsync(global::HarmonyOS.ArkUI.UserAuthType authType)
     {
-        return NodeApi.CallMethodAsync(Module, _getAuthLockState, static h => new AuthLockState(h), authType);
+        return NodeApi.CallMethodAsync(Module, _getAuthLockState, static h => new AuthLockState(h), (int)authType);
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public static unsafe partial class UserAuth
     /// </summary>
     public static IntPtr GetAuthInstance(byte[] challenge, global::HarmonyOS.ArkUI.UserAuthType authType, global::HarmonyOS.ArkUI.AuthTrustLevel authTrustLevel)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getAuthInstance, NapiArg.Of(challenge), authType, authTrustLevel);
+        return NodeApi.CallMethod<IntPtr>(Module, _getAuthInstance, NapiArg.Of(challenge), (int)authType, (int)authTrustLevel);
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public sealed partial class UserAuthAuthenticator : JsObject
     /// </summary>
     public Task<double> ExecuteAsync(global::HarmonyOS.ArkUI.AuthType type, IntPtr level)
     {
-        return CallMethodAsync<double>(_execute, type, level);
+        return CallMethodAsync<double>(_execute, (int)type, level);
     }
 
 }
@@ -374,7 +374,7 @@ public sealed partial class UserAuthObject : JsObject
     /// </summary>
     public double GetAvailableStatus(global::HarmonyOS.ArkUI.UserAuthType authType, global::HarmonyOS.ArkUI.AuthTrustLevel authTrustLevel)
     {
-        return CallMethod<double>(_getAvailableStatus, authType, authTrustLevel);
+        return CallMethod<double>(_getAvailableStatus, (int)authType, (int)authTrustLevel);
     }
 
     /// <summary>
@@ -382,7 +382,7 @@ public sealed partial class UserAuthObject : JsObject
     /// </summary>
     public byte[] Auth(byte[] challenge, global::HarmonyOS.ArkUI.UserAuthType authType, global::HarmonyOS.ArkUI.AuthTrustLevel authTrustLevel, IntPtr callback)
     {
-        return CallMethod(_auth, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(challenge), authType, authTrustLevel, callback);
+        return CallMethod(_auth, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(challenge), (int)authType, (int)authTrustLevel, callback);
     }
 
     /// <summary>
@@ -453,16 +453,16 @@ public sealed partial class UserAuthResult : JsObject
     /// <summary>
     /// token
     /// </summary>
-    public byte[] Token => ValueConverter.ConvertArray(GetPropertyRaw(_token), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? Token => NativeValue.IsNullOrUndefined(GetPropertyRaw(_token)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_token), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// authType
     /// </summary>
-    public global::HarmonyOS.ArkUI.UserAuthType? AuthType => (global::HarmonyOS.ArkUI.UserAuthType?)(global::HarmonyOS.ArkUI.UserAuthType)NativeValue.ToInt(GetPropertyRaw(_authType));
+    public global::HarmonyOS.ArkUI.UserAuthType? AuthType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_authType)) ? null : (global::HarmonyOS.ArkUI.UserAuthType?)(global::HarmonyOS.ArkUI.UserAuthType)NativeValue.ToInt(GetPropertyRaw(_authType));
 
     /// <summary>
     /// enrolledState
     /// </summary>
-    public EnrolledState? EnrolledState => GetPropertyRaw(_enrolledState) == IntPtr.Zero ? null : new EnrolledState(GetPropertyRaw(_enrolledState));
+    public EnrolledState? EnrolledState => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enrolledState)) ? null : new EnrolledState(GetPropertyRaw(_enrolledState));
 
 }

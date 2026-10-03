@@ -253,7 +253,7 @@ public sealed partial class WifiAccessInfo : JsObject
     /// <summary>
     /// bssid
     /// </summary>
-    public string? Bssid => (string?)NativeValue.ToString(GetPropertyRaw(_bssid)) ?? string.Empty;
+    public string? Bssid => NativeValue.IsNullOrUndefined(GetPropertyRaw(_bssid)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_bssid));
 
 }
 

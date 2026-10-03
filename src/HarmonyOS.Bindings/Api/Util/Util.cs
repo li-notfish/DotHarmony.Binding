@@ -757,7 +757,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public byte[] EncodeSync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethod(_encodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), options);
+        return CallMethod(_encodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -765,7 +765,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public string EncodeToStringSync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethod<string>(_encodeToStringSync, NapiArg.Of(src), options);
+        return CallMethod<string>(_encodeToStringSync, NapiArg.Of(src), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -773,7 +773,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public byte[] DecodeSync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethod(_decodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), options);
+        return CallMethod(_decodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -781,7 +781,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public Task<byte[]> EncodeAsync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethodAsync(_encode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), options);
+        return CallMethodAsync(_encode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -789,7 +789,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public Task<string> EncodeToStringAsync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethodAsync<string>(_encodeToString, NapiArg.Of(src), options);
+        return CallMethodAsync<string>(_encodeToString, NapiArg.Of(src), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -797,7 +797,7 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public Task<byte[]> DecodeAsync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
-        return CallMethodAsync(_decode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), options);
+        return CallMethodAsync(_decode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), NapiArg.Of(options));
     }
 
 }
@@ -1211,12 +1211,12 @@ public sealed partial class TextDecoderOptions : JsObject
     /// <summary>
     /// fatal
     /// </summary>
-    public bool? Fatal => (bool?)NativeValue.ToBool(GetPropertyRaw(_fatal));
+    public bool? Fatal => NativeValue.IsNullOrUndefined(GetPropertyRaw(_fatal)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_fatal));
 
     /// <summary>
     /// ignoreBOM
     /// </summary>
-    public bool? IgnoreBom => (bool?)NativeValue.ToBool(GetPropertyRaw(_ignoreBOM));
+    public bool? IgnoreBom => NativeValue.IsNullOrUndefined(GetPropertyRaw(_ignoreBOM)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_ignoreBOM));
 
 }
 
@@ -1231,7 +1231,7 @@ public sealed partial class DecodeWithStreamOptions : JsObject
     /// <summary>
     /// stream
     /// </summary>
-    public bool? Stream => (bool?)NativeValue.ToBool(GetPropertyRaw(_stream));
+    public bool? Stream => NativeValue.IsNullOrUndefined(GetPropertyRaw(_stream)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_stream));
 
 }
 
@@ -1246,7 +1246,7 @@ public sealed partial class DecodeToStringOptions : JsObject
     /// <summary>
     /// stream
     /// </summary>
-    public bool? Stream => (bool?)NativeValue.ToBool(GetPropertyRaw(_stream));
+    public bool? Stream => NativeValue.IsNullOrUndefined(GetPropertyRaw(_stream)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_stream));
 
 }
 

@@ -932,12 +932,12 @@ public sealed partial class InputMethodEngineAttachOptions : JsObject
     /// <summary>
     /// requestKeyboardReason
     /// </summary>
-    public global::HarmonyOS.ArkUI.InputMethodEngineRequestKeyboardReason? RequestKeyboardReason => (global::HarmonyOS.ArkUI.InputMethodEngineRequestKeyboardReason?)(global::HarmonyOS.ArkUI.InputMethodEngineRequestKeyboardReason)NativeValue.ToInt(GetPropertyRaw(_requestKeyboardReason));
+    public global::HarmonyOS.ArkUI.InputMethodEngineRequestKeyboardReason? RequestKeyboardReason => NativeValue.IsNullOrUndefined(GetPropertyRaw(_requestKeyboardReason)) ? null : (global::HarmonyOS.ArkUI.InputMethodEngineRequestKeyboardReason?)(global::HarmonyOS.ArkUI.InputMethodEngineRequestKeyboardReason)NativeValue.ToInt(GetPropertyRaw(_requestKeyboardReason));
 
     /// <summary>
     /// isSimpleKeyboardEnabled
     /// </summary>
-    public bool? IsSimpleKeyboardEnabled => (bool?)NativeValue.ToBool(GetPropertyRaw(_isSimpleKeyboardEnabled));
+    public bool? IsSimpleKeyboardEnabled => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isSimpleKeyboardEnabled)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isSimpleKeyboardEnabled));
 
 }
 
@@ -1190,7 +1190,7 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public Task SendExtendActionAsync(global::HarmonyOS.ArkUI.InputMethodEngineExtendAction action)
     {
-        return CallMethodAsyncVoid(_sendExtendAction, action);
+        return CallMethodAsyncVoid(_sendExtendAction, (int)action);
     }
 
     /// <summary>
@@ -1246,7 +1246,7 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public Task SendMessageAsync(string msgId, byte[]? msgParam = null)
     {
-        return CallMethodAsyncVoid(_sendMessage, msgId, NapiArg.Of(msgParam));
+        return CallMethodAsyncVoid(_sendMessage, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 
     /// <summary>
@@ -1345,7 +1345,7 @@ public sealed partial class InputMethodEnginePanelInfo : JsObject
     /// <summary>
     /// flag
     /// </summary>
-    public global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag? Flag => (global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag?)(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag)NativeValue.ToInt(GetPropertyRaw(_flag));
+    public global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag? Flag => NativeValue.IsNullOrUndefined(GetPropertyRaw(_flag)) ? null : (global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag?)(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag)NativeValue.ToInt(GetPropertyRaw(_flag));
 
 }
 
@@ -1462,7 +1462,7 @@ public sealed partial class PanelObject : JsObject
     /// </summary>
     public void ChangeFlag(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag flag)
     {
-        CallMethodVoid(_changeFlag, flag);
+        CallMethodVoid(_changeFlag, (int)flag);
     }
 
     /// <summary>
@@ -1478,7 +1478,7 @@ public sealed partial class PanelObject : JsObject
     /// </summary>
     public void AdjustPanelRect(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag flag, IntPtr rect)
     {
-        CallMethodVoid(_adjustPanelRect, flag, rect);
+        CallMethodVoid(_adjustPanelRect, (int)flag, rect);
     }
 
     /// <summary>
@@ -1486,7 +1486,7 @@ public sealed partial class PanelObject : JsObject
     /// </summary>
     public Task UpdatePanelRectAsync(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag flag, IntPtr rect)
     {
-        return CallMethodAsyncVoid(_updatePanelRect, flag, rect);
+        return CallMethodAsyncVoid(_updatePanelRect, (int)flag, rect);
     }
 
     /// <summary>
@@ -1494,7 +1494,7 @@ public sealed partial class PanelObject : JsObject
     /// </summary>
     public void UpdatePanelRectSync(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag flag, IntPtr rect)
     {
-        CallMethodVoid(_updatePanelRectSync, flag, rect);
+        CallMethodVoid(_updatePanelRectSync, (int)flag, rect);
     }
 
     /// <summary>
@@ -1510,7 +1510,7 @@ public sealed partial class PanelObject : JsObject
     /// </summary>
     public void SetImmersiveMode(global::HarmonyOS.ArkUI.ImmersiveMode mode)
     {
-        CallMethodVoid(_setImmersiveMode, mode);
+        CallMethodVoid(_setImmersiveMode, (int)mode);
     }
 
     /// <summary>
@@ -1777,7 +1777,7 @@ public sealed partial class InputMethodEngineMessageHandler : JsObject
     /// </summary>
     public void OnMessage(string msgId, byte[]? msgParam = null)
     {
-        CallMethodVoid(_onMessage, msgId, NapiArg.Of(msgParam));
+        CallMethodVoid(_onMessage, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 
     /// <summary>

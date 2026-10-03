@@ -122,7 +122,7 @@ public static unsafe partial class RelationalStore
     /// </summary>
     public static bool IsTokenizerSupported(global::HarmonyOS.ArkUI.Tokenizer tokenizer)
     {
-        return NodeApi.CallMethod<bool>(Module, _isTokenizerSupported, tokenizer);
+        return NodeApi.CallMethod<bool>(Module, _isTokenizerSupported, (int)tokenizer);
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ public static unsafe partial class RelationalStore
     /// </summary>
     public static IntPtr GetInsertSqlInfo(string table, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getInsertSqlInfo, table, values, conflict);
+        return NodeApi.CallMethod<IntPtr>(Module, _getInsertSqlInfo, table, values, NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public static unsafe partial class RelationalStore
     /// </summary>
     public static IntPtr GetUpdateSqlInfo(RelationalStoreRdbPredicates predicates, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getUpdateSqlInfo, NapiArg.Of(predicates), values, conflict);
+        return NodeApi.CallMethod<IntPtr>(Module, _getUpdateSqlInfo, NapiArg.Of(predicates), values, NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -249,7 +249,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> InsertAsync(string table, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethodAsync<double>(_insert, table, values, conflict);
+        return CallMethodAsync<double>(_insert, table, values, (int)conflict);
     }
 
     /// <summary>
@@ -257,7 +257,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public double InsertSync(string table, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod<double>(_insertSync, table, values, conflict);
+        return CallMethod<double>(_insertSync, table, values, NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -281,7 +281,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> BatchInsertWithConflictResolutionAsync(string table, IntPtr[] values, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethodAsync<double>(_batchInsertWithConflictResolution, table, NapiArg.Of(values), conflict);
+        return CallMethodAsync<double>(_batchInsertWithConflictResolution, table, NapiArg.Of(values), (int)conflict);
     }
 
     /// <summary>
@@ -289,7 +289,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public double BatchInsertWithConflictResolutionSync(string table, IntPtr[] values, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethod<double>(_batchInsertWithConflictResolutionSync, table, NapiArg.Of(values), conflict);
+        return CallMethod<double>(_batchInsertWithConflictResolutionSync, table, NapiArg.Of(values), (int)conflict);
     }
 
     /// <summary>
@@ -297,7 +297,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<Result> BatchInsertWithReturningAsync(string table, IntPtr[] values, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync(_batchInsertWithReturning, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), conflict);
+        return CallMethodAsync(_batchInsertWithReturning, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -305,7 +305,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Result BatchInsertWithReturningSync(string table, IntPtr[] values, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod(_batchInsertWithReturningSync, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), conflict);
+        return CallMethod(_batchInsertWithReturningSync, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -321,7 +321,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<double> UpdateAsync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethodAsync<double>(_update, values, NapiArg.Of(predicates), conflict);
+        return CallMethodAsync<double>(_update, values, NapiArg.Of(predicates), (int)conflict);
     }
 
     /// <summary>
@@ -329,7 +329,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public double UpdateSync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod<double>(_updateSync, values, NapiArg.Of(predicates), conflict);
+        return CallMethod<double>(_updateSync, values, NapiArg.Of(predicates), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -337,7 +337,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<Result> UpdateWithReturningAsync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync(_updateWithReturning, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), conflict);
+        return CallMethodAsync(_updateWithReturning, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -345,7 +345,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Result UpdateWithReturningSync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod(_updateWithReturningSync, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), conflict);
+        return CallMethod(_updateWithReturningSync, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -617,7 +617,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task SetDistributedTablesAsync(string[] tables, global::HarmonyOS.ArkUI.DistributedType type)
     {
-        return CallMethodAsyncCallbackVoid(_setDistributedTables, NapiArg.Of(tables), type);
+        return CallMethodAsyncCallbackVoid(_setDistributedTables, NapiArg.Of(tables), (int)type);
     }
 
     /// <summary>
@@ -625,7 +625,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task SetDistributedTablesAsync(string[] tables, global::HarmonyOS.ArkUI.DistributedType type, DistributedConfig config)
     {
-        return CallMethodAsyncVoid(_setDistributedTables, NapiArg.Of(tables), type, NapiArg.Of(config));
+        return CallMethodAsyncVoid(_setDistributedTables, NapiArg.Of(tables), (int)type, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -641,7 +641,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<object[]> SyncAsync(global::HarmonyOS.ArkUI.DataRelationalStoreSyncMode mode, RelationalStoreRdbPredicates predicates)
     {
-        return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), mode, NapiArg.Of(predicates));
+        return CallMethodAsync(_sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<object>(e)), (int)mode, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -649,7 +649,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task<SyncResult[]> SyncExAsync(global::HarmonyOS.ArkUI.DataRelationalStoreSyncMode mode, RelationalStoreRdbPredicates predicates)
     {
-        return CallMethodAsync(_syncEx, h => ValueConverter.ConvertArray(h, static e => new SyncResult(e)), mode, NapiArg.Of(predicates));
+        return CallMethodAsync(_syncEx, h => ValueConverter.ConvertArray(h, static e => new SyncResult(e)), (int)mode, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -657,7 +657,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task CloudSyncAsync(global::HarmonyOS.ArkUI.DataRelationalStoreSyncMode mode, IntPtr progress)
     {
-        return CallMethodAsyncVoid(_cloudSync, mode, progress);
+        return CallMethodAsyncVoid(_cloudSync, (int)mode, progress);
     }
 
     /// <summary>
@@ -665,7 +665,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public Task CloudSyncAsync(global::HarmonyOS.ArkUI.DataRelationalStoreSyncMode mode, string[] tables, IntPtr progress)
     {
-        return CallMethodAsyncVoid(_cloudSync, mode, NapiArg.Of(tables), progress);
+        return CallMethodAsyncVoid(_cloudSync, (int)mode, NapiArg.Of(tables), progress);
     }
 
     /// <summary>
@@ -697,7 +697,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public void On(string @event, global::HarmonyOS.ArkUI.DataRelationalStoreSubscribeType type, IntPtr observer)
     {
-        CallMethodVoid(_on, @event, type, observer);
+        CallMethodVoid(_on, @event, (int)type, observer);
     }
 
     /// <summary>
@@ -721,7 +721,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public void Off(string @event, global::HarmonyOS.ArkUI.DataRelationalStoreSubscribeType type, IntPtr observer)
     {
-        CallMethodVoid(_off, @event, type, observer);
+        CallMethodVoid(_off, @event, (int)type, observer);
     }
 
     /// <summary>
@@ -845,7 +845,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<string>(e))),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, type2));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, (int)type2));
     }
 
     /// <summary>
@@ -855,7 +855,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(ValueConverter.ConvertArray(args[0], static e => ValueConverter.Convert<IntPtr>(e))),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, type2));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, (int)type2));
     }
 
     /// <summary>
@@ -911,7 +911,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public void Off(string type, System.Action<string[]> callback, global::HarmonyOS.ArkUI.DataRelationalStoreSubscribeType type2)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, type2));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, (int)type2));
     }
 
     /// <summary>
@@ -919,7 +919,7 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// </summary>
     public void Off(string type, System.Action<IntPtr[]> callback, global::HarmonyOS.ArkUI.DataRelationalStoreSubscribeType type2)
     {
-        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, type2));
+        _eventListeners.Remove((type, callback), js => NodeApi.CallMethodVoid(Handle, _off, type, js, (int)type2));
     }
 
     /// <summary>
@@ -1093,67 +1093,67 @@ public sealed partial class RelationalStoreStoreConfig : JsObject
     /// <summary>
     /// encrypt
     /// </summary>
-    public bool? Encrypt => (bool?)NativeValue.ToBool(GetPropertyRaw(_encrypt));
+    public bool? Encrypt => NativeValue.IsNullOrUndefined(GetPropertyRaw(_encrypt)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_encrypt));
 
     /// <summary>
     /// dataGroupId
     /// </summary>
-    public string? DataGroupId => (string?)NativeValue.ToString(GetPropertyRaw(_dataGroupId)) ?? string.Empty;
+    public string? DataGroupId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_dataGroupId)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_dataGroupId));
 
     /// <summary>
     /// customDir
     /// </summary>
-    public string? CustomDir => (string?)NativeValue.ToString(GetPropertyRaw(_customDir)) ?? string.Empty;
+    public string? CustomDir => NativeValue.IsNullOrUndefined(GetPropertyRaw(_customDir)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_customDir));
 
     /// <summary>
     /// rootDir
     /// </summary>
-    public string? RootDir => (string?)NativeValue.ToString(GetPropertyRaw(_rootDir)) ?? string.Empty;
+    public string? RootDir => NativeValue.IsNullOrUndefined(GetPropertyRaw(_rootDir)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_rootDir));
 
     /// <summary>
     /// autoCleanDirtyData
     /// </summary>
-    public bool? AutoCleanDirtyData => (bool?)NativeValue.ToBool(GetPropertyRaw(_autoCleanDirtyData));
+    public bool? AutoCleanDirtyData => NativeValue.IsNullOrUndefined(GetPropertyRaw(_autoCleanDirtyData)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_autoCleanDirtyData));
 
     /// <summary>
     /// allowRebuild
     /// </summary>
-    public bool? AllowRebuild => (bool?)NativeValue.ToBool(GetPropertyRaw(_allowRebuild));
+    public bool? AllowRebuild => NativeValue.IsNullOrUndefined(GetPropertyRaw(_allowRebuild)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_allowRebuild));
 
     /// <summary>
     /// vector
     /// </summary>
-    public bool? Vector => (bool?)NativeValue.ToBool(GetPropertyRaw(_vector));
+    public bool? Vector => NativeValue.IsNullOrUndefined(GetPropertyRaw(_vector)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_vector));
 
     /// <summary>
     /// isReadOnly
     /// </summary>
-    public bool? IsReadOnly => (bool?)NativeValue.ToBool(GetPropertyRaw(_isReadOnly));
+    public bool? IsReadOnly => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isReadOnly)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isReadOnly));
 
     /// <summary>
     /// pluginLibs
     /// </summary>
-    public string[] PluginLibs => ValueConverter.ConvertArray(GetPropertyRaw(_pluginLibs), static e => ValueConverter.Convert<string>(e));
+    public string[]? PluginLibs => NativeValue.IsNullOrUndefined(GetPropertyRaw(_pluginLibs)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_pluginLibs), static e => ValueConverter.Convert<string>(e));
 
     /// <summary>
     /// cryptoParam
     /// </summary>
-    public CryptoParam? CryptoParam => GetPropertyRaw(_cryptoParam) == IntPtr.Zero ? null : new CryptoParam(GetPropertyRaw(_cryptoParam));
+    public CryptoParam? CryptoParam => NativeValue.IsNullOrUndefined(GetPropertyRaw(_cryptoParam)) ? null : new CryptoParam(GetPropertyRaw(_cryptoParam));
 
     /// <summary>
     /// tokenizer
     /// </summary>
-    public global::HarmonyOS.ArkUI.Tokenizer? Tokenizer => (global::HarmonyOS.ArkUI.Tokenizer?)(global::HarmonyOS.ArkUI.Tokenizer)NativeValue.ToInt(GetPropertyRaw(_tokenizer));
+    public global::HarmonyOS.ArkUI.Tokenizer? Tokenizer => NativeValue.IsNullOrUndefined(GetPropertyRaw(_tokenizer)) ? null : (global::HarmonyOS.ArkUI.Tokenizer?)(global::HarmonyOS.ArkUI.Tokenizer)NativeValue.ToInt(GetPropertyRaw(_tokenizer));
 
     /// <summary>
     /// persist
     /// </summary>
-    public bool? Persist => (bool?)NativeValue.ToBool(GetPropertyRaw(_persist));
+    public bool? Persist => NativeValue.IsNullOrUndefined(GetPropertyRaw(_persist)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_persist));
 
     /// <summary>
     /// enableSemanticIndex
     /// </summary>
-    public bool? EnableSemanticIndex => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableSemanticIndex));
+    public bool? EnableSemanticIndex => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enableSemanticIndex)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enableSemanticIndex));
 
 }
 
@@ -1223,7 +1223,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates EqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_equalTo, static h => new RelationalStoreRdbPredicates(h), field, value);
+        return CallMethod(_equalTo, static h => new RelationalStoreRdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -1231,7 +1231,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates NotEqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_notEqualTo, static h => new RelationalStoreRdbPredicates(h), field, value);
+        return CallMethod(_notEqualTo, static h => new RelationalStoreRdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -1327,7 +1327,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates Between(string field, global::HarmonyOS.ArkUI.ValueType low, global::HarmonyOS.ArkUI.ValueType high)
     {
-        return CallMethod(_between, static h => new RelationalStoreRdbPredicates(h), field, low, high);
+        return CallMethod(_between, static h => new RelationalStoreRdbPredicates(h), field, (int)low, (int)high);
     }
 
     /// <summary>
@@ -1335,7 +1335,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates NotBetween(string field, global::HarmonyOS.ArkUI.ValueType low, global::HarmonyOS.ArkUI.ValueType high)
     {
-        return CallMethod(_notBetween, static h => new RelationalStoreRdbPredicates(h), field, low, high);
+        return CallMethod(_notBetween, static h => new RelationalStoreRdbPredicates(h), field, (int)low, (int)high);
     }
 
     /// <summary>
@@ -1343,7 +1343,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates GreaterThan(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_greaterThan, static h => new RelationalStoreRdbPredicates(h), field, value);
+        return CallMethod(_greaterThan, static h => new RelationalStoreRdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -1351,7 +1351,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates LessThan(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_lessThan, static h => new RelationalStoreRdbPredicates(h), field, value);
+        return CallMethod(_lessThan, static h => new RelationalStoreRdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -1359,7 +1359,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates GreaterThanOrEqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_greaterThanOrEqualTo, static h => new RelationalStoreRdbPredicates(h), field, value);
+        return CallMethod(_greaterThanOrEqualTo, static h => new RelationalStoreRdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -1367,7 +1367,7 @@ public sealed partial class RelationalStoreRdbPredicates : JsObject
     /// </summary>
     public RelationalStoreRdbPredicates LessThanOrEqualTo(string field, global::HarmonyOS.ArkUI.ValueType value)
     {
-        return CallMethod(_lessThanOrEqualTo, static h => new RelationalStoreRdbPredicates(h), field, value);
+        return CallMethod(_lessThanOrEqualTo, static h => new RelationalStoreRdbPredicates(h), field, (int)value);
     }
 
     /// <summary>
@@ -1572,7 +1572,7 @@ public sealed partial class ReturningConfig : JsObject
     /// <summary>
     /// maxReturningCount
     /// </summary>
-    public double? MaxReturningCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxReturningCount));
+    public double? MaxReturningCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maxReturningCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_maxReturningCount));
 
 }
 
@@ -2067,37 +2067,37 @@ public sealed partial class DistributedConfig : JsObject
     /// <summary>
     /// asyncDownloadAsset
     /// </summary>
-    public bool? AsyncDownloadAsset => (bool?)NativeValue.ToBool(GetPropertyRaw(_asyncDownloadAsset));
+    public bool? AsyncDownloadAsset => NativeValue.IsNullOrUndefined(GetPropertyRaw(_asyncDownloadAsset)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_asyncDownloadAsset));
 
     /// <summary>
     /// enableCloud
     /// </summary>
-    public bool? EnableCloud => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableCloud));
+    public bool? EnableCloud => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enableCloud)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enableCloud));
 
     /// <summary>
     /// tableType
     /// </summary>
-    public global::HarmonyOS.ArkUI.DistributedTableType? TableType => (global::HarmonyOS.ArkUI.DistributedTableType?)(global::HarmonyOS.ArkUI.DistributedTableType)NativeValue.ToInt(GetPropertyRaw(_tableType));
+    public global::HarmonyOS.ArkUI.DistributedTableType? TableType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_tableType)) ? null : (global::HarmonyOS.ArkUI.DistributedTableType?)(global::HarmonyOS.ArkUI.DistributedTableType)NativeValue.ToInt(GetPropertyRaw(_tableType));
 
     /// <summary>
     /// assetConflictPolicy
     /// </summary>
-    public global::HarmonyOS.ArkUI.AssetConflictPolicy? AssetConflictPolicy => (global::HarmonyOS.ArkUI.AssetConflictPolicy?)(global::HarmonyOS.ArkUI.AssetConflictPolicy)NativeValue.ToInt(GetPropertyRaw(_assetConflictPolicy));
+    public global::HarmonyOS.ArkUI.AssetConflictPolicy? AssetConflictPolicy => NativeValue.IsNullOrUndefined(GetPropertyRaw(_assetConflictPolicy)) ? null : (global::HarmonyOS.ArkUI.AssetConflictPolicy?)(global::HarmonyOS.ArkUI.AssetConflictPolicy)NativeValue.ToInt(GetPropertyRaw(_assetConflictPolicy));
 
     /// <summary>
     /// assetTempPath
     /// </summary>
-    public string? AssetTempPath => (string?)NativeValue.ToString(GetPropertyRaw(_assetTempPath)) ?? string.Empty;
+    public string? AssetTempPath => NativeValue.IsNullOrUndefined(GetPropertyRaw(_assetTempPath)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_assetTempPath));
 
     /// <summary>
     /// assetDownloadOnDemand
     /// </summary>
-    public bool? AssetDownloadOnDemand => (bool?)NativeValue.ToBool(GetPropertyRaw(_assetDownloadOnDemand));
+    public bool? AssetDownloadOnDemand => NativeValue.IsNullOrUndefined(GetPropertyRaw(_assetDownloadOnDemand)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_assetDownloadOnDemand));
 
     /// <summary>
     /// autoSyncSwitch
     /// </summary>
-    public bool? AutoSyncSwitch => (bool?)NativeValue.ToBool(GetPropertyRaw(_autoSyncSwitch));
+    public bool? AutoSyncSwitch => NativeValue.IsNullOrUndefined(GetPropertyRaw(_autoSyncSwitch)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_autoSyncSwitch));
 
 }
 
@@ -2146,12 +2146,12 @@ public sealed partial class CloudSyncConfig : JsObject
     /// <summary>
     /// enablePredicate
     /// </summary>
-    public bool? EnablePredicate => (bool?)NativeValue.ToBool(GetPropertyRaw(_enablePredicate));
+    public bool? EnablePredicate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enablePredicate)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enablePredicate));
 
     /// <summary>
     /// predicate
     /// </summary>
-    public RelationalStoreRdbPredicates? Predicate => GetPropertyRaw(_predicate) == IntPtr.Zero ? null : new RelationalStoreRdbPredicates(GetPropertyRaw(_predicate));
+    public RelationalStoreRdbPredicates? Predicate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_predicate)) ? null : new RelationalStoreRdbPredicates(GetPropertyRaw(_predicate));
 
 }
 
@@ -2211,7 +2211,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<double> InsertAsync(string table, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync<double>(_insert, table, values, conflict);
+        return CallMethodAsync<double>(_insert, table, values, NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -2219,7 +2219,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public double InsertSync(string table, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod<double>(_insertSync, table, values, conflict);
+        return CallMethod<double>(_insertSync, table, values, NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -2243,7 +2243,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public double BatchInsertWithConflictResolutionSync(string table, IntPtr[] values, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethod<double>(_batchInsertWithConflictResolutionSync, table, NapiArg.Of(values), conflict);
+        return CallMethod<double>(_batchInsertWithConflictResolutionSync, table, NapiArg.Of(values), (int)conflict);
     }
 
     /// <summary>
@@ -2251,7 +2251,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<double> BatchInsertWithConflictResolutionAsync(string table, IntPtr[] values, global::HarmonyOS.ArkUI.ConflictResolution conflict)
     {
-        return CallMethodAsync<double>(_batchInsertWithConflictResolution, table, NapiArg.Of(values), conflict);
+        return CallMethodAsync<double>(_batchInsertWithConflictResolution, table, NapiArg.Of(values), (int)conflict);
     }
 
     /// <summary>
@@ -2259,7 +2259,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<Result> BatchInsertWithReturningAsync(string table, IntPtr[] values, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync(_batchInsertWithReturning, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), conflict);
+        return CallMethodAsync(_batchInsertWithReturning, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -2267,7 +2267,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Result BatchInsertWithReturningSync(string table, IntPtr[] values, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod(_batchInsertWithReturningSync, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), conflict);
+        return CallMethod(_batchInsertWithReturningSync, static h => new Result(h), table, NapiArg.Of(values), NapiArg.Of(config), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -2275,7 +2275,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<double> UpdateAsync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync<double>(_update, values, NapiArg.Of(predicates), conflict);
+        return CallMethodAsync<double>(_update, values, NapiArg.Of(predicates), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -2283,7 +2283,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public double UpdateSync(IntPtr values, RelationalStoreRdbPredicates predicates, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod<double>(_updateSync, values, NapiArg.Of(predicates), conflict);
+        return CallMethod<double>(_updateSync, values, NapiArg.Of(predicates), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -2291,7 +2291,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Task<Result> UpdateWithReturningAsync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethodAsync(_updateWithReturning, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), conflict);
+        return CallMethodAsync(_updateWithReturning, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -2299,7 +2299,7 @@ public sealed partial class Transaction : JsObject
     /// </summary>
     public Result UpdateWithReturningSync(IntPtr values, RelationalStoreRdbPredicates predicates, ReturningConfig config, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
-        return CallMethod(_updateWithReturningSync, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), conflict);
+        return CallMethod(_updateWithReturningSync, static h => new Result(h), values, NapiArg.Of(predicates), NapiArg.Of(config), NapiArg.Of(conflict));
     }
 
     /// <summary>
@@ -2427,7 +2427,7 @@ public sealed partial class TransactionOptions : JsObject
     /// <summary>
     /// transactionType
     /// </summary>
-    public global::HarmonyOS.ArkUI.TransactionType? TransactionType => (global::HarmonyOS.ArkUI.TransactionType?)(global::HarmonyOS.ArkUI.TransactionType)NativeValue.ToInt(GetPropertyRaw(_transactionType));
+    public global::HarmonyOS.ArkUI.TransactionType? TransactionType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_transactionType)) ? null : (global::HarmonyOS.ArkUI.TransactionType?)(global::HarmonyOS.ArkUI.TransactionType)NativeValue.ToInt(GetPropertyRaw(_transactionType));
 
 }
 
@@ -2452,27 +2452,27 @@ public sealed partial class CryptoParam : JsObject
     /// <summary>
     /// iterationCount
     /// </summary>
-    public double? IterationCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_iterationCount));
+    public double? IterationCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_iterationCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_iterationCount));
 
     /// <summary>
     /// encryptionAlgo
     /// </summary>
-    public global::HarmonyOS.ArkUI.EncryptionAlgo? EncryptionAlgo => (global::HarmonyOS.ArkUI.EncryptionAlgo?)(global::HarmonyOS.ArkUI.EncryptionAlgo)NativeValue.ToInt(GetPropertyRaw(_encryptionAlgo));
+    public global::HarmonyOS.ArkUI.EncryptionAlgo? EncryptionAlgo => NativeValue.IsNullOrUndefined(GetPropertyRaw(_encryptionAlgo)) ? null : (global::HarmonyOS.ArkUI.EncryptionAlgo?)(global::HarmonyOS.ArkUI.EncryptionAlgo)NativeValue.ToInt(GetPropertyRaw(_encryptionAlgo));
 
     /// <summary>
     /// hmacAlgo
     /// </summary>
-    public global::HarmonyOS.ArkUI.HmacAlgo? HmacAlgo => (global::HarmonyOS.ArkUI.HmacAlgo?)(global::HarmonyOS.ArkUI.HmacAlgo)NativeValue.ToInt(GetPropertyRaw(_hmacAlgo));
+    public global::HarmonyOS.ArkUI.HmacAlgo? HmacAlgo => NativeValue.IsNullOrUndefined(GetPropertyRaw(_hmacAlgo)) ? null : (global::HarmonyOS.ArkUI.HmacAlgo?)(global::HarmonyOS.ArkUI.HmacAlgo)NativeValue.ToInt(GetPropertyRaw(_hmacAlgo));
 
     /// <summary>
     /// kdfAlgo
     /// </summary>
-    public global::HarmonyOS.ArkUI.KdfAlgo? KdfAlgo => (global::HarmonyOS.ArkUI.KdfAlgo?)(global::HarmonyOS.ArkUI.KdfAlgo)NativeValue.ToInt(GetPropertyRaw(_kdfAlgo));
+    public global::HarmonyOS.ArkUI.KdfAlgo? KdfAlgo => NativeValue.IsNullOrUndefined(GetPropertyRaw(_kdfAlgo)) ? null : (global::HarmonyOS.ArkUI.KdfAlgo?)(global::HarmonyOS.ArkUI.KdfAlgo)NativeValue.ToInt(GetPropertyRaw(_kdfAlgo));
 
     /// <summary>
     /// cryptoPageSize
     /// </summary>
-    public double? CryptoPageSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_cryptoPageSize));
+    public double? CryptoPageSize => NativeValue.IsNullOrUndefined(GetPropertyRaw(_cryptoPageSize)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_cryptoPageSize));
 
 }
 
@@ -2523,6 +2523,6 @@ public sealed partial class RelationalStoreAsset : JsObject
     /// <summary>
     /// status
     /// </summary>
-    public global::HarmonyOS.ArkUI.DataRelationalStoreAssetStatus? Status => (global::HarmonyOS.ArkUI.DataRelationalStoreAssetStatus?)(global::HarmonyOS.ArkUI.DataRelationalStoreAssetStatus)NativeValue.ToInt(GetPropertyRaw(_status));
+    public global::HarmonyOS.ArkUI.DataRelationalStoreAssetStatus? Status => NativeValue.IsNullOrUndefined(GetPropertyRaw(_status)) ? null : (global::HarmonyOS.ArkUI.DataRelationalStoreAssetStatus?)(global::HarmonyOS.ArkUI.DataRelationalStoreAssetStatus)NativeValue.ToInt(GetPropertyRaw(_status));
 
 }

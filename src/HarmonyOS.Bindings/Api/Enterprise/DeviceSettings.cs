@@ -139,7 +139,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static void SetValueForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsItem item, double accountId, string value)
     {
-        NodeApi.CallMethodVoid(Module, _setValueForAccount, NapiArg.Of(admin), item, accountId, value);
+        NodeApi.CallMethodVoid(Module, _setValueForAccount, NapiArg.Of(admin), (int)item, accountId, value);
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static string GetValueForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsItem item, double accountId)
     {
-        return NodeApi.CallMethod<string>(Module, _getValueForAccount, NapiArg.Of(admin), item, accountId);
+        return NodeApi.CallMethod<string>(Module, _getValueForAccount, NapiArg.Of(admin), (int)item, accountId);
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public static unsafe partial class DeviceSettings
     /// </summary>
     public static void SetSwitchStatus(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SwitchKey key, global::HarmonyOS.ArkUI.SwitchStatus status)
     {
-        NodeApi.CallMethodVoid(Module, _setSwitchStatus, NapiArg.Of(admin), key, status);
+        NodeApi.CallMethodVoid(Module, _setSwitchStatus, NapiArg.Of(admin), (int)key, (int)status);
     }
 
 }

@@ -387,7 +387,7 @@ public static unsafe partial class ApplicationManager
     /// </summary>
     public static void AddAllowedDistributeAbilityConnBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.EnterpriseApplicationManagerServiceType serviceType, double accountId)
     {
-        NodeApi.CallMethodVoid(Module, _addAllowedDistributeAbilityConnBundles, NapiArg.Of(admin), NapiArg.Of(appIdentifiers), serviceType, accountId);
+        NodeApi.CallMethodVoid(Module, _addAllowedDistributeAbilityConnBundles, NapiArg.Of(admin), NapiArg.Of(appIdentifiers), (int)serviceType, accountId);
     }
 
     /// <summary>
@@ -395,7 +395,7 @@ public static unsafe partial class ApplicationManager
     /// </summary>
     public static void RemoveAllowedDistributeAbilityConnBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.EnterpriseApplicationManagerServiceType serviceType, double accountId)
     {
-        NodeApi.CallMethodVoid(Module, _removeAllowedDistributeAbilityConnBundles, NapiArg.Of(admin), NapiArg.Of(appIdentifiers), serviceType, accountId);
+        NodeApi.CallMethodVoid(Module, _removeAllowedDistributeAbilityConnBundles, NapiArg.Of(admin), NapiArg.Of(appIdentifiers), (int)serviceType, accountId);
     }
 
     /// <summary>
@@ -403,7 +403,7 @@ public static unsafe partial class ApplicationManager
     /// </summary>
     public static string[] GetAllowedDistributeAbilityConnBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.EnterpriseApplicationManagerServiceType serviceType, double accountId)
     {
-        return NodeApi.CallMethod(Module, _getAllowedDistributeAbilityConnBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), serviceType, accountId);
+        return NodeApi.CallMethod(Module, _getAllowedDistributeAbilityConnBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), (int)serviceType, accountId);
     }
 
     /// <summary>

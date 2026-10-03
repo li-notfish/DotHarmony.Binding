@@ -173,7 +173,7 @@ public sealed partial class AtManager : JsObject
     /// </summary>
     public Task<bool> RequestGlobalSwitchAsync(IntPtr context, global::HarmonyOS.ArkUI.SwitchType type)
     {
-        return CallMethodAsync<bool>(_requestGlobalSwitch, context, type);
+        return CallMethodAsync<bool>(_requestGlobalSwitch, context, (int)type);
     }
 
     /// <summary>

@@ -317,7 +317,7 @@ public sealed partial class BundleInfo : JsObject
     /// <summary>
     /// firstInstallTime
     /// </summary>
-    public double? FirstInstallTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_firstInstallTime));
+    public double? FirstInstallTime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_firstInstallTime)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_firstInstallTime));
 
 }
 
@@ -542,7 +542,7 @@ public sealed partial class SignatureInfo : JsObject
     /// <summary>
     /// certificate
     /// </summary>
-    public string? Certificate => (string?)NativeValue.ToString(GetPropertyRaw(_certificate)) ?? string.Empty;
+    public string? Certificate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_certificate)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_certificate));
 
 }
 

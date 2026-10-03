@@ -139,7 +139,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public IntPtr GetSupportedOutputCapability(IntPtr camera, global::HarmonyOS.ArkUI.SceneMode mode)
     {
-        return CallMethod<IntPtr>(_getSupportedOutputCapability, camera, mode);
+        return CallMethod<IntPtr>(_getSupportedOutputCapability, camera, (int)mode);
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public IntPtr GetSupportedFullOutputCapability(IntPtr camera, global::HarmonyOS.ArkUI.SceneMode mode)
     {
-        return CallMethod<IntPtr>(_getSupportedFullOutputCapability, camera, mode);
+        return CallMethod<IntPtr>(_getSupportedFullOutputCapability, camera, (int)mode);
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public CameraInput CreateCameraInput(global::HarmonyOS.ArkUI.CameraPosition position, global::HarmonyOS.ArkUI.CameraType type)
     {
-        return CallMethod(_createCameraInput, static h => new CameraInput(h), position, type);
+        return CallMethod(_createCameraInput, static h => new CameraInput(h), (int)position, (int)type);
     }
 
     /// <summary>
@@ -243,7 +243,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public IntPtr CreateSession(global::HarmonyOS.ArkUI.SceneMode mode)
     {
-        return CallMethod<IntPtr>(_createSession, mode);
+        return CallMethod<IntPtr>(_createSession, (int)mode);
     }
 
     /// <summary>
@@ -283,7 +283,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public bool IsTorchModeSupported(global::HarmonyOS.ArkUI.TorchMode mode)
     {
-        return CallMethod<bool>(_isTorchModeSupported, mode);
+        return CallMethod<bool>(_isTorchModeSupported, (int)mode);
     }
 
     /// <summary>
@@ -299,7 +299,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public void SetTorchMode(global::HarmonyOS.ArkUI.TorchMode mode)
     {
-        CallMethodVoid(_setTorchMode, mode);
+        CallMethodVoid(_setTorchMode, (int)mode);
     }
 
     /// <summary>
@@ -323,7 +323,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public IntPtr GetCameraDevice(global::HarmonyOS.ArkUI.CameraPosition position, global::HarmonyOS.ArkUI.CameraType type)
     {
-        return CallMethod<IntPtr>(_getCameraDevice, position, type);
+        return CallMethod<IntPtr>(_getCameraDevice, (int)position, (int)type);
     }
 
     /// <summary>
@@ -339,7 +339,7 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public IntPtr[] GetCameraDevices(global::HarmonyOS.ArkUI.CameraPosition position, global::HarmonyOS.ArkUI.CameraType[] types, global::HarmonyOS.ArkUI.ConnectionType connectType)
     {
-        return CallMethod(_getCameraDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), position, NapiArg.Of(types), connectType);
+        return CallMethod(_getCameraDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), (int)position, NapiArg.Of(types), (int)connectType);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -677,7 +677,7 @@ public sealed partial class MetadataObject : JsObject
     /// <summary>
     /// isLockFocusTracked
     /// </summary>
-    public bool? IsLockFocusTracked => (bool?)NativeValue.ToBool(GetPropertyRaw(_isLockFocusTracked));
+    public bool? IsLockFocusTracked => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isLockFocusTracked)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isLockFocusTracked));
 
 }
 
@@ -780,7 +780,7 @@ public sealed partial class CameraInput : JsObject
     /// </summary>
     public Task OpenAsync(global::HarmonyOS.ArkUI.CameraConcurrentType type)
     {
-        return CallMethodAsyncVoid(_open, type);
+        return CallMethodAsyncVoid(_open, (int)type);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -965,7 +965,7 @@ public sealed partial class PreviewOutput : JsObject
     /// </summary>
     public void SetPreviewRotation(global::HarmonyOS.ArkUI.ImageRotation previewRotation, bool? isDisplayLocked = null)
     {
-        CallMethodVoid(_setPreviewRotation, previewRotation, NapiArg.Of(isDisplayLocked));
+        CallMethodVoid(_setPreviewRotation, (int)previewRotation, NapiArg.Of(isDisplayLocked));
     }
 
     /// <summary>
@@ -1180,7 +1180,7 @@ public sealed partial class PhotoOutput : JsObject
     /// </summary>
     public void SetMovingPhotoVideoCodecType(global::HarmonyOS.ArkUI.VideoCodecType codecType)
     {
-        CallMethodVoid(_setMovingPhotoVideoCodecType, codecType);
+        CallMethodVoid(_setMovingPhotoVideoCodecType, (int)codecType);
     }
 
     /// <summary>
@@ -1260,7 +1260,7 @@ public sealed partial class PhotoOutput : JsObject
     /// </summary>
     public bool IsPhotoQualityPrioritizationSupported(global::HarmonyOS.ArkUI.PhotoQualityPrioritization qualityPrioritization)
     {
-        return CallMethod<bool>(_isPhotoQualityPrioritizationSupported, qualityPrioritization);
+        return CallMethod<bool>(_isPhotoQualityPrioritizationSupported, (int)qualityPrioritization);
     }
 
     /// <summary>
@@ -1268,7 +1268,7 @@ public sealed partial class PhotoOutput : JsObject
     /// </summary>
     public void SetPhotoQualityPrioritization(global::HarmonyOS.ArkUI.PhotoQualityPrioritization qualityPrioritization)
     {
-        CallMethodVoid(_setPhotoQualityPrioritization, qualityPrioritization);
+        CallMethodVoid(_setPhotoQualityPrioritization, (int)qualityPrioritization);
     }
 
     /// <summary>
@@ -2150,7 +2150,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public bool IsFlashModeSupported(global::HarmonyOS.ArkUI.FlashMode flashMode)
     {
-        return CallMethod<bool>(_isFlashModeSupported, flashMode);
+        return CallMethod<bool>(_isFlashModeSupported, (int)flashMode);
     }
 
     /// <summary>
@@ -2166,7 +2166,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public void SetFlashMode(global::HarmonyOS.ArkUI.FlashMode flashMode)
     {
-        CallMethodVoid(_setFlashMode, flashMode);
+        CallMethodVoid(_setFlashMode, (int)flashMode);
     }
 
     /// <summary>
@@ -2174,7 +2174,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public bool IsExposureModeSupported(global::HarmonyOS.ArkUI.ExposureMode aeMode)
     {
-        return CallMethod<bool>(_isExposureModeSupported, aeMode);
+        return CallMethod<bool>(_isExposureModeSupported, (int)aeMode);
     }
 
     /// <summary>
@@ -2190,7 +2190,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public void SetExposureMode(global::HarmonyOS.ArkUI.ExposureMode aeMode)
     {
-        CallMethodVoid(_setExposureMode, aeMode);
+        CallMethodVoid(_setExposureMode, (int)aeMode);
     }
 
     /// <summary>
@@ -2238,7 +2238,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public bool IsFocusModeSupported(global::HarmonyOS.ArkUI.FocusMode afMode)
     {
-        return CallMethod<bool>(_isFocusModeSupported, afMode);
+        return CallMethod<bool>(_isFocusModeSupported, (int)afMode);
     }
 
     /// <summary>
@@ -2254,7 +2254,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public void SetFocusMode(global::HarmonyOS.ArkUI.FocusMode afMode)
     {
-        CallMethodVoid(_setFocusMode, afMode);
+        CallMethodVoid(_setFocusMode, (int)afMode);
     }
 
     /// <summary>
@@ -2310,7 +2310,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public bool IsVideoStabilizationModeSupported(global::HarmonyOS.ArkUI.VideoStabilizationMode vsMode)
     {
-        return CallMethod<bool>(_isVideoStabilizationModeSupported, vsMode);
+        return CallMethod<bool>(_isVideoStabilizationModeSupported, (int)vsMode);
     }
 
     /// <summary>
@@ -2326,7 +2326,7 @@ public sealed partial class CaptureSession : JsObject
     /// </summary>
     public void SetVideoStabilizationMode(global::HarmonyOS.ArkUI.VideoStabilizationMode mode)
     {
-        CallMethodVoid(_setVideoStabilizationMode, mode);
+        CallMethodVoid(_setVideoStabilizationMode, (int)mode);
     }
 
     /// <summary>
@@ -2517,27 +2517,27 @@ public sealed partial class PhotoCaptureSetting : JsObject
     /// <summary>
     /// quality
     /// </summary>
-    public global::HarmonyOS.ArkUI.QualityLevel? Quality => (global::HarmonyOS.ArkUI.QualityLevel?)(global::HarmonyOS.ArkUI.QualityLevel)NativeValue.ToInt(GetPropertyRaw(_quality));
+    public global::HarmonyOS.ArkUI.QualityLevel? Quality => NativeValue.IsNullOrUndefined(GetPropertyRaw(_quality)) ? null : (global::HarmonyOS.ArkUI.QualityLevel?)(global::HarmonyOS.ArkUI.QualityLevel)NativeValue.ToInt(GetPropertyRaw(_quality));
 
     /// <summary>
     /// rotation
     /// </summary>
-    public global::HarmonyOS.ArkUI.ImageRotation? Rotation => (global::HarmonyOS.ArkUI.ImageRotation?)(global::HarmonyOS.ArkUI.ImageRotation)NativeValue.ToInt(GetPropertyRaw(_rotation));
+    public global::HarmonyOS.ArkUI.ImageRotation? Rotation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_rotation)) ? null : (global::HarmonyOS.ArkUI.ImageRotation?)(global::HarmonyOS.ArkUI.ImageRotation)NativeValue.ToInt(GetPropertyRaw(_rotation));
 
     /// <summary>
     /// location
     /// </summary>
-    public CameraLocation? Location => GetPropertyRaw(_location) == IntPtr.Zero ? null : new CameraLocation(GetPropertyRaw(_location));
+    public CameraLocation? Location => NativeValue.IsNullOrUndefined(GetPropertyRaw(_location)) ? null : new CameraLocation(GetPropertyRaw(_location));
 
     /// <summary>
     /// mirror
     /// </summary>
-    public bool? Mirror => (bool?)NativeValue.ToBool(GetPropertyRaw(_mirror));
+    public bool? Mirror => NativeValue.IsNullOrUndefined(GetPropertyRaw(_mirror)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_mirror));
 
     /// <summary>
     /// compressionQuality
     /// </summary>
-    public double? CompressionQuality => (double?)NativeValue.ToDouble(GetPropertyRaw(_compressionQuality));
+    public double? CompressionQuality => NativeValue.IsNullOrUndefined(GetPropertyRaw(_compressionQuality)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_compressionQuality));
 
 }
 

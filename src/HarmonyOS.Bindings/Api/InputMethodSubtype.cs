@@ -88,12 +88,12 @@ public sealed partial class InputMethodSubtypeObject : JsObject
     /// <summary>
     /// label
     /// </summary>
-    public string? Label => (string?)NativeValue.ToString(GetPropertyRaw(_label)) ?? string.Empty;
+    public string? Label => NativeValue.IsNullOrUndefined(GetPropertyRaw(_label)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_label));
 
     /// <summary>
     /// labelId
     /// </summary>
-    public double? LabelId => (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
+    public double? LabelId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_labelId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_labelId));
 
     /// <summary>
     /// name
@@ -108,7 +108,7 @@ public sealed partial class InputMethodSubtypeObject : JsObject
     /// <summary>
     /// mode
     /// </summary>
-    public string? Mode => (string?)NativeValue.ToString(GetPropertyRaw(_mode)) ?? string.Empty;
+    public string? Mode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_mode)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_mode));
 
     /// <summary>
     /// locale
@@ -123,12 +123,12 @@ public sealed partial class InputMethodSubtypeObject : JsObject
     /// <summary>
     /// icon
     /// </summary>
-    public string? Icon => (string?)NativeValue.ToString(GetPropertyRaw(_icon)) ?? string.Empty;
+    public string? Icon => NativeValue.IsNullOrUndefined(GetPropertyRaw(_icon)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_icon));
 
     /// <summary>
     /// iconId
     /// </summary>
-    public double? IconId => (double?)NativeValue.ToDouble(GetPropertyRaw(_iconId));
+    public double? IconId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_iconId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_iconId));
 
     /// <summary>
     /// extra

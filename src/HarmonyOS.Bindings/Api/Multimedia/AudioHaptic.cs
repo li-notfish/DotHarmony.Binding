@@ -113,7 +113,7 @@ public sealed partial class AudioHapticManager : JsObject
     /// </summary>
     public void SetAudioLatencyMode(double id, global::HarmonyOS.ArkUI.AudioLatencyMode latencyMode)
     {
-        CallMethodVoid(_setAudioLatencyMode, id, latencyMode);
+        CallMethodVoid(_setAudioLatencyMode, id, (int)latencyMode);
     }
 
     /// <summary>
@@ -162,7 +162,7 @@ public sealed partial class AudioHapticPlayer : JsObject
     /// </summary>
     public bool IsMuted(global::HarmonyOS.ArkUI.AudioHapticType type)
     {
-        return CallMethod<bool>(_isMuted, type);
+        return CallMethod<bool>(_isMuted, (int)type);
     }
 
     /// <summary>
@@ -315,12 +315,12 @@ public sealed partial class AudioHapticPlayerOptions : JsObject
     /// <summary>
     /// muteAudio
     /// </summary>
-    public bool? MuteAudio => (bool?)NativeValue.ToBool(GetPropertyRaw(_muteAudio));
+    public bool? MuteAudio => NativeValue.IsNullOrUndefined(GetPropertyRaw(_muteAudio)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_muteAudio));
 
     /// <summary>
     /// muteHaptics
     /// </summary>
-    public bool? MuteHaptics => (bool?)NativeValue.ToBool(GetPropertyRaw(_muteHaptics));
+    public bool? MuteHaptics => NativeValue.IsNullOrUndefined(GetPropertyRaw(_muteHaptics)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_muteHaptics));
 
 }
 
@@ -342,11 +342,11 @@ public sealed partial class AudioHapticFileDescriptor : JsObject
     /// <summary>
     /// length
     /// </summary>
-    public double? Length => (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
+    public double? Length => NativeValue.IsNullOrUndefined(GetPropertyRaw(_length)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_length));
 
     /// <summary>
     /// offset
     /// </summary>
-    public double? Offset => (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
+    public double? Offset => NativeValue.IsNullOrUndefined(GetPropertyRaw(_offset)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_offset));
 
 }

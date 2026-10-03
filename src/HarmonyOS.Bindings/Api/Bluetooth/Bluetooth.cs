@@ -175,7 +175,7 @@ public static unsafe partial class Bluetooth
     /// </summary>
     public static global::HarmonyOS.ArkUI.BluetoothBluetoothProfileConnectionState GetProfileConnState(global::HarmonyOS.ArkUI.BluetoothBluetoothProfileId profileId)
     {
-        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothBluetoothProfileConnectionState>(Module, _getProfileConnState, profileId);
+        return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothBluetoothProfileConnectionState>(Module, _getProfileConnState, (int)profileId);
     }
 
     /// <summary>
@@ -199,7 +199,7 @@ public static unsafe partial class Bluetooth
     /// </summary>
     public static bool SetBluetoothScanMode(global::HarmonyOS.ArkUI.BluetoothBluetoothScanMode mode, double duration)
     {
-        return NodeApi.CallMethod<bool>(Module, _setBluetoothScanMode, mode, duration);
+        return NodeApi.CallMethod<bool>(Module, _setBluetoothScanMode, (int)mode, duration);
     }
 
     /// <summary>
@@ -287,7 +287,7 @@ public static unsafe partial class Bluetooth
     /// </summary>
     public static bool SppWrite(double clientSocket, byte[] data)
     {
-        return NodeApi.CallMethod<bool>(Module, _sppWrite, clientSocket, NapiArg.Of(data));
+        return NodeApi.CallMethod<bool>(Module, _sppWrite, clientSocket, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>
@@ -311,7 +311,7 @@ public static unsafe partial class Bluetooth
     /// </summary>
     public static BluetoothA2dpSourceProfile GetProfile(global::HarmonyOS.ArkUI.BluetoothBluetoothProfileId profileId)
     {
-        return NodeApi.CallMethod(Module, _getProfile, static h => new BluetoothA2dpSourceProfile(h), profileId);
+        return NodeApi.CallMethod(Module, _getProfile, static h => new BluetoothA2dpSourceProfile(h), (int)profileId);
     }
 
     /// <summary>
@@ -1616,17 +1616,17 @@ public sealed partial class BluetoothAdvertiseSetting : JsObject
     /// <summary>
     /// interval
     /// </summary>
-    public double? Interval => (double?)NativeValue.ToDouble(GetPropertyRaw(_interval));
+    public double? Interval => NativeValue.IsNullOrUndefined(GetPropertyRaw(_interval)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_interval));
 
     /// <summary>
     /// txPower
     /// </summary>
-    public double? TxPower => (double?)NativeValue.ToDouble(GetPropertyRaw(_txPower));
+    public double? TxPower => NativeValue.IsNullOrUndefined(GetPropertyRaw(_txPower)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_txPower));
 
     /// <summary>
     /// connectable
     /// </summary>
-    public bool? Connectable => (bool?)NativeValue.ToBool(GetPropertyRaw(_connectable));
+    public bool? Connectable => NativeValue.IsNullOrUndefined(GetPropertyRaw(_connectable)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_connectable));
 
 }
 

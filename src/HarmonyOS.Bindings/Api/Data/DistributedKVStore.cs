@@ -512,27 +512,27 @@ public sealed partial class DistributedKVStoreOptions : JsObject
     /// <summary>
     /// createIfMissing
     /// </summary>
-    public bool? CreateIfMissing => (bool?)NativeValue.ToBool(GetPropertyRaw(_createIfMissing));
+    public bool? CreateIfMissing => NativeValue.IsNullOrUndefined(GetPropertyRaw(_createIfMissing)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_createIfMissing));
 
     /// <summary>
     /// encrypt
     /// </summary>
-    public bool? Encrypt => (bool?)NativeValue.ToBool(GetPropertyRaw(_encrypt));
+    public bool? Encrypt => NativeValue.IsNullOrUndefined(GetPropertyRaw(_encrypt)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_encrypt));
 
     /// <summary>
     /// backup
     /// </summary>
-    public bool? Backup => (bool?)NativeValue.ToBool(GetPropertyRaw(_backup));
+    public bool? Backup => NativeValue.IsNullOrUndefined(GetPropertyRaw(_backup)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_backup));
 
     /// <summary>
     /// autoSync
     /// </summary>
-    public bool? AutoSync => (bool?)NativeValue.ToBool(GetPropertyRaw(_autoSync));
+    public bool? AutoSync => NativeValue.IsNullOrUndefined(GetPropertyRaw(_autoSync)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_autoSync));
 
     /// <summary>
     /// kvStoreType
     /// </summary>
-    public global::HarmonyOS.ArkUI.DataDistributedKVStoreKVStoreType? KvStoreType => (global::HarmonyOS.ArkUI.DataDistributedKVStoreKVStoreType?)(global::HarmonyOS.ArkUI.DataDistributedKVStoreKVStoreType)NativeValue.ToInt(GetPropertyRaw(_kvStoreType));
+    public global::HarmonyOS.ArkUI.DataDistributedKVStoreKVStoreType? KvStoreType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_kvStoreType)) ? null : (global::HarmonyOS.ArkUI.DataDistributedKVStoreKVStoreType?)(global::HarmonyOS.ArkUI.DataDistributedKVStoreKVStoreType)NativeValue.ToInt(GetPropertyRaw(_kvStoreType));
 
     /// <summary>
     /// securityLevel
@@ -542,11 +542,11 @@ public sealed partial class DistributedKVStoreOptions : JsObject
     /// <summary>
     /// schema
     /// </summary>
-    public DistributedKVStoreSchema? Schema => GetPropertyRaw(_schema) == IntPtr.Zero ? null : new DistributedKVStoreSchema(GetPropertyRaw(_schema));
+    public DistributedKVStoreSchema? Schema => NativeValue.IsNullOrUndefined(GetPropertyRaw(_schema)) ? null : new DistributedKVStoreSchema(GetPropertyRaw(_schema));
 
     /// <summary>
     /// rootDir
     /// </summary>
-    public string? RootDir => (string?)NativeValue.ToString(GetPropertyRaw(_rootDir)) ?? string.Empty;
+    public string? RootDir => NativeValue.IsNullOrUndefined(GetPropertyRaw(_rootDir)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_rootDir));
 
 }

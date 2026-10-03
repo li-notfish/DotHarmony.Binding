@@ -560,7 +560,7 @@ public sealed partial class EventInfo : JsObject
     private static ReadOnlySpan<byte> _EventInfo => "EventInfo"u8;
 
     public EventInfo(IntPtr type, string bundleName, global::HarmonyOS.ArkUI.Action triggerAction)
-        : this(NodeApi.CreateInstance(Accessibility.Module, _EventInfo, type, bundleName, triggerAction)) { }
+        : this(NodeApi.CreateInstance(Accessibility.Module, _EventInfo, type, bundleName, (int)triggerAction)) { }
     private static ReadOnlySpan<byte> _type => "type"u8;
     private static ReadOnlySpan<byte> _windowUpdateType => "windowUpdateType"u8;
     private static ReadOnlySpan<byte> _bundleName => "bundleName"u8;
@@ -597,17 +597,17 @@ public sealed partial class EventInfo : JsObject
     /// <summary>
     /// componentType
     /// </summary>
-    public string? ComponentType => (string?)NativeValue.ToString(GetPropertyRaw(_componentType)) ?? string.Empty;
+    public string? ComponentType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_componentType)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_componentType));
 
     /// <summary>
     /// pageId
     /// </summary>
-    public double? PageId => (double?)NativeValue.ToDouble(GetPropertyRaw(_pageId));
+    public double? PageId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_pageId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_pageId));
 
     /// <summary>
     /// description
     /// </summary>
-    public string? Description => (string?)NativeValue.ToString(GetPropertyRaw(_description)) ?? string.Empty;
+    public string? Description => NativeValue.IsNullOrUndefined(GetPropertyRaw(_description)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_description));
 
     /// <summary>
     /// triggerAction
@@ -622,42 +622,42 @@ public sealed partial class EventInfo : JsObject
     /// <summary>
     /// contents
     /// </summary>
-    public string[] Contents => ValueConverter.ConvertArray(GetPropertyRaw(_contents), static e => ValueConverter.Convert<string>(e));
+    public string[]? Contents => NativeValue.IsNullOrUndefined(GetPropertyRaw(_contents)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_contents), static e => ValueConverter.Convert<string>(e));
 
     /// <summary>
     /// lastContent
     /// </summary>
-    public string? LastContent => (string?)NativeValue.ToString(GetPropertyRaw(_lastContent)) ?? string.Empty;
+    public string? LastContent => NativeValue.IsNullOrUndefined(GetPropertyRaw(_lastContent)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_lastContent));
 
     /// <summary>
     /// beginIndex
     /// </summary>
-    public double? BeginIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_beginIndex));
+    public double? BeginIndex => NativeValue.IsNullOrUndefined(GetPropertyRaw(_beginIndex)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_beginIndex));
 
     /// <summary>
     /// currentIndex
     /// </summary>
-    public double? CurrentIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_currentIndex));
+    public double? CurrentIndex => NativeValue.IsNullOrUndefined(GetPropertyRaw(_currentIndex)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_currentIndex));
 
     /// <summary>
     /// endIndex
     /// </summary>
-    public double? EndIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_endIndex));
+    public double? EndIndex => NativeValue.IsNullOrUndefined(GetPropertyRaw(_endIndex)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_endIndex));
 
     /// <summary>
     /// itemCount
     /// </summary>
-    public double? ItemCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_itemCount));
+    public double? ItemCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_itemCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_itemCount));
 
     /// <summary>
     /// elementId
     /// </summary>
-    public double? ElementId => (double?)NativeValue.ToDouble(GetPropertyRaw(_elementId));
+    public double? ElementId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_elementId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_elementId));
 
     /// <summary>
     /// textAnnouncedForAccessibility
     /// </summary>
-    public string? TextAnnouncedForAccessibility => (string?)NativeValue.ToString(GetPropertyRaw(_textAnnouncedForAccessibility)) ?? string.Empty;
+    public string? TextAnnouncedForAccessibility => NativeValue.IsNullOrUndefined(GetPropertyRaw(_textAnnouncedForAccessibility)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_textAnnouncedForAccessibility));
 
     /// <summary>
     /// textResourceAnnouncedForAccessibility
@@ -667,7 +667,7 @@ public sealed partial class EventInfo : JsObject
     /// <summary>
     /// customId
     /// </summary>
-    public string? CustomId => (string?)NativeValue.ToString(GetPropertyRaw(_customId)) ?? string.Empty;
+    public string? CustomId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_customId)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_customId));
 
 }
 

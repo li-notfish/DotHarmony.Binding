@@ -2322,7 +2322,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public void AnimateTo(IntPtr value, global::HarmonyOS.ArkUI.Action @event)
     {
-        CallMethodVoid(_animateTo, value, @event);
+        CallMethodVoid(_animateTo, value, (int)@event);
     }
 
     /// <summary>
@@ -2386,7 +2386,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public void RunScopedTask(global::HarmonyOS.ArkUI.Action callback)
     {
-        CallMethodVoid(_runScopedTask, callback);
+        CallMethodVoid(_runScopedTask, (int)callback);
     }
 
     /// <summary>
@@ -2394,7 +2394,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public void SetKeyboardAvoidMode(global::HarmonyOS.ArkUI.KeyboardAvoidMode value)
     {
-        CallMethodVoid(_setKeyboardAvoidMode, value);
+        CallMethodVoid(_setKeyboardAvoidMode, (int)value);
     }
 
     /// <summary>
@@ -2802,7 +2802,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public void SetCustomKeyboardContinueFeature(global::HarmonyOS.ArkUI.CustomKeyboardContinueFeature feature)
     {
-        CallMethodVoid(_setCustomKeyboardContinueFeature, feature);
+        CallMethodVoid(_setCustomKeyboardContinueFeature, (int)feature);
     }
 
     /// <summary>
@@ -2834,7 +2834,7 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public void SetTextSelectionClearPolicy(global::HarmonyOS.ArkUI.TextSelectionClearPolicy policy)
     {
-        CallMethodVoid(_setTextSelectionClearPolicy, policy);
+        CallMethodVoid(_setTextSelectionClearPolicy, (int)policy);
     }
 
     /// <summary>
@@ -3029,7 +3029,7 @@ public sealed partial class ScrollActionProposal : JsObject
     /// <summary>
     /// distance
     /// </summary>
-    public double? Distance => (double?)NativeValue.ToDouble(GetPropertyRaw(_distance));
+    public double? Distance => NativeValue.IsNullOrUndefined(GetPropertyRaw(_distance)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_distance));
 
 }
 
@@ -3055,7 +3055,7 @@ public sealed partial class GestureHandlingResolution : JsObject
     /// <summary>
     /// selectedProposal
     /// </summary>
-    public BaseGestureHandlingProposal? SelectedProposal => GetPropertyRaw(_selectedProposal) == IntPtr.Zero ? null : new BaseGestureHandlingProposal(GetPropertyRaw(_selectedProposal));
+    public BaseGestureHandlingProposal? SelectedProposal => NativeValue.IsNullOrUndefined(GetPropertyRaw(_selectedProposal)) ? null : new BaseGestureHandlingProposal(GetPropertyRaw(_selectedProposal));
 
 }
 
@@ -3323,7 +3323,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public void AnimateTo(IntPtr value, global::HarmonyOS.ArkUI.Action @event)
     {
-        CallMethodVoid(_animateTo, value, @event);
+        CallMethodVoid(_animateTo, value, (int)@event);
     }
 
     /// <summary>
@@ -3387,7 +3387,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public void RunScopedTask(global::HarmonyOS.ArkUI.Action callback)
     {
-        CallMethodVoid(_runScopedTask, callback);
+        CallMethodVoid(_runScopedTask, (int)callback);
     }
 
     /// <summary>
@@ -3395,7 +3395,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public void SetKeyboardAvoidMode(global::HarmonyOS.ArkUI.KeyboardAvoidMode value)
     {
-        CallMethodVoid(_setKeyboardAvoidMode, value);
+        CallMethodVoid(_setKeyboardAvoidMode, (int)value);
     }
 
     /// <summary>
@@ -3803,7 +3803,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public void SetCustomKeyboardContinueFeature(global::HarmonyOS.ArkUI.CustomKeyboardContinueFeature feature)
     {
-        CallMethodVoid(_setCustomKeyboardContinueFeature, feature);
+        CallMethodVoid(_setCustomKeyboardContinueFeature, (int)feature);
     }
 
     /// <summary>
@@ -3835,7 +3835,7 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public void SetTextSelectionClearPolicy(global::HarmonyOS.ArkUI.TextSelectionClearPolicy policy)
     {
-        CallMethodVoid(_setTextSelectionClearPolicy, policy);
+        CallMethodVoid(_setTextSelectionClearPolicy, (int)policy);
     }
 
     /// <summary>
@@ -4344,7 +4344,7 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void AddGlobalGestureListener(global::HarmonyOS.ArkUI.GestureListenerType type, GestureObserverConfigs option, IntPtr callback)
     {
-        CallMethodVoid(_addGlobalGestureListener, type, NapiArg.Of(option), callback);
+        CallMethodVoid(_addGlobalGestureListener, (int)type, NapiArg.Of(option), callback);
     }
 
     /// <summary>
@@ -4352,7 +4352,7 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void RemoveGlobalGestureListener(global::HarmonyOS.ArkUI.GestureListenerType type, IntPtr? callback = null)
     {
-        CallMethodVoid(_removeGlobalGestureListener, type, NapiArg.Of(callback));
+        CallMethodVoid(_removeGlobalGestureListener, (int)type, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -5601,7 +5601,7 @@ public sealed partial class TargetInfo : JsObject
     /// <summary>
     /// componentId
     /// </summary>
-    public double? ComponentId => (double?)NativeValue.ToDouble(GetPropertyRaw(_componentId));
+    public double? ComponentId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_componentId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_componentId));
 
 }
 

@@ -168,7 +168,7 @@ public static unsafe partial class Socket
     /// </summary>
     public static void SppWrite(double clientSocket, byte[] data)
     {
-        NodeApi.CallMethodVoid(Module, _sppWrite, clientSocket, NapiArg.Of(data));
+        NodeApi.CallMethodVoid(Module, _sppWrite, clientSocket, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public static unsafe partial class Socket
     /// </summary>
     public static Task SppWriteAsync(double clientSocket, byte[] data)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sppWriteAsync, clientSocket, NapiArg.Of(data));
+        return NodeApi.CallMethodAsyncVoid(Module, _sppWriteAsync, clientSocket, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>

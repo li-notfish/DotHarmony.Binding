@@ -251,6 +251,6 @@ public sealed partial class DataProxyConfig : JsObject
     /// <summary>
     /// maxValueLength
     /// </summary>
-    public global::HarmonyOS.ArkUI.DataProxyMaxValueLength? MaxValueLength => (global::HarmonyOS.ArkUI.DataProxyMaxValueLength?)(global::HarmonyOS.ArkUI.DataProxyMaxValueLength)NativeValue.ToInt(GetPropertyRaw(_maxValueLength));
+    public global::HarmonyOS.ArkUI.DataProxyMaxValueLength? MaxValueLength => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maxValueLength)) ? null : (global::HarmonyOS.ArkUI.DataProxyMaxValueLength?)(global::HarmonyOS.ArkUI.DataProxyMaxValueLength)NativeValue.ToInt(GetPropertyRaw(_maxValueLength));
 
 }

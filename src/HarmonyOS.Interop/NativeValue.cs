@@ -97,8 +97,7 @@ internal static class NativeValue
     public static IntPtr From(Enum? value) => value == null ? IntPtr.Zero : From(Convert.ToInt32(value));
 
     /// <summary>
-    /// 将字节数组封送为新的 JS Uint8Array（拷贝语义）。asset 等 BYTES 参数要求 Uint8Array
-    /// （而非 From(byte[]) 的 ArrayBuffer），两者并存。
+    /// 将字节数组封送为新的 JS Uint8Array（拷贝语义）。这是 byte[] 的默认封送形态。
     /// </summary>
     public static IntPtr FromUint8Array(byte[] value)
     {
@@ -145,10 +144,8 @@ internal static class NativeValue
         return map;
     }
 
-    /// <summary>
-    /// 将字节数组封送为新的 JS ArrayBuffer（拷贝语义：后续修改 C# 数组不影响 JS 侧）
-    /// </summary>
-    public static IntPtr From(byte[] value)
+    /// <summary>将字节数组封送为新的 JS ArrayBuffer（拷贝语义：后续修改 C# 数组不影响 JS 侧）。</summary>
+    public static IntPtr FromArrayBuffer(byte[]? value)
     {
         if (value == null) return IntPtr.Zero;
         var env = NapiEnv.Current;
@@ -200,10 +197,13 @@ internal static class NativeValue
     {
         NapiArg.Tag.Null => IntPtr.Zero,
         NapiArg.Tag.Number => From(arg.Number),
-        NapiArg.Tag.Int => From(arg.Integer),
+        NapiArg.Tag.Int32 => From((int)arg.Integer),
+        NapiArg.Tag.UInt32 => From((uint)arg.Integer),
+        NapiArg.Tag.Int64 => From(arg.Integer),
         NapiArg.Tag.UInt64 => From(unchecked((ulong)arg.Integer)),
         NapiArg.Tag.Bool => From(arg.Integer != 0),
         NapiArg.Tag.Native => (IntPtr)arg.Integer,
+        NapiArg.Tag.ArrayBuffer => FromArrayBuffer((byte[]?)arg.RefValue),
         _ => From(arg.RefValue),
     };
 
@@ -224,7 +224,7 @@ internal static class NativeValue
         IntPtr p => From(p),
         Enum e => From(e),
         JsBigInt bi => From(bi),
-        byte[] buf => From(buf),
+        byte[] buf => FromUint8Array(buf),
         string[] strs => From(strs),
         JsObject j => From(j),
         _ => FromRecord(value)
@@ -368,6 +368,14 @@ internal static class NativeValue
         var buf = new byte[length32 + 1];
         NativeNodeApi.napi_get_value_string_utf8(env, value, buf, (IntPtr)buf.Length, out length).ThrowIfFailed();
         return Encoding.UTF8.GetString(buf, 0, (int)length);
+    }
+
+    /// <summary>Returns true for a JS null or undefined napi value.</summary>
+    public static bool IsNullOrUndefined(IntPtr value)
+    {
+        if (value == IntPtr.Zero) return true;
+        NativeNodeApi.napi_typeof(NapiEnv.Current, value, out var type).ThrowIfFailed();
+        return type is NativeNodeApi.napi_valuetype.napi_null or NativeNodeApi.napi_valuetype.napi_undefined;
     }
 
     /// <summary>

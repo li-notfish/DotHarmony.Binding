@@ -217,57 +217,57 @@ public sealed partial class NetFirewallRule : JsObject
     /// <summary>
     /// id
     /// </summary>
-    public double? Id => (double?)NativeValue.ToDouble(GetPropertyRaw(_id));
+    public double? Id => NativeValue.IsNullOrUndefined(GetPropertyRaw(_id)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_id));
 
     /// <summary>
     /// description
     /// </summary>
-    public string? Description => (string?)NativeValue.ToString(GetPropertyRaw(_description)) ?? string.Empty;
+    public string? Description => NativeValue.IsNullOrUndefined(GetPropertyRaw(_description)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_description));
 
     /// <summary>
     /// appUid
     /// </summary>
-    public double? AppUid => (double?)NativeValue.ToDouble(GetPropertyRaw(_appUid));
+    public double? AppUid => NativeValue.IsNullOrUndefined(GetPropertyRaw(_appUid)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_appUid));
 
     /// <summary>
     /// localIps
     /// </summary>
-    public NetFirewallIpParams[] LocalIps => ValueConverter.ConvertArray(GetPropertyRaw(_localIps), static e => new NetFirewallIpParams(e));
+    public NetFirewallIpParams[]? LocalIps => NativeValue.IsNullOrUndefined(GetPropertyRaw(_localIps)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_localIps), static e => new NetFirewallIpParams(e));
 
     /// <summary>
     /// remoteIps
     /// </summary>
-    public NetFirewallIpParams[] RemoteIps => ValueConverter.ConvertArray(GetPropertyRaw(_remoteIps), static e => new NetFirewallIpParams(e));
+    public NetFirewallIpParams[]? RemoteIps => NativeValue.IsNullOrUndefined(GetPropertyRaw(_remoteIps)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_remoteIps), static e => new NetFirewallIpParams(e));
 
     /// <summary>
     /// protocol
     /// </summary>
-    public double? Protocol => (double?)NativeValue.ToDouble(GetPropertyRaw(_protocol));
+    public double? Protocol => NativeValue.IsNullOrUndefined(GetPropertyRaw(_protocol)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_protocol));
 
     /// <summary>
     /// localPorts
     /// </summary>
-    public NetFirewallPortParams[] LocalPorts => ValueConverter.ConvertArray(GetPropertyRaw(_localPorts), static e => new NetFirewallPortParams(e));
+    public NetFirewallPortParams[]? LocalPorts => NativeValue.IsNullOrUndefined(GetPropertyRaw(_localPorts)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_localPorts), static e => new NetFirewallPortParams(e));
 
     /// <summary>
     /// remotePorts
     /// </summary>
-    public NetFirewallPortParams[] RemotePorts => ValueConverter.ConvertArray(GetPropertyRaw(_remotePorts), static e => new NetFirewallPortParams(e));
+    public NetFirewallPortParams[]? RemotePorts => NativeValue.IsNullOrUndefined(GetPropertyRaw(_remotePorts)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_remotePorts), static e => new NetFirewallPortParams(e));
 
     /// <summary>
     /// domains
     /// </summary>
-    public NetFirewallDomainParams[] Domains => ValueConverter.ConvertArray(GetPropertyRaw(_domains), static e => new NetFirewallDomainParams(e));
+    public NetFirewallDomainParams[]? Domains => NativeValue.IsNullOrUndefined(GetPropertyRaw(_domains)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_domains), static e => new NetFirewallDomainParams(e));
 
     /// <summary>
     /// dns
     /// </summary>
-    public NetFirewallDnsParams? Dns => GetPropertyRaw(_dns) == IntPtr.Zero ? null : new NetFirewallDnsParams(GetPropertyRaw(_dns));
+    public NetFirewallDnsParams? Dns => NativeValue.IsNullOrUndefined(GetPropertyRaw(_dns)) ? null : new NetFirewallDnsParams(GetPropertyRaw(_dns));
 
     /// <summary>
     /// interface
     /// </summary>
-    public string? Interface => (string?)NativeValue.ToString(GetPropertyRaw(_interface)) ?? string.Empty;
+    public string? Interface => NativeValue.IsNullOrUndefined(GetPropertyRaw(_interface)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_interface));
 
 }
 
@@ -356,27 +356,27 @@ public sealed partial class NetFirewallIpParams : JsObject
     /// <summary>
     /// family
     /// </summary>
-    public double? Family => (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
+    public double? Family => NativeValue.IsNullOrUndefined(GetPropertyRaw(_family)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_family));
 
     /// <summary>
     /// address
     /// </summary>
-    public string? Address => (string?)NativeValue.ToString(GetPropertyRaw(_address)) ?? string.Empty;
+    public string? Address => NativeValue.IsNullOrUndefined(GetPropertyRaw(_address)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_address));
 
     /// <summary>
     /// mask
     /// </summary>
-    public double? Mask => (double?)NativeValue.ToDouble(GetPropertyRaw(_mask));
+    public double? Mask => NativeValue.IsNullOrUndefined(GetPropertyRaw(_mask)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_mask));
 
     /// <summary>
     /// startIp
     /// </summary>
-    public string? StartIP => (string?)NativeValue.ToString(GetPropertyRaw(_startIp)) ?? string.Empty;
+    public string? StartIP => NativeValue.IsNullOrUndefined(GetPropertyRaw(_startIp)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_startIp));
 
     /// <summary>
     /// endIp
     /// </summary>
-    public string? EndIP => (string?)NativeValue.ToString(GetPropertyRaw(_endIp)) ?? string.Empty;
+    public string? EndIP => NativeValue.IsNullOrUndefined(GetPropertyRaw(_endIp)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_endIp));
 
 }
 
@@ -439,6 +439,6 @@ public sealed partial class NetFirewallDnsParams : JsObject
     /// <summary>
     /// standbyDns
     /// </summary>
-    public string? StandbyDns => (string?)NativeValue.ToString(GetPropertyRaw(_standbyDns)) ?? string.Empty;
+    public string? StandbyDns => NativeValue.IsNullOrUndefined(GetPropertyRaw(_standbyDns)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_standbyDns));
 
 }

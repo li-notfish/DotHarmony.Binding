@@ -164,7 +164,7 @@ public static unsafe partial class AbilityConnectionManager
     /// </summary>
     public static Task SendDataAsync(double sessionId, byte[] data)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendData, sessionId, NapiArg.Of(data));
+        return NodeApi.CallMethodAsyncVoid(Module, _sendData, sessionId, NapiArg.OfArrayBuffer(data));
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();
@@ -300,7 +300,7 @@ public sealed partial class PeerInfo : JsObject
     /// <summary>
     /// serviceName
     /// </summary>
-    public string? ServiceName => (string?)NativeValue.ToString(GetPropertyRaw(_serviceName)) ?? string.Empty;
+    public string? ServiceName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_serviceName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_serviceName));
 
 }
 
@@ -322,12 +322,12 @@ public sealed partial class ConnectResult : JsObject
     /// <summary>
     /// errorCode
     /// </summary>
-    public global::HarmonyOS.ArkUI.ConnectErrorCode? ErrorCode => (global::HarmonyOS.ArkUI.ConnectErrorCode?)(global::HarmonyOS.ArkUI.ConnectErrorCode)NativeValue.ToInt(GetPropertyRaw(_errorCode));
+    public global::HarmonyOS.ArkUI.ConnectErrorCode? ErrorCode => NativeValue.IsNullOrUndefined(GetPropertyRaw(_errorCode)) ? null : (global::HarmonyOS.ArkUI.ConnectErrorCode?)(global::HarmonyOS.ArkUI.ConnectErrorCode)NativeValue.ToInt(GetPropertyRaw(_errorCode));
 
     /// <summary>
     /// reason
     /// </summary>
-    public string? Reason => (string?)NativeValue.ToString(GetPropertyRaw(_reason)) ?? string.Empty;
+    public string? Reason => NativeValue.IsNullOrUndefined(GetPropertyRaw(_reason)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_reason));
 
 }
 
@@ -350,16 +350,16 @@ public sealed partial class EventCallbackInfo : JsObject
     /// <summary>
     /// reason
     /// </summary>
-    public global::HarmonyOS.ArkUI.DisconnectReason? Reason => (global::HarmonyOS.ArkUI.DisconnectReason?)(global::HarmonyOS.ArkUI.DisconnectReason)NativeValue.ToInt(GetPropertyRaw(_reason));
+    public global::HarmonyOS.ArkUI.DisconnectReason? Reason => NativeValue.IsNullOrUndefined(GetPropertyRaw(_reason)) ? null : (global::HarmonyOS.ArkUI.DisconnectReason?)(global::HarmonyOS.ArkUI.DisconnectReason)NativeValue.ToInt(GetPropertyRaw(_reason));
 
     /// <summary>
     /// msg
     /// </summary>
-    public string? Msg => (string?)NativeValue.ToString(GetPropertyRaw(_msg)) ?? string.Empty;
+    public string? Msg => NativeValue.IsNullOrUndefined(GetPropertyRaw(_msg)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_msg));
 
     /// <summary>
     /// data
     /// </summary>
-    public byte[] Data => ValueConverter.ConvertArray(GetPropertyRaw(_data), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? Data => NativeValue.IsNullOrUndefined(GetPropertyRaw(_data)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_data), static e => ValueConverter.Convert<byte>(e));
 
 }

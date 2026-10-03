@@ -397,7 +397,7 @@ public sealed partial class UIAbilityObject : JsObject
     /// <summary>
     /// specifiedId
     /// </summary>
-    public string? SpecifiedId => (string?)NativeValue.ToString(GetPropertyRaw(_specifiedId)) ?? string.Empty;
+    public string? SpecifiedId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_specifiedId)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_specifiedId));
 
     /// <summary>
     /// isDestroyed

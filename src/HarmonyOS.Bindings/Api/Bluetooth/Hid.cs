@@ -166,7 +166,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void ReplyReport(global::HarmonyOS.ArkUI.ReportType type, double id, byte[] reportData)
     {
-        CallMethodVoid(_replyReport, type, id, NapiArg.Of(reportData));
+        CallMethodVoid(_replyReport, (int)type, id, NapiArg.Of(reportData));
     }
 
     /// <summary>
@@ -174,7 +174,7 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void ReportError(global::HarmonyOS.ArkUI.ErrorReason error)
     {
-        CallMethodVoid(_reportError, error);
+        CallMethodVoid(_reportError, (int)error);
     }
 
     /// <summary>
@@ -314,31 +314,31 @@ public sealed partial class HidDeviceQos : JsObject
     /// <summary>
     /// serviceType
     /// </summary>
-    public global::HarmonyOS.ArkUI.ServiceType? ServiceType => (global::HarmonyOS.ArkUI.ServiceType?)(global::HarmonyOS.ArkUI.ServiceType)NativeValue.ToInt(GetPropertyRaw(_serviceType));
+    public global::HarmonyOS.ArkUI.ServiceType? ServiceType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_serviceType)) ? null : (global::HarmonyOS.ArkUI.ServiceType?)(global::HarmonyOS.ArkUI.ServiceType)NativeValue.ToInt(GetPropertyRaw(_serviceType));
 
     /// <summary>
     /// tokenRate
     /// </summary>
-    public double? TokenRate => (double?)NativeValue.ToDouble(GetPropertyRaw(_tokenRate));
+    public double? TokenRate => NativeValue.IsNullOrUndefined(GetPropertyRaw(_tokenRate)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_tokenRate));
 
     /// <summary>
     /// tokenBucketSize
     /// </summary>
-    public double? TokenBucketSize => (double?)NativeValue.ToDouble(GetPropertyRaw(_tokenBucketSize));
+    public double? TokenBucketSize => NativeValue.IsNullOrUndefined(GetPropertyRaw(_tokenBucketSize)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_tokenBucketSize));
 
     /// <summary>
     /// peakBandwidth
     /// </summary>
-    public double? PeakBandwidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_peakBandwidth));
+    public double? PeakBandwidth => NativeValue.IsNullOrUndefined(GetPropertyRaw(_peakBandwidth)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_peakBandwidth));
 
     /// <summary>
     /// latency
     /// </summary>
-    public double? Latency => (double?)NativeValue.ToDouble(GetPropertyRaw(_latency));
+    public double? Latency => NativeValue.IsNullOrUndefined(GetPropertyRaw(_latency)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_latency));
 
     /// <summary>
     /// delayVariation
     /// </summary>
-    public double? DelayVariation => (double?)NativeValue.ToDouble(GetPropertyRaw(_delayVariation));
+    public double? DelayVariation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_delayVariation)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_delayVariation));
 
 }

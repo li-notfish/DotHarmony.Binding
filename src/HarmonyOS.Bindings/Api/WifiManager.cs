@@ -349,7 +349,7 @@ public static unsafe partial class WifiManager
     /// </summary>
     public static bool IsBandTypeSupported(global::HarmonyOS.ArkUI.WifiBandType bandType)
     {
-        return NodeApi.CallMethod<bool>(Module, _isBandTypeSupported, bandType);
+        return NodeApi.CallMethod<bool>(Module, _isBandTypeSupported, (int)bandType);
     }
 
     /// <summary>
@@ -885,12 +885,12 @@ public sealed partial class WifiManagerWifiDeviceConfig : JsObject
     /// <summary>
     /// bssid
     /// </summary>
-    public string? Bssid => (string?)NativeValue.ToString(GetPropertyRaw(_bssid)) ?? string.Empty;
+    public string? Bssid => NativeValue.IsNullOrUndefined(GetPropertyRaw(_bssid)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_bssid));
 
     /// <summary>
     /// bssidType
     /// </summary>
-    public global::HarmonyOS.ArkUI.DeviceAddressType? BssidType => (global::HarmonyOS.ArkUI.DeviceAddressType?)(global::HarmonyOS.ArkUI.DeviceAddressType)NativeValue.ToInt(GetPropertyRaw(_bssidType));
+    public global::HarmonyOS.ArkUI.DeviceAddressType? BssidType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_bssidType)) ? null : (global::HarmonyOS.ArkUI.DeviceAddressType?)(global::HarmonyOS.ArkUI.DeviceAddressType)NativeValue.ToInt(GetPropertyRaw(_bssidType));
 
     /// <summary>
     /// preSharedKey
@@ -900,7 +900,7 @@ public sealed partial class WifiManagerWifiDeviceConfig : JsObject
     /// <summary>
     /// isHiddenSsid
     /// </summary>
-    public bool? IsHiddenSsid => (bool?)NativeValue.ToBool(GetPropertyRaw(_isHiddenSsid));
+    public bool? IsHiddenSsid => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isHiddenSsid)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isHiddenSsid));
 
     /// <summary>
     /// securityType
@@ -910,22 +910,22 @@ public sealed partial class WifiManagerWifiDeviceConfig : JsObject
     /// <summary>
     /// netId
     /// </summary>
-    public double? NetId => (double?)NativeValue.ToDouble(GetPropertyRaw(_netId));
+    public double? NetId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_netId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_netId));
 
     /// <summary>
     /// eapConfig
     /// </summary>
-    public WifiEapConfig? EapConfig => GetPropertyRaw(_eapConfig) == IntPtr.Zero ? null : new WifiEapConfig(GetPropertyRaw(_eapConfig));
+    public WifiEapConfig? EapConfig => NativeValue.IsNullOrUndefined(GetPropertyRaw(_eapConfig)) ? null : new WifiEapConfig(GetPropertyRaw(_eapConfig));
 
     /// <summary>
     /// wapiConfig
     /// </summary>
-    public WifiWapiConfig? WapiConfig => GetPropertyRaw(_wapiConfig) == IntPtr.Zero ? null : new WifiWapiConfig(GetPropertyRaw(_wapiConfig));
+    public WifiWapiConfig? WapiConfig => NativeValue.IsNullOrUndefined(GetPropertyRaw(_wapiConfig)) ? null : new WifiWapiConfig(GetPropertyRaw(_wapiConfig));
 
     /// <summary>
     /// showNoInternetDialog
     /// </summary>
-    public bool? ShowNoInternetDialog => (bool?)NativeValue.ToBool(GetPropertyRaw(_showNoInternetDialog));
+    public bool? ShowNoInternetDialog => NativeValue.IsNullOrUndefined(GetPropertyRaw(_showNoInternetDialog)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_showNoInternetDialog));
 
 }
 
@@ -1085,7 +1085,7 @@ public sealed partial class WifiManagerWifiLinkedInfo : JsObject
     /// <summary>
     /// wifiLinkType
     /// </summary>
-    public global::HarmonyOS.ArkUI.WifiLinkType? WifiLinkType => (global::HarmonyOS.ArkUI.WifiLinkType?)(global::HarmonyOS.ArkUI.WifiLinkType)NativeValue.ToInt(GetPropertyRaw(_wifiLinkType));
+    public global::HarmonyOS.ArkUI.WifiLinkType? WifiLinkType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_wifiLinkType)) ? null : (global::HarmonyOS.ArkUI.WifiLinkType?)(global::HarmonyOS.ArkUI.WifiLinkType)NativeValue.ToInt(GetPropertyRaw(_wifiLinkType));
 
 }
 
@@ -1174,12 +1174,12 @@ public sealed partial class Ipv6Info : JsObject
     /// <summary>
     /// uniqueIpv6Address
     /// </summary>
-    public string? UniqueIpv6Address => (string?)NativeValue.ToString(GetPropertyRaw(_uniqueIpv6Address)) ?? string.Empty;
+    public string? UniqueIpv6Address => NativeValue.IsNullOrUndefined(GetPropertyRaw(_uniqueIpv6Address)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_uniqueIpv6Address));
 
     /// <summary>
     /// randomUniqueIpv6Address
     /// </summary>
-    public string? RandomUniqueIpv6Address => (string?)NativeValue.ToString(GetPropertyRaw(_randomUniqueIpv6Address)) ?? string.Empty;
+    public string? RandomUniqueIpv6Address => NativeValue.IsNullOrUndefined(GetPropertyRaw(_randomUniqueIpv6Address)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_randomUniqueIpv6Address));
 
     /// <summary>
     /// gateway
@@ -1319,7 +1319,7 @@ public sealed partial class WifiManagerWifiP2pDevice : JsObject
     /// <summary>
     /// deviceAddressType
     /// </summary>
-    public global::HarmonyOS.ArkUI.DeviceAddressType? DeviceAddressType => (global::HarmonyOS.ArkUI.DeviceAddressType?)(global::HarmonyOS.ArkUI.DeviceAddressType)NativeValue.ToInt(GetPropertyRaw(_deviceAddressType));
+    public global::HarmonyOS.ArkUI.DeviceAddressType? DeviceAddressType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_deviceAddressType)) ? null : (global::HarmonyOS.ArkUI.DeviceAddressType?)(global::HarmonyOS.ArkUI.DeviceAddressType)NativeValue.ToInt(GetPropertyRaw(_deviceAddressType));
 
     /// <summary>
     /// primaryDeviceType

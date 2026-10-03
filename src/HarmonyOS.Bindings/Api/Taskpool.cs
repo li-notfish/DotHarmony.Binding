@@ -96,7 +96,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr> ExecuteAsync(Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, NapiArg.Of(task), priority);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, NapiArg.Of(task), NapiArg.Of(priority));
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr> ExecuteAsync(IntPtr task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, priority);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, NapiArg.Of(priority));
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(group), priority);
+        return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(group), NapiArg.Of(priority));
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr> ExecuteDelayedAsync(double delayTime, Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDelayed, delayTime, NapiArg.Of(task), priority);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDelayed, delayTime, NapiArg.Of(task), NapiArg.Of(priority));
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static Task<IntPtr> ExecuteDelayedAsync(double delayTime, IntPtr task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDelayed, delayTime, task, priority);
+        return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDelayed, delayTime, task, NapiArg.Of(priority));
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static void ExecutePeriodically(double period, Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        NodeApi.CallMethodVoid(Module, _executePeriodically, period, NapiArg.Of(task), priority);
+        NodeApi.CallMethodVoid(Module, _executePeriodically, period, NapiArg.Of(task), NapiArg.Of(priority));
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public static unsafe partial class Taskpool
     /// </summary>
     public static void ExecutePeriodically(double period, IntPtr task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        NodeApi.CallMethodVoid(Module, _executePeriodically, period, task, priority);
+        NodeApi.CallMethodVoid(Module, _executePeriodically, period, task, NapiArg.Of(priority));
     }
 
     /// <summary>
@@ -324,7 +324,7 @@ public sealed partial class LongTask : JsObject
     /// <summary>
     /// arguments
     /// </summary>
-    public IntPtr[] Arguments => ValueConverter.ConvertArray(GetPropertyRaw(_arguments), static e => ValueConverter.Convert<IntPtr>(e));
+    public IntPtr[]? Arguments => NativeValue.IsNullOrUndefined(GetPropertyRaw(_arguments)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_arguments), static e => ValueConverter.Convert<IntPtr>(e));
 
     /// <summary>
     /// name
@@ -512,7 +512,7 @@ public sealed partial class TaskpoolTask : JsObject
     /// <summary>
     /// arguments
     /// </summary>
-    public IntPtr[] Arguments => ValueConverter.ConvertArray(GetPropertyRaw(_arguments), static e => ValueConverter.Convert<IntPtr>(e));
+    public IntPtr[]? Arguments => NativeValue.IsNullOrUndefined(GetPropertyRaw(_arguments)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_arguments), static e => ValueConverter.Convert<IntPtr>(e));
 
     /// <summary>
     /// name
@@ -648,10 +648,10 @@ public sealed partial class SequenceRunner : JsObject
     private static ReadOnlySpan<byte> _SequenceRunner => "SequenceRunner"u8;
 
     public SequenceRunner(global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
-        : this(NodeApi.CreateInstance(Taskpool.Module, _SequenceRunner, priority)) { }
+        : this(NodeApi.CreateInstance(Taskpool.Module, _SequenceRunner, NapiArg.Of(priority))) { }
 
     public SequenceRunner(string name, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
-        : this(NodeApi.CreateInstance(Taskpool.Module, _SequenceRunner, name, priority)) { }
+        : this(NodeApi.CreateInstance(Taskpool.Module, _SequenceRunner, name, NapiArg.Of(priority))) { }
     private static ReadOnlySpan<byte> _execute => "execute"u8;
     /// <summary>
     /// execute
@@ -684,7 +684,7 @@ public sealed partial class AsyncRunner : JsObject
     /// </summary>
     public Task<IntPtr> ExecuteAsync(Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
-        return CallMethodAsync<IntPtr>(_execute, NapiArg.Of(task), priority);
+        return CallMethodAsync<IntPtr>(_execute, NapiArg.Of(task), NapiArg.Of(priority));
     }
 
 }
@@ -707,12 +707,12 @@ public sealed partial class ThreadInfo : JsObject
     /// <summary>
     /// taskIds
     /// </summary>
-    public double[] TaskIds => ValueConverter.ConvertArray(GetPropertyRaw(_taskIds), static e => ValueConverter.Convert<double>(e));
+    public double[]? TaskIds => NativeValue.IsNullOrUndefined(GetPropertyRaw(_taskIds)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_taskIds), static e => ValueConverter.Convert<double>(e));
 
     /// <summary>
     /// priority
     /// </summary>
-    public global::HarmonyOS.ArkUI.TaskpoolPriority? Priority => (global::HarmonyOS.ArkUI.TaskpoolPriority?)(global::HarmonyOS.ArkUI.TaskpoolPriority)NativeValue.ToInt(GetPropertyRaw(_priority));
+    public global::HarmonyOS.ArkUI.TaskpoolPriority? Priority => NativeValue.IsNullOrUndefined(GetPropertyRaw(_priority)) ? null : (global::HarmonyOS.ArkUI.TaskpoolPriority?)(global::HarmonyOS.ArkUI.TaskpoolPriority)NativeValue.ToInt(GetPropertyRaw(_priority));
 
 }
 
@@ -740,7 +740,7 @@ public sealed partial class TaskpoolTaskInfo : JsObject
     /// <summary>
     /// duration
     /// </summary>
-    public double? Duration => (double?)NativeValue.ToDouble(GetPropertyRaw(_duration));
+    public double? Duration => NativeValue.IsNullOrUndefined(GetPropertyRaw(_duration)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_duration));
 
     /// <summary>
     /// name

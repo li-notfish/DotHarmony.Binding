@@ -165,71 +165,71 @@ public sealed partial class WorkInfo : JsObject
     /// <summary>
     /// isPersisted
     /// </summary>
-    public bool? IsPersisted => (bool?)NativeValue.ToBool(GetPropertyRaw(_isPersisted));
+    public bool? IsPersisted => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isPersisted)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isPersisted));
 
     /// <summary>
     /// networkType
     /// </summary>
-    public global::HarmonyOS.ArkUI.NetworkType? NetworkType => (global::HarmonyOS.ArkUI.NetworkType?)(global::HarmonyOS.ArkUI.NetworkType)NativeValue.ToInt(GetPropertyRaw(_networkType));
+    public global::HarmonyOS.ArkUI.NetworkType? NetworkType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_networkType)) ? null : (global::HarmonyOS.ArkUI.NetworkType?)(global::HarmonyOS.ArkUI.NetworkType)NativeValue.ToInt(GetPropertyRaw(_networkType));
 
     /// <summary>
     /// isCharging
     /// </summary>
-    public bool? IsCharging => (bool?)NativeValue.ToBool(GetPropertyRaw(_isCharging));
+    public bool? IsCharging => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isCharging)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isCharging));
 
     /// <summary>
     /// chargerType
     /// </summary>
-    public global::HarmonyOS.ArkUI.ChargingType? ChargerType => (global::HarmonyOS.ArkUI.ChargingType?)(global::HarmonyOS.ArkUI.ChargingType)NativeValue.ToInt(GetPropertyRaw(_chargerType));
+    public global::HarmonyOS.ArkUI.ChargingType? ChargerType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_chargerType)) ? null : (global::HarmonyOS.ArkUI.ChargingType?)(global::HarmonyOS.ArkUI.ChargingType)NativeValue.ToInt(GetPropertyRaw(_chargerType));
 
     /// <summary>
     /// batteryLevel
     /// </summary>
-    public double? BatteryLevel => (double?)NativeValue.ToDouble(GetPropertyRaw(_batteryLevel));
+    public double? BatteryLevel => NativeValue.IsNullOrUndefined(GetPropertyRaw(_batteryLevel)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_batteryLevel));
 
     /// <summary>
     /// batteryStatus
     /// </summary>
-    public global::HarmonyOS.ArkUI.BatteryStatus? BatteryStatus => (global::HarmonyOS.ArkUI.BatteryStatus?)(global::HarmonyOS.ArkUI.BatteryStatus)NativeValue.ToInt(GetPropertyRaw(_batteryStatus));
+    public global::HarmonyOS.ArkUI.BatteryStatus? BatteryStatus => NativeValue.IsNullOrUndefined(GetPropertyRaw(_batteryStatus)) ? null : (global::HarmonyOS.ArkUI.BatteryStatus?)(global::HarmonyOS.ArkUI.BatteryStatus)NativeValue.ToInt(GetPropertyRaw(_batteryStatus));
 
     /// <summary>
     /// storageRequest
     /// </summary>
-    public global::HarmonyOS.ArkUI.StorageRequest? StorageRequest => (global::HarmonyOS.ArkUI.StorageRequest?)(global::HarmonyOS.ArkUI.StorageRequest)NativeValue.ToInt(GetPropertyRaw(_storageRequest));
+    public global::HarmonyOS.ArkUI.StorageRequest? StorageRequest => NativeValue.IsNullOrUndefined(GetPropertyRaw(_storageRequest)) ? null : (global::HarmonyOS.ArkUI.StorageRequest?)(global::HarmonyOS.ArkUI.StorageRequest)NativeValue.ToInt(GetPropertyRaw(_storageRequest));
 
     /// <summary>
     /// repeatCycleTime
     /// </summary>
-    public double? RepeatCycleTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_repeatCycleTime));
+    public double? RepeatCycleTime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_repeatCycleTime)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_repeatCycleTime));
 
     /// <summary>
     /// isRepeat
     /// </summary>
-    public bool? IsRepeat => (bool?)NativeValue.ToBool(GetPropertyRaw(_isRepeat));
+    public bool? IsRepeat => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isRepeat)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isRepeat));
 
     /// <summary>
     /// repeatCount
     /// </summary>
-    public double? RepeatCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_repeatCount));
+    public double? RepeatCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_repeatCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_repeatCount));
 
     /// <summary>
     /// isDeepIdle
     /// </summary>
-    public bool? IsDeepIdle => (bool?)NativeValue.ToBool(GetPropertyRaw(_isDeepIdle));
+    public bool? IsDeepIdle => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isDeepIdle)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isDeepIdle));
 
     /// <summary>
     /// idleWaitTime
     /// </summary>
-    public double? IdleWaitTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_idleWaitTime));
+    public double? IdleWaitTime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_idleWaitTime)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_idleWaitTime));
 
     /// <summary>
     /// parameters
     /// </summary>
-    public string? Parameters => (string?)NativeValue.ToString(GetPropertyRaw(_parameters)) ?? string.Empty;
+    public string? Parameters => NativeValue.IsNullOrUndefined(GetPropertyRaw(_parameters)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_parameters));
 
     /// <summary>
     /// earliestStartTime
     /// </summary>
-    public double? EarliestStartTime => (double?)NativeValue.ToDouble(GetPropertyRaw(_earliestStartTime));
+    public double? EarliestStartTime => NativeValue.IsNullOrUndefined(GetPropertyRaw(_earliestStartTime)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_earliestStartTime));
 
 }

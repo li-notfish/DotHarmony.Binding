@@ -155,7 +155,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetAppClipboardPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double tokenId, global::HarmonyOS.ArkUI.ClipboardPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _setAppClipboardPolicy, NapiArg.Of(admin), tokenId, policy);
+        NodeApi.CallMethodVoid(Module, _setAppClipboardPolicy, NapiArg.Of(admin), tokenId, (int)policy);
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetAppClipboardPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double accountId, global::HarmonyOS.ArkUI.ClipboardPolicy policy)
     {
-        NodeApi.CallMethodVoid(Module, _setAppClipboardPolicy, NapiArg.Of(admin), bundleName, accountId, policy);
+        NodeApi.CallMethodVoid(Module, _setAppClipboardPolicy, NapiArg.Of(admin), bundleName, accountId, (int)policy);
     }
 
     /// <summary>
@@ -219,7 +219,7 @@ public static unsafe partial class SecurityManager
     /// </summary>
     public static void SetPermissionManagedState(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, SecurityManagerApplicationInstance applicationInstance, string[] permissions, global::HarmonyOS.ArkUI.PermissionManagedState managedState)
     {
-        NodeApi.CallMethodVoid(Module, _setPermissionManagedState, NapiArg.Of(admin), NapiArg.Of(applicationInstance), NapiArg.Of(permissions), managedState);
+        NodeApi.CallMethodVoid(Module, _setPermissionManagedState, NapiArg.Of(admin), NapiArg.Of(applicationInstance), NapiArg.Of(permissions), (int)managedState);
     }
 
     /// <summary>
@@ -371,22 +371,22 @@ public sealed partial class PasswordPolicy : JsObject
     /// <summary>
     /// complexityRegex
     /// </summary>
-    public string? ComplexityRegex => (string?)NativeValue.ToString(GetPropertyRaw(_complexityRegex)) ?? string.Empty;
+    public string? ComplexityRegex => NativeValue.IsNullOrUndefined(GetPropertyRaw(_complexityRegex)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_complexityRegex));
 
     /// <summary>
     /// validityPeriod
     /// </summary>
-    public double? ValidityPeriod => (double?)NativeValue.ToDouble(GetPropertyRaw(_validityPeriod));
+    public double? ValidityPeriod => NativeValue.IsNullOrUndefined(GetPropertyRaw(_validityPeriod)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_validityPeriod));
 
     /// <summary>
     /// additionalDescription
     /// </summary>
-    public string? AdditionalDescription => (string?)NativeValue.ToString(GetPropertyRaw(_additionalDescription)) ?? string.Empty;
+    public string? AdditionalDescription => NativeValue.IsNullOrUndefined(GetPropertyRaw(_additionalDescription)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_additionalDescription));
 
     /// <summary>
     /// passwordAlgs
     /// </summary>
-    public global::HarmonyOS.ArkUI.PasswordAlgs? PasswordAlgs => (global::HarmonyOS.ArkUI.PasswordAlgs?)(global::HarmonyOS.ArkUI.PasswordAlgs)NativeValue.ToInt(GetPropertyRaw(_passwordAlgs));
+    public global::HarmonyOS.ArkUI.PasswordAlgs? PasswordAlgs => NativeValue.IsNullOrUndefined(GetPropertyRaw(_passwordAlgs)) ? null : (global::HarmonyOS.ArkUI.PasswordAlgs?)(global::HarmonyOS.ArkUI.PasswordAlgs)NativeValue.ToInt(GetPropertyRaw(_passwordAlgs));
 
 }
 

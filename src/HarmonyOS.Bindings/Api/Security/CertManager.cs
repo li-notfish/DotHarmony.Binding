@@ -204,7 +204,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static CMResult InstallUserTrustedCertificateSync(byte[] cert, global::HarmonyOS.ArkUI.CertScope certScope)
     {
-        return NodeApi.CallMethod(Module, _installUserTrustedCertificateSync, static h => new CMResult(h), NapiArg.Of(cert), certScope);
+        return NodeApi.CallMethod(Module, _installUserTrustedCertificateSync, static h => new CMResult(h), NapiArg.Of(cert), (int)certScope);
     }
 
     /// <summary>
@@ -212,7 +212,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task<CMResult> InstallPrivateCertificateAsync(byte[] keystore, string keystorePwd, string certAlias, global::HarmonyOS.ArkUI.AuthStorageLevel level)
     {
-        return NodeApi.CallMethodAsync(Module, _installPrivateCertificate, static h => new CMResult(h), NapiArg.Of(keystore), keystorePwd, certAlias, level);
+        return NodeApi.CallMethodAsync(Module, _installPrivateCertificate, static h => new CMResult(h), NapiArg.Of(keystore), keystorePwd, certAlias, (int)level);
     }
 
     /// <summary>
@@ -220,7 +220,7 @@ public static unsafe partial class CertManager
     /// </summary>
     public static Task<CMResult> GetAllUserTrustedCertificatesAsync(global::HarmonyOS.ArkUI.CertScope scope)
     {
-        return NodeApi.CallMethodAsync(Module, _getAllUserTrustedCertificates, static h => new CMResult(h), scope);
+        return NodeApi.CallMethodAsync(Module, _getAllUserTrustedCertificates, static h => new CMResult(h), (int)scope);
     }
 
     /// <summary>
@@ -284,47 +284,47 @@ public sealed partial class CMResult : JsObject
     /// <summary>
     /// certList
     /// </summary>
-    public CertAbstract[] CertList => ValueConverter.ConvertArray(GetPropertyRaw(_certList), static e => new CertAbstract(e));
+    public CertAbstract[]? CertList => NativeValue.IsNullOrUndefined(GetPropertyRaw(_certList)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_certList), static e => new CertAbstract(e));
 
     /// <summary>
     /// certInfo
     /// </summary>
-    public CertInfo? CertInfo => GetPropertyRaw(_certInfo) == IntPtr.Zero ? null : new CertInfo(GetPropertyRaw(_certInfo));
+    public CertInfo? CertInfo => NativeValue.IsNullOrUndefined(GetPropertyRaw(_certInfo)) ? null : new CertInfo(GetPropertyRaw(_certInfo));
 
     /// <summary>
     /// credentialList
     /// </summary>
-    public CredentialAbstract[] CredentialList => ValueConverter.ConvertArray(GetPropertyRaw(_credentialList), static e => new CredentialAbstract(e));
+    public CredentialAbstract[]? CredentialList => NativeValue.IsNullOrUndefined(GetPropertyRaw(_credentialList)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_credentialList), static e => new CredentialAbstract(e));
 
     /// <summary>
     /// credential
     /// </summary>
-    public CertManagerCredential? Credential => GetPropertyRaw(_credential) == IntPtr.Zero ? null : new CertManagerCredential(GetPropertyRaw(_credential));
+    public CertManagerCredential? Credential => NativeValue.IsNullOrUndefined(GetPropertyRaw(_credential)) ? null : new CertManagerCredential(GetPropertyRaw(_credential));
 
     /// <summary>
     /// appUidList
     /// </summary>
-    public string[] AppUidList => ValueConverter.ConvertArray(GetPropertyRaw(_appUidList), static e => ValueConverter.Convert<string>(e));
+    public string[]? AppUidList => NativeValue.IsNullOrUndefined(GetPropertyRaw(_appUidList)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_appUidList), static e => ValueConverter.Convert<string>(e));
 
     /// <summary>
     /// uri
     /// </summary>
-    public string? Uri => (string?)NativeValue.ToString(GetPropertyRaw(_uri)) ?? string.Empty;
+    public string? Uri => NativeValue.IsNullOrUndefined(GetPropertyRaw(_uri)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_uri));
 
     /// <summary>
     /// outData
     /// </summary>
-    public byte[] OutData => ValueConverter.ConvertArray(GetPropertyRaw(_outData), static e => ValueConverter.Convert<byte>(e));
+    public byte[]? OutData => NativeValue.IsNullOrUndefined(GetPropertyRaw(_outData)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_outData), static e => ValueConverter.Convert<byte>(e));
 
     /// <summary>
     /// credentialDetailList
     /// </summary>
-    public CertManagerCredential[] CredentialDetailList => ValueConverter.ConvertArray(GetPropertyRaw(_credentialDetailList), static e => new CertManagerCredential(e));
+    public CertManagerCredential[]? CredentialDetailList => NativeValue.IsNullOrUndefined(GetPropertyRaw(_credentialDetailList)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_credentialDetailList), static e => new CertManagerCredential(e));
 
     /// <summary>
     /// uriList
     /// </summary>
-    public string[] UriList => ValueConverter.ConvertArray(GetPropertyRaw(_uriList), static e => ValueConverter.Convert<string>(e));
+    public string[]? UriList => NativeValue.IsNullOrUndefined(GetPropertyRaw(_uriList)) ? null : ValueConverter.ConvertArray(GetPropertyRaw(_uriList), static e => ValueConverter.Convert<string>(e));
 
 }
 
@@ -613,6 +613,6 @@ public sealed partial class CertManagerCredential : JsObject
     /// <summary>
     /// certPurpose
     /// </summary>
-    public global::HarmonyOS.ArkUI.CertificatePurpose? CertPurpose => (global::HarmonyOS.ArkUI.CertificatePurpose?)(global::HarmonyOS.ArkUI.CertificatePurpose)NativeValue.ToInt(GetPropertyRaw(_certPurpose));
+    public global::HarmonyOS.ArkUI.CertificatePurpose? CertPurpose => NativeValue.IsNullOrUndefined(GetPropertyRaw(_certPurpose)) ? null : (global::HarmonyOS.ArkUI.CertificatePurpose?)(global::HarmonyOS.ArkUI.CertificatePurpose)NativeValue.ToInt(GetPropertyRaw(_certPurpose));
 
 }

@@ -35,6 +35,8 @@
         
         <Button Text="Test Promise Reject"
                 Clicked="OnTestPromiseReject" />
+        <Button Text="Test Callback Reject"
+                Clicked="OnTestCallbackReject" />
         
         <Label x:Name="ResultLabel"
                Text="Result will appear here"

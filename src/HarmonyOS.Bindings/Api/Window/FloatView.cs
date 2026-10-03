@@ -110,7 +110,7 @@ public static unsafe partial class FloatView
     /// </summary>
     public static IntPtr GetFloatViewLimits(global::HarmonyOS.ArkUI.FloatViewTemplateType templateType)
     {
-        return NodeApi.CallMethod<IntPtr>(Module, _getFloatViewLimits, templateType);
+        return NodeApi.CallMethod<IntPtr>(Module, _getFloatViewLimits, (int)templateType);
     }
 
 }

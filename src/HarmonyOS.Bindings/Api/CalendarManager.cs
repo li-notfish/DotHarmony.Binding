@@ -286,7 +286,7 @@ public sealed partial class CalendarAccount : JsObject
     /// <summary>
     /// displayName
     /// </summary>
-    public string? DisplayName => (string?)NativeValue.ToString(GetPropertyRaw(_displayName)) ?? string.Empty;
+    public string? DisplayName => NativeValue.IsNullOrUndefined(GetPropertyRaw(_displayName)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_displayName));
 
 }
 
@@ -338,11 +338,11 @@ public sealed partial class CalendarConfig : JsObject
     /// <summary>
     /// enableReminder
     /// </summary>
-    public bool? EnableReminder => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableReminder));
+    public bool? EnableReminder => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enableReminder)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enableReminder));
 
     /// <summary>
     /// color
     /// </summary>
-    public double? Color => (double?)NativeValue.ToDouble(GetPropertyRaw(_color));
+    public double? Color => NativeValue.IsNullOrUndefined(GetPropertyRaw(_color)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_color));
 
 }

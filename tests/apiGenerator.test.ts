@@ -186,6 +186,59 @@ declare namespace testsvc {
     });
 });
 
+describe('Api Binding 映射回归', () => {
+    test('可选输出属性先判断 undefined/null，可选字符串保留 null', () => {
+        const cs = generate(`
+declare namespace testsvc {
+    interface Info {
+        count?: number;
+        label?: string;
+        enabled?: boolean;
+    }
+    function getInfo(): Info;
+}
+`);
+        expect(cs).toContain('public double? Count => NativeValue.IsNullOrUndefined(GetPropertyRaw(_count)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_count))');
+        expect(cs).toContain('public string? Label => NativeValue.IsNullOrUndefined(GetPropertyRaw(_label)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_label))');
+        expect(cs).toContain('public bool? Enabled => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enabled)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enabled))');
+        expect(cs).not.toContain('?? string.Empty');
+    });
+
+    test('ArrayBuffer 参数显式走 ArrayBuffer，Uint8Array 默认走 Uint8Array', () => {
+        const cs = generate(`
+declare namespace testsvc {
+    function writeBuffer(buffer: ArrayBuffer): void;
+    function writeBytes(bytes: Uint8Array): void;
+}
+`);
+        expect(cs).toContain('public static void WriteBuffer(byte[] buffer)');
+        expect(cs).toContain('NapiArg.OfArrayBuffer(buffer)');
+        expect(cs).toContain('public static void WriteBytes(byte[] bytes)');
+        expect(cs).toContain('NapiArg.Of(bytes)');
+        expect(cs).not.toContain('NapiArg.OfArrayBuffer(bytes)');
+    });
+
+    test('JS number 保守映射 double，显式整数别名保留宽度', () => {
+        const { TypeMapper } = require('../tools/api-generator/typeMapper');
+        expect(TypeMapper.mapType('number')).toBe('double');
+        expect(TypeMapper.mapType('int')).toBe('int');
+        expect(TypeMapper.mapType('uint')).toBe('uint');
+        expect(TypeMapper.mapType('long')).toBe('long');
+        expect(TypeMapper.mapType('ulong')).toBe('ulong');
+        expect(TypeMapper.mapType('bigint')).toBe('JsBigInt');
+    });
+
+    test('Promise 方法仍统一走 PromiseTaskBridge 调用点', () => {
+        const cs = generate(`
+declare namespace testsvc {
+    function load(): Promise<string>;
+}
+`);
+        expect(cs).toContain('public static Task<string> LoadAsync()');
+        expect(cs).toContain('NodeApi.CallMethodAsync<string>(Module, _load)');
+    });
+});
+
 test('事件回调强制必需后，其前的可选参数须降级（CS1737）', () => {
     const cs = generate(`
 declare namespace testsvc {

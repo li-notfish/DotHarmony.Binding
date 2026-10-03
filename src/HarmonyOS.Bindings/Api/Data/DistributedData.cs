@@ -621,37 +621,37 @@ public sealed partial class Options : JsObject
     /// <summary>
     /// createIfMissing
     /// </summary>
-    public bool? CreateIfMissing => (bool?)NativeValue.ToBool(GetPropertyRaw(_createIfMissing));
+    public bool? CreateIfMissing => NativeValue.IsNullOrUndefined(GetPropertyRaw(_createIfMissing)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_createIfMissing));
 
     /// <summary>
     /// encrypt
     /// </summary>
-    public bool? Encrypt => (bool?)NativeValue.ToBool(GetPropertyRaw(_encrypt));
+    public bool? Encrypt => NativeValue.IsNullOrUndefined(GetPropertyRaw(_encrypt)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_encrypt));
 
     /// <summary>
     /// backup
     /// </summary>
-    public bool? Backup => (bool?)NativeValue.ToBool(GetPropertyRaw(_backup));
+    public bool? Backup => NativeValue.IsNullOrUndefined(GetPropertyRaw(_backup)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_backup));
 
     /// <summary>
     /// autoSync
     /// </summary>
-    public bool? AutoSync => (bool?)NativeValue.ToBool(GetPropertyRaw(_autoSync));
+    public bool? AutoSync => NativeValue.IsNullOrUndefined(GetPropertyRaw(_autoSync)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_autoSync));
 
     /// <summary>
     /// kvStoreType
     /// </summary>
-    public global::HarmonyOS.ArkUI.KVStoreType? KvStoreType => (global::HarmonyOS.ArkUI.KVStoreType?)(global::HarmonyOS.ArkUI.KVStoreType)NativeValue.ToInt(GetPropertyRaw(_kvStoreType));
+    public global::HarmonyOS.ArkUI.KVStoreType? KvStoreType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_kvStoreType)) ? null : (global::HarmonyOS.ArkUI.KVStoreType?)(global::HarmonyOS.ArkUI.KVStoreType)NativeValue.ToInt(GetPropertyRaw(_kvStoreType));
 
     /// <summary>
     /// securityLevel
     /// </summary>
-    public global::HarmonyOS.ArkUI.SecurityLevel? SecurityLevel => (global::HarmonyOS.ArkUI.SecurityLevel?)(global::HarmonyOS.ArkUI.SecurityLevel)NativeValue.ToInt(GetPropertyRaw(_securityLevel));
+    public global::HarmonyOS.ArkUI.SecurityLevel? SecurityLevel => NativeValue.IsNullOrUndefined(GetPropertyRaw(_securityLevel)) ? null : (global::HarmonyOS.ArkUI.SecurityLevel?)(global::HarmonyOS.ArkUI.SecurityLevel)NativeValue.ToInt(GetPropertyRaw(_securityLevel));
 
     /// <summary>
     /// schema
     /// </summary>
-    public Schema? Schema => GetPropertyRaw(_schema) == IntPtr.Zero ? null : new Schema(GetPropertyRaw(_schema));
+    public Schema? Schema => NativeValue.IsNullOrUndefined(GetPropertyRaw(_schema)) ? null : new Schema(GetPropertyRaw(_schema));
 
 }
 
@@ -694,7 +694,7 @@ public sealed partial class KVStore : JsObject
     /// </summary>
     public void On(string @event, global::HarmonyOS.ArkUI.SubscribeType type, IntPtr listener)
     {
-        CallMethodVoid(_on, @event, type, listener);
+        CallMethodVoid(_on, @event, (int)type, listener);
     }
 
     /// <summary>
@@ -778,7 +778,7 @@ public sealed partial class KVStore : JsObject
     {
         _eventListeners.Add((type, callback),
             args => callback(new ChangeNotification(args[0])),
-            js => NodeApi.CallMethodVoid(Handle, _on, type, js, type2));
+            js => NodeApi.CallMethodVoid(Handle, _on, type, js, (int)type2));
     }
 
     /// <summary>

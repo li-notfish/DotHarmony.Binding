@@ -100,7 +100,7 @@ public static unsafe partial class Window
     /// </summary>
     public static Task<WindowObject> CreateAsync(string id, global::HarmonyOS.ArkUI.WindowType type)
     {
-        return NodeApi.CallMethodAsync(Module, _create, static h => new WindowObject(h), id, type);
+        return NodeApi.CallMethodAsync(Module, _create, static h => new WindowObject(h), id, (int)type);
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public static unsafe partial class Window
     /// </summary>
     public static Task<WindowObject> CreateAsync(IntPtr ctx, string id, global::HarmonyOS.ArkUI.WindowType type)
     {
-        return NodeApi.CallMethodAsync(Module, _create, static h => new WindowObject(h), ctx, id, type);
+        return NodeApi.CallMethodAsync(Module, _create, static h => new WindowObject(h), ctx, id, (int)type);
     }
 
     /// <summary>
@@ -537,7 +537,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetRelativePositionToParentWindowEnabledAsync(bool enabled, global::HarmonyOS.ArkUI.WindowAnchor? anchor = null, double? offsetX = null, double? offsetY = null)
     {
-        return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, enabled, anchor, NapiArg.Of(offsetX), NapiArg.Of(offsetY));
+        return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, enabled, NapiArg.Of(anchor), NapiArg.Of(offsetX), NapiArg.Of(offsetY));
     }
 
     /// <summary>
@@ -577,7 +577,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task<AvoidArea> GetAvoidAreaAsync(global::HarmonyOS.ArkUI.AvoidAreaType type)
     {
-        return CallMethodAsync(_getAvoidArea, static h => new AvoidArea(h), type);
+        return CallMethodAsync(_getAvoidArea, static h => new AvoidArea(h), (int)type);
     }
 
     /// <summary>
@@ -585,7 +585,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public AvoidArea GetWindowAvoidAreaIgnoringVisibility(global::HarmonyOS.ArkUI.AvoidAreaType type)
     {
-        return CallMethod(_getWindowAvoidAreaIgnoringVisibility, static h => new AvoidArea(h), type);
+        return CallMethod(_getWindowAvoidAreaIgnoringVisibility, static h => new AvoidArea(h), (int)type);
     }
 
     /// <summary>
@@ -593,7 +593,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public AvoidArea GetWindowAvoidArea(global::HarmonyOS.ArkUI.AvoidAreaType type)
     {
-        return CallMethod(_getWindowAvoidArea, static h => new AvoidArea(h), type);
+        return CallMethod(_getWindowAvoidArea, static h => new AvoidArea(h), (int)type);
     }
 
     /// <summary>
@@ -745,7 +745,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetPreferredOrientationAsync(global::HarmonyOS.ArkUI.WindowWindowOrientation orientation)
     {
-        return CallMethodAsyncVoid(_setPreferredOrientation, orientation);
+        return CallMethodAsyncVoid(_setPreferredOrientation, (int)orientation);
     }
 
     /// <summary>
@@ -769,7 +769,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task<OrientationResult> SetPreferredOrientationWithResultAsync(global::HarmonyOS.ArkUI.WindowWindowOrientation orientation)
     {
-        return CallMethodAsync(_setPreferredOrientationWithResult, static h => new OrientationResult(h), orientation);
+        return CallMethodAsync(_setPreferredOrientationWithResult, static h => new OrientationResult(h), (int)orientation);
     }
 
     /// <summary>
@@ -881,7 +881,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetColorSpaceAsync(global::HarmonyOS.ArkUI.WindowWindowColorSpace colorSpace)
     {
-        return CallMethodAsyncVoid(_setColorSpace, colorSpace);
+        return CallMethodAsyncVoid(_setColorSpace, (int)colorSpace);
     }
 
     /// <summary>
@@ -889,7 +889,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetWindowColorSpaceAsync(global::HarmonyOS.ArkUI.WindowWindowColorSpace colorSpace)
     {
-        return CallMethodAsyncVoid(_setWindowColorSpace, colorSpace);
+        return CallMethodAsyncVoid(_setWindowColorSpace, (int)colorSpace);
     }
 
     /// <summary>
@@ -1161,7 +1161,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null)
     {
-        return CallMethodAsyncVoid(_maximize, presentation);
+        return CallMethodAsyncVoid(_maximize, NapiArg.Of(presentation));
     }
 
     /// <summary>
@@ -1169,7 +1169,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null, bool? acrossDisplay = null)
     {
-        return CallMethodAsyncVoid(_maximize, presentation, NapiArg.Of(acrossDisplay));
+        return CallMethodAsyncVoid(_maximize, NapiArg.Of(presentation), NapiArg.Of(acrossDisplay));
     }
 
     /// <summary>
@@ -1313,7 +1313,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetSubWindowModalAsync(bool isModal, global::HarmonyOS.ArkUI.ModalityType modalityType)
     {
-        return CallMethodAsyncVoid(_setSubWindowModal, isModal, modalityType);
+        return CallMethodAsyncVoid(_setSubWindowModal, isModal, (int)modalityType);
     }
 
     /// <summary>
@@ -1609,7 +1609,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public double ConvertOrientationAndRotation(global::HarmonyOS.ArkUI.RotationInfoType from, global::HarmonyOS.ArkUI.RotationInfoType to, double value)
     {
-        return CallMethod<double>(_convertOrientationAndRotation, from, to, value);
+        return CallMethod<double>(_convertOrientationAndRotation, (int)from, (int)to, value);
     }
 
     /// <summary>
@@ -1633,7 +1633,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public bool IsInWindowPostureMode(global::HarmonyOS.ArkUI.WindowPostureMode mode)
     {
-        return CallMethod<bool>(_isInWindowPostureMode, mode);
+        return CallMethod<bool>(_isInWindowPostureMode, (int)mode);
     }
 
     /// <summary>
@@ -1641,7 +1641,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public void OnWindowPostureModeChange(global::HarmonyOS.ArkUI.WindowPostureMode mode, IntPtr callback)
     {
-        CallMethodVoid(_onWindowPostureModeChange, mode, callback);
+        CallMethodVoid(_onWindowPostureModeChange, (int)mode, callback);
     }
 
     /// <summary>
@@ -1649,7 +1649,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public void OffWindowPostureModeChange(global::HarmonyOS.ArkUI.WindowPostureMode mode, IntPtr? callback = null)
     {
-        CallMethodVoid(_offWindowPostureModeChange, mode, NapiArg.Of(callback));
+        CallMethodVoid(_offWindowPostureModeChange, (int)mode, NapiArg.Of(callback));
     }
 
     /// <summary>
@@ -1657,7 +1657,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetWindowTransitionAnimationAsync(global::HarmonyOS.ArkUI.WindowTransitionType transitionType, IntPtr animation)
     {
-        return CallMethodAsyncVoid(_setWindowTransitionAnimation, transitionType, animation);
+        return CallMethodAsyncVoid(_setWindowTransitionAnimation, (int)transitionType, animation);
     }
 
     /// <summary>
@@ -1665,7 +1665,7 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public IntPtr GetWindowTransitionAnimation(global::HarmonyOS.ArkUI.WindowTransitionType transitionType)
     {
-        return CallMethod<IntPtr>(_getWindowTransitionAnimation, transitionType);
+        return CallMethod<IntPtr>(_getWindowTransitionAnimation, (int)transitionType);
     }
 
     /// <summary>
@@ -2504,22 +2504,22 @@ public sealed partial class WindowWindowInfo : JsObject
     /// <summary>
     /// isFocused
     /// </summary>
-    public bool? IsFocused => (bool?)NativeValue.ToBool(GetPropertyRaw(_isFocused));
+    public bool? IsFocused => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isFocused)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isFocused));
 
     /// <summary>
     /// globalDisplayRect
     /// </summary>
-    public WindowRect2? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_globalDisplayRect));
+    public WindowRect2? GlobalDisplayRect => NativeValue.IsNullOrUndefined(GetPropertyRaw(_globalDisplayRect)) ? null : new WindowRect2(GetPropertyRaw(_globalDisplayRect));
 
     /// <summary>
     /// displayId
     /// </summary>
-    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+    public double? DisplayId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_displayId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
 
     /// <summary>
     /// globalRect
     /// </summary>
-    public WindowRect2? GlobalRect => GetPropertyRaw(_globalRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_globalRect));
+    public WindowRect2? GlobalRect => NativeValue.IsNullOrUndefined(GetPropertyRaw(_globalRect)) ? null : new WindowRect2(GetPropertyRaw(_globalRect));
 
 }
 
@@ -2540,7 +2540,7 @@ public sealed partial class WindowLayoutInfo : JsObject
     /// <summary>
     /// windowAlpha
     /// </summary>
-    public double? WindowAlpha => (double?)NativeValue.ToDouble(GetPropertyRaw(_windowAlpha));
+    public double? WindowAlpha => NativeValue.IsNullOrUndefined(GetPropertyRaw(_windowAlpha)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_windowAlpha));
 
 }
 
@@ -2798,7 +2798,7 @@ public sealed partial class ShowWindowOptions : JsObject
     /// <summary>
     /// focusOnShow
     /// </summary>
-    public bool? FocusOnShow => (bool?)NativeValue.ToBool(GetPropertyRaw(_focusOnShow));
+    public bool? FocusOnShow => NativeValue.IsNullOrUndefined(GetPropertyRaw(_focusOnShow)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_focusOnShow));
 
 }
 
@@ -2813,7 +2813,7 @@ public sealed partial class MoveConfiguration : JsObject
     /// <summary>
     /// displayId
     /// </summary>
-    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+    public double? DisplayId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_displayId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
 
 }
 
@@ -2860,7 +2860,7 @@ public sealed partial class WindowProperties : JsObject
     /// <summary>
     /// windowType
     /// </summary>
-    public global::HarmonyOS.ArkUI.WindowType? WindowType => (global::HarmonyOS.ArkUI.WindowType?)(global::HarmonyOS.ArkUI.WindowType)NativeValue.ToInt(GetPropertyRaw(_windowType));
+    public global::HarmonyOS.ArkUI.WindowType? WindowType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_windowType)) ? null : (global::HarmonyOS.ArkUI.WindowType?)(global::HarmonyOS.ArkUI.WindowType)NativeValue.ToInt(GetPropertyRaw(_windowType));
 
     /// <summary>
     /// isFullScreen
@@ -2920,17 +2920,17 @@ public sealed partial class WindowProperties : JsObject
     /// <summary>
     /// displayId
     /// </summary>
-    public double? DisplayId => (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
+    public double? DisplayId => NativeValue.IsNullOrUndefined(GetPropertyRaw(_displayId)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_displayId));
 
     /// <summary>
     /// name
     /// </summary>
-    public string? Name => (string?)NativeValue.ToString(GetPropertyRaw(_name)) ?? string.Empty;
+    public string? Name => NativeValue.IsNullOrUndefined(GetPropertyRaw(_name)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_name));
 
     /// <summary>
     /// globalDisplayRect
     /// </summary>
-    public WindowRect2? GlobalDisplayRect => GetPropertyRaw(_globalDisplayRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_globalDisplayRect));
+    public WindowRect2? GlobalDisplayRect => NativeValue.IsNullOrUndefined(GetPropertyRaw(_globalDisplayRect)) ? null : new WindowRect2(GetPropertyRaw(_globalDisplayRect));
 
 }
 
@@ -3012,42 +3012,42 @@ public sealed partial class SystemBarProperties : JsObject
     /// <summary>
     /// statusBarColor
     /// </summary>
-    public string? StatusBarColor => (string?)NativeValue.ToString(GetPropertyRaw(_statusBarColor)) ?? string.Empty;
+    public string? StatusBarColor => NativeValue.IsNullOrUndefined(GetPropertyRaw(_statusBarColor)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_statusBarColor));
 
     /// <summary>
     /// isStatusBarLightIcon
     /// </summary>
-    public bool? IsStatusBarLightIcon => (bool?)NativeValue.ToBool(GetPropertyRaw(_isStatusBarLightIcon));
+    public bool? IsStatusBarLightIcon => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isStatusBarLightIcon)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isStatusBarLightIcon));
 
     /// <summary>
     /// statusBarContentColor
     /// </summary>
-    public string? StatusBarContentColor => (string?)NativeValue.ToString(GetPropertyRaw(_statusBarContentColor)) ?? string.Empty;
+    public string? StatusBarContentColor => NativeValue.IsNullOrUndefined(GetPropertyRaw(_statusBarContentColor)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_statusBarContentColor));
 
     /// <summary>
     /// navigationBarColor
     /// </summary>
-    public string? NavigationBarColor => (string?)NativeValue.ToString(GetPropertyRaw(_navigationBarColor)) ?? string.Empty;
+    public string? NavigationBarColor => NativeValue.IsNullOrUndefined(GetPropertyRaw(_navigationBarColor)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_navigationBarColor));
 
     /// <summary>
     /// isNavigationBarLightIcon
     /// </summary>
-    public bool? IsNavigationBarLightIcon => (bool?)NativeValue.ToBool(GetPropertyRaw(_isNavigationBarLightIcon));
+    public bool? IsNavigationBarLightIcon => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isNavigationBarLightIcon)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isNavigationBarLightIcon));
 
     /// <summary>
     /// navigationBarContentColor
     /// </summary>
-    public string? NavigationBarContentColor => (string?)NativeValue.ToString(GetPropertyRaw(_navigationBarContentColor)) ?? string.Empty;
+    public string? NavigationBarContentColor => NativeValue.IsNullOrUndefined(GetPropertyRaw(_navigationBarContentColor)) ? null : (string?)NativeValue.ToString(GetPropertyRaw(_navigationBarContentColor));
 
     /// <summary>
     /// enableStatusBarAnimation
     /// </summary>
-    public bool? EnableStatusBarAnimation => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableStatusBarAnimation));
+    public bool? EnableStatusBarAnimation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enableStatusBarAnimation)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enableStatusBarAnimation));
 
     /// <summary>
     /// enableNavigationBarAnimation
     /// </summary>
-    public bool? EnableNavigationBarAnimation => (bool?)NativeValue.ToBool(GetPropertyRaw(_enableNavigationBarAnimation));
+    public bool? EnableNavigationBarAnimation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_enableNavigationBarAnimation)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_enableNavigationBarAnimation));
 
 }
 
@@ -3094,17 +3094,17 @@ public sealed partial class MaximizeOptions : JsObject
     /// <summary>
     /// maximizePresentation
     /// </summary>
-    public global::HarmonyOS.ArkUI.MaximizePresentation? MaximizePresentation => (global::HarmonyOS.ArkUI.MaximizePresentation?)(global::HarmonyOS.ArkUI.MaximizePresentation)NativeValue.ToInt(GetPropertyRaw(_maximizePresentation));
+    public global::HarmonyOS.ArkUI.MaximizePresentation? MaximizePresentation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maximizePresentation)) ? null : (global::HarmonyOS.ArkUI.MaximizePresentation?)(global::HarmonyOS.ArkUI.MaximizePresentation)NativeValue.ToInt(GetPropertyRaw(_maximizePresentation));
 
     /// <summary>
     /// acrossDisplayPresentation
     /// </summary>
-    public global::HarmonyOS.ArkUI.AcrossDisplayPresentation? AcrossDisplayPresentation => (global::HarmonyOS.ArkUI.AcrossDisplayPresentation?)(global::HarmonyOS.ArkUI.AcrossDisplayPresentation)NativeValue.ToInt(GetPropertyRaw(_acrossDisplayPresentation));
+    public global::HarmonyOS.ArkUI.AcrossDisplayPresentation? AcrossDisplayPresentation => NativeValue.IsNullOrUndefined(GetPropertyRaw(_acrossDisplayPresentation)) ? null : (global::HarmonyOS.ArkUI.AcrossDisplayPresentation?)(global::HarmonyOS.ArkUI.AcrossDisplayPresentation)NativeValue.ToInt(GetPropertyRaw(_acrossDisplayPresentation));
 
     /// <summary>
     /// snapshotAnimationConfig
     /// </summary>
-    public WindowSnapshotAnimationConfig? SnapshotAnimationConfig => GetPropertyRaw(_snapshotAnimationConfig) == IntPtr.Zero ? null : new WindowSnapshotAnimationConfig(GetPropertyRaw(_snapshotAnimationConfig));
+    public WindowSnapshotAnimationConfig? SnapshotAnimationConfig => NativeValue.IsNullOrUndefined(GetPropertyRaw(_snapshotAnimationConfig)) ? null : new WindowSnapshotAnimationConfig(GetPropertyRaw(_snapshotAnimationConfig));
 
 }
 
@@ -3123,27 +3123,27 @@ public sealed partial class WindowLimits : JsObject
     /// <summary>
     /// maxWidth
     /// </summary>
-    public double? MaxWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxWidth));
+    public double? MaxWidth => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maxWidth)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_maxWidth));
 
     /// <summary>
     /// maxHeight
     /// </summary>
-    public double? MaxHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_maxHeight));
+    public double? MaxHeight => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maxHeight)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_maxHeight));
 
     /// <summary>
     /// minWidth
     /// </summary>
-    public double? MinWidth => (double?)NativeValue.ToDouble(GetPropertyRaw(_minWidth));
+    public double? MinWidth => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minWidth)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_minWidth));
 
     /// <summary>
     /// minHeight
     /// </summary>
-    public double? MinHeight => (double?)NativeValue.ToDouble(GetPropertyRaw(_minHeight));
+    public double? MinHeight => NativeValue.IsNullOrUndefined(GetPropertyRaw(_minHeight)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_minHeight));
 
     /// <summary>
     /// pixelUnit
     /// </summary>
-    public global::HarmonyOS.ArkUI.PixelUnit? PixelUnit => (global::HarmonyOS.ArkUI.PixelUnit?)(global::HarmonyOS.ArkUI.PixelUnit)NativeValue.ToInt(GetPropertyRaw(_pixelUnit));
+    public global::HarmonyOS.ArkUI.PixelUnit? PixelUnit => NativeValue.IsNullOrUndefined(GetPropertyRaw(_pixelUnit)) ? null : (global::HarmonyOS.ArkUI.PixelUnit?)(global::HarmonyOS.ArkUI.PixelUnit)NativeValue.ToInt(GetPropertyRaw(_pixelUnit));
 
 }
 
@@ -3159,12 +3159,12 @@ public sealed partial class WindowSnapshotAnimationConfig : JsObject
     /// <summary>
     /// duration
     /// </summary>
-    public double? Duration => (double?)NativeValue.ToDouble(GetPropertyRaw(_duration));
+    public double? Duration => NativeValue.IsNullOrUndefined(GetPropertyRaw(_duration)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_duration));
 
     /// <summary>
     /// delay
     /// </summary>
-    public double? Delay => (double?)NativeValue.ToDouble(GetPropertyRaw(_delay));
+    public double? Delay => NativeValue.IsNullOrUndefined(GetPropertyRaw(_delay)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_delay));
 
 }
 
@@ -3218,37 +3218,37 @@ public sealed partial class SubWindowOptions : JsObject
     /// <summary>
     /// isModal
     /// </summary>
-    public bool? IsModal => (bool?)NativeValue.ToBool(GetPropertyRaw(_isModal));
+    public bool? IsModal => NativeValue.IsNullOrUndefined(GetPropertyRaw(_isModal)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_isModal));
 
     /// <summary>
     /// modalityType
     /// </summary>
-    public global::HarmonyOS.ArkUI.ModalityType? ModalityType => (global::HarmonyOS.ArkUI.ModalityType?)(global::HarmonyOS.ArkUI.ModalityType)NativeValue.ToInt(GetPropertyRaw(_modalityType));
+    public global::HarmonyOS.ArkUI.ModalityType? ModalityType => NativeValue.IsNullOrUndefined(GetPropertyRaw(_modalityType)) ? null : (global::HarmonyOS.ArkUI.ModalityType?)(global::HarmonyOS.ArkUI.ModalityType)NativeValue.ToInt(GetPropertyRaw(_modalityType));
 
     /// <summary>
     /// windowRect
     /// </summary>
-    public WindowRect2? WindowRect => GetPropertyRaw(_windowRect) == IntPtr.Zero ? null : new WindowRect2(GetPropertyRaw(_windowRect));
+    public WindowRect2? WindowRect => NativeValue.IsNullOrUndefined(GetPropertyRaw(_windowRect)) ? null : new WindowRect2(GetPropertyRaw(_windowRect));
 
     /// <summary>
     /// maximizeSupported
     /// </summary>
-    public bool? MaximizeSupported => (bool?)NativeValue.ToBool(GetPropertyRaw(_maximizeSupported));
+    public bool? MaximizeSupported => NativeValue.IsNullOrUndefined(GetPropertyRaw(_maximizeSupported)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_maximizeSupported));
 
     /// <summary>
     /// zLevel
     /// </summary>
-    public double? ZLevel => (double?)NativeValue.ToDouble(GetPropertyRaw(_zLevel));
+    public double? ZLevel => NativeValue.IsNullOrUndefined(GetPropertyRaw(_zLevel)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_zLevel));
 
     /// <summary>
     /// outlineEnabled
     /// </summary>
-    public bool? OutlineEnabled => (bool?)NativeValue.ToBool(GetPropertyRaw(_outlineEnabled));
+    public bool? OutlineEnabled => NativeValue.IsNullOrUndefined(GetPropertyRaw(_outlineEnabled)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_outlineEnabled));
 
     /// <summary>
     /// zLevelAboveParentLoosened
     /// </summary>
-    public bool? ZLevelAboveParentLoosened => (bool?)NativeValue.ToBool(GetPropertyRaw(_zLevelAboveParentLoosened));
+    public bool? ZLevelAboveParentLoosened => NativeValue.IsNullOrUndefined(GetPropertyRaw(_zLevelAboveParentLoosened)) ? null : (bool?)NativeValue.ToBool(GetPropertyRaw(_zLevelAboveParentLoosened));
 
 }
 
@@ -3272,21 +3272,21 @@ public sealed partial class KeyFramePolicy : JsObject
     /// <summary>
     /// interval
     /// </summary>
-    public double? Interval => (double?)NativeValue.ToDouble(GetPropertyRaw(_interval));
+    public double? Interval => NativeValue.IsNullOrUndefined(GetPropertyRaw(_interval)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_interval));
 
     /// <summary>
     /// distance
     /// </summary>
-    public double? Distance => (double?)NativeValue.ToDouble(GetPropertyRaw(_distance));
+    public double? Distance => NativeValue.IsNullOrUndefined(GetPropertyRaw(_distance)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_distance));
 
     /// <summary>
     /// animationDuration
     /// </summary>
-    public double? AnimationDuration => (double?)NativeValue.ToDouble(GetPropertyRaw(_animationDuration));
+    public double? AnimationDuration => NativeValue.IsNullOrUndefined(GetPropertyRaw(_animationDuration)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_animationDuration));
 
     /// <summary>
     /// animationDelay
     /// </summary>
-    public double? AnimationDelay => (double?)NativeValue.ToDouble(GetPropertyRaw(_animationDelay));
+    public double? AnimationDelay => NativeValue.IsNullOrUndefined(GetPropertyRaw(_animationDelay)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_animationDelay));
 
 }

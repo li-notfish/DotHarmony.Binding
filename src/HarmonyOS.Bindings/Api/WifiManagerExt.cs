@@ -110,7 +110,7 @@ public static unsafe partial class WifiManagerExt
     /// </summary>
     public static void SetPowerMode(global::HarmonyOS.ArkUI.PowerMode mode)
     {
-        NodeApi.CallMethodVoid(Module, _setPowerMode, mode);
+        NodeApi.CallMethodVoid(Module, _setPowerMode, (int)mode);
     }
 
 }

@@ -253,17 +253,17 @@ public sealed partial class TranslateOption : JsObject
     /// <summary>
     /// x
     /// </summary>
-    public double? X => (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
+    public double? X => NativeValue.IsNullOrUndefined(GetPropertyRaw(_x)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
 
     /// <summary>
     /// y
     /// </summary>
-    public double? Y => (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
+    public double? Y => NativeValue.IsNullOrUndefined(GetPropertyRaw(_y)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
 
     /// <summary>
     /// z
     /// </summary>
-    public double? Z => (double?)NativeValue.ToDouble(GetPropertyRaw(_z));
+    public double? Z => NativeValue.IsNullOrUndefined(GetPropertyRaw(_z)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_z));
 
 }
 
@@ -282,27 +282,27 @@ public sealed partial class ScaleOption : JsObject
     /// <summary>
     /// x
     /// </summary>
-    public double? X => (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
+    public double? X => NativeValue.IsNullOrUndefined(GetPropertyRaw(_x)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
 
     /// <summary>
     /// y
     /// </summary>
-    public double? Y => (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
+    public double? Y => NativeValue.IsNullOrUndefined(GetPropertyRaw(_y)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
 
     /// <summary>
     /// z
     /// </summary>
-    public double? Z => (double?)NativeValue.ToDouble(GetPropertyRaw(_z));
+    public double? Z => NativeValue.IsNullOrUndefined(GetPropertyRaw(_z)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_z));
 
     /// <summary>
     /// centerX
     /// </summary>
-    public double? CenterX => (double?)NativeValue.ToDouble(GetPropertyRaw(_centerX));
+    public double? CenterX => NativeValue.IsNullOrUndefined(GetPropertyRaw(_centerX)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_centerX));
 
     /// <summary>
     /// centerY
     /// </summary>
-    public double? CenterY => (double?)NativeValue.ToDouble(GetPropertyRaw(_centerY));
+    public double? CenterY => NativeValue.IsNullOrUndefined(GetPropertyRaw(_centerY)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_centerY));
 
 }
 
@@ -322,32 +322,32 @@ public sealed partial class RotateOption : JsObject
     /// <summary>
     /// x
     /// </summary>
-    public double? X => (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
+    public double? X => NativeValue.IsNullOrUndefined(GetPropertyRaw(_x)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_x));
 
     /// <summary>
     /// y
     /// </summary>
-    public double? Y => (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
+    public double? Y => NativeValue.IsNullOrUndefined(GetPropertyRaw(_y)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_y));
 
     /// <summary>
     /// z
     /// </summary>
-    public double? Z => (double?)NativeValue.ToDouble(GetPropertyRaw(_z));
+    public double? Z => NativeValue.IsNullOrUndefined(GetPropertyRaw(_z)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_z));
 
     /// <summary>
     /// centerX
     /// </summary>
-    public double? CenterX => (double?)NativeValue.ToDouble(GetPropertyRaw(_centerX));
+    public double? CenterX => NativeValue.IsNullOrUndefined(GetPropertyRaw(_centerX)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_centerX));
 
     /// <summary>
     /// centerY
     /// </summary>
-    public double? CenterY => (double?)NativeValue.ToDouble(GetPropertyRaw(_centerY));
+    public double? CenterY => NativeValue.IsNullOrUndefined(GetPropertyRaw(_centerY)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_centerY));
 
     /// <summary>
     /// angle
     /// </summary>
-    public double? Angle => (double?)NativeValue.ToDouble(GetPropertyRaw(_angle));
+    public double? Angle => NativeValue.IsNullOrUndefined(GetPropertyRaw(_angle)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_angle));
 
 }
 
@@ -371,7 +371,7 @@ public sealed partial class PolyToPolyOptions : JsObject
     /// <summary>
     /// srcIndex
     /// </summary>
-    public double? SrcIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_srcIndex));
+    public double? SrcIndex => NativeValue.IsNullOrUndefined(GetPropertyRaw(_srcIndex)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_srcIndex));
 
     /// <summary>
     /// dst
@@ -381,12 +381,12 @@ public sealed partial class PolyToPolyOptions : JsObject
     /// <summary>
     /// dstIndex
     /// </summary>
-    public double? DstIndex => (double?)NativeValue.ToDouble(GetPropertyRaw(_dstIndex));
+    public double? DstIndex => NativeValue.IsNullOrUndefined(GetPropertyRaw(_dstIndex)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_dstIndex));
 
     /// <summary>
     /// pointCount
     /// </summary>
-    public double? PointCount => (double?)NativeValue.ToDouble(GetPropertyRaw(_pointCount));
+    public double? PointCount => NativeValue.IsNullOrUndefined(GetPropertyRaw(_pointCount)) ? null : (double?)NativeValue.ToDouble(GetPropertyRaw(_pointCount));
 
 }
 

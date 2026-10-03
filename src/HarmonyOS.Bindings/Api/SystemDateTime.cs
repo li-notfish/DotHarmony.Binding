@@ -137,7 +137,7 @@ public static unsafe partial class SystemDateTime
     /// </summary>
     public static double GetUptime(global::HarmonyOS.ArkUI.TimeType timeType, bool? isNanoseconds = null)
     {
-        return NodeApi.CallMethod<double>(Module, _getUptime, timeType, NapiArg.Of(isNanoseconds));
+        return NodeApi.CallMethod<double>(Module, _getUptime, (int)timeType, NapiArg.Of(isNanoseconds));
     }
 
     /// <summary>

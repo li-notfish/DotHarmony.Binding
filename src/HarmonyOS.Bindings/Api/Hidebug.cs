@@ -506,7 +506,7 @@ public static unsafe partial class Hidebug
     /// </summary>
     public static string StartAppTraceCapture(double[] tags, global::HarmonyOS.ArkUI.TraceFlag flag, double limitSize)
     {
-        return NodeApi.CallMethod<string>(Module, _startAppTraceCapture, NapiArg.Of(tags), flag, limitSize);
+        return NodeApi.CallMethod<string>(Module, _startAppTraceCapture, NapiArg.Of(tags), (int)flag, limitSize);
     }
 
     /// <summary>
@@ -586,7 +586,7 @@ public static unsafe partial class Hidebug
     /// </summary>
     public static void SetJsRawHeapTrimLevel(global::HarmonyOS.ArkUI.JsRawHeapTrimLevel level)
     {
-        NodeApi.CallMethodVoid(Module, _setJsRawHeapTrimLevel, level);
+        NodeApi.CallMethodVoid(Module, _setJsRawHeapTrimLevel, (int)level);
     }
 
     /// <summary>

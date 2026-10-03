@@ -109,7 +109,7 @@ public sealed partial class CompletionHandlerForAtomicServiceObject : JsObject
     /// </summary>
     public void OnAtomicServiceRequestFailure(string appId, global::HarmonyOS.ArkUI.FailureCode failureCode, string failureMessage)
     {
-        CallMethodVoid(_onAtomicServiceRequestFailure, appId, failureCode, failureMessage);
+        CallMethodVoid(_onAtomicServiceRequestFailure, appId, (int)failureCode, failureMessage);
     }
 
 }
