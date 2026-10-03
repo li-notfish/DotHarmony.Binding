@@ -8,6 +8,11 @@
 #   enum_targets                     —— 枚举产物（ArkUINodeTypes.g.cs + JSON 元数据）
 #   code_targets                     —— ABI 结构体/函数表/PInvoke 产物（A2 起）
 
+# per-TFM 条件包裹常量名（M3 平台化第一步）：code_targets 条目声明 tfm_guard: true 时，
+# 生成物主体包进 `#if <常量>` / `#endif`。默认全部不包裹（桌面全量定义的过渡态不变）；
+# 桌面桩体阶段再逐目标开启。
+tfm_guard: HARMONYOS
+
 headers:
   dir: arkui
   files:

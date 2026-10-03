@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- linux-musl-arm64 NativeAOT shared library -> staged host libs/arm64-v8a/libapp.so -->
-    <TargetFramework>net10.0</TargetFramework>
+    <!-- linux-musl-arm64 NativeAOT shared library -> staged host libs/arm64-v8a/libapp.so。
+         平台 TFM：net10.0-harmonyos 的注册片段由 HarmonyOS.Maui buildTransitive targets 导入 -->
+    <TargetFramework>net10.0-harmonyos</TargetFramework>
     <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
@@ -27,9 +28,26 @@
     <MauiXamlInflator>SourceGen</MauiXamlInflator>
   </PropertyGroup>
 
+  <!-- net10.0-harmonyos 平台注册（无 workload 的最小片段）：TargetPlatformSupported 跳过
+       NETSDK1139；SdkSupportedTargetPlatformVersion 提供合法平台版本（NETSDK1140/NU1012）；
+       CA1418 静默未知平台名分析器警告。harmonyos TFM 下 HARMONYOS 常量由 SDK 自动定义
+       （TargetPlatformIdentifier 大写）。必须内联在工程主体（或 Directory.Build.targets）——
+       首次还原时 NuGet buildTransitive 导入尚不存在，包内片段无法生效。 -->
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('-harmonyos'))">
+    <TargetPlatformSupported>true</TargetPlatformSupported>
+    <TargetPlatformVersion Condition="'$(TargetPlatformVersion)' == ''">1.0</TargetPlatformVersion>
+    <NoWarn>$(NoWarn);CA1418</NoWarn>
+  </PropertyGroup>
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-harmonyos'))">
+    <SdkSupportedTargetPlatformVersion Include="1.0" />
+  </ItemGroup>
+
   <ItemGroup>
     <!-- buildTransitive targets ship HarmonyStageHost/HarmonyBuildLibApp/HarmonyBuildHap/HarmonyDeploy/HarmonyRun -->
     <PackageReference Include="HarmonyOS.Maui" Version="HarmonyPackageVersion" />
+    <!-- 必须显式引用：作为传递依赖时 build 资产被 exclude，Crosscompile.targets 不导入，
+         Windows 交叉 NativeAOT 会报 Cross-OS native compilation is not supported -->
+    <PackageReference Include="PublishAotClang" Version="1.0.5" />
   </ItemGroup>
 
 </Project>

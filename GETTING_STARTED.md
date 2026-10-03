@@ -65,6 +65,14 @@ dotnet build MyApp -t:HarmonyRun         # 全链路
 宿主编排 targets 由 `HarmonyOS.Maui` 包经 buildTransitive 自动导入，工程内无需手写 Import。
 release 签名通过属性簇配置（见 README「NuGet 包与模板」一节）。
 
+模板工程的目标框架是平台 TFM `net10.0-harmonyos`，其平台注册片段
+（`TargetPlatformSupported` 等三行属性 + `SdkSupportedTargetPlatformVersion` 一项）
+已内联在模板 csproj 中。**若把 `HarmonyOS.Maui` 加到既有工程并改用 `net10.0-harmonyos`**，
+需把同一片段复制到该工程（或 Directory.Build.targets）——首次还原时 NuGet
+buildTransitive 导入尚不存在，包内片段无法生效（NETSDK1139/NU1012）；同时需显式
+`PackageReference Include="PublishAotClang"`（作为传递依赖时 build 资产被排除，
+Windows 交叉 NativeAOT 会报 Cross-OS native compilation is not supported）。
+
 ## 2. 路线 B：仓库内参照开发（samples/dotnet/）
 
 > 完整可运行的参照：[samples/dotnet/HelloApp](samples/dotnet/HelloApp)（XAML + 导航 + 手势 + 托管布局）与

@@ -112,7 +112,7 @@ bash scripts/deploy-hap.sh
 
 | 变量 | 作用 | 探测顺序 |
 |---|---|---|
-| `OHOS_SDK_BASE` | OpenHarmony SDK 根目录（含 `26.0.0/toolchains`） | → `OHSDK_HOME` → `D:\Harmony\OpenHarmony\Sdk` → DevEco 内置 sdk |
+| `OHOS_SDK_BASE` | OpenHarmony SDK 根目录（含 `26.0.0/toolchains`） | → `OHSDK_HOME` → DevEco 内置 sdk（`D:\Program Files\Huawei\DevEco Studio\sdk`）→ `D:\Harmony\OpenHarmony\Sdk` |
 | `DEVECO_HOME` | DevEco Studio 安装目录 | → `D:\Program Files\Huawei\DevEco Studio` → C 盘同名 |
 | `HOST_DIR` | 宿主目录覆盖（三脚本通用；targets 生成模式自动指向 `obj/harmony/host`） | `samples/HarmonyHost` |
 

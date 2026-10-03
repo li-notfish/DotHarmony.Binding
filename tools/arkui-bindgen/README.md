@@ -30,8 +30,9 @@ python -m arkui_bindgen diff               # 全部声明 snapshot 的目标
 python -m arkui_bindgen diff --target animate
 ```
 
-`--sdk` 省略时按 `OHOS_SDK_BASE` → `OHSDK_HOME` → `D:\Harmony\OpenHarmony\Sdk` → DevEco 内置探测
-（与 TS 侧 api-generator 同序）。
+`--sdk` 省略时按 `OHOS_SDK_BASE` → `OHSDK_HOME` → DevEco 内置
+（`D:\Program Files\Huawei\DevEco Studio\sdk\default\openharmony`）→ `D:\Harmony\OpenHarmony\Sdk`
+探测（与 TS 侧 api-generator 同序）。
 
 > `check` 依赖本机 OpenHarmony SDK 头文件，因此当前 GitHub Actions 最小 CI 不执行该步骤；
 > 本地合入前请先运行一次。

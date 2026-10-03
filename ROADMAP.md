@@ -222,8 +222,22 @@ Flashlight、Map/FilePicker/Screenshot；传感器族与 Geolocation/MediaPicker
     覆盖已知 API 缺映射、显式权限未使用、映射歧义三类诊断，并通过本地 NuGet 包消费者验收
   - v3 已完成：支持 `harmony-permissions.custom.json` 自定义映射、XAML 事件来源定位、
     `HMP005`/`HMP006` 冲突与格式诊断；包消费者验收覆盖 XAML + 自定义映射 + ProjectReference
-- **远期**：真 `net10.0-harmonyos` workload 化（前置：生成器 per-TFM 输出、KnownFrameworkReference/
-  RuntimePack 注册与 RID 图策略、workload manifest 广告链；需真实多 RID 需求支撑）
+- **平台 TFM 第一步（已完成）**：`net10.0-harmonyos` 落地——Interop/Bindings 双目标
+  （`net10.0;net10.0-harmonyos`），`HARMONYOS` 常量改为 TFM 驱动（harmonyos TFM 由 SDK 按
+  TargetPlatformIdentifier 自动定义；桌面 net10.0 目标在库级 props 过渡性全量定义，
+  `#else` 死代码语义与桌面测试资产不变）；无 workload 的最小平台注册片段
+  （`TargetPlatformSupported` + `SdkSupportedTargetPlatformVersion` + `TargetPlatformVersion=1.0`
+  + CA1418 静默）固化于根 `Directory.Build.targets` 与模板工程（必须内联/Directory.Build.targets——
+  首次还原时 NuGet buildTransitive 导入尚不存在，包内片段无法生效，实测 NETSDK1139）；
+  生成器 `arkui-bindgen` 支持 per-TFM `#if` 包裹（`semantics.yaml` 顶层 `tfm_guard` 声明常量名，
+  code_target 条目 `tfm_guard: true` 开启，默认不包裹、check/diff 零漂移）；
+  模板工程 `harmony-maui` 已切平台 TFM，端到端验证（StageHost → PublishAotClang 双架构 →
+  build-hap → 模拟器 HarmonyRun）通过。另修复两个包分发缺口：`PublishAotClang` 需在应用工程
+  显式引用（传递依赖 exclude=Build 导致交叉 AOT 报错）、`patch-openharmony-nativeaot.ps1`
+  补入包内 scripts。
+- **远期**：真 workload 化（前置：`HARMONYOS` 桌面全量定义摘除（桌面桩体化，生成器 per-TFM
+  包裹逐目标开启）、KnownFrameworkReference/RuntimePack 注册与 RID 图策略、
+  workload manifest 广告链；需真实多 RID 需求支撑）
 
 ---
 

@@ -35,6 +35,37 @@ def _emit():
     return emit_code_target("mini", TGT, model, SimpleNamespace(_raw=SEM_RAW))
 
 
+def _emit_guarded(tgt_extra: dict, sem_extra: dict | None = None):
+    model = parse_headers([FIX / "mini_animate.h"], [FIX])
+    tgt = {**TGT, **tgt_extra}
+    raw = {**SEM_RAW, **(sem_extra or {})}
+    return emit_code_target("mini", tgt, model, SimpleNamespace(_raw=raw))
+
+
+def test_tfm_guard_default_off():
+    # 未声明 tfm_guard：产物无包裹（现状口径，check/diff 零漂移）
+    text = _emit()
+    assert "#if " not in text
+    assert "#endif" not in text
+
+
+def test_tfm_guard_wraps_body_with_default_constant():
+    text = _emit_guarded({"tfm_guard": True})
+    i_comment = text.index("// 来源:")
+    i_if = text.index("#if HARMONYOS")
+    i_nullable = text.index("#nullable enable")
+    assert i_comment < i_if < i_nullable
+    assert text.rstrip().endswith("#endif // HARMONYOS")
+    # 包裹不改变签名清单：与未包裹产物逐签名一致
+    assert diff_texts(text, _emit()) == []
+
+
+def test_tfm_guard_constant_name_from_semantics():
+    text = _emit_guarded({"tfm_guard": True}, {"tfm_guard": "HARMONYOS_NEXT"})
+    assert "#if HARMONYOS_NEXT" in text
+    assert text.rstrip().endswith("#endif // HARMONYOS_NEXT")
+
+
 def test_struct_fields_and_case():
     text = _emit()
     assert "internal unsafe struct Mini_Callback" in text

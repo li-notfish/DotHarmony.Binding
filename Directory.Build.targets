@@ -1,0 +1,26 @@
+<!--
+  Directory.Build.targets：net10.0-harmonyos 平台注册（无 workload 的最小片段，
+  SDK 10.0.401 spike 实测通过）。
+
+  TargetPlatformSupported 跳过 NETSDK1139；SdkSupportedTargetPlatformVersion 提供合法
+  平台版本（跳过 NETSDK1140/NU1012）；CA1418 对未知平台名的分析器警告静默。
+  harmonyos TFM 下 HARMONYOS 常量由 SDK 自动定义（GenerateTargetPlatformDefineConstants，
+  取 TargetPlatformIdentifier 大写）。
+
+  为什么放 .targets 而不是 .props：props（含 NuGet buildTransitive props）在工程主体
+  之前求值，此时单目标工程的 $(TargetFramework) 尚未定义，条件会失效（模板消费方
+  实测 NETSDK1139）；.targets 在工程主体之后、所有 target 运行之前求值，条件可靠。
+  包消费方经 HarmonyOS.Maui buildTransitive targets 获得同一片段。
+-->
+<Project>
+
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('-harmonyos'))">
+    <TargetPlatformSupported>true</TargetPlatformSupported>
+    <TargetPlatformVersion Condition="'$(TargetPlatformVersion)' == ''">1.0</TargetPlatformVersion>
+    <NoWarn>$(NoWarn);CA1418</NoWarn>
+  </PropertyGroup>
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-harmonyos'))">
+    <SdkSupportedTargetPlatformVersion Include="1.0" />
+  </ItemGroup>
+
+</Project>
