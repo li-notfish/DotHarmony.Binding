@@ -443,16 +443,25 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
             return;
         if (locked && _lastRootWidth > 0)
         {
-            _mainColumn.SetWidth(ResolveLockedContentWidth(_lastRootWidth, HarmonyShellTheme.FlyoutWidthVp));
-            _mainColumn.SetPosition(HarmonyShellTheme.FlyoutWidthVp, 0f);
+            // 窄屏（手机竖屏）下 280vp 面板会把内容挤成窄条：面板宽钳制到根宽 60%，
+            // 保证内容区至少保留 40% 可交互（含切回 Flyout 的入口）
+            var panelWidth = ResolveLockedFlyoutWidth(_lastRootWidth, HarmonyShellTheme.FlyoutWidthVp);
+            _flyoutPanel?.SetWidth(panelWidth);
+            _mainColumn.SetWidth(ResolveLockedContentWidth(_lastRootWidth, panelWidth));
+            _mainColumn.SetPosition(panelWidth, 0f);
         }
         else if (!locked)
         {
+            _flyoutPanel?.SetWidth(HarmonyShellTheme.FlyoutWidthVp);
             _mainColumn.SetWidthPercent(1.0f);
             _mainColumn.SetPosition(0f, 0f);
         }
         // locked 但根尺寸未就绪：等 OnRootSizeChange 回填
     }
+
+    /// <summary>Locked 并排时面板有效宽度：主题宽与根宽 60% 取小（窄屏保底内容区）。</summary>
+    internal static float ResolveLockedFlyoutWidth(float rootWidth, float flyoutWidth)
+        => Math.Min(flyoutWidth, rootWidth * 0.6f);
 
     /// <summary>Locked 并排时主列宽度：根宽 - 面板宽，下限 0（窄屏/超宽面板不设负宽）。</summary>
     internal static float ResolveLockedContentWidth(float rootWidth, float flyoutWidth)

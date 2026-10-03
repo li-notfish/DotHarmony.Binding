@@ -19,4 +19,12 @@ public class ShellFlyoutBehaviorTests
     [Fact]
     public void LockedContentWidth_ExactFit_ReturnsZero()
         => Assert.Equal(0f, HarmonyShellHandler.ResolveLockedContentWidth(280f, 280f));
+
+    [Fact]
+    public void LockedFlyoutWidth_WideRoot_KeepsThemeWidth()
+        => Assert.Equal(280f, HarmonyShellHandler.ResolveLockedFlyoutWidth(800f, 280f));
+
+    [Fact]
+    public void LockedFlyoutWidth_NarrowPhone_ClampsTo60Percent()
+        => Assert.Equal(216.0, (double)HarmonyShellHandler.ResolveLockedFlyoutWidth(360f, 280f), 3);
 }

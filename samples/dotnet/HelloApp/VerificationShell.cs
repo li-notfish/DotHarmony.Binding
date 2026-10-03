@@ -12,11 +12,25 @@ public class AppShell : Shell
 {
     public static AppShell? Instance { get; private set; }
 
+    /// <summary>Locked ↔ Flyout 切换（主页按钮与 Flyout 头部入口共用）。</summary>
+    public static void ToggleFlyoutBehavior()
+    {
+        var sh = Instance!;
+        sh.FlyoutBehavior = sh.FlyoutBehavior == FlyoutBehavior.Locked
+            ? FlyoutBehavior.Flyout : FlyoutBehavior.Locked;
+        HiLog.Info("VProbe", $"[V][BEHAVIOR] {sh.FlyoutBehavior}");
+    }
+
     public AppShell()
     {
         Instance = this;
         HarmonyShellNavigation.RegisterRoute("probeDetail", typeof(ProbeDetailPage));
         HarmonyShellNavigation.RegisterRoute("probeGrid", typeof(GridProbePage));
+
+        // Locked 并排后内容区极窄，主页按钮可能不可达：Flyout 头部常驻一个切回入口
+        var headerToggle = new Button { Text = "切换 Locked/Flyout" };
+        headerToggle.Clicked += (_, _) => ToggleFlyoutBehavior();
+        FlyoutHeader = headerToggle;
 
         Items.Add(new ShellItem
         {
@@ -92,10 +106,7 @@ public class ShellHomePage : ContentPage
         var lockBtn = new Button { Text = "Toggle FlyoutBehavior Locked" };
         lockBtn.Clicked += (_, _) =>
         {
-            var sh = AppShell.Instance!;
-            sh.FlyoutBehavior = sh.FlyoutBehavior == FlyoutBehavior.Locked
-                ? FlyoutBehavior.Flyout : FlyoutBehavior.Locked;
-            HiLog.Info("VProbe", $"[V][BEHAVIOR] {sh.FlyoutBehavior}");
+            AppShell.ToggleFlyoutBehavior();
         };
         layout.Children.Add(lockBtn);
 
