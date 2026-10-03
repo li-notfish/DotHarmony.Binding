@@ -122,8 +122,7 @@ internal static class PromiseTaskBridge
             var state = TakeState(env, info, out var firstArg, out gch);
             if (state.Done)
             {
-                NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-                return undefined;
+                return CallbackTrampolines.SafeReturnUndefined(env);
             }
             state.Done = true;
             object? value = state.Convert != null
@@ -143,8 +142,7 @@ internal static class PromiseTaskBridge
         {
             if (gch.IsAllocated) gch.Free();
         }
-        NativeNodeApi.napi_get_undefined(env, out var undefinedRet).ThrowIfFailed();
-        return undefinedRet;
+        return CallbackTrampolines.SafeReturnUndefined(env);
     }
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -156,8 +154,7 @@ internal static class PromiseTaskBridge
             var state = TakeState(env, info, out var reasonArg, out gch);
             if (state.Done)
             {
-                NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-                return undefined;
+                return CallbackTrampolines.SafeReturnUndefined(env);
             }
             state.Done = true;
             string? reason = null;
@@ -177,8 +174,7 @@ internal static class PromiseTaskBridge
         {
             if (gch.IsAllocated) gch.Free();
         }
-        NativeNodeApi.napi_get_undefined(env, out var undefinedRet).ThrowIfFailed();
-        return undefinedRet;
+        return CallbackTrampolines.SafeReturnUndefined(env);
     }
 #endif
 }

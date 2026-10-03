@@ -378,6 +378,25 @@ public static class NodeApi
     }
 
     /// <summary>
+    /// 把 span 参数回调包装为 JS 回调函数。常规参数数量走栈缓冲，无逐次 IntPtr[] 分配。
+    /// </summary>
+    public static (IntPtr jsFunc, GCHandle Handle) CreateCallbackFunction(Action<ReadOnlySpan<IntPtr>> adapted)
+    {
+#if HARMONYOS
+        ArgumentNullException.ThrowIfNull(adapted);
+        var gch = GCHandle.Alloc(adapted);
+        var env = NapiEnv.Current;
+        var nameBytes = "callback"u8.ToArray();
+        NativeNodeApi.napi_create_function(
+            env, nameBytes, (IntPtr)nameBytes.Length,
+            CallbackTrampolines.ArgsTrampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc).ThrowIfFailed();
+        return (jsFunc, gch);
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>
     /// 调用组件方法（非链式）
     /// </summary>
     /// <typeparam name="T">返回类型</typeparam>

@@ -21,7 +21,11 @@ public abstract unsafe class ArkUIGestureRecognizer : IDisposable
     private ArkUI_NodeHandle _attachedNode;
     private GCHandle _extraParams;
     private bool _disposed;
+    private bool _disposePending;
     private Action<ArkUIGestureEvent>? _callback;
+
+    [ThreadStatic]
+    private static bool _inGestureDispatch;
 
     private static readonly delegate* unmanaged<ArkUI_GestureEvent*, void*, void> Trampoline = &Dispatch;
 
@@ -87,6 +91,17 @@ public abstract unsafe class ArkUIGestureRecognizer : IDisposable
     public void Dispose()
     {
         if (_disposed) return;
+
+        if (_inGestureDispatch)
+        {
+            if (_disposePending)
+                return;
+
+            _disposePending = true;
+            MainThreadDispatcher.Post(Dispose);
+            return;
+        }
+
         _disposed = true;
         Detach();
         if (!_recognizer.IsNull)
@@ -105,19 +120,45 @@ public abstract unsafe class ArkUIGestureRecognizer : IDisposable
 
     private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_disposed, this);
 
+    internal bool IsTestDisposed => _disposed;
+
+    internal void TestDisposeDuringDispatch()
+    {
+        _inGestureDispatch = true;
+        try
+        {
+            Dispose();
+        }
+        finally
+        {
+            _inGestureDispatch = false;
+        }
+    }
+
     [UnmanagedCallersOnly]
     private static void Dispatch(ArkUI_GestureEvent* eventPtr, void* extraParams)
     {
+        ArkUIGestureRecognizer? target = null;
         try
         {
-            var target = GCHandle.FromIntPtr((IntPtr)extraParams).Target as ArkUIGestureRecognizer;
+            target = GCHandle.FromIntPtr((IntPtr)extraParams).Target as ArkUIGestureRecognizer;
             if (target?._callback is not { } cb)
                 return;
-            cb(new ArkUIGestureEvent(eventPtr, target._attachedNode));
+
+            _inGestureDispatch = true;
+            try
+            {
+                cb(new ArkUIGestureEvent(eventPtr, target._attachedNode));
+            }
+            finally
+            {
+                _inGestureDispatch = false;
+            }
         }
         catch (Exception ex)
         {
             HiLog.Error("HarmonyGestures", $"gesture dispatch error: {ex.GetType().Name}: {ex.Message}");
+            _inGestureDispatch = false;
         }
     }
 }

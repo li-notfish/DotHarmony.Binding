@@ -49,5 +49,6 @@
     <InternalsVisibleTo Include="HarmonyEngineTests" />
     <!-- Essentials 装拆分前经 Maui 装 IVT 触达生成类型 internal 成员，拆分后自带条目 -->
     <InternalsVisibleTo Include="HarmonyOS.Essentials" />
+    <InternalsVisibleTo Include="app" />
   </ItemGroup>
 </Project>

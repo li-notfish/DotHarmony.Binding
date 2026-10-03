@@ -518,7 +518,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// 编译器对 ≤N 元素的实参栈分配（全仓最热的原生 API 路径）。</summary>
     protected void SetNumericAttribute(ArkUI_NodeAttributeType attribute, params ReadOnlySpan<ArkUI_NumberValue> values)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         fixed (ArkUI_NumberValue* p = values)
         {
             var item = new ArkUI_AttributeItem { value = p, size = values.Length };
@@ -531,7 +531,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>设置字符串型属性</summary>
     protected void SetStringAttribute(ArkUI_NodeAttributeType attribute, string value)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         // 原生侧按 NUL 结尾 C 串读取：GetBytes 不补终止符，长度恰好时会越界读
         // （短文本侥幸正常、长文本被截断/吃掉）——显式补 0，空串即 "\0"
         var utf8 = new byte[Encoding.UTF8.GetByteCount(value) + 1];
@@ -548,7 +548,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>设置对象型属性（如 ArkUI_TextStyle 等复杂结构）</summary>
     protected void SetObjectAttribute(ArkUI_NodeAttributeType attribute, void* objectPtr)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         var item = new ArkUI_AttributeItem { @object = objectPtr };
         var status = ArkUINativeApi.SetAttribute(_handle, attribute, &item);
         if (status != 0)
@@ -558,7 +558,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>复位属性到默认值</summary>
     protected void ResetAttribute(ArkUI_NodeAttributeType attribute)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         var status = ArkUINativeApi.ResetAttribute(_handle, attribute);
         if (status != 0)
             throw new InvalidOperationException($"ResetAttribute({attribute}) failed: {status}");
@@ -569,7 +569,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>注册节点事件处理器（同类型事件覆盖式注册，符合 ArkUI 语义）</summary>
     protected void On(ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         _handlers.Add(eventType);
         // 注册进全局分发总线（含首次时的原生 receiver 注册），再向节点注册事件
         NodeEventBus.Register(_targetId, eventType, handler);
@@ -581,7 +581,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>注销节点事件处理器</summary>
     protected void Off(ArkUI_NodeEventType eventType)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         if (_handlers.Remove(eventType))
         {
             NodeEventBus.Unregister(_targetId, eventType);
@@ -606,7 +606,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>追加子节点</summary>
     public void AddChild(ArkUINodeBase child)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
+        child.EnsureHandle();
         CheckAlive(child);
         var status = ArkUINativeApi.AddChild(_handle, child._handle);
         if (status != 0)
@@ -616,7 +617,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>移除子节点</summary>
     public void RemoveChild(ArkUINodeBase child)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
+        child.EnsureHandle();
         CheckAlive(child);
         var status = ArkUINativeApi.RemoveChild(_handle, child._handle);
         if (status != 0)
@@ -626,7 +628,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>移除全部子节点</summary>
     public void RemoveAllChildren()
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         var status = ArkUINativeApi.RemoveAllChildren(_handle);
         if (status != 0)
             throw new InvalidOperationException($"RemoveAllChildren failed: {status}");
@@ -635,7 +637,9 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>在指定兄弟节点后插入子节点</summary>
     public void InsertChildAfter(ArkUINodeBase child, ArkUINodeBase? sibling)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
+        child.EnsureHandle();
+        sibling?.EnsureHandle();
         CheckAlive(child);
         var status = ArkUINativeApi.InsertChildAfter(
             _handle, child._handle, sibling?._handle ?? default);
@@ -646,7 +650,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>在指定位置插入子节点</summary>
     public void InsertChildAt(ArkUINodeBase child, int position)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
+        child.EnsureHandle();
         CheckAlive(child);
         var status = ArkUINativeApi.InsertChildAt(_handle, child._handle, position);
         if (status != 0)
@@ -668,21 +673,21 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>可拖拽（OH_ArkUI_SetNodeDraggable；返回 0 成功）</summary>
     public int SetDraggable(bool enabled)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         return ArkUINativeApi.SetNodeDraggable(_handle, enabled);
     }
 
     /// <summary>放侧放行任意拖拽数据类型（OH_ArkUI_AllowNodeAllDropDataTypes；返回 0 成功）</summary>
     public int AllowAllDropDataTypes()
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         return ArkUINativeApi.AllowNodeAllDropDataTypes(_handle);
     }
 
     /// <summary>挂载虚拟化 adapter（NODE_LIST_NODE_ADAPTER，item.@object；返回 0 成功）</summary>
     public int SetNodeAdapter(IntPtr adapterHandle)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         var item = new ArkUI_AttributeItem { @object = (void*)adapterHandle };
         var status = ArkUINativeApi.SetAttribute(
             _handle, ArkUI_NodeAttributeType.NODE_LIST_NODE_ADAPTER, &item);
@@ -694,7 +699,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>摘除虚拟化 adapter（NODE_LIST_NODE_ADAPTER 复位默认；dispose adapter 前必须先摘）</summary>
     public void ResetNodeAdapter()
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         var status = ArkUINativeApi.ResetAttribute(
             _handle, ArkUI_NodeAttributeType.NODE_LIST_NODE_ADAPTER);
         if (status != 0)
@@ -732,6 +737,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     protected virtual void Dispose(bool disposing)
     {
         if (_disposed) return;
+        EnsureHandle();
 
         if (!_handle.IsNull)
         {
@@ -756,8 +762,14 @@ public abstract unsafe class ArkUINodeBase : IDisposable
 
     private void ThrowIfDisposed()
     {
+        EnsureHandle();
+    }
+
+    private void EnsureHandle()
+    {
         if (_disposed)
             throw new ObjectDisposedException(GetType().Name);
+        NativeMainThread.Ensure();
     }
 
     private static void CheckAlive(ArkUINodeBase? node)

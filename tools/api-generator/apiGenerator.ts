@@ -1174,7 +1174,7 @@ export class ApiGenerator {
         const t = param.type.replace(/\?$/, '');
         if (t === 'string') return expr;
         if (t === 'IntPtr') return nullable ? `NapiArg.Of(${expr})` : expr;
-        if (t.startsWith('global::HarmonyOS.ArkUI.') && !t.endsWith('[]')) return expr; // 枚举（Enum 隐式转换）——枚举数组走 Of
+        if (t.startsWith('global::HarmonyOS.ArkUI.') && !t.endsWith('[]')) return `(int)${expr}`; // 枚举强制 int，避免 Enum 装箱；枚举数组走 Of
         if (PRIMITIVE_TYPES.has(t) && !nullable) return expr;
         return `NapiArg.Of(${expr})`;
     }

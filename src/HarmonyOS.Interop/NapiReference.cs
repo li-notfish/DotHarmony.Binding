@@ -1,5 +1,6 @@
 #if HARMONYOS
 using System;
+using System.Threading;
 
 namespace HarmonyOS.Interop;
 
@@ -8,8 +9,13 @@ namespace HarmonyOS.Interop;
 /// </summary>
 internal class NapiReference : IDisposable
 {
+    private const int Active = 0;
+    private const int Disposing = 1;
+    private const int Disposed = 2;
+
+    private readonly IntPtr _env;
     private IntPtr _ref;
-    private bool _disposed;
+    private int _disposeState;
 
     /// <summary>
     /// 创建对 napi_value 的引用
@@ -20,7 +26,8 @@ internal class NapiReference : IDisposable
             throw new ArgumentNullException(nameof(napiValue));
 
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_create_reference(env, napiValue, 1, out var napiRef);
+        _env = env;
+        NativeNodeApi.napi_create_reference(env, napiValue, 1, out var napiRef).ThrowIfFailed();
         _ref = napiRef;
     }
 
@@ -31,11 +38,10 @@ internal class NapiReference : IDisposable
     {
         get
         {
-            if (_disposed)
+            if (Volatile.Read(ref _disposeState) != Active)
                 throw new ObjectDisposedException(nameof(NapiReference));
 
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_get_reference_value(env, _ref, out var value);
+            NativeNodeApi.napi_get_reference_value(_env, _ref, out var value).ThrowIfFailed();
             return value;
         }
     }
@@ -59,31 +65,39 @@ internal class NapiReference : IDisposable
     /// </summary>
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
-        {
-            if (disposing)
-            {
-                // 释放托管资源
-            }
+        if (Interlocked.Exchange(ref _disposeState, Disposing) != Active)
+            return;
 
-            if (_ref != IntPtr.Zero)
+        try
+        {
+            var reference = _ref;
+            if (reference != IntPtr.Zero)
             {
-                // napi_delete_reference 只允许在持有 napi_env 的 JS 线程调用
-                // （env 为 ThreadStatic；napi_ref 绑定其创建时的 env 实例）。
-                // 终结器线程上没有 env——直接落原生既会抛异常终止进程、也泄漏引用，
-                // 改由队列暂存，待 JS 线程事件分发时批量回收（见 NapiFinalizationQueue）。
-                if (NapiEnv.IsAvailable)
+                // napi_ref is bound to the env that created it. Direct deletion is
+                // safe only when the current thread carries that same env.
+                if (NapiEnv.IsAvailable && NapiEnv.Current == _env)
                 {
-                    NativeNodeApi.napi_delete_reference(NapiEnv.Current, _ref);
+                    try
+                    {
+                        NativeNodeApi.napi_delete_reference(_env, reference).ThrowIfFailed();
+                    }
+                    catch (Exception ex)
+                    {
+                        HiLog.Error("NapiReference", $"delete failed, deferred: {ex.GetType().Name}: {ex.Message}");
+                        NapiFinalizationQueue.Enqueue(_env, reference);
+                    }
                 }
                 else
                 {
-                    NapiFinalizationQueue.Enqueue(_ref);
+                    NapiFinalizationQueue.Enqueue(_env, reference);
                 }
+
                 _ref = IntPtr.Zero;
             }
-
-            _disposed = true;
+        }
+        finally
+        {
+            Volatile.Write(ref _disposeState, Disposed);
         }
     }
 

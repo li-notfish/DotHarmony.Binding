@@ -41,6 +41,8 @@ public partial class MainPage : ContentPage
     {
         try
         {
+            await InteropStress.RunAsync();
+            await ResumeOnUiAsync();
             var throughput = await MeasureTsfThroughputAsync(TsfnIterations);
             HiLog.Info("Perf", $"PERF_TSFN_THROUGHPUT_OPS_PER_SEC={throughput:F2}");
             HiLog.Info("Perf", "PERF_DONE");
@@ -51,6 +53,13 @@ public partial class MainPage : ContentPage
             HiLog.Error("Perf", $"PERF_FAILED: {ex.GetType().Name}: {ex.Message}");
             _status.Text = "failed";
         }
+    }
+
+    private static Task ResumeOnUiAsync()
+    {
+        var completion = new TaskCompletionSource();
+        MainThreadDispatcher.Post(() => completion.TrySetResult());
+        return completion.Task;
     }
 
     private static async Task<double> MeasureTsfThroughputAsync(int iterations)

@@ -172,7 +172,7 @@ public static class ArkTsEngine
             NativeNodeApi.napi_create_reference(env, bridgeValue, 1, out _bridgeRef).ThrowIfFailed();
 
             // 把回流回调交给引擎（GCHandle 由进程生命周期持有）
-            var (jsFunc, handle) = NodeApi.CreateCallbackFunction((Action<IntPtr[]>)OnEventFromJs);
+            var (jsFunc, handle) = NodeApi.CreateCallbackFunction((Action<ReadOnlySpan<IntPtr>>)OnEventFromJs);
             _onEventHandle = handle;
             NodeApi.CallMethodVoid(bridgeValue, "init", NapiArg.Of(jsFunc));
 
@@ -194,7 +194,7 @@ public static class ArkTsEngine
     }
 
     /// <summary>引擎回流回调（ArgsTrampoline 适配：args = [id, kind, payload]）</summary>
-    private static void OnEventFromJs(IntPtr[] args)
+    private static void OnEventFromJs(ReadOnlySpan<IntPtr> args)
     {
         try
         {

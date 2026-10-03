@@ -87,23 +87,22 @@ internal static class CallbackTaskBridge
 #if HARMONYOS
     private static IntPtr GetUndefined(IntPtr env)
     {
-        NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-        return undefined;
+        return CallbackTrampolines.SafeReturnUndefined(env);
     }
 
     private static long? ReadErrorInt64(IntPtr env, IntPtr err, byte[] key)
     {
         NativeNodeApi.napi_get_named_property(env, err, key, out var value);
-        NativeNodeApi.napi_typeof(env, value, out var valueType);
+        NativeNodeApi.napi_typeof(env, value, out var valueType).ThrowIfFailed();
         if (valueType != NativeNodeApi.napi_valuetype.napi_number) return null;
-        NativeNodeApi.napi_get_value_int64(env, value, out var result);
+        NativeNodeApi.napi_get_value_int64(env, value, out var result).ThrowIfFailed();
         return result;
     }
 
     private static string? ReadErrorString(IntPtr env, IntPtr err, byte[] key)
     {
         NativeNodeApi.napi_get_named_property(env, err, key, out var value);
-        NativeNodeApi.napi_typeof(env, value, out var valueType);
+        NativeNodeApi.napi_typeof(env, value, out var valueType).ThrowIfFailed();
         if (valueType != NativeNodeApi.napi_valuetype.napi_string) return null;
         return NativeValue.ToString(value);
     }
@@ -121,7 +120,7 @@ internal static class CallbackTaskBridge
             gch = GCHandle.FromIntPtr(data);
             var state = (State)gch.Target!;
             if (state.Done)
-                return GetUndefined(env);
+                return CallbackTrampolines.SafeReturnUndefined(env);
             state.Done = true;
 
             var err = argc > 0 ? argv[0] : IntPtr.Zero;
@@ -129,7 +128,7 @@ internal static class CallbackTaskBridge
             if (errType == NativeNodeApi.napi_valuetype.napi_undefined || errType == NativeNodeApi.napi_valuetype.napi_null)
             {
                 // 成功路径：AsyncCallback<T> 的 data 在第二位（void AsyncCallback 只有 err）
-                var dataArg = argc > 1 ? argv[1] : GetUndefined(env);
+                var dataArg = argc > 1 ? argv[1] : CallbackTrampolines.SafeReturnUndefined(env);
                 object? value = state.Convert != null
                     ? state.Convert(dataArg)
                     : ValueConverter.ConvertTo(state.InnerType, dataArg);
@@ -166,7 +165,7 @@ internal static class CallbackTaskBridge
         {
             if (gch.IsAllocated) gch.Free();
         }
-        return GetUndefined(env);
+        return CallbackTrampolines.SafeReturnUndefined(env);
     }
 #endif
 }

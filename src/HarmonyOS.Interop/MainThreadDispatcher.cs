@@ -1,6 +1,7 @@
 #if HARMONYOS
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace HarmonyOS.Interop;
 
@@ -12,9 +13,12 @@ namespace HarmonyOS.Interop;
 /// </summary>
 public static class MainThreadDispatcher
 {
-    private static readonly ConcurrentQueue<Action> Queue = new();
+    private const int MaxQueueSize = 10_000;
+
+    private static readonly Queue<Action> Queue = new();
     private static readonly object Sync = new();
     private static ThreadSafeFunction? _tsfn;
+    private static int _queueFullCount;
 
     /// <summary>在 JS/UI 线程安装派发器（幂等；Host.InitializeCore 负责调用）</summary>
     public static void AttachUiThread()
@@ -27,7 +31,7 @@ public static class MainThreadDispatcher
             tsfn.OnCallJs = static _ => DrainQueue();
             _tsfn = tsfn;
             // 挂接完成即冲刷停靠的动作（Attach 前 Post 的积压）
-            if (!Queue.IsEmpty)
+            if (Queue.Count > 0)
                 tsfn.Call(IntPtr.Zero);
         }
     }
@@ -44,17 +48,46 @@ public static class MainThreadDispatcher
     /// <summary>排队到 JS/UI 线程执行。未挂接时仅入队，AttachUiThread 之后首个 Post 触发冲刷</summary>
     public static void Post(Action action)
     {
+        TryPost(action);
+    }
+
+    /// <summary>在 UI 线程同步清空当前队列；仅供压力测试和宿主收尾使用。</summary>
+    internal static void Drain() => DrainQueue();
+
+    /// <summary>尝试排队到 JS/UI 线程；返回是否成功入队。</summary>
+    public static bool TryPost(Action action)
+    {
         ArgumentNullException.ThrowIfNull(action);
-        Queue.Enqueue(action);
+
         ThreadSafeFunction? tsfn;
-        lock (Sync) tsfn = _tsfn;
+        lock (Sync)
+        {
+            if (Queue.Count >= MaxQueueSize)
+            {
+                if (Interlocked.Increment(ref _queueFullCount) == 1)
+                    HiLog.Error("MainThread", "INTEROP_DISPATCH_QUEUE_FULL");
+                return false;
+            }
+            Queue.Enqueue(action);
+            tsfn = _tsfn;
+        }
+
         tsfn?.Call(IntPtr.Zero);
+        return true;
     }
 
     private static void DrainQueue()
     {
-        while (Queue.TryDequeue(out var action))
+        while (true)
         {
+            Action action;
+            lock (Sync)
+            {
+                if (Queue.Count == 0)
+                    return;
+                action = Queue.Dequeue();
+            }
+
             try
             {
                 action();
