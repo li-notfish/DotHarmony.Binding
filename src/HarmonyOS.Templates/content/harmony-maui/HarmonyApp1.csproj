@@ -22,6 +22,8 @@
 
     <!-- ModuleInitializer registers the app before any export is called; CA2255 does not apply -->
     <NoWarn>$(NoWarn);CA2255</NoWarn>
+    <!-- IL2104: the HarmonyOS.Maui package intentionally uses reflection-based bridges that are rooted at runtime. -->
+    <NoWarn>$(NoWarn);IL2104</NoWarn>
 
     <!-- XAML via Controls buildTransitive targets; SourceGen keeps InitializeComponent AOT-safe -->
     <EnableDefaultMauiItems>true</EnableDefaultMauiItems>
@@ -47,7 +49,7 @@
     <PackageReference Include="HarmonyOS.Maui" Version="HarmonyPackageVersion" />
     <!-- 必须显式引用：作为传递依赖时 build 资产被 exclude，Crosscompile.targets 不导入，
          Windows 交叉 NativeAOT 会报 Cross-OS native compilation is not supported -->
-    <PackageReference Include="PublishAotClang" Version="1.0.5" />
+    <PackageReference Include="PublishAotClang" Version="HarmonyPublishAotClangVersion" />
   </ItemGroup>
 
 </Project>

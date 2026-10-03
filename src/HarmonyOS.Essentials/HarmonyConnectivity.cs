@@ -25,8 +25,9 @@ public class HarmonyConnectivity : IConnectivity
                 return NetworkAccess.None;
             var caps = ReadDefaultCaps();
             // INTERNET（12）标记网络可上网，VALIDATED（16）为已确认——任一即 Internet
-            if (caps is not null && (Array.IndexOf(caps.NetworkCap, HNetCap.NetCapabilityInternet) >= 0 ||
-                                     Array.IndexOf(caps.NetworkCap, HNetCap.NetCapabilityValidated) >= 0))
+            if (caps?.NetworkCap is { } networkCaps &&
+                (Array.IndexOf(networkCaps, HNetCap.NetCapabilityInternet) >= 0 ||
+                 Array.IndexOf(networkCaps, HNetCap.NetCapabilityValidated) >= 0))
                 return NetworkAccess.Internet;
             return NetworkAccess.Local;
         }

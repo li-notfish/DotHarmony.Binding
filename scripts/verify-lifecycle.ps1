@@ -34,7 +34,7 @@ function Click-Text([string]$want) {
         & $HDC @hdcArgs shell rm -f /data/local/tmp/layout.json | Out-Null
         & $HDC @hdcArgs shell uitest dumpLayout -p /data/local/tmp/layout.json | Out-Null
         & $HDC @hdcArgs file recv /data/local/tmp/layout.json "$workDir\layout.json" | Out-Null
-        $c = python -X utf8 "$root\tmp\find_text.py" "$workDir\layout.json" $want
+        $c = python -X utf8 "$root\scripts\find-layout-text.py" "$workDir\layout.json" $want
         if ($LASTEXITCODE -eq 0) {
             $xy = "$c" -split ' '
             Write-Host "  click '$want' at $($xy[0]),$($xy[1]) (attempt $attempt)"
@@ -44,7 +44,7 @@ function Click-Text([string]$want) {
         }
         Start-Sleep 2
     }
-    python -X utf8 "$root\tmp\dump_texts.py" "$workDir\layout.json" | Write-Host
+        python -X utf8 "$root\scripts\dump-layout-texts.py" "$workDir\layout.json" | Write-Host
     throw "text not found on screen: $want"
 }
 

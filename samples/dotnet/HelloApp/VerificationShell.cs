@@ -187,7 +187,7 @@ public class ShellHomePage : ContentPage
         neither.SetAppThemeColor(
             ScrollView.BackgroundColorProperty,
             Colors.Beige,
-            Color.FromHex("#2A2A30"));
+            Color.FromArgb("#2A2A30"));
         layout.Children.Add(neither);
 
         layout.Children.Add(_status);

@@ -17,9 +17,16 @@
     "packageVersion": {
       "type": "parameter",
       "datatype": "string",
-      "defaultValue": "1.0.0",
+      "defaultValue": "1.1.0",
       "replaces": "HarmonyPackageVersion",
       "description": "Version of the HarmonyOS.Maui package to reference."
+    },
+    "publishAotClangVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "1.0.5",
+      "replaces": "HarmonyPublishAotClangVersion",
+      "description": "Version of the PublishAotClang package to reference."
     }
   }
 }

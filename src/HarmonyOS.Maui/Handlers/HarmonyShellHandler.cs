@@ -612,6 +612,7 @@ public class HarmonyShellHandler : ViewHandler<Shell, ArkStack>
         }
         if (ReferenceEquals(_visiblePage, page))
             _visiblePage = null;
+        page.PropertyChanged -= OnVisiblePagePropertyChanged;
         page.Handler = null; // 触发 DisconnectHandler（手势/事件订阅清理）
         node.Dispose();
     }

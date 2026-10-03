@@ -11,6 +11,9 @@
     <PackageId>HarmonyOS.Bindings</PackageId>
     <Description>C# bindings for HarmonyOS ArkTS components and APIs</Description>
     <PackageTags>arkui;arkts;bindings</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- Generated API surface intentionally mirrors ArkTS member names and nullable JS values. -->
+    <NoWarn>$(NoWarn);CS0108;CS0114;CS8602;CS8604;CS8981</NoWarn>
   </PropertyGroup>
 
   <!-- 过渡态取舍（workload 化前）：桌面 net10.0 目标继续全量定义 HARMONYOS，
@@ -32,6 +35,10 @@
 
   <ItemGroup>
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <Import Project="..\HarmonyOS.Maui.Permissions\build\HarmonyOS.Maui.Permissions.targets" />

@@ -140,17 +140,37 @@ public class HarmonyPreferences : IPreferences
         if (typeof(T) == typeof(string))
             return tag == "s" ? (T)(object)payload : (T)(object)raw;
 
-        return tag switch
+        try
         {
-            "b" => (T)(object)(payload == "1"),
-            "i" => typeof(T) == typeof(int)
-                ? (T)(object)(int)long.Parse(payload, CultureInfo.InvariantCulture)
-                : (T)(object)long.Parse(payload, CultureInfo.InvariantCulture),
-            "f" => (T)(object)float.Parse(payload, CultureInfo.InvariantCulture),
-            "d" => (T)(object)double.Parse(payload, CultureInfo.InvariantCulture),
-            "t" => (T)(object)DateTime.FromBinary(long.Parse(payload, CultureInfo.InvariantCulture)),
-            "o" => (T)(object)DateTimeOffset.Parse(payload, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
-            _ => defaultValue, // 无标签/未知标签（外部写入的非 MAUI 数据）：按 MAUI 语义返回缺省
-        };
+            return tag switch
+            {
+                "b" when typeof(T) == typeof(bool) && payload is "1" or "0" =>
+                    (T)(object)(payload == "1"),
+                "i" when typeof(T) == typeof(int) &&
+                    long.TryParse(payload, NumberStyles.Integer, CultureInfo.InvariantCulture, out var l) &&
+                    l is >= int.MinValue and <= int.MaxValue => (T)(object)(int)l,
+                "i" when typeof(T) == typeof(long) &&
+                    long.TryParse(payload, NumberStyles.Integer, CultureInfo.InvariantCulture, out var l) => (T)(object)l,
+                "f" when typeof(T) == typeof(float) &&
+                    float.TryParse(payload, NumberStyles.Float, CultureInfo.InvariantCulture, out var f) => (T)(object)f,
+                "d" when typeof(T) == typeof(double) &&
+                    double.TryParse(payload, NumberStyles.Float, CultureInfo.InvariantCulture, out var d) => (T)(object)d,
+                "t" when typeof(T) == typeof(DateTime) &&
+                    long.TryParse(payload, NumberStyles.Integer, CultureInfo.InvariantCulture, out var ticks) =>
+                    (T)(object)DateTime.FromBinary(ticks),
+                "o" when typeof(T) == typeof(DateTimeOffset) &&
+                    DateTimeOffset.TryParse(payload, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var dto) =>
+                    (T)(object)dto,
+                _ => defaultValue, // Missing, unknown, externally written, or mismatched data returns the default.
+            };
+        }
+        catch (FormatException)
+        {
+            return defaultValue;
+        }
+        catch (OverflowException)
+        {
+            return defaultValue;
+        }
     }
 }

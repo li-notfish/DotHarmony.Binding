@@ -34,7 +34,7 @@ internal static class TsfnExperiment
             {
                 _ = NapiEnv.Current;
                 var value = NativeValue.From("tsfn-ok");
-                roundTrip = NativeValue.ToString(value);
+                roundTrip = NativeValue.ToString(value) ?? string.Empty;
             }
             catch (Exception ex)
             {

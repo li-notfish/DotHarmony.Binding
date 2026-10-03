@@ -149,6 +149,7 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
             if (_nodes.Remove(page, out var node))
             {
                 UnsubscribeTitleTracking(page);
+                page.Handler = null; // Disconnect the page handler before releasing its native node.
                 _content!.RemoveChild(node);
                 node.Dispose();
             }

@@ -56,6 +56,7 @@ export default class EntryAbility extends UIAbility {
 
   onDestroy(): void {
     hilog.info(0x0000, TAG, 'Ability onDestroy');
+    native.notifyLifecycleChanged(3);
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -71,10 +72,12 @@ export default class EntryAbility extends UIAbility {
 
   onWindowStageDestroy(): void {
     hilog.info(0x0000, TAG, 'Ability onWindowStageDestroy');
+    native.notifyLifecycleChanged(3);
   }
 
   onForeground(): void {
     hilog.info(0x0000, TAG, 'Ability onForeground');
+    native.notifyLifecycleChanged(1);
   }
 
   onConfigurationUpdate(newConfig: Configuration): void {
@@ -86,5 +89,6 @@ export default class EntryAbility extends UIAbility {
 
   onBackground(): void {
     hilog.info(0x0000, TAG, 'Ability onBackground');
+    native.notifyLifecycleChanged(2);
   }
 }

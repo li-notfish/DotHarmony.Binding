@@ -27,6 +27,13 @@ public static class MauiHarmonyHost
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static int OnThemeChangedNative(nint env, int colorMode) => ThemeChangedCore(env, colorMode);
 
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static int OnLifecycleChangedNative(nint env, int lifecycleEvent)
+    {
+        HarmonyLifecycleController.Notify(lifecycleEvent);
+        return 0;
+    }
+
     /// <summary>向 libentry.so 注册主题回调函数指针（旧宿主无此导出时静默跳过，走 dlsym 回退）。</summary>
     private static unsafe void RegisterThemeCallback()
     {
@@ -49,6 +56,30 @@ public static class MauiHarmonyHost
         {
             // 注册失败不致命：仅影响系统深浅色跟随
             Interop.HiLog.Warn("HarmonyHost", "theme callback registration failed; dlsym fallback only");
+        }
+    }
+
+    /// <summary>向 libentry.so 注册生命周期回调函数指针。</summary>
+    private static unsafe void RegisterLifecycleCallback()
+    {
+        try
+        {
+            if (NativeLibrary.TryLoad("libentry.so", out var lib) &&
+                NativeLibrary.TryGetExport(lib, "HarmonyHostSetLifecycleChangedCallback", out var registrar))
+            {
+                ((delegate* unmanaged[Cdecl]<nint, void>)registrar)(
+                    (nint)(delegate* unmanaged[Cdecl]<nint, int, int>)&OnLifecycleChangedNative);
+                Interop.HiLog.Info("HarmonyHost", "lifecycle callback registered via libentry");
+            }
+            else
+            {
+                Interop.HiLog.Warn("HarmonyHost",
+                    "HarmonyHostSetLifecycleChangedCallback not found; MAUI app/window lifecycle events will not fire");
+            }
+        }
+        catch
+        {
+            Interop.HiLog.Warn("HarmonyHost", "lifecycle callback registration failed");
         }
     }
 
@@ -92,6 +123,7 @@ public static class MauiHarmonyHost
     public static void RunApplication(Func<MApplication> applicationFactory)
     {
         RegisterThemeCallback();
+        RegisterLifecycleCallback();
         Host.RootBuilder = contentHandle =>
         {
             Essentials.HarmonyEssentials.Install();
@@ -114,6 +146,8 @@ public static class MauiHarmonyHost
                     "Application.CreateWindow produced no root Page (set MainPage in the Application ctor)");
 
             HarmonyNavigation.Attach(container, app, window);
+            HarmonyLifecycleController.Attach(window);
+            HarmonyLifecycleController.Current?.Created();
             HarmonyNavigation.Push(rootPage);
         };
     }

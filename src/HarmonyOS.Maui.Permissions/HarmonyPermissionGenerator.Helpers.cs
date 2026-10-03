@@ -169,7 +169,7 @@ public sealed partial class HarmonyPermissionGenerator
         var result = ImmutableArray.CreateBuilder<ExplicitPermission>();
         try
         {
-            using var document = JsonDocument.Parse(text.GetText().ToString());
+            using var document = JsonDocument.Parse(text.GetText()?.ToString() ?? string.Empty);
             if (!document.RootElement.TryGetProperty("permissions", out var permissions))
             {
                 return result.ToImmutable();

@@ -11,6 +11,7 @@
     <PackageId>HarmonyOS.Interop</PackageId>
     <Description>Generic Node-API (napi) interop core for HarmonyOS: env injection, value marshaling, callbacks, TSFN, hilog bridge</Description>
     <PackageTags>napi;interop</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <!-- 过渡态取舍（workload 化前）：桌面 net10.0 目标继续全量定义 HARMONYOS，
@@ -22,6 +23,10 @@
 
   <ItemGroup>
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

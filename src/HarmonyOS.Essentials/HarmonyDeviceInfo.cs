@@ -15,7 +15,7 @@ public class HarmonyDeviceInfo : IDeviceInfo
 
     public string Name => HDeviceInfo.MarketName;
 
-    public string VersionString => HDeviceInfo.OsFullName;
+    public string VersionString => Version.ToString();
 
     public Version Version => ParseOsVersion();
 
@@ -33,13 +33,17 @@ public class HarmonyDeviceInfo : IDeviceInfo
 
     public DeviceType DeviceType => IsEmulator() ? DeviceType.Virtual : DeviceType.Physical;
 
-    private static Version ParseOsVersion()
+    internal static Version ParseOsVersion()
     {
-        var fullName = HDeviceInfo.OsFullName;
+        return ParseOsVersion(HDeviceInfo.OsFullName, (int)HDeviceInfo.SdkApiVersion);
+    }
+
+    internal static Version ParseOsVersion(string fullName, int sdkApiVersion)
+    {
         var tail = fullName[(fullName.LastIndexOf('-') + 1)..];
         if (tail.Length > 0 && tail != fullName && System.Version.TryParse(tail, out var v))
             return v;
-        return new Version((int)HDeviceInfo.SdkApiVersion, 0);
+        return new Version(sdkApiVersion, 0);
     }
 
     private static bool IsEmulator()

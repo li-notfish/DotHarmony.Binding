@@ -36,6 +36,7 @@ internal sealed class HarmonyGeolocation : IGeolocation
 
     public async Task<Location?> GetLocationAsync(GeolocationRequest request, CancellationToken cancelToken)
     {
+        cancelToken.ThrowIfCancellationRequested();
         if (!GeoLocationManager.IsLocationEnabled())
             throw new FeatureNotEnabledException("Location is not enabled on this device.");
         var req = new CurrentLocationRequest(
@@ -79,8 +80,12 @@ internal sealed class HarmonyGeolocation : IGeolocation
     public void StopListeningForeground()
     {
         if (!_listening) return;
-        GeoLocationManager.Off("locationChange", _onLocationChange);
-        GeoLocationManager.Off("locationError", _onLocationError);
+        var onLocationChange = _onLocationChange;
+        var onLocationError = _onLocationError;
+        if (onLocationChange is not null)
+            GeoLocationManager.Off("locationChange", onLocationChange);
+        if (onLocationError is not null)
+            GeoLocationManager.Off("locationError", onLocationError);
         _onLocationChange = null;
         _onLocationError = null;
         _listening = false;

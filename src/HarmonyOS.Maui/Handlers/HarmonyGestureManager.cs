@@ -57,6 +57,20 @@ internal sealed class HarmonyGestureManager : IDisposable
         DestroyPendingDragData(); // 拖拽载荷最终兜底（节点既销毁，管线已死）
         if (_touchSubscribed)
             _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_TOUCH_EVENT);
+        if (_dragSubscribed)
+        {
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_START);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_END);
+            _dragSubscribed = false;
+        }
+        if (_dropSubscribed)
+        {
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_ENTER);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_MOVE);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_LEAVE);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DROP);
+            _dropSubscribed = false;
+        }
         foreach (var g in _attached.Concat(_parked))
             g.Dispose();
         _attached.Clear();

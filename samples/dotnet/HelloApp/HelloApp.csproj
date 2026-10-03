@@ -24,7 +24,8 @@
     <AssemblyName>app</AssemblyName>
 
     <!-- 本工程即应用入口：ModuleInitializer 在宿主 dlopen 后、任何导出调用前注册 RootBuilder，CA2255 不适用 -->
-    <NoWarn>$(NoWarn);CA2255</NoWarn>
+    <!-- IL2026/IL2104：示例工程刻意使用字符串绑定与 CommunityToolkit，便于端到端探针。 -->
+    <NoWarn>$(NoWarn);CA2255;IL2026;IL2104</NoWarn>
 
     <!-- XAML：启用 Controls 包 buildTransitive targets（XamlC/SourceGen/自动 xaml 收集） -->
     <EnableDefaultMauiItems>true</EnableDefaultMauiItems>

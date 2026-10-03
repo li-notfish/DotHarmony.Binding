@@ -13,6 +13,7 @@
     <PackageId>HarmonyOS.Essentials</PackageId>
     <Description>MAUI Essentials implementations for HarmonyOS (device info, sensors, geolocation, picker, storage, connectivity, ...)</Description>
     <PackageTags>maui;essentials</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,5 +38,9 @@
     <!-- 单位换算/枚举映射等纯逻辑测试（EssentialsMappingTests 等 5 个套件）触达 internal 成员 -->
     <InternalsVisibleTo Include="HarmonyGestureTests" />
     <InternalsVisibleTo Include="HarmonyOS.Maui" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
