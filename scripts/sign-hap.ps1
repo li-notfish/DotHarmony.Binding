@@ -9,6 +9,7 @@ param(
     [Parameter(Mandatory = $true)][string]$SigningProfile
 )
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "lib\sdk.ps1")
 
 $keystorePassword = $env:HarmonySigningKeystorePassword
 $certPassword = $env:HarmonySigningCertPassword
@@ -47,6 +48,8 @@ if (-not (Test-Path $inputHap)) {
 }
 
 Write-Host "=== signing HAP: $outputHap"
+$compatibleVersion = Get-HarmonyCompatibleVersion
+Write-Host "compatibleVersion: $compatibleVersion"
 & $java -jar $signTool sign-app `
     -mode localSign `
     -keyAlias $SigningCertAlias `
@@ -58,7 +61,7 @@ Write-Host "=== signing HAP: $outputHap"
     -keystoreFile $SigningKeystore `
     -keystorePwd $keystorePassword `
     -outFile $outputHap `
-    -compatibleVersion 26 `
+    -compatibleVersion $compatibleVersion `
     -signCode 1
 if ($LASTEXITCODE -ne 0) {
     throw "hap-sign-tool failed with exit code $LASTEXITCODE"

@@ -6,18 +6,10 @@ $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent $scriptDir
+. (Join-Path $scriptDir "lib\sdk.ps1")
 
-# ---- 定位 hdc（与 deploy-hap.ps1 同一套候选） ----
-$HDC = $null
-foreach ($base in @($env:OHOS_SDK_BASE, $env:OHSDK_HOME, "D:\Harmony\OpenHarmony\Sdk", "C:\Program Files\Huawei\DevEco Studio\sdk")) {
-    if (-not $base) { continue }
-    foreach ($rel in @("26.0.0\toolchains\hdc.exe", "toolchains\hdc.exe")) {
-        $p = Join-Path $base $rel
-        if (Test-Path $p) { $HDC = $p; break }
-    }
-    if ($HDC) { break }
-}
-if (-not $HDC) { Write-Error "找不到 hdc.exe"; exit 1 }
+# ---- 定位 hdc（共享候选与版本排序） ----
+$HDC = Find-HarmonyHdc
 function Invoke-Hdc { & $HDC -t $Target @args }
 
 $outDir = Join-Path $projectRoot "tmp\zprobe"

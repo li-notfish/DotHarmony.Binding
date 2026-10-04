@@ -18,7 +18,7 @@ HarmonyOS NDK 头文件（ArkUI /*.h*）→ C# 绑定生成器。取代已删除
 python -m pip install -r requirements.txt   # libclang + PyYAML（+pytest 跑单测）
 
 # 生成（默认读取 config/semantics.yaml 的头文件集合；默认 out-dir 已是 NativeNode/）
-python -m arkui_bindgen gen --sdk D:\Harmony\OpenHarmony\Sdk\26.0.0 `
+python -m arkui_bindgen gen --sdk D:\Harmony\OpenHarmony\Sdk `
     --out-dir src\HarmonyOS.Bindings\NativeNode
 
 # 漂移检查（本地门禁）：内存重出并与盘上产物逐字节比对；
