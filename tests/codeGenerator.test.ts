@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { ArkTsParser } from '../tools/api-generator/index';
+import { CodeGenerator } from '../tools/api-generator/codeGenerator';
 
 const outputDir = path.join(__dirname, '../tests-output');
 
@@ -57,6 +58,22 @@ describe('Code Generation Tests', () => {
         const content = fs.readFileSync(textCsPath, 'utf-8');
         expect(content).toContain('using System;');
         expect(content).toContain('using System.Runtime.InteropServices;');
+    });
+
+    test('generated header and using directives derive from the emitted body', () => {
+        const parser = new ArkTsParser();
+        const result = parser.parseFile(path.join(__dirname, 'fixtures/text.d.ts'));
+        const content = new CodeGenerator({
+            generatorVersion: '4.5.6',
+            sdkVersion: '28.0.0',
+        }).generate(result);
+
+        expect(content).toContain('// 生成器版本：4.5.6；HarmonyOS SDK：28.0.0');
+        expect(content).toContain('using System.Runtime.InteropServices;');
+        expect(content).not.toContain('using System.Linq;');
+        expect(content).not.toContain('using System.Text;');
+        expect(content).not.toContain('using System.Threading.Tasks;');
+        expect(content).not.toMatch(/[A-Za-z]:[\\/]/);
     });
 
     test('should have XML documentation', () => {

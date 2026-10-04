@@ -9,7 +9,8 @@ import { NativeCodeGenerator, EnumMetadata, NativeGap } from './nativeCodeGenera
 import { ApiGenerator, reservedModuleClassNames, moduleSubNamespace } from './apiGenerator';
 import { TypeMapper } from './typeMapper';
 import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo, ImportInfo } from './models';
-import { resolveSdkRoot } from './sdk';
+import { getSdkVersion, resolveSdkRoot } from './sdk';
+import { DEFAULT_GENERATION_METADATA, GENERATOR_VERSION, GenerationMetadata } from './generation';
 
 interface CacheEntry {
     hash: string;
@@ -32,10 +33,13 @@ export class ArkTsParser {
     /** 全局枚举名去重：同一枚举（如 Orientation）可能出现在多个模块的 .d.ts 中 */
     private generatedEnumNames = new Set<string>();
 
-    constructor(enumMetadata?: EnumMetadata) {
+    constructor(
+        enumMetadata?: EnumMetadata,
+        generationMetadata: GenerationMetadata = DEFAULT_GENERATION_METADATA,
+    ) {
         this.parser = new AstParser();
-        this.generator = new CodeGenerator();
-        this.enumGenerator = new EnumGenerator();
+        this.generator = new CodeGenerator(generationMetadata);
+        this.enumGenerator = new EnumGenerator(generationMetadata);
         if (enumMetadata) {
             this.nativeGenerator = new NativeCodeGenerator(enumMetadata);
         }
@@ -444,10 +448,13 @@ export async function processNativeSDK(sdkArg?: string): Promise<void> {
         throw new Error(`enum metadata not found: ${enumMetaPath}（先运行 extract_arkui_types.py --dump-json）`);
     }
     const enumMetadata = JSON.parse(fs.readFileSync(enumMetaPath, 'utf-8')) as EnumMetadata;
-    const parser = new ArkTsParser(enumMetadata);
-    const context = createParseContext();
-
     const sdkBase = resolveSdkRoot('native', { explicitPath: sdkArg });
+    const generationMetadata = {
+        generatorVersion: GENERATOR_VERSION,
+        sdkVersion: getSdkVersion(sdkBase),
+    };
+    const parser = new ArkTsParser(enumMetadata, generationMetadata);
+    const context = createParseContext();
     const componentDir = path.join(sdkBase, 'ets', 'component');
     const outputDir = path.join(__dirname, '../../src/HarmonyOS.Bindings/Nodes');
 
@@ -676,7 +683,11 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
     const componentDir = path.join(sdkBase, 'ets', 'component');
     const apiDir = path.join(sdkBase, 'ets', 'api');
 
-    const parser = new ArkTsParser();
+    const generationMetadata = {
+        generatorVersion: GENERATOR_VERSION,
+        sdkVersion: getSdkVersion(sdkBase),
+    };
+    const parser = new ArkTsParser(undefined, generationMetadata);
     const context = createParseContext();
 
     // 字符串字面量联合别名登记（生成器不猜：直接读 d.ts 定义）——
@@ -709,7 +720,7 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
 
     console.log(`\n--- APIs (${apiFiles.length}${allModules ? ' (all)' : ' pilot'} modules) ---`);
 
-    const apiGen = new ApiGenerator();
+    const apiGen = new ApiGenerator(generationMetadata);
     let apiSuccess = 0;
     let apiSkipped = 0;
     const boundModules: { module: string; local: string; className: string }[] = [];

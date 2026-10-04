@@ -146,18 +146,27 @@ export function resolveSdkRoot(
 }
 
 export function getSdkVersion(sdkRoot: string): string {
-    const direct = path.basename(sdkRoot);
-    if (/^\d+(?:\.\d+)*$/.test(direct)) return direct;
-
-    for (const file of ['oh-uni-package.json', 'package.json']) {
+    for (const file of [
+        path.join('ets', 'oh-uni-package.json'),
+        'oh-uni-package.json',
+        path.join('toolchains', 'oh-uni-package.json'),
+        'package.json',
+    ]) {
         const candidate = path.join(sdkRoot, file);
         if (!fs.existsSync(candidate)) continue;
         try {
-            const value = JSON.parse(fs.readFileSync(candidate, 'utf8')) as { version?: unknown };
-            if (typeof value.version === 'string' && value.version) return value.version;
+            const value = JSON.parse(fs.readFileSync(candidate, 'utf8')) as {
+                platformVersion?: unknown;
+                version?: unknown;
+            };
+            for (const version of [value.platformVersion, value.version]) {
+                if (typeof version === 'string' && version) return version;
+            }
         } catch {
             // Ignore malformed metadata and continue with the next source.
         }
     }
+    const direct = path.basename(sdkRoot);
+    if (/^\d+(?:\.\d+)*$/.test(direct)) return direct;
     return 'unknown';
 }

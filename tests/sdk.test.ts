@@ -84,6 +84,18 @@ describe('HarmonyOS SDK resolution', () => {
         expect(getSdkVersion(root)).toBe('27.0.1');
     });
 
+    test('nested ets metadata platformVersion is preferred', () => {
+        const root = path.join(tempRoot, 'nested-metadata-sdk');
+        fs.mkdirSync(path.join(root, 'ets'), { recursive: true });
+        fs.writeFileSync(
+            path.join(root, 'ets', 'oh-uni-package.json'),
+            JSON.stringify({ platformVersion: '28.1.2', version: 'internal-build' }),
+        );
+        fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ version: '0.0.1' }));
+
+        expect(getSdkVersion(root)).toBe('28.1.2');
+    });
+
     test('no valid candidate reports all checked roots', () => {
         const missing = path.join(tempRoot, 'missing');
         expect(() => resolveSdkRoot('full', {
