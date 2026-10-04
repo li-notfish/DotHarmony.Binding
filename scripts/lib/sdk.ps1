@@ -81,6 +81,14 @@ function Get-HarmonySdkRootCandidates([string]$Candidate) {
 }
 
 function Find-HarmonyHdc {
+    if ($env:HARMONY_HDC) {
+        $resolvedHdc = $env:HARMONY_HDC
+        if (-not (Test-Path -LiteralPath $resolvedHdc)) {
+            throw "HARMONY_HDC 指向不存在的 hdc：$resolvedHdc"
+        }
+        return (Resolve-Path -LiteralPath $resolvedHdc).Path
+    }
+
     $candidates = @(
         $env:OHOS_SDK_BASE,
         $env:OHOS_SDK_HOME,

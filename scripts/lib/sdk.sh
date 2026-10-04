@@ -89,6 +89,14 @@ harmony_find_hdc() {
     HDC=""
     local candidate root
     local tried=()
+    if [ -n "${HARMONY_HDC:-}" ]; then
+        if [ ! -f "$HARMONY_HDC" ]; then
+            printf 'HARMONY_HDC does not exist: %s\n' "$HARMONY_HDC" >&2
+            return 1
+        fi
+        HDC="$HARMONY_HDC"
+        return 0
+    fi
     local candidates=(
         "${OHOS_SDK_BASE:-}"
         "${OHOS_SDK_HOME:-}"
