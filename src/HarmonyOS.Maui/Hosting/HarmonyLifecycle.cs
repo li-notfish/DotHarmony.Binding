@@ -44,6 +44,11 @@ internal sealed class HarmonyLifecycleController
                 _pendingForeground = true;
                 Interop.HiLog.Info("HarmonyHost", "foreground received before MAUI window creation; deferred");
             }
+            else if (lifecycleEvent == Background || lifecycleEvent == Destroy)
+            {
+                _pendingForeground = false;
+                Interop.HiLog.Warn("HarmonyHost", $"lifecycle event {lifecycleEvent} received before MAUI window creation");
+            }
             else
             {
                 Interop.HiLog.Warn("HarmonyHost", $"lifecycle event {lifecycleEvent} received before MAUI window creation");

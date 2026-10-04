@@ -44,4 +44,16 @@ public class EssentialsSemanticsTests
 
         Assert.False(queue.IsShaking);
     }
+
+    [Fact]
+    public void AccelerometerShakeQueue_IgnoresExpiredSamples()
+    {
+        var queue = new AccelerometerShakeQueue();
+        queue.Add(0, accelerating: true);
+        queue.Add(100_000_000, accelerating: true);
+        queue.Add(200_000_000, accelerating: true);
+        queue.Add(600_000_000, accelerating: true);
+
+        Assert.False(queue.IsShaking);
+    }
 }

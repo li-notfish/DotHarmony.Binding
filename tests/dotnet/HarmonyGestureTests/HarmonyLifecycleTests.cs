@@ -53,4 +53,24 @@ public class HarmonyLifecycleTests
 
         Assert.Equal(new[] { "Created", "Resumed", "Activated" }, events);
     }
+
+    [Fact]
+    public void LifecycleController_ClearsPendingForegroundWhenTerminalEventArrives()
+    {
+        HarmonyLifecycleController.Reset();
+        HarmonyLifecycleController.Notify(HarmonyLifecycleController.Foreground);
+        HarmonyLifecycleController.Notify(HarmonyLifecycleController.Background);
+        HarmonyLifecycleController.Notify(HarmonyLifecycleController.Destroy);
+
+        var window = new Window();
+        var events = new List<string>();
+        window.Created += (_, _) => events.Add("Created");
+        window.Resumed += (_, _) => events.Add("Resumed");
+        window.Activated += (_, _) => events.Add("Activated");
+
+        HarmonyLifecycleController.Attach(window);
+        HarmonyLifecycleController.Current!.Created();
+
+        Assert.Equal(new[] { "Created" }, events);
+    }
 }

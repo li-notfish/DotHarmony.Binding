@@ -153,7 +153,7 @@ internal sealed class AccelerometerShakeQueue
 
     private void Purge(long cutoff)
     {
-        while (_samples.Count >= MinimumSampleCount && _samples.Peek().Timestamp < cutoff)
+        while (_samples.Count > 0 && _samples.Peek().Timestamp < cutoff)
         {
             if (_samples.Dequeue().Accelerating)
                 _acceleratingCount--;
