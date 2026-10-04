@@ -46,7 +46,9 @@ internal static class NavigationFireAndForget
         task.ContinueWith(t =>
         {
             if (t.Exception is not null)
-                System.Diagnostics.Debug.WriteLine($"navigation failed: {t.Exception.InnerException}");
+                HarmonyOS.Interop.HiLog.Error(
+                    "ApiDemo",
+                    $"navigation failed: {t.Exception}");
         }, TaskScheduler.Default);
     }
 }

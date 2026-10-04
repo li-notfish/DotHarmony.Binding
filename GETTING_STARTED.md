@@ -23,10 +23,37 @@
 | 工具 | 用途 | 说明 |
 |---|---|---|
 | .NET 10 SDK（Windows） | 本机编译检查（C#/XAML 编译期验证） | `dotnet --version` ≥ 10 |
+| Node.js + Python 3 | TS/NDK 生成器与本地工具 | 未安装生成器步骤会直接失败 |
 | PublishAotClang | Windows 本地 NativeAOT 交叉编译 libapp.so | 由 `Directory.Build.props` 自动引用；内置 Zig / clang / objcopy |
-| DevEco Studio | hvigor 打 HAP、hdc 部署、模拟器 | 记住安装路径，脚本自动探测常见位置 |
+| DevEco Studio + HarmonyOS/OpenHarmony SDK | hvigor 打 HAP、NDK、hdc 部署、模拟器 | 记住安装路径；SDK 按语义版本倒序选择，不固定 26 |
+| 模拟器或真机 | `HarmonyRun` 设备预检、安装、启动 | 设备必须先于 AOT 构建处于在线状态 |
+| 调试签名材料 | 真机安装 | `.p12`、`.cer`、`.p7b`、keystore/证书别名、两组口令需成套 |
 
-以上工具链就绪后，仓库根目录：
+先执行环境自检：
+
+```powershell
+# 不连接设备；确定工具链、SDK 与 hdc 可用
+pwsh scripts/check-harmony-env.ps1
+
+# 最终运行前再检查设备；Bash 对应 --check-device
+pwsh scripts/check-harmony-env.ps1 -CheckDevice
+bash scripts/check-harmony-env.sh --check-device
+```
+
+SDK 可通过生成器 `--sdk <版本目录或集合根目录>` 或 `OHOS_SDK_BASE` /
+`OHOS_SDK_HOME` / `OHSDK_HOME` 指定。未指定时脚本选择最高可用稳定版本；
+无效环境变量只告警并回退，没有有效候选时一次性列出候选和缺失布局。
+
+启动 DevEco 模拟器或真机后检查连接：
+
+```bash
+hdc list targets
+# 预期至少出现一个非 [Empty] 的 host:port
+hdc tconn 127.0.0.1:5555   # 模拟器未连接时按实际地址执行
+HDC_TARGET=127.0.0.1:5555 hdc list targets   # 多设备时先确认目标
+```
+
+以上工具链和设备就绪后，在仓库根目录运行：
 
 ```powershell
 # 一键验证链路（HelloApp 示例：libapp.so 双架构 → HAP → 部署到模拟器）
@@ -37,6 +64,16 @@ bash scripts/deploy-hap.sh         # hdc 安装 + 启动（多设备：HDC_TARGE
 ```
 
 或直接在示例工程上：`dotnet build samples/dotnet/HelloApp -t:HarmonyRun`（等价上面三步）。
+
+`HarmonyRun` 的执行顺序与失败定位：
+
+| 顺序 | 阶段 | 常见失败 |
+|---:|---|---|
+| 1 | `HarmonyDevicePreflight` | `hdc list targets` 为空、`HDC_TARGET` 不存在；此阶段失败不会启动 AOT/Hvigor |
+| 2 | staging + 权限生成 | 模板 JSON5 结构变化、bundleId 非法、权限报告冲突 |
+| 3 | NativeAOT arm64/x64 | PublishAotClang 未还原、RID/交叉工具链错误、产物缺失 |
+| 4 | Hvigor HAP + 可选签名 | `node.exe`/`hvigorw.js` 缺失、SDK 布局不完整、签名六项不全 |
+| 5 | 安装与启动 | 安装失败、权限/profile 不匹配、20 秒内无进程和 `HarmonyHost` 日志 |
 
 ---
 
@@ -287,7 +324,8 @@ public static void Register()
 | 3. 部署 | `scripts/deploy-hap.sh` / `scripts/deploy-hap.ps1` | 优先安装 signed HAP，无签名产物时回退 unsigned；启动并跟踪 HarmonyHost 日志 | `HDC_TARGET` 设备选择 |
 | 4. 布局回归 | `scripts/verify-layout-baseline.ps1` | 样本关键界面截图与基线像素 diff；`-Update` 生成基线（分辨率相关，基线存 artifacts/ 不入库） | `-App` / `-Target` / `-Tolerance` |
 
-其它 targets：`HarmonyStageHost` / `HarmonyBuildLibApp` / `HarmonyBuildHap` / `HarmonyDeploy` 可单独执行。
+其它 targets：`HarmonyDevicePreflight` / `HarmonyStageHost` / `HarmonyBuildLibApp` /
+`HarmonyBuildHap` / `HarmonyDeploy` 可单独执行。
 如果只想手动打某个样例的 HAP，可以用：
 ```powershell
 .\scripts\build-hap.cmd WeatherTwentyOne
@@ -417,6 +455,10 @@ re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——�
 | 症状 | 去哪看 |
 |---|---|
 | 部署后白屏/闪退 | `hdc shell hilog \| grep HarmonyHost`；`.NET UI built successfully` 是否出现 |
+| 设备预检失败 | 启动模拟器/真机，运行 `hdc list targets`；必要时 `hdc tconn <host:port>`，多设备设置 `HDC_TARGET` |
+| 启动 20 秒超时 | 查看脚本附带的最近 hilog，重点筛 `HarmonyHost`、`dlopen`、`libapp`、`dotnet` |
+| 找不到 node/hvigor | 设置 `DEVECO_HOME`，或先运行 `scripts/check-harmony-env.ps1` |
+| 真机安装被拒 | 确认 debug profile 与签名六项成套；release profile 不应直接用于调试设备 |
 | 导航静默失败、后续导航全挂 | FireAndForget 吞了异常——确认已按 §2 改造 `FireAndForgetNavigation` 打 hilog（HelloApp 版可照抄） |
 | Windows 本地 AOT 失败 | 检查 `PublishAotClang` 包是否还原成功，以及 .NET 10 SDK 是否可用 |
 | hdc 命令路径被 Git Bash 吃掉 | 前缀 `MSYS_NO_PATHCONV=1` |
