@@ -348,10 +348,10 @@ public sealed record CertBlob(
     {
         var _inDataV = NativeValue.From(InData);
         if (_inDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _inDataName, _inDataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _inDataName, _inDataV).ThrowIfFailed();
         var _aliasV = NativeValue.From(Alias);
         if (_aliasV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _aliasName, _aliasV);
+            NativeNodeApi.napi_set_named_property(env, obj, _aliasName, _aliasV).ThrowIfFailed();
     }
 }
 
@@ -402,10 +402,10 @@ public sealed record WatermarkProperties(
     {
         var _intervalsRowV = NativeValue.From(IntervalsRow);
         if (_intervalsRowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _intervalsRowName, _intervalsRowV);
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalsRowName, _intervalsRowV).ThrowIfFailed();
         var _intervalsColV = NativeValue.From(IntervalsCol);
         if (_intervalsColV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _intervalsColName, _intervalsColV);
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalsColName, _intervalsColV).ThrowIfFailed();
     }
 }
 
@@ -425,12 +425,12 @@ public sealed record SecurityManagerApplicationInstance(
     {
         var _appIdentifierV = NativeValue.From(AppIdentifier);
         if (_appIdentifierV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _appIdentifierName, _appIdentifierV);
+            NativeNodeApi.napi_set_named_property(env, obj, _appIdentifierName, _appIdentifierV).ThrowIfFailed();
         var _accountIdV = NativeValue.From(AccountId);
         if (_accountIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _accountIdName, _accountIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _accountIdName, _accountIdV).ThrowIfFailed();
         var _appIndexV = NativeValue.From(AppIndex);
         if (_appIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _appIndexName, _appIndexV);
+            NativeNodeApi.napi_set_named_property(env, obj, _appIndexName, _appIndexV).ThrowIfFailed();
     }
 }

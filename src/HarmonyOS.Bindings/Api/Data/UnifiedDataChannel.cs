@@ -147,13 +147,13 @@ public sealed record UnifiedDataChannelOptions(
     {
         var _intentionV = NativeValue.From(Intention);
         if (_intentionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _intentionName, _intentionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _intentionName, _intentionV).ThrowIfFailed();
         var _keyV = NativeValue.From(Key);
         if (_keyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyName, _keyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keyName, _keyV).ThrowIfFailed();
         var _visibilityV = NativeValue.From(Visibility);
         if (_visibilityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _visibilityName, _visibilityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _visibilityName, _visibilityV).ThrowIfFailed();
     }
 }
 

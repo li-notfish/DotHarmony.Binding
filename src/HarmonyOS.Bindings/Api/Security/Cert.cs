@@ -1100,19 +1100,19 @@ public sealed record Pkcs12ParsingConfig(
     {
         var _passwordV = NativeValue.From(Password);
         if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
+            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV).ThrowIfFailed();
         var _needsPrivateKeyV = NativeValue.From(NeedsPrivateKey);
         if (_needsPrivateKeyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _needsPrivateKeyName, _needsPrivateKeyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _needsPrivateKeyName, _needsPrivateKeyV).ThrowIfFailed();
         var _privateKeyFormatV = NativeValue.From(PrivateKeyFormat);
         if (_privateKeyFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _privateKeyFormatName, _privateKeyFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _privateKeyFormatName, _privateKeyFormatV).ThrowIfFailed();
         var _needsCertV = NativeValue.From(NeedsCert);
         if (_needsCertV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _needsCertName, _needsCertV);
+            NativeNodeApi.napi_set_named_property(env, obj, _needsCertName, _needsCertV).ThrowIfFailed();
         var _needsOtherCertsV = NativeValue.From(NeedsOtherCerts);
         if (_needsOtherCertsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _needsOtherCertsName, _needsOtherCertsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _needsOtherCertsName, _needsOtherCertsV).ThrowIfFailed();
     }
 }
 
@@ -1380,25 +1380,25 @@ public sealed record Pkcs12CreationConfig(
     {
         var _passwordV = NativeValue.From(Password);
         if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
+            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV).ThrowIfFailed();
         var _keyEncParamsV = NativeValue.From(KeyEncParams);
         if (_keyEncParamsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyEncParamsName, _keyEncParamsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keyEncParamsName, _keyEncParamsV).ThrowIfFailed();
         var _encryptCertV = NativeValue.From(EncryptCert);
         if (_encryptCertV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptCertName, _encryptCertV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encryptCertName, _encryptCertV).ThrowIfFailed();
         var _certEncParamsV = NativeValue.From(CertEncParams);
         if (_certEncParamsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certEncParamsName, _certEncParamsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certEncParamsName, _certEncParamsV).ThrowIfFailed();
         var _macSaltLenV = NativeValue.From(MacSaltLen);
         if (_macSaltLenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _macSaltLenName, _macSaltLenV);
+            NativeNodeApi.napi_set_named_property(env, obj, _macSaltLenName, _macSaltLenV).ThrowIfFailed();
         var _macIterationsV = NativeValue.From(MacIterations);
         if (_macIterationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _macIterationsName, _macIterationsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _macIterationsName, _macIterationsV).ThrowIfFailed();
         var _macDigestAlgorithmV = NativeValue.From(MacDigestAlgorithm);
         if (_macDigestAlgorithmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _macDigestAlgorithmName, _macDigestAlgorithmV);
+            NativeNodeApi.napi_set_named_property(env, obj, _macDigestAlgorithmName, _macDigestAlgorithmV).ThrowIfFailed();
     }
 }
 
@@ -1753,13 +1753,13 @@ public sealed record PbesParams(
     {
         var _saltLenV = NativeValue.From(SaltLen);
         if (_saltLenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _saltLenName, _saltLenV);
+            NativeNodeApi.napi_set_named_property(env, obj, _saltLenName, _saltLenV).ThrowIfFailed();
         var _iterationsV = NativeValue.From(Iterations);
         if (_iterationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iterationsName, _iterationsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _iterationsName, _iterationsV).ThrowIfFailed();
         var _encryptionAlgorithmV = NativeValue.From(EncryptionAlgorithm);
         if (_encryptionAlgorithmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encryptionAlgorithmName, _encryptionAlgorithmV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encryptionAlgorithmName, _encryptionAlgorithmV).ThrowIfFailed();
     }
 }
 

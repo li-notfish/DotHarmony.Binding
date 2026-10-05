@@ -661,10 +661,10 @@ public sealed record NetSpecifier(
     {
         var _netCapabilitiesV = NativeValue.From(NetCapabilities);
         if (_netCapabilitiesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _netCapabilitiesName, _netCapabilitiesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _netCapabilitiesName, _netCapabilitiesV).ThrowIfFailed();
         var _bearerPrivateIdentifierV = NativeValue.From(BearerPrivateIdentifier);
         if (_bearerPrivateIdentifierV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bearerPrivateIdentifierName, _bearerPrivateIdentifierV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bearerPrivateIdentifierName, _bearerPrivateIdentifierV).ThrowIfFailed();
     }
 }
 
@@ -901,10 +901,10 @@ public sealed record TraceRouteOptions(
     {
         var _maxJumpNumberV = NativeValue.From(MaxJumpNumber);
         if (_maxJumpNumberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxJumpNumberName, _maxJumpNumberV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxJumpNumberName, _maxJumpNumberV).ThrowIfFailed();
         var _packetsTypeV = NativeValue.From(PacketsType);
         if (_packetsTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _packetsTypeName, _packetsTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _packetsTypeName, _packetsTypeV).ThrowIfFailed();
     }
 }
 

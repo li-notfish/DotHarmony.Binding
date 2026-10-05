@@ -1204,22 +1204,22 @@ public sealed record InitializationOptions(
     {
         var _sizeV = NativeValue.From(Size);
         if (_sizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV).ThrowIfFailed();
         var _srcPixelFormatV = NativeValue.From(SrcPixelFormat);
         if (_srcPixelFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _srcPixelFormatName, _srcPixelFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _srcPixelFormatName, _srcPixelFormatV).ThrowIfFailed();
         var _pixelFormatV = NativeValue.From(PixelFormat);
         if (_pixelFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pixelFormatName, _pixelFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pixelFormatName, _pixelFormatV).ThrowIfFailed();
         var _editableV = NativeValue.From(Editable);
         if (_editableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _editableName, _editableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _editableName, _editableV).ThrowIfFailed();
         var _alphaTypeV = NativeValue.From(AlphaType);
         if (_alphaTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _alphaTypeName, _alphaTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _alphaTypeName, _alphaTypeV).ThrowIfFailed();
         var _scaleModeV = NativeValue.From(ScaleMode);
         if (_scaleModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _scaleModeName, _scaleModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _scaleModeName, _scaleModeV).ThrowIfFailed();
     }
 }
 
@@ -1563,13 +1563,13 @@ public sealed record SourceOptions(
     {
         var _sourceDensityV = NativeValue.From(SourceDensity);
         if (_sourceDensityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sourceDensityName, _sourceDensityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sourceDensityName, _sourceDensityV).ThrowIfFailed();
         var _sourcePixelFormatV = NativeValue.From(SourcePixelFormat);
         if (_sourcePixelFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sourcePixelFormatName, _sourcePixelFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sourcePixelFormatName, _sourcePixelFormatV).ThrowIfFailed();
         var _sourceSizeV = NativeValue.From(SourceSize);
         if (_sourceSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sourceSizeName, _sourceSizeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sourceSizeName, _sourceSizeV).ThrowIfFailed();
     }
 }
 
@@ -1861,10 +1861,10 @@ public sealed record ImageReceiverOptions(
     {
         var _sizeV = NativeValue.From(Size);
         if (_sizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV).ThrowIfFailed();
         var _capacityV = NativeValue.From(Capacity);
         if (_capacityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _capacityName, _capacityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _capacityName, _capacityV).ThrowIfFailed();
     }
 }
 

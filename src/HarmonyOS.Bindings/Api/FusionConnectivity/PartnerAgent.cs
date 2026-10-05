@@ -135,10 +135,10 @@ public sealed record DeviceCapability(
     {
         var _supportBrV = NativeValue.From(SupportBr);
         if (_supportBrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _supportBrName, _supportBrV);
+            NativeNodeApi.napi_set_named_property(env, obj, _supportBrName, _supportBrV).ThrowIfFailed();
         var _supportBleAdvertiserV = NativeValue.From(SupportBleAdvertiser);
         if (_supportBleAdvertiserV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _supportBleAdvertiserName, _supportBleAdvertiserV);
+            NativeNodeApi.napi_set_named_property(env, obj, _supportBleAdvertiserName, _supportBleAdvertiserV).ThrowIfFailed();
     }
 }
 
@@ -156,9 +156,9 @@ public sealed record BusinessCapability(
     {
         var _supportMediaControlV = NativeValue.From(SupportMediaControl);
         if (_supportMediaControlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _supportMediaControlName, _supportMediaControlV);
+            NativeNodeApi.napi_set_named_property(env, obj, _supportMediaControlName, _supportMediaControlV).ThrowIfFailed();
         var _supportTelephonyControlV = NativeValue.From(SupportTelephonyControl);
         if (_supportTelephonyControlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _supportTelephonyControlName, _supportTelephonyControlV);
+            NativeNodeApi.napi_set_named_property(env, obj, _supportTelephonyControlName, _supportTelephonyControlV).ThrowIfFailed();
     }
 }

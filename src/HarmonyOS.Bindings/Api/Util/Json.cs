@@ -122,6 +122,6 @@ public sealed record ParseOptions(
     {
         var _bigIntModeV = NativeValue.From(BigIntMode);
         if (_bigIntModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bigIntModeName, _bigIntModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bigIntModeName, _bigIntModeV).ThrowIfFailed();
     }
 }

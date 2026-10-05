@@ -286,7 +286,7 @@ public sealed record StoreConfig(
     {
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV).ThrowIfFailed();
     }
 }
 

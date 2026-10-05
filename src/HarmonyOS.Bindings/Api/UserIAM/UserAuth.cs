@@ -327,19 +327,19 @@ public sealed record AuthParam(
     {
         var _challengeV = NativeValue.From(Challenge);
         if (_challengeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _challengeName, _challengeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _challengeName, _challengeV).ThrowIfFailed();
         var _authTypeV = NativeValue.From(AuthType);
         if (_authTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _authTypeName, _authTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _authTypeName, _authTypeV).ThrowIfFailed();
         var _authTrustLevelV = NativeValue.From(AuthTrustLevel);
         if (_authTrustLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _authTrustLevelName, _authTrustLevelV);
+            NativeNodeApi.napi_set_named_property(env, obj, _authTrustLevelName, _authTrustLevelV).ThrowIfFailed();
         var _reuseUnlockResultV = NativeValue.From(ReuseUnlockResult);
         if (_reuseUnlockResultV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reuseUnlockResultName, _reuseUnlockResultV);
+            NativeNodeApi.napi_set_named_property(env, obj, _reuseUnlockResultName, _reuseUnlockResultV).ThrowIfFailed();
         var _skipLockedBiometricAuthV = NativeValue.From(SkipLockedBiometricAuth);
         if (_skipLockedBiometricAuthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _skipLockedBiometricAuthName, _skipLockedBiometricAuthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _skipLockedBiometricAuthName, _skipLockedBiometricAuthV).ThrowIfFailed();
     }
 }
 
@@ -425,10 +425,10 @@ public sealed record ReuseUnlockResult(
     {
         var _reuseModeV = NativeValue.From(ReuseMode);
         if (_reuseModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reuseModeName, _reuseModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _reuseModeName, _reuseModeV).ThrowIfFailed();
         var _reuseDurationV = NativeValue.From(ReuseDuration);
         if (_reuseDurationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reuseDurationName, _reuseDurationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _reuseDurationName, _reuseDurationV).ThrowIfFailed();
     }
 }
 

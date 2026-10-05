@@ -42,9 +42,8 @@ internal sealed class HarmonyGeolocation : IGeolocation
         var req = new CurrentLocationRequest(
             MaxAccuracy: MaxAccuracyOf(request.DesiredAccuracy),
             TimeoutMs: request.Timeout.TotalMilliseconds);
-        // OHOS getCurrentLocation 无取消通道：WaitAsync 只取消托管等待（底层定位继续、结果丢弃）
-        var task = GeoLocationManager.GetCurrentLocationAsync(req);
-        var handle = cancelToken.CanBeCanceled ? await task.WaitAsync(cancelToken) : await task;
+        // OHOS getCurrentLocation 无取消通道：取消只结束托管等待，底层定位继续、结果丢弃
+        var handle = await GeoLocationManager.GetCurrentLocationAsync(req, cancelToken);
         return FromNative(handle);
     }
 

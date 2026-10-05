@@ -2328,16 +2328,16 @@ public sealed record MediaStream(
     {
         var _urlV = NativeValue.From(Url);
         if (_urlV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _urlName, _urlV);
+            NativeNodeApi.napi_set_named_property(env, obj, _urlName, _urlV).ThrowIfFailed();
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV).ThrowIfFailed();
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV).ThrowIfFailed();
         var _bitrateV = NativeValue.From(Bitrate);
         if (_bitrateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bitrateName, _bitrateV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bitrateName, _bitrateV).ThrowIfFailed();
     }
 }
 

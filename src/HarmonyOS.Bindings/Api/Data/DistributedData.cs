@@ -235,10 +235,10 @@ public sealed record KVManagerConfig(
     {
         var _userInfoV = NativeValue.From(UserInfo);
         if (_userInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userInfoName, _userInfoV);
+            NativeNodeApi.napi_set_named_property(env, obj, _userInfoName, _userInfoV).ThrowIfFailed();
         var _bundleNameV = NativeValue.From(BundleName);
         if (_bundleNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bundleNameName, _bundleNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bundleNameName, _bundleNameV).ThrowIfFailed();
     }
 }
 
@@ -863,10 +863,10 @@ public sealed record UserInfo(
     {
         var _userIdV = NativeValue.From(UserId);
         if (_userIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userIdName, _userIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _userIdName, _userIdV).ThrowIfFailed();
         var _userTypeV = NativeValue.From(UserType);
         if (_userTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userTypeName, _userTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _userTypeName, _userTypeV).ThrowIfFailed();
     }
 }
 

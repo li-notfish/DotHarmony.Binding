@@ -715,15 +715,15 @@ public sealed record WorkerOptions(
     {
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV).ThrowIfFailed();
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV).ThrowIfFailed();
         var _sharedV = NativeValue.From(Shared);
         if (_sharedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sharedName, _sharedV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sharedName, _sharedV).ThrowIfFailed();
         var _priorityV = NativeValue.From(Priority);
         if (_priorityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV).ThrowIfFailed();
     }
 }

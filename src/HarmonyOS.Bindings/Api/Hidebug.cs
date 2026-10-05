@@ -691,16 +691,16 @@ public sealed record RequestTraceConfig(
     {
         var _identifierV = NativeValue.From(Identifier);
         if (_identifierV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _identifierName, _identifierV);
+            NativeNodeApi.napi_set_named_property(env, obj, _identifierName, _identifierV).ThrowIfFailed();
         var _bufferSizeKbV = NativeValue.From(BufferSizeKb);
         if (_bufferSizeKbV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bufferSizeKbName, _bufferSizeKbV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bufferSizeKbName, _bufferSizeKbV).ThrowIfFailed();
         var _durationMsV = NativeValue.From(DurationMs);
         if (_durationMsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _durationMsName, _durationMsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _durationMsName, _durationMsV).ThrowIfFailed();
         var _reservedV = NativeValue.From(Reserved);
         if (_reservedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reservedName, _reservedV);
+            NativeNodeApi.napi_set_named_property(env, obj, _reservedName, _reservedV).ThrowIfFailed();
     }
 }
 
@@ -743,15 +743,15 @@ public sealed record GwpAsanOptions(
     {
         var _alwaysEnabledV = NativeValue.From(AlwaysEnabled);
         if (_alwaysEnabledV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _alwaysEnabledName, _alwaysEnabledV);
+            NativeNodeApi.napi_set_named_property(env, obj, _alwaysEnabledName, _alwaysEnabledV).ThrowIfFailed();
         var _sampleRateV = NativeValue.From(SampleRate);
         if (_sampleRateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sampleRateName, _sampleRateV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sampleRateName, _sampleRateV).ThrowIfFailed();
         var _maxSimutaneousAllocationsV = NativeValue.From(MaxSimutaneousAllocations);
         if (_maxSimutaneousAllocationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxSimutaneousAllocationsName, _maxSimutaneousAllocationsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxSimutaneousAllocationsName, _maxSimutaneousAllocationsV).ThrowIfFailed();
         var _isRecoverV = NativeValue.From(IsRecover);
         if (_isRecoverV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isRecoverName, _isRecoverV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isRecoverName, _isRecoverV).ThrowIfFailed();
     }
 }

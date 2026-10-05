@@ -103,16 +103,16 @@ public sealed record DownloadableProfile(
     {
         var _activationCodeV = NativeValue.From(ActivationCode);
         if (_activationCodeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _activationCodeName, _activationCodeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _activationCodeName, _activationCodeV).ThrowIfFailed();
         var _confirmationCodeV = NativeValue.From(ConfirmationCode);
         if (_confirmationCodeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _confirmationCodeName, _confirmationCodeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _confirmationCodeName, _confirmationCodeV).ThrowIfFailed();
         var _carrierNameV = NativeValue.From(CarrierName);
         if (_carrierNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _carrierNameName, _carrierNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _carrierNameName, _carrierNameV).ThrowIfFailed();
         var _accessRulesV = NativeValue.From(AccessRules);
         if (_accessRulesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _accessRulesName, _accessRulesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _accessRulesName, _accessRulesV).ThrowIfFailed();
     }
 }
 
@@ -132,12 +132,12 @@ public sealed record AccessRule(
     {
         var _certificateHashHexStrV = NativeValue.From(CertificateHashHexStr);
         if (_certificateHashHexStrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certificateHashHexStrName, _certificateHashHexStrV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certificateHashHexStrName, _certificateHashHexStrV).ThrowIfFailed();
         var _packageNameV = NativeValue.From(PackageName);
         if (_packageNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _packageNameName, _packageNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _packageNameName, _packageNameV).ThrowIfFailed();
         var _accessTypeV = NativeValue.From(AccessType);
         if (_accessTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _accessTypeName, _accessTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _accessTypeName, _accessTypeV).ThrowIfFailed();
     }
 }

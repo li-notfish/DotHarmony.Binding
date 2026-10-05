@@ -84,18 +84,18 @@ public sealed record SelectionPanelPanelInfo(
     {
         var _panelTypeV = NativeValue.From(PanelType);
         if (_panelTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _panelTypeName, _panelTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _panelTypeName, _panelTypeV).ThrowIfFailed();
         var _xV = NativeValue.From(X);
         if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
+            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV).ThrowIfFailed();
         var _yV = NativeValue.From(Y);
         if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
+            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV).ThrowIfFailed();
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV).ThrowIfFailed();
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV).ThrowIfFailed();
     }
 }

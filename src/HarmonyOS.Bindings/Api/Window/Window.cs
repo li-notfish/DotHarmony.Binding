@@ -2558,13 +2558,13 @@ public sealed record WindowInfoOptions(
     {
         var _excludeSystemWindowsV = NativeValue.From(ExcludeSystemWindows);
         if (_excludeSystemWindowsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _excludeSystemWindowsName, _excludeSystemWindowsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _excludeSystemWindowsName, _excludeSystemWindowsV).ThrowIfFailed();
         var _foregroundAboveWindowV = NativeValue.From(ForegroundAboveWindow);
         if (_foregroundAboveWindowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _foregroundAboveWindowName, _foregroundAboveWindowV);
+            NativeNodeApi.napi_set_named_property(env, obj, _foregroundAboveWindowName, _foregroundAboveWindowV).ThrowIfFailed();
         var _foregroundBelowWindowV = NativeValue.From(ForegroundBelowWindow);
         if (_foregroundBelowWindowV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _foregroundBelowWindowName, _foregroundBelowWindowV);
+            NativeNodeApi.napi_set_named_property(env, obj, _foregroundBelowWindowName, _foregroundBelowWindowV).ThrowIfFailed();
     }
 }
 
@@ -2613,7 +2613,7 @@ public sealed record WindowSnapshotConfiguration(
     {
         var _useCacheV = NativeValue.From(UseCache);
         if (_useCacheV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _useCacheName, _useCacheV);
+            NativeNodeApi.napi_set_named_property(env, obj, _useCacheName, _useCacheV).ThrowIfFailed();
     }
 }
 

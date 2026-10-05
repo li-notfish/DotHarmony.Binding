@@ -109,13 +109,13 @@ public sealed record ShowToastOptions(
     {
         var _messageV = NativeValue.From(Message);
         if (_messageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _messageName, _messageV);
+            NativeNodeApi.napi_set_named_property(env, obj, _messageName, _messageV).ThrowIfFailed();
         var _durationV = NativeValue.From(Duration);
         if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV).ThrowIfFailed();
         var _bottomV = NativeValue.From(Bottom);
         if (_bottomV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bottomName, _bottomV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bottomName, _bottomV).ThrowIfFailed();
     }
 }
 

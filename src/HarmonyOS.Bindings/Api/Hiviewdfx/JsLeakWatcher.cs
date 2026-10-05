@@ -144,27 +144,27 @@ public sealed record LeakWatcherConfig(
     {
         var _monitorObjectTypesV = NativeValue.From(MonitorObjectTypes);
         if (_monitorObjectTypesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _monitorObjectTypesName, _monitorObjectTypesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _monitorObjectTypesName, _monitorObjectTypesV).ThrowIfFailed();
         var _objectUniqueIDsV = NativeValue.From(ObjectUniqueIDs);
         if (_objectUniqueIDsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _objectUniqueIDsName, _objectUniqueIDsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _objectUniqueIDsName, _objectUniqueIDsV).ThrowIfFailed();
         var _checkIntervalV = NativeValue.From(CheckInterval);
         if (_checkIntervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _checkIntervalName, _checkIntervalV);
+            NativeNodeApi.napi_set_named_property(env, obj, _checkIntervalName, _checkIntervalV).ThrowIfFailed();
         var _fgLeakCountThresholdV = NativeValue.From(FgLeakCountThreshold);
         if (_fgLeakCountThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fgLeakCountThresholdName, _fgLeakCountThresholdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _fgLeakCountThresholdName, _fgLeakCountThresholdV).ThrowIfFailed();
         var _bgLeakCountThresholdV = NativeValue.From(BgLeakCountThreshold);
         if (_bgLeakCountThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bgLeakCountThresholdName, _bgLeakCountThresholdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bgLeakCountThresholdName, _bgLeakCountThresholdV).ThrowIfFailed();
         var _maxStoredHeapDumpsV = NativeValue.From(MaxStoredHeapDumps);
         if (_maxStoredHeapDumpsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxStoredHeapDumpsName, _maxStoredHeapDumpsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxStoredHeapDumpsName, _maxStoredHeapDumpsV).ThrowIfFailed();
         var _dumpHeapWaitTimeMsV = NativeValue.From(DumpHeapWaitTimeMs);
         if (_dumpHeapWaitTimeMsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dumpHeapWaitTimeMsName, _dumpHeapWaitTimeMsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dumpHeapWaitTimeMsName, _dumpHeapWaitTimeMsV).ThrowIfFailed();
         var _exclusionListV = NativeValue.From(ExclusionList);
         if (_exclusionListV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _exclusionListName, _exclusionListV);
+            NativeNodeApi.napi_set_named_property(env, obj, _exclusionListName, _exclusionListV).ThrowIfFailed();
     }
 }

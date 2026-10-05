@@ -832,22 +832,22 @@ public sealed record VirtualScreenConfig(
     {
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV).ThrowIfFailed();
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV).ThrowIfFailed();
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV).ThrowIfFailed();
         var _densityV = NativeValue.From(Density);
         if (_densityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _densityName, _densityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _densityName, _densityV).ThrowIfFailed();
         var _surfaceIdV = NativeValue.From(SurfaceId);
         if (_surfaceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _surfaceIdName, _surfaceIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _surfaceIdName, _surfaceIdV).ThrowIfFailed();
         var _supportsFocusV = NativeValue.From(SupportsFocus);
         if (_supportsFocusV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _supportsFocusName, _supportsFocusV);
+            NativeNodeApi.napi_set_named_property(env, obj, _supportsFocusName, _supportsFocusV).ThrowIfFailed();
     }
 }
 

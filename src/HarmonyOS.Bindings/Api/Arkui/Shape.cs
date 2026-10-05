@@ -263,13 +263,13 @@ public sealed record RectShapeOptions(
     {
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV).ThrowIfFailed();
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV).ThrowIfFailed();
         var _radiusV = NativeValue.From(Radius);
         if (_radiusV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _radiusName, _radiusV);
+            NativeNodeApi.napi_set_named_property(env, obj, _radiusName, _radiusV).ThrowIfFailed();
     }
 }
 
@@ -287,10 +287,10 @@ public sealed record ShapeSize(
     {
         var _widthV = NativeValue.From(Width);
         if (_widthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _widthName, _widthV).ThrowIfFailed();
         var _heightV = NativeValue.From(Height);
         if (_heightV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV);
+            NativeNodeApi.napi_set_named_property(env, obj, _heightName, _heightV).ThrowIfFailed();
     }
 }
 
@@ -306,6 +306,6 @@ public sealed record PathShapeOptions(
     {
         var _commandsV = NativeValue.From(Commands);
         if (_commandsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _commandsName, _commandsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _commandsName, _commandsV).ThrowIfFailed();
     }
 }

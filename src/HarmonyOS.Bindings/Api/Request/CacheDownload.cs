@@ -231,7 +231,7 @@ public sealed record RetryOptions(
     {
         var _maxRetryCountV = NativeValue.From(MaxRetryCount);
         if (_maxRetryCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxRetryCountName, _maxRetryCountV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxRetryCountName, _maxRetryCountV).ThrowIfFailed();
     }
 }
 
@@ -249,10 +249,10 @@ public sealed record TimeoutOptions(
     {
         var _networkCheckTimeoutV = NativeValue.From(NetworkCheckTimeout);
         if (_networkCheckTimeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _networkCheckTimeoutName, _networkCheckTimeoutV);
+            NativeNodeApi.napi_set_named_property(env, obj, _networkCheckTimeoutName, _networkCheckTimeoutV).ThrowIfFailed();
         var _httpTotalTimeoutV = NativeValue.From(HttpTotalTimeout);
         if (_httpTotalTimeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _httpTotalTimeoutName, _httpTotalTimeoutV);
+            NativeNodeApi.napi_set_named_property(env, obj, _httpTotalTimeoutName, _httpTotalTimeoutV).ThrowIfFailed();
     }
 }
 

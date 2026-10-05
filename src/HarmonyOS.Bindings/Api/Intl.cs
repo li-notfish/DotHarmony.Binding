@@ -383,22 +383,22 @@ public sealed record LocaleOptions(
     {
         var _calendarV = NativeValue.From(Calendar);
         if (_calendarV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _calendarName, _calendarV);
+            NativeNodeApi.napi_set_named_property(env, obj, _calendarName, _calendarV).ThrowIfFailed();
         var _collationV = NativeValue.From(Collation);
         if (_collationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _collationName, _collationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _collationName, _collationV).ThrowIfFailed();
         var _hourCycleV = NativeValue.From(HourCycle);
         if (_hourCycleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _hourCycleName, _hourCycleV);
+            NativeNodeApi.napi_set_named_property(env, obj, _hourCycleName, _hourCycleV).ThrowIfFailed();
         var _numberingSystemV = NativeValue.From(NumberingSystem);
         if (_numberingSystemV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _numberingSystemName, _numberingSystemV);
+            NativeNodeApi.napi_set_named_property(env, obj, _numberingSystemName, _numberingSystemV).ThrowIfFailed();
         var _numericV = NativeValue.From(Numeric);
         if (_numericV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _numericName, _numericV);
+            NativeNodeApi.napi_set_named_property(env, obj, _numericName, _numericV).ThrowIfFailed();
         var _caseFirstV = NativeValue.From(CaseFirst);
         if (_caseFirstV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _caseFirstName, _caseFirstV);
+            NativeNodeApi.napi_set_named_property(env, obj, _caseFirstName, _caseFirstV).ThrowIfFailed();
     }
 }
 
@@ -741,25 +741,25 @@ public sealed record PluralRulesOptions(
     {
         var _localeMatcherV = NativeValue.From(LocaleMatcher);
         if (_localeMatcherV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _localeMatcherName, _localeMatcherV);
+            NativeNodeApi.napi_set_named_property(env, obj, _localeMatcherName, _localeMatcherV).ThrowIfFailed();
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV).ThrowIfFailed();
         var _minimumIntegerDigitsV = NativeValue.From(MinimumIntegerDigits);
         if (_minimumIntegerDigitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minimumIntegerDigitsName, _minimumIntegerDigitsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _minimumIntegerDigitsName, _minimumIntegerDigitsV).ThrowIfFailed();
         var _minimumFractionDigitsV = NativeValue.From(MinimumFractionDigits);
         if (_minimumFractionDigitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minimumFractionDigitsName, _minimumFractionDigitsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _minimumFractionDigitsName, _minimumFractionDigitsV).ThrowIfFailed();
         var _maximumFractionDigitsV = NativeValue.From(MaximumFractionDigits);
         if (_maximumFractionDigitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maximumFractionDigitsName, _maximumFractionDigitsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maximumFractionDigitsName, _maximumFractionDigitsV).ThrowIfFailed();
         var _minimumSignificantDigitsV = NativeValue.From(MinimumSignificantDigits);
         if (_minimumSignificantDigitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minimumSignificantDigitsName, _minimumSignificantDigitsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _minimumSignificantDigitsName, _minimumSignificantDigitsV).ThrowIfFailed();
         var _maximumSignificantDigitsV = NativeValue.From(MaximumSignificantDigits);
         if (_maximumSignificantDigitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maximumSignificantDigitsName, _maximumSignificantDigitsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maximumSignificantDigitsName, _maximumSignificantDigitsV).ThrowIfFailed();
     }
 }
 
@@ -812,12 +812,12 @@ public sealed record RelativeTimeFormatInputOptions(
     {
         var _localeMatcherV = NativeValue.From(LocaleMatcher);
         if (_localeMatcherV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _localeMatcherName, _localeMatcherV);
+            NativeNodeApi.napi_set_named_property(env, obj, _localeMatcherName, _localeMatcherV).ThrowIfFailed();
         var _numericV = NativeValue.From(Numeric);
         if (_numericV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _numericName, _numericV);
+            NativeNodeApi.napi_set_named_property(env, obj, _numericName, _numericV).ThrowIfFailed();
         var _styleV = NativeValue.From(Style);
         if (_styleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _styleName, _styleV);
+            NativeNodeApi.napi_set_named_property(env, obj, _styleName, _styleV).ThrowIfFailed();
     }
 }

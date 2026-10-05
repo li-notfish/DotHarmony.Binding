@@ -357,13 +357,13 @@ public sealed record CMSignatureSpec(
     {
         var _purposeV = NativeValue.From(Purpose);
         if (_purposeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _purposeName, _purposeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _purposeName, _purposeV).ThrowIfFailed();
         var _paddingV = NativeValue.From(Padding);
         if (_paddingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _paddingName, _paddingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _paddingName, _paddingV).ThrowIfFailed();
         var _digestV = NativeValue.From(Digest);
         if (_digestV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _digestName, _digestV);
+            NativeNodeApi.napi_set_named_property(env, obj, _digestName, _digestV).ThrowIfFailed();
     }
 }
 
@@ -383,13 +383,13 @@ public sealed record CertStoreProperty(
     {
         var _certTypeV = NativeValue.From(CertType);
         if (_certTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certTypeName, _certTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certTypeName, _certTypeV).ThrowIfFailed();
         var _certScopeV = NativeValue.From(CertScope);
         if (_certScopeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certScopeName, _certScopeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certScopeName, _certScopeV).ThrowIfFailed();
         var _certAlgV = NativeValue.From(CertAlg);
         if (_certAlgV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certAlgName, _certAlgV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certAlgName, _certAlgV).ThrowIfFailed();
     }
 }
 
@@ -405,7 +405,7 @@ public sealed record UkeyInfo(
     {
         var _certPurposeV = NativeValue.From(CertPurpose);
         if (_certPurposeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certPurposeName, _certPurposeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certPurposeName, _certPurposeV).ThrowIfFailed();
     }
 }
 
@@ -425,13 +425,13 @@ public sealed record CertManagerCertBlob(
     {
         var _certDataV = NativeValue.From(CertData);
         if (_certDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certDataName, _certDataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certDataName, _certDataV).ThrowIfFailed();
         var _certFormatV = NativeValue.From(CertFormat);
         if (_certFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certFormatName, _certFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certFormatName, _certFormatV).ThrowIfFailed();
         var _certScopeV = NativeValue.From(CertScope);
         if (_certScopeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certScopeName, _certScopeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certScopeName, _certScopeV).ThrowIfFailed();
     }
 }
 

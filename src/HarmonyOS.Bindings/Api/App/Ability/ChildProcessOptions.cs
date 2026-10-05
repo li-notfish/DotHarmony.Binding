@@ -78,9 +78,9 @@ public sealed record ChildProcessOptionsObject(
     {
         var _isolationModeV = NativeValue.From(IsolationMode);
         if (_isolationModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isolationModeName, _isolationModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isolationModeName, _isolationModeV).ThrowIfFailed();
         var _isolationUidV = NativeValue.From(IsolationUid);
         if (_isolationUidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isolationUidName, _isolationUidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isolationUidName, _isolationUidV).ThrowIfFailed();
     }
 }

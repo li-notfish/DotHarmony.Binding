@@ -127,9 +127,9 @@ public sealed record PolicyInfo(
     {
         var _uriV = NativeValue.From(Uri);
         if (_uriV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uriName, _uriV);
+            NativeNodeApi.napi_set_named_property(env, obj, _uriName, _uriV).ThrowIfFailed();
         var _operationModeV = NativeValue.From(OperationMode);
         if (_operationModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _operationModeName, _operationModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _operationModeName, _operationModeV).ThrowIfFailed();
     }
 }

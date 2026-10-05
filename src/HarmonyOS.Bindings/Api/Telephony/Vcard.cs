@@ -115,9 +115,9 @@ public sealed record VCardBuilderOptions(
     {
         var _cardTypeV = NativeValue.From(CardType);
         if (_cardTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cardTypeName, _cardTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _cardTypeName, _cardTypeV).ThrowIfFailed();
         var _charsetV = NativeValue.From(Charset);
         if (_charsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _charsetName, _charsetV);
+            NativeNodeApi.napi_set_named_property(env, obj, _charsetName, _charsetV).ThrowIfFailed();
     }
 }

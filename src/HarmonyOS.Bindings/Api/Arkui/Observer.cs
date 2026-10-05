@@ -519,7 +519,7 @@ public sealed record ObserverOptions(
     {
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV).ThrowIfFailed();
     }
 }
 

@@ -2485,10 +2485,10 @@ public sealed record SensorOptions(
     {
         var _intervalV = NativeValue.From(Interval);
         if (_intervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV).ThrowIfFailed();
         var _sensorInfoParamV = NativeValue.From(SensorInfoParam);
         if (_sensorInfoParamV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sensorInfoParamName, _sensorInfoParamV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sensorInfoParamName, _sensorInfoParamV).ThrowIfFailed();
     }
 }
 
@@ -2506,10 +2506,10 @@ public sealed record SensorInfoParam(
     {
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV).ThrowIfFailed();
         var _sensorIndexV = NativeValue.From(SensorIndex);
         if (_sensorIndexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sensorIndexName, _sensorIndexV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sensorIndexName, _sensorIndexV).ThrowIfFailed();
     }
 }
 
@@ -2679,13 +2679,13 @@ public sealed record LocationOptions(
     {
         var _latitudeV = NativeValue.From(Latitude);
         if (_latitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _latitudeName, _latitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _latitudeName, _latitudeV).ThrowIfFailed();
         var _longitudeV = NativeValue.From(Longitude);
         if (_longitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _longitudeName, _longitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _longitudeName, _longitudeV).ThrowIfFailed();
         var _altitudeV = NativeValue.From(Altitude);
         if (_altitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _altitudeName, _altitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _altitudeName, _altitudeV).ThrowIfFailed();
     }
 }
 
@@ -2703,10 +2703,10 @@ public sealed record CoordinatesOptions(
     {
         var _xV = NativeValue.From(X);
         if (_xV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV);
+            NativeNodeApi.napi_set_named_property(env, obj, _xName, _xV).ThrowIfFailed();
         var _yV = NativeValue.From(Y);
         if (_yV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV);
+            NativeNodeApi.napi_set_named_property(env, obj, _yName, _yV).ThrowIfFailed();
     }
 }
 

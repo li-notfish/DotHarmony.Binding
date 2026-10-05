@@ -205,22 +205,22 @@ public sealed record ZlibOptions(
     {
         var _levelV = NativeValue.From(Level);
         if (_levelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _levelName, _levelV);
+            NativeNodeApi.napi_set_named_property(env, obj, _levelName, _levelV).ThrowIfFailed();
         var _memLevelV = NativeValue.From(MemLevel);
         if (_memLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _memLevelName, _memLevelV);
+            NativeNodeApi.napi_set_named_property(env, obj, _memLevelName, _memLevelV).ThrowIfFailed();
         var _strategyV = NativeValue.From(Strategy);
         if (_strategyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _strategyName, _strategyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _strategyName, _strategyV).ThrowIfFailed();
         var _parallelV = NativeValue.From(Parallel);
         if (_parallelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _parallelName, _parallelV);
+            NativeNodeApi.napi_set_named_property(env, obj, _parallelName, _parallelV).ThrowIfFailed();
         var _pathSeparatorStrategyV = NativeValue.From(PathSeparatorStrategy);
         if (_pathSeparatorStrategyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pathSeparatorStrategyName, _pathSeparatorStrategyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pathSeparatorStrategyName, _pathSeparatorStrategyV).ThrowIfFailed();
         var _keepTopLevelFolderV = NativeValue.From(KeepTopLevelFolder);
         if (_keepTopLevelFolderV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keepTopLevelFolderName, _keepTopLevelFolderV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keepTopLevelFolderName, _keepTopLevelFolderV).ThrowIfFailed();
     }
 }
 

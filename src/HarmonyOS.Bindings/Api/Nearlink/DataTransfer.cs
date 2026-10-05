@@ -174,13 +174,13 @@ public sealed record ConnectionParams(
     {
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV).ThrowIfFailed();
         var _uuidV = NativeValue.From(Uuid);
         if (_uuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV).ThrowIfFailed();
         var _transferModeV = NativeValue.From(TransferMode);
         if (_transferModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _transferModeName, _transferModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _transferModeName, _transferModeV).ThrowIfFailed();
     }
 }
 
@@ -200,13 +200,13 @@ public sealed record DataParams(
     {
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV).ThrowIfFailed();
         var _uuidV = NativeValue.From(Uuid);
         if (_uuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV).ThrowIfFailed();
         var _dataV = NativeValue.From(Data);
         if (_dataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dataName, _dataV).ThrowIfFailed();
     }
 }
 
@@ -224,9 +224,9 @@ public sealed record ConnectionStateParams(
     {
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV).ThrowIfFailed();
         var _uuidV = NativeValue.From(Uuid);
         if (_uuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV).ThrowIfFailed();
     }
 }

@@ -84,18 +84,18 @@ public sealed record InputEventObject(
     {
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV).ThrowIfFailed();
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV).ThrowIfFailed();
         var _actionTimeV = NativeValue.From(ActionTime);
         if (_actionTimeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _actionTimeName, _actionTimeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _actionTimeName, _actionTimeV).ThrowIfFailed();
         var _screenIdV = NativeValue.From(ScreenId);
         if (_screenIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _screenIdName, _screenIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _screenIdName, _screenIdV).ThrowIfFailed();
         var _windowIdV = NativeValue.From(WindowId);
         if (_windowIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _windowIdName, _windowIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _windowIdName, _windowIdV).ThrowIfFailed();
     }
 }

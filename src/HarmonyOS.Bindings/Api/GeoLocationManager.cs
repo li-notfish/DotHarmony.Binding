@@ -759,19 +759,19 @@ public sealed record LocationRequest(
     {
         var _priorityV = NativeValue.From(Priority);
         if (_priorityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV).ThrowIfFailed();
         var _scenarioV = NativeValue.From(Scenario);
         if (_scenarioV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV);
+            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV).ThrowIfFailed();
         var _timeIntervalV = NativeValue.From(TimeInterval);
         if (_timeIntervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeIntervalName, _timeIntervalV);
+            NativeNodeApi.napi_set_named_property(env, obj, _timeIntervalName, _timeIntervalV).ThrowIfFailed();
         var _distanceIntervalV = NativeValue.From(DistanceInterval);
         if (_distanceIntervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _distanceIntervalName, _distanceIntervalV);
+            NativeNodeApi.napi_set_named_property(env, obj, _distanceIntervalName, _distanceIntervalV).ThrowIfFailed();
         var _maxAccuracyV = NativeValue.From(MaxAccuracy);
         if (_maxAccuracyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxAccuracyName, _maxAccuracyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxAccuracyName, _maxAccuracyV).ThrowIfFailed();
     }
 }
 
@@ -789,10 +789,10 @@ public sealed record CachedGnssLocationsRequest(
     {
         var _reportingPeriodSecV = NativeValue.From(ReportingPeriodSec);
         if (_reportingPeriodSecV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reportingPeriodSecName, _reportingPeriodSecV);
+            NativeNodeApi.napi_set_named_property(env, obj, _reportingPeriodSecName, _reportingPeriodSecV).ThrowIfFailed();
         var _wakeUpCacheQueueFullV = NativeValue.From(WakeUpCacheQueueFull);
         if (_wakeUpCacheQueueFullV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _wakeUpCacheQueueFullName, _wakeUpCacheQueueFullV);
+            NativeNodeApi.napi_set_named_property(env, obj, _wakeUpCacheQueueFullName, _wakeUpCacheQueueFullV).ThrowIfFailed();
     }
 }
 
@@ -810,10 +810,10 @@ public sealed record GeofenceRequest(
     {
         var _scenarioV = NativeValue.From(Scenario);
         if (_scenarioV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV);
+            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV).ThrowIfFailed();
         var _geofenceV = NativeValue.From(Geofence);
         if (_geofenceV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _geofenceName, _geofenceV);
+            NativeNodeApi.napi_set_named_property(env, obj, _geofenceName, _geofenceV).ThrowIfFailed();
     }
 }
 
@@ -835,16 +835,16 @@ public sealed record CurrentLocationRequest(
     {
         var _priorityV = NativeValue.From(Priority);
         if (_priorityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV).ThrowIfFailed();
         var _scenarioV = NativeValue.From(Scenario);
         if (_scenarioV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV);
+            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV).ThrowIfFailed();
         var _maxAccuracyV = NativeValue.From(MaxAccuracy);
         if (_maxAccuracyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxAccuracyName, _maxAccuracyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxAccuracyName, _maxAccuracyV).ThrowIfFailed();
         var _timeoutMsV = NativeValue.From(TimeoutMs);
         if (_timeoutMsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeoutMsName, _timeoutMsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _timeoutMsName, _timeoutMsV).ThrowIfFailed();
     }
 }
 
@@ -985,19 +985,19 @@ public sealed record ReverseGeoCodeRequest(
     {
         var _localeV = NativeValue.From(Locale);
         if (_localeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _localeName, _localeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _localeName, _localeV).ThrowIfFailed();
         var _countryV = NativeValue.From(Country);
         if (_countryV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _countryName, _countryV);
+            NativeNodeApi.napi_set_named_property(env, obj, _countryName, _countryV).ThrowIfFailed();
         var _latitudeV = NativeValue.From(Latitude);
         if (_latitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _latitudeName, _latitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _latitudeName, _latitudeV).ThrowIfFailed();
         var _longitudeV = NativeValue.From(Longitude);
         if (_longitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _longitudeName, _longitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _longitudeName, _longitudeV).ThrowIfFailed();
         var _maxItemsV = NativeValue.From(MaxItems);
         if (_maxItemsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxItemsName, _maxItemsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxItemsName, _maxItemsV).ThrowIfFailed();
     }
 }
 
@@ -1027,28 +1027,28 @@ public sealed record GeoCodeRequest(
     {
         var _localeV = NativeValue.From(Locale);
         if (_localeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _localeName, _localeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _localeName, _localeV).ThrowIfFailed();
         var _countryV = NativeValue.From(Country);
         if (_countryV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _countryName, _countryV);
+            NativeNodeApi.napi_set_named_property(env, obj, _countryName, _countryV).ThrowIfFailed();
         var _descriptionV = NativeValue.From(Description);
         if (_descriptionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _descriptionName, _descriptionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _descriptionName, _descriptionV).ThrowIfFailed();
         var _maxItemsV = NativeValue.From(MaxItems);
         if (_maxItemsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxItemsName, _maxItemsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxItemsName, _maxItemsV).ThrowIfFailed();
         var _minLatitudeV = NativeValue.From(MinLatitude);
         if (_minLatitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minLatitudeName, _minLatitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _minLatitudeName, _minLatitudeV).ThrowIfFailed();
         var _minLongitudeV = NativeValue.From(MinLongitude);
         if (_minLongitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minLongitudeName, _minLongitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _minLongitudeName, _minLongitudeV).ThrowIfFailed();
         var _maxLatitudeV = NativeValue.From(MaxLatitude);
         if (_maxLatitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxLatitudeName, _maxLatitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxLatitudeName, _maxLatitudeV).ThrowIfFailed();
         var _maxLongitudeV = NativeValue.From(MaxLongitude);
         if (_maxLongitudeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxLongitudeName, _maxLongitudeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxLongitudeName, _maxLongitudeV).ThrowIfFailed();
     }
 }
 
@@ -1066,10 +1066,10 @@ public sealed record LocationCommand(
     {
         var _scenarioV = NativeValue.From(Scenario);
         if (_scenarioV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV);
+            NativeNodeApi.napi_set_named_property(env, obj, _scenarioName, _scenarioV).ThrowIfFailed();
         var _commandV = NativeValue.From(Command);
         if (_commandV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _commandName, _commandV);
+            NativeNodeApi.napi_set_named_property(env, obj, _commandName, _commandV).ThrowIfFailed();
     }
 }
 
@@ -1149,13 +1149,13 @@ public sealed record BeaconFence(
     {
         var _identifierV = NativeValue.From(Identifier);
         if (_identifierV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _identifierName, _identifierV);
+            NativeNodeApi.napi_set_named_property(env, obj, _identifierName, _identifierV).ThrowIfFailed();
         var _beaconFenceInfoTypeV = NativeValue.From(BeaconFenceInfoType);
         if (_beaconFenceInfoTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _beaconFenceInfoTypeName, _beaconFenceInfoTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _beaconFenceInfoTypeName, _beaconFenceInfoTypeV).ThrowIfFailed();
         var _manufactureDataV = NativeValue.From(ManufactureData);
         if (_manufactureDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufactureDataName, _manufactureDataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _manufactureDataName, _manufactureDataV).ThrowIfFailed();
     }
 }
 
@@ -1245,10 +1245,10 @@ public sealed record DistrictRequestParams(
     {
         var _localeV = NativeValue.From(Locale);
         if (_localeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _localeName, _localeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _localeName, _localeV).ThrowIfFailed();
         var _timeoutMsV = NativeValue.From(TimeoutMs);
         if (_timeoutMsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeoutMsName, _timeoutMsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _timeoutMsName, _timeoutMsV).ThrowIfFailed();
     }
 }
 
@@ -1266,10 +1266,10 @@ public sealed record BluetoothSearchRequestParams(
     {
         var _deviceIdArrayV = NativeValue.From(DeviceIdArray);
         if (_deviceIdArrayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdArrayName, _deviceIdArrayV);
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdArrayName, _deviceIdArrayV).ThrowIfFailed();
         var _rssiThresholdV = NativeValue.From(RssiThreshold);
         if (_rssiThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rssiThresholdName, _rssiThresholdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _rssiThresholdName, _rssiThresholdV).ThrowIfFailed();
     }
 }
 
@@ -1385,12 +1385,12 @@ public sealed record BeaconManufactureData(
     {
         var _manufactureIdV = NativeValue.From(ManufactureId);
         if (_manufactureIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufactureIdName, _manufactureIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _manufactureIdName, _manufactureIdV).ThrowIfFailed();
         var _manufactureDataV = NativeValue.From(ManufactureData);
         if (_manufactureDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufactureDataName, _manufactureDataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _manufactureDataName, _manufactureDataV).ThrowIfFailed();
         var _manufactureDataMaskV = NativeValue.From(ManufactureDataMask);
         if (_manufactureDataMaskV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufactureDataMaskName, _manufactureDataMaskV);
+            NativeNodeApi.napi_set_named_property(env, obj, _manufactureDataMaskName, _manufactureDataMaskV).ThrowIfFailed();
     }
 }

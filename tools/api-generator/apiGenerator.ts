@@ -1065,7 +1065,7 @@ export class ApiGenerator {
             const utf8Var = this.encodePropVar(p.pascal);
             lines.push(`        var ${utf8Var}V = NativeValue.From(${p.pascal});`);
             lines.push(`        if (${utf8Var}V != IntPtr.Zero)`);
-            lines.push(`            NativeNodeApi.napi_set_named_property(env, obj, ${utf8Var}Name, ${utf8Var}V);`);
+            lines.push(`            NativeNodeApi.napi_set_named_property(env, obj, ${utf8Var}Name, ${utf8Var}V).ThrowIfFailed();`);
         }
         lines.push('    }');
         lines.push('}');

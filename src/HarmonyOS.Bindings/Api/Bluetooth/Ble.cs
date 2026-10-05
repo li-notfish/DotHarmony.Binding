@@ -1162,16 +1162,16 @@ public sealed record AdvertiseSetting(
     {
         var _intervalV = NativeValue.From(Interval);
         if (_intervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV).ThrowIfFailed();
         var _txPowerV = NativeValue.From(TxPower);
         if (_txPowerV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _txPowerName, _txPowerV);
+            NativeNodeApi.napi_set_named_property(env, obj, _txPowerName, _txPowerV).ThrowIfFailed();
         var _connectableV = NativeValue.From(Connectable);
         if (_connectableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _connectableName, _connectableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _connectableName, _connectableV).ThrowIfFailed();
         var _isExtendedV = NativeValue.From(IsExtended);
         if (_isExtendedV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isExtendedName, _isExtendedV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isExtendedName, _isExtendedV).ThrowIfFailed();
     }
 }
 
@@ -1189,10 +1189,10 @@ public sealed record AdvertisingEnableParams(
     {
         var _advertisingIdV = NativeValue.From(AdvertisingId);
         if (_advertisingIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _advertisingIdName, _advertisingIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _advertisingIdName, _advertisingIdV).ThrowIfFailed();
         var _durationV = NativeValue.From(Duration);
         if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV).ThrowIfFailed();
     }
 }
 
@@ -1208,7 +1208,7 @@ public sealed record AdvertisingDisableParams(
     {
         var _advertisingIdV = NativeValue.From(AdvertisingId);
         if (_advertisingIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _advertisingIdName, _advertisingIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _advertisingIdName, _advertisingIdV).ThrowIfFailed();
     }
 }
 

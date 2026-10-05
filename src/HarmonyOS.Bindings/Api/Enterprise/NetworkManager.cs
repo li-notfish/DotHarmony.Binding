@@ -416,18 +416,18 @@ public sealed record InterfaceConfig(
     {
         var _iPSetModeV = NativeValue.From(IPSetMode);
         if (_iPSetModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iPSetModeName, _iPSetModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _iPSetModeName, _iPSetModeV).ThrowIfFailed();
         var _iPAddressV = NativeValue.From(IPAddress);
         if (_iPAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iPAddressName, _iPAddressV);
+            NativeNodeApi.napi_set_named_property(env, obj, _iPAddressName, _iPAddressV).ThrowIfFailed();
         var _gatewayV = NativeValue.From(Gateway);
         if (_gatewayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _gatewayName, _gatewayV);
+            NativeNodeApi.napi_set_named_property(env, obj, _gatewayName, _gatewayV).ThrowIfFailed();
         var _netMaskV = NativeValue.From(NetMask);
         if (_netMaskV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _netMaskName, _netMaskV);
+            NativeNodeApi.napi_set_named_property(env, obj, _netMaskName, _netMaskV).ThrowIfFailed();
         var _dnsServersV = NativeValue.From(DnsServers);
         if (_dnsServersV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dnsServersName, _dnsServersV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dnsServersName, _dnsServersV).ThrowIfFailed();
     }
 }

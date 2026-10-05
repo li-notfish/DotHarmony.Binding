@@ -232,12 +232,12 @@ public sealed record KeyPressedConfig(
     {
         var _keyV = NativeValue.From(Key);
         if (_keyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyName, _keyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keyName, _keyV).ThrowIfFailed();
         var _actionV = NativeValue.From(Action);
         if (_actionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _actionName, _actionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _actionName, _actionV).ThrowIfFailed();
         var _isRepeatV = NativeValue.From(IsRepeat);
         if (_isRepeatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isRepeatName, _isRepeatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isRepeatName, _isRepeatV).ThrowIfFailed();
     }
 }

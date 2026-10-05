@@ -636,19 +636,19 @@ public sealed record WifiDeviceConfig(
     {
         var _ssidV = NativeValue.From(Ssid);
         if (_ssidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _ssidName, _ssidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _ssidName, _ssidV).ThrowIfFailed();
         var _bssidV = NativeValue.From(Bssid);
         if (_bssidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bssidName, _bssidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bssidName, _bssidV).ThrowIfFailed();
         var _preSharedKeyV = NativeValue.From(PreSharedKey);
         if (_preSharedKeyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _preSharedKeyName, _preSharedKeyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _preSharedKeyName, _preSharedKeyV).ThrowIfFailed();
         var _isHiddenSsidV = NativeValue.From(IsHiddenSsid);
         if (_isHiddenSsidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isHiddenSsidName, _isHiddenSsidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isHiddenSsidName, _isHiddenSsidV).ThrowIfFailed();
         var _securityTypeV = NativeValue.From(SecurityType);
         if (_securityTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _securityTypeName, _securityTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _securityTypeName, _securityTypeV).ThrowIfFailed();
     }
 }
 
@@ -927,18 +927,18 @@ public sealed record WifiP2PConfig(
     {
         var _deviceAddressV = NativeValue.From(DeviceAddress);
         if (_deviceAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddressName, _deviceAddressV);
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddressName, _deviceAddressV).ThrowIfFailed();
         var _netIdV = NativeValue.From(NetId);
         if (_netIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _netIdName, _netIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _netIdName, _netIdV).ThrowIfFailed();
         var _passphraseV = NativeValue.From(Passphrase);
         if (_passphraseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _passphraseName, _passphraseV);
+            NativeNodeApi.napi_set_named_property(env, obj, _passphraseName, _passphraseV).ThrowIfFailed();
         var _groupNameV = NativeValue.From(GroupName);
         if (_groupNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _groupNameName, _groupNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _groupNameName, _groupNameV).ThrowIfFailed();
         var _goBandV = NativeValue.From(GoBand);
         if (_goBandV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _goBandName, _goBandV);
+            NativeNodeApi.napi_set_named_property(env, obj, _goBandName, _goBandV).ThrowIfFailed();
     }
 }

@@ -447,12 +447,12 @@ public sealed record PreferencesOptions(
     {
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV).ThrowIfFailed();
         var _dataGroupIdV = NativeValue.From(DataGroupId);
         if (_dataGroupIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataGroupIdName, _dataGroupIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dataGroupIdName, _dataGroupIdV).ThrowIfFailed();
         var _storageTypeV = NativeValue.From(StorageType);
         if (_storageTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _storageTypeName, _storageTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _storageTypeName, _storageTypeV).ThrowIfFailed();
     }
 }

@@ -534,6 +534,6 @@ public sealed record ObserverOptions(
     {
         var _slotIdV = NativeValue.From(SlotId);
         if (_slotIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _slotIdName, _slotIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _slotIdName, _slotIdV).ThrowIfFailed();
     }
 }

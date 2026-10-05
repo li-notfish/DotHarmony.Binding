@@ -134,9 +134,9 @@ public sealed record ConfigOption(
     {
         var _disableV = NativeValue.From(Disable);
         if (_disableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableName, _disableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _disableName, _disableV).ThrowIfFailed();
         var _maxStorageV = NativeValue.From(MaxStorage);
         if (_maxStorageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxStorageName, _maxStorageV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxStorageName, _maxStorageV).ThrowIfFailed();
     }
 }

@@ -192,15 +192,15 @@ public sealed record SerialAttribute(
     {
         var _baudRateV = NativeValue.From(BaudRate);
         if (_baudRateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _baudRateName, _baudRateV);
+            NativeNodeApi.napi_set_named_property(env, obj, _baudRateName, _baudRateV).ThrowIfFailed();
         var _dataBitsV = NativeValue.From(DataBits);
         if (_dataBitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataBitsName, _dataBitsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dataBitsName, _dataBitsV).ThrowIfFailed();
         var _parityV = NativeValue.From(Parity);
         if (_parityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _parityName, _parityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _parityName, _parityV).ThrowIfFailed();
         var _stopBitsV = NativeValue.From(StopBits);
         if (_stopBitsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _stopBitsName, _stopBitsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _stopBitsName, _stopBitsV).ThrowIfFailed();
     }
 }

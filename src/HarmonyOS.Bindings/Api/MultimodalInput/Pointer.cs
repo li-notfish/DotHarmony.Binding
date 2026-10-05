@@ -176,6 +176,6 @@ public sealed record CursorConfig(
     {
         var _followSystemV = NativeValue.From(FollowSystem);
         if (_followSystemV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _followSystemName, _followSystemV);
+            NativeNodeApi.napi_set_named_property(env, obj, _followSystemName, _followSystemV).ThrowIfFailed();
     }
 }

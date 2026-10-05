@@ -167,19 +167,19 @@ public sealed record ModelConfig(
     {
         var _versionV = NativeValue.From(Version);
         if (_versionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _versionName, _versionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _versionName, _versionV).ThrowIfFailed();
         var _isNpuAvailableV = NativeValue.From(IsNpuAvailable);
         if (_isNpuAvailableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isNpuAvailableName, _isNpuAvailableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isNpuAvailableName, _isNpuAvailableV).ThrowIfFailed();
         var _cachePathV = NativeValue.From(CachePath);
         if (_cachePathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cachePathName, _cachePathV);
+            NativeNodeApi.napi_set_named_property(env, obj, _cachePathName, _cachePathV).ThrowIfFailed();
         var _modelInfoV = NativeValue.From(ModelInfo);
         if (_modelInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _modelInfoName, _modelInfoV);
+            NativeNodeApi.napi_set_named_property(env, obj, _modelInfoName, _modelInfoV).ThrowIfFailed();
         var _networkPolicyV = NativeValue.From(NetworkPolicy);
         if (_networkPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _networkPolicyName, _networkPolicyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _networkPolicyName, _networkPolicyV).ThrowIfFailed();
     }
 }
 
@@ -233,10 +233,10 @@ public sealed record SplitConfig(
     {
         var _sizeV = NativeValue.From(Size);
         if (_sizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sizeName, _sizeV).ThrowIfFailed();
         var _overlapRatioV = NativeValue.From(OverlapRatio);
         if (_overlapRatioV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _overlapRatioName, _overlapRatioV);
+            NativeNodeApi.napi_set_named_property(env, obj, _overlapRatioName, _overlapRatioV).ThrowIfFailed();
     }
 }
 

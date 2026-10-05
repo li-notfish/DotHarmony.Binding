@@ -794,19 +794,19 @@ public sealed record RequestFilter(
     {
         var _beforeV = NativeValue.From(Before);
         if (_beforeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _beforeName, _beforeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _beforeName, _beforeV).ThrowIfFailed();
         var _afterV = NativeValue.From(After);
         if (_afterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _afterName, _afterV);
+            NativeNodeApi.napi_set_named_property(env, obj, _afterName, _afterV).ThrowIfFailed();
         var _stateV = NativeValue.From(State);
         if (_stateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _stateName, _stateV);
+            NativeNodeApi.napi_set_named_property(env, obj, _stateName, _stateV).ThrowIfFailed();
         var _actionV = NativeValue.From(Action);
         if (_actionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _actionName, _actionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _actionName, _actionV).ThrowIfFailed();
         var _modeV = NativeValue.From(Mode);
         if (_modeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _modeName, _modeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _modeName, _modeV).ThrowIfFailed();
     }
 }
 

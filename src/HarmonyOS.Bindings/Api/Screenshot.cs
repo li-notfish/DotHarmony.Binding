@@ -99,9 +99,9 @@ public sealed record CaptureOption(
     {
         var _displayIdV = NativeValue.From(DisplayId);
         if (_displayIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _displayIdName, _displayIdV).ThrowIfFailed();
         var _blackWindowIdsV = NativeValue.From(BlackWindowIds);
         if (_blackWindowIdsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _blackWindowIdsName, _blackWindowIdsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _blackWindowIdsName, _blackWindowIdsV).ThrowIfFailed();
     }
 }

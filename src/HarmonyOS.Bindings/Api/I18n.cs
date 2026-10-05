@@ -1247,7 +1247,7 @@ public sealed record PhoneNumberFormatOptions(
     {
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV).ThrowIfFailed();
     }
 }
 
@@ -1290,7 +1290,7 @@ public sealed record AdvancedMeasureFormatOptions(
     {
         var _unitUsageV = NativeValue.From(UnitUsage);
         if (_unitUsageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _unitUsageName, _unitUsageV);
+            NativeNodeApi.napi_set_named_property(env, obj, _unitUsageName, _unitUsageV).ThrowIfFailed();
     }
 }
 
@@ -1321,7 +1321,7 @@ public sealed record SymbolDateTimeFormatOptions(
     {
         var _amPmSymbolV = NativeValue.From(AmPmSymbol);
         if (_amPmSymbolV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _amPmSymbolName, _amPmSymbolV);
+            NativeNodeApi.napi_set_named_property(env, obj, _amPmSymbolName, _amPmSymbolV).ThrowIfFailed();
     }
 }
 
@@ -1392,22 +1392,22 @@ public sealed record SymbolNumberFormatOptions(
     {
         var _zeroV = NativeValue.From(Zero);
         if (_zeroV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _zeroName, _zeroV);
+            NativeNodeApi.napi_set_named_property(env, obj, _zeroName, _zeroV).ThrowIfFailed();
         var _nanV = NativeValue.From(Nan);
         if (_nanV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nanName, _nanV);
+            NativeNodeApi.napi_set_named_property(env, obj, _nanName, _nanV).ThrowIfFailed();
         var _minusSignV = NativeValue.From(MinusSign);
         if (_minusSignV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _minusSignName, _minusSignV);
+            NativeNodeApi.napi_set_named_property(env, obj, _minusSignName, _minusSignV).ThrowIfFailed();
         var _plusSignV = NativeValue.From(PlusSign);
         if (_plusSignV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _plusSignName, _plusSignV);
+            NativeNodeApi.napi_set_named_property(env, obj, _plusSignName, _plusSignV).ThrowIfFailed();
         var _infinityV = NativeValue.From(Infinity);
         if (_infinityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _infinityName, _infinityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _infinityName, _infinityV).ThrowIfFailed();
         var _groupingSeparatorV = NativeValue.From(GroupingSeparator);
         if (_groupingSeparatorV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _groupingSeparatorName, _groupingSeparatorV);
+            NativeNodeApi.napi_set_named_property(env, obj, _groupingSeparatorName, _groupingSeparatorV).ThrowIfFailed();
     }
 }
 
@@ -1431,19 +1431,19 @@ public sealed record ISO8601DateTimeFormatOptions(
     {
         var _dateFormatV = NativeValue.From(DateFormat);
         if (_dateFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dateFormatName, _dateFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dateFormatName, _dateFormatV).ThrowIfFailed();
         var _timePrecisionV = NativeValue.From(TimePrecision);
         if (_timePrecisionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timePrecisionName, _timePrecisionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _timePrecisionName, _timePrecisionV).ThrowIfFailed();
         var _separatorStyleV = NativeValue.From(SeparatorStyle);
         if (_separatorStyleV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _separatorStyleName, _separatorStyleV);
+            NativeNodeApi.napi_set_named_property(env, obj, _separatorStyleName, _separatorStyleV).ThrowIfFailed();
         var _timeZoneV = NativeValue.From(TimeZone);
         if (_timeZoneV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeZoneName, _timeZoneV);
+            NativeNodeApi.napi_set_named_property(env, obj, _timeZoneName, _timeZoneV).ThrowIfFailed();
         var _displayTimeZoneV = NativeValue.From(DisplayTimeZone);
         if (_displayTimeZoneV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayTimeZoneName, _displayTimeZoneV);
+            NativeNodeApi.napi_set_named_property(env, obj, _displayTimeZoneName, _displayTimeZoneV).ThrowIfFailed();
     }
 }
 

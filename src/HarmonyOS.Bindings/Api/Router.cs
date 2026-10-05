@@ -271,6 +271,6 @@ public sealed record EnableAlertOptions(
     {
         var _messageV = NativeValue.From(Message);
         if (_messageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _messageName, _messageV);
+            NativeNodeApi.napi_set_named_property(env, obj, _messageName, _messageV).ThrowIfFailed();
     }
 }

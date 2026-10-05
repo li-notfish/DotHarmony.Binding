@@ -428,10 +428,10 @@ public sealed record CustomProperty(
     {
         var _enterpriseV = NativeValue.From(Enterprise);
         if (_enterpriseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _enterpriseName, _enterpriseV);
+            NativeNodeApi.napi_set_named_property(env, obj, _enterpriseName, _enterpriseV).ThrowIfFailed();
         var _optionsV = NativeValue.From(Options);
         if (_optionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _optionsName, _optionsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _optionsName, _optionsV).ThrowIfFailed();
     }
 }
 
@@ -447,7 +447,7 @@ public sealed record EnterprisePolicy(
     {
         var _policyStringV = NativeValue.From(PolicyString);
         if (_policyStringV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _policyStringName, _policyStringV);
+            NativeNodeApi.napi_set_named_property(env, obj, _policyStringName, _policyStringV).ThrowIfFailed();
     }
 }
 
@@ -463,7 +463,7 @@ public sealed record DlpFileQueryOptions(
     {
         var _classificationLabelV = NativeValue.From(ClassificationLabel);
         if (_classificationLabelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _classificationLabelName, _classificationLabelV);
+            NativeNodeApi.napi_set_named_property(env, obj, _classificationLabelName, _classificationLabelV).ThrowIfFailed();
     }
 }
 

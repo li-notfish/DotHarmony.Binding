@@ -806,6 +806,6 @@ public sealed record ReadableOptions(
     {
         var _encodingV = NativeValue.From(Encoding);
         if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV).ThrowIfFailed();
     }
 }

@@ -150,7 +150,7 @@ public sealed record CertificateDialogProperty(
     {
         var _showInstallButtonV = NativeValue.From(ShowInstallButton);
         if (_showInstallButtonV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _showInstallButtonName, _showInstallButtonV);
+            NativeNodeApi.napi_set_named_property(env, obj, _showInstallButtonName, _showInstallButtonV).ThrowIfFailed();
     }
 }
 
@@ -187,6 +187,6 @@ public sealed record UkeyAuthRequest(
     {
         var _keyUriV = NativeValue.From(KeyUri);
         if (_keyUriV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keyUriName, _keyUriV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keyUriName, _keyUriV).ThrowIfFailed();
     }
 }

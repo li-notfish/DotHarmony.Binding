@@ -616,13 +616,13 @@ public sealed record SppOption(
     {
         var _uuidV = NativeValue.From(Uuid);
         if (_uuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV).ThrowIfFailed();
         var _secureV = NativeValue.From(Secure);
         if (_secureV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _secureName, _secureV);
+            NativeNodeApi.napi_set_named_property(env, obj, _secureName, _secureV).ThrowIfFailed();
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV).ThrowIfFailed();
     }
 }
 
@@ -1249,13 +1249,13 @@ public sealed record BluetoothScanFilter(
     {
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV).ThrowIfFailed();
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV).ThrowIfFailed();
         var _serviceUuidV = NativeValue.From(ServiceUuid);
         if (_serviceUuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuidName, _serviceUuidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _serviceUuidName, _serviceUuidV).ThrowIfFailed();
     }
 }
 
@@ -1275,13 +1275,13 @@ public sealed record BluetoothScanOptions(
     {
         var _intervalV = NativeValue.From(Interval);
         if (_intervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV);
+            NativeNodeApi.napi_set_named_property(env, obj, _intervalName, _intervalV).ThrowIfFailed();
         var _dutyModeV = NativeValue.From(DutyMode);
         if (_dutyModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dutyModeName, _dutyModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dutyModeName, _dutyModeV).ThrowIfFailed();
         var _matchModeV = NativeValue.From(MatchMode);
         if (_matchModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _matchModeName, _matchModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _matchModeName, _matchModeV).ThrowIfFailed();
     }
 }
 

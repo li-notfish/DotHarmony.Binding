@@ -788,19 +788,19 @@ public sealed record ContactSelectionOptions(
     {
         var _isMultiSelectV = NativeValue.From(IsMultiSelect);
         if (_isMultiSelectV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isMultiSelectName, _isMultiSelectV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isMultiSelectName, _isMultiSelectV).ThrowIfFailed();
         var _filterV = NativeValue.From(Filter);
         if (_filterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterName, _filterV);
+            NativeNodeApi.napi_set_named_property(env, obj, _filterName, _filterV).ThrowIfFailed();
         var _maxSelectableV = NativeValue.From(MaxSelectable);
         if (_maxSelectableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxSelectableName, _maxSelectableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxSelectableName, _maxSelectableV).ThrowIfFailed();
         var _isDisplayedByNameV = NativeValue.From(IsDisplayedByName);
         if (_isDisplayedByNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isDisplayedByNameName, _isDisplayedByNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isDisplayedByNameName, _isDisplayedByNameV).ThrowIfFailed();
         var _isAutoDismissOnNavigationV = NativeValue.From(IsAutoDismissOnNavigation);
         if (_isAutoDismissOnNavigationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isAutoDismissOnNavigationName, _isAutoDismissOnNavigationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isAutoDismissOnNavigationName, _isAutoDismissOnNavigationV).ThrowIfFailed();
     }
 }
 
@@ -883,13 +883,13 @@ public sealed record ContactSyncProgress(
     {
         var _syncIdV = NativeValue.From(SyncId);
         if (_syncIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _syncIdName, _syncIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _syncIdName, _syncIdV).ThrowIfFailed();
         var _currentBatchV = NativeValue.From(CurrentBatch);
         if (_currentBatchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _currentBatchName, _currentBatchV);
+            NativeNodeApi.napi_set_named_property(env, obj, _currentBatchName, _currentBatchV).ThrowIfFailed();
         var _totalBatchesV = NativeValue.From(TotalBatches);
         if (_totalBatchesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _totalBatchesName, _totalBatchesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _totalBatchesName, _totalBatchesV).ThrowIfFailed();
     }
 }
 
@@ -1706,10 +1706,10 @@ public sealed record ContactSelectionFilter(
     {
         var _filterClauseV = NativeValue.From(FilterClause);
         if (_filterClauseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterClauseName, _filterClauseV);
+            NativeNodeApi.napi_set_named_property(env, obj, _filterClauseName, _filterClauseV).ThrowIfFailed();
         var _filterTypeV = NativeValue.From(FilterType);
         if (_filterTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterTypeName, _filterTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _filterTypeName, _filterTypeV).ThrowIfFailed();
     }
 }
 
@@ -1731,16 +1731,16 @@ public sealed record FilterClause(
     {
         var _dataItemV = NativeValue.From(DataItem);
         if (_dataItemV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dataItemName, _dataItemV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dataItemName, _dataItemV).ThrowIfFailed();
         var _nameV = NativeValue.From(Name);
         if (_nameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _nameName, _nameV).ThrowIfFailed();
         var _idV = NativeValue.From(Id);
         if (_idV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV);
+            NativeNodeApi.napi_set_named_property(env, obj, _idName, _idV).ThrowIfFailed();
         var _focusModeListV = NativeValue.From(FocusModeList);
         if (_focusModeListV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _focusModeListName, _focusModeListV);
+            NativeNodeApi.napi_set_named_property(env, obj, _focusModeListName, _focusModeListV).ThrowIfFailed();
     }
 }
 
@@ -1758,10 +1758,10 @@ public sealed record DataFilter(
     {
         var _optionsV = NativeValue.From(Options);
         if (_optionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _optionsName, _optionsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _optionsName, _optionsV).ThrowIfFailed();
         var _fieldV = NativeValue.From(Field);
         if (_fieldV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fieldName, _fieldV);
+            NativeNodeApi.napi_set_named_property(env, obj, _fieldName, _fieldV).ThrowIfFailed();
     }
 }
 
@@ -1779,9 +1779,9 @@ public sealed record FilterOptions(
     {
         var _filterConditionV = NativeValue.From(FilterCondition);
         if (_filterConditionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterConditionName, _filterConditionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _filterConditionName, _filterConditionV).ThrowIfFailed();
         var _valueV = NativeValue.From(Value);
         if (_valueV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV);
+            NativeNodeApi.napi_set_named_property(env, obj, _valueName, _valueV).ThrowIfFailed();
     }
 }

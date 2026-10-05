@@ -265,15 +265,15 @@ public sealed record SppOptions(
     {
         var _uuidV = NativeValue.From(Uuid);
         if (_uuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _uuidName, _uuidV).ThrowIfFailed();
         var _secureV = NativeValue.From(Secure);
         if (_secureV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _secureName, _secureV);
+            NativeNodeApi.napi_set_named_property(env, obj, _secureName, _secureV).ThrowIfFailed();
         var _typeV = NativeValue.From(Type);
         if (_typeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _typeName, _typeV).ThrowIfFailed();
         var _psmV = NativeValue.From(Psm);
         if (_psmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _psmName, _psmV);
+            NativeNodeApi.napi_set_named_property(env, obj, _psmName, _psmV).ThrowIfFailed();
     }
 }

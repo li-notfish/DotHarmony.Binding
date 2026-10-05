@@ -127,13 +127,13 @@ public sealed record EapData(
     {
         var _msgIdV = NativeValue.From(MsgId);
         if (_msgIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _msgIdName, _msgIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _msgIdName, _msgIdV).ThrowIfFailed();
         var _eapBufferV = NativeValue.From(EapBuffer);
         if (_eapBufferV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eapBufferName, _eapBufferV);
+            NativeNodeApi.napi_set_named_property(env, obj, _eapBufferName, _eapBufferV).ThrowIfFailed();
         var _bufferLenV = NativeValue.From(BufferLen);
         if (_bufferLenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bufferLenName, _bufferLenV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bufferLenName, _bufferLenV).ThrowIfFailed();
     }
 }
 
@@ -177,48 +177,48 @@ public sealed record EthEapProfile(
     {
         var _eapMethodV = NativeValue.From(EapMethod);
         if (_eapMethodV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eapMethodName, _eapMethodV);
+            NativeNodeApi.napi_set_named_property(env, obj, _eapMethodName, _eapMethodV).ThrowIfFailed();
         var _phase2MethodV = NativeValue.From(Phase2Method);
         if (_phase2MethodV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _phase2MethodName, _phase2MethodV);
+            NativeNodeApi.napi_set_named_property(env, obj, _phase2MethodName, _phase2MethodV).ThrowIfFailed();
         var _identityV = NativeValue.From(Identity);
         if (_identityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _identityName, _identityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _identityName, _identityV).ThrowIfFailed();
         var _anonymousIdentityV = NativeValue.From(AnonymousIdentity);
         if (_anonymousIdentityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _anonymousIdentityName, _anonymousIdentityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _anonymousIdentityName, _anonymousIdentityV).ThrowIfFailed();
         var _passwordV = NativeValue.From(Password);
         if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
+            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV).ThrowIfFailed();
         var _caCertAliasesV = NativeValue.From(CaCertAliases);
         if (_caCertAliasesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _caCertAliasesName, _caCertAliasesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _caCertAliasesName, _caCertAliasesV).ThrowIfFailed();
         var _caPathV = NativeValue.From(CaPath);
         if (_caPathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _caPathName, _caPathV);
+            NativeNodeApi.napi_set_named_property(env, obj, _caPathName, _caPathV).ThrowIfFailed();
         var _clientCertAliasesV = NativeValue.From(ClientCertAliases);
         if (_clientCertAliasesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _clientCertAliasesName, _clientCertAliasesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _clientCertAliasesName, _clientCertAliasesV).ThrowIfFailed();
         var _certEntryV = NativeValue.From(CertEntry);
         if (_certEntryV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certEntryName, _certEntryV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certEntryName, _certEntryV).ThrowIfFailed();
         var _certPasswordV = NativeValue.From(CertPassword);
         if (_certPasswordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certPasswordName, _certPasswordV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certPasswordName, _certPasswordV).ThrowIfFailed();
         var _altSubjectMatchV = NativeValue.From(AltSubjectMatch);
         if (_altSubjectMatchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _altSubjectMatchName, _altSubjectMatchV);
+            NativeNodeApi.napi_set_named_property(env, obj, _altSubjectMatchName, _altSubjectMatchV).ThrowIfFailed();
         var _domainSuffixMatchV = NativeValue.From(DomainSuffixMatch);
         if (_domainSuffixMatchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _domainSuffixMatchName, _domainSuffixMatchV);
+            NativeNodeApi.napi_set_named_property(env, obj, _domainSuffixMatchName, _domainSuffixMatchV).ThrowIfFailed();
         var _realmV = NativeValue.From(Realm);
         if (_realmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _realmName, _realmV);
+            NativeNodeApi.napi_set_named_property(env, obj, _realmName, _realmV).ThrowIfFailed();
         var _plmnV = NativeValue.From(Plmn);
         if (_plmnV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _plmnName, _plmnV);
+            NativeNodeApi.napi_set_named_property(env, obj, _plmnName, _plmnV).ThrowIfFailed();
         var _eapSubIdV = NativeValue.From(EapSubId);
         if (_eapSubIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eapSubIdName, _eapSubIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _eapSubIdName, _eapSubIdV).ThrowIfFailed();
     }
 }

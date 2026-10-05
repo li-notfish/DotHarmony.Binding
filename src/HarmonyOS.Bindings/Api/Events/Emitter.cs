@@ -218,10 +218,10 @@ public sealed record InnerEvent(
     {
         var _eventIdV = NativeValue.From(EventId);
         if (_eventIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eventIdName, _eventIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _eventIdName, _eventIdV).ThrowIfFailed();
         var _priorityV = NativeValue.From(Priority);
         if (_priorityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV).ThrowIfFailed();
     }
 }
 

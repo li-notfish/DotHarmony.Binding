@@ -115,10 +115,10 @@ public sealed record FontOptions(
     {
         var _familyNameV = NativeValue.From(FamilyName);
         if (_familyNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _familyNameName, _familyNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _familyNameName, _familyNameV).ThrowIfFailed();
         var _familySrcV = NativeValue.From(FamilySrc);
         if (_familySrcV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _familySrcName, _familySrcV);
+            NativeNodeApi.napi_set_named_property(env, obj, _familySrcName, _familySrcV).ThrowIfFailed();
     }
 }
 

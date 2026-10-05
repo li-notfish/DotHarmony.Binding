@@ -1029,16 +1029,16 @@ public sealed record AudioCapturerOptions(
     {
         var _streamInfoV = NativeValue.From(StreamInfo);
         if (_streamInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _streamInfoName, _streamInfoV);
+            NativeNodeApi.napi_set_named_property(env, obj, _streamInfoName, _streamInfoV).ThrowIfFailed();
         var _capturerInfoV = NativeValue.From(CapturerInfo);
         if (_capturerInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _capturerInfoName, _capturerInfoV);
+            NativeNodeApi.napi_set_named_property(env, obj, _capturerInfoName, _capturerInfoV).ThrowIfFailed();
         var _playbackCaptureConfigV = NativeValue.From(PlaybackCaptureConfig);
         if (_playbackCaptureConfigV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _playbackCaptureConfigName, _playbackCaptureConfigV);
+            NativeNodeApi.napi_set_named_property(env, obj, _playbackCaptureConfigName, _playbackCaptureConfigV).ThrowIfFailed();
         var _playbackCaptureModeV = NativeValue.From(PlaybackCaptureMode);
         if (_playbackCaptureModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _playbackCaptureModeName, _playbackCaptureModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _playbackCaptureModeName, _playbackCaptureModeV).ThrowIfFailed();
     }
 }
 
@@ -1741,13 +1741,13 @@ public sealed record AudioRendererOptions(
     {
         var _streamInfoV = NativeValue.From(StreamInfo);
         if (_streamInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _streamInfoName, _streamInfoV);
+            NativeNodeApi.napi_set_named_property(env, obj, _streamInfoName, _streamInfoV).ThrowIfFailed();
         var _rendererInfoV = NativeValue.From(RendererInfo);
         if (_rendererInfoV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rendererInfoName, _rendererInfoV);
+            NativeNodeApi.napi_set_named_property(env, obj, _rendererInfoName, _rendererInfoV).ThrowIfFailed();
         var _privacyTypeV = NativeValue.From(PrivacyType);
         if (_privacyTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _privacyTypeName, _privacyTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _privacyTypeName, _privacyTypeV).ThrowIfFailed();
     }
 }
 
@@ -3557,7 +3557,7 @@ public sealed record AudioPlaybackCaptureConfig(
     {
         var _filterOptionsV = NativeValue.From(FilterOptions);
         if (_filterOptionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterOptionsName, _filterOptionsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _filterOptionsName, _filterOptionsV).ThrowIfFailed();
     }
 }
 
@@ -3890,6 +3890,6 @@ public sealed record CaptureFilterOptions(
     {
         var _usagesV = NativeValue.From(Usages);
         if (_usagesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _usagesName, _usagesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _usagesName, _usagesV).ThrowIfFailed();
     }
 }

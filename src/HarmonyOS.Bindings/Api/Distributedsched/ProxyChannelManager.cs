@@ -209,13 +209,13 @@ public sealed record ChannelInfo(
     {
         var _linkTypeV = NativeValue.From(LinkType);
         if (_linkTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _linkTypeName, _linkTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _linkTypeName, _linkTypeV).ThrowIfFailed();
         var _peerDevAddrV = NativeValue.From(PeerDevAddr);
         if (_peerDevAddrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _peerDevAddrName, _peerDevAddrV);
+            NativeNodeApi.napi_set_named_property(env, obj, _peerDevAddrName, _peerDevAddrV).ThrowIfFailed();
         var _peerUuidV = NativeValue.From(PeerUuid);
         if (_peerUuidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _peerUuidName, _peerUuidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _peerUuidName, _peerUuidV).ThrowIfFailed();
     }
 }
 

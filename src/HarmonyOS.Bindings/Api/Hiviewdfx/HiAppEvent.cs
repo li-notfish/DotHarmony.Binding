@@ -341,10 +341,10 @@ public sealed record ConfigOption(
     {
         var _disableV = NativeValue.From(Disable);
         if (_disableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableName, _disableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _disableName, _disableV).ThrowIfFailed();
         var _maxStorageV = NativeValue.From(MaxStorage);
         if (_maxStorageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _maxStorageName, _maxStorageV);
+            NativeNodeApi.napi_set_named_property(env, obj, _maxStorageName, _maxStorageV).ThrowIfFailed();
     }
 }
 
@@ -411,22 +411,22 @@ public sealed record EventPolicy(
     {
         var _mainThreadJankPolicyV = NativeValue.From(MainThreadJankPolicy);
         if (_mainThreadJankPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mainThreadJankPolicyName, _mainThreadJankPolicyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _mainThreadJankPolicyName, _mainThreadJankPolicyV).ThrowIfFailed();
         var _cpuUsageHighPolicyV = NativeValue.From(CpuUsageHighPolicy);
         if (_cpuUsageHighPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _cpuUsageHighPolicyName, _cpuUsageHighPolicyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _cpuUsageHighPolicyName, _cpuUsageHighPolicyV).ThrowIfFailed();
         var _appCrashPolicyV = NativeValue.From(AppCrashPolicy);
         if (_appCrashPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _appCrashPolicyName, _appCrashPolicyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _appCrashPolicyName, _appCrashPolicyV).ThrowIfFailed();
         var _appFreezePolicyV = NativeValue.From(AppFreezePolicy);
         if (_appFreezePolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _appFreezePolicyName, _appFreezePolicyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _appFreezePolicyName, _appFreezePolicyV).ThrowIfFailed();
         var _resourceOverlimitPolicyV = NativeValue.From(ResourceOverlimitPolicy);
         if (_resourceOverlimitPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _resourceOverlimitPolicyName, _resourceOverlimitPolicyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _resourceOverlimitPolicyName, _resourceOverlimitPolicyV).ThrowIfFailed();
         var _addressSanitizerPolicyV = NativeValue.From(AddressSanitizerPolicy);
         if (_addressSanitizerPolicyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addressSanitizerPolicyName, _addressSanitizerPolicyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _addressSanitizerPolicyName, _addressSanitizerPolicyV).ThrowIfFailed();
     }
 }
 
@@ -491,22 +491,22 @@ public sealed record MainThreadJankPolicy(
     {
         var _logTypeV = NativeValue.From(LogType);
         if (_logTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _logTypeName, _logTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _logTypeName, _logTypeV).ThrowIfFailed();
         var _ignoreStartupTimeV = NativeValue.From(IgnoreStartupTime);
         if (_ignoreStartupTimeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _ignoreStartupTimeName, _ignoreStartupTimeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _ignoreStartupTimeName, _ignoreStartupTimeV).ThrowIfFailed();
         var _sampleIntervalV = NativeValue.From(SampleInterval);
         if (_sampleIntervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sampleIntervalName, _sampleIntervalV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sampleIntervalName, _sampleIntervalV).ThrowIfFailed();
         var _sampleCountV = NativeValue.From(SampleCount);
         if (_sampleCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sampleCountName, _sampleCountV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sampleCountName, _sampleCountV).ThrowIfFailed();
         var _reportTimesPerAppV = NativeValue.From(ReportTimesPerApp);
         if (_reportTimesPerAppV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _reportTimesPerAppName, _reportTimesPerAppV);
+            NativeNodeApi.napi_set_named_property(env, obj, _reportTimesPerAppName, _reportTimesPerAppV).ThrowIfFailed();
         var _autoStopSamplingV = NativeValue.From(AutoStopSampling);
         if (_autoStopSamplingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoStopSamplingName, _autoStopSamplingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _autoStopSamplingName, _autoStopSamplingV).ThrowIfFailed();
     }
 }
 
@@ -530,19 +530,19 @@ public sealed record CpuUsageHighPolicy(
     {
         var _foregroundLoadThresholdV = NativeValue.From(ForegroundLoadThreshold);
         if (_foregroundLoadThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _foregroundLoadThresholdName, _foregroundLoadThresholdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _foregroundLoadThresholdName, _foregroundLoadThresholdV).ThrowIfFailed();
         var _backgroundLoadThresholdV = NativeValue.From(BackgroundLoadThreshold);
         if (_backgroundLoadThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _backgroundLoadThresholdName, _backgroundLoadThresholdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _backgroundLoadThresholdName, _backgroundLoadThresholdV).ThrowIfFailed();
         var _threadLoadThresholdV = NativeValue.From(ThreadLoadThreshold);
         if (_threadLoadThresholdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _threadLoadThresholdName, _threadLoadThresholdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _threadLoadThresholdName, _threadLoadThresholdV).ThrowIfFailed();
         var _perfLogCaptureCountV = NativeValue.From(PerfLogCaptureCount);
         if (_perfLogCaptureCountV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _perfLogCaptureCountName, _perfLogCaptureCountV);
+            NativeNodeApi.napi_set_named_property(env, obj, _perfLogCaptureCountName, _perfLogCaptureCountV).ThrowIfFailed();
         var _threadLoadIntervalV = NativeValue.From(ThreadLoadInterval);
         if (_threadLoadIntervalV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _threadLoadIntervalName, _threadLoadIntervalV);
+            NativeNodeApi.napi_set_named_property(env, obj, _threadLoadIntervalName, _threadLoadIntervalV).ThrowIfFailed();
     }
 }
 
@@ -566,19 +566,19 @@ public sealed record AppCrashPolicy(
     {
         var _pageSwitchLogEnableV = NativeValue.From(PageSwitchLogEnable);
         if (_pageSwitchLogEnableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV).ThrowIfFailed();
         var _extendPcLrPrintingV = NativeValue.From(ExtendPcLrPrinting);
         if (_extendPcLrPrintingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extendPcLrPrintingName, _extendPcLrPrintingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _extendPcLrPrintingName, _extendPcLrPrintingV).ThrowIfFailed();
         var _logFileCutoffSzBytesV = NativeValue.From(LogFileCutoffSzBytes);
         if (_logFileCutoffSzBytesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _logFileCutoffSzBytesName, _logFileCutoffSzBytesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _logFileCutoffSzBytesName, _logFileCutoffSzBytesV).ThrowIfFailed();
         var _simplifyVmaPrintingV = NativeValue.From(SimplifyVmaPrinting);
         if (_simplifyVmaPrintingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _simplifyVmaPrintingName, _simplifyVmaPrintingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _simplifyVmaPrintingName, _simplifyVmaPrintingV).ThrowIfFailed();
         var _collectMinidumpV = NativeValue.From(CollectMinidump);
         if (_collectMinidumpV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _collectMinidumpName, _collectMinidumpV);
+            NativeNodeApi.napi_set_named_property(env, obj, _collectMinidumpName, _collectMinidumpV).ThrowIfFailed();
     }
 }
 
@@ -594,7 +594,7 @@ public sealed record AppFreezePolicy(
     {
         var _pageSwitchLogEnableV = NativeValue.From(PageSwitchLogEnable);
         if (_pageSwitchLogEnableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV).ThrowIfFailed();
     }
 }
 
@@ -614,13 +614,13 @@ public sealed record ResourceOverlimitPolicy(
     {
         var _pageSwitchLogEnableV = NativeValue.From(PageSwitchLogEnable);
         if (_pageSwitchLogEnableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV).ThrowIfFailed();
         var _jsHeapLogtypeV = NativeValue.From(JsHeapLogtype);
         if (_jsHeapLogtypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _jsHeapLogtypeName, _jsHeapLogtypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _jsHeapLogtypeName, _jsHeapLogtypeV).ThrowIfFailed();
         var _useRefinedLogFileNameV = NativeValue.From(UseRefinedLogFileName);
         if (_useRefinedLogFileNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _useRefinedLogFileNameName, _useRefinedLogFileNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _useRefinedLogFileNameName, _useRefinedLogFileNameV).ThrowIfFailed();
     }
 }
 
@@ -636,6 +636,6 @@ public sealed record AddressSanitizerPolicy(
     {
         var _pageSwitchLogEnableV = NativeValue.From(PageSwitchLogEnable);
         if (_pageSwitchLogEnableV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSwitchLogEnableName, _pageSwitchLogEnableV).ThrowIfFailed();
     }
 }

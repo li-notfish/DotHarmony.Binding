@@ -715,18 +715,18 @@ public sealed record DrawableDescriptorAnimationOptions(
     {
         var _durationV = NativeValue.From(Duration);
         if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV).ThrowIfFailed();
         var _iterationsV = NativeValue.From(Iterations);
         if (_iterationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iterationsName, _iterationsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _iterationsName, _iterationsV).ThrowIfFailed();
         var _frameDurationsV = NativeValue.From(FrameDurations);
         if (_frameDurationsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _frameDurationsName, _frameDurationsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _frameDurationsName, _frameDurationsV).ThrowIfFailed();
         var _autoPlayV = NativeValue.From(AutoPlay);
         if (_autoPlayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _autoPlayName, _autoPlayV);
+            NativeNodeApi.napi_set_named_property(env, obj, _autoPlayName, _autoPlayV).ThrowIfFailed();
         var _stopModeV = NativeValue.From(StopMode);
         if (_stopModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _stopModeName, _stopModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _stopModeName, _stopModeV).ThrowIfFailed();
     }
 }

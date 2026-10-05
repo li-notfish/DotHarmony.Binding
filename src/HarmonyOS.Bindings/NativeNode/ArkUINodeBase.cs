@@ -571,9 +571,18 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     {
         EnsureHandle();
         _handlers.Add(eventType);
-        // 注册进全局分发总线（含首次时的原生 receiver 注册），再向节点注册事件
-        NodeEventBus.Register(_targetId, eventType, handler);
-        ArkUINativeApi.RegisterNodeEvent(_handle, eventType, _targetId, null);
+        try
+        {
+            // 注册进全局分发总线（含首次时的原生 receiver 注册），再向节点注册事件
+            NodeEventBus.Register(_targetId, eventType, handler);
+            ArkUINativeApi.RegisterNodeEvent(_handle, eventType, _targetId, null);
+        }
+        catch
+        {
+            NodeEventBus.Unregister(_targetId, eventType);
+            throw;
+        }
+
         HiLog.Debug("HarmonyHost",
             $"[Event] register node=0x{_handle.Handle:X} type={eventType} targetId={_targetId}");
     }

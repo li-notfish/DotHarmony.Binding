@@ -409,10 +409,10 @@ public sealed record HuksOptions(
     {
         var _propertiesV = NativeValue.From(Properties);
         if (_propertiesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _propertiesName, _propertiesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _propertiesName, _propertiesV).ThrowIfFailed();
         var _inDataV = NativeValue.From(InData);
         if (_inDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _inDataName, _inDataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _inDataName, _inDataV).ThrowIfFailed();
     }
 }
 

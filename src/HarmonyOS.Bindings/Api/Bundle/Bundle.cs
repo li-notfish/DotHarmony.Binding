@@ -236,6 +236,6 @@ public sealed record BundleOptions(
     {
         var _userIdV = NativeValue.From(UserId);
         if (_userIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userIdName, _userIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _userIdName, _userIdV).ThrowIfFailed();
     }
 }

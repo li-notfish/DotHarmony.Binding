@@ -21,7 +21,7 @@ public class HarmonyPreferences : IPreferences
 {
     const string FileNamePrefix = "maui_prefs";
 
-    readonly Dictionary<string, HPrefsObject> _files = new(); // sharedName(或空串) → 已打开文件
+    readonly ConcurrentLazyCache<string, HPrefsObject> _files = new(); // sharedName(或空串) → 已打开文件
 
     public HarmonyPreferences()
     {
@@ -84,8 +84,6 @@ public class HarmonyPreferences : IPreferences
     HPrefsObject GetFile(string? sharedName)
     {
         var fileKey = sharedName ?? string.Empty;
-        if (_files.TryGetValue(fileKey, out var cached))
-            return cached;
         var name = FileNamePrefix;
         if (sharedName is not null)
         {
@@ -96,9 +94,7 @@ public class HarmonyPreferences : IPreferences
                 char.IsLetterOrDigit(c) || c is '_' or '.' ? c : '_').ToArray());
             name = $"{FileNamePrefix}.{safe}.{StableHash(sharedName):x8}";
         }
-        var prefs = HStaticPrefs.GetPreferencesSync(Context, new HOptions(name));
-        _files[fileKey] = prefs;
-        return prefs;
+        return _files.GetOrAdd(fileKey, _ => HStaticPrefs.GetPreferencesSync(Context, new HOptions(name)));
     }
 
     /// <summary>sharedName 的稳定 32 位哈希（FNV-1a；仅用于文件名消歧，非安全用途）</summary>

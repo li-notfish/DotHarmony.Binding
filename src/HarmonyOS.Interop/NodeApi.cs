@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HarmonyOS.Interop;
@@ -478,13 +479,20 @@ public static class NodeApi
 
     /// <summary>调用组件方法并接为 Task&lt;T&gt;（byte[] 方法名重载，供生成器 u8 常量使用）</summary>
     public static Task<T> CallMethodAsync<T>(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<NapiArg> args)
+        => CallMethodAsync<T>(jsObject, methodName, CancellationToken.None, args);
+
+    public static Task<T> CallMethodAsync<T>(
+        IntPtr jsObject,
+        byte[] methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
         NativeNodeApi.napi_is_promise(NapiEnv.Current, result, out var isPromise).ThrowIfFailed();
         if (!isPromise)
             return Task.FromResult(ConvertResult<T>(result));
-        return PromiseTaskBridge.ToTask<T>(result);
+        return PromiseTaskBridge.ToTask<T>(result, null, cancellationToken);
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif
@@ -520,13 +528,20 @@ public static class NodeApi
 
     /// <summary>调用组件方法并接为 Task&lt;T&gt;（ReadOnlySpan&lt;byte&gt; 方法名重载）</summary>
     public static Task<T> CallMethodAsync<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<NapiArg> args)
+        => CallMethodAsync<T>(jsObject, methodName, CancellationToken.None, args);
+
+    public static Task<T> CallMethodAsync<T>(
+        IntPtr jsObject,
+        ReadOnlySpan<byte> methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
         NativeNodeApi.napi_is_promise(NapiEnv.Current, result, out var isPromise).ThrowIfFailed();
         if (!isPromise)
             return Task.FromResult(ConvertResult<T>(result));
-        return PromiseTaskBridge.ToTask<T>(result);
+        return PromiseTaskBridge.ToTask<T>(result, null, cancellationToken);
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif

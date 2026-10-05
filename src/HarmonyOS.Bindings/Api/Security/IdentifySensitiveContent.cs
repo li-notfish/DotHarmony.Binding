@@ -119,12 +119,12 @@ public sealed record PolicyObject(
     {
         var _sensitiveLabelV = NativeValue.From(SensitiveLabel);
         if (_sensitiveLabelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _sensitiveLabelName, _sensitiveLabelV);
+            NativeNodeApi.napi_set_named_property(env, obj, _sensitiveLabelName, _sensitiveLabelV).ThrowIfFailed();
         var _keywordsV = NativeValue.From(Keywords);
         if (_keywordsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _keywordsName, _keywordsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _keywordsName, _keywordsV).ThrowIfFailed();
         var _regexV = NativeValue.From(Regex);
         if (_regexV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _regexName, _regexV);
+            NativeNodeApi.napi_set_named_property(env, obj, _regexName, _regexV).ThrowIfFailed();
     }
 }

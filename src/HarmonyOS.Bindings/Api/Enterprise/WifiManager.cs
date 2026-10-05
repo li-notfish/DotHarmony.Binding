@@ -193,43 +193,43 @@ public sealed record WifiProfile(
     {
         var _ssidV = NativeValue.From(Ssid);
         if (_ssidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _ssidName, _ssidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _ssidName, _ssidV).ThrowIfFailed();
         var _bssidV = NativeValue.From(Bssid);
         if (_bssidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _bssidName, _bssidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _bssidName, _bssidV).ThrowIfFailed();
         var _preSharedKeyV = NativeValue.From(PreSharedKey);
         if (_preSharedKeyV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _preSharedKeyName, _preSharedKeyV);
+            NativeNodeApi.napi_set_named_property(env, obj, _preSharedKeyName, _preSharedKeyV).ThrowIfFailed();
         var _isHiddenSsidV = NativeValue.From(IsHiddenSsid);
         if (_isHiddenSsidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isHiddenSsidName, _isHiddenSsidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isHiddenSsidName, _isHiddenSsidV).ThrowIfFailed();
         var _securityTypeV = NativeValue.From(SecurityType);
         if (_securityTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _securityTypeName, _securityTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _securityTypeName, _securityTypeV).ThrowIfFailed();
         var _creatorUidV = NativeValue.From(CreatorUid);
         if (_creatorUidV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _creatorUidName, _creatorUidV);
+            NativeNodeApi.napi_set_named_property(env, obj, _creatorUidName, _creatorUidV).ThrowIfFailed();
         var _disableReasonV = NativeValue.From(DisableReason);
         if (_disableReasonV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _disableReasonName, _disableReasonV);
+            NativeNodeApi.napi_set_named_property(env, obj, _disableReasonName, _disableReasonV).ThrowIfFailed();
         var _netIdV = NativeValue.From(NetId);
         if (_netIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _netIdName, _netIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _netIdName, _netIdV).ThrowIfFailed();
         var _randomMacTypeV = NativeValue.From(RandomMacType);
         if (_randomMacTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _randomMacTypeName, _randomMacTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _randomMacTypeName, _randomMacTypeV).ThrowIfFailed();
         var _randomMacAddrV = NativeValue.From(RandomMacAddr);
         if (_randomMacAddrV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _randomMacAddrName, _randomMacAddrV);
+            NativeNodeApi.napi_set_named_property(env, obj, _randomMacAddrName, _randomMacAddrV).ThrowIfFailed();
         var _iPTypeV = NativeValue.From(IPType);
         if (_iPTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iPTypeName, _iPTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _iPTypeName, _iPTypeV).ThrowIfFailed();
         var _staticIPV = NativeValue.From(StaticIP);
         if (_staticIPV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _staticIPName, _staticIPV);
+            NativeNodeApi.napi_set_named_property(env, obj, _staticIPName, _staticIPV).ThrowIfFailed();
         var _eapProfileV = NativeValue.From(EapProfile);
         if (_eapProfileV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eapProfileName, _eapProfileV);
+            NativeNodeApi.napi_set_named_property(env, obj, _eapProfileName, _eapProfileV).ThrowIfFailed();
     }
 }
 
@@ -274,19 +274,19 @@ public sealed record IpProfile(
     {
         var _iPAddressV = NativeValue.From(IPAddress);
         if (_iPAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _iPAddressName, _iPAddressV);
+            NativeNodeApi.napi_set_named_property(env, obj, _iPAddressName, _iPAddressV).ThrowIfFailed();
         var _gatewayV = NativeValue.From(Gateway);
         if (_gatewayV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _gatewayName, _gatewayV);
+            NativeNodeApi.napi_set_named_property(env, obj, _gatewayName, _gatewayV).ThrowIfFailed();
         var _prefixLengthV = NativeValue.From(PrefixLength);
         if (_prefixLengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _prefixLengthName, _prefixLengthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _prefixLengthName, _prefixLengthV).ThrowIfFailed();
         var _dnsServersV = NativeValue.From(DnsServers);
         if (_dnsServersV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _dnsServersName, _dnsServersV);
+            NativeNodeApi.napi_set_named_property(env, obj, _dnsServersName, _dnsServersV).ThrowIfFailed();
         var _domainsV = NativeValue.From(Domains);
         if (_domainsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _domainsName, _domainsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _domainsName, _domainsV).ThrowIfFailed();
     }
 }
 
@@ -330,48 +330,48 @@ public sealed record WifiEapProfile(
     {
         var _eapMethodV = NativeValue.From(EapMethod);
         if (_eapMethodV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eapMethodName, _eapMethodV);
+            NativeNodeApi.napi_set_named_property(env, obj, _eapMethodName, _eapMethodV).ThrowIfFailed();
         var _phase2MethodV = NativeValue.From(Phase2Method);
         if (_phase2MethodV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _phase2MethodName, _phase2MethodV);
+            NativeNodeApi.napi_set_named_property(env, obj, _phase2MethodName, _phase2MethodV).ThrowIfFailed();
         var _identityV = NativeValue.From(Identity);
         if (_identityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _identityName, _identityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _identityName, _identityV).ThrowIfFailed();
         var _anonymousIdentityV = NativeValue.From(AnonymousIdentity);
         if (_anonymousIdentityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _anonymousIdentityName, _anonymousIdentityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _anonymousIdentityName, _anonymousIdentityV).ThrowIfFailed();
         var _passwordV = NativeValue.From(Password);
         if (_passwordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV);
+            NativeNodeApi.napi_set_named_property(env, obj, _passwordName, _passwordV).ThrowIfFailed();
         var _caCertAliasesV = NativeValue.From(CaCertAliases);
         if (_caCertAliasesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _caCertAliasesName, _caCertAliasesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _caCertAliasesName, _caCertAliasesV).ThrowIfFailed();
         var _caPathV = NativeValue.From(CaPath);
         if (_caPathV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _caPathName, _caPathV);
+            NativeNodeApi.napi_set_named_property(env, obj, _caPathName, _caPathV).ThrowIfFailed();
         var _clientCertAliasesV = NativeValue.From(ClientCertAliases);
         if (_clientCertAliasesV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _clientCertAliasesName, _clientCertAliasesV);
+            NativeNodeApi.napi_set_named_property(env, obj, _clientCertAliasesName, _clientCertAliasesV).ThrowIfFailed();
         var _certEntryV = NativeValue.From(CertEntry);
         if (_certEntryV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certEntryName, _certEntryV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certEntryName, _certEntryV).ThrowIfFailed();
         var _certPasswordV = NativeValue.From(CertPassword);
         if (_certPasswordV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _certPasswordName, _certPasswordV);
+            NativeNodeApi.napi_set_named_property(env, obj, _certPasswordName, _certPasswordV).ThrowIfFailed();
         var _altSubjectMatchV = NativeValue.From(AltSubjectMatch);
         if (_altSubjectMatchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _altSubjectMatchName, _altSubjectMatchV);
+            NativeNodeApi.napi_set_named_property(env, obj, _altSubjectMatchName, _altSubjectMatchV).ThrowIfFailed();
         var _domainSuffixMatchV = NativeValue.From(DomainSuffixMatch);
         if (_domainSuffixMatchV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _domainSuffixMatchName, _domainSuffixMatchV);
+            NativeNodeApi.napi_set_named_property(env, obj, _domainSuffixMatchName, _domainSuffixMatchV).ThrowIfFailed();
         var _realmV = NativeValue.From(Realm);
         if (_realmV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _realmName, _realmV);
+            NativeNodeApi.napi_set_named_property(env, obj, _realmName, _realmV).ThrowIfFailed();
         var _plmnV = NativeValue.From(Plmn);
         if (_plmnV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _plmnName, _plmnV);
+            NativeNodeApi.napi_set_named_property(env, obj, _plmnName, _plmnV).ThrowIfFailed();
         var _eapSubIdV = NativeValue.From(EapSubId);
         if (_eapSubIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _eapSubIdName, _eapSubIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _eapSubIdName, _eapSubIdV).ThrowIfFailed();
     }
 }

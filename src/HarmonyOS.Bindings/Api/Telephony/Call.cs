@@ -254,7 +254,7 @@ public sealed record DialOptions(
     {
         var _extrasV = NativeValue.From(Extras);
         if (_extrasV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _extrasName, _extrasV);
+            NativeNodeApi.napi_set_named_property(env, obj, _extrasName, _extrasV).ThrowIfFailed();
     }
 }
 
@@ -272,10 +272,10 @@ public sealed record MakeCallOptions(
     {
         var _isHideDialScreenV = NativeValue.From(IsHideDialScreen);
         if (_isHideDialScreenV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isHideDialScreenName, _isHideDialScreenV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isHideDialScreenName, _isHideDialScreenV).ThrowIfFailed();
         var _isCustomAccessibilityV = NativeValue.From(IsCustomAccessibility);
         if (_isCustomAccessibilityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isCustomAccessibilityName, _isCustomAccessibilityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isCustomAccessibilityName, _isCustomAccessibilityV).ThrowIfFailed();
     }
 }
 
@@ -291,7 +291,7 @@ public sealed record EmergencyNumberOptions(
     {
         var _slotIdV = NativeValue.From(SlotId);
         if (_slotIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _slotIdName, _slotIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _slotIdName, _slotIdV).ThrowIfFailed();
     }
 }
 
@@ -307,7 +307,7 @@ public sealed record NumberFormatOptions(
     {
         var _countryCodeV = NativeValue.From(CountryCode);
         if (_countryCodeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _countryCodeName, _countryCodeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _countryCodeName, _countryCodeV).ThrowIfFailed();
     }
 }
 

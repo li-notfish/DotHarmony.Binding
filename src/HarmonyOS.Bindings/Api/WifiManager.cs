@@ -945,16 +945,16 @@ public sealed record ConnectSettings(
     {
         var _networkIdV = NativeValue.From(NetworkId);
         if (_networkIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _networkIdName, _networkIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _networkIdName, _networkIdV).ThrowIfFailed();
         var _withUserActionV = NativeValue.From(WithUserAction);
         if (_withUserActionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _withUserActionName, _withUserActionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _withUserActionName, _withUserActionV).ThrowIfFailed();
         var _userActionTimeoutV = NativeValue.From(UserActionTimeout);
         if (_userActionTimeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userActionTimeoutName, _userActionTimeoutV);
+            NativeNodeApi.napi_set_named_property(env, obj, _userActionTimeoutName, _userActionTimeoutV).ThrowIfFailed();
         var _addNetworkToSystemV = NativeValue.From(AddNetworkToSystem);
         if (_addNetworkToSystemV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addNetworkToSystemName, _addNetworkToSystemV);
+            NativeNodeApi.napi_set_named_property(env, obj, _addNetworkToSystemName, _addNetworkToSystemV).ThrowIfFailed();
     }
 }
 
@@ -1360,25 +1360,25 @@ public sealed record WifiManagerWifiP2PConfig(
     {
         var _deviceAddressV = NativeValue.From(DeviceAddress);
         if (_deviceAddressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddressName, _deviceAddressV);
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddressName, _deviceAddressV).ThrowIfFailed();
         var _deviceAddressTypeV = NativeValue.From(DeviceAddressType);
         if (_deviceAddressTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddressTypeName, _deviceAddressTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceAddressTypeName, _deviceAddressTypeV).ThrowIfFailed();
         var _netIdV = NativeValue.From(NetId);
         if (_netIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _netIdName, _netIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _netIdName, _netIdV).ThrowIfFailed();
         var _passphraseV = NativeValue.From(Passphrase);
         if (_passphraseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _passphraseName, _passphraseV);
+            NativeNodeApi.napi_set_named_property(env, obj, _passphraseName, _passphraseV).ThrowIfFailed();
         var _groupNameV = NativeValue.From(GroupName);
         if (_groupNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _groupNameName, _groupNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _groupNameName, _groupNameV).ThrowIfFailed();
         var _goBandV = NativeValue.From(GoBand);
         if (_goBandV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _goBandName, _goBandV);
+            NativeNodeApi.napi_set_named_property(env, obj, _goBandName, _goBandV).ThrowIfFailed();
         var _goFreqV = NativeValue.From(GoFreq);
         if (_goFreqV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _goFreqName, _goFreqV);
+            NativeNodeApi.napi_set_named_property(env, obj, _goFreqName, _goFreqV).ThrowIfFailed();
     }
 }
 

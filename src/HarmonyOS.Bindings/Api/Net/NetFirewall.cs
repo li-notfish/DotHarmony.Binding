@@ -319,16 +319,16 @@ public sealed record RequestParam(
     {
         var _pageV = NativeValue.From(Page);
         if (_pageV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageName, _pageV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pageName, _pageV).ThrowIfFailed();
         var _pageSizeV = NativeValue.From(PageSize);
         if (_pageSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSizeName, _pageSizeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSizeName, _pageSizeV).ThrowIfFailed();
         var _orderFieldV = NativeValue.From(OrderField);
         if (_orderFieldV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _orderFieldName, _orderFieldV);
+            NativeNodeApi.napi_set_named_property(env, obj, _orderFieldName, _orderFieldV).ThrowIfFailed();
         var _orderTypeV = NativeValue.From(OrderType);
         if (_orderTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _orderTypeName, _orderTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _orderTypeName, _orderTypeV).ThrowIfFailed();
     }
 }
 

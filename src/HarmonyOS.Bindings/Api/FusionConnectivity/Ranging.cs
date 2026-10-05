@@ -168,9 +168,9 @@ public sealed record RangingParams(
     {
         var _deviceIdV = NativeValue.From(DeviceId);
         if (_deviceIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceIdName, _deviceIdV).ThrowIfFailed();
         var _capabilityTypeV = NativeValue.From(CapabilityType);
         if (_capabilityTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _capabilityTypeName, _capabilityTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _capabilityTypeName, _capabilityTypeV).ThrowIfFailed();
     }
 }

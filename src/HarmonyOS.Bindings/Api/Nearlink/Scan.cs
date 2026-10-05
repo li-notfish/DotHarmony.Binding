@@ -125,22 +125,22 @@ public sealed record ScanFilters(
     {
         var _addressV = NativeValue.From(Address);
         if (_addressV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV);
+            NativeNodeApi.napi_set_named_property(env, obj, _addressName, _addressV).ThrowIfFailed();
         var _deviceNameV = NativeValue.From(DeviceName);
         if (_deviceNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _deviceNameName, _deviceNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _deviceNameName, _deviceNameV).ThrowIfFailed();
         var _manufacturerIdV = NativeValue.From(ManufacturerId);
         if (_manufacturerIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerIdName, _manufacturerIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerIdName, _manufacturerIdV).ThrowIfFailed();
         var _manufacturerDataV = NativeValue.From(ManufacturerData);
         if (_manufacturerDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerDataName, _manufacturerDataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerDataName, _manufacturerDataV).ThrowIfFailed();
         var _manufacturerDataMaskV = NativeValue.From(ManufacturerDataMask);
         if (_manufacturerDataMaskV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerDataMaskName, _manufacturerDataMaskV);
+            NativeNodeApi.napi_set_named_property(env, obj, _manufacturerDataMaskName, _manufacturerDataMaskV).ThrowIfFailed();
         var _rssiV = NativeValue.From(Rssi);
         if (_rssiV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _rssiName, _rssiV);
+            NativeNodeApi.napi_set_named_property(env, obj, _rssiName, _rssiV).ThrowIfFailed();
     }
 }
 
@@ -158,9 +158,9 @@ public sealed record ScanScanOptions(
     {
         var _scanModeV = NativeValue.From(ScanMode);
         if (_scanModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _scanModeName, _scanModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _scanModeName, _scanModeV).ThrowIfFailed();
         var _durationV = NativeValue.From(Duration);
         if (_durationV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV);
+            NativeNodeApi.napi_set_named_property(env, obj, _durationName, _durationV).ThrowIfFailed();
     }
 }

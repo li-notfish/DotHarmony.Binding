@@ -78,9 +78,9 @@ public sealed record ChildProcessArgsObject(
     {
         var _entryParamsV = NativeValue.From(EntryParams);
         if (_entryParamsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _entryParamsName, _entryParamsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _entryParamsName, _entryParamsV).ThrowIfFailed();
         var _fdsV = NativeValue.From(Fds);
         if (_fdsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fdsName, _fdsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _fdsName, _fdsV).ThrowIfFailed();
     }
 }

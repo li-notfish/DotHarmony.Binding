@@ -538,67 +538,67 @@ public sealed record PrintJobData(
     {
         var _printerIdV = NativeValue.From(PrinterId);
         if (_printerIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _printerIdName, _printerIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _printerIdName, _printerIdV).ThrowIfFailed();
         var _jobNameV = NativeValue.From(JobName);
         if (_jobNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _jobNameName, _jobNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _jobNameName, _jobNameV).ThrowIfFailed();
         var _documentFormatV = NativeValue.From(DocumentFormat);
         if (_documentFormatV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _documentFormatName, _documentFormatV);
+            NativeNodeApi.napi_set_named_property(env, obj, _documentFormatName, _documentFormatV).ThrowIfFailed();
         var _docFlavorV = NativeValue.From(DocFlavor);
         if (_docFlavorV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _docFlavorName, _docFlavorV);
+            NativeNodeApi.napi_set_named_property(env, obj, _docFlavorName, _docFlavorV).ThrowIfFailed();
         var _copyNumberV = NativeValue.From(CopyNumber);
         if (_copyNumberV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _copyNumberName, _copyNumberV);
+            NativeNodeApi.napi_set_named_property(env, obj, _copyNumberName, _copyNumberV).ThrowIfFailed();
         var _isLandscapeV = NativeValue.From(IsLandscape);
         if (_isLandscapeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isLandscapeName, _isLandscapeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isLandscapeName, _isLandscapeV).ThrowIfFailed();
         var _colorModeV = NativeValue.From(ColorMode);
         if (_colorModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _colorModeName, _colorModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _colorModeName, _colorModeV).ThrowIfFailed();
         var _duplexModeV = NativeValue.From(DuplexMode);
         if (_duplexModeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _duplexModeName, _duplexModeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _duplexModeName, _duplexModeV).ThrowIfFailed();
         var _pageSizeV = NativeValue.From(PageSize);
         if (_pageSizeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _pageSizeName, _pageSizeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _pageSizeName, _pageSizeV).ThrowIfFailed();
         var _jobIdV = NativeValue.From(JobId);
         if (_jobIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _jobIdName, _jobIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _jobIdName, _jobIdV).ThrowIfFailed();
         var _fdListV = NativeValue.From(FdList);
         if (_fdListV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fdListName, _fdListV);
+            NativeNodeApi.napi_set_named_property(env, obj, _fdListName, _fdListV).ThrowIfFailed();
         var _binaryDataV = NativeValue.From(BinaryData);
         if (_binaryDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _binaryDataName, _binaryDataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _binaryDataName, _binaryDataV).ThrowIfFailed();
         var _printQualityV = NativeValue.From(PrintQuality);
         if (_printQualityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _printQualityName, _printQualityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _printQualityName, _printQualityV).ThrowIfFailed();
         var _mediaTypeV = NativeValue.From(MediaType);
         if (_mediaTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mediaTypeName, _mediaTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _mediaTypeName, _mediaTypeV).ThrowIfFailed();
         var _isBorderlessV = NativeValue.From(IsBorderless);
         if (_isBorderlessV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isBorderlessName, _isBorderlessV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isBorderlessName, _isBorderlessV).ThrowIfFailed();
         var _isAutoRotateV = NativeValue.From(IsAutoRotate);
         if (_isAutoRotateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isAutoRotateName, _isAutoRotateV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isAutoRotateName, _isAutoRotateV).ThrowIfFailed();
         var _isReverseV = NativeValue.From(IsReverse);
         if (_isReverseV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isReverseName, _isReverseV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isReverseName, _isReverseV).ThrowIfFailed();
         var _isCollateV = NativeValue.From(IsCollate);
         if (_isCollateV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isCollateName, _isCollateV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isCollateName, _isCollateV).ThrowIfFailed();
         var _isSequentialV = NativeValue.From(IsSequential);
         if (_isSequentialV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _isSequentialName, _isSequentialV);
+            NativeNodeApi.napi_set_named_property(env, obj, _isSequentialName, _isSequentialV).ThrowIfFailed();
         var _optionsV = NativeValue.From(Options);
         if (_optionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _optionsName, _optionsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _optionsName, _optionsV).ThrowIfFailed();
         var _vendorOptionsV = NativeValue.From(VendorOptions);
         if (_vendorOptionsV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _vendorOptionsName, _vendorOptionsV);
+            NativeNodeApi.napi_set_named_property(env, obj, _vendorOptionsName, _vendorOptionsV).ThrowIfFailed();
     }
 }
 

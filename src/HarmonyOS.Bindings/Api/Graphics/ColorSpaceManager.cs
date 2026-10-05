@@ -144,27 +144,27 @@ public sealed record ColorSpacePrimaries(
     {
         var _redXV = NativeValue.From(RedX);
         if (_redXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _redXName, _redXV);
+            NativeNodeApi.napi_set_named_property(env, obj, _redXName, _redXV).ThrowIfFailed();
         var _redYV = NativeValue.From(RedY);
         if (_redYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _redYName, _redYV);
+            NativeNodeApi.napi_set_named_property(env, obj, _redYName, _redYV).ThrowIfFailed();
         var _greenXV = NativeValue.From(GreenX);
         if (_greenXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _greenXName, _greenXV);
+            NativeNodeApi.napi_set_named_property(env, obj, _greenXName, _greenXV).ThrowIfFailed();
         var _greenYV = NativeValue.From(GreenY);
         if (_greenYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _greenYName, _greenYV);
+            NativeNodeApi.napi_set_named_property(env, obj, _greenYName, _greenYV).ThrowIfFailed();
         var _blueXV = NativeValue.From(BlueX);
         if (_blueXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _blueXName, _blueXV);
+            NativeNodeApi.napi_set_named_property(env, obj, _blueXName, _blueXV).ThrowIfFailed();
         var _blueYV = NativeValue.From(BlueY);
         if (_blueYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _blueYName, _blueYV);
+            NativeNodeApi.napi_set_named_property(env, obj, _blueYName, _blueYV).ThrowIfFailed();
         var _whitePointXV = NativeValue.From(WhitePointX);
         if (_whitePointXV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _whitePointXName, _whitePointXV);
+            NativeNodeApi.napi_set_named_property(env, obj, _whitePointXName, _whitePointXV).ThrowIfFailed();
         var _whitePointYV = NativeValue.From(WhitePointY);
         if (_whitePointYV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _whitePointYName, _whitePointYV);
+            NativeNodeApi.napi_set_named_property(env, obj, _whitePointYName, _whitePointYV).ThrowIfFailed();
     }
 }

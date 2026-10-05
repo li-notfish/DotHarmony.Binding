@@ -460,10 +460,10 @@ public sealed record Configs(
     {
         var _priorityV = NativeValue.From(Priority);
         if (_priorityV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV);
+            NativeNodeApi.napi_set_named_property(env, obj, _priorityName, _priorityV).ThrowIfFailed();
         var _timeoutV = NativeValue.From(Timeout);
         if (_timeoutV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _timeoutName, _timeoutV);
+            NativeNodeApi.napi_set_named_property(env, obj, _timeoutName, _timeoutV).ThrowIfFailed();
     }
 }
 

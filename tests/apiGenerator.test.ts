@@ -86,6 +86,24 @@ declare namespace testsvc {
         expect(cs).toContain('public static void Draw(Rect rect)');
     });
 
+    test('record WriteTo 属性写入显式检查 napi_status', () => {
+        const cs = generate(`
+declare namespace testsvc {
+    interface Rect {
+        left: number;
+        top: number;
+    }
+    function draw(rect: Rect): void;
+}
+`);
+        expect(cs).toContain(
+            'NativeNodeApi.napi_set_named_property(env, obj, _leftName, _leftV).ThrowIfFailed();',
+        );
+        expect(cs).toContain(
+            'NativeNodeApi.napi_set_named_property(env, obj, _topName, _topV).ThrowIfFailed();',
+        );
+    });
+
     test('返回位置引用的纯数据接口升级为包装类', () => {
         const cs = generate(`
 declare namespace testsvc {

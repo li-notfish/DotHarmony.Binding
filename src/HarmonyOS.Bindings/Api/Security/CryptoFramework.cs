@@ -459,7 +459,7 @@ public sealed record MacSpec(
     {
         var _algNameV = NativeValue.From(AlgName);
         if (_algNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _algNameName, _algNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _algNameName, _algNameV).ThrowIfFailed();
     }
 }
 
@@ -918,10 +918,10 @@ public sealed record AsyKeySpec(
     {
         var _algNameV = NativeValue.From(AlgName);
         if (_algNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _algNameName, _algNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _algNameName, _algNameV).ThrowIfFailed();
         var _specTypeV = NativeValue.From(SpecType);
         if (_specTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _specTypeName, _specTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _specTypeName, _specTypeV).ThrowIfFailed();
     }
 }
 

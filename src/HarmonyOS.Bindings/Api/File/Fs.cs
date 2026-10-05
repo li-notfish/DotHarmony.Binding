@@ -921,10 +921,10 @@ public sealed record RandomAccessFileOptions(
     {
         var _startV = NativeValue.From(Start);
         if (_startV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV);
+            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV).ThrowIfFailed();
         var _endV = NativeValue.From(End);
         if (_endV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV);
+            NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV).ThrowIfFailed();
     }
 }
 
@@ -1051,10 +1051,10 @@ public sealed record ReadStreamOptions(
     {
         var _startV = NativeValue.From(Start);
         if (_startV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV);
+            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV).ThrowIfFailed();
         var _endV = NativeValue.From(End);
         if (_endV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV);
+            NativeNodeApi.napi_set_named_property(env, obj, _endName, _endV).ThrowIfFailed();
     }
 }
 
@@ -1072,10 +1072,10 @@ public sealed record WriteStreamOptions(
     {
         var _modeV = NativeValue.From(Mode);
         if (_modeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _modeName, _modeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _modeName, _modeV).ThrowIfFailed();
         var _startV = NativeValue.From(Start);
         if (_startV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV);
+            NativeNodeApi.napi_set_named_property(env, obj, _startName, _startV).ThrowIfFailed();
     }
 }
 
@@ -1105,13 +1105,13 @@ public sealed record ListFileOptions(
     {
         var _recursionV = NativeValue.From(Recursion);
         if (_recursionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _recursionName, _recursionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _recursionName, _recursionV).ThrowIfFailed();
         var _listNumV = NativeValue.From(ListNum);
         if (_listNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _listNumName, _listNumV);
+            NativeNodeApi.napi_set_named_property(env, obj, _listNumName, _listNumV).ThrowIfFailed();
         var _filterV = NativeValue.From(Filter);
         if (_filterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _filterName, _filterV);
+            NativeNodeApi.napi_set_named_property(env, obj, _filterName, _filterV).ThrowIfFailed();
     }
 }
 
@@ -1131,13 +1131,13 @@ public sealed record ListFileExtOptions(
     {
         var _recursionV = NativeValue.From(Recursion);
         if (_recursionV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _recursionName, _recursionV);
+            NativeNodeApi.napi_set_named_property(env, obj, _recursionName, _recursionV).ThrowIfFailed();
         var _listNumV = NativeValue.From(ListNum);
         if (_listNumV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _listNumName, _listNumV);
+            NativeNodeApi.napi_set_named_property(env, obj, _listNumName, _listNumV).ThrowIfFailed();
         var _fileFilterV = NativeValue.From(FileFilter);
         if (_fileFilterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileFilterName, _fileFilterV);
+            NativeNodeApi.napi_set_named_property(env, obj, _fileFilterName, _fileFilterV).ThrowIfFailed();
     }
 }
 
@@ -1245,7 +1245,7 @@ public sealed record FsOptions(
     {
         var _encodingV = NativeValue.From(Encoding);
         if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV).ThrowIfFailed();
     }
 }
 
@@ -1283,13 +1283,13 @@ public sealed record ReadTextOptions(
     {
         var _offsetV = NativeValue.From(Offset);
         if (_offsetV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV);
+            NativeNodeApi.napi_set_named_property(env, obj, _offsetName, _offsetV).ThrowIfFailed();
         var _lengthV = NativeValue.From(Length);
         if (_lengthV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _lengthName, _lengthV);
+            NativeNodeApi.napi_set_named_property(env, obj, _lengthName, _lengthV).ThrowIfFailed();
         var _encodingV = NativeValue.From(Encoding);
         if (_encodingV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV);
+            NativeNodeApi.napi_set_named_property(env, obj, _encodingName, _encodingV).ThrowIfFailed();
     }
 }
 
@@ -1552,22 +1552,22 @@ public sealed record FsFilter(
     {
         var _suffixV = NativeValue.From(Suffix);
         if (_suffixV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _suffixName, _suffixV);
+            NativeNodeApi.napi_set_named_property(env, obj, _suffixName, _suffixV).ThrowIfFailed();
         var _displayNameV = NativeValue.From(DisplayName);
         if (_displayNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _displayNameName, _displayNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _displayNameName, _displayNameV).ThrowIfFailed();
         var _mimeTypeV = NativeValue.From(MimeType);
         if (_mimeTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _mimeTypeName, _mimeTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _mimeTypeName, _mimeTypeV).ThrowIfFailed();
         var _fileSizeOverV = NativeValue.From(FileSizeOver);
         if (_fileSizeOverV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _fileSizeOverName, _fileSizeOverV);
+            NativeNodeApi.napi_set_named_property(env, obj, _fileSizeOverName, _fileSizeOverV).ThrowIfFailed();
         var _lastModifiedAfterV = NativeValue.From(LastModifiedAfter);
         if (_lastModifiedAfterV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _lastModifiedAfterName, _lastModifiedAfterV);
+            NativeNodeApi.napi_set_named_property(env, obj, _lastModifiedAfterName, _lastModifiedAfterV).ThrowIfFailed();
         var _excludeMediaV = NativeValue.From(ExcludeMedia);
         if (_excludeMediaV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _excludeMediaName, _excludeMediaV);
+            NativeNodeApi.napi_set_named_property(env, obj, _excludeMediaName, _excludeMediaV).ThrowIfFailed();
     }
 }
 

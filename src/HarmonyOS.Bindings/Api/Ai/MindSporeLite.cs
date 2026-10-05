@@ -302,10 +302,10 @@ public sealed record TrainCfg(
     {
         var _lossNameV = NativeValue.From(LossName);
         if (_lossNameV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _lossNameName, _lossNameV);
+            NativeNodeApi.napi_set_named_property(env, obj, _lossNameName, _lossNameV).ThrowIfFailed();
         var _optimizationLevelV = NativeValue.From(OptimizationLevel);
         if (_optimizationLevelV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _optimizationLevelName, _optimizationLevelV);
+            NativeNodeApi.napi_set_named_property(env, obj, _optimizationLevelName, _optimizationLevelV).ThrowIfFailed();
     }
 }
 

@@ -139,19 +139,19 @@ public sealed record AdDisplayOptions(
     {
         var _customDataV = NativeValue.From(CustomData);
         if (_customDataV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _customDataName, _customDataV);
+            NativeNodeApi.napi_set_named_property(env, obj, _customDataName, _customDataV).ThrowIfFailed();
         var _userIdV = NativeValue.From(UserId);
         if (_userIdV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _userIdName, _userIdV);
+            NativeNodeApi.napi_set_named_property(env, obj, _userIdName, _userIdV).ThrowIfFailed();
         var _useMobileDataReminderV = NativeValue.From(UseMobileDataReminder);
         if (_useMobileDataReminderV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _useMobileDataReminderName, _useMobileDataReminderV);
+            NativeNodeApi.napi_set_named_property(env, obj, _useMobileDataReminderName, _useMobileDataReminderV).ThrowIfFailed();
         var _muteV = NativeValue.From(Mute);
         if (_muteV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _muteName, _muteV);
+            NativeNodeApi.napi_set_named_property(env, obj, _muteName, _muteV).ThrowIfFailed();
         var _audioFocusTypeV = NativeValue.From(AudioFocusType);
         if (_audioFocusTypeV != IntPtr.Zero)
-            NativeNodeApi.napi_set_named_property(env, obj, _audioFocusTypeName, _audioFocusTypeV);
+            NativeNodeApi.napi_set_named_property(env, obj, _audioFocusTypeName, _audioFocusTypeV).ThrowIfFailed();
     }
 }
 
