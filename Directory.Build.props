@@ -15,7 +15,7 @@
     <HarmonyOSPlatformTargetFramework>net10.0-harmonyos</HarmonyOSPlatformTargetFramework>
     <!-- B0：包版本与公共元数据仅此一处；升版只改这里（各 csproj 不再写 Version）。
          局部覆盖：个别 csproj 可自行设 PackageVersion（MSBuild 后定义覆盖）。 -->
-    <PackageVersion>1.1.0</PackageVersion>
+    <PackageVersion>1.2.0</PackageVersion>
     <Authors>ArkTsBinding</Authors>
     <PackageTags>$(PackageTags);harmonyos;dotnet</PackageTags>
     <!-- NU1507: package source mapping is configured in NuGet.config; current SDK still emits the advisory. -->

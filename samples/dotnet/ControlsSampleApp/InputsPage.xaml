@@ -1,0 +1,25 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlsSampleApp.InputsPage"
+             Title="Inputs"
+             BackgroundColor="#FFFFFF">
+    <ScrollView>
+        <StackLayout Padding="16" Spacing="14">
+            <Label Text="CS-INPUTS-MARK" FontAttributes="Bold" FontSize="18" TextColor="#111827" />
+            <Entry Placeholder="Single line" TextColor="#111827" PlaceholderColor="#6B7280" />
+            <Editor Placeholder="Multiple lines" HeightRequest="80" TextColor="#111827" PlaceholderColor="#6B7280" />
+            <SearchBar Placeholder="Search" TextColor="#111827" PlaceholderColor="#6B7280" />
+            <Picker x:Name="DemoPicker" Title="Select item" TextColor="#111827" />
+            <DatePicker Format="D" TextColor="#111827" />
+            <TimePicker Format="T" TextColor="#111827" />
+            <Slider Minimum="0" Maximum="100" Value="40" MinimumTrackColor="#2563EB" MaximumTrackColor="#D1D5DB" />
+            <Stepper Minimum="0" Maximum="10" Increment="1" Value="2" />
+            <Switch IsToggled="True" OnColor="#16A34A" ThumbColor="#FFFFFF" />
+            <CheckBox IsChecked="True" Color="#2563EB" />
+            <StackLayout Orientation="Horizontal" Spacing="12">
+                <RadioButton Content="A" GroupName="Inputs" TextColor="#111827" />
+                <RadioButton Content="B" GroupName="Inputs" IsChecked="True" TextColor="#111827" />
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

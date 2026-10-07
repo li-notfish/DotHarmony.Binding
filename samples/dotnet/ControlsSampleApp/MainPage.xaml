@@ -1,0 +1,35 @@
+<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:local="clr-namespace:ControlsSampleApp"
+            x:Class="ControlsSampleApp.MainPage"
+            Title="Controls Samples"
+            BackgroundColor="#FFFFFF">
+    <ContentPage Title="Overview">
+        <StackLayout Padding="16" Spacing="14">
+            <Label Text="CS-ALL-MARK"
+                   FontAttributes="Bold"
+                   FontSize="20"
+                   TextColor="#111827" />
+            <Label Text="Controls are grouped by category in the tabs below."
+                   TextColor="#374151" />
+            <ContentView BackgroundColor="#ECFDF5" Padding="12">
+                <ContentView.Content>
+                    <Label Text="ContentView + ContentPresenter"
+                           TextColor="#065F46" />
+                </ContentView.Content>
+            </ContentView>
+            <ContentPresenter>
+                <ContentPresenter.Content>
+                    <Label Text="ContentPresenter"
+                           TextColor="#065F46" />
+                </ContentPresenter.Content>
+            </ContentPresenter>
+        </StackLayout>
+    </ContentPage>
+    <local:BasicsPage Title="Base" />
+    <local:InputsPage Title="Inputs" />
+    <local:LayoutsPage Title="Layouts" />
+    <local:ItemsPage Title="Items" />
+    <local:MediaGraphicsPage Title="Media" />
+    <local:MenusPage Title="Menus" />
+</TabbedPage>

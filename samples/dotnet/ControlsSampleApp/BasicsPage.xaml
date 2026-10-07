@@ -1,0 +1,29 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlsSampleApp.BasicsPage"
+             Title="Basics"
+             BackgroundColor="#FFFFFF">
+    <ScrollView>
+        <StackLayout Padding="16" Spacing="14">
+            <Label Text="CS-BASICS-MARK" FontAttributes="Bold" FontSize="18" TextColor="#111827" />
+            <Label Text="Label" TextColor="#111827" />
+            <Button Text="Button" BackgroundColor="#2563EB" TextColor="#FFFFFF" CornerRadius="6" />
+            <Image Source="probe_logo.png" HeightRequest="80" Aspect="AspectFit" />
+            <ImageButton Source="probe_logo.png" BackgroundColor="#E5E7EB" HeightRequest="72" WidthRequest="120" CornerRadius="6" />
+            <BoxView Color="#14B8A6" HeightRequest="32" CornerRadius="6" />
+            <ActivityIndicator IsRunning="True" Color="#2563EB" />
+            <ProgressBar Progress="0.45" ProgressColor="#16A34A" HeightRequest="18" />
+            <Border Stroke="#CBD5E1" StrokeThickness="1" BackgroundColor="#F8FAFC" Padding="12" StrokeShape="RoundRectangle 8">
+                <Label Text="Border" TextColor="#111827" />
+            </Border>
+            <Frame BorderColor="#94A3B8" BackgroundColor="#EEF2FF" Padding="12" CornerRadius="6">
+                <Label Text="Frame" TextColor="#111827" />
+            </Frame>
+            <ContentView BackgroundColor="#ECFDF5" Padding="12">
+                <ContentView.Content>
+                    <Label Text="ContentView + ContentPresenter" TextColor="#065F46" />
+                </ContentView.Content>
+            </ContentView>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

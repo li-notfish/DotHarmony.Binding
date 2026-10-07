@@ -448,6 +448,15 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     /// 实测 Button 塌成 19x8），信原生前帧自量测（px→vp）。</summary>
     private (float W, float H) MeasureChild(IView view, ArkUINode node, float density)
     {
+        // ScrollView 在 Grid Auto 轨道存在 ArkUI 自量测回环：托管 IContentView 测量
+        // 会把首帧 viewport 高反向写回内容，Pivot 表头实测被撑到 256px 并压入 Star 行。
+        // 原生 MeasuredSize 是稳定锚点；尚未量测（首帧）才回退托管测量。
+        if (view is IScrollView)
+        {
+            var nat = NaturalSize(view, node, density);
+            if (nat.H > 0 && nat.W > 0)
+                return nat;
+        }
         if (view is IContentView or ContentPresenter && view.Handler is not null)
         {
             try

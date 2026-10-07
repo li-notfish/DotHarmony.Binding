@@ -223,5 +223,94 @@
     "Aspect": "BoxView 填充模式未接线",
     "Fill": "渐变填充未接线（Color/Background 已映射）",
     "Shape": "形状描述未接线"
+  },
+  "HarmonySwipeItemHandler": {
+    "TextColor": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonySwipeItemViewHandler": {
+    "Content": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyFrameCompatHandler": {
+    "BorderColorDefaultValue": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "BorderWidth": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "BorderWidthDefaultValue": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "CornerRadiusDefaultValue": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyIndicatorViewHandler": {
+    "Content": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "IndicatorLayout": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "IndicatorTemplate": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyImageButtonHandler": {
+    "BorderColorDefaultValue": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "BorderWidthDefaultValue": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "CornerRadiusDefaultValue": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyFlexLayoutHandler": {
+    "AlignContent": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "AlignItems": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "Direction": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "JustifyContent": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "Position": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "Wrap": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyStepperHandler": {
+    "Increment": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonySearchBarHandler": {
+    "SearchCommand": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "SearchCommandParameter": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyWebViewHandler": {
+    "CanGoBack": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "CanGoForward": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "Cookies": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyListViewHandler": {
+    "CachingStrategy": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "FooterElement": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "FooterTemplate": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "GroupDisplayBinding": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "GroupHeaderTemplate": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "GroupShortNameBinding": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "HeaderElement": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "HeaderTemplate": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "HorizontalScrollBarVisibility": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "IsPullToRefreshEnabled": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "IsRefreshing": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "RefreshAllowed": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "RefreshCommand": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "RefreshControlColor": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "SelectionMode": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "VerticalScrollBarVisibility": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyTableViewHandler": {
+    "Model": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyEntryCellHandler": {
+    "HorizontalTextAlignment": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "Keyboard": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "VerticalTextAlignment": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyCellHandler": {
+    "ContextActions": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "HasContextActions": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "IsContextActionsLegacyModeEnabled": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "RenderHeight": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyMenuBarItemHandler": {
+    "Priority": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyMenuFlyoutSubItemHandler": {
+    "Text": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "TextColor": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyMenuFlyoutSeparatorHandler": {
+    "Text": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "TextColor": "Known limitation: not mapped by the current HarmonyOS implementation."
+  },
+  "HarmonyMenuFlyoutItemHandler": {
+    "KeyboardAccelerators": "Known limitation: not mapped by the current HarmonyOS implementation.",
+    "TextColor": "Known limitation: not mapped by the current HarmonyOS implementation."
   }
 }

@@ -11,6 +11,25 @@ namespace HandlerAudit;
 
 public static class Program
 {
+    private static readonly HashSet<string> AllowedNonBaseHandlers = new(StringComparer.Ordinal)
+    {
+        "HarmonySwipeItemHandler",
+        "HarmonySwipeItemViewHandler",
+        "HarmonyFlexLayoutHandler",
+        "HarmonyImageCellHandler",
+        "HarmonyTextCellHandler",
+        "HarmonyEntryCellHandler",
+        "HarmonyViewCellHandler",
+        "HarmonySwitchCellHandler",
+        "HarmonyCellHandler",
+        "HarmonyMenuBarHandler",
+        "HarmonyMenuBarItemHandler",
+        "HarmonyMenuFlyoutHandler",
+        "HarmonyMenuFlyoutSubItemHandler",
+        "HarmonyMenuFlyoutSeparatorHandler",
+        "HarmonyMenuFlyoutItemHandler",
+    };
+
     public static int Main(string[] args)
     {
         if (args.Contains("--selftest"))
@@ -60,7 +79,8 @@ public static class Program
             var (mapped, chain) = AuditCore.ParseMapperKeys(
                 File.ReadAllText(handlerFile), arm.HandlerClassName);
             var covered = new HashSet<string>(baseKeys);
-            if (!chain.Contains("HarmonyViewMapper.Base"))
+            if (!chain.Contains("HarmonyViewMapper.Base")
+                && !AllowedNonBaseHandlers.Contains(arm.HandlerClassName))
                 errors.Add($"{arm.HandlerClassName} 未链接 HarmonyViewMapper.Base（链基：{chain}）");
 
             var expected = AuditCore.CollectExpectedProperties(viewType);

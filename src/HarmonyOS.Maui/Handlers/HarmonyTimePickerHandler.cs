@@ -1,21 +1,26 @@
+#nullable enable
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
-using MTimePicker = Microsoft.Maui.Controls.TimePicker;
 using HarmonyOS.Bindings.NativeNode;
 using ArkTimePicker = HarmonyOS.ArkUI.TimePicker;
-using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
+using MTimePicker = Microsoft.Maui.Controls.TimePicker;
 
 namespace HarmonyOS.Maui.Handlers;
 
-/// <summary>
-/// TimePicker → ArkUI TimePicker（内嵌滚轮节点）。
-/// M1 限制：MAUI TimePicker 是弹窗交互、ArkUI 是内嵌滚轮，视觉有差异（ROADMAP 1.4）。
-/// </summary>
 public class HarmonyTimePickerHandler : HarmonyViewHandler<MTimePicker, ArkTimePicker>
 {
     public static PropertyMapper<MTimePicker, HarmonyTimePickerHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(ITimePicker.Time)] = MapTime,
+        [nameof(MTimePicker.Format)] = MapText,
+        [nameof(MTimePicker.TextColor)] = MapText,
+        [nameof(MTimePicker.CharacterSpacing)] = MapText,
+        [nameof(MTimePicker.FontFamily)] = MapText,
+        [nameof(MTimePicker.FontSize)] = MapText,
+        [nameof(MTimePicker.FontAttributes)] = MapText,
+        [nameof(MTimePicker.FontAutoScalingEnabled)] = MapText,
+        [nameof(MTimePicker.IsOpen)] = MapIsOpen,
     };
 
     public HarmonyTimePickerHandler() : base(Mapper) { }
@@ -36,11 +41,22 @@ public class HarmonyTimePickerHandler : HarmonyViewHandler<MTimePicker, ArkTimeP
 
     public static void MapTime(HarmonyTimePickerHandler handler, MTimePicker view)
     {
-        if (handler is HarmonyTimePickerHandler h)
-        {
-            var t = view.Time ?? TimeSpan.Zero;
-            h.PlatformView.SelectedTime = $"{t.Hours:d2}:{t.Minutes:d2}";
-        }
+        var t = view.Time ?? TimeSpan.Zero;
+        handler.PlatformView.SelectedTime = $"{t.Hours:d2}:{t.Minutes:d2}";
+    }
+
+    public static void MapText(HarmonyTimePickerHandler handler, MTimePicker view)
+    {
+        // ArkUI TimePicker 节点不支持 FontFamily/FontAttributes/FontSize/TextColor/CharacterSpacing。
+        // 这里必须保持 no-op；SetAttribute(401) 会让整棵页面构建失败。
+        HarmonyOS.Interop.HiLog.Warn(
+            "HarmonyHost",
+            "[TimePicker] FontFamily/FontAttributes/FontSize/TextColor/CharacterSpacing are degraded on HarmonyOS.");
+    }
+
+    public static void MapIsOpen(HarmonyTimePickerHandler handler, MTimePicker view)
+    {
+        HarmonyOS.Interop.HiLog.Warn("HarmonyHost", "[TimePicker] IsOpen is degraded on HarmonyOS.");
     }
 
     private void OnTimeChange(ArkUINodeEvent e)

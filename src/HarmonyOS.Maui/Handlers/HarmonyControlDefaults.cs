@@ -39,6 +39,19 @@ public static class HarmonyControlDefaults
     /// 但 NDK C API 无样式表——不显式设则内部 Text 零尺寸不可见。</summary>
     public static double ButtonFontSize { get; set; } = 16.0;
 
+    /// <summary>通用 Text 字号兜底。ArkUI 默认 16fp；NDK 无样式表时显式设置。</summary>
+    public static double TextFontSizeDefault { get; set; } = 16.0;
+
+    /// <summary>次级/详情 Text 字号兜底。</summary>
+    public static double DetailTextFontSizeDefault { get; set; } = 12.0;
+
+    /// <summary>状态/列表行 Text 字号兜底。</summary>
+    public static double StatusTextFontSizeDefault { get; set; } = 14.0;
+
+    /// <summary>ActivityIndicator 默认描边色；MAUI 未显式设置时使用。</summary>
+    public static Microsoft.Maui.Graphics.Color ActivityIndicatorColorDefault { get; set; } =
+        Microsoft.Maui.Graphics.Colors.Gray;
+
     /// <summary>Button.CornerRadius MAUI sentinel -1 = 平台默认；
     /// ArkUI ROUNDED_RECTANGLE 自带 20vp 圆角，sentinel 时不覆写。</summary>
     public static int ButtonCornerRadiusSentinel { get; set; } = -1;

@@ -231,8 +231,9 @@ public static class HarmonyNavigation
 
     private static void FadeIn(ArkUINode node)
     {
-        node.SetOpacity(0f);
-        node.AnimateAsync(() => node.SetOpacity(1f)).FireAndForget();
+        // 保证页面立即可见；异步淡入在部分宿主时序下会停留在 Opacity=0，
+        // 表现为“标题栏可见、内容黑屏”。这里先保证可见性，再保留后续动画空间。
+        node.SetOpacity(1f);
     }
 
     /// <summary>

@@ -55,6 +55,9 @@
           Include="..\..\scripts\stage-host.ps1;..\..\scripts\build-hap.cmd;..\..\scripts\deploy-hap.ps1;..\..\scripts\deploy-hap.sh;..\..\scripts\export-harmony-permissions.ps1;..\..\scripts\check-harmony-permissions.ps1;..\..\scripts\patch-openharmony-nativeaot.ps1" />
     <None Pack="true" PackagePath="harmonyos\scripts\"
           Include="..\..\scripts\write-explicit-permissions.ps1" />
+    <!-- deploy/sign 脚本 dot-source 的共享 SDK 定位库 -->
+    <None Pack="true" PackagePath="harmonyos\scripts\lib\"
+          Include="..\..\scripts\lib\sdk.ps1;..\..\scripts\lib\sdk.sh" />
     <!-- 打包分析器及其全部 copy-local 依赖：直接收集生成器输出目录，
          避免对 NuGet 全局包路径与传递依赖版本号的硬编码。 -->
     <None Include="..\HarmonyOS.Maui.Permissions\bin\$(Configuration)\netstandard2.0\*.dll"

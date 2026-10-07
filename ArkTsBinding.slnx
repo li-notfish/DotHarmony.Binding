@@ -5,6 +5,7 @@
     <Project Path="samples/dotnet/ApiDemo/ApiDemo.csproj" />
     <Project Path="samples/dotnet/EngineLab/EngineLab.csproj" />
     <Project Path="samples/dotnet/EssentialsApp/EssentialsApp.csproj" />
+    <Project Path="samples/dotnet/ControlsSampleApp/ControlsSampleApp.csproj" />
     <Project Path="samples/dotnet/WeatherTwentyOne/WeatherTwentyOne.csproj" />
   </Folder>
   <Folder Name="/src/">

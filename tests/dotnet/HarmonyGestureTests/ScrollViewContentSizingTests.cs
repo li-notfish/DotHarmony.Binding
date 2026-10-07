@@ -11,8 +11,8 @@ public class ScrollViewContentSizingTests
     [InlineData(ScrollOrientation.Vertical, true, false)]
     [InlineData(ScrollOrientation.Horizontal, false, true)]
     [InlineData(ScrollOrientation.Both, false, false)]
-    // Neither 禁止滚动：MAUI 语义下两轴均约束到视口，内容不得越过
-    [InlineData(ScrollOrientation.Neither, true, true)]
+    // Neither 官方 CrossPlatformMeasure：宽高均不约束
+    [InlineData(ScrollOrientation.Neither, false, false)]
     public void Orientation_SelectsExpectedCrossAxisSizing(
         ScrollOrientation orientation,
         bool stretchWidth,

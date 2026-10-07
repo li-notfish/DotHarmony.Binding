@@ -1,6 +1,7 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Devices;
 using HarmonyOS.Bindings.NativeNode;
 using HarmonyOS.Interop;
 using ArkCustomDrawNode = HarmonyOS.ArkUI.ArkCustomDrawNode;
@@ -30,6 +31,8 @@ public class HarmonyActivityIndicatorHandler :
 
     protected override void ConnectHandler(ArkCustomDrawNode platformView)
     {
+        var density = (float)DeviceDisplay.MainDisplayInfo.Density;
+        platformView.SetDefaultMeasuredSize(40f, 40f, density);
         base.ConnectHandler(platformView);
         platformView.SetDrawCallback(OnDraw);
         platformView.Invalidate();
@@ -87,7 +90,6 @@ public class HarmonyActivityIndicatorHandler :
 
     private void OnDraw(Bindings.NativeNode.OHDrawingCanvas nativeCanvas, float width, float height)
     {
-        nativeCanvas.Clear(0);
         var view = VirtualView;
         if (!view.IsRunning)
             return;
@@ -100,7 +102,7 @@ public class HarmonyActivityIndicatorHandler :
 
         (_canvas ??= new HarmonyDrawingCanvas(nativeCanvas)).Bind(nativeCanvas);
         _canvas.ResetState();
-        _canvas.StrokeColor = view.Color ?? Colors.Gray;
+        _canvas.StrokeColor = view.Color ?? HarmonyControlDefaults.ActivityIndicatorColorDefault;
         _canvas.StrokeThickness = stroke;
         _canvas.DrawArc(x, y, diameter, diameter, _angle, 270f, clockwise: true, close: false);
     }

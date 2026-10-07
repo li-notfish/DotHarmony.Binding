@@ -14,6 +14,9 @@ namespace HarmonyOS.Maui.Hosting;
 
 public static class MauiHarmonyHost
 {
+    /// <summary>宿主回调注册 seam；单测注入 fake，产品态走 libentry。</summary>
+    internal static IHarmonyHostCallbackRegistrar CallbackRegistrar { get; set; } = new LibEntryCallbackRegistrar();
+
     /// <summary>
     /// 系统 colorMode 变化入口。正常路径：宿主初始化时经 RegisterThemeCallback
     /// 把 <see cref="OnThemeChangedNative"/> 的函数指针注册进 libentry 回调表；
@@ -91,25 +94,7 @@ public static class MauiHarmonyHost
     /// </summary>
     public static void Run(Func<MPage> rootFactory, MResourceDictionary? globalResources = null)
     {
-        Host.RootBuilder = contentHandle =>
-        {
-            // Essentials 在 UI 线程首次构建时装入（napi env 已可用）——
-            // 不能在 ModuleInitializer 阶段（此时 napi 未初始化会闪退）
-            Essentials.HarmonyEssentials.Install();
-
-            // IDispatcher 注册：MAUI 控件模板内的 Dispatcher.Dispatch/CreateTimer 依赖
-            // DispatcherProvider.Current（鸿蒙宿主不走 UseMauiApp 引导，需手动注册）
-            HarmonyDispatcher.EnsureRegistered();
-
-            // 宿主根容器：页面栈 + 模态层的挂载点（Stack 叠加语义）
-            var container = new ArkStack();
-            container.SetWidthPercent(1.0f);
-            container.SetHeightPercent(1.0f);
-            Host.AttachRoot(contentHandle, container);
-
-            HarmonyNavigation.Attach(container, globalResources);
-            HarmonyNavigation.Push(rootFactory());
-        };
+        StartApplication(() => new RootPageApplication(rootFactory), globalResources);
     }
 
     /// <summary>
@@ -122,8 +107,12 @@ public static class MauiHarmonyHost
     /// </summary>
     public static void RunApplication(Func<MApplication> applicationFactory)
     {
-        RegisterThemeCallback();
-        RegisterLifecycleCallback();
+        StartApplication(applicationFactory, globalResources: null);
+    }
+
+    private static void StartApplication(Func<MApplication> applicationFactory, MResourceDictionary? globalResources)
+    {
+        RegisterHostCallbacks();
         Host.RootBuilder = contentHandle =>
         {
             Essentials.HarmonyEssentials.Install();
@@ -135,7 +124,7 @@ public static class MauiHarmonyHost
             Host.AttachRoot(contentHandle, container);
 
             var app = applicationFactory();
-            HarmonyApplication.EnsureCurrent(globalResources: null, app);
+            HarmonyApplication.EnsureCurrent(globalResources, app);
 
             // MAUI 标准窗口协议：App.MainPage → Window.Page、Windows 集合注册、
             // Parent 链（Page → Window → Application）补齐（Appearing 守卫依赖）
@@ -152,7 +141,37 @@ public static class MauiHarmonyHost
         };
     }
 
+    private static void RegisterHostCallbacks()
+    {
+        CallbackRegistrar.RegisterThemeCallback();
+        CallbackRegistrar.RegisterLifecycleCallback();
+    }
+
+    private sealed class RootPageApplication : MApplication
+    {
+        private readonly Func<MPage> _rootFactory;
+
+        public RootPageApplication(Func<MPage> rootFactory) => _rootFactory = rootFactory;
+
+        protected override Window CreateWindow(IActivationState? activationState)
+            => new(_rootFactory());
+    }
+
+    private sealed class LibEntryCallbackRegistrar : IHarmonyHostCallbackRegistrar
+    {
+        public void RegisterThemeCallback() => MauiHarmonyHost.RegisterThemeCallback();
+
+        public void RegisterLifecycleCallback() => MauiHarmonyHost.RegisterLifecycleCallback();
+    }
+
     /// <summary>泛型便捷重载（对齐 UseMauiApp&lt;T&gt; 的习惯写法）。</summary>
     public static void RunApplication<TApplication>() where TApplication : MApplication, new()
         => RunApplication(() => new TApplication());
+}
+
+internal interface IHarmonyHostCallbackRegistrar
+{
+    void RegisterThemeCallback();
+
+    void RegisterLifecycleCallback();
 }

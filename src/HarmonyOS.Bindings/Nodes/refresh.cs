@@ -16,6 +16,14 @@ public unsafe partial class Refresh : ArkUINodeBase
         set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_REFRESH_REFRESHING, ArkUIValue.I(value ? 1 : 0));
     }
 
+    /// <summary>是否启用下拉刷新（NODE_REFRESH_PULL_TO_REFRESH，i32 0/1）</summary>
+    public bool PullToRefresh
+    {
+        set => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_REFRESH_PULL_TO_REFRESH,
+            ArkUIValue.I(value ? 1 : 0));
+    }
+
     private Action<ArkUINodeEvent>? _onStateChange;
     /// <summary>onStateChange 事件（NODE_REFRESH_STATE_CHANGE）</summary>
     public event Action<ArkUINodeEvent>? StateChange

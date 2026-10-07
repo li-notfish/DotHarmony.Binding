@@ -1,0 +1,58 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlsSampleApp.ItemsPage"
+             Title="Items"
+             BackgroundColor="#FFFFFF">
+    <ScrollView>
+        <StackLayout Padding="16" Spacing="14">
+            <Label Text="CS-ITEMS-MARK" FontAttributes="Bold" FontSize="18" TextColor="#111827" />
+
+            <CollectionView x:Name="DemoCollection" HeightRequest="150">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding .}" TextColor="#111827" Padding="10" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <CarouselView x:Name="DemoCarousel" HeightRequest="120" Loop="False">
+                <CarouselView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BackgroundColor="#EEF2FF" Stroke="#C7D2FE" Padding="12" StrokeShape="RoundRectangle 8">
+                            <Label Text="{Binding .}" TextColor="#312E81" FontSize="18" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                        </Border>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+            <IndicatorView x:Name="DemoIndicator"
+                          IndicatorColor="#CBD5E1"
+                          SelectedIndicatorColor="#2563EB"
+                          IndicatorSize="8"
+                          HorizontalOptions="Center" />
+
+            <ListView x:Name="DemoList" HeightRequest="140">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding .}" Detail="ListView item" TextColor="#111827" DetailColor="#6B7280" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <TableView Intent="Settings">
+                <TableRoot Title="Compatibility cells">
+                    <TableSection Title="Cells">
+                        <TextCell Text="Text cell" Detail="Text detail" TextColor="#111827" />
+                        <ImageCell Text="Image cell" Detail="Local image" ImageSource="probe_logo.png" TextColor="#111827" />
+                        <EntryCell Label="Entry cell" Placeholder="Type here" />
+                        <SwitchCell Text="Switch cell" On="True" />
+                        <ViewCell>
+                            <StackLayout Padding="12">
+                                <Label Text="View cell" TextColor="#111827" />
+                            </StackLayout>
+                        </ViewCell>
+                    </TableSection>
+                </TableRoot>
+            </TableView>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

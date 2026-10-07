@@ -20,7 +20,8 @@ namespace HarmonyOS.Bindings.NativeNode;
 public abstract unsafe class ArkUINodeBase : IDisposable
 {
     private ArkUI_NodeHandle _handle;
-    private readonly HashSet<ArkUI_NodeEventType> _handlers = new();
+    private readonly Dictionary<ArkUI_NodeEventType, ArkUINodeEventHub> _eventHubs = new();
+    private readonly Dictionary<ArkUI_NodeEventType, Action<ArkUINodeEvent>> _eventDispatchers = new();
     private readonly int _targetId;
     private bool _disposed;
 
@@ -566,19 +567,31 @@ public abstract unsafe class ArkUINodeBase : IDisposable
 
     // ───────────────────────── 事件 ─────────────────────────
 
-    /// <summary>注册节点事件处理器（同类型事件覆盖式注册，符合 ArkUI 语义）</summary>
+    /// <summary>注册节点事件处理器；同一节点同一事件支持多个托管订阅。</summary>
     protected void On(ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
     {
         EnsureHandle();
-        _handlers.Add(eventType);
+        if (!_eventHubs.TryGetValue(eventType, out var hub))
+        {
+            hub = new ArkUINodeEventHub();
+            _eventHubs[eventType] = hub;
+        }
+
+        hub.Add(handler);
+        if (_eventDispatchers.ContainsKey(eventType))
+            return;
+
+        Action<ArkUINodeEvent> dispatcher = @event => _eventHubs[eventType].Invoke(@event);
+        _eventDispatchers[eventType] = dispatcher;
         try
         {
-            // 注册进全局分发总线（含首次时的原生 receiver 注册），再向节点注册事件
-            NodeEventBus.Register(_targetId, eventType, handler);
+            NodeEventBus.Register(_targetId, eventType, dispatcher);
             ArkUINativeApi.RegisterNodeEvent(_handle, eventType, _targetId, null);
         }
         catch
         {
+            _eventHubs.Remove(eventType);
+            _eventDispatchers.Remove(eventType);
             NodeEventBus.Unregister(_targetId, eventType);
             throw;
         }
@@ -591,7 +604,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     protected void Off(ArkUI_NodeEventType eventType)
     {
         EnsureHandle();
-        if (_handlers.Remove(eventType))
+        if (_eventHubs.Remove(eventType) | _eventDispatchers.Remove(eventType))
         {
             NodeEventBus.Unregister(_targetId, eventType);
             ArkUINativeApi.UnregisterNodeEvent(_handle, eventType);
@@ -609,6 +622,17 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>注销通用订阅（同类型覆盖式注册语义，见 SubscribeEvent）</summary>
     public void UnsubscribeEvent(ArkUI_NodeEventType eventType)
         => Off(eventType);
+
+    /// <summary>按具体 handler 精确注销；最后一个订阅移除时同步注销原生事件。</summary>
+    public void UnsubscribeEvent(ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
+    {
+        EnsureHandle();
+        if (!_eventHubs.TryGetValue(eventType, out var hub) || !hub.Remove(handler))
+            return;
+
+        if (hub.IsEmpty)
+            Off(eventType);
+    }
 
     // ───────────────────────── 树操作 ─────────────────────────
 
@@ -754,8 +778,10 @@ public abstract unsafe class ArkUINodeBase : IDisposable
                 NodeEventBus.Unregister(_gradientSizeChangeTargetId, ArkUI_NodeEventType.NODE_ON_SIZE_CHANGE);
             if (_areaChangeObserverTargetId != 0)
                 NodeEventBus.Unregister(_areaChangeObserverTargetId, ArkUI_NodeEventType.NODE_EVENT_ON_AREA_CHANGE);
-            foreach (var eventType in _handlers)
+            foreach (var eventType in _eventHubs.Keys)
                 NodeEventBus.Unregister(_targetId, eventType);
+            foreach (var hub in _eventHubs.Values)
+                hub.Clear();
             ArkUINativeApi.DisposeNode(_handle);
             _handle = default;
         }

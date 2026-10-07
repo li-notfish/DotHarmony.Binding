@@ -15,6 +15,12 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
     {
         [nameof(MLAYOUT.Background)] = MapBackground,
         [nameof(MLAYOUT.Padding)] = MapPadding,
+        [nameof(Microsoft.Maui.Controls.FlexLayout.Direction)] = MapFlexProperties,
+        [nameof(Microsoft.Maui.Controls.FlexLayout.Wrap)] = MapFlexProperties,
+        [nameof(Microsoft.Maui.Controls.FlexLayout.JustifyContent)] = MapFlexProperties,
+        [nameof(Microsoft.Maui.Controls.FlexLayout.AlignItems)] = MapFlexProperties,
+        [nameof(Microsoft.Maui.Controls.FlexLayout.AlignContent)] = MapFlexProperties,
+        [nameof(Microsoft.Maui.Controls.FlexLayout.Position)] = MapFlexProperties,
     };
 
     // Controls 布局的子树变更协议（字符串命令，经 Handler.Invoke 派发）
@@ -42,10 +48,84 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
     /// <summary>判定虚拟视图是否为水平栈（StackLayout{Horizontal} / HorizontalStackLayout 都合法）</summary>
     internal static bool IsHorizontalStack(object? view)
         => view is Microsoft.Maui.Controls.HorizontalStackLayout
-           || (view is Microsoft.Maui.Controls.StackLayout sl && sl.Orientation == StackOrientation.Horizontal);
+           || (view is Microsoft.Maui.Controls.StackLayout sl && sl.Orientation == StackOrientation.Horizontal)
+           || (view is Microsoft.Maui.Controls.FlexLayout flex
+               && flex.Direction is Microsoft.Maui.Layouts.FlexDirection.Row
+                       or Microsoft.Maui.Layouts.FlexDirection.RowReverse);
 
     /// <summary>判定是否为任意栈式布局（StackBase 覆盖 Stack/HStack/VStack）</summary>
-    internal static bool IsAnyStack(object? view) => view is Microsoft.Maui.Controls.StackBase;
+    internal static bool IsAnyStack(object? view)
+        => view is Microsoft.Maui.Controls.StackBase
+           || view is Microsoft.Maui.Controls.FlexLayout;
+
+    private static void MapFlexProperties(HarmonyLayoutHandler h, MLAYOUT v)
+    {
+        if (v is not Microsoft.Maui.Controls.FlexLayout flex)
+            return;
+
+        if (h.PlatformView is HarmonyOS.ArkUI.Flex flexNode)
+        {
+            flexNode.Direction = FlexSemanticMapper.MapDirection(flex.Direction);
+            flexNode.Wrap = FlexSemanticMapper.MapWrap(flex.Wrap);
+            flexNode.JustifyContent = FlexSemanticMapper.MapJustify(flex.JustifyContent);
+            flexNode.AlignItems = FlexSemanticMapper.MapAlignItems(flex.AlignItems);
+            flexNode.AlignContent = FlexSemanticMapper.MapAlignContent(flex.AlignContent);
+
+            if (flex.Position == Microsoft.Maui.Layouts.FlexPosition.Absolute)
+                HarmonyOS.Interop.HiLog.Warn(
+                    "HarmonyHost",
+                    "[FlexLayout] Position=Absolute is not provided by NODE_FLEX_OPTION; managed layout fallback remains.");
+            return;
+        }
+
+        if (h.PlatformView is HarmonyOS.ArkUI.Row row)
+        {
+            row.JustifyContent = flex.JustifyContent switch
+            {
+                Microsoft.Maui.Layouts.FlexJustify.Start => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_START,
+                Microsoft.Maui.Layouts.FlexJustify.Center => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_CENTER,
+                Microsoft.Maui.Layouts.FlexJustify.End => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_END,
+                Microsoft.Maui.Layouts.FlexJustify.SpaceBetween => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_SPACE_BETWEEN,
+                Microsoft.Maui.Layouts.FlexJustify.SpaceAround => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_SPACE_AROUND,
+                Microsoft.Maui.Layouts.FlexJustify.SpaceEvenly => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_SPACE_EVENLY,
+                _ => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_START,
+            };
+            row.AlignItems = flex.AlignItems switch
+            {
+                Microsoft.Maui.Layouts.FlexAlignItems.Start => ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_START,
+                Microsoft.Maui.Layouts.FlexAlignItems.Center => ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_CENTER,
+                Microsoft.Maui.Layouts.FlexAlignItems.End => ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_END,
+                Microsoft.Maui.Layouts.FlexAlignItems.Stretch => ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_STRETCH,
+                _ => ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_STRETCH,
+            };
+        }
+        else if (h.PlatformView is HarmonyOS.ArkUI.Column column)
+        {
+            column.JustifyContent = flex.JustifyContent switch
+            {
+                Microsoft.Maui.Layouts.FlexJustify.Start => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_START,
+                Microsoft.Maui.Layouts.FlexJustify.Center => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_CENTER,
+                Microsoft.Maui.Layouts.FlexJustify.End => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_END,
+                Microsoft.Maui.Layouts.FlexJustify.SpaceBetween => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_SPACE_BETWEEN,
+                Microsoft.Maui.Layouts.FlexJustify.SpaceAround => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_SPACE_AROUND,
+                Microsoft.Maui.Layouts.FlexJustify.SpaceEvenly => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_SPACE_EVENLY,
+                _ => ArkUI_FlexAlignment.ARKUI_FLEX_ALIGNMENT_START,
+            };
+            column.AlignItems = flex.AlignItems switch
+            {
+                Microsoft.Maui.Layouts.FlexAlignItems.Start => ArkUI_HorizontalAlignment.ARKUI_HORIZONTAL_ALIGNMENT_START,
+                Microsoft.Maui.Layouts.FlexAlignItems.Center => ArkUI_HorizontalAlignment.ARKUI_HORIZONTAL_ALIGNMENT_CENTER,
+                Microsoft.Maui.Layouts.FlexAlignItems.End => ArkUI_HorizontalAlignment.ARKUI_HORIZONTAL_ALIGNMENT_END,
+                Microsoft.Maui.Layouts.FlexAlignItems.Stretch => ArkUI_HorizontalAlignment.ARKUI_HORIZONTAL_ALIGNMENT_START,
+                _ => ArkUI_HorizontalAlignment.ARKUI_HORIZONTAL_ALIGNMENT_START,
+            };
+        }
+
+        // ArkUI Row/Column 没有 Wrap / AlignContent / Position 的完整 Flexbox 映射。
+        HarmonyOS.Interop.HiLog.Warn(
+            "HarmonyHost",
+            "[FlexLayout] Wrap/AlignContent/Position are degraded on HarmonyOS.");
+    }
 
     protected override void ConnectHandler(ArkUINode platformView)
     {
@@ -156,15 +236,13 @@ public class HarmonyLayoutHandler : HarmonyViewHandler<MLAYOUT, ArkUINode>
             }
             else if (isHorizontalStack)
             {
-                // 水平 Stack（Row）交叉轴 = 垂直：VerticalOptions 逐子项生效。
-                // Fill 落成百分比高仅当 Row 自身高度受约束（显式 HeightRequest）——
-                // auto 高 Row 的子项百分比会退化为 0/未定义，Row 高度本应由内容决定
-                bool rowHeightBounded = VirtualView is VisualElement rve && rve.HeightRequest >= 0;
                 switch (view.VerticalLayoutAlignment)
                 {
                     case MALIGNMENT.Fill:
-                        if (rowHeightBounded)
-                            node.SetHeightPercent(1.0f);
+                        // ArkUI 的 STRETCH 会参与子项自量测并形成回环（Pivot 表头
+                        // 实测 256px 后反向把 Row/Scroll 也撑到 256px）；auto 行先
+                        // 保持内容高，显式高仍由 HeightRequest 分支优先处理。
+                        node.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_START);
                         break;
                     case MALIGNMENT.Start:
                         node.SetAlignSelf(ArkUI_ItemAlignment.ARKUI_ITEM_ALIGNMENT_START);

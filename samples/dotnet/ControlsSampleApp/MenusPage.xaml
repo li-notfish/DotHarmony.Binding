@@ -1,0 +1,33 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlsSampleApp.MenusPage"
+             Title="Menus"
+             BackgroundColor="#FFFFFF">
+    <ContentPage.MenuBarItems>
+        <MenuBarItem Text="File">
+            <MenuFlyoutItem Text="New" />
+            <MenuFlyoutSeparator />
+            <MenuFlyoutSubItem Text="Recent">
+                <MenuFlyoutItem Text="Item one" />
+                <MenuFlyoutItem Text="Item two" />
+            </MenuFlyoutSubItem>
+        </MenuBarItem>
+        <MenuBarItem Text="Edit">
+            <MenuFlyoutItem Text="Copy" />
+        </MenuBarItem>
+    </ContentPage.MenuBarItems>
+    <ContentPage.Resources>
+        <MenuFlyout x:Key="DemoFlyout">
+            <MenuFlyoutItem Text="Resource item" />
+            <MenuFlyoutSeparator />
+        </MenuFlyout>
+    </ContentPage.Resources>
+    <ScrollView>
+        <StackLayout Padding="16" Spacing="14">
+            <Label Text="CS-MENUS-MARK" FontAttributes="Bold" FontSize="18" TextColor="#111827" />
+            <Label Text="Menu bar items are provided by the page chrome." TextColor="#374151" />
+            <Label Text="MenuFlyout and nested menu elements are declared as page resources."
+                   TextColor="#6B7280" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,21 @@
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:ControlsSampleApp"
+       x:Class="ControlsSampleApp.ShellDemoPage"
+       Title="Shell demo"
+       FlyoutBehavior="Locked">
+    <FlyoutItem Title="Samples">
+        <ShellContent Title="Home">
+            <ContentPage Title="Home" BackgroundColor="#FFFFFF">
+                <StackLayout Padding="16">
+                    <Label Text="CS-SHELL-MARK" FontAttributes="Bold" FontSize="18" TextColor="#111827" />
+                    <Button Text="Back to samples"
+                            Clicked="OnBackClicked"
+                            BackgroundColor="#2563EB"
+                            TextColor="#FFFFFF"
+                            CornerRadius="6" />
+                </StackLayout>
+            </ContentPage>
+        </ShellContent>
+    </FlyoutItem>
+</Shell>

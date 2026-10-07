@@ -1,0 +1,55 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlsSampleApp.LayoutsPage"
+             Title="Layouts"
+             BackgroundColor="#FFFFFF">
+    <ScrollView>
+        <StackLayout Padding="16" Spacing="14">
+            <Label Text="CS-LAYOUTS-MARK" FontAttributes="Bold" FontSize="18" TextColor="#111827" />
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                <BoxView Grid.Row="0" Grid.Column="0" Color="#93C5FD" HeightRequest="36" CornerRadius="6" />
+                <BoxView Grid.Row="0" Grid.Column="1" Color="#86EFAC" HeightRequest="36" CornerRadius="6" />
+                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                       Text="Grid span" HorizontalTextAlignment="Center" TextColor="#111827" />
+            </Grid>
+
+            <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Center">
+                <BoxView Color="#FCA5A5" WidthRequest="72" HeightRequest="32" CornerRadius="6" />
+                <BoxView Color="#FDBA74" WidthRequest="72" HeightRequest="32" CornerRadius="6" />
+                <BoxView Color="#A5B4FC" WidthRequest="72" HeightRequest="32" CornerRadius="6" />
+            </FlexLayout>
+
+            <AbsoluteLayout HeightRequest="90">
+                <BoxView Color="#C4B5FD"
+                         AbsoluteLayout.LayoutBounds="10,10,120,40"
+                         AbsoluteLayout.LayoutFlags="None"
+                         CornerRadius="6" />
+                <Label Text="AbsoluteLayout"
+                       AbsoluteLayout.LayoutBounds="10,60,150,30"
+                       AbsoluteLayout.LayoutFlags="None"
+                       TextColor="#111827" />
+            </AbsoluteLayout>
+
+            <RefreshView x:Name="DemoRefresh" HeightRequest="120">
+                <StackLayout Padding="8">
+                    <Label Text="RefreshView content" TextColor="#111827" />
+                    <Label Text="Pull to refresh" TextColor="#6B7280" />
+                </StackLayout>
+            </RefreshView>
+
+            <SwipeView HeightRequest="80">
+                <SwipeView.LeftItems>
+                    <SwipeItems>
+                        <SwipeItem Text="Archive" BackgroundColor="#2563EB" />
+                    </SwipeItems>
+                </SwipeView.LeftItems>
+                <SwipeView.Content>
+                    <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="12" BackgroundColor="#F9FAFB">
+                        <Label Text="SwipeView" TextColor="#111827" VerticalOptions="Center" />
+                    </Border>
+                </SwipeView.Content>
+            </SwipeView>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
