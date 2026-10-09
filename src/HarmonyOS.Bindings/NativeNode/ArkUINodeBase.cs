@@ -17,9 +17,16 @@ namespace HarmonyOS.Bindings.NativeNode;
 ///
 /// 线程约束：所有实例方法必须在 UI 主线程调用（NativeMainThread.Ensure）。
 /// </summary>
-public abstract unsafe class ArkUINodeBase : IDisposable
+internal interface IHarmonySemanticNode
+{
+    void SetSemanticText(string text);
+    void SetSemanticDescription(string description);
+}
+
+public abstract unsafe class ArkUINodeBase : IDisposable, IHarmonySemanticNode
 {
     private ArkUI_NodeHandle _handle;
+    private readonly ArkUI_NodeType _nodeType;
     private readonly Dictionary<ArkUI_NodeEventType, ArkUINodeEventHub> _eventHubs = new();
     private readonly Dictionary<ArkUI_NodeEventType, Action<ArkUINodeEvent>> _eventDispatchers = new();
     private readonly int _targetId;
@@ -28,6 +35,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     protected ArkUINodeBase(ArkUI_NodeType nodeType)
     {
         NativeMainThread.Ensure();
+        _nodeType = nodeType;
         _handle = ArkUINativeApi.CreateNode(nodeType);
         if (_handle.IsNull)
             throw new InvalidOperationException($"Failed to create native node of type {nodeType}");
@@ -141,7 +149,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// 径向渐变背景（NODE_RADIAL_GRADIENT）。
     /// center 为组件相对坐标（0~1）；radius 相对半对角线（对齐 MAUI RadialGradientPaint 语义）。
     /// 属性设置时节点可能尚未布局（尺寸为 0），故经 NODE_ON_SIZE_CHANGE（独立 targetId，
-    /// 不占用用户 SubscribeEvent 的覆盖式订阅槽）在尺寸变化时按实测尺寸重算。
+    /// 不占用用户 SubscribeEvent 的多播订阅槽）在尺寸变化时按实测尺寸重算。
     /// </summary>
     public void SetRadialGradient(float centerXFrac, float centerYFrac, float radiusFrac,
         bool repeating, uint[] colors, float[] stops)
@@ -360,7 +368,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
 
     /// <summary>
     /// 区域变化观察（NODE_EVENT_ON_AREA_CHANGE，独立 targetId，不占用 On()/SubscribeEvent
-    /// 的覆盖式订阅槽；与渐变的 NODE_ON_SIZE_CHANGE 专用槽分属不同事件类型互不冲突）。
+    /// 的多播订阅槽；与渐变的 NODE_ON_SIZE_CHANGE 专用槽分属不同事件类型互不冲突）。
     /// 位置或尺寸变化即回调（无载荷），供托管布局监听子节点自量测/内容变化触发重排。
     /// </summary>
     public void SetAreaChangeObserver(Action? observer)
@@ -614,12 +622,12 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>
     /// 通用事件订阅入口。组件生成类只包装了 .d.ts 声明的事件子集；
     /// ArkUI_NodeEventType 枚举为 NDK 头文件全量（含 NODE_EVENT_ON_APPEAR / NODE_EVENT_ON_AREA_CHANGE 等），
-    /// 可经此直接使用。覆盖式注册语义与 On() 一致：同类型事件后注册者替换先注册者。
+    /// 可经此直接使用。多播注册语义与 On() 一致：同类型事件支持多个托管订阅。
     /// </summary>
     public void SubscribeEvent(ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
         => On(eventType, handler);
 
-    /// <summary>注销通用订阅（同类型覆盖式注册语义，见 SubscribeEvent）</summary>
+    /// <summary>注销该事件类型的全部托管订阅</summary>
     public void UnsubscribeEvent(ArkUI_NodeEventType eventType)
         => Off(eventType);
 
@@ -633,6 +641,14 @@ public abstract unsafe class ArkUINodeBase : IDisposable
         if (hub.IsEmpty)
             Off(eventType);
     }
+
+    public ArkUI_NodeType NodeType => _nodeType;
+
+    void IHarmonySemanticNode.SetSemanticText(string text)
+        => SetStringAttribute(ArkUI_NodeAttributeType.NODE_ACCESSIBILITY_TEXT, text);
+
+    void IHarmonySemanticNode.SetSemanticDescription(string description)
+        => SetStringAttribute(ArkUI_NodeAttributeType.NODE_ACCESSIBILITY_DESCRIPTION, description);
 
     // ───────────────────────── 树操作 ─────────────────────────
 

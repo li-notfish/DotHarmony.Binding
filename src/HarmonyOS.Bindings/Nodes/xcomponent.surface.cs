@@ -76,6 +76,21 @@ public unsafe partial class XComponent
         SurfaceHolderAddCallback(_surfaceHolder, _surfaceCallback);
     }
 
+    internal void RemoveSurfaceCallbacks()
+    {
+        if (_surfaceHolder != null && _surfaceCallback != null)
+            SurfaceHolderRemoveCallback(_surfaceHolder, _surfaceCallback);
+        if (_surfaceCallback != null)
+            SurfaceCallbackDispose(_surfaceCallback);
+        if (_surfaceHolder != null)
+            SurfaceHolderDispose(_surfaceHolder);
+        if (_surfaceGcHandle.IsAllocated)
+            _surfaceGcHandle.Free();
+
+        _surfaceCallback = null;
+        _surfaceHolder = null;
+    }
+
     internal void SetXComponentId(string id)
         => SetStringAttribute(ArkUI_NodeAttributeType.NODE_XCOMPONENT_ID, id ?? string.Empty);
 
@@ -114,17 +129,7 @@ public unsafe partial class XComponent
     {
         if (disposing)
         {
-            if (_surfaceHolder != null && _surfaceCallback != null)
-                SurfaceHolderRemoveCallback(_surfaceHolder, _surfaceCallback);
-            if (_surfaceCallback != null)
-                SurfaceCallbackDispose(_surfaceCallback);
-            if (_surfaceHolder != null)
-                SurfaceHolderDispose(_surfaceHolder);
-            if (_surfaceGcHandle.IsAllocated)
-                _surfaceGcHandle.Free();
-
-            _surfaceCallback = null;
-            _surfaceHolder = null;
+            RemoveSurfaceCallbacks();
         }
 
         base.Dispose(disposing);
