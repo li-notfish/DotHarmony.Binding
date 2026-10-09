@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HarmonyOS.Interop;
@@ -141,6 +142,19 @@ public abstract class JsObject : IDisposable
 #endif
     }
 
+    protected Task CallMethodAsyncVoid(
+        ReadOnlySpan<byte> methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
+    {
+#if HARMONYOS
+        ThrowIfDisposed();
+        return NodeApi.CallMethodAsyncVoid(PinnedValue, methodName, cancellationToken, args);
+#else
+        throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
+#endif
+    }
+
     /// <summary>
     /// 调用仅 callback 形式的实例方法（末参 AsyncCallback&lt;T&gt;）并接为 Task&lt;T&gt;，
     /// 运行时创建 err-first JS 回调作为最后一个实参传入。
@@ -161,6 +175,19 @@ public abstract class JsObject : IDisposable
 #if HARMONYOS
         ThrowIfDisposed();
         return NodeApi.CallMethodAsyncCallbackVoid(PinnedValue, methodName, args);
+#else
+        throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
+#endif
+    }
+
+    protected Task CallMethodAsyncCallbackVoid(
+        ReadOnlySpan<byte> methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
+    {
+#if HARMONYOS
+        ThrowIfDisposed();
+        return NodeApi.CallMethodAsyncCallbackVoid(PinnedValue, methodName, cancellationToken, args);
 #else
         throw new PlatformNotSupportedException("JsObject requires HarmonyOS runtime");
 #endif

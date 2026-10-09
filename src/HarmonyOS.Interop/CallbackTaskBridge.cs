@@ -11,6 +11,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HarmonyOS.Interop;
@@ -25,7 +26,52 @@ internal static class CallbackTaskBridge
         public Type InnerType = typeof(object);
         /// <summary>data 参数的显式转换委托（数组/JsObject 包装类）；null 时走 ValueConverter 基元路径。</summary>
         public Func<IntPtr, object?>? Convert;
+        public required Action OnCancel;
+        public readonly object Lock = new();
+        public GCHandle Handle;
         public bool Done;
+        public CancellationTokenRegistration Registration;
+
+        public bool TryMarkDone()
+        {
+            lock (Lock)
+            {
+                if (Done)
+                    return false;
+                Done = true;
+                return true;
+            }
+        }
+
+        public void Free()
+        {
+            lock (Lock)
+            {
+                if (Handle.IsAllocated)
+                {
+                    var handle = Handle;
+                    Handle = default;
+                    handle.Free();
+                }
+            }
+        }
+
+        public void DisposeRegistration()
+        {
+            var registration = Registration;
+            Registration = default;
+            registration.Dispose();
+        }
+
+        public void Cancel()
+        {
+            if (TryMarkDone())
+                OnCancel?.Invoke();
+            // 释放取消注册：Cancel 总是从 token 回调线程执行，运行时会检测"当前线程正是
+            // 该回调"并跳过等待，Dispose 不会自锁；trampoline 若再触发会经 finally 走幂等路径。
+            DisposeRegistration();
+            Free();
+        }
     }
 
     private static readonly IntPtr TrampolinePtr =
@@ -34,7 +80,9 @@ internal static class CallbackTaskBridge
     /// <summary>
     /// 创建 err-first 回调函数及其 Task。回调作为被调方法的最后一个实参传入。
     /// </summary>
-    public static (IntPtr jsFunc, Task<T> task, Action abort) CreateCallback<T>(Func<IntPtr, T>? convert)
+    public static (IntPtr jsFunc, Task<T> task, Action abort) CreateCallback<T>(
+        Func<IntPtr, T>? convert,
+        CancellationToken cancellationToken = default)
     {
 #if HARMONYOS
         var tcs = new TaskCompletionSource<T>();
@@ -43,14 +91,15 @@ internal static class CallbackTaskBridge
             SetResult = v => tcs.TrySetResult((T)v!),
             SetException = ex => tcs.TrySetException(ex),
             InnerType = typeof(T),
+            OnCancel = () => tcs.TrySetCanceled(),
         };
         if (convert != null)
         {
             var conv = convert;
             state.Convert = v => conv(v)!;
         }
-        var gch = GCHandle.Alloc(state);
-        var data = GCHandle.ToIntPtr(gch);
+        state.Handle = GCHandle.Alloc(state);
+        var data = GCHandle.ToIntPtr(state.Handle);
 
         var env = NapiEnv.Current;
         var nameBytes = "asyncCallback"u8.ToArray();
@@ -59,12 +108,10 @@ internal static class CallbackTaskBridge
         // 取消 Task（防止 await 永久挂起）并释放 GCHandle（Trampoline 永不会被调用）
         Action abort = () =>
         {
-            if (!state.Done)
-            {
-                state.Done = true;
+            if (state.TryMarkDone())
                 tcs.TrySetCanceled();
-            }
-            if (gch.IsAllocated) gch.Free();
+            state.DisposeRegistration();
+            state.Free();
         };
 
         NativeNodeApi.napi_value jsFunc;
@@ -77,6 +124,13 @@ internal static class CallbackTaskBridge
         {
             abort();
             throw;
+        }
+
+        if (cancellationToken.CanBeCanceled)
+        {
+            state.Registration = cancellationToken.Register(static s => ((State)s!).Cancel(), state);
+            if (cancellationToken.IsCancellationRequested)
+                state.Cancel();
         }
         return (jsFunc, tcs.Task, abort);   // napi_value 隐式转换为 IntPtr
 #else
@@ -101,10 +155,11 @@ internal static class CallbackTaskBridge
             NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
                 .ThrowIfFailed();
             gch = GCHandle.FromIntPtr(data);
-            var state = (State)gch.Target!;
-            if (state.Done)
+            // 取消/中止后 GCHandle 已释放：迟到回调静默忽略（实现不抛），不得重新完成任务
+            if (gch.Target is not State state)
                 return CallbackTrampolines.SafeReturnUndefined(env);
-            state.Done = true;
+            if (!state.TryMarkDone())
+                return CallbackTrampolines.SafeReturnUndefined(env);
 
             var err = argc > 0 ? argv[0] : IntPtr.Zero;
             NativeNodeApi.napi_typeof(env, err, out var errType).ThrowIfFailed();
@@ -136,7 +191,11 @@ internal static class CallbackTaskBridge
         }
         finally
         {
-            if (gch.IsAllocated) gch.Free();
+            if (gch.IsAllocated && gch.Target is State s)
+            {
+                s.DisposeRegistration();
+                s.Free();
+            }
         }
         return CallbackTrampolines.SafeReturnUndefined(env);
     }
