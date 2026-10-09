@@ -16,9 +16,22 @@ namespace HarmonyOS.Essentials;
 /// </summary>
 internal sealed class HarmonyGeolocation : IGeolocation
 {
+    public const string LocationPermission = "ohos.permission.LOCATION";
+
     private Action<IntPtr>? _onLocationChange;
     private Action<HarmonyOS.ArkUI.LocationError>? _onLocationError;
     private bool _listening;
+    private readonly IHarmonyPermissionGate _permissionGate;
+
+    public HarmonyGeolocation()
+        : this(new HarmonyPermissionGate(LocationPermission))
+    {
+    }
+
+    internal HarmonyGeolocation(IHarmonyPermissionGate permissionGate)
+    {
+        _permissionGate = permissionGate ?? throw new ArgumentNullException(nameof(permissionGate));
+    }
 
     public bool IsEnabled => GeoLocationManager.IsLocationEnabled();
     public bool IsListeningForeground => _listening;
@@ -26,17 +39,21 @@ internal sealed class HarmonyGeolocation : IGeolocation
     public event EventHandler<GeolocationLocationChangedEventArgs>? LocationChanged;
     public event EventHandler<GeolocationListeningFailedEventArgs>? ListeningFailed;
 
-    public Task<Location?> GetLastKnownLocationAsync()
+    public async Task<Location?> GetLastKnownLocationAsync()
     {
+        await _permissionGate.EnsureGrantedAsync(LocationPermission).ConfigureAwait(true);
         if (!GeoLocationManager.IsLocationEnabled())
-            return Task.FromResult<Location?>(null);
+            throw new FeatureNotEnabledException("Location is not enabled on this device.");
+
         var handle = GeoLocationManager.GetLastLocation();
-        return Task.FromResult<Location?>(handle != IntPtr.Zero ? FromNative(handle) : null);
+        return handle != IntPtr.Zero ? FromNative(handle) : null;
     }
 
     public async Task<Location?> GetLocationAsync(GeolocationRequest request, CancellationToken cancelToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
         cancelToken.ThrowIfCancellationRequested();
+        await _permissionGate.EnsureGrantedAsync(LocationPermission).ConfigureAwait(true);
         if (!GeoLocationManager.IsLocationEnabled())
             throw new FeatureNotEnabledException("Location is not enabled on this device.");
         var req = new CurrentLocationRequest(
@@ -47,12 +64,14 @@ internal sealed class HarmonyGeolocation : IGeolocation
         return FromNative(handle);
     }
 
-    public Task<bool> StartListeningForegroundAsync(GeolocationListeningRequest request)
+    public async Task<bool> StartListeningForegroundAsync(GeolocationListeningRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
         if (_listening)
             throw new InvalidOperationException("Already listening for location updates");
+        await _permissionGate.EnsureGrantedAsync(LocationPermission).ConfigureAwait(true);
         if (!GeoLocationManager.IsLocationEnabled())
-            return Task.FromResult(false);
+            throw new FeatureNotEnabledException("Location is not enabled on this device.");
 
         _onLocationChange = handle =>
             LocationChanged?.Invoke(this, new GeolocationLocationChangedEventArgs(FromNative(handle)));
@@ -73,7 +92,7 @@ internal sealed class HarmonyGeolocation : IGeolocation
             MaxAccuracy: MaxAccuracyOf(request.DesiredAccuracy)));
         GeoLocationManager.On("locationError", _onLocationError);
         _listening = true;
-        return Task.FromResult(true);
+        return true;
     }
 
     public void StopListeningForeground()

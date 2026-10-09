@@ -21,17 +21,24 @@ public class HarmonyDeviceInfo : IDeviceInfo
 
     public DevicePlatform Platform => DevicePlatform.Create("OpenHarmony");
 
-    // deviceInfo.deviceType 英文字符串（"phone"/"tablet"/"wearable"/"tv"/"car"/"2in1"...）；未知兜底 Phone
-    public DeviceIdiom Idiom => HDeviceInfo.DeviceType switch
+    // deviceInfo.deviceType 英文字符串（"phone"/"tablet"/"wearable"/"tv"/"car"/"2in1"...）。
+    // 未知值保持 Unknown，避免向 MAUI 侧给出过强的 Phone 结论。
+    public DeviceIdiom Idiom => MapIdiom(HDeviceInfo.DeviceType);
+
+    public DeviceType DeviceType =>
+        IsEmulator() ? DeviceType.Virtual :
+        IsKnownDeviceType() ? DeviceType.Physical :
+        DeviceType.Unknown;
+
+    internal static DeviceIdiom MapIdiom(string deviceType) => deviceType switch
     {
+        "phone" or "mobile" => DeviceIdiom.Phone,
         "tablet" or "tablet_pc" => DeviceIdiom.Tablet,
         "tv" or "television" => DeviceIdiom.TV,
         "wearable" or "watch" => DeviceIdiom.Watch,
         "desktop" or "2in1" or "pc" => DeviceIdiom.Desktop,
-        _ => DeviceIdiom.Phone,
+        _ => DeviceIdiom.Unknown,
     };
-
-    public DeviceType DeviceType => IsEmulator() ? DeviceType.Virtual : DeviceType.Physical;
 
     internal static Version ParseOsVersion()
     {
@@ -56,5 +63,15 @@ public class HarmonyDeviceInfo : IDeviceInfo
                 return true;
         }
         return false;
+    }
+
+    private static bool IsKnownDeviceType()
+    {
+        return HDeviceInfo.DeviceType is
+            "phone" or "mobile" or
+            "tablet" or "tablet_pc" or
+            "tv" or "television" or
+            "wearable" or "watch" or
+            "desktop" or "2in1" or "pc";
     }
 }
