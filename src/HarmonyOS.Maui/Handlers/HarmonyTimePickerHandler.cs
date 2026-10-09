@@ -8,7 +8,8 @@ using MTimePicker = Microsoft.Maui.Controls.TimePicker;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonyTimePickerHandler : HarmonyViewHandler<MTimePicker, ArkTimePicker>
+public class HarmonyTimePickerHandler :
+    HarmonyViewHandler<MTimePicker, ArkTimePicker>, ITimePickerHandler
 {
     public static PropertyMapper<MTimePicker, HarmonyTimePickerHandler> Mapper = new(HarmonyViewMapper.Base)
     {
@@ -24,6 +25,10 @@ public class HarmonyTimePickerHandler : HarmonyViewHandler<MTimePicker, ArkTimeP
     };
 
     public HarmonyTimePickerHandler() : base(Mapper) { }
+
+    ITimePicker ITimePickerHandler.VirtualView => VirtualView;
+
+    object ITimePickerHandler.PlatformView => PlatformView;
 
     protected override ArkTimePicker CreatePlatformView() => new();
 

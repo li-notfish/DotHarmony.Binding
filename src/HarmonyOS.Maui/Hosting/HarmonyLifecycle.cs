@@ -1,12 +1,13 @@
 #nullable enable
+using System.Collections.Concurrent;
 using Microsoft.Maui.Controls;
 
 namespace HarmonyOS.Maui.Hosting;
 
 /// <summary>
-/// Bridges HarmonyOS ability lifecycle events to the current MAUI window.
-/// The controller is idempotent because ArkTS can deliver both
-/// onWindowStageDestroy and onDestroy for the same termination.
+/// Bridges HarmonyOS ability lifecycle events to a MAUI window.
+/// Controllers are keyed by abilityId so later hosts can support multiple
+/// abilities/windows without changing the notification contract again.
 /// </summary>
 internal sealed class HarmonyLifecycleController
 {
@@ -14,7 +15,10 @@ internal sealed class HarmonyLifecycleController
     internal const int Background = 2;
     internal const int Destroy = 3;
 
-    internal static HarmonyLifecycleController? Current { get; private set; }
+    private const long DefaultAbilityId = 0;
+    private static readonly ConcurrentDictionary<long, HarmonyLifecycleController> Controllers = new();
+
+    internal static HarmonyLifecycleController? Current => GetController(DefaultAbilityId);
 
     private static bool _pendingForeground;
 
@@ -28,31 +32,37 @@ internal sealed class HarmonyLifecycleController
 
     internal static void Reset()
     {
-        Current = null;
+        Controllers.Clear();
         _pendingForeground = false;
     }
 
-    internal static void Attach(Window window) => Current = new HarmonyLifecycleController(window);
-
-    internal static void Notify(int lifecycleEvent)
+    internal static void Attach(Window window, long abilityId = DefaultAbilityId)
     {
-        var current = Current;
+        var controller = new HarmonyLifecycleController(window);
+        Controllers[abilityId] = controller;
+    }
+
+    internal static HarmonyLifecycleController? GetController(long abilityId)
+        => Controllers.TryGetValue(abilityId, out var controller) ? controller : null;
+
+    internal static void Notify(int lifecycleEvent, long abilityId = DefaultAbilityId)
+    {
+        var current = GetController(abilityId);
         if (current is null)
         {
-            if (lifecycleEvent == Foreground)
+            if (abilityId == DefaultAbilityId && lifecycleEvent == Foreground)
             {
                 _pendingForeground = true;
                 Interop.HiLog.Info("HarmonyHost", "foreground received before MAUI window creation; deferred");
+                return;
             }
-            else if (lifecycleEvent == Background || lifecycleEvent == Destroy)
-            {
+
+            if (abilityId == DefaultAbilityId && lifecycleEvent is Background or Destroy)
                 _pendingForeground = false;
-                Interop.HiLog.Warn("HarmonyHost", $"lifecycle event {lifecycleEvent} received before MAUI window creation");
-            }
-            else
-            {
-                Interop.HiLog.Warn("HarmonyHost", $"lifecycle event {lifecycleEvent} received before MAUI window creation");
-            }
+
+            Interop.HiLog.Warn(
+                "HarmonyHost",
+                $"lifecycle event {lifecycleEvent} for ability {abilityId} received before MAUI window creation");
             return;
         }
 
@@ -109,6 +119,7 @@ internal sealed class HarmonyLifecycleController
         if (!_created || _destroyed || !_foregrounded)
             return;
 
+        ((Microsoft.Maui.IWindow)_window).Backgrounding(new Microsoft.Maui.PersistedState());
         if (_activated)
         {
             ((Microsoft.Maui.IWindow)_window).Deactivated();
@@ -116,7 +127,7 @@ internal sealed class HarmonyLifecycleController
         }
         ((Microsoft.Maui.IWindow)_window).Stopped();
         _foregrounded = false;
-        Interop.HiLog.Info("HarmonyHost", "MAUI lifecycle: Deactivated/Stopped");
+        Interop.HiLog.Info("HarmonyHost", "MAUI lifecycle: Backgrounding/Deactivated/Stopped");
     }
 
     private void DestroyCore()

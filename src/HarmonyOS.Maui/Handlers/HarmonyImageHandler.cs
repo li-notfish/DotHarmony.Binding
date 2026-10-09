@@ -1,4 +1,5 @@
 using Microsoft.Maui;
+using Microsoft.Maui.Platform;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
@@ -9,7 +10,7 @@ using MImage = Microsoft.Maui.IImage;
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Image 的 HarmonyOS Handler（ArkUI Image 节点）。</summary>
-public class HarmonyImageHandler : HarmonyViewHandler<MImage, ArkImage>
+public class HarmonyImageHandler : HarmonyViewHandler<MImage, ArkImage>, IImageHandler
 {
     public static PropertyMapper<MImage, HarmonyImageHandler> Mapper = new(HarmonyViewMapper.Base)
     {
@@ -22,6 +23,16 @@ public class HarmonyImageHandler : HarmonyViewHandler<MImage, ArkImage>
     };
 
     public HarmonyImageHandler() : base(Mapper) { }
+
+    Microsoft.Maui.IImage IImageHandler.VirtualView => VirtualView;
+
+    object IImageHandler.PlatformView => PlatformView;
+
+    private ImageSourcePartLoader? _sourceLoader;
+
+    ImageSourcePartLoader IImageHandler.SourceLoader =>
+        _sourceLoader ??= new ImageSourcePartLoader(
+            new HarmonyImageSourcePartSetter(this, _ => MapSource(this, VirtualView)));
 
     protected override ArkImage CreatePlatformView() => new();
 

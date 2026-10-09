@@ -8,7 +8,8 @@ using MDatePicker = Microsoft.Maui.Controls.DatePicker;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonyDatePickerHandler : HarmonyViewHandler<MDatePicker, ArkDatePicker>
+public class HarmonyDatePickerHandler :
+    HarmonyViewHandler<MDatePicker, ArkDatePicker>, IDatePickerHandler
 {
     public static PropertyMapper<MDatePicker, HarmonyDatePickerHandler> Mapper = new(HarmonyViewMapper.Base)
     {
@@ -26,6 +27,10 @@ public class HarmonyDatePickerHandler : HarmonyViewHandler<MDatePicker, ArkDateP
     };
 
     public HarmonyDatePickerHandler() : base(Mapper) { }
+
+    IDatePicker IDatePickerHandler.VirtualView => VirtualView;
+
+    object IDatePickerHandler.PlatformView => PlatformView;
 
     protected override ArkDatePicker CreatePlatformView() => new();
 

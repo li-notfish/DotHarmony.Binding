@@ -9,17 +9,23 @@ namespace HarmonyOS.Maui.Handlers;
 
 internal sealed class HarmonyXComponentHandler : HarmonyViewHandler<HarmonyXComponentView, ArkXComponent>
 {
+    private readonly ArkUI_XComponentType _type;
+
     public static PropertyMapper<HarmonyXComponentView, HarmonyXComponentHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(HarmonyXComponentView.XComponentId)] = MapXComponentId,
         [nameof(HarmonyXComponentView.Type)] = MapType,
     };
 
-    public HarmonyXComponentHandler() : base(Mapper) { }
+    public HarmonyXComponentHandler(ArkUI_XComponentType type = ArkUI_XComponentType.ARKUI_XCOMPONENT_TYPE_SURFACE)
+        : base(Mapper)
+    {
+        _type = type;
+    }
 
     protected override ArkXComponent CreatePlatformView()
     {
-        var node = new ArkXComponent();
+        var node = new ArkXComponent(_type);
         node.EnsureSurfaceCallbacks();
         return node;
     }
@@ -37,6 +43,7 @@ internal sealed class HarmonyXComponentHandler : HarmonyViewHandler<HarmonyXComp
         platformView.SurfaceCreated -= OnSurfaceCreated;
         platformView.SurfaceChanged -= OnSurfaceChanged;
         platformView.SurfaceDestroyed -= OnSurfaceDestroyed;
+        platformView.RemoveSurfaceCallbacks();
         base.DisconnectHandler(platformView);
     }
 
@@ -48,8 +55,12 @@ internal sealed class HarmonyXComponentHandler : HarmonyViewHandler<HarmonyXComp
 
     public static void MapType(HarmonyXComponentHandler handler, HarmonyXComponentView view)
     {
-        // ArkUI XComponent 的类型在节点创建时固定；这里仅保留 MAUI 侧状态。
-        HiLog.Debug("HarmonyHost", $"[XComponent] Type={view.Type}");
+        if (view.Type != handler._type)
+        {
+            HiLog.Warn(
+                "HarmonyHost",
+                $"[XComponent] runtime type change from {handler._type} to {view.Type} is ignored; ArkUI fixes XComponent type at creation");
+        }
     }
 
     private void OnSurfaceCreated(nint handle)

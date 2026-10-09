@@ -1,20 +1,20 @@
 using Microsoft.Maui;
+using Microsoft.Maui.Platform;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
 using HarmonyOS.ArkUI;
 using Button = Microsoft.Maui.Controls.Button;
 using ArkFlex = HarmonyOS.ArkUI.Flex;
-using ArkStack = HarmonyOS.ArkUI.Stack;
 using ArkText = HarmonyOS.ArkUI.Text;
 
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Button 的 HarmonyOS Handler。
 /// 实测当前 NDK 的 Button 节点两条文字路径均不可用：内建 NODE_BUTTON_LABEL 参与测量但不绘制
-/// （胶囊有形无字），AddChild 子 Text 不布局不渲染。因此用 Stack + 子 Text 组合实现，
+/// （胶囊有形无字），AddChild 子 Text 不布局不渲染。因此用 Flex + 子 Text 组合实现，
 /// 视觉默认值（胶囊圆角/主题蓝/白字/内边距）由 HarmonyControlDefaults 集中定义。</summary>
-public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkFlex>
+public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkFlex>, IButtonHandler
 {
     /// <summary>点击事件日志开关（插值分配走在调用点，仅在排障时打开）</summary>
     private static readonly bool LogClick = false;
@@ -46,8 +46,17 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkFlex>
     private ArkText? _label;
     private HarmonyOS.ArkUI.Image? _image;
     private NativeChildTracker<HarmonyOS.Bindings.NativeNode.ArkUINodeBase>? _childTracker;
+    private ImageSourcePartLoader? _imageSourceLoader;
 
     public HarmonyButtonHandler() : base(Mapper) { }
+
+    IButton IButtonHandler.VirtualView => VirtualView;
+
+    object IButtonHandler.PlatformView => PlatformView;
+
+    ImageSourcePartLoader IButtonHandler.ImageSourceLoader =>
+        _imageSourceLoader ??= new ImageSourcePartLoader(
+            new HarmonyImageSourcePartSetter(this, _ => MapImageSource(this, VirtualView)));
 
     protected override ArkFlex CreatePlatformView()
     {
@@ -66,7 +75,7 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkFlex>
         _label.FontSize = (float)HarmonyControlDefaults.ButtonFontSize;
         var tc = HarmonyControlDefaults.ButtonTextColor;
         _label.SetFontColor((byte)(tc.Red * 255), (byte)(tc.Green * 255), (byte)(tc.Blue * 255), (byte)(tc.Alpha * 255));
-        // 纯展示节点必须透传命中：否则子 Text 挡住点击，Stack 的 CLICK 永远不触发
+        // 纯展示节点必须透传命中：否则子 Text 挡住点击，Flex 的 CLICK 永远不触发
         _label.SetHitTestBehavior(ArkUI_HitTestMode.ARKUI_HIT_TEST_MODE_TRANSPARENT);
         _childTracker = new NativeChildTracker<HarmonyOS.Bindings.NativeNode.ArkUINodeBase>(
             flex.AddChild, flex.RemoveAllChildren);
@@ -130,7 +139,7 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkFlex>
 
     public static void MapContentLayout(HarmonyButtonHandler h, Button v)
     {
-        // Stack 只能按子节点顺序表达内容先后；左右/上下布局交由 ArkUI 自身排版。
+        // Flex 通过子节点顺序表达内容先后；左右/上下布局由 ArkUI 自身排版。
         if (h._image is null || h._label is null)
             return;
 

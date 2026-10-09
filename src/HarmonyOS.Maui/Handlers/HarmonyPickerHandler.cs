@@ -16,7 +16,7 @@ namespace HarmonyOS.Maui.Handlers;
 /// Picker → 触发文本 + 可显隐 TextPicker。
 /// 第 0 个原生选项是空哨兵，用来表达 MAUI SelectedIndex=-1 的“未选择”语义。
 /// </summary>
-public class HarmonyPickerHandler : HarmonyViewHandler<Picker, ArkColumn>
+public class HarmonyPickerHandler : HarmonyViewHandler<Picker, ArkColumn>, IPickerHandler
 {
     public static PropertyMapper<Picker, HarmonyPickerHandler> Mapper = new(HarmonyViewMapper.Base)
     {
@@ -40,6 +40,10 @@ public class HarmonyPickerHandler : HarmonyViewHandler<Picker, ArkColumn>
     private List<string> _items = new();
 
     public HarmonyPickerHandler() : base(Mapper) { }
+
+    IPicker IPickerHandler.VirtualView => VirtualView;
+
+    object IPickerHandler.PlatformView => PlatformView;
 
     protected override ArkColumn CreatePlatformView()
     {

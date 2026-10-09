@@ -135,7 +135,7 @@ public static class HarmonyHandlerFactory
         Microsoft.Maui.Controls.MenuFlyoutItem => new HarmonyMenuFlyoutItemHandler(),
         Microsoft.Maui.Controls.BoxView => new HarmonyBoxViewHandler(),
         Microsoft.Maui.Controls.GraphicsView => new HarmonyGraphicsViewHandler(),
-        HarmonyXComponentView => new HarmonyXComponentHandler(),
+        HarmonyXComponentView x => new HarmonyXComponentHandler(x.Type),
         Microsoft.Maui.Controls.Shapes.Shape => new HarmonyShapeHandler(),
         Microsoft.Maui.Controls.Layout => new HarmonyLayoutHandler(),
         _ => throw new NotSupportedException(

@@ -7,7 +7,7 @@ using ArkTextArea = HarmonyOS.ArkUI.TextArea;
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Editor 的 HarmonyOS Handler（ArkUI TextArea 节点）。FontSize 不在核心 IEditor 接口中。</summary>
-public class HarmonyEditorHandler : HarmonyViewHandler<Editor, ArkTextArea>
+public class HarmonyEditorHandler : HarmonyViewHandler<Editor, ArkTextArea>, IEditorHandler
 {
     public static PropertyMapper<Editor, HarmonyEditorHandler> Mapper = new(HarmonyViewMapper.Base)
     {
@@ -33,6 +33,10 @@ public class HarmonyEditorHandler : HarmonyViewHandler<Editor, ArkTextArea>
     };
 
     public HarmonyEditorHandler() : base(Mapper) { }
+
+    IEditor IEditorHandler.VirtualView => VirtualView;
+
+    object IEditorHandler.PlatformView => PlatformView;
 
     protected override ArkTextArea CreatePlatformView() => new();
 

@@ -156,7 +156,7 @@ public class HarmonyImageButtonHandler : HarmonyViewHandler<ImageButton, ArkStac
 
     protected override void DisconnectHandler(ArkStack platformView)
     {
-        platformView.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_CLICK);
+        platformView.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_CLICK, OnClick);
         base.DisconnectHandler(platformView);
     }
 

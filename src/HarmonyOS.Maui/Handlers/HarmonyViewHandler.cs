@@ -37,6 +37,7 @@ public abstract class HarmonyViewHandler<TVirtualView, TPlatformView> : ViewHand
             ApplyVisualSafe(() => ApplyTransform(v, platformView), v, "Transform");
             ApplyVisualSafe(() => ApplyPivot(v, platformView), v, "Anchor");
             ApplyVisualSafe(() => ApplyHitTestMode(v, platformView), v, "InputTransparent");
+            ApplyVisualSafe(() => HarmonySemanticMapper.Apply(v, platformView), v, "Semantics");
         }
     }
 
@@ -98,6 +99,8 @@ public abstract class HarmonyViewHandler<TVirtualView, TPlatformView> : ViewHand
         nameof(VisualElement.AnchorX),
         nameof(VisualElement.AnchorY),
         nameof(VisualElement.InputTransparent),
+        nameof(IView.AutomationId),
+        nameof(IView.Semantics),
     };
 
     public override void UpdateValue(string property)
@@ -136,6 +139,10 @@ public abstract class HarmonyViewHandler<TVirtualView, TPlatformView> : ViewHand
                         break;
                     case nameof(VisualElement.InputTransparent):
                         ApplyInputTransparent(v);
+                        break;
+                    case nameof(IView.AutomationId):
+                    case nameof(IView.Semantics):
+                        HarmonySemanticMapper.Apply(v, node);
                         break;
                 }
             }

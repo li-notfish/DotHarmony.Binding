@@ -15,6 +15,7 @@ public class HarmonyLifecycleTests
         window.Created += (_, _) => events.Add("Created");
         window.Resumed += (_, _) => events.Add("Resumed");
         window.Activated += (_, _) => events.Add("Activated");
+        window.Backgrounding += (_, _) => events.Add("Backgrounding");
         window.Deactivated += (_, _) => events.Add("Deactivated");
         window.Stopped += (_, _) => events.Add("Stopped");
         window.Destroying += (_, _) => events.Add("Destroying");
@@ -32,7 +33,7 @@ public class HarmonyLifecycleTests
         HarmonyLifecycleController.Notify(HarmonyLifecycleController.Destroy);
 
         Assert.Equal(
-            new[] { "Created", "Resumed", "Activated", "Deactivated", "Stopped", "Destroying" },
+            new[] { "Created", "Resumed", "Activated", "Backgrounding", "Deactivated", "Stopped", "Destroying" },
             events);
     }
 

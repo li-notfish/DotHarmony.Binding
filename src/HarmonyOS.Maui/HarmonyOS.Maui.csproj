@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!-- 纯 net10.0：MAUI Controls 的 netstandard 产物提供 VirtualView/Handler 基建，
          平台视图为本仓库 HarmonyOS.Bindings 的 ArkUINodeBase（NativeAOT 友好） -->
-    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <TargetFrameworks>$(HarmonyOSTargetFramework);$(HarmonyOSPlatformTargetFramework)</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -18,6 +18,10 @@
     <!-- NU5110/NU5111：harmonyos/scripts/ 下的 .ps1 是 targets 调用的编排脚本而非 NuGet 安装钩子；
          NU5128：包内同时携带 net10.0 lib 与 netstandard2.0 analyzer/lib 是既定混合布局。 -->
     <NoWarn>$(NoWarn);NU5110;NU5111;NU5128</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == '$(HarmonyOSPlatformTargetFramework)'">
+    <DefineConstants>$(DefineConstants);HARMONYOS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
