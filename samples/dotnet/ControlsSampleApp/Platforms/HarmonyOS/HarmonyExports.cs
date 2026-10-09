@@ -1,3 +1,5 @@
+// 平台启动代码：当前 OpenHarmony ILC 只导出入口程序集内的 [UnmanagedCallersOnly] 方法，
+// 因此每个 libapp.so 应用都需要这份薄转发层；真实实现见 HarmonyOS.Bindings/Hosting。
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using global::HarmonyOS.Bindings.Hosting;
