@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -69,17 +70,17 @@ public static unsafe partial class FormProvider
     /// <summary>
     /// setFormNextRefreshTime
     /// </summary>
-    public static Task SetFormNextRefreshTimeAsync(string formId, double minute)
+    public static Task SetFormNextRefreshTimeAsync(string formId, double minute, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setFormNextRefreshTime, formId, minute);
+        return NodeApi.CallMethodAsyncVoid(Module, _setFormNextRefreshTime, cancellationToken, formId, minute);
     }
 
     /// <summary>
     /// updateForm
     /// </summary>
-    public static Task UpdateFormAsync(string formId, IntPtr formBindingData)
+    public static Task UpdateFormAsync(string formId, IntPtr formBindingData, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateForm, formId, formBindingData);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateForm, cancellationToken, formId, formBindingData);
     }
 
 }

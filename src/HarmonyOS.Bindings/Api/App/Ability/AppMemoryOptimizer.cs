@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -69,17 +70,17 @@ public static unsafe partial class AppMemoryOptimizer
     /// <summary>
     /// evictFilePages
     /// </summary>
-    public static Task EvictFilePagesAsync(string[] fileNames)
+    public static Task EvictFilePagesAsync(string[] fileNames, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _evictFilePages, NapiArg.Of(fileNames));
+        return NodeApi.CallMethodAsyncVoid(Module, _evictFilePages, cancellationToken, NapiArg.Of(fileNames));
     }
 
     /// <summary>
     /// evictModuleFilePages
     /// </summary>
-    public static Task EvictModuleFilePagesAsync(string[] moduleNames)
+    public static Task EvictModuleFilePagesAsync(string[] moduleNames, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _evictModuleFilePages, NapiArg.Of(moduleNames));
+        return NodeApi.CallMethodAsyncVoid(Module, _evictModuleFilePages, cancellationToken, NapiArg.Of(moduleNames));
     }
 
 }

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -146,9 +147,9 @@ public static unsafe partial class BundleManager
     /// <summary>
     /// cleanBundleCacheFilesForSelf
     /// </summary>
-    public static Task CleanBundleCacheFilesForSelfAsync()
+    public static Task CleanBundleCacheFilesForSelfAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cleanBundleCacheFilesForSelf);
+        return NodeApi.CallMethodAsyncVoid(Module, _cleanBundleCacheFilesForSelf, cancellationToken);
     }
 
     /// <summary>
@@ -226,9 +227,9 @@ public static unsafe partial class BundleManager
     /// <summary>
     /// setAlternateIcon
     /// </summary>
-    public static Task SetAlternateIconAsync(string alternateIconName)
+    public static Task SetAlternateIconAsync(string alternateIconName, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setAlternateIcon, alternateIconName);
+        return NodeApi.CallMethodAsyncVoid(Module, _setAlternateIcon, cancellationToken, alternateIconName);
     }
 
     /// <summary>

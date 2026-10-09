@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -70,9 +71,9 @@ public static unsafe partial class Overlay
     /// <summary>
     /// setOverlayEnabled
     /// </summary>
-    public static Task SetOverlayEnabledAsync(string moduleName, bool isEnabled)
+    public static Task SetOverlayEnabledAsync(string moduleName, bool isEnabled, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setOverlayEnabled, moduleName, isEnabled);
+        return NodeApi.CallMethodAsyncVoid(Module, _setOverlayEnabled, cancellationToken, moduleName, isEnabled);
     }
 
     /// <summary>

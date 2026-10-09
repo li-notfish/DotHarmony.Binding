@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -74,33 +75,33 @@ public static unsafe partial class Fileshare
     /// <summary>
     /// persistPermission
     /// </summary>
-    public static Task PersistPermissionAsync(PolicyInfo[] policies)
+    public static Task PersistPermissionAsync(PolicyInfo[] policies, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _persistPermission, NapiArg.Of(policies));
+        return NodeApi.CallMethodAsyncVoid(Module, _persistPermission, cancellationToken, NapiArg.Of(policies));
     }
 
     /// <summary>
     /// revokePermission
     /// </summary>
-    public static Task RevokePermissionAsync(PolicyInfo[] policies)
+    public static Task RevokePermissionAsync(PolicyInfo[] policies, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _revokePermission, NapiArg.Of(policies));
+        return NodeApi.CallMethodAsyncVoid(Module, _revokePermission, cancellationToken, NapiArg.Of(policies));
     }
 
     /// <summary>
     /// activatePermission
     /// </summary>
-    public static Task ActivatePermissionAsync(PolicyInfo[] policies)
+    public static Task ActivatePermissionAsync(PolicyInfo[] policies, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _activatePermission, NapiArg.Of(policies));
+        return NodeApi.CallMethodAsyncVoid(Module, _activatePermission, cancellationToken, NapiArg.Of(policies));
     }
 
     /// <summary>
     /// deactivatePermission
     /// </summary>
-    public static Task DeactivatePermissionAsync(PolicyInfo[] policies)
+    public static Task DeactivatePermissionAsync(PolicyInfo[] policies, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deactivatePermission, NapiArg.Of(policies));
+        return NodeApi.CallMethodAsyncVoid(Module, _deactivatePermission, cancellationToken, NapiArg.Of(policies));
     }
 
     /// <summary>

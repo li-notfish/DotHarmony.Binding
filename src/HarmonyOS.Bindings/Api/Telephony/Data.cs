@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -186,9 +187,9 @@ public static unsafe partial class Data
     /// <summary>
     /// showSystemApnSettings
     /// </summary>
-    public static Task ShowSystemApnSettingsAsync(IntPtr context)
+    public static Task ShowSystemApnSettingsAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _showSystemApnSettings, context);
+        return NodeApi.CallMethodAsyncVoid(Module, _showSystemApnSettings, cancellationToken, context);
     }
 
 }

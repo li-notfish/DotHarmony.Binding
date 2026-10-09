@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -178,9 +179,9 @@ public static unsafe partial class InputDevice
     /// <summary>
     /// setFunctionKeyEnabled
     /// </summary>
-    public static Task SetFunctionKeyEnabledAsync(global::HarmonyOS.ArkUI.FunctionKey functionKey, bool enabled)
+    public static Task SetFunctionKeyEnabledAsync(global::HarmonyOS.ArkUI.FunctionKey functionKey, bool enabled, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setFunctionKeyEnabled, (int)functionKey, enabled);
+        return NodeApi.CallMethodAsyncVoid(Module, _setFunctionKeyEnabled, cancellationToken, (int)functionKey, enabled);
     }
 
     /// <summary>

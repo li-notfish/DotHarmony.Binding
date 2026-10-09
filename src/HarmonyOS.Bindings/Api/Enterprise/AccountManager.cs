@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -124,17 +125,17 @@ public static unsafe partial class AccountManager
     /// <summary>
     /// removeOsAccount
     /// </summary>
-    public static Task RemoveOsAccountAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
+    public static Task RemoveOsAccountAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeOsAccount, NapiArg.Of(admin), accountId);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeOsAccount, cancellationToken, NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
     /// activateOsAccount
     /// </summary>
-    public static Task ActivateOsAccountAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
+    public static Task ActivateOsAccountAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _activateOsAccount, NapiArg.Of(admin), accountId);
+        return NodeApi.CallMethodAsyncVoid(Module, _activateOsAccount, cancellationToken, NapiArg.Of(admin), accountId);
     }
 
 }

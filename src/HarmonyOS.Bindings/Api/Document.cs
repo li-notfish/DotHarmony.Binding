@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -85,9 +86,9 @@ public static unsafe partial class Document
     /// <summary>
     /// show
     /// </summary>
-    public static Task ShowAsync(string uri, string type)
+    public static Task ShowAsync(string uri, string type, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _show, uri, type);
+        return NodeApi.CallMethodAsyncVoid(Module, _show, cancellationToken, uri, type);
     }
 
 }

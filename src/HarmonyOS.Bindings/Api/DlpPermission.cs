@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -157,17 +158,17 @@ public static unsafe partial class DlpPermission
     /// <summary>
     /// setRetentionState
     /// </summary>
-    public static Task SetRetentionStateAsync(string[] docUris)
+    public static Task SetRetentionStateAsync(string[] docUris, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setRetentionState, NapiArg.Of(docUris));
+        return NodeApi.CallMethodAsyncVoid(Module, _setRetentionState, cancellationToken, NapiArg.Of(docUris));
     }
 
     /// <summary>
     /// cancelRetentionState
     /// </summary>
-    public static Task CancelRetentionStateAsync(string[] docUris)
+    public static Task CancelRetentionStateAsync(string[] docUris, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancelRetentionState, NapiArg.Of(docUris));
+        return NodeApi.CallMethodAsyncVoid(Module, _cancelRetentionState, cancellationToken, NapiArg.Of(docUris));
     }
 
     /// <summary>
@@ -205,17 +206,17 @@ public static unsafe partial class DlpPermission
     /// <summary>
     /// setSandboxAppConfig
     /// </summary>
-    public static Task SetSandboxAppConfigAsync(string configInfo)
+    public static Task SetSandboxAppConfigAsync(string configInfo, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setSandboxAppConfig, configInfo);
+        return NodeApi.CallMethodAsyncVoid(Module, _setSandboxAppConfig, cancellationToken, configInfo);
     }
 
     /// <summary>
     /// cleanSandboxAppConfig
     /// </summary>
-    public static Task CleanSandboxAppConfigAsync()
+    public static Task CleanSandboxAppConfigAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cleanSandboxAppConfig);
+        return NodeApi.CallMethodAsyncVoid(Module, _cleanSandboxAppConfig, cancellationToken);
     }
 
     /// <summary>
@@ -237,9 +238,9 @@ public static unsafe partial class DlpPermission
     /// <summary>
     /// generateDlpFileForEnterprise
     /// </summary>
-    public static Task GenerateDlpFileForEnterpriseAsync(double plaintextFd, double dlpFd, IntPtr property, CustomProperty customProperty)
+    public static Task GenerateDlpFileForEnterpriseAsync(double plaintextFd, double dlpFd, IntPtr property, CustomProperty customProperty, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _generateDlpFileForEnterprise, plaintextFd, dlpFd, property, NapiArg.Of(customProperty));
+        return NodeApi.CallMethodAsyncVoid(Module, _generateDlpFileForEnterprise, cancellationToken, plaintextFd, dlpFd, property, NapiArg.Of(customProperty));
     }
 
     /// <summary>
@@ -253,9 +254,9 @@ public static unsafe partial class DlpPermission
     /// <summary>
     /// decryptDlpFile
     /// </summary>
-    public static Task DecryptDlpFileAsync(double dlpFd, double plaintextFd)
+    public static Task DecryptDlpFileAsync(double dlpFd, double plaintextFd, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _decryptDlpFile, dlpFd, plaintextFd);
+        return NodeApi.CallMethodAsyncVoid(Module, _decryptDlpFile, cancellationToken, dlpFd, plaintextFd);
     }
 
     /// <summary>
@@ -277,17 +278,17 @@ public static unsafe partial class DlpPermission
     /// <summary>
     /// closeOpenedEnterpriseDlpFiles
     /// </summary>
-    public static Task CloseOpenedEnterpriseDlpFilesAsync(DlpFileQueryOptions? options = null)
+    public static Task CloseOpenedEnterpriseDlpFilesAsync(DlpFileQueryOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _closeOpenedEnterpriseDlpFiles, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _closeOpenedEnterpriseDlpFiles, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
     /// setControlledAppLists
     /// </summary>
-    public static Task SetControlledAppListsAsync(string[] appLists, double? userId = null)
+    public static Task SetControlledAppListsAsync(string[] appLists, double? userId = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setControlledAppLists, NapiArg.Of(appLists), NapiArg.Of(userId));
+        return NodeApi.CallMethodAsyncVoid(Module, _setControlledAppLists, cancellationToken, NapiArg.Of(appLists), NapiArg.Of(userId));
     }
 
     /// <summary>

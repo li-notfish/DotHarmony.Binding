@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -75,9 +76,9 @@ public static unsafe partial class CertManagerDialog
     /// <summary>
     /// openCertificateManagerDialog
     /// </summary>
-    public static Task OpenCertificateManagerDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateDialogPageType pageType)
+    public static Task OpenCertificateManagerDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateDialogPageType pageType, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openCertificateManagerDialog, context, (int)pageType);
+        return NodeApi.CallMethodAsyncVoid(Module, _openCertificateManagerDialog, cancellationToken, context, (int)pageType);
     }
 
     /// <summary>
@@ -99,17 +100,17 @@ public static unsafe partial class CertManagerDialog
     /// <summary>
     /// openCertificateDetailDialog
     /// </summary>
-    public static Task OpenCertificateDetailDialogAsync(IntPtr context, byte[] cert, CertificateDialogProperty property)
+    public static Task OpenCertificateDetailDialogAsync(IntPtr context, byte[] cert, CertificateDialogProperty property, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openCertificateDetailDialog, context, NapiArg.Of(cert), NapiArg.Of(property));
+        return NodeApi.CallMethodAsyncVoid(Module, _openCertificateDetailDialog, cancellationToken, context, NapiArg.Of(cert), NapiArg.Of(property));
     }
 
     /// <summary>
     /// openUninstallCertificateDialog
     /// </summary>
-    public static Task OpenUninstallCertificateDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateType certType, string certUri)
+    public static Task OpenUninstallCertificateDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateType certType, string certUri, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openUninstallCertificateDialog, context, (int)certType, certUri);
+        return NodeApi.CallMethodAsyncVoid(Module, _openUninstallCertificateDialog, cancellationToken, context, (int)certType, certUri);
     }
 
     /// <summary>
@@ -123,9 +124,9 @@ public static unsafe partial class CertManagerDialog
     /// <summary>
     /// openUkeyAuthDialog
     /// </summary>
-    public static Task OpenUkeyAuthDialogAsync(IntPtr context, UkeyAuthRequest ukeyAuthRequest)
+    public static Task OpenUkeyAuthDialogAsync(IntPtr context, UkeyAuthRequest ukeyAuthRequest, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openUkeyAuthDialog, context, NapiArg.Of(ukeyAuthRequest));
+        return NodeApi.CallMethodAsyncVoid(Module, _openUkeyAuthDialog, cancellationToken, context, NapiArg.Of(ukeyAuthRequest));
     }
 
     /// <summary>

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -406,17 +407,17 @@ public sealed partial class HttpResponseCache : JsObject
     /// <summary>
     /// flush
     /// </summary>
-    public Task FlushAsync()
+    public Task FlushAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_flush);
+        return CallMethodAsyncVoid(_flush, cancellationToken);
     }
 
     /// <summary>
     /// delete
     /// </summary>
-    public Task DeleteAsync()
+    public Task DeleteAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_delete);
+        return CallMethodAsyncVoid(_delete, cancellationToken);
     }
 
 }

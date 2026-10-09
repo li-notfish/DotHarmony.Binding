@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -154,9 +155,9 @@ public sealed partial class AudioManager : JsObject
     /// <summary>
     /// setVolume
     /// </summary>
-    public Task SetVolumeAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType, double volume)
+    public Task SetVolumeAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType, double volume, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setVolume, (int)volumeType, volume);
+        return CallMethodAsyncVoid(_setVolume, cancellationToken, (int)volumeType, volume);
     }
 
     /// <summary>
@@ -194,9 +195,9 @@ public sealed partial class AudioManager : JsObject
     /// <summary>
     /// mute
     /// </summary>
-    public Task MuteAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType, bool mute)
+    public Task MuteAsync(global::HarmonyOS.ArkUI.AudioVolumeType volumeType, bool mute, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_mute, (int)volumeType, mute);
+        return CallMethodAsyncVoid(_mute, cancellationToken, (int)volumeType, mute);
     }
 
     /// <summary>
@@ -218,9 +219,9 @@ public sealed partial class AudioManager : JsObject
     /// <summary>
     /// setMicrophoneMute
     /// </summary>
-    public Task SetMicrophoneMuteAsync(bool mute)
+    public Task SetMicrophoneMuteAsync(bool mute, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMicrophoneMute, mute);
+        return CallMethodAsyncVoid(_setMicrophoneMute, cancellationToken, mute);
     }
 
     /// <summary>
@@ -234,9 +235,9 @@ public sealed partial class AudioManager : JsObject
     /// <summary>
     /// setRingerMode
     /// </summary>
-    public Task SetRingerModeAsync(global::HarmonyOS.ArkUI.AudioRingMode mode)
+    public Task SetRingerModeAsync(global::HarmonyOS.ArkUI.AudioRingMode mode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setRingerMode, (int)mode);
+        return CallMethodAsyncVoid(_setRingerMode, cancellationToken, (int)mode);
     }
 
     /// <summary>
@@ -250,9 +251,9 @@ public sealed partial class AudioManager : JsObject
     /// <summary>
     /// setAudioParameter
     /// </summary>
-    public Task SetAudioParameterAsync(string key, string value)
+    public Task SetAudioParameterAsync(string key, string value, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setAudioParameter, key, value);
+        return CallMethodAsyncVoid(_setAudioParameter, cancellationToken, key, value);
     }
 
     /// <summary>
@@ -266,9 +267,9 @@ public sealed partial class AudioManager : JsObject
     /// <summary>
     /// setDeviceActive
     /// </summary>
-    public Task SetDeviceActiveAsync(global::HarmonyOS.ArkUI.ActiveDeviceType deviceType, bool active)
+    public Task SetDeviceActiveAsync(global::HarmonyOS.ArkUI.ActiveDeviceType deviceType, bool active, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDeviceActive, (int)deviceType, active);
+        return CallMethodAsyncVoid(_setDeviceActive, cancellationToken, (int)deviceType, active);
     }
 
     /// <summary>
@@ -601,9 +602,9 @@ public sealed partial class AudioCapturer : JsObject
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
@@ -657,17 +658,17 @@ public sealed partial class AudioCapturer : JsObject
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -721,17 +722,17 @@ public sealed partial class AudioCapturer : JsObject
     /// <summary>
     /// setWillMuteWhenInterrupted
     /// </summary>
-    public Task SetWillMuteWhenInterruptedAsync(bool muteWhenInterrupted)
+    public Task SetWillMuteWhenInterruptedAsync(bool muteWhenInterrupted, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWillMuteWhenInterrupted, muteWhenInterrupted);
+        return CallMethodAsyncVoid(_setWillMuteWhenInterrupted, cancellationToken, muteWhenInterrupted);
     }
 
     /// <summary>
     /// setMuteHint
     /// </summary>
-    public Task SetMuteHintAsync(bool mute)
+    public Task SetMuteHintAsync(bool mute, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMuteHint, mute);
+        return CallMethodAsyncVoid(_setMuteHint, cancellationToken, mute);
     }
 
     /// <summary>
@@ -1163,17 +1164,17 @@ public sealed partial class AudioRenderer : JsObject
     /// <summary>
     /// setAudioEffectMode
     /// </summary>
-    public Task SetAudioEffectModeAsync(global::HarmonyOS.ArkUI.AudioEffectMode mode)
+    public Task SetAudioEffectModeAsync(global::HarmonyOS.ArkUI.AudioEffectMode mode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setAudioEffectMode, (int)mode);
+        return CallMethodAsyncVoid(_setAudioEffectMode, cancellationToken, (int)mode);
     }
 
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
@@ -1219,41 +1220,41 @@ public sealed partial class AudioRenderer : JsObject
     /// <summary>
     /// drain
     /// </summary>
-    public Task DrainAsync()
+    public Task DrainAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_drain);
+        return CallMethodAsyncVoid(_drain, cancellationToken);
     }
 
     /// <summary>
     /// flush
     /// </summary>
-    public Task FlushAsync()
+    public Task FlushAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_flush);
+        return CallMethodAsyncVoid(_flush, cancellationToken);
     }
 
     /// <summary>
     /// pause
     /// </summary>
-    public Task PauseAsync()
+    public Task PauseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pause);
+        return CallMethodAsyncVoid(_pause, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -1275,9 +1276,9 @@ public sealed partial class AudioRenderer : JsObject
     /// <summary>
     /// setRenderRate
     /// </summary>
-    public Task SetRenderRateAsync(global::HarmonyOS.ArkUI.AudioRendererRate rate)
+    public Task SetRenderRateAsync(global::HarmonyOS.ArkUI.AudioRendererRate rate, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setRenderRate, (int)rate);
+        return CallMethodAsyncVoid(_setRenderRate, cancellationToken, (int)rate);
     }
 
     /// <summary>
@@ -1315,9 +1316,9 @@ public sealed partial class AudioRenderer : JsObject
     /// <summary>
     /// setInterruptMode
     /// </summary>
-    public Task SetInterruptModeAsync(global::HarmonyOS.ArkUI.InterruptMode mode)
+    public Task SetInterruptModeAsync(global::HarmonyOS.ArkUI.InterruptMode mode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setInterruptMode, (int)mode);
+        return CallMethodAsyncVoid(_setInterruptMode, cancellationToken, (int)mode);
     }
 
     /// <summary>
@@ -1331,9 +1332,9 @@ public sealed partial class AudioRenderer : JsObject
     /// <summary>
     /// setVolume
     /// </summary>
-    public Task SetVolumeAsync(double volume)
+    public Task SetVolumeAsync(double volume, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setVolume, volume);
+        return CallMethodAsyncVoid(_setVolume, cancellationToken, volume);
     }
 
     /// <summary>
@@ -1443,17 +1444,17 @@ public sealed partial class AudioRenderer : JsObject
     /// <summary>
     /// setDefaultOutputDevice
     /// </summary>
-    public Task SetDefaultOutputDeviceAsync(global::HarmonyOS.ArkUI.DeviceType deviceType)
+    public Task SetDefaultOutputDeviceAsync(global::HarmonyOS.ArkUI.DeviceType deviceType, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDefaultOutputDevice, (int)deviceType);
+        return CallMethodAsyncVoid(_setDefaultOutputDevice, cancellationToken, (int)deviceType);
     }
 
     /// <summary>
     /// setLoudnessGain
     /// </summary>
-    public Task SetLoudnessGainAsync(double loudnessGain)
+    public Task SetLoudnessGainAsync(double loudnessGain, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setLoudnessGain, loudnessGain);
+        return CallMethodAsyncVoid(_setLoudnessGain, cancellationToken, loudnessGain);
     }
 
     /// <summary>
@@ -1781,9 +1782,9 @@ public sealed partial class AudioLoopback : JsObject
     /// <summary>
     /// setVolume
     /// </summary>
-    public Task SetVolumeAsync(double volume)
+    public Task SetVolumeAsync(double volume, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setVolume, volume);
+        return CallMethodAsyncVoid(_setVolume, cancellationToken, volume);
     }
 
     /// <summary>
@@ -2156,9 +2157,9 @@ public sealed partial class AudioVolumeManager : JsObject
     /// <summary>
     /// setAppVolumePercentage
     /// </summary>
-    public Task SetAppVolumePercentageAsync(double volume)
+    public Task SetAppVolumePercentageAsync(double volume, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setAppVolumePercentage, volume);
+        return CallMethodAsyncVoid(_setAppVolumePercentage, cancellationToken, volume);
     }
 
     /// <summary>
@@ -2647,9 +2648,9 @@ public sealed partial class AudioRoutingManager : JsObject
     /// <summary>
     /// setCommunicationDevice
     /// </summary>
-    public Task SetCommunicationDeviceAsync(global::HarmonyOS.ArkUI.CommunicationDeviceType deviceType, bool active)
+    public Task SetCommunicationDeviceAsync(global::HarmonyOS.ArkUI.CommunicationDeviceType deviceType, bool active, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setCommunicationDevice, (int)deviceType, active);
+        return CallMethodAsyncVoid(_setCommunicationDevice, cancellationToken, (int)deviceType, active);
     }
 
     /// <summary>
@@ -2924,17 +2925,17 @@ public sealed partial class AudioSessionManager : JsObject
     /// <summary>
     /// activateAudioSession
     /// </summary>
-    public Task ActivateAudioSessionAsync(AudioSessionStrategy strategy)
+    public Task ActivateAudioSessionAsync(AudioSessionStrategy strategy, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_activateAudioSession, NapiArg.Of(strategy));
+        return CallMethodAsyncVoid(_activateAudioSession, cancellationToken, NapiArg.Of(strategy));
     }
 
     /// <summary>
     /// deactivateAudioSession
     /// </summary>
-    public Task DeactivateAudioSessionAsync()
+    public Task DeactivateAudioSessionAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_deactivateAudioSession);
+        return CallMethodAsyncVoid(_deactivateAudioSession, cancellationToken);
     }
 
     /// <summary>
@@ -2972,9 +2973,9 @@ public sealed partial class AudioSessionManager : JsObject
     /// <summary>
     /// setCapturerMuteHint
     /// </summary>
-    public Task SetCapturerMuteHintAsync(bool mute)
+    public Task SetCapturerMuteHintAsync(bool mute, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setCapturerMuteHint, mute);
+        return CallMethodAsyncVoid(_setCapturerMuteHint, cancellationToken, mute);
     }
 
     /// <summary>
@@ -2988,17 +2989,17 @@ public sealed partial class AudioSessionManager : JsObject
     /// <summary>
     /// setDefaultOutputDevice
     /// </summary>
-    public Task SetDefaultOutputDeviceAsync(global::HarmonyOS.ArkUI.DeviceType deviceType)
+    public Task SetDefaultOutputDeviceAsync(global::HarmonyOS.ArkUI.DeviceType deviceType, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDefaultOutputDevice, (int)deviceType);
+        return CallMethodAsyncVoid(_setDefaultOutputDevice, cancellationToken, (int)deviceType);
     }
 
     /// <summary>
     /// setMediaOutputDevice
     /// </summary>
-    public Task SetMediaOutputDeviceAsync(global::HarmonyOS.ArkUI.DeviceType deviceType)
+    public Task SetMediaOutputDeviceAsync(global::HarmonyOS.ArkUI.DeviceType deviceType, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMediaOutputDevice, (int)deviceType);
+        return CallMethodAsyncVoid(_setMediaOutputDevice, cancellationToken, (int)deviceType);
     }
 
     /// <summary>
@@ -3020,9 +3021,9 @@ public sealed partial class AudioSessionManager : JsObject
     /// <summary>
     /// selectMediaInputDevice
     /// </summary>
-    public Task SelectMediaInputDeviceAsync(IntPtr inputAudioDevice)
+    public Task SelectMediaInputDeviceAsync(IntPtr inputAudioDevice, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_selectMediaInputDevice, inputAudioDevice);
+        return CallMethodAsyncVoid(_selectMediaInputDevice, cancellationToken, inputAudioDevice);
     }
 
     /// <summary>
@@ -3036,17 +3037,17 @@ public sealed partial class AudioSessionManager : JsObject
     /// <summary>
     /// clearSelectedMediaInputDevice
     /// </summary>
-    public Task ClearSelectedMediaInputDeviceAsync()
+    public Task ClearSelectedMediaInputDeviceAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_clearSelectedMediaInputDevice);
+        return CallMethodAsyncVoid(_clearSelectedMediaInputDevice, cancellationToken);
     }
 
     /// <summary>
     /// setBluetoothAndNearlinkPreferredRecordCategory
     /// </summary>
-    public Task SetBluetoothAndNearlinkPreferredRecordCategoryAsync(global::HarmonyOS.ArkUI.BluetoothAndNearlinkPreferredRecordCategory category)
+    public Task SetBluetoothAndNearlinkPreferredRecordCategoryAsync(global::HarmonyOS.ArkUI.BluetoothAndNearlinkPreferredRecordCategory category, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setBluetoothAndNearlinkPreferredRecordCategory, (int)category);
+        return CallMethodAsyncVoid(_setBluetoothAndNearlinkPreferredRecordCategory, cancellationToken, (int)category);
     }
 
     /// <summary>
@@ -3346,33 +3347,33 @@ public sealed partial class AudioDeviceEnhanceManager : JsObject
     /// <summary>
     /// selectOutputDevice
     /// </summary>
-    public Task SelectOutputDeviceAsync(IntPtr outputDevice)
+    public Task SelectOutputDeviceAsync(IntPtr outputDevice, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_selectOutputDevice, outputDevice);
+        return CallMethodAsyncVoid(_selectOutputDevice, cancellationToken, outputDevice);
     }
 
     /// <summary>
     /// selectInputDevice
     /// </summary>
-    public Task SelectInputDeviceAsync(IntPtr inputDevice)
+    public Task SelectInputDeviceAsync(IntPtr inputDevice, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_selectInputDevice, inputDevice);
+        return CallMethodAsyncVoid(_selectInputDevice, cancellationToken, inputDevice);
     }
 
     /// <summary>
     /// selectOutputDeviceForAudioRenderer
     /// </summary>
-    public Task SelectOutputDeviceForAudioRendererAsync(AudioRenderer renderer, IntPtr outputDevice)
+    public Task SelectOutputDeviceForAudioRendererAsync(AudioRenderer renderer, IntPtr outputDevice, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_selectOutputDeviceForAudioRenderer, NapiArg.Of(renderer), outputDevice);
+        return CallMethodAsyncVoid(_selectOutputDeviceForAudioRenderer, cancellationToken, NapiArg.Of(renderer), outputDevice);
     }
 
     /// <summary>
     /// selectInputDeviceForAudioCapturer
     /// </summary>
-    public Task SelectInputDeviceForAudioCapturerAsync(AudioCapturer capturer, IntPtr inputDevice)
+    public Task SelectInputDeviceForAudioCapturerAsync(AudioCapturer capturer, IntPtr inputDevice, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_selectInputDeviceForAudioCapturer, NapiArg.Of(capturer), inputDevice);
+        return CallMethodAsyncVoid(_selectInputDeviceForAudioCapturer, cancellationToken, NapiArg.Of(capturer), inputDevice);
     }
 
 }
@@ -3442,9 +3443,9 @@ public sealed partial class AudioRecordingManager : JsObject
     /// <summary>
     /// enableSystemRecordController
     /// </summary>
-    public Task EnableSystemRecordControllerAsync(bool show, SystemRecordControllerConfig config)
+    public Task EnableSystemRecordControllerAsync(bool show, SystemRecordControllerConfig config, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_enableSystemRecordController, show, NapiArg.Of(config));
+        return CallMethodAsyncVoid(_enableSystemRecordController, cancellationToken, show, NapiArg.Of(config));
     }
 
 }
@@ -3720,9 +3721,9 @@ public sealed partial class AudioVolumeGroupManager : JsObject
     /// <summary>
     /// setMicrophoneMute
     /// </summary>
-    public Task SetMicrophoneMuteAsync(bool mute)
+    public Task SetMicrophoneMuteAsync(bool mute, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMicrophoneMute, mute);
+        return CallMethodAsyncVoid(_setMicrophoneMute, cancellationToken, mute);
     }
 
     /// <summary>

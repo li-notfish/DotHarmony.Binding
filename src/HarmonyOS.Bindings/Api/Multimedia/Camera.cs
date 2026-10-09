@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -561,9 +562,9 @@ public sealed partial class Photo : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
 }
@@ -696,9 +697,9 @@ public sealed partial class CameraInput : JsObject
     /// <summary>
     /// open
     /// </summary>
-    public Task OpenAsync()
+    public Task OpenAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_open);
+        return CallMethodAsyncVoid(_open, cancellationToken);
     }
 
     /// <summary>
@@ -712,9 +713,9 @@ public sealed partial class CameraInput : JsObject
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -776,9 +777,9 @@ public sealed partial class CameraInput : JsObject
     /// <summary>
     /// open
     /// </summary>
-    public Task OpenAsync(global::HarmonyOS.ArkUI.CameraConcurrentType type)
+    public Task OpenAsync(global::HarmonyOS.ArkUI.CameraConcurrentType type, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_open, (int)type);
+        return CallMethodAsyncVoid(_open, cancellationToken, (int)type);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -889,25 +890,25 @@ public sealed partial class PreviewOutput : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
@@ -1144,25 +1145,25 @@ public sealed partial class PhotoOutput : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
     /// capture
     /// </summary>
-    public Task CaptureAsync()
+    public Task CaptureAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_capture);
+        return CallMethodAsyncVoid(_capture, cancellationToken);
     }
 
     /// <summary>
     /// capture
     /// </summary>
-    public Task CaptureAsync(PhotoCaptureSetting setting)
+    public Task CaptureAsync(PhotoCaptureSetting setting, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_capture, NapiArg.Of(setting));
+        return CallMethodAsyncVoid(_capture, cancellationToken, NapiArg.Of(setting));
     }
 
     /// <summary>
@@ -1641,25 +1642,25 @@ public sealed partial class VideoOutput : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
@@ -1862,25 +1863,25 @@ public sealed partial class MetadataOutput : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
@@ -2074,9 +2075,9 @@ public sealed partial class CaptureSession : JsObject
     /// <summary>
     /// commitConfig
     /// </summary>
-    public Task CommitConfigAsync()
+    public Task CommitConfigAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_commitConfig);
+        return CallMethodAsyncVoid(_commitConfig, cancellationToken);
     }
 
     /// <summary>
@@ -2114,25 +2115,25 @@ public sealed partial class CaptureSession : JsObject
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -2571,9 +2572,9 @@ public sealed partial class CameraOutput : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
 }

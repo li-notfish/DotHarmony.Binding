@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -71,17 +72,17 @@ public static unsafe partial class Prefetcher
     /// <summary>
     /// prefetch
     /// </summary>
-    public static Task PrefetchAsync(double index)
+    public static Task PrefetchAsync(double index, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _prefetch, index);
+        return NodeApi.CallMethodAsyncVoid(Module, _prefetch, cancellationToken, index);
     }
 
     /// <summary>
     /// cancel
     /// </summary>
-    public static Task CancelAsync(double index)
+    public static Task CancelAsync(double index, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancel, index);
+        return NodeApi.CallMethodAsyncVoid(Module, _cancel, cancellationToken, index);
     }
 
     /// <summary>
@@ -146,17 +147,17 @@ public sealed partial class IDataSourcePrefetching : JsObject
     /// <summary>
     /// prefetch
     /// </summary>
-    public Task PrefetchAsync(double index)
+    public Task PrefetchAsync(double index, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_prefetch, index);
+        return CallMethodAsyncVoid(_prefetch, cancellationToken, index);
     }
 
     /// <summary>
     /// cancel
     /// </summary>
-    public Task CancelAsync(double index)
+    public Task CancelAsync(double index, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_cancel, index);
+        return CallMethodAsyncVoid(_cancel, cancellationToken, index);
     }
 
 }

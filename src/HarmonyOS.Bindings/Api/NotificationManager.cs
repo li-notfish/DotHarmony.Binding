@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -90,41 +91,41 @@ public static unsafe partial class NotificationManager
     /// <summary>
     /// publish
     /// </summary>
-    public static Task PublishAsync(IntPtr request)
+    public static Task PublishAsync(IntPtr request, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _publish, request);
+        return NodeApi.CallMethodAsyncVoid(Module, _publish, cancellationToken, request);
     }
 
     /// <summary>
     /// cancel
     /// </summary>
-    public static Task CancelAsync(double id)
+    public static Task CancelAsync(double id, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _cancel, id);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _cancel, cancellationToken, id);
     }
 
     /// <summary>
     /// cancel
     /// </summary>
-    public static Task CancelAsync(double id, string label)
+    public static Task CancelAsync(double id, string label, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancel, id, label);
+        return NodeApi.CallMethodAsyncVoid(Module, _cancel, cancellationToken, id, label);
     }
 
     /// <summary>
     /// cancelAll
     /// </summary>
-    public static Task CancelAllAsync()
+    public static Task CancelAllAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancelAll);
+        return NodeApi.CallMethodAsyncVoid(Module, _cancelAll, cancellationToken);
     }
 
     /// <summary>
     /// addSlot
     /// </summary>
-    public static Task AddSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType type)
+    public static Task AddSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType type, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _addSlot, (int)type);
+        return NodeApi.CallMethodAsyncVoid(Module, _addSlot, cancellationToken, (int)type);
     }
 
     /// <summary>
@@ -146,17 +147,17 @@ public static unsafe partial class NotificationManager
     /// <summary>
     /// removeSlot
     /// </summary>
-    public static Task RemoveSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType slotType)
+    public static Task RemoveSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType slotType, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeSlot, (int)slotType);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeSlot, cancellationToken, (int)slotType);
     }
 
     /// <summary>
     /// removeAllSlots
     /// </summary>
-    public static Task RemoveAllSlotsAsync()
+    public static Task RemoveAllSlotsAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeAllSlots);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeAllSlots, cancellationToken);
     }
 
     /// <summary>
@@ -202,9 +203,9 @@ public static unsafe partial class NotificationManager
     /// <summary>
     /// cancelGroup
     /// </summary>
-    public static Task CancelGroupAsync(string groupName)
+    public static Task CancelGroupAsync(string groupName, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancelGroup, groupName);
+        return NodeApi.CallMethodAsyncVoid(Module, _cancelGroup, cancellationToken, groupName);
     }
 
     /// <summary>
@@ -218,17 +219,17 @@ public static unsafe partial class NotificationManager
     /// <summary>
     /// requestEnableNotification
     /// </summary>
-    public static Task RequestEnableNotificationAsync()
+    public static Task RequestEnableNotificationAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _requestEnableNotification);
+        return NodeApi.CallMethodAsyncVoid(Module, _requestEnableNotification, cancellationToken);
     }
 
     /// <summary>
     /// requestEnableNotification
     /// </summary>
-    public static Task RequestEnableNotificationAsync(IntPtr context)
+    public static Task RequestEnableNotificationAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _requestEnableNotification, context);
+        return NodeApi.CallMethodAsyncVoid(Module, _requestEnableNotification, cancellationToken, context);
     }
 
     /// <summary>
@@ -242,9 +243,9 @@ public static unsafe partial class NotificationManager
     /// <summary>
     /// setBadgeNumber
     /// </summary>
-    public static Task SetBadgeNumberAsync(double badgeNumber)
+    public static Task SetBadgeNumberAsync(double badgeNumber, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setBadgeNumber, badgeNumber);
+        return NodeApi.CallMethodAsyncVoid(Module, _setBadgeNumber, cancellationToken, badgeNumber);
     }
 
     /// <summary>
@@ -258,9 +259,9 @@ public static unsafe partial class NotificationManager
     /// <summary>
     /// openNotificationSettings
     /// </summary>
-    public static Task OpenNotificationSettingsAsync(IntPtr context)
+    public static Task OpenNotificationSettingsAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openNotificationSettings, context);
+        return NodeApi.CallMethodAsyncVoid(Module, _openNotificationSettings, cancellationToken, context);
     }
 
     /// <summary>

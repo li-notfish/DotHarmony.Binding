@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -77,17 +78,17 @@ public static unsafe partial class InputMethodExtensionContext
     /// <summary>
     /// destroy
     /// </summary>
-    public static Task DestroyAsync()
+    public static Task DestroyAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _destroy);
+        return NodeApi.CallMethodAsyncVoid(Module, _destroy, cancellationToken);
     }
 
     /// <summary>
     /// startAbility
     /// </summary>
-    public static Task StartAbilityAsync(IntPtr want)
+    public static Task StartAbilityAsync(IntPtr want, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startAbility, want);
+        return NodeApi.CallMethodAsyncVoid(Module, _startAbility, cancellationToken, want);
     }
 
 }
@@ -104,17 +105,17 @@ public sealed partial class InputMethodExtensionContextObject : JsObject
     /// <summary>
     /// destroy
     /// </summary>
-    public Task DestroyAsync()
+    public Task DestroyAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_destroy);
+        return CallMethodAsyncVoid(_destroy, cancellationToken);
     }
 
     /// <summary>
     /// startAbility
     /// </summary>
-    public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
+    public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startAbility, NapiArg.Of(want));
+        return CallMethodAsyncVoid(_startAbility, cancellationToken, NapiArg.Of(want));
     }
 
 }

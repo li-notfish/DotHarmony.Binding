@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -75,9 +76,9 @@ public static unsafe partial class NetFirewall
     /// <summary>
     /// setNetFirewallPolicy
     /// </summary>
-    public static Task SetNetFirewallPolicyAsync(double userId, NetFirewallPolicy policy)
+    public static Task SetNetFirewallPolicyAsync(double userId, NetFirewallPolicy policy, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setNetFirewallPolicy, userId, NapiArg.Of(policy));
+        return NodeApi.CallMethodAsyncVoid(Module, _setNetFirewallPolicy, cancellationToken, userId, NapiArg.Of(policy));
     }
 
     /// <summary>
@@ -99,17 +100,17 @@ public static unsafe partial class NetFirewall
     /// <summary>
     /// updateNetFirewallRule
     /// </summary>
-    public static Task UpdateNetFirewallRuleAsync(NetFirewallRule rule)
+    public static Task UpdateNetFirewallRuleAsync(NetFirewallRule rule, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateNetFirewallRule, NapiArg.Of(rule));
+        return NodeApi.CallMethodAsyncVoid(Module, _updateNetFirewallRule, cancellationToken, NapiArg.Of(rule));
     }
 
     /// <summary>
     /// removeNetFirewallRule
     /// </summary>
-    public static Task RemoveNetFirewallRuleAsync(double userId, double ruleId)
+    public static Task RemoveNetFirewallRuleAsync(double userId, double ruleId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeNetFirewallRule, userId, ruleId);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeNetFirewallRule, cancellationToken, userId, ruleId);
     }
 
     /// <summary>

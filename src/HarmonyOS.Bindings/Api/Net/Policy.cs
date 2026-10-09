@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -77,9 +78,9 @@ public static unsafe partial class Policy
     /// <summary>
     /// showAppNetPolicySettings
     /// </summary>
-    public static Task ShowAppNetPolicySettingsAsync(IntPtr context)
+    public static Task ShowAppNetPolicySettingsAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _showAppNetPolicySettings, context);
+        return NodeApi.CallMethodAsyncVoid(Module, _showAppNetPolicySettings, cancellationToken, context);
     }
 
 }

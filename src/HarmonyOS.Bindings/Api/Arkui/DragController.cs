@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -106,9 +107,9 @@ public sealed partial class DragAction : JsObject
     /// <summary>
     /// startDrag
     /// </summary>
-    public Task StartDragAsync()
+    public Task StartDragAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startDrag);
+        return CallMethodAsyncVoid(_startDrag, cancellationToken);
     }
 
     /// <summary>

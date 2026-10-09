@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -105,17 +106,17 @@ public static unsafe partial class Connection
     /// <summary>
     /// pairDevice
     /// </summary>
-    public static Task PairDeviceAsync(string deviceId)
+    public static Task PairDeviceAsync(string deviceId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pairDevice, deviceId);
+        return NodeApi.CallMethodAsyncVoid(Module, _pairDevice, cancellationToken, deviceId);
     }
 
     /// <summary>
     /// pairDevice
     /// </summary>
-    public static Task PairDeviceAsync(IntPtr deviceId)
+    public static Task PairDeviceAsync(IntPtr deviceId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pairDevice, deviceId);
+        return NodeApi.CallMethodAsyncVoid(Module, _pairDevice, cancellationToken, deviceId);
     }
 
     /// <summary>
@@ -185,9 +186,9 @@ public static unsafe partial class Connection
     /// <summary>
     /// setDevicePinCode
     /// </summary>
-    public static Task SetDevicePinCodeAsync(string deviceId, string code)
+    public static Task SetDevicePinCodeAsync(string deviceId, string code, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setDevicePinCode, deviceId, code);
+        return NodeApi.CallMethodAsyncVoid(Module, _setDevicePinCode, cancellationToken, deviceId, code);
     }
 
     /// <summary>
@@ -249,9 +250,9 @@ public static unsafe partial class Connection
     /// <summary>
     /// connectAllowedProfiles
     /// </summary>
-    public static Task ConnectAllowedProfilesAsync(string deviceId)
+    public static Task ConnectAllowedProfilesAsync(string deviceId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _connectAllowedProfiles, deviceId);
+        return NodeApi.CallMethodAsyncVoid(Module, _connectAllowedProfiles, cancellationToken, deviceId);
     }
 
     /// <summary>
@@ -265,17 +266,17 @@ public static unsafe partial class Connection
     /// <summary>
     /// disconnectAllowedProfiles
     /// </summary>
-    public static Task DisconnectAllowedProfilesAsync(string deviceId)
+    public static Task DisconnectAllowedProfilesAsync(string deviceId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disconnectAllowedProfiles, deviceId);
+        return NodeApi.CallMethodAsyncVoid(Module, _disconnectAllowedProfiles, cancellationToken, deviceId);
     }
 
     /// <summary>
     /// setRemoteDeviceName
     /// </summary>
-    public static Task SetRemoteDeviceNameAsync(string deviceId, string name)
+    public static Task SetRemoteDeviceNameAsync(string deviceId, string name, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setRemoteDeviceName, deviceId, name);
+        return NodeApi.CallMethodAsyncVoid(Module, _setRemoteDeviceName, cancellationToken, deviceId, name);
     }
 
     /// <summary>

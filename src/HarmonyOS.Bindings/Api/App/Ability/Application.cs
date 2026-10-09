@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -107,25 +108,25 @@ public static unsafe partial class Application
     /// <summary>
     /// promoteCurrentToCandidateMasterProcess
     /// </summary>
-    public static Task PromoteCurrentToCandidateMasterProcessAsync(bool insertToHead)
+    public static Task PromoteCurrentToCandidateMasterProcessAsync(bool insertToHead, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _promoteCurrentToCandidateMasterProcess, insertToHead);
+        return NodeApi.CallMethodAsyncVoid(Module, _promoteCurrentToCandidateMasterProcess, cancellationToken, insertToHead);
     }
 
     /// <summary>
     /// demoteCurrentFromCandidateMasterProcess
     /// </summary>
-    public static Task DemoteCurrentFromCandidateMasterProcessAsync()
+    public static Task DemoteCurrentFromCandidateMasterProcessAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _demoteCurrentFromCandidateMasterProcess);
+        return NodeApi.CallMethodAsyncVoid(Module, _demoteCurrentFromCandidateMasterProcess, cancellationToken);
     }
 
     /// <summary>
     /// exitMasterProcessRole
     /// </summary>
-    public static Task ExitMasterProcessRoleAsync()
+    public static Task ExitMasterProcessRoleAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _exitMasterProcessRole);
+        return NodeApi.CallMethodAsyncVoid(Module, _exitMasterProcessRole, cancellationToken);
     }
 
     /// <summary>

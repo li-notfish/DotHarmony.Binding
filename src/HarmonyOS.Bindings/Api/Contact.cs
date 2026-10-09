@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -132,17 +133,17 @@ public static unsafe partial class Contact
     /// <summary>
     /// deleteContact
     /// </summary>
-    public static Task DeleteContactAsync(string key)
+    public static Task DeleteContactAsync(string key, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deleteContact, key);
+        return NodeApi.CallMethodAsyncVoid(Module, _deleteContact, cancellationToken, key);
     }
 
     /// <summary>
     /// deleteContact
     /// </summary>
-    public static Task DeleteContactAsync(IntPtr context, string key)
+    public static Task DeleteContactAsync(IntPtr context, string key, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deleteContact, context, key);
+        return NodeApi.CallMethodAsyncVoid(Module, _deleteContact, cancellationToken, context, key);
     }
 
     /// <summary>
@@ -516,33 +517,33 @@ public static unsafe partial class Contact
     /// <summary>
     /// updateContact
     /// </summary>
-    public static Task UpdateContactAsync(ContactObject contact)
+    public static Task UpdateContactAsync(ContactObject contact, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _updateContact, NapiArg.Of(contact));
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _updateContact, cancellationToken, NapiArg.Of(contact));
     }
 
     /// <summary>
     /// updateContact
     /// </summary>
-    public static Task UpdateContactAsync(IntPtr context, ContactObject contact)
+    public static Task UpdateContactAsync(IntPtr context, ContactObject contact, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _updateContact, context, NapiArg.Of(contact));
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _updateContact, cancellationToken, context, NapiArg.Of(contact));
     }
 
     /// <summary>
     /// updateContact
     /// </summary>
-    public static Task UpdateContactAsync(ContactObject contact, ContactAttributes attrs)
+    public static Task UpdateContactAsync(ContactObject contact, ContactAttributes attrs, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateContact, NapiArg.Of(contact), NapiArg.Of(attrs));
+        return NodeApi.CallMethodAsyncVoid(Module, _updateContact, cancellationToken, NapiArg.Of(contact), NapiArg.Of(attrs));
     }
 
     /// <summary>
     /// updateContact
     /// </summary>
-    public static Task UpdateContactAsync(IntPtr context, ContactObject contact, ContactAttributes attrs)
+    public static Task UpdateContactAsync(IntPtr context, ContactObject contact, ContactAttributes attrs, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateContact, context, NapiArg.Of(contact), NapiArg.Of(attrs));
+        return NodeApi.CallMethodAsyncVoid(Module, _updateContact, cancellationToken, context, NapiArg.Of(contact), NapiArg.Of(attrs));
     }
 
     /// <summary>

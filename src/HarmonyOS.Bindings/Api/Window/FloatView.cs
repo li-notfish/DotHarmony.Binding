@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -89,17 +90,17 @@ public static unsafe partial class FloatView
     /// <summary>
     /// bind
     /// </summary>
-    public static Task BindAsync(FloatViewController floatViewController, IntPtr floatingBallController, IntPtr floatingBallParams)
+    public static Task BindAsync(FloatViewController floatViewController, IntPtr floatingBallController, IntPtr floatingBallParams, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _bind, NapiArg.Of(floatViewController), floatingBallController, floatingBallParams);
+        return NodeApi.CallMethodAsyncVoid(Module, _bind, cancellationToken, NapiArg.Of(floatViewController), floatingBallController, floatingBallParams);
     }
 
     /// <summary>
     /// unbind
     /// </summary>
-    public static Task UnbindAsync(FloatViewController floatViewController, IntPtr floatingBallController)
+    public static Task UnbindAsync(FloatViewController floatViewController, IntPtr floatingBallController, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unbind, NapiArg.Of(floatViewController), floatingBallController);
+        return NodeApi.CallMethodAsyncVoid(Module, _unbind, cancellationToken, NapiArg.Of(floatViewController), floatingBallController);
     }
 
     /// <summary>
@@ -137,65 +138,65 @@ public sealed partial class FloatViewController : JsObject
     /// <summary>
     /// setUIContext
     /// </summary>
-    public Task SetUiContextAsync(string path, IntPtr? storage = null)
+    public Task SetUiContextAsync(string path, IntPtr? storage = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setUIContext, path, NapiArg.Of(storage));
+        return CallMethodAsyncVoid(_setUIContext, cancellationToken, path, NapiArg.Of(storage));
     }
 
     /// <summary>
     /// setUIContextByName
     /// </summary>
-    public Task SetUiContextByNameAsync(string name, IntPtr? storage = null)
+    public Task SetUiContextByNameAsync(string name, IntPtr? storage = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setUIContextByName, name, NapiArg.Of(storage));
+        return CallMethodAsyncVoid(_setUIContextByName, cancellationToken, name, NapiArg.Of(storage));
     }
 
     /// <summary>
     /// setWindowSize
     /// </summary>
-    public Task SetWindowSizeAsync(IntPtr size)
+    public Task SetWindowSizeAsync(IntPtr size, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowSize, size);
+        return CallMethodAsyncVoid(_setWindowSize, cancellationToken, size);
     }
 
     /// <summary>
     /// switchTemplate
     /// </summary>
-    public Task SwitchTemplateAsync(IntPtr templateProperty)
+    public Task SwitchTemplateAsync(IntPtr templateProperty, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_switchTemplate, templateProperty);
+        return CallMethodAsyncVoid(_switchTemplate, cancellationToken, templateProperty);
     }
 
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
     /// setFloatViewVisibilityInApp
     /// </summary>
-    public Task SetFloatViewVisibilityInAppAsync(bool isVisible)
+    public Task SetFloatViewVisibilityInAppAsync(bool isVisible, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setFloatViewVisibilityInApp, isVisible);
+        return CallMethodAsyncVoid(_setFloatViewVisibilityInApp, cancellationToken, isVisible);
     }
 
     /// <summary>
     /// restoreMainWindow
     /// </summary>
-    public Task RestoreMainWindowAsync(IntPtr? wantParameters = null)
+    public Task RestoreMainWindowAsync(IntPtr? wantParameters = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_restoreMainWindow, NapiArg.Of(wantParameters));
+        return CallMethodAsyncVoid(_restoreMainWindow, cancellationToken, NapiArg.Of(wantParameters));
     }
 
     /// <summary>

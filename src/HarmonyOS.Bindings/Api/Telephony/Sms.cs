@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -90,9 +91,9 @@ public static unsafe partial class Sms
     /// <summary>
     /// sendShortMessage
     /// </summary>
-    public static Task SendShortMessageAsync(IntPtr options)
+    public static Task SendShortMessageAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendShortMessage, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _sendShortMessage, cancellationToken, options);
     }
 
     /// <summary>

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -126,17 +127,17 @@ public static unsafe partial class ConnectedTag
     /// <summary>
     /// writeNdefTag
     /// </summary>
-    public static Task WriteNdefTagAsync(string data)
+    public static Task WriteNdefTagAsync(string data, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _writeNdefTag, data);
+        return NodeApi.CallMethodAsyncVoid(Module, _writeNdefTag, cancellationToken, data);
     }
 
     /// <summary>
     /// write
     /// </summary>
-    public static Task WriteAsync(double[] data)
+    public static Task WriteAsync(double[] data, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _write, NapiArg.Of(data));
+        return NodeApi.CallMethodAsyncVoid(Module, _write, cancellationToken, NapiArg.Of(data));
     }
 
     /// <summary>

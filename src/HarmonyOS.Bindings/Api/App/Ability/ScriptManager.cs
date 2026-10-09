@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -68,9 +69,9 @@ public static unsafe partial class ScriptManager
     /// <summary>
     /// completeArkTSScriptInApp
     /// </summary>
-    public static Task CompleteArkTsScriptInAppAsync(IntPtr context, string requestCode, IntPtr result)
+    public static Task CompleteArkTsScriptInAppAsync(IntPtr context, string requestCode, IntPtr result, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _completeArkTSScriptInApp, context, requestCode, result);
+        return NodeApi.CallMethodAsyncVoid(Module, _completeArkTSScriptInApp, cancellationToken, context, requestCode, result);
     }
 
 }

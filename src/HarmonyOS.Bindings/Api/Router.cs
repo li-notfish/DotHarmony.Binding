@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -92,17 +93,17 @@ public static unsafe partial class Router
     /// <summary>
     /// pushUrl
     /// </summary>
-    public static Task PushUrlAsync(IntPtr options)
+    public static Task PushUrlAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, cancellationToken, options);
     }
 
     /// <summary>
     /// pushUrl
     /// </summary>
-    public static Task PushUrlAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
+    public static Task PushUrlAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, options, (int)mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, cancellationToken, options, (int)mode);
     }
 
     /// <summary>
@@ -116,17 +117,17 @@ public static unsafe partial class Router
     /// <summary>
     /// replaceUrl
     /// </summary>
-    public static Task ReplaceUrlAsync(IntPtr options)
+    public static Task ReplaceUrlAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, cancellationToken, options);
     }
 
     /// <summary>
     /// replaceUrl
     /// </summary>
-    public static Task ReplaceUrlAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
+    public static Task ReplaceUrlAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, options, (int)mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, cancellationToken, options, (int)mode);
     }
 
     /// <summary>
@@ -228,33 +229,33 @@ public static unsafe partial class Router
     /// <summary>
     /// pushNamedRoute
     /// </summary>
-    public static Task PushNamedRouteAsync(IntPtr options)
+    public static Task PushNamedRouteAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, cancellationToken, options);
     }
 
     /// <summary>
     /// pushNamedRoute
     /// </summary>
-    public static Task PushNamedRouteAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
+    public static Task PushNamedRouteAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, options, (int)mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, cancellationToken, options, (int)mode);
     }
 
     /// <summary>
     /// replaceNamedRoute
     /// </summary>
-    public static Task ReplaceNamedRouteAsync(IntPtr options)
+    public static Task ReplaceNamedRouteAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, cancellationToken, options);
     }
 
     /// <summary>
     /// replaceNamedRoute
     /// </summary>
-    public static Task ReplaceNamedRouteAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode)
+    public static Task ReplaceNamedRouteAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, options, (int)mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, cancellationToken, options, (int)mode);
     }
 
 }

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -69,17 +70,17 @@ public static unsafe partial class InsightIntentProvider
     /// <summary>
     /// sendExecuteResult
     /// </summary>
-    public static Task SendExecuteResultAsync(double instanceId, IntPtr result)
+    public static Task SendExecuteResultAsync(double instanceId, IntPtr result, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendExecuteResult, instanceId, result);
+        return NodeApi.CallMethodAsyncVoid(Module, _sendExecuteResult, cancellationToken, instanceId, result);
     }
 
     /// <summary>
     /// sendIntentResult
     /// </summary>
-    public static Task SendIntentResultAsync(double instanceId, IntPtr result)
+    public static Task SendIntentResultAsync(double instanceId, IntPtr result, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendIntentResult, instanceId, result);
+        return NodeApi.CallMethodAsyncVoid(Module, _sendIntentResult, cancellationToken, instanceId, result);
     }
 
 }

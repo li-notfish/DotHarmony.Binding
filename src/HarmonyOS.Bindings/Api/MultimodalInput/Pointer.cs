@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -77,9 +78,9 @@ public static unsafe partial class Pointer
     /// <summary>
     /// setPointerStyle
     /// </summary>
-    public static Task SetPointerStyleAsync(double windowId, global::HarmonyOS.ArkUI.PointerStyle pointerStyle)
+    public static Task SetPointerStyleAsync(double windowId, global::HarmonyOS.ArkUI.PointerStyle pointerStyle, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setPointerStyle, windowId, (int)pointerStyle);
+        return NodeApi.CallMethodAsyncVoid(Module, _setPointerStyle, cancellationToken, windowId, (int)pointerStyle);
     }
 
     /// <summary>
@@ -109,9 +110,9 @@ public static unsafe partial class Pointer
     /// <summary>
     /// setPointerVisible
     /// </summary>
-    public static Task SetPointerVisibleAsync(bool visible)
+    public static Task SetPointerVisibleAsync(bool visible, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setPointerVisible, visible);
+        return NodeApi.CallMethodAsyncVoid(Module, _setPointerVisible, cancellationToken, visible);
     }
 
     /// <summary>
@@ -141,9 +142,9 @@ public static unsafe partial class Pointer
     /// <summary>
     /// setCustomCursor
     /// </summary>
-    public static Task SetCustomCursorAsync(double windowId, IntPtr pixelMap, double? focusX = null, double? focusY = null)
+    public static Task SetCustomCursorAsync(double windowId, IntPtr pixelMap, double? focusX = null, double? focusY = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setCustomCursor, windowId, pixelMap, NapiArg.Of(focusX), NapiArg.Of(focusY));
+        return NodeApi.CallMethodAsyncVoid(Module, _setCustomCursor, cancellationToken, windowId, pixelMap, NapiArg.Of(focusX), NapiArg.Of(focusY));
     }
 
     /// <summary>
@@ -157,9 +158,9 @@ public static unsafe partial class Pointer
     /// <summary>
     /// setCustomCursor
     /// </summary>
-    public static Task SetCustomCursorAsync(double windowId, IntPtr cursor, CursorConfig config)
+    public static Task SetCustomCursorAsync(double windowId, IntPtr cursor, CursorConfig config, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setCustomCursor, windowId, cursor, NapiArg.Of(config));
+        return NodeApi.CallMethodAsyncVoid(Module, _setCustomCursor, cancellationToken, windowId, cursor, NapiArg.Of(config));
     }
 
 }

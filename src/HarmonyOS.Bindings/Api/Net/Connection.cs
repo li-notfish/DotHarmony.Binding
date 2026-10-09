@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -184,9 +185,9 @@ public static unsafe partial class Connection
     /// <summary>
     /// setNetExtAttribute
     /// </summary>
-    public static Task SetNetExtAttributeAsync(NetHandle netHandle, string netExtAttribute)
+    public static Task SetNetExtAttributeAsync(NetHandle netHandle, string netExtAttribute, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setNetExtAttribute, NapiArg.Of(netHandle), netExtAttribute);
+        return NodeApi.CallMethodAsyncVoid(Module, _setNetExtAttribute, cancellationToken, NapiArg.Of(netHandle), netExtAttribute);
     }
 
     /// <summary>
@@ -248,17 +249,17 @@ public static unsafe partial class Connection
     /// <summary>
     /// reportNetConnected
     /// </summary>
-    public static Task ReportNetConnectedAsync(NetHandle netHandle)
+    public static Task ReportNetConnectedAsync(NetHandle netHandle, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _reportNetConnected, NapiArg.Of(netHandle));
+        return NodeApi.CallMethodAsyncVoid(Module, _reportNetConnected, cancellationToken, NapiArg.Of(netHandle));
     }
 
     /// <summary>
     /// reportNetDisconnected
     /// </summary>
-    public static Task ReportNetDisconnectedAsync(NetHandle netHandle)
+    public static Task ReportNetDisconnectedAsync(NetHandle netHandle, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _reportNetDisconnected, NapiArg.Of(netHandle));
+        return NodeApi.CallMethodAsyncVoid(Module, _reportNetDisconnected, cancellationToken, NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -296,9 +297,9 @@ public static unsafe partial class Connection
     /// <summary>
     /// setAppNet
     /// </summary>
-    public static Task SetAppNetAsync(NetHandle netHandle)
+    public static Task SetAppNetAsync(NetHandle netHandle, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setAppNet, NapiArg.Of(netHandle));
+        return NodeApi.CallMethodAsyncVoid(Module, _setAppNet, cancellationToken, NapiArg.Of(netHandle));
     }
 
     /// <summary>
@@ -368,25 +369,25 @@ public static unsafe partial class Connection
     /// <summary>
     /// addCustomDnsRule
     /// </summary>
-    public static Task AddCustomDnsRuleAsync(string host, string[] ip)
+    public static Task AddCustomDnsRuleAsync(string host, string[] ip, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _addCustomDnsRule, host, NapiArg.Of(ip));
+        return NodeApi.CallMethodAsyncVoid(Module, _addCustomDnsRule, cancellationToken, host, NapiArg.Of(ip));
     }
 
     /// <summary>
     /// removeCustomDnsRule
     /// </summary>
-    public static Task RemoveCustomDnsRuleAsync(string host)
+    public static Task RemoveCustomDnsRuleAsync(string host, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeCustomDnsRule, host);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeCustomDnsRule, cancellationToken, host);
     }
 
     /// <summary>
     /// clearCustomDnsRules
     /// </summary>
-    public static Task ClearCustomDnsRulesAsync()
+    public static Task ClearCustomDnsRulesAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _clearCustomDnsRules);
+        return NodeApi.CallMethodAsyncVoid(Module, _clearCustomDnsRules, cancellationToken);
     }
 
     /// <summary>
@@ -476,17 +477,17 @@ public sealed partial class NetConnection : JsObject
     /// <summary>
     /// register
     /// </summary>
-    public Task RegisterAsync()
+    public Task RegisterAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_register);
+        return CallMethodAsyncCallbackVoid(_register, cancellationToken);
     }
 
     /// <summary>
     /// unregister
     /// </summary>
-    public Task UnregisterAsync()
+    public Task UnregisterAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_unregister);
+        return CallMethodAsyncCallbackVoid(_unregister, cancellationToken);
     }
 
     private static ReadOnlySpan<byte> _off => "off"u8;
@@ -688,9 +689,9 @@ public sealed partial class NetHandle : JsObject
     /// <summary>
     /// bindSocket
     /// </summary>
-    public Task BindSocketAsync(IntPtr socketParam)
+    public Task BindSocketAsync(IntPtr socketParam, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_bindSocket, socketParam);
+        return CallMethodAsyncVoid(_bindSocket, cancellationToken, socketParam);
     }
 
     /// <summary>

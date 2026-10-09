@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -111,41 +112,41 @@ public static unsafe partial class Print
     /// <summary>
     /// startPrint
     /// </summary>
-    public static Task StartPrintAsync(PrintJobData job)
+    public static Task StartPrintAsync(PrintJobData job, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startPrint, NapiArg.Of(job));
+        return NodeApi.CallMethodAsyncVoid(Module, _startPrint, cancellationToken, NapiArg.Of(job));
     }
 
     /// <summary>
     /// startDiscoverPrinter
     /// </summary>
-    public static Task StartDiscoverPrinterAsync(string[] extensionList)
+    public static Task StartDiscoverPrinterAsync(string[] extensionList, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startDiscoverPrinter, NapiArg.Of(extensionList));
+        return NodeApi.CallMethodAsyncVoid(Module, _startDiscoverPrinter, cancellationToken, NapiArg.Of(extensionList));
     }
 
     /// <summary>
     /// stopDiscoverPrinter
     /// </summary>
-    public static Task StopDiscoverPrinterAsync()
+    public static Task StopDiscoverPrinterAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopDiscoverPrinter);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopDiscoverPrinter, cancellationToken);
     }
 
     /// <summary>
     /// connectPrinter
     /// </summary>
-    public static Task ConnectPrinterAsync(string printerId)
+    public static Task ConnectPrinterAsync(string printerId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _connectPrinter, printerId);
+        return NodeApi.CallMethodAsyncVoid(Module, _connectPrinter, cancellationToken, printerId);
     }
 
     /// <summary>
     /// updatePrintJobState
     /// </summary>
-    public static Task UpdatePrintJobStateAsync(string jobId, global::HarmonyOS.ArkUI.PrintJobState state, global::HarmonyOS.ArkUI.PrintJobSubState subState)
+    public static Task UpdatePrintJobStateAsync(string jobId, global::HarmonyOS.ArkUI.PrintJobState state, global::HarmonyOS.ArkUI.PrintJobSubState subState, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updatePrintJobState, jobId, (int)state, (int)subState);
+        return NodeApi.CallMethodAsyncVoid(Module, _updatePrintJobState, cancellationToken, jobId, (int)state, (int)subState);
     }
 
     /// <summary>
@@ -159,25 +160,25 @@ public static unsafe partial class Print
     /// <summary>
     /// addPrinterToDiscovery
     /// </summary>
-    public static Task AddPrinterToDiscoveryAsync(PrinterInformation printerInformation)
+    public static Task AddPrinterToDiscoveryAsync(PrinterInformation printerInformation, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _addPrinterToDiscovery, NapiArg.Of(printerInformation));
+        return NodeApi.CallMethodAsyncVoid(Module, _addPrinterToDiscovery, cancellationToken, NapiArg.Of(printerInformation));
     }
 
     /// <summary>
     /// updatePrinterInDiscovery
     /// </summary>
-    public static Task UpdatePrinterInDiscoveryAsync(PrinterInformation printerInformation)
+    public static Task UpdatePrinterInDiscoveryAsync(PrinterInformation printerInformation, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updatePrinterInDiscovery, NapiArg.Of(printerInformation));
+        return NodeApi.CallMethodAsyncVoid(Module, _updatePrinterInDiscovery, cancellationToken, NapiArg.Of(printerInformation));
     }
 
     /// <summary>
     /// removePrinterFromDiscovery
     /// </summary>
-    public static Task RemovePrinterFromDiscoveryAsync(string printerId)
+    public static Task RemovePrinterFromDiscoveryAsync(string printerId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removePrinterFromDiscovery, printerId);
+        return NodeApi.CallMethodAsyncVoid(Module, _removePrinterFromDiscovery, cancellationToken, printerId);
     }
 
     /// <summary>
@@ -191,9 +192,9 @@ public static unsafe partial class Print
     /// <summary>
     /// updatePrinterInformation
     /// </summary>
-    public static Task UpdatePrinterInformationAsync(PrinterInformation printerInformation)
+    public static Task UpdatePrinterInformationAsync(PrinterInformation printerInformation, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updatePrinterInformation, NapiArg.Of(printerInformation));
+        return NodeApi.CallMethodAsyncVoid(Module, _updatePrinterInformation, cancellationToken, NapiArg.Of(printerInformation));
     }
 
     /// <summary>

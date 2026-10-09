@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -581,9 +582,9 @@ public static unsafe partial class Settings
     /// <summary>
     /// enableAirplaneMode
     /// </summary>
-    public static Task EnableAirplaneModeAsync(bool enable)
+    public static Task EnableAirplaneModeAsync(bool enable, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _enableAirplaneMode, enable);
+        return NodeApi.CallMethodAsyncVoid(Module, _enableAirplaneMode, cancellationToken, enable);
     }
 
     /// <summary>
@@ -637,9 +638,9 @@ public static unsafe partial class Settings
     /// <summary>
     /// registerKeyObserver
     /// </summary>
-    public static Task RegisterKeyObserverAsync(IntPtr context, string name, string domainName)
+    public static Task RegisterKeyObserverAsync(IntPtr context, string name, string domainName, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _registerKeyObserver, context, name, domainName);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _registerKeyObserver, cancellationToken, context, name, domainName);
     }
 
     /// <summary>

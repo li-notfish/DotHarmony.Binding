@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -94,17 +95,17 @@ public static unsafe partial class RelationalStore
     /// <summary>
     /// deleteRdbStore
     /// </summary>
-    public static Task DeleteRdbStoreAsync(IntPtr context, string name)
+    public static Task DeleteRdbStoreAsync(IntPtr context, string name, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, context, name);
+        return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, cancellationToken, context, name);
     }
 
     /// <summary>
     /// deleteRdbStore
     /// </summary>
-    public static Task DeleteRdbStoreAsync(IntPtr context, RelationalStoreStoreConfig config)
+    public static Task DeleteRdbStoreAsync(IntPtr context, RelationalStoreStoreConfig config, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, context, NapiArg.Of(config));
+        return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, cancellationToken, context, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -485,33 +486,33 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// cleanDirtyData
     /// </summary>
-    public Task CleanDirtyDataAsync(string table, double cursor)
+    public Task CleanDirtyDataAsync(string table, double cursor, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_cleanDirtyData, table, cursor);
+        return CallMethodAsyncVoid(_cleanDirtyData, cancellationToken, table, cursor);
     }
 
     /// <summary>
     /// cleanDirtyData
     /// </summary>
-    public Task CleanDirtyDataAsync(string table)
+    public Task CleanDirtyDataAsync(string table, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_cleanDirtyData, table);
+        return CallMethodAsyncCallbackVoid(_cleanDirtyData, cancellationToken, table);
     }
 
     /// <summary>
     /// executeSql
     /// </summary>
-    public Task ExecuteSqlAsync(string sql)
+    public Task ExecuteSqlAsync(string sql, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_executeSql, sql);
+        return CallMethodAsyncCallbackVoid(_executeSql, cancellationToken, sql);
     }
 
     /// <summary>
     /// executeSql
     /// </summary>
-    public Task ExecuteSqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[] bindArgs)
+    public Task ExecuteSqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[] bindArgs, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_executeSql, sql, NapiArg.Of(bindArgs));
+        return CallMethodAsyncVoid(_executeSql, cancellationToken, sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -565,9 +566,9 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// commit
     /// </summary>
-    public Task CommitAsync(double txId)
+    public Task CommitAsync(double txId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_commit, txId);
+        return CallMethodAsyncVoid(_commit, cancellationToken, txId);
     }
 
     /// <summary>
@@ -581,49 +582,49 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// rollback
     /// </summary>
-    public Task RollbackAsync(double txId)
+    public Task RollbackAsync(double txId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_rollback, txId);
+        return CallMethodAsyncVoid(_rollback, cancellationToken, txId);
     }
 
     /// <summary>
     /// backup
     /// </summary>
-    public Task BackupAsync(string destName)
+    public Task BackupAsync(string destName, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_backup, destName);
+        return CallMethodAsyncVoid(_backup, cancellationToken, destName);
     }
 
     /// <summary>
     /// restore
     /// </summary>
-    public Task RestoreAsync(string srcName)
+    public Task RestoreAsync(string srcName, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_restore, srcName);
+        return CallMethodAsyncVoid(_restore, cancellationToken, srcName);
     }
 
     /// <summary>
     /// setDistributedTables
     /// </summary>
-    public Task SetDistributedTablesAsync(string[] tables)
+    public Task SetDistributedTablesAsync(string[] tables, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDistributedTables, NapiArg.Of(tables));
+        return CallMethodAsyncVoid(_setDistributedTables, cancellationToken, NapiArg.Of(tables));
     }
 
     /// <summary>
     /// setDistributedTables
     /// </summary>
-    public Task SetDistributedTablesAsync(string[] tables, global::HarmonyOS.ArkUI.DistributedType type)
+    public Task SetDistributedTablesAsync(string[] tables, global::HarmonyOS.ArkUI.DistributedType type, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_setDistributedTables, NapiArg.Of(tables), (int)type);
+        return CallMethodAsyncCallbackVoid(_setDistributedTables, cancellationToken, NapiArg.Of(tables), (int)type);
     }
 
     /// <summary>
     /// setDistributedTables
     /// </summary>
-    public Task SetDistributedTablesAsync(string[] tables, global::HarmonyOS.ArkUI.DistributedType type, DistributedConfig config)
+    public Task SetDistributedTablesAsync(string[] tables, global::HarmonyOS.ArkUI.DistributedType type, DistributedConfig config, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDistributedTables, NapiArg.Of(tables), (int)type, NapiArg.Of(config));
+        return CallMethodAsyncVoid(_setDistributedTables, cancellationToken, NapiArg.Of(tables), (int)type, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -653,33 +654,33 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// cloudSync
     /// </summary>
-    public Task CloudSyncAsync(global::HarmonyOS.ArkUI.DataRelationalStoreSyncMode mode, IntPtr progress)
+    public Task CloudSyncAsync(global::HarmonyOS.ArkUI.DataRelationalStoreSyncMode mode, IntPtr progress, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_cloudSync, (int)mode, progress);
+        return CallMethodAsyncVoid(_cloudSync, cancellationToken, (int)mode, progress);
     }
 
     /// <summary>
     /// cloudSync
     /// </summary>
-    public Task CloudSyncAsync(global::HarmonyOS.ArkUI.DataRelationalStoreSyncMode mode, string[] tables, IntPtr progress)
+    public Task CloudSyncAsync(global::HarmonyOS.ArkUI.DataRelationalStoreSyncMode mode, string[] tables, IntPtr progress, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_cloudSync, (int)mode, NapiArg.Of(tables), progress);
+        return CallMethodAsyncVoid(_cloudSync, cancellationToken, (int)mode, NapiArg.Of(tables), progress);
     }
 
     /// <summary>
     /// cloudSyncEx
     /// </summary>
-    public Task CloudSyncExAsync(CloudSyncConfig config, IntPtr progress)
+    public Task CloudSyncExAsync(CloudSyncConfig config, IntPtr progress, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_cloudSyncEx, NapiArg.Of(config), progress);
+        return CallMethodAsyncVoid(_cloudSyncEx, cancellationToken, NapiArg.Of(config), progress);
     }
 
     /// <summary>
     /// stopCloudSync
     /// </summary>
-    public Task StopCloudSyncAsync()
+    public Task StopCloudSyncAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stopCloudSync);
+        return CallMethodAsyncVoid(_stopCloudSync, cancellationToken);
     }
 
     /// <summary>
@@ -749,9 +750,9 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -781,17 +782,17 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// lockRow
     /// </summary>
-    public Task LockRowAsync(RelationalStoreRdbPredicates predicates)
+    public Task LockRowAsync(RelationalStoreRdbPredicates predicates, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_lockRow, NapiArg.Of(predicates));
+        return CallMethodAsyncVoid(_lockRow, cancellationToken, NapiArg.Of(predicates));
     }
 
     /// <summary>
     /// unlockRow
     /// </summary>
-    public Task UnlockRowAsync(RelationalStoreRdbPredicates predicates)
+    public Task UnlockRowAsync(RelationalStoreRdbPredicates predicates, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_unlockRow, NapiArg.Of(predicates));
+        return CallMethodAsyncVoid(_unlockRow, cancellationToken, NapiArg.Of(predicates));
     }
 
     /// <summary>
@@ -813,25 +814,25 @@ public sealed partial class RelationalStoreRdbStore : JsObject
     /// <summary>
     /// rekey
     /// </summary>
-    public Task RekeyAsync(CryptoParam? cryptoParam = null)
+    public Task RekeyAsync(CryptoParam? cryptoParam = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_rekey, NapiArg.Of(cryptoParam));
+        return CallMethodAsyncVoid(_rekey, cancellationToken, NapiArg.Of(cryptoParam));
     }
 
     /// <summary>
     /// setLocale
     /// </summary>
-    public Task SetLocaleAsync(string locale)
+    public Task SetLocaleAsync(string locale, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setLocale, locale);
+        return CallMethodAsyncVoid(_setLocale, cancellationToken, locale);
     }
 
     /// <summary>
     /// rekeyEx
     /// </summary>
-    public Task RekeyExAsync(CryptoParam cryptoParam)
+    public Task RekeyExAsync(CryptoParam cryptoParam, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_rekeyEx, NapiArg.Of(cryptoParam));
+        return CallMethodAsyncVoid(_rekeyEx, cancellationToken, NapiArg.Of(cryptoParam));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -2191,17 +2192,17 @@ public sealed partial class Transaction : JsObject
     /// <summary>
     /// commit
     /// </summary>
-    public Task CommitAsync()
+    public Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_commit);
+        return CallMethodAsyncVoid(_commit, cancellationToken);
     }
 
     /// <summary>
     /// rollback
     /// </summary>
-    public Task RollbackAsync()
+    public Task RollbackAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_rollback);
+        return CallMethodAsyncVoid(_rollback, cancellationToken);
     }
 
     /// <summary>

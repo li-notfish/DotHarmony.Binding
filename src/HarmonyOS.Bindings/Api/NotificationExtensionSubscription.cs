@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -75,9 +76,9 @@ public static unsafe partial class NotificationExtensionSubscription
     /// <summary>
     /// openSubscriptionSettings
     /// </summary>
-    public static Task OpenSubscriptionSettingsAsync(IntPtr context)
+    public static Task OpenSubscriptionSettingsAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openSubscriptionSettings, context);
+        return NodeApi.CallMethodAsyncVoid(Module, _openSubscriptionSettings, cancellationToken, context);
     }
 
     /// <summary>
@@ -91,17 +92,17 @@ public static unsafe partial class NotificationExtensionSubscription
     /// <summary>
     /// subscribe
     /// </summary>
-    public static Task SubscribeAsync(IntPtr[] info)
+    public static Task SubscribeAsync(IntPtr[] info, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _subscribe, NapiArg.Of(info));
+        return NodeApi.CallMethodAsyncVoid(Module, _subscribe, cancellationToken, NapiArg.Of(info));
     }
 
     /// <summary>
     /// unsubscribe
     /// </summary>
-    public static Task UnsubscribeAsync()
+    public static Task UnsubscribeAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unsubscribe);
+        return NodeApi.CallMethodAsyncVoid(Module, _unsubscribe, cancellationToken);
     }
 
     /// <summary>

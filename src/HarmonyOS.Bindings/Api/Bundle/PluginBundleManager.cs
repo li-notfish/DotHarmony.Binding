@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -71,17 +72,17 @@ public static unsafe partial class PluginBundleManager
     /// <summary>
     /// installLocalPlugin
     /// </summary>
-    public static Task InstallLocalPluginAsync(string[] pluginFilePaths)
+    public static Task InstallLocalPluginAsync(string[] pluginFilePaths, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _installLocalPlugin, NapiArg.Of(pluginFilePaths));
+        return NodeApi.CallMethodAsyncVoid(Module, _installLocalPlugin, cancellationToken, NapiArg.Of(pluginFilePaths));
     }
 
     /// <summary>
     /// uninstallLocalPlugin
     /// </summary>
-    public static Task UninstallLocalPluginAsync(string pluginBundleName)
+    public static Task UninstallLocalPluginAsync(string pluginBundleName, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _uninstallLocalPlugin, pluginBundleName);
+        return NodeApi.CallMethodAsyncVoid(Module, _uninstallLocalPlugin, cancellationToken, pluginBundleName);
     }
 
     /// <summary>

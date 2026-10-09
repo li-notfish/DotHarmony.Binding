@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -70,9 +71,9 @@ public static unsafe partial class CloudData
     /// <summary>
     /// setCloudStrategy
     /// </summary>
-    public static Task SetCloudStrategyAsync(global::HarmonyOS.ArkUI.StrategyType strategy, IntPtr[]? param = null)
+    public static Task SetCloudStrategyAsync(global::HarmonyOS.ArkUI.StrategyType strategy, IntPtr[]? param = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setCloudStrategy, (int)strategy, NapiArg.Of(param));
+        return NodeApi.CallMethodAsyncVoid(Module, _setCloudStrategy, cancellationToken, (int)strategy, NapiArg.Of(param));
     }
 
     /// <summary>

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -185,17 +186,17 @@ public static unsafe partial class Image
     /// <summary>
     /// createPremultipliedPixelMap
     /// </summary>
-    public static Task CreatePremultipliedPixelMapAsync(ImagePixelMap src, ImagePixelMap dst)
+    public static Task CreatePremultipliedPixelMapAsync(ImagePixelMap src, ImagePixelMap dst, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _createPremultipliedPixelMap, NapiArg.Of(src), NapiArg.Of(dst));
+        return NodeApi.CallMethodAsyncVoid(Module, _createPremultipliedPixelMap, cancellationToken, NapiArg.Of(src), NapiArg.Of(dst));
     }
 
     /// <summary>
     /// createUnpremultipliedPixelMap
     /// </summary>
-    public static Task CreateUnpremultipliedPixelMapAsync(ImagePixelMap src, ImagePixelMap dst)
+    public static Task CreateUnpremultipliedPixelMapAsync(ImagePixelMap src, ImagePixelMap dst, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _createUnpremultipliedPixelMap, NapiArg.Of(src), NapiArg.Of(dst));
+        return NodeApi.CallMethodAsyncVoid(Module, _createUnpremultipliedPixelMap, cancellationToken, NapiArg.Of(src), NapiArg.Of(dst));
     }
 
     /// <summary>
@@ -615,9 +616,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// readAllPixelsToBuffer
     /// </summary>
-    public Task ReadAllPixelsToBufferAsync(byte[] dst)
+    public Task ReadAllPixelsToBufferAsync(byte[] dst, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_readAllPixelsToBuffer, NapiArg.OfArrayBuffer(dst));
+        return CallMethodAsyncVoid(_readAllPixelsToBuffer, cancellationToken, NapiArg.OfArrayBuffer(dst));
     }
 
     /// <summary>
@@ -631,9 +632,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// readPixelsToBuffer
     /// </summary>
-    public Task ReadPixelsToBufferAsync(byte[] dst)
+    public Task ReadPixelsToBufferAsync(byte[] dst, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_readPixelsToBuffer, NapiArg.OfArrayBuffer(dst));
+        return CallMethodAsyncVoid(_readPixelsToBuffer, cancellationToken, NapiArg.OfArrayBuffer(dst));
     }
 
     /// <summary>
@@ -647,9 +648,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// readPixelsToArea
     /// </summary>
-    public Task ReadPixelsToAreaAsync(PositionArea area)
+    public Task ReadPixelsToAreaAsync(PositionArea area, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_readPixelsToArea, NapiArg.Of(area));
+        return CallMethodAsyncVoid(_readPixelsToArea, cancellationToken, NapiArg.Of(area));
     }
 
     /// <summary>
@@ -663,9 +664,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// readPixels
     /// </summary>
-    public Task ReadPixelsAsync(PositionArea area)
+    public Task ReadPixelsAsync(PositionArea area, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_readPixels, NapiArg.Of(area));
+        return CallMethodAsyncVoid(_readPixels, cancellationToken, NapiArg.Of(area));
     }
 
     /// <summary>
@@ -679,9 +680,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// writePixelsFromArea
     /// </summary>
-    public Task WritePixelsFromAreaAsync(PositionArea area)
+    public Task WritePixelsFromAreaAsync(PositionArea area, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_writePixelsFromArea, NapiArg.Of(area));
+        return CallMethodAsyncVoid(_writePixelsFromArea, cancellationToken, NapiArg.Of(area));
     }
 
     /// <summary>
@@ -695,9 +696,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// writePixels
     /// </summary>
-    public Task WritePixelsAsync(PositionArea area)
+    public Task WritePixelsAsync(PositionArea area, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_writePixels, NapiArg.Of(area));
+        return CallMethodAsyncVoid(_writePixels, cancellationToken, NapiArg.Of(area));
     }
 
     /// <summary>
@@ -711,9 +712,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// writeAllPixelsFromBuffer
     /// </summary>
-    public Task WriteAllPixelsFromBufferAsync(byte[] src)
+    public Task WriteAllPixelsFromBufferAsync(byte[] src, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_writeAllPixelsFromBuffer, NapiArg.OfArrayBuffer(src));
+        return CallMethodAsyncVoid(_writeAllPixelsFromBuffer, cancellationToken, NapiArg.OfArrayBuffer(src));
     }
 
     /// <summary>
@@ -727,9 +728,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// writeBufferToPixels
     /// </summary>
-    public Task WriteBufferToPixelsAsync(byte[] src)
+    public Task WriteBufferToPixelsAsync(byte[] src, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_writeBufferToPixels, NapiArg.OfArrayBuffer(src));
+        return CallMethodAsyncVoid(_writeBufferToPixels, cancellationToken, NapiArg.OfArrayBuffer(src));
     }
 
     /// <summary>
@@ -743,9 +744,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// toSdr
     /// </summary>
-    public Task ToSdrAsync()
+    public Task ToSdrAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_toSdr);
+        return CallMethodAsyncVoid(_toSdr, cancellationToken);
     }
 
     /// <summary>
@@ -791,9 +792,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// setOpacity
     /// </summary>
-    public Task SetOpacityAsync(double value)
+    public Task SetOpacityAsync(double value, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setOpacity, value);
+        return CallMethodAsyncVoid(_setOpacity, cancellationToken, value);
     }
 
     /// <summary>
@@ -807,9 +808,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// opacity
     /// </summary>
-    public Task OpacityAsync(double rate)
+    public Task OpacityAsync(double rate, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_opacity, rate);
+        return CallMethodAsyncVoid(_opacity, cancellationToken, rate);
     }
 
     /// <summary>
@@ -855,9 +856,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// applyScale
     /// </summary>
-    public Task ApplyScaleAsync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel? level = null)
+    public Task ApplyScaleAsync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel? level = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_applyScale, x, y, NapiArg.Of(level));
+        return CallMethodAsyncVoid(_applyScale, cancellationToken, x, y, NapiArg.Of(level));
     }
 
     /// <summary>
@@ -871,9 +872,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// scale
     /// </summary>
-    public Task ScaleAsync(double x, double y)
+    public Task ScaleAsync(double x, double y, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_scale, x, y);
+        return CallMethodAsyncVoid(_scale, cancellationToken, x, y);
     }
 
     /// <summary>
@@ -887,9 +888,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// scale
     /// </summary>
-    public Task ScaleAsync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel level)
+    public Task ScaleAsync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel level, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_scale, x, y, (int)level);
+        return CallMethodAsyncVoid(_scale, cancellationToken, x, y, (int)level);
     }
 
     /// <summary>
@@ -919,9 +920,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// applyTranslate
     /// </summary>
-    public Task ApplyTranslateAsync(double x, double y)
+    public Task ApplyTranslateAsync(double x, double y, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_applyTranslate, x, y);
+        return CallMethodAsyncVoid(_applyTranslate, cancellationToken, x, y);
     }
 
     /// <summary>
@@ -935,9 +936,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// translate
     /// </summary>
-    public Task TranslateAsync(double x, double y)
+    public Task TranslateAsync(double x, double y, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_translate, x, y);
+        return CallMethodAsyncVoid(_translate, cancellationToken, x, y);
     }
 
     /// <summary>
@@ -951,9 +952,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// applyRotate
     /// </summary>
-    public Task ApplyRotateAsync(double angle)
+    public Task ApplyRotateAsync(double angle, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_applyRotate, angle);
+        return CallMethodAsyncVoid(_applyRotate, cancellationToken, angle);
     }
 
     /// <summary>
@@ -967,9 +968,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// rotate
     /// </summary>
-    public Task RotateAsync(double angle)
+    public Task RotateAsync(double angle, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_rotate, angle);
+        return CallMethodAsyncVoid(_rotate, cancellationToken, angle);
     }
 
     /// <summary>
@@ -983,9 +984,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// applyFlip
     /// </summary>
-    public Task ApplyFlipAsync(bool horizontal, bool vertical)
+    public Task ApplyFlipAsync(bool horizontal, bool vertical, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_applyFlip, horizontal, vertical);
+        return CallMethodAsyncVoid(_applyFlip, cancellationToken, horizontal, vertical);
     }
 
     /// <summary>
@@ -999,9 +1000,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// flip
     /// </summary>
-    public Task FlipAsync(bool horizontal, bool vertical)
+    public Task FlipAsync(bool horizontal, bool vertical, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_flip, horizontal, vertical);
+        return CallMethodAsyncVoid(_flip, cancellationToken, horizontal, vertical);
     }
 
     /// <summary>
@@ -1015,9 +1016,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// applyCrop
     /// </summary>
-    public Task ApplyCropAsync(ImageRegion region)
+    public Task ApplyCropAsync(ImageRegion region, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_applyCrop, NapiArg.Of(region));
+        return CallMethodAsyncVoid(_applyCrop, cancellationToken, NapiArg.Of(region));
     }
 
     /// <summary>
@@ -1031,9 +1032,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// crop
     /// </summary>
-    public Task CropAsync(ImageRegion region)
+    public Task CropAsync(ImageRegion region, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_crop, NapiArg.Of(region));
+        return CallMethodAsyncVoid(_crop, cancellationToken, NapiArg.Of(region));
     }
 
     /// <summary>
@@ -1079,25 +1080,25 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// applyColorSpace
     /// </summary>
-    public Task ApplyColorSpaceAsync(IntPtr targetColorSpace)
+    public Task ApplyColorSpaceAsync(IntPtr targetColorSpace, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_applyColorSpace, targetColorSpace);
+        return CallMethodAsyncVoid(_applyColorSpace, cancellationToken, targetColorSpace);
     }
 
     /// <summary>
     /// convertPixelFormat
     /// </summary>
-    public Task ConvertPixelFormatAsync(global::HarmonyOS.ArkUI.PixelMapFormat targetPixelFormat)
+    public Task ConvertPixelFormatAsync(global::HarmonyOS.ArkUI.PixelMapFormat targetPixelFormat, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_convertPixelFormat, (int)targetPixelFormat);
+        return CallMethodAsyncVoid(_convertPixelFormat, cancellationToken, (int)targetPixelFormat);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -1143,9 +1144,9 @@ public sealed partial class ImagePixelMap : JsObject
     /// <summary>
     /// setMetadata
     /// </summary>
-    public Task SetMetadataAsync(global::HarmonyOS.ArkUI.HdrMetadataKey key, IntPtr value)
+    public Task SetMetadataAsync(global::HarmonyOS.ArkUI.HdrMetadataKey key, IntPtr value, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMetadata, (int)key, value);
+        return CallMethodAsyncVoid(_setMetadata, cancellationToken, (int)key, value);
     }
 
     /// <summary>
@@ -1436,49 +1437,49 @@ public sealed partial class ImageSource : JsObject
     /// <summary>
     /// modifyImageProperty
     /// </summary>
-    public Task ModifyImagePropertyAsync(global::HarmonyOS.ArkUI.PropertyKey key, string value)
+    public Task ModifyImagePropertyAsync(global::HarmonyOS.ArkUI.PropertyKey key, string value, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_modifyImageProperty, (int)key, value);
+        return CallMethodAsyncVoid(_modifyImageProperty, cancellationToken, (int)key, value);
     }
 
     /// <summary>
     /// modifyImageProperty
     /// </summary>
-    public Task ModifyImagePropertyAsync(string key, string value)
+    public Task ModifyImagePropertyAsync(string key, string value, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_modifyImageProperty, key, value);
+        return CallMethodAsyncVoid(_modifyImageProperty, cancellationToken, key, value);
     }
 
     /// <summary>
     /// modifyImageProperties
     /// </summary>
-    public Task ModifyImagePropertiesAsync(IntPtr records)
+    public Task ModifyImagePropertiesAsync(IntPtr records, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_modifyImageProperties, records);
+        return CallMethodAsyncVoid(_modifyImageProperties, cancellationToken, records);
     }
 
     /// <summary>
     /// modifyImagePropertiesEnhanced
     /// </summary>
-    public Task ModifyImagePropertiesEnhancedAsync(IntPtr records)
+    public Task ModifyImagePropertiesEnhancedAsync(IntPtr records, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_modifyImagePropertiesEnhanced, records);
+        return CallMethodAsyncVoid(_modifyImagePropertiesEnhanced, cancellationToken, records);
     }
 
     /// <summary>
     /// updateData
     /// </summary>
-    public Task UpdateDataAsync(byte[] buf, bool isFinished, double offset, double length)
+    public Task UpdateDataAsync(byte[] buf, bool isFinished, double offset, double length, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateData, NapiArg.OfArrayBuffer(buf), isFinished, offset, length);
+        return CallMethodAsyncVoid(_updateData, cancellationToken, NapiArg.OfArrayBuffer(buf), isFinished, offset, length);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -1508,9 +1509,9 @@ public sealed partial class ImageSource : JsObject
     /// <summary>
     /// writeImageMetadata
     /// </summary>
-    public Task WriteImageMetadataAsync(ImageMetadata imageMetadata)
+    public Task WriteImageMetadataAsync(ImageMetadata imageMetadata, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_writeImageMetadata, NapiArg.Of(imageMetadata));
+        return CallMethodAsyncVoid(_writeImageMetadata, cancellationToken, NapiArg.Of(imageMetadata));
     }
 
     /// <summary>
@@ -1637,33 +1638,33 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packToFile
     /// </summary>
-    public Task PackToFileAsync(ImageSource source, double fd, PackingOption options)
+    public Task PackToFileAsync(ImageSource source, double fd, PackingOption options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_packToFile, NapiArg.Of(source), fd, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_packToFile, cancellationToken, NapiArg.Of(source), fd, NapiArg.Of(options));
     }
 
     /// <summary>
     /// packToFile
     /// </summary>
-    public Task PackToFileAsync(ImagePixelMap source, double fd, PackingOption options)
+    public Task PackToFileAsync(ImagePixelMap source, double fd, PackingOption options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_packToFile, NapiArg.Of(source), fd, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_packToFile, cancellationToken, NapiArg.Of(source), fd, NapiArg.Of(options));
     }
 
     /// <summary>
     /// packToFileFromPixelmapSequence
     /// </summary>
-    public Task PackToFileFromPixelmapSequenceAsync(ImagePixelMap[] pixelmapSequence, double fd, PackingOptionsForSequence options)
+    public Task PackToFileFromPixelmapSequenceAsync(ImagePixelMap[] pixelmapSequence, double fd, PackingOptionsForSequence options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_packToFileFromPixelmapSequence, NapiArg.Of(pixelmapSequence), fd, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_packToFileFromPixelmapSequence, cancellationToken, NapiArg.Of(pixelmapSequence), fd, NapiArg.Of(options));
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -1677,17 +1678,17 @@ public sealed partial class ImagePacker : JsObject
     /// <summary>
     /// packToFile
     /// </summary>
-    public Task PackToFileAsync(Picture picture, double fd, PackingOption options)
+    public Task PackToFileAsync(Picture picture, double fd, PackingOption options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_packToFile, NapiArg.Of(picture), fd, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_packToFile, cancellationToken, NapiArg.Of(picture), fd, NapiArg.Of(options));
     }
 
     /// <summary>
     /// packBinaryImageToTiffFile
     /// </summary>
-    public Task PackBinaryImageToTiffFileAsync(BinaryBufferInfo bufferInfo, double fd, PackingOptionsForTiff? options = null)
+    public Task PackBinaryImageToTiffFileAsync(BinaryBufferInfo bufferInfo, double fd, PackingOptionsForTiff? options = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_packBinaryImageToTiffFile, NapiArg.Of(bufferInfo), fd, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_packBinaryImageToTiffFile, cancellationToken, NapiArg.Of(bufferInfo), fd, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1774,9 +1775,9 @@ public sealed partial class ImageReceiver : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -1903,9 +1904,9 @@ public sealed partial class ImageCreator : JsObject
     /// <summary>
     /// queueImage
     /// </summary>
-    public Task QueueImageAsync(ImageImage image)
+    public Task QueueImageAsync(ImageImage image, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_queueImage, NapiArg.Of(image));
+        return CallMethodAsyncVoid(_queueImage, cancellationToken, NapiArg.Of(image));
     }
 
     /// <summary>
@@ -1927,9 +1928,9 @@ public sealed partial class ImageCreator : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -2048,9 +2049,9 @@ public sealed partial class Picture : JsObject
     /// <summary>
     /// setMetadata
     /// </summary>
-    public Task SetMetadataAsync(global::HarmonyOS.ArkUI.MetadataType metadataType, Metadata metadata)
+    public Task SetMetadataAsync(global::HarmonyOS.ArkUI.MetadataType metadataType, Metadata metadata, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMetadata, (int)metadataType, NapiArg.Of(metadata));
+        return CallMethodAsyncVoid(_setMetadata, cancellationToken, (int)metadataType, NapiArg.Of(metadata));
     }
 
     /// <summary>
@@ -2080,9 +2081,9 @@ public sealed partial class Picture : JsObject
     /// <summary>
     /// hdrComposeToMainPixelmap
     /// </summary>
-    public Task HdrComposeToMainPixelmapAsync()
+    public Task HdrComposeToMainPixelmapAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_hdrComposeToMainPixelmap);
+        return CallMethodAsyncVoid(_hdrComposeToMainPixelmap, cancellationToken);
     }
 
 }
@@ -2105,9 +2106,9 @@ public sealed partial class AuxiliaryPicture : JsObject
     /// <summary>
     /// writePixelsFromBuffer
     /// </summary>
-    public Task WritePixelsFromBufferAsync(byte[] data)
+    public Task WritePixelsFromBufferAsync(byte[] data, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_writePixelsFromBuffer, NapiArg.OfArrayBuffer(data));
+        return CallMethodAsyncVoid(_writePixelsFromBuffer, cancellationToken, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>
@@ -2129,9 +2130,9 @@ public sealed partial class AuxiliaryPicture : JsObject
     /// <summary>
     /// setMetadata
     /// </summary>
-    public Task SetMetadataAsync(global::HarmonyOS.ArkUI.MetadataType metadataType, Metadata metadata)
+    public Task SetMetadataAsync(global::HarmonyOS.ArkUI.MetadataType metadataType, Metadata metadata, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMetadata, (int)metadataType, NapiArg.Of(metadata));
+        return CallMethodAsyncVoid(_setMetadata, cancellationToken, (int)metadataType, NapiArg.Of(metadata));
     }
 
     /// <summary>
@@ -2679,9 +2680,9 @@ public sealed partial class ImageImage : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -2741,9 +2742,9 @@ public sealed partial class Metadata : JsObject
     /// <summary>
     /// setProperties
     /// </summary>
-    public Task SetPropertiesAsync(IntPtr records)
+    public Task SetPropertiesAsync(IntPtr records, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setProperties, records);
+        return CallMethodAsyncVoid(_setProperties, cancellationToken, records);
     }
 
     /// <summary>
@@ -2773,9 +2774,9 @@ public sealed partial class Metadata : JsObject
     /// <summary>
     /// setBlob
     /// </summary>
-    public Task SetBlobAsync(byte[] blob)
+    public Task SetBlobAsync(byte[] blob, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setBlob, NapiArg.OfArrayBuffer(blob));
+        return CallMethodAsyncVoid(_setBlob, cancellationToken, NapiArg.OfArrayBuffer(blob));
     }
 
 }
@@ -3653,9 +3654,9 @@ public sealed partial class ExifMetadata : JsObject
     /// <summary>
     /// setProperties
     /// </summary>
-    public Task SetPropertiesAsync(IntPtr records)
+    public Task SetPropertiesAsync(IntPtr records, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setProperties, records);
+        return CallMethodAsyncVoid(_setProperties, cancellationToken, records);
     }
 
     /// <summary>
@@ -3685,9 +3686,9 @@ public sealed partial class ExifMetadata : JsObject
     /// <summary>
     /// setBlob
     /// </summary>
-    public Task SetBlobAsync(byte[] blob)
+    public Task SetBlobAsync(byte[] blob, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setBlob, NapiArg.OfArrayBuffer(blob));
+        return CallMethodAsyncVoid(_setBlob, cancellationToken, NapiArg.OfArrayBuffer(blob));
     }
 
 }
@@ -3911,9 +3912,9 @@ public sealed partial class MakerNoteHuaweiMetadata : JsObject
     /// <summary>
     /// setProperties
     /// </summary>
-    public Task SetPropertiesAsync(IntPtr records)
+    public Task SetPropertiesAsync(IntPtr records, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setProperties, records);
+        return CallMethodAsyncVoid(_setProperties, cancellationToken, records);
     }
 
     /// <summary>
@@ -3943,9 +3944,9 @@ public sealed partial class MakerNoteHuaweiMetadata : JsObject
     /// <summary>
     /// setBlob
     /// </summary>
-    public Task SetBlobAsync(byte[] blob)
+    public Task SetBlobAsync(byte[] blob, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setBlob, NapiArg.OfArrayBuffer(blob));
+        return CallMethodAsyncVoid(_setBlob, cancellationToken, NapiArg.OfArrayBuffer(blob));
     }
 
 }
@@ -4007,9 +4008,9 @@ public sealed partial class HeifsMetadata : JsObject
     /// <summary>
     /// setProperties
     /// </summary>
-    public Task SetPropertiesAsync(IntPtr records)
+    public Task SetPropertiesAsync(IntPtr records, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setProperties, records);
+        return CallMethodAsyncVoid(_setProperties, cancellationToken, records);
     }
 
     /// <summary>
@@ -4039,9 +4040,9 @@ public sealed partial class HeifsMetadata : JsObject
     /// <summary>
     /// setBlob
     /// </summary>
-    public Task SetBlobAsync(byte[] blob)
+    public Task SetBlobAsync(byte[] blob, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setBlob, NapiArg.OfArrayBuffer(blob));
+        return CallMethodAsyncVoid(_setBlob, cancellationToken, NapiArg.OfArrayBuffer(blob));
     }
 
 }
@@ -4970,17 +4971,17 @@ public sealed partial class XMPMetadata : JsObject
     /// <summary>
     /// registerXMPNamespace
     /// </summary>
-    public Task RegisterXmpNamespaceAsync(XMPNamespace xmpNamespace)
+    public Task RegisterXmpNamespaceAsync(XMPNamespace xmpNamespace, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_registerXMPNamespace, NapiArg.Of(xmpNamespace));
+        return CallMethodAsyncVoid(_registerXMPNamespace, cancellationToken, NapiArg.Of(xmpNamespace));
     }
 
     /// <summary>
     /// setValue
     /// </summary>
-    public Task SetValueAsync(string path, global::HarmonyOS.ArkUI.XMPTagType type, string? value = null)
+    public Task SetValueAsync(string path, global::HarmonyOS.ArkUI.XMPTagType type, string? value = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setValue, path, (int)type, value);
+        return CallMethodAsyncVoid(_setValue, cancellationToken, path, (int)type, value);
     }
 
     /// <summary>
@@ -4994,9 +4995,9 @@ public sealed partial class XMPMetadata : JsObject
     /// <summary>
     /// removeTag
     /// </summary>
-    public Task RemoveTagAsync(string path)
+    public Task RemoveTagAsync(string path, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_removeTag, path);
+        return CallMethodAsyncVoid(_removeTag, cancellationToken, path);
     }
 
     /// <summary>
@@ -5018,9 +5019,9 @@ public sealed partial class XMPMetadata : JsObject
     /// <summary>
     /// setBlob
     /// </summary>
-    public Task SetBlobAsync(byte[] buffer)
+    public Task SetBlobAsync(byte[] buffer, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setBlob, NapiArg.OfArrayBuffer(buffer));
+        return CallMethodAsyncVoid(_setBlob, cancellationToken, NapiArg.OfArrayBuffer(buffer));
     }
 
     /// <summary>

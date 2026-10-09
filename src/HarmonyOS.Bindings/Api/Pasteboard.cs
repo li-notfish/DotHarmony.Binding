@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -661,17 +662,17 @@ public sealed partial class SystemPasteboard : JsObject
     /// <summary>
     /// clear
     /// </summary>
-    public Task ClearAsync()
+    public Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_clear);
+        return CallMethodAsyncVoid(_clear, cancellationToken);
     }
 
     /// <summary>
     /// clearData
     /// </summary>
-    public Task ClearDataAsync()
+    public Task ClearDataAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_clearData);
+        return CallMethodAsyncVoid(_clearData, cancellationToken);
     }
 
     /// <summary>
@@ -733,17 +734,17 @@ public sealed partial class SystemPasteboard : JsObject
     /// <summary>
     /// setPasteData
     /// </summary>
-    public Task SetPasteDataAsync(PasteData data)
+    public Task SetPasteDataAsync(PasteData data, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPasteData, NapiArg.Of(data));
+        return CallMethodAsyncVoid(_setPasteData, cancellationToken, NapiArg.Of(data));
     }
 
     /// <summary>
     /// setData
     /// </summary>
-    public Task SetDataAsync(PasteData data)
+    public Task SetDataAsync(PasteData data, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setData, NapiArg.Of(data));
+        return CallMethodAsyncVoid(_setData, cancellationToken, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -773,9 +774,9 @@ public sealed partial class SystemPasteboard : JsObject
     /// <summary>
     /// setUnifiedData
     /// </summary>
-    public Task SetUnifiedDataAsync(IntPtr data)
+    public Task SetUnifiedDataAsync(IntPtr data, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setUnifiedData, data);
+        return CallMethodAsyncVoid(_setUnifiedData, cancellationToken, data);
     }
 
     /// <summary>

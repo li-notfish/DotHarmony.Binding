@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -105,25 +106,25 @@ public sealed partial class FloatingBallController : JsObject
     /// <summary>
     /// startFloatingBall
     /// </summary>
-    public Task StartFloatingBallAsync(IntPtr @params)
+    public Task StartFloatingBallAsync(IntPtr @params, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startFloatingBall, @params);
+        return CallMethodAsyncVoid(_startFloatingBall, cancellationToken, @params);
     }
 
     /// <summary>
     /// updateFloatingBall
     /// </summary>
-    public Task UpdateFloatingBallAsync(IntPtr @params)
+    public Task UpdateFloatingBallAsync(IntPtr @params, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateFloatingBall, @params);
+        return CallMethodAsyncVoid(_updateFloatingBall, cancellationToken, @params);
     }
 
     /// <summary>
     /// stopFloatingBall
     /// </summary>
-    public Task StopFloatingBallAsync()
+    public Task StopFloatingBallAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stopFloatingBall);
+        return CallMethodAsyncVoid(_stopFloatingBall, cancellationToken);
     }
 
     /// <summary>
@@ -169,17 +170,17 @@ public sealed partial class FloatingBallController : JsObject
     /// <summary>
     /// restoreMainWindow
     /// </summary>
-    public Task RestoreMainWindowAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
+    public Task RestoreMainWindowAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_restoreMainWindow, NapiArg.Of(want));
+        return CallMethodAsyncVoid(_restoreMainWindow, cancellationToken, NapiArg.Of(want));
     }
 
     /// <summary>
     /// setFloatingBallVisibilityInApp
     /// </summary>
-    public Task SetFloatingBallVisibilityInAppAsync(bool isVisible)
+    public Task SetFloatingBallVisibilityInAppAsync(bool isVisible, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setFloatingBallVisibilityInApp, isVisible);
+        return CallMethodAsyncVoid(_setFloatingBallVisibilityInApp, cancellationToken, isVisible);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();

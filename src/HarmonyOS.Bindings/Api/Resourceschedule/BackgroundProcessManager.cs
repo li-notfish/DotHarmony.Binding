@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -73,25 +74,25 @@ public static unsafe partial class BackgroundProcessManager
     /// <summary>
     /// setProcessPriority
     /// </summary>
-    public static Task SetProcessPriorityAsync(double pid, global::HarmonyOS.ArkUI.ProcessPriority priority)
+    public static Task SetProcessPriorityAsync(double pid, global::HarmonyOS.ArkUI.ProcessPriority priority, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setProcessPriority, pid, (int)priority);
+        return NodeApi.CallMethodAsyncVoid(Module, _setProcessPriority, cancellationToken, pid, (int)priority);
     }
 
     /// <summary>
     /// resetProcessPriority
     /// </summary>
-    public static Task ResetProcessPriorityAsync(double pid)
+    public static Task ResetProcessPriorityAsync(double pid, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _resetProcessPriority, pid);
+        return NodeApi.CallMethodAsyncVoid(Module, _resetProcessPriority, cancellationToken, pid);
     }
 
     /// <summary>
     /// setPowerSaveMode
     /// </summary>
-    public static Task SetPowerSaveModeAsync(double pid, global::HarmonyOS.ArkUI.PowerSaveMode powerSaveMode)
+    public static Task SetPowerSaveModeAsync(double pid, global::HarmonyOS.ArkUI.PowerSaveMode powerSaveMode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setPowerSaveMode, pid, (int)powerSaveMode);
+        return NodeApi.CallMethodAsyncVoid(Module, _setPowerSaveMode, cancellationToken, pid, (int)powerSaveMode);
     }
 
     /// <summary>

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -118,33 +119,33 @@ public static unsafe partial class Preferences
     /// <summary>
     /// deletePreferences
     /// </summary>
-    public static Task DeletePreferencesAsync(IntPtr context, string name)
+    public static Task DeletePreferencesAsync(IntPtr context, string name, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, context, name);
+        return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, cancellationToken, context, name);
     }
 
     /// <summary>
     /// deletePreferences
     /// </summary>
-    public static Task DeletePreferencesAsync(IntPtr context, PreferencesOptions options)
+    public static Task DeletePreferencesAsync(IntPtr context, PreferencesOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, context, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, cancellationToken, context, NapiArg.Of(options));
     }
 
     /// <summary>
     /// removePreferencesFromCache
     /// </summary>
-    public static Task RemovePreferencesFromCacheAsync(IntPtr context, string name)
+    public static Task RemovePreferencesFromCacheAsync(IntPtr context, string name, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, context, name);
+        return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, cancellationToken, context, name);
     }
 
     /// <summary>
     /// removePreferencesFromCache
     /// </summary>
-    public static Task RemovePreferencesFromCacheAsync(IntPtr context, PreferencesOptions options)
+    public static Task RemovePreferencesFromCacheAsync(IntPtr context, PreferencesOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, context, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, cancellationToken, context, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -239,9 +240,9 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// put
     /// </summary>
-    public Task PutAsync(string key, global::HarmonyOS.ArkUI.ValueType value)
+    public Task PutAsync(string key, global::HarmonyOS.ArkUI.ValueType value, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_put, key, (int)value);
+        return CallMethodAsyncVoid(_put, cancellationToken, key, (int)value);
     }
 
     /// <summary>
@@ -255,9 +256,9 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// delete
     /// </summary>
-    public Task DeleteAsync(string key)
+    public Task DeleteAsync(string key, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_delete, key);
+        return CallMethodAsyncVoid(_delete, cancellationToken, key);
     }
 
     /// <summary>
@@ -271,9 +272,9 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// clear
     /// </summary>
-    public Task ClearAsync()
+    public Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_clear);
+        return CallMethodAsyncVoid(_clear, cancellationToken);
     }
 
     /// <summary>
@@ -287,9 +288,9 @@ public sealed partial class PreferencesObject : JsObject
     /// <summary>
     /// flush
     /// </summary>
-    public Task FlushAsync()
+    public Task FlushAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_flush);
+        return CallMethodAsyncVoid(_flush, cancellationToken);
     }
 
     /// <summary>

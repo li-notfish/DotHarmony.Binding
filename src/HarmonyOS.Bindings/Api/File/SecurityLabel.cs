@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -71,9 +72,9 @@ public static unsafe partial class SecurityLabel
     /// <summary>
     /// setSecurityLabel
     /// </summary>
-    public static Task SetSecurityLabelAsync(string path, IntPtr type)
+    public static Task SetSecurityLabelAsync(string path, IntPtr type, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setSecurityLabel, path, type);
+        return NodeApi.CallMethodAsyncVoid(Module, _setSecurityLabel, cancellationToken, path, type);
     }
 
     /// <summary>

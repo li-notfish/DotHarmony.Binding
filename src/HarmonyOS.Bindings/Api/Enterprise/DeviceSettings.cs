@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -94,17 +95,17 @@ public static unsafe partial class DeviceSettings
     /// <summary>
     /// setHomeWallpaper
     /// </summary>
-    public static Task SetHomeWallpaperAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double fd)
+    public static Task SetHomeWallpaperAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double fd, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setHomeWallpaper, NapiArg.Of(admin), fd);
+        return NodeApi.CallMethodAsyncVoid(Module, _setHomeWallpaper, cancellationToken, NapiArg.Of(admin), fd);
     }
 
     /// <summary>
     /// setUnlockWallpaper
     /// </summary>
-    public static Task SetUnlockWallpaperAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double fd)
+    public static Task SetUnlockWallpaperAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double fd, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setUnlockWallpaper, NapiArg.Of(admin), fd);
+        return NodeApi.CallMethodAsyncVoid(Module, _setUnlockWallpaper, cancellationToken, NapiArg.Of(admin), fd);
     }
 
     /// <summary>

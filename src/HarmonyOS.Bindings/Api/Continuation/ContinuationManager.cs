@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -126,33 +127,33 @@ public static unsafe partial class ContinuationManager
     /// <summary>
     /// unregister
     /// </summary>
-    public static Task UnregisterAsync(double token)
+    public static Task UnregisterAsync(double token, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unregister, token);
+        return NodeApi.CallMethodAsyncVoid(Module, _unregister, cancellationToken, token);
     }
 
     /// <summary>
     /// updateConnectStatus
     /// </summary>
-    public static Task UpdateConnectStatusAsync(double token, string deviceId, global::HarmonyOS.ArkUI.DeviceConnectState status)
+    public static Task UpdateConnectStatusAsync(double token, string deviceId, global::HarmonyOS.ArkUI.DeviceConnectState status, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateConnectStatus, token, deviceId, (int)status);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateConnectStatus, cancellationToken, token, deviceId, (int)status);
     }
 
     /// <summary>
     /// startDeviceManager
     /// </summary>
-    public static Task StartDeviceManagerAsync(double token)
+    public static Task StartDeviceManagerAsync(double token, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _startDeviceManager, token);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _startDeviceManager, cancellationToken, token);
     }
 
     /// <summary>
     /// startDeviceManager
     /// </summary>
-    public static Task StartDeviceManagerAsync(double token, IntPtr options)
+    public static Task StartDeviceManagerAsync(double token, IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startDeviceManager, token, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _startDeviceManager, cancellationToken, token, options);
     }
 
     /// <summary>
@@ -174,33 +175,33 @@ public static unsafe partial class ContinuationManager
     /// <summary>
     /// unregisterContinuation
     /// </summary>
-    public static Task UnregisterContinuationAsync(double token)
+    public static Task UnregisterContinuationAsync(double token, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unregisterContinuation, token);
+        return NodeApi.CallMethodAsyncVoid(Module, _unregisterContinuation, cancellationToken, token);
     }
 
     /// <summary>
     /// updateContinuationState
     /// </summary>
-    public static Task UpdateContinuationStateAsync(double token, string deviceId, global::HarmonyOS.ArkUI.DeviceConnectState status)
+    public static Task UpdateContinuationStateAsync(double token, string deviceId, global::HarmonyOS.ArkUI.DeviceConnectState status, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateContinuationState, token, deviceId, (int)status);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateContinuationState, cancellationToken, token, deviceId, (int)status);
     }
 
     /// <summary>
     /// startContinuationDeviceManager
     /// </summary>
-    public static Task StartContinuationDeviceManagerAsync(double token)
+    public static Task StartContinuationDeviceManagerAsync(double token, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _startContinuationDeviceManager, token);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _startContinuationDeviceManager, cancellationToken, token);
     }
 
     /// <summary>
     /// startContinuationDeviceManager
     /// </summary>
-    public static Task StartContinuationDeviceManagerAsync(double token, IntPtr options)
+    public static Task StartContinuationDeviceManagerAsync(double token, IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startContinuationDeviceManager, token, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _startContinuationDeviceManager, cancellationToken, token, options);
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();

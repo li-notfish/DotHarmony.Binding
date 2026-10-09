@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -78,9 +79,9 @@ public static unsafe partial class ShortcutManager
     /// <summary>
     /// setShortcutVisibleForSelf
     /// </summary>
-    public static Task SetShortcutVisibleForSelfAsync(string id, bool visible)
+    public static Task SetShortcutVisibleForSelfAsync(string id, bool visible, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setShortcutVisibleForSelf, id, visible);
+        return NodeApi.CallMethodAsyncVoid(Module, _setShortcutVisibleForSelf, cancellationToken, id, visible);
     }
 
     /// <summary>

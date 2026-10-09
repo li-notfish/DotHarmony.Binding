@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -116,17 +117,17 @@ public sealed partial class TextEmbedding : JsObject
     /// <summary>
     /// loadModel
     /// </summary>
-    public Task LoadModelAsync()
+    public Task LoadModelAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_loadModel);
+        return CallMethodAsyncVoid(_loadModel, cancellationToken);
     }
 
     /// <summary>
     /// releaseModel
     /// </summary>
-    public Task ReleaseModelAsync()
+    public Task ReleaseModelAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_releaseModel);
+        return CallMethodAsyncVoid(_releaseModel, cancellationToken);
     }
 
     /// <summary>
@@ -196,17 +197,17 @@ public sealed partial class ImageEmbedding : JsObject
     /// <summary>
     /// loadModel
     /// </summary>
-    public Task LoadModelAsync()
+    public Task LoadModelAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_loadModel);
+        return CallMethodAsyncVoid(_loadModel, cancellationToken);
     }
 
     /// <summary>
     /// releaseModel
     /// </summary>
-    public Task ReleaseModelAsync()
+    public Task ReleaseModelAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_releaseModel);
+        return CallMethodAsyncVoid(_releaseModel, cancellationToken);
     }
 
     /// <summary>

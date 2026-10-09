@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -392,9 +393,9 @@ public sealed partial class Mac : JsObject
     /// <summary>
     /// init
     /// </summary>
-    public Task InitAsync(SymKey key)
+    public Task InitAsync(SymKey key, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_init, NapiArg.Of(key));
+        return CallMethodAsyncVoid(_init, cancellationToken, NapiArg.Of(key));
     }
 
     /// <summary>
@@ -408,9 +409,9 @@ public sealed partial class Mac : JsObject
     /// <summary>
     /// update
     /// </summary>
-    public Task UpdateAsync(CryptoFrameworkDataBlob input)
+    public Task UpdateAsync(CryptoFrameworkDataBlob input, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_update, NapiArg.Of(input));
+        return CallMethodAsyncVoid(_update, cancellationToken, NapiArg.Of(input));
     }
 
     /// <summary>
@@ -484,9 +485,9 @@ public sealed partial class Md : JsObject
     /// <summary>
     /// update
     /// </summary>
-    public Task UpdateAsync(CryptoFrameworkDataBlob input)
+    public Task UpdateAsync(CryptoFrameworkDataBlob input, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_update, NapiArg.Of(input));
+        return CallMethodAsyncVoid(_update, cancellationToken, NapiArg.Of(input));
     }
 
     /// <summary>
@@ -547,9 +548,9 @@ public sealed partial class Cipher : JsObject
     /// <summary>
     /// init
     /// </summary>
-    public Task InitAsync(global::HarmonyOS.ArkUI.CryptoMode opMode, CryptoFrameworkKey key, ParamsSpec @params)
+    public Task InitAsync(global::HarmonyOS.ArkUI.CryptoMode opMode, CryptoFrameworkKey key, ParamsSpec @params, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_init, (int)opMode, NapiArg.Of(key), NapiArg.Of(@params));
+        return CallMethodAsyncVoid(_init, cancellationToken, (int)opMode, NapiArg.Of(key), NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -634,9 +635,9 @@ public sealed partial class Sign : JsObject
     /// <summary>
     /// init
     /// </summary>
-    public Task InitAsync(PriKey priKey)
+    public Task InitAsync(PriKey priKey, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_init, NapiArg.Of(priKey));
+        return CallMethodAsyncVoid(_init, cancellationToken, NapiArg.Of(priKey));
     }
 
     /// <summary>
@@ -650,9 +651,9 @@ public sealed partial class Sign : JsObject
     /// <summary>
     /// update
     /// </summary>
-    public Task UpdateAsync(CryptoFrameworkDataBlob data)
+    public Task UpdateAsync(CryptoFrameworkDataBlob data, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_update, NapiArg.Of(data));
+        return CallMethodAsyncVoid(_update, cancellationToken, NapiArg.Of(data));
     }
 
     /// <summary>
@@ -723,9 +724,9 @@ public sealed partial class Verify : JsObject
     /// <summary>
     /// init
     /// </summary>
-    public Task InitAsync(PubKey pubKey)
+    public Task InitAsync(PubKey pubKey, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_init, NapiArg.Of(pubKey));
+        return CallMethodAsyncVoid(_init, cancellationToken, NapiArg.Of(pubKey));
     }
 
     /// <summary>
@@ -739,9 +740,9 @@ public sealed partial class Verify : JsObject
     /// <summary>
     /// update
     /// </summary>
-    public Task UpdateAsync(CryptoFrameworkDataBlob data)
+    public Task UpdateAsync(CryptoFrameworkDataBlob data, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_update, NapiArg.Of(data));
+        return CallMethodAsyncVoid(_update, cancellationToken, NapiArg.Of(data));
     }
 
     /// <summary>

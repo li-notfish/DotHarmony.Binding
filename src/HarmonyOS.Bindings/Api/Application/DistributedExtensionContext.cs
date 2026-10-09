@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -77,9 +78,9 @@ public static unsafe partial class DistributedExtensionContext
     /// <summary>
     /// disconnectServiceExtensionAbility
     /// </summary>
-    public static Task DisconnectServiceExtensionAbilityAsync(double connection)
+    public static Task DisconnectServiceExtensionAbilityAsync(double connection, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disconnectServiceExtensionAbility, connection);
+        return NodeApi.CallMethodAsyncVoid(Module, _disconnectServiceExtensionAbility, cancellationToken, connection);
     }
 
 }
@@ -104,9 +105,9 @@ public sealed partial class DistributedExtensionContextObject : JsObject
     /// <summary>
     /// disconnectServiceExtensionAbility
     /// </summary>
-    public Task DisconnectServiceExtensionAbilityAsync(double connection)
+    public Task DisconnectServiceExtensionAbilityAsync(double connection, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_disconnectServiceExtensionAbility, connection);
+        return CallMethodAsyncVoid(_disconnectServiceExtensionAbility, cancellationToken, connection);
     }
 
 }

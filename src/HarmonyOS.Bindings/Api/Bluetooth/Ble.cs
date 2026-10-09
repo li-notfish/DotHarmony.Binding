@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -169,25 +170,25 @@ public static unsafe partial class Ble
     /// <summary>
     /// enableAdvertising
     /// </summary>
-    public static Task EnableAdvertisingAsync(AdvertisingEnableParams advertisingEnableParams)
+    public static Task EnableAdvertisingAsync(AdvertisingEnableParams advertisingEnableParams, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _enableAdvertising, NapiArg.Of(advertisingEnableParams));
+        return NodeApi.CallMethodAsyncVoid(Module, _enableAdvertising, cancellationToken, NapiArg.Of(advertisingEnableParams));
     }
 
     /// <summary>
     /// disableAdvertising
     /// </summary>
-    public static Task DisableAdvertisingAsync(AdvertisingDisableParams advertisingDisableParams)
+    public static Task DisableAdvertisingAsync(AdvertisingDisableParams advertisingDisableParams, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disableAdvertising, NapiArg.Of(advertisingDisableParams));
+        return NodeApi.CallMethodAsyncVoid(Module, _disableAdvertising, cancellationToken, NapiArg.Of(advertisingDisableParams));
     }
 
     /// <summary>
     /// stopAdvertising
     /// </summary>
-    public static Task StopAdvertisingAsync(double advertisingId)
+    public static Task StopAdvertisingAsync(double advertisingId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopAdvertising, advertisingId);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopAdvertising, cancellationToken, advertisingId);
     }
 
     /// <summary>
@@ -379,9 +380,9 @@ public sealed partial class GattServer : JsObject
     /// <summary>
     /// notifyCharacteristicChanged
     /// </summary>
-    public Task NotifyCharacteristicChangedAsync(string deviceId, NotifyCharacteristic notifyCharacteristic)
+    public Task NotifyCharacteristicChangedAsync(string deviceId, NotifyCharacteristic notifyCharacteristic, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_notifyCharacteristicChanged, deviceId, NapiArg.Of(notifyCharacteristic));
+        return CallMethodAsyncVoid(_notifyCharacteristicChanged, cancellationToken, deviceId, NapiArg.Of(notifyCharacteristic));
     }
 
     /// <summary>
@@ -411,9 +412,9 @@ public sealed partial class GattServer : JsObject
     /// <summary>
     /// setPhy
     /// </summary>
-    public Task SetPhyAsync(string deviceId, PhyValue phyValue)
+    public Task SetPhyAsync(string deviceId, PhyValue phyValue, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPhy, deviceId, NapiArg.Of(phyValue));
+        return CallMethodAsyncVoid(_setPhy, cancellationToken, deviceId, NapiArg.Of(phyValue));
     }
 
     /// <summary>
@@ -758,17 +759,17 @@ public sealed partial class GattClientDevice : JsObject
     /// <summary>
     /// writeCharacteristicValue
     /// </summary>
-    public Task WriteCharacteristicValueAsync(IntPtr characteristic, global::HarmonyOS.ArkUI.GattWriteType writeType)
+    public Task WriteCharacteristicValueAsync(IntPtr characteristic, global::HarmonyOS.ArkUI.GattWriteType writeType, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_writeCharacteristicValue, characteristic, (int)writeType);
+        return CallMethodAsyncVoid(_writeCharacteristicValue, cancellationToken, characteristic, (int)writeType);
     }
 
     /// <summary>
     /// writeDescriptorValue
     /// </summary>
-    public Task WriteDescriptorValueAsync(BLEDescriptor descriptor)
+    public Task WriteDescriptorValueAsync(BLEDescriptor descriptor, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_writeDescriptorValue, NapiArg.Of(descriptor));
+        return CallMethodAsyncVoid(_writeDescriptorValue, cancellationToken, NapiArg.Of(descriptor));
     }
 
     /// <summary>
@@ -798,17 +799,17 @@ public sealed partial class GattClientDevice : JsObject
     /// <summary>
     /// setCharacteristicChangeNotification
     /// </summary>
-    public Task SetCharacteristicChangeNotificationAsync(IntPtr characteristic, bool enable)
+    public Task SetCharacteristicChangeNotificationAsync(IntPtr characteristic, bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setCharacteristicChangeNotification, characteristic, enable);
+        return CallMethodAsyncVoid(_setCharacteristicChangeNotification, cancellationToken, characteristic, enable);
     }
 
     /// <summary>
     /// setCharacteristicChangeIndication
     /// </summary>
-    public Task SetCharacteristicChangeIndicationAsync(IntPtr characteristic, bool enable)
+    public Task SetCharacteristicChangeIndicationAsync(IntPtr characteristic, bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setCharacteristicChangeIndication, characteristic, enable);
+        return CallMethodAsyncVoid(_setCharacteristicChangeIndication, cancellationToken, characteristic, enable);
     }
 
     /// <summary>
@@ -822,9 +823,9 @@ public sealed partial class GattClientDevice : JsObject
     /// <summary>
     /// updateConnectionParam
     /// </summary>
-    public Task UpdateConnectionParamAsync(global::HarmonyOS.ArkUI.ConnectionParam param)
+    public Task UpdateConnectionParamAsync(global::HarmonyOS.ArkUI.ConnectionParam param, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateConnectionParam, (int)param);
+        return CallMethodAsyncVoid(_updateConnectionParam, cancellationToken, (int)param);
     }
 
     /// <summary>
@@ -838,9 +839,9 @@ public sealed partial class GattClientDevice : JsObject
     /// <summary>
     /// setPhy
     /// </summary>
-    public Task SetPhyAsync(PhyValue phyValue)
+    public Task SetPhyAsync(PhyValue phyValue, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPhy, NapiArg.Of(phyValue));
+        return CallMethodAsyncVoid(_setPhy, cancellationToken, NapiArg.Of(phyValue));
     }
 
     /// <summary>
@@ -1023,17 +1024,17 @@ public sealed partial class BleScanner : JsObject
     /// <summary>
     /// startScan
     /// </summary>
-    public Task StartScanAsync(IntPtr[] filters, ScanOptions? options = null)
+    public Task StartScanAsync(IntPtr[] filters, ScanOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startScan, NapiArg.Of(filters), NapiArg.Of(options));
+        return CallMethodAsyncVoid(_startScan, cancellationToken, NapiArg.Of(filters), NapiArg.Of(options));
     }
 
     /// <summary>
     /// stopScan
     /// </summary>
-    public Task StopScanAsync()
+    public Task StopScanAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stopScan);
+        return CallMethodAsyncVoid(_stopScan, cancellationToken);
     }
 
     /// <summary>

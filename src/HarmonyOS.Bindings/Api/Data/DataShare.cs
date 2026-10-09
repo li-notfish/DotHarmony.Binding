@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -142,17 +143,17 @@ public sealed partial class DataProxyHandle : JsObject
     /// <summary>
     /// putValue
     /// </summary>
-    public Task PutValueAsync(string uri, double key, IntPtr value, DataProxyConfig config)
+    public Task PutValueAsync(string uri, double key, IntPtr value, DataProxyConfig config, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_putValue, uri, key, value, NapiArg.Of(config));
+        return CallMethodAsyncVoid(_putValue, cancellationToken, uri, key, value, NapiArg.Of(config));
     }
 
     /// <summary>
     /// removeValue
     /// </summary>
-    public Task RemoveValueAsync(string uri, double key, DataProxyConfig config)
+    public Task RemoveValueAsync(string uri, double key, DataProxyConfig config, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_removeValue, uri, key, NapiArg.Of(config));
+        return CallMethodAsyncVoid(_removeValue, cancellationToken, uri, key, NapiArg.Of(config));
     }
 
     /// <summary>

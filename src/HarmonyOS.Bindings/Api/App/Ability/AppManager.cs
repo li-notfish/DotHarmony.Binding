@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -100,9 +101,9 @@ public static unsafe partial class AppManager
     /// <summary>
     /// off
     /// </summary>
-    public static Task OffAsync(string type, double observerId)
+    public static Task OffAsync(string type, double observerId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _off, type, observerId);
+        return NodeApi.CallMethodAsyncVoid(Module, _off, cancellationToken, type, observerId);
     }
 
     /// <summary>
@@ -116,9 +117,9 @@ public static unsafe partial class AppManager
     /// <summary>
     /// killProcessesByBundleName
     /// </summary>
-    public static Task KillProcessesByBundleNameAsync(string bundleName, bool clearPageStack, double? appIndex = null)
+    public static Task KillProcessesByBundleNameAsync(string bundleName, bool clearPageStack, double? appIndex = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _killProcessesByBundleName, bundleName, clearPageStack, NapiArg.Of(appIndex));
+        return NodeApi.CallMethodAsyncVoid(Module, _killProcessesByBundleName, cancellationToken, bundleName, clearPageStack, NapiArg.Of(appIndex));
     }
 
     /// <summary>

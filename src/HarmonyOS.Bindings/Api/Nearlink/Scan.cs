@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -72,17 +73,17 @@ public static unsafe partial class Scan
     /// <summary>
     /// startScan
     /// </summary>
-    public static Task StartScanAsync(ScanFilters[] filters, ScanScanOptions? options = null)
+    public static Task StartScanAsync(ScanFilters[] filters, ScanScanOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startScan, NapiArg.Of(filters), NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _startScan, cancellationToken, NapiArg.Of(filters), NapiArg.Of(options));
     }
 
     /// <summary>
     /// stopScan
     /// </summary>
-    public static Task StopScanAsync()
+    public static Task StopScanAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopScan);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopScan, cancellationToken);
     }
 
     /// <summary>

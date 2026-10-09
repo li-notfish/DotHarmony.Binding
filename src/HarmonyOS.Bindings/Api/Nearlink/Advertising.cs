@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -80,9 +81,9 @@ public static unsafe partial class Advertising
     /// <summary>
     /// stopAdvertising
     /// </summary>
-    public static Task StopAdvertisingAsync(double advertisingId)
+    public static Task StopAdvertisingAsync(double advertisingId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopAdvertising, advertisingId);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopAdvertising, cancellationToken, advertisingId);
     }
 
     /// <summary>

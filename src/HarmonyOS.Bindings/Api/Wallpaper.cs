@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -135,17 +136,17 @@ public static unsafe partial class Wallpaper
     /// <summary>
     /// reset
     /// </summary>
-    public static Task ResetAsync(global::HarmonyOS.ArkUI.WallpaperType wallpaperType)
+    public static Task ResetAsync(global::HarmonyOS.ArkUI.WallpaperType wallpaperType, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _reset, (int)wallpaperType);
+        return NodeApi.CallMethodAsyncVoid(Module, _reset, cancellationToken, (int)wallpaperType);
     }
 
     /// <summary>
     /// setWallpaper
     /// </summary>
-    public static Task SetWallpaperAsync(string source, global::HarmonyOS.ArkUI.WallpaperType wallpaperType)
+    public static Task SetWallpaperAsync(string source, global::HarmonyOS.ArkUI.WallpaperType wallpaperType, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setWallpaper, source, (int)wallpaperType);
+        return NodeApi.CallMethodAsyncVoid(Module, _setWallpaper, cancellationToken, source, (int)wallpaperType);
     }
 
     /// <summary>

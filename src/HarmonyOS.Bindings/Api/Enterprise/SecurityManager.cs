@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -119,9 +120,9 @@ public static unsafe partial class SecurityManager
     /// <summary>
     /// uninstallUserCertificate
     /// </summary>
-    public static Task UninstallUserCertificateAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string certUri)
+    public static Task UninstallUserCertificateAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string certUri, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _uninstallUserCertificate, NapiArg.Of(admin), certUri);
+        return NodeApi.CallMethodAsyncVoid(Module, _uninstallUserCertificate, cancellationToken, NapiArg.Of(admin), certUri);
     }
 
     /// <summary>

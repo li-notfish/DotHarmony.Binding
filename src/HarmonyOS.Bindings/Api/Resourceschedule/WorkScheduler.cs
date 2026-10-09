@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -98,9 +99,9 @@ public static unsafe partial class WorkScheduler
     /// <summary>
     /// obtainAllWorks
     /// </summary>
-    public static Task ObtainAllWorksAsync()
+    public static Task ObtainAllWorksAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _obtainAllWorks);
+        return NodeApi.CallMethodAsyncVoid(Module, _obtainAllWorks, cancellationToken);
     }
 
     /// <summary>
@@ -114,9 +115,9 @@ public static unsafe partial class WorkScheduler
     /// <summary>
     /// isLastWorkTimeOut
     /// </summary>
-    public static Task IsLastWorkTimeOutAsync(double workId)
+    public static Task IsLastWorkTimeOutAsync(double workId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _isLastWorkTimeOut, workId);
+        return NodeApi.CallMethodAsyncVoid(Module, _isLastWorkTimeOut, cancellationToken, workId);
     }
 
 }

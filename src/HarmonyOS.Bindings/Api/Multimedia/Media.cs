@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -381,49 +382,49 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// prepare
     /// </summary>
-    public Task PrepareAsync()
+    public Task PrepareAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_prepare);
+        return CallMethodAsyncVoid(_prepare, cancellationToken);
     }
 
     /// <summary>
     /// play
     /// </summary>
-    public Task PlayAsync()
+    public Task PlayAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_play);
+        return CallMethodAsyncVoid(_play, cancellationToken);
     }
 
     /// <summary>
     /// pause
     /// </summary>
-    public Task PauseAsync()
+    public Task PauseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pause);
+        return CallMethodAsyncVoid(_pause, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
     /// reset
     /// </summary>
-    public Task ResetAsync()
+    public Task ResetAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_reset);
+        return CallMethodAsyncVoid(_reset, cancellationToken);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -461,17 +462,17 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// selectTrack
     /// </summary>
-    public Task SelectTrackAsync(double index, global::HarmonyOS.ArkUI.SwitchMode? mode = null)
+    public Task SelectTrackAsync(double index, global::HarmonyOS.ArkUI.SwitchMode? mode = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_selectTrack, index, NapiArg.Of(mode));
+        return CallMethodAsyncVoid(_selectTrack, cancellationToken, index, NapiArg.Of(mode));
     }
 
     /// <summary>
     /// deselectTrack
     /// </summary>
-    public Task DeselectTrackAsync(double index)
+    public Task DeselectTrackAsync(double index, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_deselectTrack, index);
+        return CallMethodAsyncVoid(_deselectTrack, cancellationToken, index);
     }
 
     /// <summary>
@@ -485,9 +486,9 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// setMediaSource
     /// </summary>
-    public Task SetMediaSourceAsync(MediaSource src, PlaybackStrategy? strategy = null)
+    public Task SetMediaSourceAsync(MediaSource src, PlaybackStrategy? strategy = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMediaSource, NapiArg.Of(src), NapiArg.Of(strategy));
+        return CallMethodAsyncVoid(_setMediaSource, cancellationToken, NapiArg.Of(src), NapiArg.Of(strategy));
     }
 
     /// <summary>
@@ -501,25 +502,25 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// setTrackSelectionFilter
     /// </summary>
-    public Task SetTrackSelectionFilterAsync(TrackSelectionFilter filter)
+    public Task SetTrackSelectionFilterAsync(TrackSelectionFilter filter, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setTrackSelectionFilter, NapiArg.Of(filter));
+        return CallMethodAsyncVoid(_setTrackSelectionFilter, cancellationToken, NapiArg.Of(filter));
     }
 
     /// <summary>
     /// addSubtitleFromFd
     /// </summary>
-    public Task AddSubtitleFromFdAsync(double fd, double? offset = null, double? length = null)
+    public Task AddSubtitleFromFdAsync(double fd, double? offset = null, double? length = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_addSubtitleFromFd, fd, NapiArg.Of(offset), NapiArg.Of(length));
+        return CallMethodAsyncVoid(_addSubtitleFromFd, cancellationToken, fd, NapiArg.Of(offset), NapiArg.Of(length));
     }
 
     /// <summary>
     /// addSubtitleFromUrl
     /// </summary>
-    public Task AddSubtitleFromUrlAsync(string url)
+    public Task AddSubtitleFromUrlAsync(string url, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_addSubtitleFromUrl, url);
+        return CallMethodAsyncVoid(_addSubtitleFromUrl, cancellationToken, url);
     }
 
     /// <summary>
@@ -573,25 +574,25 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// setPlaybackStrategy
     /// </summary>
-    public Task SetPlaybackStrategyAsync(PlaybackStrategy strategy)
+    public Task SetPlaybackStrategyAsync(PlaybackStrategy strategy, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPlaybackStrategy, NapiArg.Of(strategy));
+        return CallMethodAsyncVoid(_setPlaybackStrategy, cancellationToken, NapiArg.Of(strategy));
     }
 
     /// <summary>
     /// setMediaMuted
     /// </summary>
-    public Task SetMediaMutedAsync(global::HarmonyOS.ArkUI.MediaType mediaType, bool muted)
+    public Task SetMediaMutedAsync(global::HarmonyOS.ArkUI.MediaType mediaType, bool muted, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMediaMuted, (int)mediaType, muted);
+        return CallMethodAsyncVoid(_setMediaMuted, cancellationToken, (int)mediaType, muted);
     }
 
     /// <summary>
     /// setPlaybackRange
     /// </summary>
-    public Task SetPlaybackRangeAsync(double startTimeMs, double endTimeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null)
+    public Task SetPlaybackRangeAsync(double startTimeMs, double endTimeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPlaybackRange, startTimeMs, endTimeMs, NapiArg.Of(mode));
+        return CallMethodAsyncVoid(_setPlaybackRange, cancellationToken, startTimeMs, endTimeMs, NapiArg.Of(mode));
     }
 
     /// <summary>
@@ -621,33 +622,33 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// setSuperResolution
     /// </summary>
-    public Task SetSuperResolutionAsync(bool enabled)
+    public Task SetSuperResolutionAsync(bool enabled, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSuperResolution, enabled);
+        return CallMethodAsyncVoid(_setSuperResolution, cancellationToken, enabled);
     }
 
     /// <summary>
     /// setVideoWindowSize
     /// </summary>
-    public Task SetVideoWindowSizeAsync(double width, double height)
+    public Task SetVideoWindowSizeAsync(double width, double height, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setVideoWindowSize, width, height);
+        return CallMethodAsyncVoid(_setVideoWindowSize, cancellationToken, width, height);
     }
 
     /// <summary>
     /// advanceToNextMediaSource
     /// </summary>
-    public Task AdvanceToNextMediaSourceAsync()
+    public Task AdvanceToNextMediaSourceAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_advanceToNextMediaSource);
+        return CallMethodAsyncVoid(_advanceToNextMediaSource, cancellationToken);
     }
 
     /// <summary>
     /// advanceToPrevMediaSource
     /// </summary>
-    public Task AdvanceToPrevMediaSourceAsync()
+    public Task AdvanceToPrevMediaSourceAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_advanceToPrevMediaSource);
+        return CallMethodAsyncVoid(_advanceToPrevMediaSource, cancellationToken);
     }
 
     /// <summary>
@@ -669,25 +670,25 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// removePlaybackMediaSource
     /// </summary>
-    public Task RemovePlaybackMediaSourceAsync(string id)
+    public Task RemovePlaybackMediaSourceAsync(string id, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_removePlaybackMediaSource, id);
+        return CallMethodAsyncVoid(_removePlaybackMediaSource, cancellationToken, id);
     }
 
     /// <summary>
     /// clearPlaybackList
     /// </summary>
-    public Task ClearPlaybackListAsync()
+    public Task ClearPlaybackListAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_clearPlaybackList);
+        return CallMethodAsyncVoid(_clearPlaybackList, cancellationToken);
     }
 
     /// <summary>
     /// advanceToMediaSource
     /// </summary>
-    public Task AdvanceToMediaSourceAsync(string id)
+    public Task AdvanceToMediaSourceAsync(string id, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_advanceToMediaSource, id);
+        return CallMethodAsyncVoid(_advanceToMediaSource, cancellationToken, id);
     }
 
     /// <summary>
@@ -725,9 +726,9 @@ public sealed partial class AVPlayer : JsObject
     /// <summary>
     /// setLoudnessGain
     /// </summary>
-    public Task SetLoudnessGainAsync(double loudnessGain)
+    public Task SetLoudnessGainAsync(double loudnessGain, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setLoudnessGain, loudnessGain);
+        return CallMethodAsyncVoid(_setLoudnessGain, cancellationToken, loudnessGain);
     }
 
     /// <summary>
@@ -1407,9 +1408,9 @@ public sealed partial class AVRecorder : JsObject
     /// <summary>
     /// prepare
     /// </summary>
-    public Task PrepareAsync(IntPtr config)
+    public Task PrepareAsync(IntPtr config, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_prepare, config);
+        return CallMethodAsyncVoid(_prepare, cancellationToken, config);
     }
 
     /// <summary>
@@ -1447,65 +1448,65 @@ public sealed partial class AVRecorder : JsObject
     /// <summary>
     /// updateRotation
     /// </summary>
-    public Task UpdateRotationAsync(double rotation)
+    public Task UpdateRotationAsync(double rotation, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateRotation, rotation);
+        return CallMethodAsyncVoid(_updateRotation, cancellationToken, rotation);
     }
 
     /// <summary>
     /// setWillMuteWhenInterrupted
     /// </summary>
-    public Task SetWillMuteWhenInterruptedAsync(bool muteWhenInterrupted)
+    public Task SetWillMuteWhenInterruptedAsync(bool muteWhenInterrupted, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWillMuteWhenInterrupted, muteWhenInterrupted);
+        return CallMethodAsyncVoid(_setWillMuteWhenInterrupted, cancellationToken, muteWhenInterrupted);
     }
 
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
     /// pause
     /// </summary>
-    public Task PauseAsync()
+    public Task PauseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pause);
+        return CallMethodAsyncVoid(_pause, cancellationToken);
     }
 
     /// <summary>
     /// resume
     /// </summary>
-    public Task ResumeAsync()
+    public Task ResumeAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_resume);
+        return CallMethodAsyncVoid(_resume, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
     /// reset
     /// </summary>
-    public Task ResetAsync()
+    public Task ResetAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_reset);
+        return CallMethodAsyncVoid(_reset, cancellationToken);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -2549,49 +2550,49 @@ public sealed partial class VideoPlayer : JsObject
     /// <summary>
     /// setDisplaySurface
     /// </summary>
-    public Task SetDisplaySurfaceAsync(string surfaceId)
+    public Task SetDisplaySurfaceAsync(string surfaceId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDisplaySurface, surfaceId);
+        return CallMethodAsyncVoid(_setDisplaySurface, cancellationToken, surfaceId);
     }
 
     /// <summary>
     /// prepare
     /// </summary>
-    public Task PrepareAsync()
+    public Task PrepareAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_prepare);
+        return CallMethodAsyncVoid(_prepare, cancellationToken);
     }
 
     /// <summary>
     /// play
     /// </summary>
-    public Task PlayAsync()
+    public Task PlayAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_play);
+        return CallMethodAsyncVoid(_play, cancellationToken);
     }
 
     /// <summary>
     /// pause
     /// </summary>
-    public Task PauseAsync()
+    public Task PauseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pause);
+        return CallMethodAsyncVoid(_pause, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
     /// reset
     /// </summary>
-    public Task ResetAsync()
+    public Task ResetAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_reset);
+        return CallMethodAsyncVoid(_reset, cancellationToken);
     }
 
     /// <summary>
@@ -2613,17 +2614,17 @@ public sealed partial class VideoPlayer : JsObject
     /// <summary>
     /// setVolume
     /// </summary>
-    public Task SetVolumeAsync(double vol)
+    public Task SetVolumeAsync(double vol, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setVolume, vol);
+        return CallMethodAsyncVoid(_setVolume, cancellationToken, vol);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -2793,89 +2794,89 @@ public sealed partial class AVScreenCaptureRecorder : JsObject
     /// <summary>
     /// init
     /// </summary>
-    public Task InitAsync(AVScreenCaptureRecordConfig config)
+    public Task InitAsync(AVScreenCaptureRecordConfig config, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_init, NapiArg.Of(config));
+        return CallMethodAsyncVoid(_init, cancellationToken, NapiArg.Of(config));
     }
 
     /// <summary>
     /// startRecording
     /// </summary>
-    public Task StartRecordingAsync()
+    public Task StartRecordingAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startRecording);
+        return CallMethodAsyncVoid(_startRecording, cancellationToken);
     }
 
     /// <summary>
     /// stopRecording
     /// </summary>
-    public Task StopRecordingAsync()
+    public Task StopRecordingAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stopRecording);
+        return CallMethodAsyncVoid(_stopRecording, cancellationToken);
     }
 
     /// <summary>
     /// pauseRecording
     /// </summary>
-    public Task PauseRecordingAsync()
+    public Task PauseRecordingAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pauseRecording);
+        return CallMethodAsyncVoid(_pauseRecording, cancellationToken);
     }
 
     /// <summary>
     /// resumeRecording
     /// </summary>
-    public Task ResumeRecordingAsync()
+    public Task ResumeRecordingAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_resumeRecording);
+        return CallMethodAsyncVoid(_resumeRecording, cancellationToken);
     }
 
     /// <summary>
     /// skipPrivacyMode
     /// </summary>
-    public Task SkipPrivacyModeAsync(double[] windowIDs)
+    public Task SkipPrivacyModeAsync(double[] windowIDs, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_skipPrivacyMode, NapiArg.Of(windowIDs));
+        return CallMethodAsyncVoid(_skipPrivacyMode, cancellationToken, NapiArg.Of(windowIDs));
     }
 
     /// <summary>
     /// setPickerMode
     /// </summary>
-    public Task SetPickerModeAsync(global::HarmonyOS.ArkUI.PickerMode pickerMode)
+    public Task SetPickerModeAsync(global::HarmonyOS.ArkUI.PickerMode pickerMode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPickerMode, (int)pickerMode);
+        return CallMethodAsyncVoid(_setPickerMode, cancellationToken, (int)pickerMode);
     }
 
     /// <summary>
     /// excludePickerWindows
     /// </summary>
-    public Task ExcludePickerWindowsAsync(double[] excludedWindows)
+    public Task ExcludePickerWindowsAsync(double[] excludedWindows, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_excludePickerWindows, NapiArg.Of(excludedWindows));
+        return CallMethodAsyncVoid(_excludePickerWindows, cancellationToken, NapiArg.Of(excludedWindows));
     }
 
     /// <summary>
     /// presentPicker
     /// </summary>
-    public Task PresentPickerAsync()
+    public Task PresentPickerAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_presentPicker);
+        return CallMethodAsyncVoid(_presentPicker, cancellationToken);
     }
 
     /// <summary>
     /// setMicEnabled
     /// </summary>
-    public Task SetMicEnabledAsync(bool enable)
+    public Task SetMicEnabledAsync(bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMicEnabled, enable);
+        return CallMethodAsyncVoid(_setMicEnabled, cancellationToken, enable);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -2889,9 +2890,9 @@ public sealed partial class AVScreenCaptureRecorder : JsObject
     /// <summary>
     /// setContentAutoRotation
     /// </summary>
-    public Task SetContentAutoRotationAsync(bool enable)
+    public Task SetContentAutoRotationAsync(bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setContentAutoRotation, enable);
+        return CallMethodAsyncVoid(_setContentAutoRotation, cancellationToken, enable);
     }
 
     /// <summary>
@@ -3023,49 +3024,49 @@ public sealed partial class AVTranscoder : JsObject
     /// <summary>
     /// prepare
     /// </summary>
-    public Task PrepareAsync(AVTranscoderConfig config)
+    public Task PrepareAsync(AVTranscoderConfig config, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_prepare, NapiArg.Of(config));
+        return CallMethodAsyncVoid(_prepare, cancellationToken, NapiArg.Of(config));
     }
 
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
     /// pause
     /// </summary>
-    public Task PauseAsync()
+    public Task PauseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pause);
+        return CallMethodAsyncVoid(_pause, cancellationToken);
     }
 
     /// <summary>
     /// resume
     /// </summary>
-    public Task ResumeAsync()
+    public Task ResumeAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_resume);
+        return CallMethodAsyncVoid(_resume, cancellationToken);
     }
 
     /// <summary>
     /// cancel
     /// </summary>
-    public Task CancelAsync()
+    public Task CancelAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_cancel);
+        return CallMethodAsyncVoid(_cancel, cancellationToken);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -3295,9 +3296,9 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
 }
@@ -3337,9 +3338,9 @@ public sealed partial class AVImageGenerator : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
 }

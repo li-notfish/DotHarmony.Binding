@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -177,9 +178,9 @@ public static unsafe partial class AbilityStage
     /// <summary>
     /// onAboutToCreateAbilityAsync
     /// </summary>
-    public static Task OnAboutToCreateAbilityAsync()
+    public static Task OnAboutToCreateAbilityAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _onAboutToCreateAbilityAsync);
+        return NodeApi.CallMethodAsyncVoid(Module, _onAboutToCreateAbilityAsync, cancellationToken);
     }
 
 }

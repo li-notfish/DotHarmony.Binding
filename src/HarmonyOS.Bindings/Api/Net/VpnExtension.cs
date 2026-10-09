@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -71,17 +72,17 @@ public static unsafe partial class VpnExtension
     /// <summary>
     /// startVpnExtensionAbility
     /// </summary>
-    public static Task StartVpnExtensionAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
+    public static Task StartVpnExtensionAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startVpnExtensionAbility, NapiArg.Of(want));
+        return NodeApi.CallMethodAsyncVoid(Module, _startVpnExtensionAbility, cancellationToken, NapiArg.Of(want));
     }
 
     /// <summary>
     /// stopVpnExtensionAbility
     /// </summary>
-    public static Task StopVpnExtensionAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
+    public static Task StopVpnExtensionAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopVpnExtensionAbility, NapiArg.Of(want));
+        return NodeApi.CallMethodAsyncVoid(Module, _stopVpnExtensionAbility, cancellationToken, NapiArg.Of(want));
     }
 
     /// <summary>
@@ -133,33 +134,33 @@ public sealed partial class VpnConnection : JsObject
     /// <summary>
     /// protect
     /// </summary>
-    public Task ProtectAsync(double socketFd)
+    public Task ProtectAsync(double socketFd, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_protect, socketFd);
+        return CallMethodAsyncVoid(_protect, cancellationToken, socketFd);
     }
 
     /// <summary>
     /// destroy
     /// </summary>
-    public Task DestroyAsync()
+    public Task DestroyAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_destroy);
+        return CallMethodAsyncVoid(_destroy, cancellationToken);
     }
 
     /// <summary>
     /// destroy
     /// </summary>
-    public Task DestroyAsync(string vpnId)
+    public Task DestroyAsync(string vpnId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_destroy, vpnId);
+        return CallMethodAsyncVoid(_destroy, cancellationToken, vpnId);
     }
 
     /// <summary>
     /// protectProcessNet
     /// </summary>
-    public Task ProtectProcessNetAsync()
+    public Task ProtectProcessNetAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_protectProcessNet);
+        return CallMethodAsyncVoid(_protectProcessNet, cancellationToken);
     }
 
 }

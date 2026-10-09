@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -210,17 +211,17 @@ public sealed partial class DataObject : JsObject
     /// <summary>
     /// setSessionId
     /// </summary>
-    public Task SetSessionIdAsync(string sessionId)
+    public Task SetSessionIdAsync(string sessionId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSessionId, sessionId);
+        return CallMethodAsyncVoid(_setSessionId, cancellationToken, sessionId);
     }
 
     /// <summary>
     /// setSessionId
     /// </summary>
-    public Task SetSessionIdAsync()
+    public Task SetSessionIdAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_setSessionId);
+        return CallMethodAsyncCallbackVoid(_setSessionId, cancellationToken);
     }
 
     /// <summary>
@@ -258,25 +259,25 @@ public sealed partial class DataObject : JsObject
     /// <summary>
     /// bindAssetStore
     /// </summary>
-    public Task BindAssetStoreAsync(string assetKey, IntPtr bindInfo)
+    public Task BindAssetStoreAsync(string assetKey, IntPtr bindInfo, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_bindAssetStore, assetKey, bindInfo);
+        return CallMethodAsyncVoid(_bindAssetStore, cancellationToken, assetKey, bindInfo);
     }
 
     /// <summary>
     /// setAsset
     /// </summary>
-    public Task SetAssetAsync(string assetKey, string uri)
+    public Task SetAssetAsync(string assetKey, string uri, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setAsset, assetKey, uri);
+        return CallMethodAsyncVoid(_setAsset, cancellationToken, assetKey, uri);
     }
 
     /// <summary>
     /// setAssets
     /// </summary>
-    public Task SetAssetsAsync(string assetsKey, string[] uris)
+    public Task SetAssetsAsync(string assetsKey, string[] uris, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setAssets, assetsKey, NapiArg.Of(uris));
+        return CallMethodAsyncVoid(_setAssets, cancellationToken, assetsKey, NapiArg.Of(uris));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();

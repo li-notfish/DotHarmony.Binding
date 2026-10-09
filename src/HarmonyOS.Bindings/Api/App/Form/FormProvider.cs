@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -82,17 +83,17 @@ public static unsafe partial class FormProvider
     /// <summary>
     /// setFormNextRefreshTime
     /// </summary>
-    public static Task SetFormNextRefreshTimeAsync(string formId, double minute)
+    public static Task SetFormNextRefreshTimeAsync(string formId, double minute, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setFormNextRefreshTime, formId, minute);
+        return NodeApi.CallMethodAsyncVoid(Module, _setFormNextRefreshTime, cancellationToken, formId, minute);
     }
 
     /// <summary>
     /// updateForm
     /// </summary>
-    public static Task UpdateFormAsync(string formId, IntPtr formBindingData)
+    public static Task UpdateFormAsync(string formId, IntPtr formBindingData, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateForm, formId, formBindingData);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateForm, cancellationToken, formId, formBindingData);
     }
 
     /// <summary>
@@ -162,17 +163,17 @@ public static unsafe partial class FormProvider
     /// <summary>
     /// requestOverflow
     /// </summary>
-    public static Task RequestOverflowAsync(string formId, IntPtr overflowInfo)
+    public static Task RequestOverflowAsync(string formId, IntPtr overflowInfo, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _requestOverflow, formId, overflowInfo);
+        return NodeApi.CallMethodAsyncVoid(Module, _requestOverflow, cancellationToken, formId, overflowInfo);
     }
 
     /// <summary>
     /// cancelOverflow
     /// </summary>
-    public static Task CancelOverflowAsync(string formId)
+    public static Task CancelOverflowAsync(string formId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancelOverflow, formId);
+        return NodeApi.CallMethodAsyncVoid(Module, _cancelOverflow, cancellationToken, formId);
     }
 
     /// <summary>

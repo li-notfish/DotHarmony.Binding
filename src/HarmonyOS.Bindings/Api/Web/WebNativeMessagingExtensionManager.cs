@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -78,9 +79,9 @@ public static unsafe partial class WebNativeMessagingExtensionManager
     /// <summary>
     /// disconnectNative
     /// </summary>
-    public static Task DisconnectNativeAsync(double connectionId)
+    public static Task DisconnectNativeAsync(double connectionId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disconnectNative, connectionId);
+        return NodeApi.CallMethodAsyncVoid(Module, _disconnectNative, cancellationToken, connectionId);
     }
 
 }

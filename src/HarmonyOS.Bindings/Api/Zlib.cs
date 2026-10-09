@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -80,49 +81,49 @@ public static unsafe partial class Zlib
     /// <summary>
     /// zipFile
     /// </summary>
-    public static Task ZipFileAsync(string inFile, string outFile, ZlibOptions options)
+    public static Task ZipFileAsync(string inFile, string outFile, ZlibOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _zipFile, inFile, outFile, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _zipFile, cancellationToken, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
     /// unzipFile
     /// </summary>
-    public static Task UnzipFileAsync(string inFile, string outFile, ZlibOptions options)
+    public static Task UnzipFileAsync(string inFile, string outFile, ZlibOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unzipFile, inFile, outFile, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _unzipFile, cancellationToken, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
     /// compressFile
     /// </summary>
-    public static Task CompressFileAsync(string inFile, string outFile, ZlibOptions options)
+    public static Task CompressFileAsync(string inFile, string outFile, ZlibOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _compressFile, inFile, outFile, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _compressFile, cancellationToken, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
     /// compressFiles
     /// </summary>
-    public static Task CompressFilesAsync(string[] inFiles, string outFile, ZlibOptions options)
+    public static Task CompressFilesAsync(string[] inFiles, string outFile, ZlibOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _compressFiles, NapiArg.Of(inFiles), outFile, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _compressFiles, cancellationToken, NapiArg.Of(inFiles), outFile, NapiArg.Of(options));
     }
 
     /// <summary>
     /// decompressFile
     /// </summary>
-    public static Task DecompressFileAsync(string inFile, string outFile, ZlibOptions options)
+    public static Task DecompressFileAsync(string inFile, string outFile, ZlibOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _decompressFile, inFile, outFile, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _decompressFile, cancellationToken, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
     /// decompressFile
     /// </summary>
-    public static Task DecompressFileAsync(string inFile, string outFile)
+    public static Task DecompressFileAsync(string inFile, string outFile, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _decompressFile, inFile, outFile);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _decompressFile, cancellationToken, inFile, outFile);
     }
 
     /// <summary>
@@ -728,9 +729,9 @@ public sealed partial class GZip : JsObject
     /// <summary>
     /// gzdopen
     /// </summary>
-    public Task GzdopenAsync(double fd, string mode)
+    public Task GzdopenAsync(double fd, string mode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_gzdopen, fd, mode);
+        return CallMethodAsyncVoid(_gzdopen, cancellationToken, fd, mode);
     }
 
     /// <summary>
@@ -744,9 +745,9 @@ public sealed partial class GZip : JsObject
     /// <summary>
     /// gzopen
     /// </summary>
-    public Task GzopenAsync(string path, string mode)
+    public Task GzopenAsync(string path, string mode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_gzopen, path, mode);
+        return CallMethodAsyncVoid(_gzopen, cancellationToken, path, mode);
     }
 
     /// <summary>
@@ -776,9 +777,9 @@ public sealed partial class GZip : JsObject
     /// <summary>
     /// gzclearerr
     /// </summary>
-    public Task GzclearerrAsync()
+    public Task GzclearerrAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_gzclearerr);
+        return CallMethodAsyncVoid(_gzclearerr, cancellationToken);
     }
 
     /// <summary>

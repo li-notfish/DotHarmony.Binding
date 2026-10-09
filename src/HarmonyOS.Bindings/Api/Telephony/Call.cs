@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -99,25 +100,25 @@ public static unsafe partial class Call
     /// <summary>
     /// makeCall
     /// </summary>
-    public static Task MakeCallAsync(string phoneNumber)
+    public static Task MakeCallAsync(string phoneNumber, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _makeCall, phoneNumber);
+        return NodeApi.CallMethodAsyncVoid(Module, _makeCall, cancellationToken, phoneNumber);
     }
 
     /// <summary>
     /// makeCall
     /// </summary>
-    public static Task MakeCallAsync(string phoneNumber, MakeCallOptions? options = null)
+    public static Task MakeCallAsync(string phoneNumber, MakeCallOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _makeCall, phoneNumber, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _makeCall, cancellationToken, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>
     /// makeCall
     /// </summary>
-    public static Task MakeCallAsync(IntPtr context, string phoneNumber)
+    public static Task MakeCallAsync(IntPtr context, string phoneNumber, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _makeCall, context, phoneNumber);
+        return NodeApi.CallMethodAsyncVoid(Module, _makeCall, cancellationToken, context, phoneNumber);
     }
 
     /// <summary>
@@ -211,25 +212,25 @@ public static unsafe partial class Call
     /// <summary>
     /// answerCall
     /// </summary>
-    public static Task AnswerCallAsync()
+    public static Task AnswerCallAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _answerCall);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _answerCall, cancellationToken);
     }
 
     /// <summary>
     /// hangUpCall
     /// </summary>
-    public static Task HangUpCallAsync()
+    public static Task HangUpCallAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _hangUpCall);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _hangUpCall, cancellationToken);
     }
 
     /// <summary>
     /// rejectCall
     /// </summary>
-    public static Task RejectCallAsync()
+    public static Task RejectCallAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _rejectCall);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _rejectCall, cancellationToken);
     }
 
     /// <summary>

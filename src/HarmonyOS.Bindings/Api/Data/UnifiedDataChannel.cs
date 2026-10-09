@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -84,9 +85,9 @@ public static unsafe partial class UnifiedDataChannel
     /// <summary>
     /// updateData
     /// </summary>
-    public static Task UpdateDataAsync(UnifiedDataChannelOptions options, UnifiedData data)
+    public static Task UpdateDataAsync(UnifiedDataChannelOptions options, UnifiedData data, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateData, NapiArg.Of(options), NapiArg.Of(data));
+        return NodeApi.CallMethodAsyncVoid(Module, _updateData, cancellationToken, NapiArg.Of(options), NapiArg.Of(data));
     }
 
     /// <summary>

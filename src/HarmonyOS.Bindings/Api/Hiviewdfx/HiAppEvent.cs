@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -216,25 +217,25 @@ public static unsafe partial class HiAppEvent
     /// <summary>
     /// write
     /// </summary>
-    public static Task WriteAsync(IntPtr info)
+    public static Task WriteAsync(IntPtr info, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _write, info);
+        return NodeApi.CallMethodAsyncVoid(Module, _write, cancellationToken, info);
     }
 
     /// <summary>
     /// setEventParam
     /// </summary>
-    public static Task SetEventParamAsync(IntPtr @params, string domain, string? name = null)
+    public static Task SetEventParamAsync(IntPtr @params, string domain, string? name = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setEventParam, @params, domain, name);
+        return NodeApi.CallMethodAsyncVoid(Module, _setEventParam, cancellationToken, @params, domain, name);
     }
 
     /// <summary>
     /// setEventConfig
     /// </summary>
-    public static Task SetEventConfigAsync(string name, IntPtr config)
+    public static Task SetEventConfigAsync(string name, IntPtr config, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setEventConfig, name, config);
+        return NodeApi.CallMethodAsyncVoid(Module, _setEventConfig, cancellationToken, name, config);
     }
 
     /// <summary>
@@ -320,9 +321,9 @@ public static unsafe partial class HiAppEvent
     /// <summary>
     /// configEventPolicy
     /// </summary>
-    public static Task ConfigEventPolicyAsync(EventPolicy policy)
+    public static Task ConfigEventPolicyAsync(EventPolicy policy, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _configEventPolicy, NapiArg.Of(policy));
+        return NodeApi.CallMethodAsyncVoid(Module, _configEventPolicy, cancellationToken, NapiArg.Of(policy));
     }
 
 }

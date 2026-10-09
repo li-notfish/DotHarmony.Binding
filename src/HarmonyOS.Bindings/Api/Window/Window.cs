@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -152,25 +153,25 @@ public static unsafe partial class Window
     /// <summary>
     /// shiftAppWindowFocus
     /// </summary>
-    public static Task ShiftAppWindowFocusAsync(double sourceWindowId, double targetWindowId)
+    public static Task ShiftAppWindowFocusAsync(double sourceWindowId, double targetWindowId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowFocus, sourceWindowId, targetWindowId);
+        return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowFocus, cancellationToken, sourceWindowId, targetWindowId);
     }
 
     /// <summary>
     /// shiftAppWindowPointerEvent
     /// </summary>
-    public static Task ShiftAppWindowPointerEventAsync(double sourceWindowId, double targetWindowId)
+    public static Task ShiftAppWindowPointerEventAsync(double sourceWindowId, double targetWindowId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowPointerEvent, sourceWindowId, targetWindowId);
+        return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowPointerEvent, cancellationToken, sourceWindowId, targetWindowId);
     }
 
     /// <summary>
     /// shiftAppWindowTouchEvent
     /// </summary>
-    public static Task ShiftAppWindowTouchEventAsync(double sourceWindowId, double targetWindowId, double fingerId)
+    public static Task ShiftAppWindowTouchEventAsync(double sourceWindowId, double targetWindowId, double fingerId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowTouchEvent, sourceWindowId, targetWindowId, fingerId);
+        return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowTouchEvent, cancellationToken, sourceWindowId, targetWindowId, fingerId);
     }
 
     /// <summary>
@@ -232,17 +233,17 @@ public static unsafe partial class Window
     /// <summary>
     /// setStartWindowBackgroundColor
     /// </summary>
-    public static Task SetStartWindowBackgroundColorAsync(string moduleName, string abilityName, IntPtr color)
+    public static Task SetStartWindowBackgroundColorAsync(string moduleName, string abilityName, IntPtr color, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setStartWindowBackgroundColor, moduleName, abilityName, color);
+        return NodeApi.CallMethodAsyncVoid(Module, _setStartWindowBackgroundColor, cancellationToken, moduleName, abilityName, color);
     }
 
     /// <summary>
     /// setWatermarkImageForAppWindows
     /// </summary>
-    public static Task SetWatermarkImageForAppWindowsAsync(IntPtr pixelMap)
+    public static Task SetWatermarkImageForAppWindowsAsync(IntPtr pixelMap, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setWatermarkImageForAppWindows, pixelMap);
+        return NodeApi.CallMethodAsyncVoid(Module, _setWatermarkImageForAppWindows, cancellationToken, pixelMap);
     }
 
     /// <summary>
@@ -421,121 +422,121 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// show
     /// </summary>
-    public Task ShowAsync()
+    public Task ShowAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_show);
+        return CallMethodAsyncVoid(_show, cancellationToken);
     }
 
     /// <summary>
     /// showWindow
     /// </summary>
-    public Task ShowWindowAsync()
+    public Task ShowWindowAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_showWindow);
+        return CallMethodAsyncVoid(_showWindow, cancellationToken);
     }
 
     /// <summary>
     /// showWindow
     /// </summary>
-    public Task ShowWindowAsync(ShowWindowOptions options)
+    public Task ShowWindowAsync(ShowWindowOptions options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_showWindow, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_showWindow, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
     /// destroy
     /// </summary>
-    public Task DestroyAsync()
+    public Task DestroyAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_destroy);
+        return CallMethodAsyncVoid(_destroy, cancellationToken);
     }
 
     /// <summary>
     /// destroyWindow
     /// </summary>
-    public Task DestroyWindowAsync()
+    public Task DestroyWindowAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_destroyWindow);
+        return CallMethodAsyncVoid(_destroyWindow, cancellationToken);
     }
 
     /// <summary>
     /// moveTo
     /// </summary>
-    public Task MoveToAsync(double x, double y)
+    public Task MoveToAsync(double x, double y, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_moveTo, x, y);
+        return CallMethodAsyncVoid(_moveTo, cancellationToken, x, y);
     }
 
     /// <summary>
     /// moveWindowTo
     /// </summary>
-    public Task MoveWindowToAsync(double x, double y)
+    public Task MoveWindowToAsync(double x, double y, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_moveWindowTo, x, y);
+        return CallMethodAsyncVoid(_moveWindowTo, cancellationToken, x, y);
     }
 
     /// <summary>
     /// moveWindowToAsync
     /// </summary>
-    public Task MoveWindowToAsync(double x, double y, MoveConfiguration? moveConfiguration = null)
+    public Task MoveWindowToAsync(double x, double y, MoveConfiguration? moveConfiguration = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_moveWindowToAsync, x, y, NapiArg.Of(moveConfiguration));
+        return CallMethodAsyncVoid(_moveWindowToAsync, cancellationToken, x, y, NapiArg.Of(moveConfiguration));
     }
 
     /// <summary>
     /// moveWindowToGlobal
     /// </summary>
-    public Task MoveWindowToGlobalAsync(double x, double y)
+    public Task MoveWindowToGlobalAsync(double x, double y, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_moveWindowToGlobal, x, y);
+        return CallMethodAsyncVoid(_moveWindowToGlobal, cancellationToken, x, y);
     }
 
     /// <summary>
     /// moveWindowToGlobal
     /// </summary>
-    public Task MoveWindowToGlobalAsync(double x, double y, MoveConfiguration? moveConfiguration = null)
+    public Task MoveWindowToGlobalAsync(double x, double y, MoveConfiguration? moveConfiguration = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_moveWindowToGlobal, x, y, NapiArg.Of(moveConfiguration));
+        return CallMethodAsyncVoid(_moveWindowToGlobal, cancellationToken, x, y, NapiArg.Of(moveConfiguration));
     }
 
     /// <summary>
     /// moveWindowToGlobalDisplay
     /// </summary>
-    public Task MoveWindowToGlobalDisplayAsync(double x, double y)
+    public Task MoveWindowToGlobalDisplayAsync(double x, double y, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_moveWindowToGlobalDisplay, x, y);
+        return CallMethodAsyncVoid(_moveWindowToGlobalDisplay, cancellationToken, x, y);
     }
 
     /// <summary>
     /// resetSize
     /// </summary>
-    public Task ResetSizeAsync(double width, double height)
+    public Task ResetSizeAsync(double width, double height, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_resetSize, width, height);
+        return CallMethodAsyncVoid(_resetSize, cancellationToken, width, height);
     }
 
     /// <summary>
     /// resize
     /// </summary>
-    public Task ResizeAsync(double width, double height)
+    public Task ResizeAsync(double width, double height, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_resize, width, height);
+        return CallMethodAsyncVoid(_resize, cancellationToken, width, height);
     }
 
     /// <summary>
     /// setFollowParentWindowLayoutEnabled
     /// </summary>
-    public Task SetFollowParentWindowLayoutEnabledAsync(bool enabled)
+    public Task SetFollowParentWindowLayoutEnabledAsync(bool enabled, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setFollowParentWindowLayoutEnabled, enabled);
+        return CallMethodAsyncVoid(_setFollowParentWindowLayoutEnabled, cancellationToken, enabled);
     }
 
     /// <summary>
     /// setRelativePositionToParentWindowEnabled
     /// </summary>
-    public Task SetRelativePositionToParentWindowEnabledAsync(bool enabled, global::HarmonyOS.ArkUI.WindowAnchor? anchor = null, double? offsetX = null, double? offsetY = null)
+    public Task SetRelativePositionToParentWindowEnabledAsync(bool enabled, global::HarmonyOS.ArkUI.WindowAnchor? anchor = null, double? offsetX = null, double? offsetY = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, enabled, NapiArg.Of(anchor), NapiArg.Of(offsetX), NapiArg.Of(offsetY));
+        return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, cancellationToken, enabled, NapiArg.Of(anchor), NapiArg.Of(offsetX), NapiArg.Of(offsetY));
     }
 
     /// <summary>
@@ -597,9 +598,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setSystemAvoidAreaEnabled
     /// </summary>
-    public Task SetSystemAvoidAreaEnabledAsync(bool enabled)
+    public Task SetSystemAvoidAreaEnabledAsync(bool enabled, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSystemAvoidAreaEnabled, enabled);
+        return CallMethodAsyncVoid(_setSystemAvoidAreaEnabled, cancellationToken, enabled);
     }
 
     /// <summary>
@@ -613,9 +614,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setFloatNavigationAvoidAreaEnabled
     /// </summary>
-    public Task SetFloatNavigationAvoidAreaEnabledAsync(bool enabled)
+    public Task SetFloatNavigationAvoidAreaEnabledAsync(bool enabled, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setFloatNavigationAvoidAreaEnabled, enabled);
+        return CallMethodAsyncVoid(_setFloatNavigationAvoidAreaEnabled, cancellationToken, enabled);
     }
 
     /// <summary>
@@ -629,65 +630,65 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setFullScreen
     /// </summary>
-    public Task SetFullScreenAsync(bool isFullScreen)
+    public Task SetFullScreenAsync(bool isFullScreen, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setFullScreen, isFullScreen);
+        return CallMethodAsyncVoid(_setFullScreen, cancellationToken, isFullScreen);
     }
 
     /// <summary>
     /// setLayoutFullScreen
     /// </summary>
-    public Task SetLayoutFullScreenAsync(bool isLayoutFullScreen)
+    public Task SetLayoutFullScreenAsync(bool isLayoutFullScreen, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setLayoutFullScreen, isLayoutFullScreen);
+        return CallMethodAsyncVoid(_setLayoutFullScreen, cancellationToken, isLayoutFullScreen);
     }
 
     /// <summary>
     /// setWindowLayoutFullScreen
     /// </summary>
-    public Task SetWindowLayoutFullScreenAsync(bool isLayoutFullScreen)
+    public Task SetWindowLayoutFullScreenAsync(bool isLayoutFullScreen, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowLayoutFullScreen, isLayoutFullScreen);
+        return CallMethodAsyncVoid(_setWindowLayoutFullScreen, cancellationToken, isLayoutFullScreen);
     }
 
     /// <summary>
     /// setSystemBarEnable
     /// </summary>
-    public Task SetSystemBarEnableAsync(IntPtr names)
+    public Task SetSystemBarEnableAsync(IntPtr names, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSystemBarEnable, names);
+        return CallMethodAsyncVoid(_setSystemBarEnable, cancellationToken, names);
     }
 
     /// <summary>
     /// setWindowSystemBarEnable
     /// </summary>
-    public Task SetWindowSystemBarEnableAsync(IntPtr names)
+    public Task SetWindowSystemBarEnableAsync(IntPtr names, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowSystemBarEnable, names);
+        return CallMethodAsyncVoid(_setWindowSystemBarEnable, cancellationToken, names);
     }
 
     /// <summary>
     /// setSpecificSystemBarEnabled
     /// </summary>
-    public Task SetSpecificSystemBarEnabledAsync(IntPtr name, bool enable, bool? enableAnimation = null)
+    public Task SetSpecificSystemBarEnabledAsync(IntPtr name, bool enable, bool? enableAnimation = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSpecificSystemBarEnabled, name, enable, NapiArg.Of(enableAnimation));
+        return CallMethodAsyncVoid(_setSpecificSystemBarEnabled, cancellationToken, name, enable, NapiArg.Of(enableAnimation));
     }
 
     /// <summary>
     /// setSystemBarProperties
     /// </summary>
-    public Task SetSystemBarPropertiesAsync(SystemBarProperties systemBarProperties)
+    public Task SetSystemBarPropertiesAsync(SystemBarProperties systemBarProperties, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSystemBarProperties, NapiArg.Of(systemBarProperties));
+        return CallMethodAsyncVoid(_setSystemBarProperties, cancellationToken, NapiArg.Of(systemBarProperties));
     }
 
     /// <summary>
     /// setWindowSystemBarProperties
     /// </summary>
-    public Task SetWindowSystemBarPropertiesAsync(SystemBarProperties systemBarProperties)
+    public Task SetWindowSystemBarPropertiesAsync(SystemBarProperties systemBarProperties, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowSystemBarProperties, NapiArg.Of(systemBarProperties));
+        return CallMethodAsyncVoid(_setWindowSystemBarProperties, cancellationToken, NapiArg.Of(systemBarProperties));
     }
 
     /// <summary>
@@ -701,9 +702,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setStatusBarColor
     /// </summary>
-    public Task SetStatusBarColorAsync(IntPtr color)
+    public Task SetStatusBarColorAsync(IntPtr color, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setStatusBarColor, color);
+        return CallMethodAsyncVoid(_setStatusBarColor, cancellationToken, color);
     }
 
     /// <summary>
@@ -725,9 +726,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setGestureBackEnabled
     /// </summary>
-    public Task SetGestureBackEnabledAsync(bool enabled)
+    public Task SetGestureBackEnabledAsync(bool enabled, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setGestureBackEnabled, enabled);
+        return CallMethodAsyncVoid(_setGestureBackEnabled, cancellationToken, enabled);
     }
 
     /// <summary>
@@ -741,9 +742,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setPreferredOrientation
     /// </summary>
-    public Task SetPreferredOrientationAsync(global::HarmonyOS.ArkUI.WindowWindowOrientation orientation)
+    public Task SetPreferredOrientationAsync(global::HarmonyOS.ArkUI.WindowWindowOrientation orientation, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPreferredOrientation, (int)orientation);
+        return CallMethodAsyncVoid(_setPreferredOrientation, cancellationToken, (int)orientation);
     }
 
     /// <summary>
@@ -781,17 +782,17 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// loadContent
     /// </summary>
-    public Task LoadContentAsync(string path, IntPtr storage)
+    public Task LoadContentAsync(string path, IntPtr storage, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_loadContent, path, storage);
+        return CallMethodAsyncVoid(_loadContent, cancellationToken, path, storage);
     }
 
     /// <summary>
     /// loadContent
     /// </summary>
-    public Task LoadContentAsync(string path)
+    public Task LoadContentAsync(string path, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_loadContent, path);
+        return CallMethodAsyncVoid(_loadContent, cancellationToken, path);
     }
 
     /// <summary>
@@ -805,25 +806,25 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setUIContent
     /// </summary>
-    public Task SetUiContentAsync(string path)
+    public Task SetUiContentAsync(string path, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setUIContent, path);
+        return CallMethodAsyncVoid(_setUIContent, cancellationToken, path);
     }
 
     /// <summary>
     /// loadContentByName
     /// </summary>
-    public Task LoadContentByNameAsync(string name, IntPtr storage)
+    public Task LoadContentByNameAsync(string name, IntPtr storage, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_loadContentByName, name, storage);
+        return CallMethodAsyncVoid(_loadContentByName, cancellationToken, name, storage);
     }
 
     /// <summary>
     /// loadContentByName
     /// </summary>
-    public Task LoadContentByNameAsync(string name)
+    public Task LoadContentByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_loadContentByName, name);
+        return CallMethodAsyncCallbackVoid(_loadContentByName, cancellationToken, name);
     }
 
     /// <summary>
@@ -853,9 +854,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setDialogBackGestureEnabled
     /// </summary>
-    public Task SetDialogBackGestureEnabledAsync(bool enabled)
+    public Task SetDialogBackGestureEnabledAsync(bool enabled, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDialogBackGestureEnabled, enabled);
+        return CallMethodAsyncVoid(_setDialogBackGestureEnabled, cancellationToken, enabled);
     }
 
     /// <summary>
@@ -877,17 +878,17 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setColorSpace
     /// </summary>
-    public Task SetColorSpaceAsync(global::HarmonyOS.ArkUI.WindowWindowColorSpace colorSpace)
+    public Task SetColorSpaceAsync(global::HarmonyOS.ArkUI.WindowWindowColorSpace colorSpace, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setColorSpace, (int)colorSpace);
+        return CallMethodAsyncVoid(_setColorSpace, cancellationToken, (int)colorSpace);
     }
 
     /// <summary>
     /// setWindowColorSpace
     /// </summary>
-    public Task SetWindowColorSpaceAsync(global::HarmonyOS.ArkUI.WindowWindowColorSpace colorSpace)
+    public Task SetWindowColorSpaceAsync(global::HarmonyOS.ArkUI.WindowWindowColorSpace colorSpace, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowColorSpace, (int)colorSpace);
+        return CallMethodAsyncVoid(_setWindowColorSpace, cancellationToken, (int)colorSpace);
     }
 
     /// <summary>
@@ -909,9 +910,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setBackgroundColor
     /// </summary>
-    public Task SetBackgroundColorAsync(string color)
+    public Task SetBackgroundColorAsync(string color, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setBackgroundColor, color);
+        return CallMethodAsyncVoid(_setBackgroundColor, cancellationToken, color);
     }
 
     /// <summary>
@@ -925,33 +926,33 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setWindowShadowEnabled
     /// </summary>
-    public Task SetWindowShadowEnabledAsync(bool enable)
+    public Task SetWindowShadowEnabledAsync(bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowShadowEnabled, enable);
+        return CallMethodAsyncVoid(_setWindowShadowEnabled, cancellationToken, enable);
     }
 
     /// <summary>
     /// setBrightness
     /// </summary>
-    public Task SetBrightnessAsync(double brightness)
+    public Task SetBrightnessAsync(double brightness, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setBrightness, brightness);
+        return CallMethodAsyncVoid(_setBrightness, cancellationToken, brightness);
     }
 
     /// <summary>
     /// setWindowTopmost
     /// </summary>
-    public Task SetWindowTopmostAsync(bool isWindowTopmost)
+    public Task SetWindowTopmostAsync(bool isWindowTopmost, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowTopmost, isWindowTopmost);
+        return CallMethodAsyncVoid(_setWindowTopmost, cancellationToken, isWindowTopmost);
     }
 
     /// <summary>
     /// setWindowBrightness
     /// </summary>
-    public Task SetWindowBrightnessAsync(double brightness)
+    public Task SetWindowBrightnessAsync(double brightness, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowBrightness, brightness);
+        return CallMethodAsyncVoid(_setWindowBrightness, cancellationToken, brightness);
     }
 
     /// <summary>
@@ -965,33 +966,33 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setDimBehind
     /// </summary>
-    public Task SetDimBehindAsync(double dimBehindValue)
+    public Task SetDimBehindAsync(double dimBehindValue, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDimBehind, dimBehindValue);
+        return CallMethodAsyncVoid(_setDimBehind, cancellationToken, dimBehindValue);
     }
 
     /// <summary>
     /// setFocusable
     /// </summary>
-    public Task SetFocusableAsync(bool isFocusable)
+    public Task SetFocusableAsync(bool isFocusable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setFocusable, isFocusable);
+        return CallMethodAsyncVoid(_setFocusable, cancellationToken, isFocusable);
     }
 
     /// <summary>
     /// setWindowFocusable
     /// </summary>
-    public Task SetWindowFocusableAsync(bool isFocusable)
+    public Task SetWindowFocusableAsync(bool isFocusable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowFocusable, isFocusable);
+        return CallMethodAsyncVoid(_setWindowFocusable, cancellationToken, isFocusable);
     }
 
     /// <summary>
     /// setExclusivelyHighlighted
     /// </summary>
-    public Task SetExclusivelyHighlightedAsync(bool exclusivelyHighlighted)
+    public Task SetExclusivelyHighlightedAsync(bool exclusivelyHighlighted, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setExclusivelyHighlighted, exclusivelyHighlighted);
+        return CallMethodAsyncVoid(_setExclusivelyHighlighted, cancellationToken, exclusivelyHighlighted);
     }
 
     /// <summary>
@@ -1005,57 +1006,57 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setKeepScreenOn
     /// </summary>
-    public Task SetKeepScreenOnAsync(bool isKeepScreenOn)
+    public Task SetKeepScreenOnAsync(bool isKeepScreenOn, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setKeepScreenOn, isKeepScreenOn);
+        return CallMethodAsyncVoid(_setKeepScreenOn, cancellationToken, isKeepScreenOn);
     }
 
     /// <summary>
     /// setWindowKeepScreenOn
     /// </summary>
-    public Task SetWindowKeepScreenOnAsync(bool isKeepScreenOn)
+    public Task SetWindowKeepScreenOnAsync(bool isKeepScreenOn, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowKeepScreenOn, isKeepScreenOn);
+        return CallMethodAsyncVoid(_setWindowKeepScreenOn, cancellationToken, isKeepScreenOn);
     }
 
     /// <summary>
     /// setOutsideTouchable
     /// </summary>
-    public Task SetOutsideTouchableAsync(bool touchable)
+    public Task SetOutsideTouchableAsync(bool touchable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setOutsideTouchable, touchable);
+        return CallMethodAsyncVoid(_setOutsideTouchable, cancellationToken, touchable);
     }
 
     /// <summary>
     /// setPrivacyMode
     /// </summary>
-    public Task SetPrivacyModeAsync(bool isPrivacyMode)
+    public Task SetPrivacyModeAsync(bool isPrivacyMode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPrivacyMode, isPrivacyMode);
+        return CallMethodAsyncVoid(_setPrivacyMode, cancellationToken, isPrivacyMode);
     }
 
     /// <summary>
     /// setWindowPrivacyMode
     /// </summary>
-    public Task SetWindowPrivacyModeAsync(bool isPrivacyMode)
+    public Task SetWindowPrivacyModeAsync(bool isPrivacyMode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowPrivacyMode, isPrivacyMode);
+        return CallMethodAsyncVoid(_setWindowPrivacyMode, cancellationToken, isPrivacyMode);
     }
 
     /// <summary>
     /// setTouchable
     /// </summary>
-    public Task SetTouchableAsync(bool isTouchable)
+    public Task SetTouchableAsync(bool isTouchable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setTouchable, isTouchable);
+        return CallMethodAsyncVoid(_setTouchable, cancellationToken, isTouchable);
     }
 
     /// <summary>
     /// setWindowTouchable
     /// </summary>
-    public Task SetWindowTouchableAsync(bool isTouchable)
+    public Task SetWindowTouchableAsync(bool isTouchable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowTouchable, isTouchable);
+        return CallMethodAsyncVoid(_setWindowTouchable, cancellationToken, isTouchable);
     }
 
     /// <summary>
@@ -1093,9 +1094,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setWindowCornerRadius
     /// </summary>
-    public Task SetWindowCornerRadiusAsync(double cornerRadius)
+    public Task SetWindowCornerRadiusAsync(double cornerRadius, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowCornerRadius, cornerRadius);
+        return CallMethodAsyncVoid(_setWindowCornerRadius, cancellationToken, cornerRadius);
     }
 
     /// <summary>
@@ -1109,89 +1110,89 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// raiseToAppTop
     /// </summary>
-    public Task RaiseToAppTopAsync()
+    public Task RaiseToAppTopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_raiseToAppTop);
+        return CallMethodAsyncVoid(_raiseToAppTop, cancellationToken);
     }
 
     /// <summary>
     /// setAspectRatio
     /// </summary>
-    public Task SetAspectRatioAsync(double ratio)
+    public Task SetAspectRatioAsync(double ratio, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setAspectRatio, ratio);
+        return CallMethodAsyncVoid(_setAspectRatio, cancellationToken, ratio);
     }
 
     /// <summary>
     /// setContentAspectRatio
     /// </summary>
-    public Task SetContentAspectRatioAsync(double ratio, bool? isPersistent = null, bool? needUpdateRect = null)
+    public Task SetContentAspectRatioAsync(double ratio, bool? isPersistent = null, bool? needUpdateRect = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setContentAspectRatio, ratio, NapiArg.Of(isPersistent), NapiArg.Of(needUpdateRect));
+        return CallMethodAsyncVoid(_setContentAspectRatio, cancellationToken, ratio, NapiArg.Of(isPersistent), NapiArg.Of(needUpdateRect));
     }
 
     /// <summary>
     /// resetAspectRatio
     /// </summary>
-    public Task ResetAspectRatioAsync()
+    public Task ResetAspectRatioAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_resetAspectRatio);
+        return CallMethodAsyncVoid(_resetAspectRatio, cancellationToken);
     }
 
     /// <summary>
     /// setRaiseByClickEnabled
     /// </summary>
-    public Task SetRaiseByClickEnabledAsync(bool enable)
+    public Task SetRaiseByClickEnabledAsync(bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setRaiseByClickEnabled, enable);
+        return CallMethodAsyncVoid(_setRaiseByClickEnabled, cancellationToken, enable);
     }
 
     /// <summary>
     /// minimize
     /// </summary>
-    public Task MinimizeAsync()
+    public Task MinimizeAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_minimize);
+        return CallMethodAsyncVoid(_minimize, cancellationToken);
     }
 
     /// <summary>
     /// maximize
     /// </summary>
-    public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null)
+    public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_maximize, NapiArg.Of(presentation));
+        return CallMethodAsyncVoid(_maximize, cancellationToken, NapiArg.Of(presentation));
     }
 
     /// <summary>
     /// maximize
     /// </summary>
-    public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null, bool? acrossDisplay = null)
+    public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null, bool? acrossDisplay = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_maximize, NapiArg.Of(presentation), NapiArg.Of(acrossDisplay));
+        return CallMethodAsyncVoid(_maximize, cancellationToken, NapiArg.Of(presentation), NapiArg.Of(acrossDisplay));
     }
 
     /// <summary>
     /// maximizeWithOptions
     /// </summary>
-    public Task MaximizeWithOptionsAsync(MaximizeOptions? maximizeOptions = null)
+    public Task MaximizeWithOptionsAsync(MaximizeOptions? maximizeOptions = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_maximizeWithOptions, NapiArg.Of(maximizeOptions));
+        return CallMethodAsyncVoid(_maximizeWithOptions, cancellationToken, NapiArg.Of(maximizeOptions));
     }
 
     /// <summary>
     /// setResizeByDragEnabled
     /// </summary>
-    public Task SetResizeByDragEnabledAsync(bool enable)
+    public Task SetResizeByDragEnabledAsync(bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setResizeByDragEnabled, enable);
+        return CallMethodAsyncVoid(_setResizeByDragEnabled, cancellationToken, enable);
     }
 
     /// <summary>
     /// setSupportedWindowModes
     /// </summary>
-    public Task SetSupportedWindowModesAsync(IntPtr[] supportedWindowModes)
+    public Task SetSupportedWindowModesAsync(IntPtr[] supportedWindowModes, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSupportedWindowModes, NapiArg.Of(supportedWindowModes));
+        return CallMethodAsyncVoid(_setSupportedWindowModes, cancellationToken, NapiArg.Of(supportedWindowModes));
     }
 
     /// <summary>
@@ -1237,33 +1238,33 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// recover
     /// </summary>
-    public Task RecoverAsync()
+    public Task RecoverAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_recover);
+        return CallMethodAsyncVoid(_recover, cancellationToken);
     }
 
     /// <summary>
     /// recover
     /// </summary>
-    public Task RecoverAsync(WindowSnapshotAnimationConfig snapshotAnimationConfig)
+    public Task RecoverAsync(WindowSnapshotAnimationConfig snapshotAnimationConfig, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_recover, NapiArg.Of(snapshotAnimationConfig));
+        return CallMethodAsyncVoid(_recover, cancellationToken, NapiArg.Of(snapshotAnimationConfig));
     }
 
     /// <summary>
     /// restore
     /// </summary>
-    public Task RestoreAsync()
+    public Task RestoreAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_restore);
+        return CallMethodAsyncVoid(_restore, cancellationToken);
     }
 
     /// <summary>
     /// restoreMainWindow
     /// </summary>
-    public Task RestoreMainWindowAsync(IntPtr? wantParameters = null)
+    public Task RestoreMainWindowAsync(IntPtr? wantParameters = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_restoreMainWindow, NapiArg.Of(wantParameters));
+        return CallMethodAsyncVoid(_restoreMainWindow, cancellationToken, NapiArg.Of(wantParameters));
     }
 
     /// <summary>
@@ -1293,25 +1294,25 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setWindowTitle
     /// </summary>
-    public Task SetWindowTitleAsync(string titleName)
+    public Task SetWindowTitleAsync(string titleName, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowTitle, titleName);
+        return CallMethodAsyncVoid(_setWindowTitle, cancellationToken, titleName);
     }
 
     /// <summary>
     /// setSubWindowModal
     /// </summary>
-    public Task SetSubWindowModalAsync(bool isModal)
+    public Task SetSubWindowModalAsync(bool isModal, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSubWindowModal, isModal);
+        return CallMethodAsyncVoid(_setSubWindowModal, cancellationToken, isModal);
     }
 
     /// <summary>
     /// setSubWindowModal
     /// </summary>
-    public Task SetSubWindowModalAsync(bool isModal, global::HarmonyOS.ArkUI.ModalityType modalityType)
+    public Task SetSubWindowModalAsync(bool isModal, global::HarmonyOS.ArkUI.ModalityType modalityType, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSubWindowModal, isModal, (int)modalityType);
+        return CallMethodAsyncVoid(_setSubWindowModal, cancellationToken, isModal, (int)modalityType);
     }
 
     /// <summary>
@@ -1349,9 +1350,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setTouchableAreas
     /// </summary>
-    public Task SetTouchableAreasAsync(WindowRect2[] rects)
+    public Task SetTouchableAreasAsync(WindowRect2[] rects, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setTouchableAreas, NapiArg.Of(rects));
+        return CallMethodAsyncVoid(_setTouchableAreas, cancellationToken, NapiArg.Of(rects));
     }
 
     /// <summary>
@@ -1373,73 +1374,73 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// enableLandscapeMultiWindow
     /// </summary>
-    public Task EnableLandscapeMultiWindowAsync()
+    public Task EnableLandscapeMultiWindowAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_enableLandscapeMultiWindow);
+        return CallMethodAsyncVoid(_enableLandscapeMultiWindow, cancellationToken);
     }
 
     /// <summary>
     /// startMoving
     /// </summary>
-    public Task StartMovingAsync()
+    public Task StartMovingAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startMoving);
+        return CallMethodAsyncVoid(_startMoving, cancellationToken);
     }
 
     /// <summary>
     /// startMoving
     /// </summary>
-    public Task StartMovingAsync(double offsetX, double offsetY)
+    public Task StartMovingAsync(double offsetX, double offsetY, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startMoving, offsetX, offsetY);
+        return CallMethodAsyncVoid(_startMoving, cancellationToken, offsetX, offsetY);
     }
 
     /// <summary>
     /// stopMoving
     /// </summary>
-    public Task StopMovingAsync()
+    public Task StopMovingAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stopMoving);
+        return CallMethodAsyncVoid(_stopMoving, cancellationToken);
     }
 
     /// <summary>
     /// enableDrag
     /// </summary>
-    public Task EnableDragAsync(bool enable)
+    public Task EnableDragAsync(bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_enableDrag, enable);
+        return CallMethodAsyncVoid(_enableDrag, cancellationToken, enable);
     }
 
     /// <summary>
     /// disableLandscapeMultiWindow
     /// </summary>
-    public Task DisableLandscapeMultiWindowAsync()
+    public Task DisableLandscapeMultiWindowAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_disableLandscapeMultiWindow);
+        return CallMethodAsyncVoid(_disableLandscapeMultiWindow, cancellationToken);
     }
 
     /// <summary>
     /// setWindowMask
     /// </summary>
-    public Task SetWindowMaskAsync(double[][] windowMask)
+    public Task SetWindowMaskAsync(double[][] windowMask, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowMask, NapiArg.Of(windowMask));
+        return CallMethodAsyncVoid(_setWindowMask, cancellationToken, NapiArg.Of(windowMask));
     }
 
     /// <summary>
     /// setWindowMaskWithAlpha
     /// </summary>
-    public Task SetWindowMaskWithAlphaAsync(byte[] windowMask, double maskWidth, double maskHeight)
+    public Task SetWindowMaskWithAlphaAsync(byte[] windowMask, double maskWidth, double maskHeight, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowMaskWithAlpha, NapiArg.Of(windowMask), maskWidth, maskHeight);
+        return CallMethodAsyncVoid(_setWindowMaskWithAlpha, cancellationToken, NapiArg.Of(windowMask), maskWidth, maskHeight);
     }
 
     /// <summary>
     /// clearWindowMask
     /// </summary>
-    public Task ClearWindowMaskAsync()
+    public Task ClearWindowMaskAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_clearWindowMask);
+        return CallMethodAsyncVoid(_clearWindowMask, cancellationToken);
     }
 
     /// <summary>
@@ -1461,9 +1462,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setWindowGrayScale
     /// </summary>
-    public Task SetWindowGrayScaleAsync(double grayScale)
+    public Task SetWindowGrayScaleAsync(double grayScale, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowGrayScale, grayScale);
+        return CallMethodAsyncVoid(_setWindowGrayScale, cancellationToken, grayScale);
     }
 
     /// <summary>
@@ -1517,9 +1518,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setParentWindow
     /// </summary>
-    public Task SetParentWindowAsync(double windowId)
+    public Task SetParentWindowAsync(double windowId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setParentWindow, windowId);
+        return CallMethodAsyncVoid(_setParentWindow, cancellationToken, windowId);
     }
 
     /// <summary>
@@ -1533,17 +1534,17 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setFollowParentMultiScreenPolicy
     /// </summary>
-    public Task SetFollowParentMultiScreenPolicyAsync(bool enabled)
+    public Task SetFollowParentMultiScreenPolicyAsync(bool enabled, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setFollowParentMultiScreenPolicy, enabled);
+        return CallMethodAsyncVoid(_setFollowParentMultiScreenPolicy, cancellationToken, enabled);
     }
 
     /// <summary>
     /// setTitleAndDockHoverShown
     /// </summary>
-    public Task SetTitleAndDockHoverShownAsync(bool? isTitleHoverShown = null, bool? isDockHoverShown = null)
+    public Task SetTitleAndDockHoverShownAsync(bool? isTitleHoverShown = null, bool? isDockHoverShown = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setTitleAndDockHoverShown, NapiArg.Of(isTitleHoverShown), NapiArg.Of(isDockHoverShown));
+        return CallMethodAsyncVoid(_setTitleAndDockHoverShown, cancellationToken, NapiArg.Of(isTitleHoverShown), NapiArg.Of(isDockHoverShown));
     }
 
     /// <summary>
@@ -1573,9 +1574,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setSeparationTouchEnabled
     /// </summary>
-    public Task SetSeparationTouchEnabledAsync(bool enabled)
+    public Task SetSeparationTouchEnabledAsync(bool enabled, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSeparationTouchEnabled, enabled);
+        return CallMethodAsyncVoid(_setSeparationTouchEnabled, cancellationToken, enabled);
     }
 
     /// <summary>
@@ -1589,9 +1590,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setReceiveDragEventEnabled
     /// </summary>
-    public Task SetReceiveDragEventEnabledAsync(bool enabled)
+    public Task SetReceiveDragEventEnabledAsync(bool enabled, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setReceiveDragEventEnabled, enabled);
+        return CallMethodAsyncVoid(_setReceiveDragEventEnabled, cancellationToken, enabled);
     }
 
     /// <summary>
@@ -1653,9 +1654,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setWindowTransitionAnimation
     /// </summary>
-    public Task SetWindowTransitionAnimationAsync(global::HarmonyOS.ArkUI.WindowTransitionType transitionType, IntPtr animation)
+    public Task SetWindowTransitionAnimationAsync(global::HarmonyOS.ArkUI.WindowTransitionType transitionType, IntPtr animation, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowTransitionAnimation, (int)transitionType, animation);
+        return CallMethodAsyncVoid(_setWindowTransitionAnimation, cancellationToken, (int)transitionType, animation);
     }
 
     /// <summary>
@@ -1669,9 +1670,9 @@ public sealed partial class WindowObject : JsObject
     /// <summary>
     /// setSubWindowZLevel
     /// </summary>
-    public Task SetSubWindowZLevelAsync(double zLevel)
+    public Task SetSubWindowZLevelAsync(double zLevel, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSubWindowZLevel, zLevel);
+        return CallMethodAsyncVoid(_setSubWindowZLevel, cancellationToken, zLevel);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -147,9 +148,9 @@ public sealed partial class RemoteDeviceObject : JsObject
     /// <summary>
     /// startPairing
     /// </summary>
-    public Task StartPairingAsync()
+    public Task StartPairingAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startPairing);
+        return CallMethodAsyncVoid(_startPairing, cancellationToken);
     }
 
     /// <summary>

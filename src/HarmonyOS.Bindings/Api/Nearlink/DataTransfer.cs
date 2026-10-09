@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -95,17 +96,17 @@ public static unsafe partial class DataTransfer
     /// <summary>
     /// connect
     /// </summary>
-    public static Task ConnectAsync(ConnectionParams @params)
+    public static Task ConnectAsync(ConnectionParams @params, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _connect, NapiArg.Of(@params));
+        return NodeApi.CallMethodAsyncVoid(Module, _connect, cancellationToken, NapiArg.Of(@params));
     }
 
     /// <summary>
     /// disconnect
     /// </summary>
-    public static Task DisconnectAsync(ConnectionParams @params)
+    public static Task DisconnectAsync(ConnectionParams @params, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disconnect, NapiArg.Of(@params));
+        return NodeApi.CallMethodAsyncVoid(Module, _disconnect, cancellationToken, NapiArg.Of(@params));
     }
 
     /// <summary>
@@ -127,9 +128,9 @@ public static unsafe partial class DataTransfer
     /// <summary>
     /// writeData
     /// </summary>
-    public static Task WriteDataAsync(DataParams @params)
+    public static Task WriteDataAsync(DataParams @params, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _writeData, NapiArg.Of(@params));
+        return NodeApi.CallMethodAsyncVoid(Module, _writeData, cancellationToken, NapiArg.Of(@params));
     }
 
     /// <summary>

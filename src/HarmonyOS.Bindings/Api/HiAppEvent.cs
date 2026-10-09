@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -105,9 +106,9 @@ public static unsafe partial class HiAppEvent
     /// <summary>
     /// write
     /// </summary>
-    public static Task WriteAsync(string eventName, global::HarmonyOS.ArkUI.HiAppEventEventType eventType, IntPtr keyValues)
+    public static Task WriteAsync(string eventName, global::HarmonyOS.ArkUI.HiAppEventEventType eventType, IntPtr keyValues, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _write, eventName, (int)eventType, keyValues);
+        return NodeApi.CallMethodAsyncVoid(Module, _write, cancellationToken, eventName, (int)eventType, keyValues);
     }
 
     /// <summary>

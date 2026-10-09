@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -70,17 +71,17 @@ public static unsafe partial class Vcard
     /// <summary>
     /// importVCard
     /// </summary>
-    public static Task ImportVCardAsync(IntPtr context, string filePath, double accountId)
+    public static Task ImportVCardAsync(IntPtr context, string filePath, double accountId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _importVCard, context, filePath, accountId);
+        return NodeApi.CallMethodAsyncVoid(Module, _importVCard, cancellationToken, context, filePath, accountId);
     }
 
     /// <summary>
     /// importVCard
     /// </summary>
-    public static Task ImportVCardAsync(IntPtr context, string filePath)
+    public static Task ImportVCardAsync(IntPtr context, string filePath, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _importVCard, context, filePath);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _importVCard, cancellationToken, context, filePath);
     }
 
     /// <summary>

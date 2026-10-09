@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -79,9 +80,9 @@ public static unsafe partial class AdminManager
     /// <summary>
     /// disableAdmin
     /// </summary>
-    public static Task DisableAdminAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double? userId = null)
+    public static Task DisableAdminAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double? userId = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disableAdmin, NapiArg.Of(admin), NapiArg.Of(userId));
+        return NodeApi.CallMethodAsyncVoid(Module, _disableAdmin, cancellationToken, NapiArg.Of(admin), NapiArg.Of(userId));
     }
 
     /// <summary>
@@ -143,17 +144,17 @@ public static unsafe partial class AdminManager
     /// <summary>
     /// enableDeviceAdmin
     /// </summary>
-    public static Task EnableDeviceAdminAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
+    public static Task EnableDeviceAdminAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _enableDeviceAdmin, NapiArg.Of(admin));
+        return NodeApi.CallMethodAsyncVoid(Module, _enableDeviceAdmin, cancellationToken, NapiArg.Of(admin));
     }
 
     /// <summary>
     /// disableDeviceAdmin
     /// </summary>
-    public static Task DisableDeviceAdminAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
+    public static Task DisableDeviceAdminAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disableDeviceAdmin, NapiArg.Of(admin));
+        return NodeApi.CallMethodAsyncVoid(Module, _disableDeviceAdmin, cancellationToken, NapiArg.Of(admin));
     }
 
     /// <summary>

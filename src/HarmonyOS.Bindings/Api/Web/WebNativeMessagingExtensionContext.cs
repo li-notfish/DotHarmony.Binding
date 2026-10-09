@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -71,9 +72,9 @@ public static unsafe partial class WebNativeMessagingExtensionContext
     /// <summary>
     /// startAbility
     /// </summary>
-    public static Task StartAbilityAsync(IntPtr want, IntPtr? options = null)
+    public static Task StartAbilityAsync(IntPtr want, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startAbility, want, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _startAbility, cancellationToken, want, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -87,17 +88,17 @@ public static unsafe partial class WebNativeMessagingExtensionContext
     /// <summary>
     /// terminateSelf
     /// </summary>
-    public static Task TerminateSelfAsync()
+    public static Task TerminateSelfAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelf);
+        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelf, cancellationToken);
     }
 
     /// <summary>
     /// stopNativeConnection
     /// </summary>
-    public static Task StopNativeConnectionAsync(double connectionId)
+    public static Task StopNativeConnectionAsync(double connectionId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopNativeConnection, connectionId);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopNativeConnection, cancellationToken, connectionId);
     }
 
 }
@@ -116,9 +117,9 @@ public sealed partial class WebNativeMessagingExtensionContextObject : JsObject
     /// <summary>
     /// startAbility
     /// </summary>
-    public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, global::HarmonyOS.Bindings.Api.App.Ability.StartOptionsObject? options = null)
+    public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, global::HarmonyOS.Bindings.Api.App.Ability.StartOptionsObject? options = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startAbility, NapiArg.Of(want), NapiArg.Of(options));
+        return CallMethodAsyncVoid(_startAbility, cancellationToken, NapiArg.Of(want), NapiArg.Of(options));
     }
 
     /// <summary>
@@ -132,17 +133,17 @@ public sealed partial class WebNativeMessagingExtensionContextObject : JsObject
     /// <summary>
     /// terminateSelf
     /// </summary>
-    public Task TerminateSelfAsync()
+    public Task TerminateSelfAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_terminateSelf);
+        return CallMethodAsyncVoid(_terminateSelf, cancellationToken);
     }
 
     /// <summary>
     /// stopNativeConnection
     /// </summary>
-    public Task StopNativeConnectionAsync(double connectionId)
+    public Task StopNativeConnectionAsync(double connectionId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stopNativeConnection, connectionId);
+        return CallMethodAsyncVoid(_stopNativeConnection, cancellationToken, connectionId);
     }
 
 }

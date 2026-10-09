@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -231,17 +232,17 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// flushCachedGnssLocations
     /// </summary>
-    public static Task FlushCachedGnssLocationsAsync()
+    public static Task FlushCachedGnssLocationsAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _flushCachedGnssLocations);
+        return NodeApi.CallMethodAsyncVoid(Module, _flushCachedGnssLocations, cancellationToken);
     }
 
     /// <summary>
     /// sendCommand
     /// </summary>
-    public static Task SendCommandAsync(LocationCommand command)
+    public static Task SendCommandAsync(LocationCommand command, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendCommand, NapiArg.Of(command));
+        return NodeApi.CallMethodAsyncVoid(Module, _sendCommand, cancellationToken, NapiArg.Of(command));
     }
 
     /// <summary>
@@ -263,9 +264,9 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// removeGnssGeofence
     /// </summary>
-    public static Task RemoveGnssGeofenceAsync(double geofenceId)
+    public static Task RemoveGnssGeofenceAsync(double geofenceId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeGnssGeofence, geofenceId);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeGnssGeofence, cancellationToken, geofenceId);
     }
 
     /// <summary>
@@ -327,9 +328,9 @@ public static unsafe partial class GeoLocationManager
     /// <summary>
     /// removeBeaconFence
     /// </summary>
-    public static Task RemoveBeaconFenceAsync(BeaconFence? beaconFence = null)
+    public static Task RemoveBeaconFenceAsync(BeaconFence? beaconFence = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeBeaconFence, NapiArg.Of(beaconFence));
+        return NodeApi.CallMethodAsyncVoid(Module, _removeBeaconFence, cancellationToken, NapiArg.Of(beaconFence));
     }
 
     /// <summary>

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -159,25 +160,25 @@ public static unsafe partial class BundleManager
     /// <summary>
     /// uninstall
     /// </summary>
-    public static Task UninstallAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double? userId = null, bool? isKeepData = null)
+    public static Task UninstallAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double? userId = null, bool? isKeepData = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _uninstall, NapiArg.Of(admin), bundleName, NapiArg.Of(userId), NapiArg.Of(isKeepData));
+        return NodeApi.CallMethodAsyncVoid(Module, _uninstall, cancellationToken, NapiArg.Of(admin), bundleName, NapiArg.Of(userId), NapiArg.Of(isKeepData));
     }
 
     /// <summary>
     /// install
     /// </summary>
-    public static Task InstallAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] hapFilePaths, IntPtr? installParam = null)
+    public static Task InstallAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] hapFilePaths, IntPtr? installParam = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _install, NapiArg.Of(admin), NapiArg.Of(hapFilePaths), NapiArg.Of(installParam));
+        return NodeApi.CallMethodAsyncVoid(Module, _install, cancellationToken, NapiArg.Of(admin), NapiArg.Of(hapFilePaths), NapiArg.Of(installParam));
     }
 
     /// <summary>
     /// installForResult
     /// </summary>
-    public static Task InstallForResultAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] hapFilePaths, IntPtr? installParam = null)
+    public static Task InstallForResultAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] hapFilePaths, IntPtr? installParam = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _installForResult, NapiArg.Of(admin), NapiArg.Of(hapFilePaths), NapiArg.Of(installParam));
+        return NodeApi.CallMethodAsyncVoid(Module, _installForResult, cancellationToken, NapiArg.Of(admin), NapiArg.Of(hapFilePaths), NapiArg.Of(installParam));
     }
 
     /// <summary>

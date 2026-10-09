@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -99,9 +100,9 @@ public static unsafe partial class Storage
     /// <summary>
     /// deleteStorage
     /// </summary>
-    public static Task DeleteStorageAsync(string path)
+    public static Task DeleteStorageAsync(string path, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deleteStorage, path);
+        return NodeApi.CallMethodAsyncVoid(Module, _deleteStorage, cancellationToken, path);
     }
 
     /// <summary>
@@ -115,9 +116,9 @@ public static unsafe partial class Storage
     /// <summary>
     /// removeStorageFromCache
     /// </summary>
-    public static Task RemoveStorageFromCacheAsync(string path)
+    public static Task RemoveStorageFromCacheAsync(string path, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeStorageFromCache, path);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeStorageFromCache, cancellationToken, path);
     }
 
     /// <summary>
@@ -196,9 +197,9 @@ public sealed partial class StorageObject : JsObject
     /// <summary>
     /// put
     /// </summary>
-    public Task PutAsync(string key, global::HarmonyOS.ArkUI.ValueType value)
+    public Task PutAsync(string key, global::HarmonyOS.ArkUI.ValueType value, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_put, key, (int)value);
+        return CallMethodAsyncVoid(_put, cancellationToken, key, (int)value);
     }
 
     /// <summary>
@@ -212,9 +213,9 @@ public sealed partial class StorageObject : JsObject
     /// <summary>
     /// delete
     /// </summary>
-    public Task DeleteAsync(string key)
+    public Task DeleteAsync(string key, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_delete, key);
+        return CallMethodAsyncVoid(_delete, cancellationToken, key);
     }
 
     /// <summary>
@@ -228,9 +229,9 @@ public sealed partial class StorageObject : JsObject
     /// <summary>
     /// clear
     /// </summary>
-    public Task ClearAsync()
+    public Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_clear);
+        return CallMethodAsyncVoid(_clear, cancellationToken);
     }
 
     /// <summary>
@@ -244,9 +245,9 @@ public sealed partial class StorageObject : JsObject
     /// <summary>
     /// flush
     /// </summary>
-    public Task FlushAsync()
+    public Task FlushAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_flush);
+        return CallMethodAsyncVoid(_flush, cancellationToken);
     }
 
     /// <summary>

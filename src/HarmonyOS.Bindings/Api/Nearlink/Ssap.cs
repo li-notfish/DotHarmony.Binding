@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -109,17 +110,17 @@ public sealed partial class Client : JsObject
     /// <summary>
     /// connect
     /// </summary>
-    public Task ConnectAsync()
+    public Task ConnectAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_connect);
+        return CallMethodAsyncVoid(_connect, cancellationToken);
     }
 
     /// <summary>
     /// disconnect
     /// </summary>
-    public Task DisconnectAsync()
+    public Task DisconnectAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_disconnect);
+        return CallMethodAsyncVoid(_disconnect, cancellationToken);
     }
 
     /// <summary>
@@ -149,25 +150,25 @@ public sealed partial class Client : JsObject
     /// <summary>
     /// writeProperty
     /// </summary>
-    public Task WritePropertyAsync(IntPtr property, global::HarmonyOS.ArkUI.PropertyWriteType writeType)
+    public Task WritePropertyAsync(IntPtr property, global::HarmonyOS.ArkUI.PropertyWriteType writeType, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_writeProperty, property, (int)writeType);
+        return CallMethodAsyncVoid(_writeProperty, cancellationToken, property, (int)writeType);
     }
 
     /// <summary>
     /// setPropertyNotification
     /// </summary>
-    public Task SetPropertyNotificationAsync(IntPtr property, bool enable)
+    public Task SetPropertyNotificationAsync(IntPtr property, bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPropertyNotification, property, enable);
+        return CallMethodAsyncVoid(_setPropertyNotification, cancellationToken, property, enable);
     }
 
     /// <summary>
     /// requestMtuSize
     /// </summary>
-    public Task RequestMtuSizeAsync(double mtu)
+    public Task RequestMtuSizeAsync(double mtu, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_requestMtuSize, mtu);
+        return CallMethodAsyncVoid(_requestMtuSize, cancellationToken, mtu);
     }
 
     /// <summary>
@@ -267,9 +268,9 @@ public sealed partial class SsapServer : JsObject
     /// <summary>
     /// notifyPropertyChanged
     /// </summary>
-    public Task NotifyPropertyChangedAsync(string address, IntPtr property)
+    public Task NotifyPropertyChangedAsync(string address, IntPtr property, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_notifyPropertyChanged, address, property);
+        return CallMethodAsyncVoid(_notifyPropertyChanged, cancellationToken, address, property);
     }
 
     /// <summary>

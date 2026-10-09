@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -227,25 +228,25 @@ public static unsafe partial class Display
     /// <summary>
     /// destroyVirtualScreen
     /// </summary>
-    public static Task DestroyVirtualScreenAsync(double screenId)
+    public static Task DestroyVirtualScreenAsync(double screenId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _destroyVirtualScreen, screenId);
+        return NodeApi.CallMethodAsyncVoid(Module, _destroyVirtualScreen, cancellationToken, screenId);
     }
 
     /// <summary>
     /// setVirtualScreenSurface
     /// </summary>
-    public static Task SetVirtualScreenSurfaceAsync(double screenId, string surfaceId)
+    public static Task SetVirtualScreenSurfaceAsync(double screenId, string surfaceId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setVirtualScreenSurface, screenId, surfaceId);
+        return NodeApi.CallMethodAsyncVoid(Module, _setVirtualScreenSurface, cancellationToken, screenId, surfaceId);
     }
 
     /// <summary>
     /// makeUnique
     /// </summary>
-    public static Task MakeUniqueAsync(double screenId)
+    public static Task MakeUniqueAsync(double screenId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _makeUnique, screenId);
+        return NodeApi.CallMethodAsyncVoid(Module, _makeUnique, cancellationToken, screenId);
     }
 
     /// <summary>

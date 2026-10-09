@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -2930,9 +2931,9 @@ public sealed partial class WebHttpBodyStream : JsObject
     /// <summary>
     /// initialize
     /// </summary>
-    public Task InitializeAsync()
+    public Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_initialize);
+        return CallMethodAsyncVoid(_initialize, cancellationToken);
     }
 
     /// <summary>

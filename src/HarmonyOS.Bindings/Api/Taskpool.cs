@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -195,9 +196,9 @@ public static unsafe partial class Taskpool
     /// <summary>
     /// getTask
     /// </summary>
-    public static Task GetTaskAsync(double taskId, string? taskName = null)
+    public static Task GetTaskAsync(double taskId, string? taskName = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _getTask, taskId, taskName);
+        return NodeApi.CallMethodAsyncVoid(Module, _getTask, cancellationToken, taskId, taskName);
     }
 
     /// <summary>

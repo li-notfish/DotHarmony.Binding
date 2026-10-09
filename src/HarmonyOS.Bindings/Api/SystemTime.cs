@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -76,9 +77,9 @@ public static unsafe partial class SystemTime
     /// <summary>
     /// setTime
     /// </summary>
-    public static Task SetTimeAsync(double time)
+    public static Task SetTimeAsync(double time, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setTime, time);
+        return NodeApi.CallMethodAsyncVoid(Module, _setTime, cancellationToken, time);
     }
 
     /// <summary>
@@ -132,9 +133,9 @@ public static unsafe partial class SystemTime
     /// <summary>
     /// setDate
     /// </summary>
-    public static Task SetDateAsync(IntPtr date)
+    public static Task SetDateAsync(IntPtr date, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setDate, date);
+        return NodeApi.CallMethodAsyncVoid(Module, _setDate, cancellationToken, date);
     }
 
     /// <summary>
@@ -148,9 +149,9 @@ public static unsafe partial class SystemTime
     /// <summary>
     /// setTimezone
     /// </summary>
-    public static Task SetTimezoneAsync(string timezone)
+    public static Task SetTimezoneAsync(string timezone, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setTimezone, timezone);
+        return NodeApi.CallMethodAsyncVoid(Module, _setTimezone, cancellationToken, timezone);
     }
 
     /// <summary>

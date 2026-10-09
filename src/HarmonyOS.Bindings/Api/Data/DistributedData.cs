@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -137,17 +138,17 @@ public sealed partial class KVManager : JsObject
     /// <summary>
     /// closeKVStore
     /// </summary>
-    public Task CloseKvStoreAsync(string appId, string storeId, KVStore kvStore)
+    public Task CloseKvStoreAsync(string appId, string storeId, KVStore kvStore, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_closeKVStore, appId, storeId, NapiArg.Of(kvStore));
+        return CallMethodAsyncVoid(_closeKVStore, cancellationToken, appId, storeId, NapiArg.Of(kvStore));
     }
 
     /// <summary>
     /// deleteKVStore
     /// </summary>
-    public Task DeleteKvStoreAsync(string appId, string storeId)
+    public Task DeleteKvStoreAsync(string appId, string storeId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_deleteKVStore, appId, storeId);
+        return CallMethodAsyncVoid(_deleteKVStore, cancellationToken, appId, storeId);
     }
 
     /// <summary>
@@ -674,17 +675,17 @@ public sealed partial class KVStore : JsObject
     /// <summary>
     /// put
     /// </summary>
-    public Task PutAsync(string key, byte[] value)
+    public Task PutAsync(string key, byte[] value, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_put, key, NapiArg.Of(value));
+        return CallMethodAsyncVoid(_put, cancellationToken, key, NapiArg.Of(value));
     }
 
     /// <summary>
     /// delete
     /// </summary>
-    public Task DeleteAsync(string key)
+    public Task DeleteAsync(string key, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_delete, key);
+        return CallMethodAsyncVoid(_delete, cancellationToken, key);
     }
 
     /// <summary>
@@ -714,57 +715,57 @@ public sealed partial class KVStore : JsObject
     /// <summary>
     /// putBatch
     /// </summary>
-    public Task PutBatchAsync(Entry[] entries)
+    public Task PutBatchAsync(Entry[] entries, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_putBatch, NapiArg.Of(entries));
+        return CallMethodAsyncVoid(_putBatch, cancellationToken, NapiArg.Of(entries));
     }
 
     /// <summary>
     /// deleteBatch
     /// </summary>
-    public Task DeleteBatchAsync(string[] keys)
+    public Task DeleteBatchAsync(string[] keys, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_deleteBatch, NapiArg.Of(keys));
+        return CallMethodAsyncVoid(_deleteBatch, cancellationToken, NapiArg.Of(keys));
     }
 
     /// <summary>
     /// startTransaction
     /// </summary>
-    public Task StartTransactionAsync()
+    public Task StartTransactionAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startTransaction);
+        return CallMethodAsyncVoid(_startTransaction, cancellationToken);
     }
 
     /// <summary>
     /// commit
     /// </summary>
-    public Task CommitAsync()
+    public Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_commit);
+        return CallMethodAsyncVoid(_commit, cancellationToken);
     }
 
     /// <summary>
     /// rollback
     /// </summary>
-    public Task RollbackAsync()
+    public Task RollbackAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_rollback);
+        return CallMethodAsyncVoid(_rollback, cancellationToken);
     }
 
     /// <summary>
     /// enableSync
     /// </summary>
-    public Task EnableSyncAsync(bool enabled)
+    public Task EnableSyncAsync(bool enabled, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_enableSync, enabled);
+        return CallMethodAsyncVoid(_enableSync, cancellationToken, enabled);
     }
 
     /// <summary>
     /// setSyncRange
     /// </summary>
-    public Task SetSyncRangeAsync(string[] localLabels, string[] remoteSupportLabels)
+    public Task SetSyncRangeAsync(string[] localLabels, string[] remoteSupportLabels, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSyncRange, NapiArg.Of(localLabels), NapiArg.Of(remoteSupportLabels));
+        return CallMethodAsyncVoid(_setSyncRange, cancellationToken, NapiArg.Of(localLabels), NapiArg.Of(remoteSupportLabels));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();

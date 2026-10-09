@@ -6,6 +6,7 @@
 #nullable enable
 using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -167,9 +168,9 @@ public sealed partial class UDPSocket : JsObject
     /// <summary>
     /// bind
     /// </summary>
-    public Task BindAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress address)
+    public Task BindAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress address, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_bind, NapiArg.Of(address));
+        return CallMethodAsyncVoid(_bind, cancellationToken, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -183,17 +184,17 @@ public sealed partial class UDPSocket : JsObject
     /// <summary>
     /// send
     /// </summary>
-    public Task SendAsync(IntPtr options)
+    public Task SendAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_send, options);
+        return CallMethodAsyncVoid(_send, cancellationToken, options);
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -207,9 +208,9 @@ public sealed partial class UDPSocket : JsObject
     /// <summary>
     /// setExtraOptions
     /// </summary>
-    public Task SetExtraOptionsAsync(UDPExtraOptions options)
+    public Task SetExtraOptionsAsync(UDPExtraOptions options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_setExtraOptions, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -378,9 +379,9 @@ public sealed partial class MulticastSocket : JsObject
     /// <summary>
     /// bind
     /// </summary>
-    public Task BindAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress address)
+    public Task BindAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress address, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_bind, NapiArg.Of(address));
+        return CallMethodAsyncVoid(_bind, cancellationToken, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -394,17 +395,17 @@ public sealed partial class MulticastSocket : JsObject
     /// <summary>
     /// send
     /// </summary>
-    public Task SendAsync(IntPtr options)
+    public Task SendAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_send, options);
+        return CallMethodAsyncVoid(_send, cancellationToken, options);
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -418,9 +419,9 @@ public sealed partial class MulticastSocket : JsObject
     /// <summary>
     /// setExtraOptions
     /// </summary>
-    public Task SetExtraOptionsAsync(UDPExtraOptions options)
+    public Task SetExtraOptionsAsync(UDPExtraOptions options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_setExtraOptions, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -450,25 +451,25 @@ public sealed partial class MulticastSocket : JsObject
     /// <summary>
     /// addMembership
     /// </summary>
-    public Task AddMembershipAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress multicastAddress)
+    public Task AddMembershipAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress multicastAddress, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_addMembership, NapiArg.Of(multicastAddress));
+        return CallMethodAsyncVoid(_addMembership, cancellationToken, NapiArg.Of(multicastAddress));
     }
 
     /// <summary>
     /// dropMembership
     /// </summary>
-    public Task DropMembershipAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress multicastAddress)
+    public Task DropMembershipAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress multicastAddress, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_dropMembership, NapiArg.Of(multicastAddress));
+        return CallMethodAsyncVoid(_dropMembership, cancellationToken, NapiArg.Of(multicastAddress));
     }
 
     /// <summary>
     /// setMulticastTTL
     /// </summary>
-    public Task SetMulticastTtlAsync(double ttl)
+    public Task SetMulticastTtlAsync(double ttl, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMulticastTTL, ttl);
+        return CallMethodAsyncVoid(_setMulticastTTL, cancellationToken, ttl);
     }
 
     /// <summary>
@@ -482,9 +483,9 @@ public sealed partial class MulticastSocket : JsObject
     /// <summary>
     /// setLoopbackMode
     /// </summary>
-    public Task SetLoopbackModeAsync(bool flag)
+    public Task SetLoopbackModeAsync(bool flag, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setLoopbackMode, flag);
+        return CallMethodAsyncVoid(_setLoopbackMode, cancellationToken, flag);
     }
 
     /// <summary>
@@ -640,33 +641,33 @@ public sealed partial class TCPSocket : JsObject
     /// <summary>
     /// bind
     /// </summary>
-    public Task BindAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress address)
+    public Task BindAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress address, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_bind, NapiArg.Of(address));
+        return CallMethodAsyncVoid(_bind, cancellationToken, NapiArg.Of(address));
     }
 
     /// <summary>
     /// connect
     /// </summary>
-    public Task ConnectAsync(IntPtr options)
+    public Task ConnectAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_connect, options);
+        return CallMethodAsyncVoid(_connect, cancellationToken, options);
     }
 
     /// <summary>
     /// send
     /// </summary>
-    public Task SendAsync(TCPSendOptions options)
+    public Task SendAsync(TCPSendOptions options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_send, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_send, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -696,9 +697,9 @@ public sealed partial class TCPSocket : JsObject
     /// <summary>
     /// setExtraOptions
     /// </summary>
-    public Task SetExtraOptionsAsync(IntPtr options)
+    public Task SetExtraOptionsAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, options);
+        return CallMethodAsyncVoid(_setExtraOptions, cancellationToken, options);
     }
 
     /// <summary>
@@ -867,9 +868,9 @@ public sealed partial class TLSSocket : JsObject
     /// <summary>
     /// bind
     /// </summary>
-    public Task BindAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress address)
+    public Task BindAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress address, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_bind, NapiArg.Of(address));
+        return CallMethodAsyncVoid(_bind, cancellationToken, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -891,9 +892,9 @@ public sealed partial class TLSSocket : JsObject
     /// <summary>
     /// setExtraOptions
     /// </summary>
-    public Task SetExtraOptionsAsync(IntPtr options)
+    public Task SetExtraOptionsAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, options);
+        return CallMethodAsyncVoid(_setExtraOptions, cancellationToken, options);
     }
 
     /// <summary>
@@ -971,25 +972,25 @@ public sealed partial class TLSSocket : JsObject
     /// <summary>
     /// connect
     /// </summary>
-    public Task ConnectAsync(IntPtr options)
+    public Task ConnectAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_connect, options);
+        return CallMethodAsyncVoid(_connect, cancellationToken, options);
     }
 
     /// <summary>
     /// send
     /// </summary>
-    public Task SendAsync(string data)
+    public Task SendAsync(string data, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_send, data);
+        return CallMethodAsyncVoid(_send, cancellationToken, data);
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -1126,17 +1127,17 @@ public sealed partial class TCPSocketServer : JsObject
     /// <summary>
     /// listen
     /// </summary>
-    public Task ListenAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress address)
+    public Task ListenAsync(global::HarmonyOS.Bindings.Api.Net.NetAddress address, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_listen, NapiArg.Of(address));
+        return CallMethodAsyncVoid(_listen, cancellationToken, NapiArg.Of(address));
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -1150,9 +1151,9 @@ public sealed partial class TCPSocketServer : JsObject
     /// <summary>
     /// setExtraOptions
     /// </summary>
-    public Task SetExtraOptionsAsync(IntPtr options)
+    public Task SetExtraOptionsAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, options);
+        return CallMethodAsyncVoid(_setExtraOptions, cancellationToken, options);
     }
 
     /// <summary>
@@ -1289,17 +1290,17 @@ public sealed partial class TLSSocketServer : JsObject
     /// <summary>
     /// listen
     /// </summary>
-    public Task ListenAsync(IntPtr options)
+    public Task ListenAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_listen, options);
+        return CallMethodAsyncVoid(_listen, cancellationToken, options);
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -1313,9 +1314,9 @@ public sealed partial class TLSSocketServer : JsObject
     /// <summary>
     /// setExtraOptions
     /// </summary>
-    public Task SetExtraOptionsAsync(IntPtr options)
+    public Task SetExtraOptionsAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, options);
+        return CallMethodAsyncVoid(_setExtraOptions, cancellationToken, options);
     }
 
     /// <summary>
@@ -1469,33 +1470,33 @@ public sealed partial class LocalSocket : JsObject
     /// <summary>
     /// bind
     /// </summary>
-    public Task BindAsync(LocalAddress address)
+    public Task BindAsync(LocalAddress address, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_bind, NapiArg.Of(address));
+        return CallMethodAsyncVoid(_bind, cancellationToken, NapiArg.Of(address));
     }
 
     /// <summary>
     /// connect
     /// </summary>
-    public Task ConnectAsync(LocalConnectOptions options)
+    public Task ConnectAsync(LocalConnectOptions options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_connect, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_connect, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
     /// send
     /// </summary>
-    public Task SendAsync(LocalSendOptions options)
+    public Task SendAsync(LocalSendOptions options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_send, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_send, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -1517,9 +1518,9 @@ public sealed partial class LocalSocket : JsObject
     /// <summary>
     /// setExtraOptions
     /// </summary>
-    public Task SetExtraOptionsAsync(ExtraOptionsBase options)
+    public Task SetExtraOptionsAsync(ExtraOptionsBase options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_setExtraOptions, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1689,9 +1690,9 @@ public sealed partial class LocalSocketServer : JsObject
     /// <summary>
     /// listen
     /// </summary>
-    public Task ListenAsync(LocalAddress address)
+    public Task ListenAsync(LocalAddress address, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_listen, NapiArg.Of(address));
+        return CallMethodAsyncVoid(_listen, cancellationToken, NapiArg.Of(address));
     }
 
     /// <summary>
@@ -1705,9 +1706,9 @@ public sealed partial class LocalSocketServer : JsObject
     /// <summary>
     /// setExtraOptions
     /// </summary>
-    public Task SetExtraOptionsAsync(ExtraOptionsBase options)
+    public Task SetExtraOptionsAsync(ExtraOptionsBase options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setExtraOptions, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_setExtraOptions, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1729,9 +1730,9 @@ public sealed partial class LocalSocketServer : JsObject
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -1910,17 +1911,17 @@ public sealed partial class LocalSocketConnection : JsObject
     /// <summary>
     /// send
     /// </summary>
-    public Task SendAsync(LocalSendOptions options)
+    public Task SendAsync(LocalSendOptions options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_send, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_send, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -2077,17 +2078,17 @@ public sealed partial class TCPSocketConnection : JsObject
     /// <summary>
     /// send
     /// </summary>
-    public Task SendAsync(TCPSendOptions options)
+    public Task SendAsync(TCPSendOptions options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_send, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_send, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -2255,17 +2256,17 @@ public sealed partial class TLSSocketConnection : JsObject
     /// <summary>
     /// send
     /// </summary>
-    public Task SendAsync(string data)
+    public Task SendAsync(string data, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_send, data);
+        return CallMethodAsyncVoid(_send, cancellationToken, data);
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>

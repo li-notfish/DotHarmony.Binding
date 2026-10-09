@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -114,17 +115,17 @@ public sealed partial class PiPController : JsObject
     /// <summary>
     /// startPiP
     /// </summary>
-    public Task StartPiPAsync()
+    public Task StartPiPAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startPiP);
+        return CallMethodAsyncVoid(_startPiP, cancellationToken);
     }
 
     /// <summary>
     /// stopPiP
     /// </summary>
-    public Task StopPiPAsync()
+    public Task StopPiPAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stopPiP);
+        return CallMethodAsyncVoid(_stopPiP, cancellationToken);
     }
 
     /// <summary>
@@ -154,9 +155,9 @@ public sealed partial class PiPController : JsObject
     /// <summary>
     /// updateContentNode
     /// </summary>
-    public Task UpdateContentNodeAsync(IntPtr contentNode)
+    public Task UpdateContentNodeAsync(IntPtr contentNode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateContentNode, contentNode);
+        return CallMethodAsyncVoid(_updateContentNode, cancellationToken, contentNode);
     }
 
     /// <summary>

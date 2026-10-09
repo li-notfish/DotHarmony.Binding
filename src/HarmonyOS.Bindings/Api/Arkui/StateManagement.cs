@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -337,9 +338,9 @@ public static unsafe partial class StateManagement
     /// <summary>
     /// preRender
     /// </summary>
-    public static Task PreRenderAsync(IntPtr builder, double times)
+    public static Task PreRenderAsync(IntPtr builder, double times, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _preRender, builder, times);
+        return NodeApi.CallMethodAsyncVoid(Module, _preRender, cancellationToken, builder, times);
     }
 
 }

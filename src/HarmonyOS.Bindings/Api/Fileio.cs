@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -125,17 +126,17 @@ public static unsafe partial class Fileio
     /// <summary>
     /// access
     /// </summary>
-    public static Task AccessAsync(string path, double? mode = null)
+    public static Task AccessAsync(string path, double? mode = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _access, path, NapiArg.Of(mode));
+        return NodeApi.CallMethodAsyncVoid(Module, _access, cancellationToken, path, NapiArg.Of(mode));
     }
 
     /// <summary>
     /// access
     /// </summary>
-    public static Task AccessAsync(string path)
+    public static Task AccessAsync(string path, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _access, path);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _access, cancellationToken, path);
     }
 
     /// <summary>
@@ -149,9 +150,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// close
     /// </summary>
-    public static Task CloseAsync(double fd)
+    public static Task CloseAsync(double fd, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _close, fd);
+        return NodeApi.CallMethodAsyncVoid(Module, _close, cancellationToken, fd);
     }
 
     /// <summary>
@@ -165,17 +166,17 @@ public static unsafe partial class Fileio
     /// <summary>
     /// copyFile
     /// </summary>
-    public static Task CopyFileAsync(string src, string dest, double? mode = null)
+    public static Task CopyFileAsync(string src, string dest, double? mode = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest, NapiArg.Of(mode));
+        return NodeApi.CallMethodAsyncVoid(Module, _copyFile, cancellationToken, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
     /// copyFile
     /// </summary>
-    public static Task CopyFileAsync(string src, string dest)
+    public static Task CopyFileAsync(string src, string dest, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copyFile, src, dest);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copyFile, cancellationToken, src, dest);
     }
 
     /// <summary>
@@ -205,9 +206,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// chown
     /// </summary>
-    public static Task ChownAsync(string path, double uid, double gid)
+    public static Task ChownAsync(string path, double uid, double gid, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _chown, path, uid, gid);
+        return NodeApi.CallMethodAsyncVoid(Module, _chown, cancellationToken, path, uid, gid);
     }
 
     /// <summary>
@@ -221,9 +222,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// chmod
     /// </summary>
-    public static Task ChmodAsync(string path, double mode)
+    public static Task ChmodAsync(string path, double mode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _chmod, path, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _chmod, cancellationToken, path, mode);
     }
 
     /// <summary>
@@ -237,17 +238,17 @@ public static unsafe partial class Fileio
     /// <summary>
     /// ftruncate
     /// </summary>
-    public static Task FtruncateAsync(double fd, double? len = null)
+    public static Task FtruncateAsync(double fd, double? len = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _ftruncate, fd, NapiArg.Of(len));
+        return NodeApi.CallMethodAsyncVoid(Module, _ftruncate, cancellationToken, fd, NapiArg.Of(len));
     }
 
     /// <summary>
     /// ftruncate
     /// </summary>
-    public static Task FtruncateAsync(double fd)
+    public static Task FtruncateAsync(double fd, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _ftruncate, fd);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _ftruncate, cancellationToken, fd);
     }
 
     /// <summary>
@@ -261,9 +262,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// fsync
     /// </summary>
-    public static Task FsyncAsync(double fd)
+    public static Task FsyncAsync(double fd, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _fsync, fd);
+        return NodeApi.CallMethodAsyncVoid(Module, _fsync, cancellationToken, fd);
     }
 
     /// <summary>
@@ -293,9 +294,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// fdatasync
     /// </summary>
-    public static Task FdatasyncAsync(double fd)
+    public static Task FdatasyncAsync(double fd, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _fdatasync, fd);
+        return NodeApi.CallMethodAsyncVoid(Module, _fdatasync, cancellationToken, fd);
     }
 
     /// <summary>
@@ -309,9 +310,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// fchown
     /// </summary>
-    public static Task FchownAsync(double fd, double uid, double gid)
+    public static Task FchownAsync(double fd, double uid, double gid, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _fchown, fd, uid, gid);
+        return NodeApi.CallMethodAsyncVoid(Module, _fchown, cancellationToken, fd, uid, gid);
     }
 
     /// <summary>
@@ -325,9 +326,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// fchmod
     /// </summary>
-    public static Task FchmodAsync(double fd, double mode)
+    public static Task FchmodAsync(double fd, double mode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _fchmod, fd, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _fchmod, cancellationToken, fd, mode);
     }
 
     /// <summary>
@@ -365,9 +366,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// lchown
     /// </summary>
-    public static Task LchownAsync(string path, double uid, double gid)
+    public static Task LchownAsync(string path, double uid, double gid, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _lchown, path, uid, gid);
+        return NodeApi.CallMethodAsyncVoid(Module, _lchown, cancellationToken, path, uid, gid);
     }
 
     /// <summary>
@@ -397,17 +398,17 @@ public static unsafe partial class Fileio
     /// <summary>
     /// mkdir
     /// </summary>
-    public static Task MkdirAsync(string path, double? mode = null)
+    public static Task MkdirAsync(string path, double? mode = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mkdir, path, NapiArg.Of(mode));
+        return NodeApi.CallMethodAsyncVoid(Module, _mkdir, cancellationToken, path, NapiArg.Of(mode));
     }
 
     /// <summary>
     /// mkdir
     /// </summary>
-    public static Task MkdirAsync(string path)
+    public static Task MkdirAsync(string path, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _mkdir, path);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _mkdir, cancellationToken, path);
     }
 
     /// <summary>
@@ -525,9 +526,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// rename
     /// </summary>
-    public static Task RenameAsync(string oldPath, string newPath)
+    public static Task RenameAsync(string oldPath, string newPath, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _rename, oldPath, newPath);
+        return NodeApi.CallMethodAsyncVoid(Module, _rename, cancellationToken, oldPath, newPath);
     }
 
     /// <summary>
@@ -541,9 +542,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// rmdir
     /// </summary>
-    public static Task RmdirAsync(string path)
+    public static Task RmdirAsync(string path, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _rmdir, path);
+        return NodeApi.CallMethodAsyncVoid(Module, _rmdir, cancellationToken, path);
     }
 
     /// <summary>
@@ -573,9 +574,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// symlink
     /// </summary>
-    public static Task SymlinkAsync(string target, string srcPath)
+    public static Task SymlinkAsync(string target, string srcPath, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _symlink, target, srcPath);
+        return NodeApi.CallMethodAsyncVoid(Module, _symlink, cancellationToken, target, srcPath);
     }
 
     /// <summary>
@@ -589,17 +590,17 @@ public static unsafe partial class Fileio
     /// <summary>
     /// truncate
     /// </summary>
-    public static Task TruncateAsync(string path, double? len = null)
+    public static Task TruncateAsync(string path, double? len = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _truncate, path, NapiArg.Of(len));
+        return NodeApi.CallMethodAsyncVoid(Module, _truncate, cancellationToken, path, NapiArg.Of(len));
     }
 
     /// <summary>
     /// truncate
     /// </summary>
-    public static Task TruncateAsync(string path)
+    public static Task TruncateAsync(string path, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _truncate, path);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _truncate, cancellationToken, path);
     }
 
     /// <summary>
@@ -613,9 +614,9 @@ public static unsafe partial class Fileio
     /// <summary>
     /// unlink
     /// </summary>
-    public static Task UnlinkAsync(string path)
+    public static Task UnlinkAsync(string path, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unlink, path);
+        return NodeApi.CallMethodAsyncVoid(Module, _unlink, cancellationToken, path);
     }
 
     /// <summary>

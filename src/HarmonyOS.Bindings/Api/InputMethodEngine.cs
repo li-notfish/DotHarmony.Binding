@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -379,9 +380,9 @@ public sealed partial class InputMethodAbility : JsObject
     /// <summary>
     /// destroyPanel
     /// </summary>
-    public Task DestroyPanelAsync(PanelObject panel)
+    public Task DestroyPanelAsync(PanelObject panel, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_destroyPanel, NapiArg.Of(panel));
+        return CallMethodAsyncVoid(_destroyPanel, cancellationToken, NapiArg.Of(panel));
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -952,25 +953,25 @@ public sealed partial class KeyboardController : JsObject
     /// <summary>
     /// hide
     /// </summary>
-    public Task HideAsync()
+    public Task HideAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_hide);
+        return CallMethodAsyncVoid(_hide, cancellationToken);
     }
 
     /// <summary>
     /// hideKeyboard
     /// </summary>
-    public Task HideKeyboardAsync()
+    public Task HideKeyboardAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_hideKeyboard);
+        return CallMethodAsyncVoid(_hideKeyboard, cancellationToken);
     }
 
     /// <summary>
     /// exitCurrentInputType
     /// </summary>
-    public Task ExitCurrentInputTypeAsync()
+    public Task ExitCurrentInputTypeAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_exitCurrentInputType);
+        return CallMethodAsyncVoid(_exitCurrentInputType, cancellationToken);
     }
 
 }
@@ -1122,9 +1123,9 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// moveCursor
     /// </summary>
-    public Task MoveCursorAsync(double direction)
+    public Task MoveCursorAsync(double direction, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_moveCursor, direction);
+        return CallMethodAsyncVoid(_moveCursor, cancellationToken, direction);
     }
 
     /// <summary>
@@ -1138,9 +1139,9 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// selectByRange
     /// </summary>
-    public Task SelectByRangeAsync(InputMethodEngineRange range)
+    public Task SelectByRangeAsync(InputMethodEngineRange range, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_selectByRange, NapiArg.Of(range));
+        return CallMethodAsyncVoid(_selectByRange, cancellationToken, NapiArg.Of(range));
     }
 
     /// <summary>
@@ -1154,9 +1155,9 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// selectByMovement
     /// </summary>
-    public Task SelectByMovementAsync(InputMethodEngineMovement movement)
+    public Task SelectByMovementAsync(InputMethodEngineMovement movement, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_selectByMovement, NapiArg.Of(movement));
+        return CallMethodAsyncVoid(_selectByMovement, cancellationToken, NapiArg.Of(movement));
     }
 
     /// <summary>
@@ -1186,17 +1187,17 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// sendExtendAction
     /// </summary>
-    public Task SendExtendActionAsync(global::HarmonyOS.ArkUI.InputMethodEngineExtendAction action)
+    public Task SendExtendActionAsync(global::HarmonyOS.ArkUI.InputMethodEngineExtendAction action, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_sendExtendAction, (int)action);
+        return CallMethodAsyncVoid(_sendExtendAction, cancellationToken, (int)action);
     }
 
     /// <summary>
     /// sendPrivateCommand
     /// </summary>
-    public Task SendPrivateCommandAsync(IntPtr commandData)
+    public Task SendPrivateCommandAsync(IntPtr commandData, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_sendPrivateCommand, commandData);
+        return CallMethodAsyncVoid(_sendPrivateCommand, cancellationToken, commandData);
     }
 
     /// <summary>
@@ -1210,9 +1211,9 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// setPreviewText
     /// </summary>
-    public Task SetPreviewTextAsync(string text, InputMethodEngineRange range)
+    public Task SetPreviewTextAsync(string text, InputMethodEngineRange range, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPreviewText, text, NapiArg.Of(range));
+        return CallMethodAsyncVoid(_setPreviewText, cancellationToken, text, NapiArg.Of(range));
     }
 
     /// <summary>
@@ -1226,9 +1227,9 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// finishTextPreview
     /// </summary>
-    public Task FinishTextPreviewAsync()
+    public Task FinishTextPreviewAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_finishTextPreview);
+        return CallMethodAsyncVoid(_finishTextPreview, cancellationToken);
     }
 
     /// <summary>
@@ -1242,9 +1243,9 @@ public sealed partial class InputClient : JsObject
     /// <summary>
     /// sendMessage
     /// </summary>
-    public Task SendMessageAsync(string msgId, byte[]? msgParam = null)
+    public Task SendMessageAsync(string msgId, byte[]? msgParam = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_sendMessage, msgId, NapiArg.OfArrayBuffer(msgParam));
+        return CallMethodAsyncVoid(_sendMessage, cancellationToken, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 
     /// <summary>
@@ -1378,33 +1379,33 @@ public sealed partial class PanelObject : JsObject
     /// <summary>
     /// setUiContent
     /// </summary>
-    public Task SetUiContentAsync(string path)
+    public Task SetUiContentAsync(string path, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setUiContent, path);
+        return CallMethodAsyncVoid(_setUiContent, cancellationToken, path);
     }
 
     /// <summary>
     /// setUiContent
     /// </summary>
-    public Task SetUiContentAsync(string path, IntPtr storage)
+    public Task SetUiContentAsync(string path, IntPtr storage, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setUiContent, path, storage);
+        return CallMethodAsyncVoid(_setUiContent, cancellationToken, path, storage);
     }
 
     /// <summary>
     /// resize
     /// </summary>
-    public Task ResizeAsync(double width, double height)
+    public Task ResizeAsync(double width, double height, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_resize, width, height);
+        return CallMethodAsyncVoid(_resize, cancellationToken, width, height);
     }
 
     /// <summary>
     /// moveTo
     /// </summary>
-    public Task MoveToAsync(double x, double y)
+    public Task MoveToAsync(double x, double y, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_moveTo, x, y);
+        return CallMethodAsyncVoid(_moveTo, cancellationToken, x, y);
     }
 
     /// <summary>
@@ -1426,17 +1427,17 @@ public sealed partial class PanelObject : JsObject
     /// <summary>
     /// show
     /// </summary>
-    public Task ShowAsync()
+    public Task ShowAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_show);
+        return CallMethodAsyncVoid(_show, cancellationToken);
     }
 
     /// <summary>
     /// hide
     /// </summary>
-    public Task HideAsync()
+    public Task HideAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_hide);
+        return CallMethodAsyncVoid(_hide, cancellationToken);
     }
 
     /// <summary>
@@ -1482,9 +1483,9 @@ public sealed partial class PanelObject : JsObject
     /// <summary>
     /// updatePanelRect
     /// </summary>
-    public Task UpdatePanelRectAsync(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag flag, IntPtr rect)
+    public Task UpdatePanelRectAsync(global::HarmonyOS.ArkUI.InputMethodEnginePanelFlag flag, IntPtr rect, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updatePanelRect, (int)flag, rect);
+        return CallMethodAsyncVoid(_updatePanelRect, cancellationToken, (int)flag, rect);
     }
 
     /// <summary>
@@ -1530,9 +1531,9 @@ public sealed partial class PanelObject : JsObject
     /// <summary>
     /// setKeepScreenOn
     /// </summary>
-    public Task SetKeepScreenOnAsync(bool isKeepScreenOn)
+    public Task SetKeepScreenOnAsync(bool isKeepScreenOn, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setKeepScreenOn, isKeepScreenOn);
+        return CallMethodAsyncVoid(_setKeepScreenOn, cancellationToken, isKeepScreenOn);
     }
 
     /// <summary>
@@ -1546,9 +1547,9 @@ public sealed partial class PanelObject : JsObject
     /// <summary>
     /// setSystemPanelButtonColor
     /// </summary>
-    public Task SetSystemPanelButtonColorAsync(string fillColor, string backgroundColor)
+    public Task SetSystemPanelButtonColorAsync(string fillColor, string backgroundColor, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSystemPanelButtonColor, fillColor, backgroundColor);
+        return CallMethodAsyncVoid(_setSystemPanelButtonColor, cancellationToken, fillColor, backgroundColor);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();

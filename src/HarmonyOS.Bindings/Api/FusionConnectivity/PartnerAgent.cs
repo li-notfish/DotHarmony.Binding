@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -82,17 +83,17 @@ public static unsafe partial class PartnerAgent
     /// <summary>
     /// bindDevice
     /// </summary>
-    public static Task BindDeviceAsync(IntPtr deviceAddress, DeviceCapability deviceCapability, BusinessCapability businessCapability, string partnerAgentExtensionAbilityName)
+    public static Task BindDeviceAsync(IntPtr deviceAddress, DeviceCapability deviceCapability, BusinessCapability businessCapability, string partnerAgentExtensionAbilityName, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _bindDevice, deviceAddress, NapiArg.Of(deviceCapability), NapiArg.Of(businessCapability), partnerAgentExtensionAbilityName);
+        return NodeApi.CallMethodAsyncVoid(Module, _bindDevice, cancellationToken, deviceAddress, NapiArg.Of(deviceCapability), NapiArg.Of(businessCapability), partnerAgentExtensionAbilityName);
     }
 
     /// <summary>
     /// unbindDevice
     /// </summary>
-    public static Task UnbindDeviceAsync(IntPtr deviceAddress)
+    public static Task UnbindDeviceAsync(IntPtr deviceAddress, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unbindDevice, deviceAddress);
+        return NodeApi.CallMethodAsyncVoid(Module, _unbindDevice, cancellationToken, deviceAddress);
     }
 
     /// <summary>

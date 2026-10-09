@@ -6,6 +6,7 @@
 #nullable enable
 using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -244,9 +245,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// close
     /// </summary>
-    public static Task CloseAsync(double file)
+    public static Task CloseAsync(double file, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _close, file);
+        return NodeApi.CallMethodAsyncVoid(Module, _close, cancellationToken, file);
     }
 
     /// <summary>
@@ -260,33 +261,33 @@ public static unsafe partial class Fs
     /// <summary>
     /// copy
     /// </summary>
-    public static Task CopyAsync(string srcUri, string destUri, IntPtr? options = null)
+    public static Task CopyAsync(string srcUri, string destUri, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copy, srcUri, destUri, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _copy, cancellationToken, srcUri, destUri, NapiArg.Of(options));
     }
 
     /// <summary>
     /// copy
     /// </summary>
-    public static Task CopyAsync(string srcUri, string destUri)
+    public static Task CopyAsync(string srcUri, string destUri, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copy, srcUri, destUri);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copy, cancellationToken, srcUri, destUri);
     }
 
     /// <summary>
     /// copyDir
     /// </summary>
-    public static Task CopyDirAsync(string src, string dest, double? mode = null)
+    public static Task CopyDirAsync(string src, string dest, double? mode = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copyDir, src, dest, NapiArg.Of(mode));
+        return NodeApi.CallMethodAsyncVoid(Module, _copyDir, cancellationToken, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
     /// copyDir
     /// </summary>
-    public static Task CopyDirAsync(string src, string dest)
+    public static Task CopyDirAsync(string src, string dest, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copyDir, src, dest);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copyDir, cancellationToken, src, dest);
     }
 
     /// <summary>
@@ -300,17 +301,17 @@ public static unsafe partial class Fs
     /// <summary>
     /// copyFile
     /// </summary>
-    public static Task CopyFileAsync(string src, string dest, double? mode = null)
+    public static Task CopyFileAsync(string src, string dest, double? mode = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _copyFile, src, dest, NapiArg.Of(mode));
+        return NodeApi.CallMethodAsyncVoid(Module, _copyFile, cancellationToken, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
     /// copyFile
     /// </summary>
-    public static Task CopyFileAsync(string src, string dest)
+    public static Task CopyFileAsync(string src, string dest, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copyFile, src, dest);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _copyFile, cancellationToken, src, dest);
     }
 
     /// <summary>
@@ -404,9 +405,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// fdatasync
     /// </summary>
-    public static Task FdatasyncAsync(double fd)
+    public static Task FdatasyncAsync(double fd, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _fdatasync, fd);
+        return NodeApi.CallMethodAsyncVoid(Module, _fdatasync, cancellationToken, fd);
     }
 
     /// <summary>
@@ -436,9 +437,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// fsync
     /// </summary>
-    public static Task FsyncAsync(double fd)
+    public static Task FsyncAsync(double fd, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _fsync, fd);
+        return NodeApi.CallMethodAsyncVoid(Module, _fsync, cancellationToken, fd);
     }
 
     /// <summary>
@@ -516,17 +517,17 @@ public static unsafe partial class Fs
     /// <summary>
     /// mkdir
     /// </summary>
-    public static Task MkdirAsync(string path)
+    public static Task MkdirAsync(string path, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mkdir, path);
+        return NodeApi.CallMethodAsyncVoid(Module, _mkdir, cancellationToken, path);
     }
 
     /// <summary>
     /// mkdir
     /// </summary>
-    public static Task MkdirAsync(string path, bool recursion)
+    public static Task MkdirAsync(string path, bool recursion, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _mkdir, path, recursion);
+        return NodeApi.CallMethodAsyncVoid(Module, _mkdir, cancellationToken, path, recursion);
     }
 
     /// <summary>
@@ -580,17 +581,17 @@ public static unsafe partial class Fs
     /// <summary>
     /// moveDir
     /// </summary>
-    public static Task MoveDirAsync(string src, string dest, double? mode = null)
+    public static Task MoveDirAsync(string src, string dest, double? mode = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _moveDir, src, dest, NapiArg.Of(mode));
+        return NodeApi.CallMethodAsyncVoid(Module, _moveDir, cancellationToken, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
     /// moveDir
     /// </summary>
-    public static Task MoveDirAsync(string src, string dest)
+    public static Task MoveDirAsync(string src, string dest, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _moveDir, src, dest);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _moveDir, cancellationToken, src, dest);
     }
 
     /// <summary>
@@ -604,17 +605,17 @@ public static unsafe partial class Fs
     /// <summary>
     /// moveFile
     /// </summary>
-    public static Task MoveFileAsync(string src, string dest, double? mode = null)
+    public static Task MoveFileAsync(string src, string dest, double? mode = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _moveFile, src, dest, NapiArg.Of(mode));
+        return NodeApi.CallMethodAsyncVoid(Module, _moveFile, cancellationToken, src, dest, NapiArg.Of(mode));
     }
 
     /// <summary>
     /// moveFile
     /// </summary>
-    public static Task MoveFileAsync(string src, string dest)
+    public static Task MoveFileAsync(string src, string dest, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _moveFile, src, dest);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _moveFile, cancellationToken, src, dest);
     }
 
     /// <summary>
@@ -724,9 +725,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// rename
     /// </summary>
-    public static Task RenameAsync(string oldPath, string newPath)
+    public static Task RenameAsync(string oldPath, string newPath, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _rename, oldPath, newPath);
+        return NodeApi.CallMethodAsyncVoid(Module, _rename, cancellationToken, oldPath, newPath);
     }
 
     /// <summary>
@@ -740,9 +741,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// rmdir
     /// </summary>
-    public static Task RmdirAsync(string path)
+    public static Task RmdirAsync(string path, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _rmdir, path);
+        return NodeApi.CallMethodAsyncVoid(Module, _rmdir, cancellationToken, path);
     }
 
     /// <summary>
@@ -772,9 +773,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// symlink
     /// </summary>
-    public static Task SymlinkAsync(string target, string srcPath)
+    public static Task SymlinkAsync(string target, string srcPath, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _symlink, target, srcPath);
+        return NodeApi.CallMethodAsyncVoid(Module, _symlink, cancellationToken, target, srcPath);
     }
 
     /// <summary>
@@ -788,17 +789,17 @@ public static unsafe partial class Fs
     /// <summary>
     /// truncate
     /// </summary>
-    public static Task TruncateAsync(string file, double? len = null)
+    public static Task TruncateAsync(string file, double? len = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _truncate, file, NapiArg.Of(len));
+        return NodeApi.CallMethodAsyncVoid(Module, _truncate, cancellationToken, file, NapiArg.Of(len));
     }
 
     /// <summary>
     /// truncate
     /// </summary>
-    public static Task TruncateAsync(string file)
+    public static Task TruncateAsync(string file, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _truncate, file);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _truncate, cancellationToken, file);
     }
 
     /// <summary>
@@ -812,9 +813,9 @@ public static unsafe partial class Fs
     /// <summary>
     /// unlink
     /// </summary>
-    public static Task UnlinkAsync(string path)
+    public static Task UnlinkAsync(string path, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unlink, path);
+        return NodeApi.CallMethodAsyncVoid(Module, _unlink, cancellationToken, path);
     }
 
     /// <summary>
@@ -860,25 +861,25 @@ public static unsafe partial class Fs
     /// <summary>
     /// connectDfs
     /// </summary>
-    public static Task ConnectDfsAsync(string networkId, DfsListeners listeners)
+    public static Task ConnectDfsAsync(string networkId, DfsListeners listeners, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _connectDfs, networkId, NapiArg.Of(listeners));
+        return NodeApi.CallMethodAsyncVoid(Module, _connectDfs, cancellationToken, networkId, NapiArg.Of(listeners));
     }
 
     /// <summary>
     /// disconnectDfs
     /// </summary>
-    public static Task DisconnectDfsAsync(string networkId)
+    public static Task DisconnectDfsAsync(string networkId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disconnectDfs, networkId);
+        return NodeApi.CallMethodAsyncVoid(Module, _disconnectDfs, cancellationToken, networkId);
     }
 
     /// <summary>
     /// setxattr
     /// </summary>
-    public static Task SetxattrAsync(string path, string key, string value)
+    public static Task SetxattrAsync(string path, string key, string value, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setxattr, path, key, value);
+        return NodeApi.CallMethodAsyncVoid(Module, _setxattr, cancellationToken, path, key, value);
     }
 
     /// <summary>
@@ -1181,17 +1182,17 @@ public sealed partial class FsFile : JsObject
     /// <summary>
     /// lock
     /// </summary>
-    public Task LockAsync(bool? exclusive = null)
+    public Task LockAsync(bool? exclusive = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_lock, NapiArg.Of(exclusive));
+        return CallMethodAsyncVoid(_lock, cancellationToken, NapiArg.Of(exclusive));
     }
 
     /// <summary>
     /// lock
     /// </summary>
-    public Task LockAsync()
+    public Task LockAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_lock);
+        return CallMethodAsyncCallbackVoid(_lock, cancellationToken);
     }
 
     /// <summary>

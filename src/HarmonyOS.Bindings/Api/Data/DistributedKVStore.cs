@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -100,33 +101,33 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// <summary>
     /// closeKVStore
     /// </summary>
-    public Task CloseKvStoreAsync(string appId, string storeId)
+    public Task CloseKvStoreAsync(string appId, string storeId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_closeKVStore, appId, storeId);
+        return CallMethodAsyncCallbackVoid(_closeKVStore, cancellationToken, appId, storeId);
     }
 
     /// <summary>
     /// closeKVStore
     /// </summary>
-    public Task CloseKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null)
+    public Task CloseKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_closeKVStore, appId, storeId, NapiArg.Of(kvConfig));
+        return CallMethodAsyncVoid(_closeKVStore, cancellationToken, appId, storeId, NapiArg.Of(kvConfig));
     }
 
     /// <summary>
     /// deleteKVStore
     /// </summary>
-    public Task DeleteKvStoreAsync(string appId, string storeId)
+    public Task DeleteKvStoreAsync(string appId, string storeId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_deleteKVStore, appId, storeId);
+        return CallMethodAsyncCallbackVoid(_deleteKVStore, cancellationToken, appId, storeId);
     }
 
     /// <summary>
     /// deleteKVStore
     /// </summary>
-    public Task DeleteKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null)
+    public Task DeleteKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_deleteKVStore, appId, storeId, NapiArg.Of(kvConfig));
+        return CallMethodAsyncVoid(_deleteKVStore, cancellationToken, appId, storeId, NapiArg.Of(kvConfig));
     }
 
     /// <summary>

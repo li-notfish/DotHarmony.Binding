@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -69,17 +70,17 @@ public static unsafe partial class KioskManager
     /// <summary>
     /// enterKioskMode
     /// </summary>
-    public static Task EnterKioskModeAsync(IntPtr context)
+    public static Task EnterKioskModeAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _enterKioskMode, context);
+        return NodeApi.CallMethodAsyncVoid(Module, _enterKioskMode, cancellationToken, context);
     }
 
     /// <summary>
     /// exitKioskMode
     /// </summary>
-    public static Task ExitKioskModeAsync(IntPtr context)
+    public static Task ExitKioskModeAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _exitKioskMode, context);
+        return NodeApi.CallMethodAsyncVoid(Module, _exitKioskMode, cancellationToken, context);
     }
 
 }

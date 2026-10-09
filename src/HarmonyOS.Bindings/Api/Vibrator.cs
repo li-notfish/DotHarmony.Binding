@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -80,41 +81,41 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// vibrate
     /// </summary>
-    public static Task VibrateAsync(double duration)
+    public static Task VibrateAsync(double duration, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _vibrate, duration);
+        return NodeApi.CallMethodAsyncVoid(Module, _vibrate, cancellationToken, duration);
     }
 
     /// <summary>
     /// vibrate
     /// </summary>
-    public static Task VibrateAsync(global::HarmonyOS.ArkUI.EffectId effectId)
+    public static Task VibrateAsync(global::HarmonyOS.ArkUI.EffectId effectId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _vibrate, (int)effectId);
+        return NodeApi.CallMethodAsyncVoid(Module, _vibrate, cancellationToken, (int)effectId);
     }
 
     /// <summary>
     /// startVibration
     /// </summary>
-    public static Task StartVibrationAsync(IntPtr effect, IntPtr attribute)
+    public static Task StartVibrationAsync(IntPtr effect, IntPtr attribute, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startVibration, effect, attribute);
+        return NodeApi.CallMethodAsyncVoid(Module, _startVibration, cancellationToken, effect, attribute);
     }
 
     /// <summary>
     /// stopVibration
     /// </summary>
-    public static Task StopVibrationAsync(global::HarmonyOS.ArkUI.VibratorStopMode stopMode)
+    public static Task StopVibrationAsync(global::HarmonyOS.ArkUI.VibratorStopMode stopMode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, (int)stopMode);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, cancellationToken, (int)stopMode);
     }
 
     /// <summary>
     /// stopVibration
     /// </summary>
-    public static Task StopVibrationAsync()
+    public static Task StopVibrationAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, cancellationToken);
     }
 
     /// <summary>
@@ -128,9 +129,9 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// stopVibration
     /// </summary>
-    public static Task StopVibrationAsync(VibratorInfoParam? param = null)
+    public static Task StopVibrationAsync(VibratorInfoParam? param = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, NapiArg.Of(param));
+        return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, cancellationToken, NapiArg.Of(param));
     }
 
     /// <summary>
@@ -160,9 +161,9 @@ public static unsafe partial class Vibrator
     /// <summary>
     /// stop
     /// </summary>
-    public static Task StopAsync(global::HarmonyOS.ArkUI.VibratorStopMode stopMode)
+    public static Task StopAsync(global::HarmonyOS.ArkUI.VibratorStopMode stopMode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stop, (int)stopMode);
+        return NodeApi.CallMethodAsyncVoid(Module, _stop, cancellationToken, (int)stopMode);
     }
 
     /// <summary>

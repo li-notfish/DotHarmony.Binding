@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -110,9 +111,9 @@ public static unsafe partial class BackgroundTaskManager
     /// <summary>
     /// startBackgroundRunning
     /// </summary>
-    public static Task StartBackgroundRunningAsync(IntPtr context, global::HarmonyOS.ArkUI.ResourcescheduleBackgroundTaskManagerBackgroundMode bgMode, IntPtr wantAgent)
+    public static Task StartBackgroundRunningAsync(IntPtr context, global::HarmonyOS.ArkUI.ResourcescheduleBackgroundTaskManagerBackgroundMode bgMode, IntPtr wantAgent, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, context, (int)bgMode, wantAgent);
+        return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, cancellationToken, context, (int)bgMode, wantAgent);
     }
 
     /// <summary>
@@ -150,17 +151,17 @@ public static unsafe partial class BackgroundTaskManager
     /// <summary>
     /// stopBackgroundRunning
     /// </summary>
-    public static Task StopBackgroundRunningAsync(IntPtr context)
+    public static Task StopBackgroundRunningAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopBackgroundRunning, context);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopBackgroundRunning, cancellationToken, context);
     }
 
     /// <summary>
     /// stopBackgroundRunning
     /// </summary>
-    public static Task StopBackgroundRunningAsync(IntPtr context, double continuousTaskId)
+    public static Task StopBackgroundRunningAsync(IntPtr context, double continuousTaskId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopBackgroundRunning, context, continuousTaskId);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopBackgroundRunning, cancellationToken, context, continuousTaskId);
     }
 
     /// <summary>

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -106,17 +107,17 @@ public sealed partial class DistributedAccountAbility : JsObject
     /// <summary>
     /// updateOsAccountDistributedInfo
     /// </summary>
-    public Task UpdateOsAccountDistributedInfoAsync(IntPtr accountInfo)
+    public Task UpdateOsAccountDistributedInfoAsync(IntPtr accountInfo, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateOsAccountDistributedInfo, accountInfo);
+        return CallMethodAsyncVoid(_updateOsAccountDistributedInfo, cancellationToken, accountInfo);
     }
 
     /// <summary>
     /// setOsAccountDistributedInfo
     /// </summary>
-    public Task SetOsAccountDistributedInfoAsync(IntPtr accountInfo)
+    public Task SetOsAccountDistributedInfoAsync(IntPtr accountInfo, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setOsAccountDistributedInfo, accountInfo);
+        return CallMethodAsyncVoid(_setOsAccountDistributedInfo, cancellationToken, accountInfo);
     }
 
 }

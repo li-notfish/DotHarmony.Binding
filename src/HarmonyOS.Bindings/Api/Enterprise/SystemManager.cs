@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -126,9 +127,9 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// notifyUpdatePackages
     /// </summary>
-    public static Task NotifyUpdatePackagesAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr packageInfo)
+    public static Task NotifyUpdatePackagesAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr packageInfo, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _notifyUpdatePackages, NapiArg.Of(admin), packageInfo);
+        return NodeApi.CallMethodAsyncVoid(Module, _notifyUpdatePackages, cancellationToken, NapiArg.Of(admin), packageInfo);
     }
 
     /// <summary>
@@ -230,9 +231,9 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// setActivationLockDisabled
     /// </summary>
-    public static Task SetActivationLockDisabledAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool isDisabled, string? credential = null)
+    public static Task SetActivationLockDisabledAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool isDisabled, string? credential = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setActivationLockDisabled, NapiArg.Of(admin), isDisabled, credential);
+        return NodeApi.CallMethodAsyncVoid(Module, _setActivationLockDisabled, cancellationToken, NapiArg.Of(admin), isDisabled, credential);
     }
 
     /// <summary>
@@ -246,9 +247,9 @@ public static unsafe partial class SystemManager
     /// <summary>
     /// startCollectLog
     /// </summary>
-    public static Task StartCollectLogAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
+    public static Task StartCollectLogAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startCollectLog, NapiArg.Of(admin));
+        return NodeApi.CallMethodAsyncVoid(Module, _startCollectLog, cancellationToken, NapiArg.Of(admin));
     }
 
     /// <summary>

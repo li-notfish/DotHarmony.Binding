@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -97,17 +98,17 @@ public static unsafe partial class BackgroundTaskManager
     /// <summary>
     /// startBackgroundRunning
     /// </summary>
-    public static Task StartBackgroundRunningAsync(IntPtr context, global::HarmonyOS.ArkUI.BackgroundMode bgMode, IntPtr wantAgent)
+    public static Task StartBackgroundRunningAsync(IntPtr context, global::HarmonyOS.ArkUI.BackgroundMode bgMode, IntPtr wantAgent, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, context, (int)bgMode, wantAgent);
+        return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, cancellationToken, context, (int)bgMode, wantAgent);
     }
 
     /// <summary>
     /// stopBackgroundRunning
     /// </summary>
-    public static Task StopBackgroundRunningAsync(IntPtr context)
+    public static Task StopBackgroundRunningAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _stopBackgroundRunning, context);
+        return NodeApi.CallMethodAsyncVoid(Module, _stopBackgroundRunning, cancellationToken, context);
     }
 
 }

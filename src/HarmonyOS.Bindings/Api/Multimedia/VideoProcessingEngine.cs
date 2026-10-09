@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -70,17 +71,17 @@ public static unsafe partial class VideoProcessingEngine
     /// <summary>
     /// initializeEnvironment
     /// </summary>
-    public static Task InitializeEnvironmentAsync()
+    public static Task InitializeEnvironmentAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _initializeEnvironment);
+        return NodeApi.CallMethodAsyncVoid(Module, _initializeEnvironment, cancellationToken);
     }
 
     /// <summary>
     /// deinitializeEnvironment
     /// </summary>
-    public static Task DeinitializeEnvironmentAsync()
+    public static Task DeinitializeEnvironmentAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deinitializeEnvironment);
+        return NodeApi.CallMethodAsyncVoid(Module, _deinitializeEnvironment, cancellationToken);
     }
 
     /// <summary>

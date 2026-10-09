@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -265,17 +266,17 @@ public sealed partial class FileSync : JsObject
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
@@ -373,9 +374,9 @@ public sealed partial class CloudFileCache : JsObject
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync(string uri)
+    public Task StartAsync(string uri, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start, uri);
+        return CallMethodAsyncVoid(_start, cancellationToken, uri);
     }
 
     /// <summary>
@@ -389,25 +390,25 @@ public sealed partial class CloudFileCache : JsObject
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync(string uri, bool? needClean = null)
+    public Task StopAsync(string uri, bool? needClean = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop, uri, NapiArg.Of(needClean));
+        return CallMethodAsyncVoid(_stop, cancellationToken, uri, NapiArg.Of(needClean));
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync(string uri)
+    public Task StopAsync(string uri, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncCallbackVoid(_stop, uri);
+        return CallMethodAsyncCallbackVoid(_stop, cancellationToken, uri);
     }
 
     /// <summary>
     /// stopBatch
     /// </summary>
-    public Task StopBatchAsync(double downloadId, bool? needClean = null)
+    public Task StopBatchAsync(double downloadId, bool? needClean = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stopBatch, downloadId, NapiArg.Of(needClean));
+        return CallMethodAsyncVoid(_stopBatch, cancellationToken, downloadId, NapiArg.Of(needClean));
     }
 
     /// <summary>
@@ -429,9 +430,9 @@ public sealed partial class CloudFileCache : JsObject
     /// <summary>
     /// cleanAllFileCache
     /// </summary>
-    public Task CleanAllFileCacheAsync()
+    public Task CleanAllFileCacheAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_cleanAllFileCache);
+        return CallMethodAsyncVoid(_cleanAllFileCache, cancellationToken);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();
@@ -552,9 +553,9 @@ public sealed partial class FileVersion : JsObject
     /// <summary>
     /// replaceFileWithHistoryVersion
     /// </summary>
-    public Task ReplaceFileWithHistoryVersionAsync(string originalUri, string versionUri)
+    public Task ReplaceFileWithHistoryVersionAsync(string originalUri, string versionUri, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_replaceFileWithHistoryVersion, originalUri, versionUri);
+        return CallMethodAsyncVoid(_replaceFileWithHistoryVersion, cancellationToken, originalUri, versionUri);
     }
 
     /// <summary>
@@ -568,9 +569,9 @@ public sealed partial class FileVersion : JsObject
     /// <summary>
     /// clearFileConflict
     /// </summary>
-    public Task ClearFileConflictAsync(string uri)
+    public Task ClearFileConflictAsync(string uri, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_clearFileConflict, uri);
+        return CallMethodAsyncVoid(_clearFileConflict, cancellationToken, uri);
     }
 
 }

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -113,9 +114,9 @@ public static unsafe partial class BackupExtensionAbility
     /// <summary>
     /// onRelease
     /// </summary>
-    public static Task OnReleaseAsync(double scenario)
+    public static Task OnReleaseAsync(double scenario, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _onRelease, scenario);
+        return NodeApi.CallMethodAsyncVoid(Module, _onRelease, cancellationToken, scenario);
     }
 
 }

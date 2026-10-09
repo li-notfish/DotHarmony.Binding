@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -302,9 +303,9 @@ public sealed partial class InputMethodSetting : JsObject
     /// <summary>
     /// displayOptionalInputMethod
     /// </summary>
-    public Task DisplayOptionalInputMethodAsync()
+    public Task DisplayOptionalInputMethodAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_displayOptionalInputMethod);
+        return CallMethodAsyncVoid(_displayOptionalInputMethod, cancellationToken);
     }
 
     /// <summary>
@@ -390,97 +391,97 @@ public sealed partial class InputMethodController : JsObject
     /// <summary>
     /// attach
     /// </summary>
-    public Task AttachAsync(bool showKeyboard, TextConfig textConfig)
+    public Task AttachAsync(bool showKeyboard, TextConfig textConfig, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_attach, showKeyboard, NapiArg.Of(textConfig));
+        return CallMethodAsyncVoid(_attach, cancellationToken, showKeyboard, NapiArg.Of(textConfig));
     }
 
     /// <summary>
     /// attach
     /// </summary>
-    public Task AttachAsync(bool showKeyboard, TextConfig textConfig, global::HarmonyOS.ArkUI.RequestKeyboardReason requestKeyboardReason)
+    public Task AttachAsync(bool showKeyboard, TextConfig textConfig, global::HarmonyOS.ArkUI.RequestKeyboardReason requestKeyboardReason, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_attach, showKeyboard, NapiArg.Of(textConfig), (int)requestKeyboardReason);
+        return CallMethodAsyncVoid(_attach, cancellationToken, showKeyboard, NapiArg.Of(textConfig), (int)requestKeyboardReason);
     }
 
     /// <summary>
     /// attachWithUIContext
     /// </summary>
-    public Task AttachWithUiContextAsync(global::HarmonyOS.Bindings.Api.Arkui.UIContextObject uiContext, TextConfig textConfig, AttachOptions? attachOptions = null)
+    public Task AttachWithUiContextAsync(global::HarmonyOS.Bindings.Api.Arkui.UIContextObject uiContext, TextConfig textConfig, AttachOptions? attachOptions = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_attachWithUIContext, NapiArg.Of(uiContext), NapiArg.Of(textConfig), NapiArg.Of(attachOptions));
+        return CallMethodAsyncVoid(_attachWithUIContext, cancellationToken, NapiArg.Of(uiContext), NapiArg.Of(textConfig), NapiArg.Of(attachOptions));
     }
 
     /// <summary>
     /// discardTypingText
     /// </summary>
-    public Task DiscardTypingTextAsync()
+    public Task DiscardTypingTextAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_discardTypingText);
+        return CallMethodAsyncVoid(_discardTypingText, cancellationToken);
     }
 
     /// <summary>
     /// showTextInput
     /// </summary>
-    public Task ShowTextInputAsync()
+    public Task ShowTextInputAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_showTextInput);
+        return CallMethodAsyncVoid(_showTextInput, cancellationToken);
     }
 
     /// <summary>
     /// showTextInput
     /// </summary>
-    public Task ShowTextInputAsync(global::HarmonyOS.ArkUI.RequestKeyboardReason requestKeyboardReason)
+    public Task ShowTextInputAsync(global::HarmonyOS.ArkUI.RequestKeyboardReason requestKeyboardReason, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_showTextInput, (int)requestKeyboardReason);
+        return CallMethodAsyncVoid(_showTextInput, cancellationToken, (int)requestKeyboardReason);
     }
 
     /// <summary>
     /// hideTextInput
     /// </summary>
-    public Task HideTextInputAsync()
+    public Task HideTextInputAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_hideTextInput);
+        return CallMethodAsyncVoid(_hideTextInput, cancellationToken);
     }
 
     /// <summary>
     /// detach
     /// </summary>
-    public Task DetachAsync()
+    public Task DetachAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_detach);
+        return CallMethodAsyncVoid(_detach, cancellationToken);
     }
 
     /// <summary>
     /// setCallingWindow
     /// </summary>
-    public Task SetCallingWindowAsync(double windowId)
+    public Task SetCallingWindowAsync(double windowId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setCallingWindow, windowId);
+        return CallMethodAsyncVoid(_setCallingWindow, cancellationToken, windowId);
     }
 
     /// <summary>
     /// updateCursor
     /// </summary>
-    public Task UpdateCursorAsync(CursorInfo cursorInfo)
+    public Task UpdateCursorAsync(CursorInfo cursorInfo, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateCursor, NapiArg.Of(cursorInfo));
+        return CallMethodAsyncVoid(_updateCursor, cancellationToken, NapiArg.Of(cursorInfo));
     }
 
     /// <summary>
     /// changeSelection
     /// </summary>
-    public Task ChangeSelectionAsync(string text, double start, double end)
+    public Task ChangeSelectionAsync(string text, double start, double end, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_changeSelection, text, start, end);
+        return CallMethodAsyncVoid(_changeSelection, cancellationToken, text, start, end);
     }
 
     /// <summary>
     /// updateAttribute
     /// </summary>
-    public Task UpdateAttributeAsync(InputAttribute attribute)
+    public Task UpdateAttributeAsync(InputAttribute attribute, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateAttribute, NapiArg.Of(attribute));
+        return CallMethodAsyncVoid(_updateAttribute, cancellationToken, NapiArg.Of(attribute));
     }
 
     /// <summary>
@@ -502,25 +503,25 @@ public sealed partial class InputMethodController : JsObject
     /// <summary>
     /// showSoftKeyboard
     /// </summary>
-    public Task ShowSoftKeyboardAsync()
+    public Task ShowSoftKeyboardAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_showSoftKeyboard);
+        return CallMethodAsyncVoid(_showSoftKeyboard, cancellationToken);
     }
 
     /// <summary>
     /// hideSoftKeyboard
     /// </summary>
-    public Task HideSoftKeyboardAsync()
+    public Task HideSoftKeyboardAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_hideSoftKeyboard);
+        return CallMethodAsyncVoid(_hideSoftKeyboard, cancellationToken);
     }
 
     /// <summary>
     /// sendMessage
     /// </summary>
-    public Task SendMessageAsync(string msgId, byte[]? msgParam = null)
+    public Task SendMessageAsync(string msgId, byte[]? msgParam = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_sendMessage, msgId, NapiArg.OfArrayBuffer(msgParam));
+        return CallMethodAsyncVoid(_sendMessage, cancellationToken, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 
     /// <summary>

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -187,9 +188,9 @@ public static unsafe partial class Socket
     /// <summary>
     /// sppWriteAsync
     /// </summary>
-    public static Task SppWriteAsync(double clientSocket, byte[] data)
+    public static Task SppWriteAsync(double clientSocket, byte[] data, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sppWriteAsync, clientSocket, NapiArg.OfArrayBuffer(data));
+        return NodeApi.CallMethodAsyncVoid(Module, _sppWriteAsync, cancellationToken, clientSocket, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>

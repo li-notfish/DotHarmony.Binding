@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -90,9 +91,9 @@ public static unsafe partial class WantAgent
     /// <summary>
     /// cancel
     /// </summary>
-    public static Task CancelAsync(IntPtr agent)
+    public static Task CancelAsync(IntPtr agent, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancel, agent);
+        return NodeApi.CallMethodAsyncVoid(Module, _cancel, cancellationToken, agent);
     }
 
     /// <summary>

@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -551,97 +552,97 @@ public sealed partial class AVMusicTemplate : JsObject
     /// <summary>
     /// setUserInfo
     /// </summary>
-    public Task SetUserInfoAsync(AvMusicTemplateUserInfo userInfo)
+    public Task SetUserInfoAsync(AvMusicTemplateUserInfo userInfo, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setUserInfo, NapiArg.Of(userInfo));
+        return CallMethodAsyncVoid(_setUserInfo, cancellationToken, NapiArg.Of(userInfo));
     }
 
     /// <summary>
     /// setDialogCommand
     /// </summary>
-    public Task SetDialogCommandAsync(IntPtr type, IntPtr dialogInfo)
+    public Task SetDialogCommandAsync(IntPtr type, IntPtr dialogInfo, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDialogCommand, type, dialogInfo);
+        return CallMethodAsyncVoid(_setDialogCommand, cancellationToken, type, dialogInfo);
     }
 
     /// <summary>
     /// setCurrentSingle
     /// </summary>
-    public Task SetCurrentSingleAsync(IntPtr single)
+    public Task SetCurrentSingleAsync(IntPtr single, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setCurrentSingle, single);
+        return CallMethodAsyncVoid(_setCurrentSingle, cancellationToken, single);
     }
 
     /// <summary>
     /// setMediaEntities
     /// </summary>
-    public Task SetMediaEntitiesAsync(MediaEntity[] entities)
+    public Task SetMediaEntitiesAsync(MediaEntity[] entities, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setMediaEntities, NapiArg.Of(entities));
+        return CallMethodAsyncVoid(_setMediaEntities, cancellationToken, NapiArg.Of(entities));
     }
 
     /// <summary>
     /// setTabContent
     /// </summary>
-    public Task SetTabContentAsync(string tabId, IntPtr tabContent)
+    public Task SetTabContentAsync(string tabId, IntPtr tabContent, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setTabContent, tabId, tabContent);
+        return CallMethodAsyncVoid(_setTabContent, cancellationToken, tabId, tabContent);
     }
 
     /// <summary>
     /// setPlaylist
     /// </summary>
-    public Task SetPlaylistAsync(IntPtr playlist)
+    public Task SetPlaylistAsync(IntPtr playlist, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setPlaylist, playlist);
+        return CallMethodAsyncVoid(_setPlaylist, cancellationToken, playlist);
     }
 
     /// <summary>
     /// setDownloadMediaEntityStatus
     /// </summary>
-    public Task SetDownloadMediaEntityStatusAsync(MediaEntity single)
+    public Task SetDownloadMediaEntityStatusAsync(MediaEntity single, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDownloadMediaEntityStatus, NapiArg.Of(single));
+        return CallMethodAsyncVoid(_setDownloadMediaEntityStatus, cancellationToken, NapiArg.Of(single));
     }
 
     /// <summary>
     /// setCustomElements
     /// </summary>
-    public Task SetCustomElementsAsync(global::HarmonyOS.ArkUI.ActionType actionType, IntPtr customType, IntPtr customElement)
+    public Task SetCustomElementsAsync(global::HarmonyOS.ArkUI.ActionType actionType, IntPtr customType, IntPtr customElement, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setCustomElements, (int)actionType, customType, customElement);
+        return CallMethodAsyncVoid(_setCustomElements, cancellationToken, (int)actionType, customType, customElement);
     }
 
     /// <summary>
     /// setSettings
     /// </summary>
-    public Task SetSettingsAsync(SettingItem[] settingItems)
+    public Task SetSettingsAsync(SettingItem[] settingItems, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setSettings, NapiArg.Of(settingItems));
+        return CallMethodAsyncVoid(_setSettings, cancellationToken, NapiArg.Of(settingItems));
     }
 
     /// <summary>
     /// reportExecuteAction
     /// </summary>
-    public Task ReportExecuteActionAsync(string actionType, string @params)
+    public Task ReportExecuteActionAsync(string actionType, string @params, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_reportExecuteAction, actionType, @params);
+        return CallMethodAsyncVoid(_reportExecuteAction, cancellationToken, actionType, @params);
     }
 
     /// <summary>
     /// setExtensionAbility
     /// </summary>
-    public Task SetExtensionAbilityAsync(IntPtr want)
+    public Task SetExtensionAbilityAsync(IntPtr want, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setExtensionAbility, want);
+        return CallMethodAsyncVoid(_setExtensionAbility, cancellationToken, want);
     }
 
     /// <summary>
     /// destroy
     /// </summary>
-    public Task DestroyAsync()
+    public Task DestroyAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_destroy);
+        return CallMethodAsyncVoid(_destroy, cancellationToken);
     }
 
 }

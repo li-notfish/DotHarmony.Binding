@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -89,9 +90,9 @@ public static unsafe partial class Thermal
     /// <summary>
     /// unsubscribeThermalLevel
     /// </summary>
-    public static Task UnsubscribeThermalLevelAsync()
+    public static Task UnsubscribeThermalLevelAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _unsubscribeThermalLevel);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _unsubscribeThermalLevel, cancellationToken);
     }
 
     /// <summary>

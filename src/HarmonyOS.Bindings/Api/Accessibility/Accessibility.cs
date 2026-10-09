@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -164,17 +165,17 @@ public static unsafe partial class Accessibility
     /// <summary>
     /// sendEvent
     /// </summary>
-    public static Task SendEventAsync(EventInfo @event)
+    public static Task SendEventAsync(EventInfo @event, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendEvent, NapiArg.Of(@event));
+        return NodeApi.CallMethodAsyncVoid(Module, _sendEvent, cancellationToken, NapiArg.Of(@event));
     }
 
     /// <summary>
     /// sendAccessibilityEvent
     /// </summary>
-    public static Task SendAccessibilityEventAsync(EventInfo @event)
+    public static Task SendAccessibilityEventAsync(EventInfo @event, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendAccessibilityEvent, NapiArg.Of(@event));
+        return NodeApi.CallMethodAsyncVoid(Module, _sendAccessibilityEvent, cancellationToken, NapiArg.Of(@event));
     }
 
     /// <summary>
@@ -356,9 +357,9 @@ public static unsafe partial class Accessibility
     /// <summary>
     /// setSeniorModeStateForSelf
     /// </summary>
-    public static Task SetSeniorModeStateForSelfAsync(bool state)
+    public static Task SetSeniorModeStateForSelfAsync(bool state, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setSeniorModeStateForSelf, state);
+        return NodeApi.CallMethodAsyncVoid(Module, _setSeniorModeStateForSelf, cancellationToken, state);
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();

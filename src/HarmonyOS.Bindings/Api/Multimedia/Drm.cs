@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -222,9 +223,9 @@ public sealed partial class MediaKeySystem : JsObject
     /// <summary>
     /// processKeySystemResponse
     /// </summary>
-    public Task ProcessKeySystemResponseAsync(byte[] response)
+    public Task ProcessKeySystemResponseAsync(byte[] response, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_processKeySystemResponse, NapiArg.Of(response));
+        return CallMethodAsyncVoid(_processKeySystemResponse, cancellationToken, NapiArg.Of(response));
     }
 
     /// <summary>
@@ -471,17 +472,17 @@ public sealed partial class MediaKeySession : JsObject
     /// <summary>
     /// processOfflineReleaseResponse
     /// </summary>
-    public Task ProcessOfflineReleaseResponseAsync(byte[] mediaKeyId, byte[] response)
+    public Task ProcessOfflineReleaseResponseAsync(byte[] mediaKeyId, byte[] response, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_processOfflineReleaseResponse, NapiArg.Of(mediaKeyId), NapiArg.Of(response));
+        return CallMethodAsyncVoid(_processOfflineReleaseResponse, cancellationToken, NapiArg.Of(mediaKeyId), NapiArg.Of(response));
     }
 
     /// <summary>
     /// restoreOfflineMediaKeys
     /// </summary>
-    public Task RestoreOfflineMediaKeysAsync(byte[] mediaKeyId)
+    public Task RestoreOfflineMediaKeysAsync(byte[] mediaKeyId, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_restoreOfflineMediaKeys, NapiArg.Of(mediaKeyId));
+        return CallMethodAsyncVoid(_restoreOfflineMediaKeys, cancellationToken, NapiArg.Of(mediaKeyId));
     }
 
     /// <summary>

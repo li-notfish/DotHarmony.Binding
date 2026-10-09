@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -376,9 +377,9 @@ public sealed partial class ResourceManagerObject : JsObject
     /// <summary>
     /// closeRawFileDescriptor
     /// </summary>
-    public Task CloseRawFileDescriptorAsync(string path)
+    public Task CloseRawFileDescriptorAsync(string path, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_closeRawFileDescriptor, path);
+        return CallMethodAsyncVoid(_closeRawFileDescriptor, cancellationToken, path);
     }
 
     /// <summary>
@@ -800,9 +801,9 @@ public sealed partial class ResourceManagerObject : JsObject
     /// <summary>
     /// closeRawFd
     /// </summary>
-    public Task CloseRawFdAsync(string path)
+    public Task CloseRawFdAsync(string path, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_closeRawFd, path);
+        return CallMethodAsyncVoid(_closeRawFd, cancellationToken, path);
     }
 
     /// <summary>

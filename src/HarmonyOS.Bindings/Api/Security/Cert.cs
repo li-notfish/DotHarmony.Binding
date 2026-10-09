@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -264,9 +265,9 @@ public sealed partial class X509Cert : JsObject
     /// <summary>
     /// verify
     /// </summary>
-    public Task VerifyAsync(IntPtr key)
+    public Task VerifyAsync(IntPtr key, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_verify, key);
+        return CallMethodAsyncVoid(_verify, cancellationToken, key);
     }
 
     /// <summary>
@@ -628,9 +629,9 @@ public sealed partial class X509Crl : JsObject
     /// <summary>
     /// verify
     /// </summary>
-    public Task VerifyAsync(IntPtr key)
+    public Task VerifyAsync(IntPtr key, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_verify, key);
+        return CallMethodAsyncVoid(_verify, cancellationToken, key);
     }
 
     /// <summary>
@@ -749,9 +750,9 @@ public sealed partial class CertChainValidator : JsObject
     /// <summary>
     /// validate
     /// </summary>
-    public Task ValidateAsync(CertChainData certChain)
+    public Task ValidateAsync(CertChainData certChain, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_validate, NapiArg.Of(certChain));
+        return CallMethodAsyncVoid(_validate, cancellationToken, NapiArg.Of(certChain));
     }
 
     /// <summary>
@@ -847,9 +848,9 @@ public sealed partial class X509CRL : JsObject
     /// <summary>
     /// verify
     /// </summary>
-    public Task VerifyAsync(IntPtr key)
+    public Task VerifyAsync(IntPtr key, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_verify, key);
+        return CallMethodAsyncVoid(_verify, cancellationToken, key);
     }
 
     /// <summary>
@@ -1241,9 +1242,9 @@ public sealed partial class CmsGenerator : JsObject
     /// <summary>
     /// addRecipientInfo
     /// </summary>
-    public Task AddRecipientInfoAsync(CmsRecipientInfo recipientInfo)
+    public Task AddRecipientInfoAsync(CmsRecipientInfo recipientInfo, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_addRecipientInfo, NapiArg.Of(recipientInfo));
+        return CallMethodAsyncVoid(_addRecipientInfo, cancellationToken, NapiArg.Of(recipientInfo));
     }
 
     /// <summary>
@@ -1288,9 +1289,9 @@ public sealed partial class CmsParser : JsObject
     /// <summary>
     /// setRawData
     /// </summary>
-    public Task SetRawDataAsync(byte[] data, global::HarmonyOS.ArkUI.CmsFormat cmsFormat)
+    public Task SetRawDataAsync(byte[] data, global::HarmonyOS.ArkUI.CmsFormat cmsFormat, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setRawData, NapiArg.Of(data), (int)cmsFormat);
+        return CallMethodAsyncVoid(_setRawData, cancellationToken, NapiArg.Of(data), (int)cmsFormat);
     }
 
     /// <summary>
@@ -1304,9 +1305,9 @@ public sealed partial class CmsParser : JsObject
     /// <summary>
     /// verifySignedData
     /// </summary>
-    public Task VerifySignedDataAsync(IntPtr config)
+    public Task VerifySignedDataAsync(IntPtr config, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_verifySignedData, config);
+        return CallMethodAsyncVoid(_verifySignedData, cancellationToken, config);
     }
 
     /// <summary>

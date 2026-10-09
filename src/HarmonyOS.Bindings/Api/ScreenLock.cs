@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -86,9 +87,9 @@ public static unsafe partial class ScreenLock
     /// <summary>
     /// unlockScreen
     /// </summary>
-    public static Task UnlockScreenAsync()
+    public static Task UnlockScreenAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _unlockScreen);
+        return NodeApi.CallMethodAsyncVoid(Module, _unlockScreen, cancellationToken);
     }
 
 }

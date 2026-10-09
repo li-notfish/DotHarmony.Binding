@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -107,9 +108,9 @@ public static unsafe partial class Huks
     /// <summary>
     /// generateKeyItem
     /// </summary>
-    public static Task GenerateKeyItemAsync(string keyAlias, HuksOptions options)
+    public static Task GenerateKeyItemAsync(string keyAlias, HuksOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _generateKeyItem, keyAlias, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _generateKeyItem, cancellationToken, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -123,9 +124,9 @@ public static unsafe partial class Huks
     /// <summary>
     /// deleteKeyItem
     /// </summary>
-    public static Task DeleteKeyItemAsync(string keyAlias, HuksOptions options)
+    public static Task DeleteKeyItemAsync(string keyAlias, HuksOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deleteKeyItem, keyAlias, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _deleteKeyItem, cancellationToken, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -139,17 +140,17 @@ public static unsafe partial class Huks
     /// <summary>
     /// importKeyItem
     /// </summary>
-    public static Task ImportKeyItemAsync(string keyAlias, HuksOptions options)
+    public static Task ImportKeyItemAsync(string keyAlias, HuksOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _importKeyItem, keyAlias, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _importKeyItem, cancellationToken, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
     /// importWrappedKeyItem
     /// </summary>
-    public static Task ImportWrappedKeyItemAsync(string keyAlias, string wrappingKeyAlias, HuksOptions options)
+    public static Task ImportWrappedKeyItemAsync(string keyAlias, string wrappingKeyAlias, HuksOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _importWrappedKeyItem, keyAlias, wrappingKeyAlias, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _importWrappedKeyItem, cancellationToken, keyAlias, wrappingKeyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -283,9 +284,9 @@ public static unsafe partial class Huks
     /// <summary>
     /// abortSession
     /// </summary>
-    public static Task AbortSessionAsync(double handle, HuksOptions options)
+    public static Task AbortSessionAsync(double handle, HuksOptions options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _abortSession, handle, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _abortSession, cancellationToken, handle, NapiArg.Of(options));
     }
 
     /// <summary>

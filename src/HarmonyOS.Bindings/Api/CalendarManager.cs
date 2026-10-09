@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -99,9 +100,9 @@ public sealed partial class CalendarManagerObject : JsObject
     /// <summary>
     /// deleteCalendar
     /// </summary>
-    public Task DeleteCalendarAsync(Calendar calendar)
+    public Task DeleteCalendarAsync(Calendar calendar, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_deleteCalendar, NapiArg.Of(calendar));
+        return CallMethodAsyncVoid(_deleteCalendar, cancellationToken, NapiArg.Of(calendar));
     }
 
     /// <summary>
@@ -173,33 +174,33 @@ public sealed partial class Calendar : JsObject
     /// <summary>
     /// addEvents
     /// </summary>
-    public Task AddEventsAsync(IntPtr[] events)
+    public Task AddEventsAsync(IntPtr[] events, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_addEvents, NapiArg.Of(events));
+        return CallMethodAsyncVoid(_addEvents, cancellationToken, NapiArg.Of(events));
     }
 
     /// <summary>
     /// deleteEvent
     /// </summary>
-    public Task DeleteEventAsync(double id)
+    public Task DeleteEventAsync(double id, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_deleteEvent, id);
+        return CallMethodAsyncVoid(_deleteEvent, cancellationToken, id);
     }
 
     /// <summary>
     /// deleteEvents
     /// </summary>
-    public Task DeleteEventsAsync(double[] ids)
+    public Task DeleteEventsAsync(double[] ids, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_deleteEvents, NapiArg.Of(ids));
+        return CallMethodAsyncVoid(_deleteEvents, cancellationToken, NapiArg.Of(ids));
     }
 
     /// <summary>
     /// updateEvent
     /// </summary>
-    public Task UpdateEventAsync(IntPtr @event)
+    public Task UpdateEventAsync(IntPtr @event, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateEvent, @event);
+        return CallMethodAsyncVoid(_updateEvent, cancellationToken, @event);
     }
 
     /// <summary>
@@ -229,9 +230,9 @@ public sealed partial class Calendar : JsObject
     /// <summary>
     /// setConfig
     /// </summary>
-    public Task SetConfigAsync(CalendarConfig config)
+    public Task SetConfigAsync(CalendarConfig config, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setConfig, NapiArg.Of(config));
+        return CallMethodAsyncVoid(_setConfig, cancellationToken, NapiArg.Of(config));
     }
 
     /// <summary>
@@ -253,9 +254,9 @@ public sealed partial class Calendar : JsObject
     /// <summary>
     /// openEventEditPage
     /// </summary>
-    public Task OpenEventEditPageAsync(double id)
+    public Task OpenEventEditPageAsync(double id, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_openEventEditPage, id);
+        return CallMethodAsyncVoid(_openEventEditPage, cancellationToken, id);
     }
 
 }

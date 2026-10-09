@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -70,9 +71,9 @@ public static unsafe partial class PluginComponent
     /// <summary>
     /// push
     /// </summary>
-    public static Task PushAsync(IntPtr param)
+    public static Task PushAsync(IntPtr param, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _push, param);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _push, cancellationToken, param);
     }
 
     /// <summary>

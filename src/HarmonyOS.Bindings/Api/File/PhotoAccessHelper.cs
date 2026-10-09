@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -190,9 +191,9 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// <summary>
     /// createDeleteRequest
     /// </summary>
-    public Task CreateDeleteRequestAsync(string[] uriList)
+    public Task CreateDeleteRequestAsync(string[] uriList, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_createDeleteRequest, NapiArg.Of(uriList));
+        return CallMethodAsyncVoid(_createDeleteRequest, cancellationToken, NapiArg.Of(uriList));
     }
 
     /// <summary>
@@ -254,17 +255,17 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
     /// applyChanges
     /// </summary>
-    public Task ApplyChangesAsync(MediaChangeRequest mediaChangeRequest)
+    public Task ApplyChangesAsync(MediaChangeRequest mediaChangeRequest, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_applyChanges, NapiArg.Of(mediaChangeRequest));
+        return CallMethodAsyncVoid(_applyChanges, cancellationToken, NapiArg.Of(mediaChangeRequest));
     }
 
     /// <summary>
@@ -366,9 +367,9 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// <summary>
     /// setAssetCompatibleCapability
     /// </summary>
-    public Task SetAssetCompatibleCapabilityAsync(AssetCompatibleCapability capability)
+    public Task SetAssetCompatibleCapabilityAsync(AssetCompatibleCapability capability, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setAssetCompatibleCapability, NapiArg.Of(capability));
+        return CallMethodAsyncVoid(_setAssetCompatibleCapability, cancellationToken, NapiArg.Of(capability));
     }
 
     /// <summary>
@@ -500,17 +501,17 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// <summary>
     /// deleteAssets
     /// </summary>
-    public Task DeleteAssetsAsync(IntPtr context, PhotoAsset[] assets)
+    public Task DeleteAssetsAsync(IntPtr context, PhotoAsset[] assets, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_deleteAssets, context, NapiArg.Of(assets));
+        return CallMethodAsyncVoid(_deleteAssets, cancellationToken, context, NapiArg.Of(assets));
     }
 
     /// <summary>
     /// deleteAssets
     /// </summary>
-    public Task DeleteAssetsAsync(IntPtr context, string[] uriList)
+    public Task DeleteAssetsAsync(IntPtr context, string[] uriList, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_deleteAssets, context, NapiArg.Of(uriList));
+        return CallMethodAsyncVoid(_deleteAssets, cancellationToken, context, NapiArg.Of(uriList));
     }
 
     /// <summary>
@@ -873,25 +874,25 @@ public sealed partial class Album : JsObject
     /// <summary>
     /// commitModify
     /// </summary>
-    public Task CommitModifyAsync()
+    public Task CommitModifyAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_commitModify);
+        return CallMethodAsyncVoid(_commitModify, cancellationToken);
     }
 
     /// <summary>
     /// addAssets
     /// </summary>
-    public Task AddAssetsAsync(PhotoAsset[] assets)
+    public Task AddAssetsAsync(PhotoAsset[] assets, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_addAssets, NapiArg.Of(assets));
+        return CallMethodAsyncVoid(_addAssets, cancellationToken, NapiArg.Of(assets));
     }
 
     /// <summary>
     /// removeAssets
     /// </summary>
-    public Task RemoveAssetsAsync(PhotoAsset[] assets)
+    public Task RemoveAssetsAsync(PhotoAsset[] assets, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_removeAssets, NapiArg.Of(assets));
+        return CallMethodAsyncVoid(_removeAssets, cancellationToken, NapiArg.Of(assets));
     }
 
 }
@@ -947,9 +948,9 @@ public sealed partial class PhotoAsset : JsObject
     /// <summary>
     /// commitModify
     /// </summary>
-    public Task CommitModifyAsync()
+    public Task CommitModifyAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_commitModify);
+        return CallMethodAsyncVoid(_commitModify, cancellationToken);
     }
 
     /// <summary>
@@ -963,9 +964,9 @@ public sealed partial class PhotoAsset : JsObject
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync(double fd)
+    public Task CloseAsync(double fd, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close, fd);
+        return CallMethodAsyncVoid(_close, cancellationToken, fd);
     }
 
     /// <summary>

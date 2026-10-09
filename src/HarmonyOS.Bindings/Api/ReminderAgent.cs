@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -82,9 +83,9 @@ public static unsafe partial class ReminderAgent
     /// <summary>
     /// cancelReminder
     /// </summary>
-    public static Task CancelReminderAsync(double reminderId)
+    public static Task CancelReminderAsync(double reminderId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancelReminder, reminderId);
+        return NodeApi.CallMethodAsyncVoid(Module, _cancelReminder, cancellationToken, reminderId);
     }
 
     /// <summary>
@@ -98,25 +99,25 @@ public static unsafe partial class ReminderAgent
     /// <summary>
     /// cancelAllReminders
     /// </summary>
-    public static Task CancelAllRemindersAsync()
+    public static Task CancelAllRemindersAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancelAllReminders);
+        return NodeApi.CallMethodAsyncVoid(Module, _cancelAllReminders, cancellationToken);
     }
 
     /// <summary>
     /// addNotificationSlot
     /// </summary>
-    public static Task AddNotificationSlotAsync(IntPtr slot)
+    public static Task AddNotificationSlotAsync(IntPtr slot, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _addNotificationSlot, slot);
+        return NodeApi.CallMethodAsyncVoid(Module, _addNotificationSlot, cancellationToken, slot);
     }
 
     /// <summary>
     /// removeNotificationSlot
     /// </summary>
-    public static Task RemoveNotificationSlotAsync(IntPtr slotType)
+    public static Task RemoveNotificationSlotAsync(IntPtr slotType, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeNotificationSlot, slotType);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeNotificationSlot, cancellationToken, slotType);
     }
 
 }

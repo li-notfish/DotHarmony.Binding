@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -90,9 +91,9 @@ public static unsafe partial class ProxyChannelManager
     /// <summary>
     /// sendData
     /// </summary>
-    public static Task SendDataAsync(double channelId, byte[] data)
+    public static Task SendDataAsync(double channelId, byte[] data, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendData, channelId, NapiArg.OfArrayBuffer(data));
+        return NodeApi.CallMethodAsyncVoid(Module, _sendData, cancellationToken, channelId, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>

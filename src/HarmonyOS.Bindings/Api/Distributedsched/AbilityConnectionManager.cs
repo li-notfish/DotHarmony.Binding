@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -135,9 +136,9 @@ public static unsafe partial class AbilityConnectionManager
     /// <summary>
     /// acceptConnect
     /// </summary>
-    public static Task AcceptConnectAsync(double sessionId, string token)
+    public static Task AcceptConnectAsync(double sessionId, string token, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _acceptConnect, sessionId, token);
+        return NodeApi.CallMethodAsyncVoid(Module, _acceptConnect, cancellationToken, sessionId, token);
     }
 
     /// <summary>
@@ -151,17 +152,17 @@ public static unsafe partial class AbilityConnectionManager
     /// <summary>
     /// sendMessage
     /// </summary>
-    public static Task SendMessageAsync(double sessionId, string msg)
+    public static Task SendMessageAsync(double sessionId, string msg, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendMessage, sessionId, msg);
+        return NodeApi.CallMethodAsyncVoid(Module, _sendMessage, cancellationToken, sessionId, msg);
     }
 
     /// <summary>
     /// sendData
     /// </summary>
-    public static Task SendDataAsync(double sessionId, byte[] data)
+    public static Task SendDataAsync(double sessionId, byte[] data, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _sendData, sessionId, NapiArg.OfArrayBuffer(data));
+        return NodeApi.CallMethodAsyncVoid(Module, _sendData, cancellationToken, sessionId, NapiArg.OfArrayBuffer(data));
     }
 
     private static readonly EventListenerRegistry _eventListeners = new();

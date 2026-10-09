@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -97,17 +98,17 @@ public static unsafe partial class Access
     /// <summary>
     /// enableBluetoothAsync
     /// </summary>
-    public static Task EnableBluetoothAsync()
+    public static Task EnableBluetoothAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _enableBluetoothAsync);
+        return NodeApi.CallMethodAsyncVoid(Module, _enableBluetoothAsync, cancellationToken);
     }
 
     /// <summary>
     /// disableBluetoothAsync
     /// </summary>
-    public static Task DisableBluetoothAsync()
+    public static Task DisableBluetoothAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disableBluetoothAsync);
+        return NodeApi.CallMethodAsyncVoid(Module, _disableBluetoothAsync, cancellationToken);
     }
 
     /// <summary>
@@ -145,17 +146,17 @@ public static unsafe partial class Access
     /// <summary>
     /// addPersistentDeviceId
     /// </summary>
-    public static Task AddPersistentDeviceIdAsync(string deviceId)
+    public static Task AddPersistentDeviceIdAsync(string deviceId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _addPersistentDeviceId, deviceId);
+        return NodeApi.CallMethodAsyncVoid(Module, _addPersistentDeviceId, cancellationToken, deviceId);
     }
 
     /// <summary>
     /// deletePersistentDeviceId
     /// </summary>
-    public static Task DeletePersistentDeviceIdAsync(string deviceId)
+    public static Task DeletePersistentDeviceIdAsync(string deviceId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deletePersistentDeviceId, deviceId);
+        return NodeApi.CallMethodAsyncVoid(Module, _deletePersistentDeviceId, cancellationToken, deviceId);
     }
 
     /// <summary>

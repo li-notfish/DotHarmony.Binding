@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -83,9 +84,9 @@ public static unsafe partial class Asset
     /// <summary>
     /// add
     /// </summary>
-    public static Task AddAsync(IntPtr attributes)
+    public static Task AddAsync(IntPtr attributes, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _add, attributes);
+        return NodeApi.CallMethodAsyncVoid(Module, _add, cancellationToken, attributes);
     }
 
     /// <summary>
@@ -107,17 +108,17 @@ public static unsafe partial class Asset
     /// <summary>
     /// remove
     /// </summary>
-    public static Task RemoveAsync(IntPtr query)
+    public static Task RemoveAsync(IntPtr query, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _remove, query);
+        return NodeApi.CallMethodAsyncVoid(Module, _remove, cancellationToken, query);
     }
 
     /// <summary>
     /// batchRemove
     /// </summary>
-    public static Task BatchRemoveAsync(IntPtr[] assetsToBeRemoved)
+    public static Task BatchRemoveAsync(IntPtr[] assetsToBeRemoved, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _batchRemove, NapiArg.Of(assetsToBeRemoved));
+        return NodeApi.CallMethodAsyncVoid(Module, _batchRemove, cancellationToken, NapiArg.Of(assetsToBeRemoved));
     }
 
     /// <summary>
@@ -131,9 +132,9 @@ public static unsafe partial class Asset
     /// <summary>
     /// update
     /// </summary>
-    public static Task UpdateAsync(IntPtr query, IntPtr attributesToUpdate)
+    public static Task UpdateAsync(IntPtr query, IntPtr attributesToUpdate, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _update, query, attributesToUpdate);
+        return NodeApi.CallMethodAsyncVoid(Module, _update, cancellationToken, query, attributesToUpdate);
     }
 
     /// <summary>
@@ -187,9 +188,9 @@ public static unsafe partial class Asset
     /// <summary>
     /// postQuery
     /// </summary>
-    public static Task PostQueryAsync(IntPtr handle)
+    public static Task PostQueryAsync(IntPtr handle, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _postQuery, handle);
+        return NodeApi.CallMethodAsyncVoid(Module, _postQuery, cancellationToken, handle);
     }
 
     /// <summary>

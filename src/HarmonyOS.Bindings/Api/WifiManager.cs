@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -193,9 +194,9 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// removeCandidateConfig
     /// </summary>
-    public static Task RemoveCandidateConfigAsync(double networkId)
+    public static Task RemoveCandidateConfigAsync(double networkId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _removeCandidateConfig, networkId);
+        return NodeApi.CallMethodAsyncVoid(Module, _removeCandidateConfig, cancellationToken, networkId);
     }
 
     /// <summary>
@@ -217,17 +218,17 @@ public static unsafe partial class WifiManager
     /// <summary>
     /// connectToCandidateConfig
     /// </summary>
-    public static Task ConnectToCandidateConfigAsync(ConnectSettings settings)
+    public static Task ConnectToCandidateConfigAsync(ConnectSettings settings, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _connectToCandidateConfig, NapiArg.Of(settings));
+        return NodeApi.CallMethodAsyncVoid(Module, _connectToCandidateConfig, cancellationToken, NapiArg.Of(settings));
     }
 
     /// <summary>
     /// connectToCandidateConfigWithUserAction
     /// </summary>
-    public static Task ConnectToCandidateConfigWithUserActionAsync(double networkId)
+    public static Task ConnectToCandidateConfigWithUserActionAsync(double networkId, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _connectToCandidateConfigWithUserAction, networkId);
+        return NodeApi.CallMethodAsyncVoid(Module, _connectToCandidateConfigWithUserAction, cancellationToken, networkId);
     }
 
     /// <summary>

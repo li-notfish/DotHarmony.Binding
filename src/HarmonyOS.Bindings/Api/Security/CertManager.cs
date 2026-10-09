@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -96,9 +97,9 @@ public static unsafe partial class CertManager
     /// <summary>
     /// uninstallPrivateCertificate
     /// </summary>
-    public static Task UninstallPrivateCertificateAsync(string keyUri)
+    public static Task UninstallPrivateCertificateAsync(string keyUri, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _uninstallPrivateCertificate, keyUri);
+        return NodeApi.CallMethodAsyncVoid(Module, _uninstallPrivateCertificate, cancellationToken, keyUri);
     }
 
     /// <summary>
@@ -120,9 +121,9 @@ public static unsafe partial class CertManager
     /// <summary>
     /// update
     /// </summary>
-    public static Task UpdateAsync(byte[] handle, byte[] data)
+    public static Task UpdateAsync(byte[] handle, byte[] data, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _update, NapiArg.Of(handle), NapiArg.Of(data));
+        return NodeApi.CallMethodAsyncVoid(Module, _update, cancellationToken, NapiArg.Of(handle), NapiArg.Of(data));
     }
 
     /// <summary>
@@ -144,9 +145,9 @@ public static unsafe partial class CertManager
     /// <summary>
     /// abort
     /// </summary>
-    public static Task AbortAsync(byte[] handle)
+    public static Task AbortAsync(byte[] handle, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _abort, NapiArg.Of(handle));
+        return NodeApi.CallMethodAsyncVoid(Module, _abort, cancellationToken, NapiArg.Of(handle));
     }
 
     /// <summary>
@@ -256,9 +257,9 @@ public static unsafe partial class CertManager
     /// <summary>
     /// importUkeyCertificate
     /// </summary>
-    public static Task ImportUkeyCertificateAsync(string keyUri, byte[] cert, UkeyInfo ukeyInfo)
+    public static Task ImportUkeyCertificateAsync(string keyUri, byte[] cert, UkeyInfo ukeyInfo, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _importUkeyCertificate, keyUri, NapiArg.Of(cert), NapiArg.Of(ukeyInfo));
+        return NodeApi.CallMethodAsyncVoid(Module, _importUkeyCertificate, cancellationToken, keyUri, NapiArg.Of(cert), NapiArg.Of(ukeyInfo));
     }
 
 }

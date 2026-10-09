@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -322,9 +323,9 @@ public static unsafe partial class Request
     /// <summary>
     /// remove
     /// </summary>
-    public static Task RemoveAsync(string id)
+    public static Task RemoveAsync(string id, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _remove, id);
+        return NodeApi.CallMethodAsyncVoid(Module, _remove, cancellationToken, id);
     }
 
     /// <summary>
@@ -370,17 +371,17 @@ public static unsafe partial class Request
     /// <summary>
     /// attachGroup
     /// </summary>
-    public static Task AttachGroupAsync(string gid, string[] tids)
+    public static Task AttachGroupAsync(string gid, string[] tids, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _attachGroup, gid, NapiArg.Of(tids));
+        return NodeApi.CallMethodAsyncVoid(Module, _attachGroup, cancellationToken, gid, NapiArg.Of(tids));
     }
 
     /// <summary>
     /// deleteGroup
     /// </summary>
-    public static Task DeleteGroupAsync(string gid)
+    public static Task DeleteGroupAsync(string gid, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deleteGroup, gid);
+        return NodeApi.CallMethodAsyncVoid(Module, _deleteGroup, cancellationToken, gid);
     }
 
 }
@@ -431,17 +432,17 @@ public sealed partial class DownloadTask : JsObject
     /// <summary>
     /// pause
     /// </summary>
-    public Task PauseAsync()
+    public Task PauseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pause);
+        return CallMethodAsyncVoid(_pause, cancellationToken);
     }
 
     /// <summary>
     /// resume
     /// </summary>
-    public Task ResumeAsync()
+    public Task ResumeAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_resume);
+        return CallMethodAsyncVoid(_resume, cancellationToken);
     }
 
     /// <summary>

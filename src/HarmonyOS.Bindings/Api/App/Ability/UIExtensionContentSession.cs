@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -99,9 +100,9 @@ public static unsafe partial class UIExtensionContentSession
     /// <summary>
     /// terminateSelf
     /// </summary>
-    public static Task TerminateSelfAsync()
+    public static Task TerminateSelfAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelf);
+        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelf, cancellationToken);
     }
 
     /// <summary>
@@ -115,17 +116,17 @@ public static unsafe partial class UIExtensionContentSession
     /// <summary>
     /// terminateSelfWithResult
     /// </summary>
-    public static Task TerminateSelfWithResultAsync(IntPtr parameter)
+    public static Task TerminateSelfWithResultAsync(IntPtr parameter, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelfWithResult, parameter);
+        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelfWithResult, cancellationToken, parameter);
     }
 
     /// <summary>
     /// setWindowPrivacyMode
     /// </summary>
-    public static Task SetWindowPrivacyModeAsync(bool isPrivacyMode)
+    public static Task SetWindowPrivacyModeAsync(bool isPrivacyMode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _setWindowPrivacyMode, isPrivacyMode);
+        return NodeApi.CallMethodAsyncVoid(Module, _setWindowPrivacyMode, cancellationToken, isPrivacyMode);
     }
 
     /// <summary>
@@ -147,9 +148,9 @@ public static unsafe partial class UIExtensionContentSession
     /// <summary>
     /// startAbilityByType
     /// </summary>
-    public static Task StartAbilityByTypeAsync(string type, IntPtr wantParam, IntPtr abilityStartCallback)
+    public static Task StartAbilityByTypeAsync(string type, IntPtr wantParam, IntPtr abilityStartCallback, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startAbilityByType, type, wantParam, abilityStartCallback);
+        return NodeApi.CallMethodAsyncVoid(Module, _startAbilityByType, cancellationToken, type, wantParam, abilityStartCallback);
     }
 
     /// <summary>
@@ -195,33 +196,33 @@ public sealed partial class UIExtensionContentSessionObject : JsObject
     /// <summary>
     /// terminateSelf
     /// </summary>
-    public Task TerminateSelfAsync()
+    public Task TerminateSelfAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_terminateSelf);
+        return CallMethodAsyncVoid(_terminateSelf, cancellationToken);
     }
 
     /// <summary>
     /// terminateSelfWithResult
     /// </summary>
-    public Task TerminateSelfWithResultAsync(IntPtr parameter)
+    public Task TerminateSelfWithResultAsync(IntPtr parameter, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_terminateSelfWithResult, parameter);
+        return CallMethodAsyncVoid(_terminateSelfWithResult, cancellationToken, parameter);
     }
 
     /// <summary>
     /// setWindowPrivacyMode
     /// </summary>
-    public Task SetWindowPrivacyModeAsync(bool isPrivacyMode)
+    public Task SetWindowPrivacyModeAsync(bool isPrivacyMode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setWindowPrivacyMode, isPrivacyMode);
+        return CallMethodAsyncVoid(_setWindowPrivacyMode, cancellationToken, isPrivacyMode);
     }
 
     /// <summary>
     /// startAbilityByType
     /// </summary>
-    public Task StartAbilityByTypeAsync(string type, IntPtr wantParam, IntPtr abilityStartCallback)
+    public Task StartAbilityByTypeAsync(string type, IntPtr wantParam, IntPtr abilityStartCallback, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_startAbilityByType, type, wantParam, abilityStartCallback);
+        return CallMethodAsyncVoid(_startAbilityByType, cancellationToken, type, wantParam, abilityStartCallback);
     }
 
     /// <summary>

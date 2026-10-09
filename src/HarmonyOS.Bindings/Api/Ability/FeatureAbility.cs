@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -110,17 +111,17 @@ public static unsafe partial class FeatureAbility
     /// <summary>
     /// terminateSelfWithResult
     /// </summary>
-    public static Task TerminateSelfWithResultAsync(IntPtr parameter)
+    public static Task TerminateSelfWithResultAsync(IntPtr parameter, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelfWithResult, parameter);
+        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelfWithResult, cancellationToken, parameter);
     }
 
     /// <summary>
     /// terminateSelf
     /// </summary>
-    public static Task TerminateSelfAsync()
+    public static Task TerminateSelfAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelf);
+        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelf, cancellationToken);
     }
 
     /// <summary>
@@ -150,9 +151,9 @@ public static unsafe partial class FeatureAbility
     /// <summary>
     /// disconnectAbility
     /// </summary>
-    public static Task DisconnectAbilityAsync(double connection)
+    public static Task DisconnectAbilityAsync(double connection, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disconnectAbility, connection);
+        return NodeApi.CallMethodAsyncVoid(Module, _disconnectAbility, cancellationToken, connection);
     }
 
     /// <summary>

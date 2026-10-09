@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -78,9 +79,9 @@ public static unsafe partial class Rdb
     /// <summary>
     /// deleteRdbStore
     /// </summary>
-    public static Task DeleteRdbStoreAsync(IntPtr context, string name)
+    public static Task DeleteRdbStoreAsync(IntPtr context, string name, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, context, name);
+        return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, cancellationToken, context, name);
     }
 
 }
@@ -158,9 +159,9 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// executeSql
     /// </summary>
-    public Task ExecuteSqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[] bindArgs)
+    public Task ExecuteSqlAsync(string sql, global::HarmonyOS.ArkUI.ValueType[] bindArgs, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_executeSql, sql, NapiArg.Of(bindArgs));
+        return CallMethodAsyncVoid(_executeSql, cancellationToken, sql, NapiArg.Of(bindArgs));
     }
 
     /// <summary>
@@ -190,9 +191,9 @@ public sealed partial class RdbStore : JsObject
     /// <summary>
     /// setDistributedTables
     /// </summary>
-    public Task SetDistributedTablesAsync(string[] tables)
+    public Task SetDistributedTablesAsync(string[] tables, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDistributedTables, NapiArg.Of(tables));
+        return CallMethodAsyncVoid(_setDistributedTables, cancellationToken, NapiArg.Of(tables));
     }
 
     /// <summary>

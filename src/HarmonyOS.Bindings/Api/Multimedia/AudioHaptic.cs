@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -100,9 +101,9 @@ public sealed partial class AudioHapticManager : JsObject
     /// <summary>
     /// unregisterSource
     /// </summary>
-    public Task UnregisterSourceAsync(double id)
+    public Task UnregisterSourceAsync(double id, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_unregisterSource, id);
+        return CallMethodAsyncVoid(_unregisterSource, cancellationToken, id);
     }
 
     /// <summary>
@@ -165,25 +166,25 @@ public sealed partial class AudioHapticPlayer : JsObject
     /// <summary>
     /// start
     /// </summary>
-    public Task StartAsync()
+    public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_start);
+        return CallMethodAsyncVoid(_start, cancellationToken);
     }
 
     /// <summary>
     /// stop
     /// </summary>
-    public Task StopAsync()
+    public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_stop);
+        return CallMethodAsyncVoid(_stop, cancellationToken);
     }
 
     /// <summary>
     /// release
     /// </summary>
-    public Task ReleaseAsync()
+    public Task ReleaseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_release);
+        return CallMethodAsyncVoid(_release, cancellationToken);
     }
 
     /// <summary>
@@ -205,17 +206,17 @@ public sealed partial class AudioHapticPlayer : JsObject
     /// <summary>
     /// setVolume
     /// </summary>
-    public Task SetVolumeAsync(double volume)
+    public Task SetVolumeAsync(double volume, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setVolume, volume);
+        return CallMethodAsyncVoid(_setVolume, cancellationToken, volume);
     }
 
     /// <summary>
     /// setLoop
     /// </summary>
-    public Task SetLoopAsync(bool loop)
+    public Task SetLoopAsync(bool loop, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setLoop, loop);
+        return CallMethodAsyncVoid(_setLoop, cancellationToken, loop);
     }
 
     private readonly EventListenerRegistry _eventListeners = new();

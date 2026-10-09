@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -97,9 +98,9 @@ public static unsafe partial class UIAbility
     /// <summary>
     /// call
     /// </summary>
-    public static Task CallAsync(string method, IntPtr data)
+    public static Task CallAsync(string method, IntPtr data, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _call, method, data);
+        return NodeApi.CallMethodAsyncVoid(Module, _call, cancellationToken, method, data);
     }
 
     /// <summary>

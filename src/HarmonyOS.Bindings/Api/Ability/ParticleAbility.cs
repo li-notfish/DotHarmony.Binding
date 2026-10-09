@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -75,17 +76,17 @@ public static unsafe partial class ParticleAbility
     /// <summary>
     /// startAbility
     /// </summary>
-    public static Task StartAbilityAsync(IntPtr parameter)
+    public static Task StartAbilityAsync(IntPtr parameter, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startAbility, parameter);
+        return NodeApi.CallMethodAsyncVoid(Module, _startAbility, cancellationToken, parameter);
     }
 
     /// <summary>
     /// terminateSelf
     /// </summary>
-    public static Task TerminateSelfAsync()
+    public static Task TerminateSelfAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelf);
+        return NodeApi.CallMethodAsyncVoid(Module, _terminateSelf, cancellationToken);
     }
 
     /// <summary>
@@ -99,17 +100,17 @@ public static unsafe partial class ParticleAbility
     /// <summary>
     /// startBackgroundRunning
     /// </summary>
-    public static Task StartBackgroundRunningAsync(double id, IntPtr request)
+    public static Task StartBackgroundRunningAsync(double id, IntPtr request, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, id, request);
+        return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, cancellationToken, id, request);
     }
 
     /// <summary>
     /// cancelBackgroundRunning
     /// </summary>
-    public static Task CancelBackgroundRunningAsync()
+    public static Task CancelBackgroundRunningAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _cancelBackgroundRunning);
+        return NodeApi.CallMethodAsyncVoid(Module, _cancelBackgroundRunning, cancellationToken);
     }
 
     /// <summary>
@@ -123,9 +124,9 @@ public static unsafe partial class ParticleAbility
     /// <summary>
     /// disconnectAbility
     /// </summary>
-    public static Task DisconnectAbilityAsync(double connection)
+    public static Task DisconnectAbilityAsync(double connection, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _disconnectAbility, connection);
+        return NodeApi.CallMethodAsyncVoid(Module, _disconnectAbility, cancellationToken, connection);
     }
 
 }

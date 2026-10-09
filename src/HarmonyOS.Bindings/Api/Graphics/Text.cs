@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -333,9 +334,9 @@ public sealed partial class Paragraph : JsObject
     /// <summary>
     /// layout
     /// </summary>
-    public Task LayoutAsync(double width)
+    public Task LayoutAsync(double width, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_layout, width);
+        return CallMethodAsyncVoid(_layout, cancellationToken, width);
     }
 
     /// <summary>
@@ -667,9 +668,9 @@ public sealed partial class FontCollection : JsObject
     /// <summary>
     /// loadFont
     /// </summary>
-    public Task LoadFontAsync(string name, string path)
+    public Task LoadFontAsync(string name, string path, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_loadFont, name, path);
+        return CallMethodAsyncVoid(_loadFont, cancellationToken, name, path);
     }
 
     /// <summary>
@@ -683,9 +684,9 @@ public sealed partial class FontCollection : JsObject
     /// <summary>
     /// loadFontWithCheck
     /// </summary>
-    public Task LoadFontWithCheckAsync(string name, string path, double? index = null)
+    public Task LoadFontWithCheckAsync(string name, string path, double? index = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_loadFontWithCheck, name, path, NapiArg.Of(index));
+        return CallMethodAsyncVoid(_loadFontWithCheck, cancellationToken, name, path, NapiArg.Of(index));
     }
 
     /// <summary>
@@ -699,9 +700,9 @@ public sealed partial class FontCollection : JsObject
     /// <summary>
     /// unloadFont
     /// </summary>
-    public Task UnloadFontAsync(string name)
+    public Task UnloadFontAsync(string name, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_unloadFont, name);
+        return CallMethodAsyncVoid(_unloadFont, cancellationToken, name);
     }
 
     /// <summary>

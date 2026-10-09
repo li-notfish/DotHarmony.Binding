@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -106,17 +107,17 @@ public sealed partial class SerialPort : JsObject
     /// <summary>
     /// open
     /// </summary>
-    public Task OpenAsync(SerialConfigs? config = null)
+    public Task OpenAsync(SerialConfigs? config = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_open, NapiArg.Of(config));
+        return CallMethodAsyncVoid(_open, cancellationToken, NapiArg.Of(config));
     }
 
     /// <summary>
     /// close
     /// </summary>
-    public Task CloseAsync()
+    public Task CloseAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_close);
+        return CallMethodAsyncVoid(_close, cancellationToken);
     }
 
     /// <summary>
@@ -146,25 +147,25 @@ public sealed partial class SerialPort : JsObject
     /// <summary>
     /// flush
     /// </summary>
-    public Task FlushAsync()
+    public Task FlushAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_flush);
+        return CallMethodAsyncVoid(_flush, cancellationToken);
     }
 
     /// <summary>
     /// drain
     /// </summary>
-    public Task DrainAsync()
+    public Task DrainAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_drain);
+        return CallMethodAsyncVoid(_drain, cancellationToken);
     }
 
     /// <summary>
     /// setRts
     /// </summary>
-    public Task SetRtsAsync(bool enable)
+    public Task SetRtsAsync(bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setRts, enable);
+        return CallMethodAsyncVoid(_setRts, cancellationToken, enable);
     }
 
     /// <summary>
@@ -178,9 +179,9 @@ public sealed partial class SerialPort : JsObject
     /// <summary>
     /// sendBrk
     /// </summary>
-    public Task SendBrkAsync()
+    public Task SendBrkAsync(CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_sendBrk);
+        return CallMethodAsyncVoid(_sendBrk, cancellationToken);
     }
 
     /// <summary>
@@ -202,9 +203,9 @@ public sealed partial class SerialPort : JsObject
     /// <summary>
     /// setDtr
     /// </summary>
-    public Task SetDtrAsync(bool enable)
+    public Task SetDtrAsync(bool enable, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_setDtr, enable);
+        return CallMethodAsyncVoid(_setDtr, cancellationToken, enable);
     }
 
     /// <summary>

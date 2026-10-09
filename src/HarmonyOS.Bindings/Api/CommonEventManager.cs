@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -73,17 +74,17 @@ public static unsafe partial class CommonEventManager
     /// <summary>
     /// publish
     /// </summary>
-    public static Task PublishAsync(string @event)
+    public static Task PublishAsync(string @event, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _publish, @event);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _publish, cancellationToken, @event);
     }
 
     /// <summary>
     /// publish
     /// </summary>
-    public static Task PublishAsync(string @event, IntPtr options)
+    public static Task PublishAsync(string @event, IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _publish, @event, options);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _publish, cancellationToken, @event, options);
     }
 
     /// <summary>
@@ -113,17 +114,17 @@ public static unsafe partial class CommonEventManager
     /// <summary>
     /// subscribeToEvent
     /// </summary>
-    public static Task SubscribeToEventAsync(IntPtr subscriber, IntPtr callback)
+    public static Task SubscribeToEventAsync(IntPtr subscriber, IntPtr callback, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _subscribeToEvent, subscriber, callback);
+        return NodeApi.CallMethodAsyncVoid(Module, _subscribeToEvent, cancellationToken, subscriber, callback);
     }
 
     /// <summary>
     /// unsubscribe
     /// </summary>
-    public static Task UnsubscribeAsync(IntPtr subscriber)
+    public static Task UnsubscribeAsync(IntPtr subscriber, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncCallbackVoid(Module, _unsubscribe, subscriber);
+        return NodeApi.CallMethodAsyncCallbackVoid(Module, _unsubscribe, cancellationToken, subscriber);
     }
 
 }

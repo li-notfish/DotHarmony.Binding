@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 using HarmonyOS.ArkUI;
@@ -310,9 +311,9 @@ public static unsafe partial class UIContext
     /// <summary>
     /// pushUrl
     /// </summary>
-    public static Task PushUrlAsync(IntPtr options)
+    public static Task PushUrlAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, cancellationToken, options);
     }
 
     /// <summary>
@@ -326,9 +327,9 @@ public static unsafe partial class UIContext
     /// <summary>
     /// pushUrl
     /// </summary>
-    public static Task PushUrlAsync(IntPtr options, IntPtr mode)
+    public static Task PushUrlAsync(IntPtr options, IntPtr mode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, options, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, cancellationToken, options, mode);
     }
 
     /// <summary>
@@ -342,9 +343,9 @@ public static unsafe partial class UIContext
     /// <summary>
     /// replaceUrl
     /// </summary>
-    public static Task ReplaceUrlAsync(IntPtr options)
+    public static Task ReplaceUrlAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, cancellationToken, options);
     }
 
     /// <summary>
@@ -358,9 +359,9 @@ public static unsafe partial class UIContext
     /// <summary>
     /// replaceUrl
     /// </summary>
-    public static Task ReplaceUrlAsync(IntPtr options, IntPtr mode)
+    public static Task ReplaceUrlAsync(IntPtr options, IntPtr mode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, options, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, cancellationToken, options, mode);
     }
 
     /// <summary>
@@ -462,9 +463,9 @@ public static unsafe partial class UIContext
     /// <summary>
     /// pushNamedRoute
     /// </summary>
-    public static Task PushNamedRouteAsync(IntPtr options)
+    public static Task PushNamedRouteAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, cancellationToken, options);
     }
 
     /// <summary>
@@ -478,9 +479,9 @@ public static unsafe partial class UIContext
     /// <summary>
     /// pushNamedRoute
     /// </summary>
-    public static Task PushNamedRouteAsync(IntPtr options, IntPtr mode)
+    public static Task PushNamedRouteAsync(IntPtr options, IntPtr mode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, options, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, cancellationToken, options, mode);
     }
 
     /// <summary>
@@ -494,9 +495,9 @@ public static unsafe partial class UIContext
     /// <summary>
     /// replaceNamedRoute
     /// </summary>
-    public static Task ReplaceNamedRouteAsync(IntPtr options)
+    public static Task ReplaceNamedRouteAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, cancellationToken, options);
     }
 
     /// <summary>
@@ -510,9 +511,9 @@ public static unsafe partial class UIContext
     /// <summary>
     /// replaceNamedRoute
     /// </summary>
-    public static Task ReplaceNamedRouteAsync(IntPtr options, IntPtr mode)
+    public static Task ReplaceNamedRouteAsync(IntPtr options, IntPtr mode, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, options, mode);
+        return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, cancellationToken, options, mode);
     }
 
     /// <summary>
@@ -574,33 +575,33 @@ public static unsafe partial class UIContext
     /// <summary>
     /// openCustomDialog
     /// </summary>
-    public static Task OpenCustomDialogAsync(IntPtr dialogContent, IntPtr? options = null)
+    public static Task OpenCustomDialogAsync(IntPtr dialogContent, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openCustomDialog, dialogContent, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _openCustomDialog, cancellationToken, dialogContent, NapiArg.Of(options));
     }
 
     /// <summary>
     /// openCustomDialogWithController
     /// </summary>
-    public static Task OpenCustomDialogWithControllerAsync(IntPtr dialogContent, IntPtr controller, IntPtr? options = null)
+    public static Task OpenCustomDialogWithControllerAsync(IntPtr dialogContent, IntPtr controller, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openCustomDialogWithController, dialogContent, controller, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _openCustomDialogWithController, cancellationToken, dialogContent, controller, NapiArg.Of(options));
     }
 
     /// <summary>
     /// updateCustomDialog
     /// </summary>
-    public static Task UpdateCustomDialogAsync(IntPtr dialogContent, IntPtr options)
+    public static Task UpdateCustomDialogAsync(IntPtr dialogContent, IntPtr options, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateCustomDialog, dialogContent, options);
+        return NodeApi.CallMethodAsyncVoid(Module, _updateCustomDialog, cancellationToken, dialogContent, options);
     }
 
     /// <summary>
     /// closeCustomDialog
     /// </summary>
-    public static Task CloseCustomDialogAsync(IntPtr dialogContent)
+    public static Task CloseCustomDialogAsync(IntPtr dialogContent, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _closeCustomDialog, dialogContent);
+        return NodeApi.CallMethodAsyncVoid(Module, _closeCustomDialog, cancellationToken, dialogContent);
     }
 
     /// <summary>
@@ -646,49 +647,49 @@ public static unsafe partial class UIContext
     /// <summary>
     /// openPopup
     /// </summary>
-    public static Task OpenPopupAsync(IntPtr content, IntPtr target, IntPtr? options = null)
+    public static Task OpenPopupAsync(IntPtr content, IntPtr target, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openPopup, content, target, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _openPopup, cancellationToken, content, target, NapiArg.Of(options));
     }
 
     /// <summary>
     /// updatePopup
     /// </summary>
-    public static Task UpdatePopupAsync(IntPtr content, IntPtr options, bool? partialUpdate = null)
+    public static Task UpdatePopupAsync(IntPtr content, IntPtr options, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updatePopup, content, options, NapiArg.Of(partialUpdate));
+        return NodeApi.CallMethodAsyncVoid(Module, _updatePopup, cancellationToken, content, options, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
     /// closePopup
     /// </summary>
-    public static Task ClosePopupAsync(IntPtr content)
+    public static Task ClosePopupAsync(IntPtr content, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _closePopup, content);
+        return NodeApi.CallMethodAsyncVoid(Module, _closePopup, cancellationToken, content);
     }
 
     /// <summary>
     /// openMenu
     /// </summary>
-    public static Task OpenMenuAsync(IntPtr content, IntPtr target, IntPtr? options = null)
+    public static Task OpenMenuAsync(IntPtr content, IntPtr target, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openMenu, content, target, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _openMenu, cancellationToken, content, target, NapiArg.Of(options));
     }
 
     /// <summary>
     /// updateMenu
     /// </summary>
-    public static Task UpdateMenuAsync(IntPtr content, IntPtr options, bool? partialUpdate = null)
+    public static Task UpdateMenuAsync(IntPtr content, IntPtr options, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateMenu, content, options, NapiArg.Of(partialUpdate));
+        return NodeApi.CallMethodAsyncVoid(Module, _updateMenu, cancellationToken, content, options, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
     /// closeMenu
     /// </summary>
-    public static Task CloseMenuAsync(IntPtr content)
+    public static Task CloseMenuAsync(IntPtr content, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _closeMenu, content);
+        return NodeApi.CallMethodAsyncVoid(Module, _closeMenu, cancellationToken, content);
     }
 
     /// <summary>
@@ -902,9 +903,9 @@ public static unsafe partial class UIContext
     /// <summary>
     /// openOrderOverlay
     /// </summary>
-    public static Task OpenOrderOverlayAsync(IntPtr content, IntPtr? options = null)
+    public static Task OpenOrderOverlayAsync(IntPtr content, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openOrderOverlay, content, NapiArg.Of(options));
+        return NodeApi.CallMethodAsyncVoid(Module, _openOrderOverlay, cancellationToken, content, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -1806,25 +1807,25 @@ public static unsafe partial class UIContext
     /// <summary>
     /// openBindSheet
     /// </summary>
-    public static Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null)
+    public static Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _openBindSheet, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
+        return NodeApi.CallMethodAsyncVoid(Module, _openBindSheet, cancellationToken, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
     }
 
     /// <summary>
     /// updateBindSheet
     /// </summary>
-    public static Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null)
+    public static Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _updateBindSheet, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
+        return NodeApi.CallMethodAsyncVoid(Module, _updateBindSheet, cancellationToken, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
     /// closeBindSheet
     /// </summary>
-    public static Task CloseBindSheetAsync(IntPtr bindSheetContent)
+    public static Task CloseBindSheetAsync(IntPtr bindSheetContent, CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _closeBindSheet, bindSheetContent);
+        return NodeApi.CallMethodAsyncVoid(Module, _closeBindSheet, cancellationToken, bindSheetContent);
     }
 
     /// <summary>
@@ -2654,25 +2655,25 @@ public sealed partial class UIContextObject : JsObject
     /// <summary>
     /// openBindSheet
     /// </summary>
-    public Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null)
+    public Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_openBindSheet, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
+        return CallMethodAsyncVoid(_openBindSheet, cancellationToken, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
     }
 
     /// <summary>
     /// updateBindSheet
     /// </summary>
-    public Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null)
+    public Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateBindSheet, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
+        return CallMethodAsyncVoid(_updateBindSheet, cancellationToken, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
     /// closeBindSheet
     /// </summary>
-    public Task CloseBindSheetAsync(IntPtr bindSheetContent)
+    public Task CloseBindSheetAsync(IntPtr bindSheetContent, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_closeBindSheet, bindSheetContent);
+        return CallMethodAsyncVoid(_closeBindSheet, cancellationToken, bindSheetContent);
     }
 
     /// <summary>
@@ -3655,25 +3656,25 @@ public sealed partial class ResolvedUIContext : JsObject
     /// <summary>
     /// openBindSheet
     /// </summary>
-    public Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null)
+    public Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_openBindSheet, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
+        return CallMethodAsyncVoid(_openBindSheet, cancellationToken, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
     }
 
     /// <summary>
     /// updateBindSheet
     /// </summary>
-    public Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null)
+    public Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateBindSheet, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
+        return CallMethodAsyncVoid(_updateBindSheet, cancellationToken, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
     /// closeBindSheet
     /// </summary>
-    public Task CloseBindSheetAsync(IntPtr bindSheetContent)
+    public Task CloseBindSheetAsync(IntPtr bindSheetContent, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_closeBindSheet, bindSheetContent);
+        return CallMethodAsyncVoid(_closeBindSheet, cancellationToken, bindSheetContent);
     }
 
     /// <summary>
@@ -3906,33 +3907,33 @@ public sealed partial class RouterObject : JsObject
     /// <summary>
     /// pushUrl
     /// </summary>
-    public Task PushUrlAsync(IntPtr options)
+    public Task PushUrlAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pushUrl, options);
+        return CallMethodAsyncVoid(_pushUrl, cancellationToken, options);
     }
 
     /// <summary>
     /// pushUrl
     /// </summary>
-    public Task PushUrlAsync(IntPtr options, IntPtr mode)
+    public Task PushUrlAsync(IntPtr options, IntPtr mode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pushUrl, options, mode);
+        return CallMethodAsyncVoid(_pushUrl, cancellationToken, options, mode);
     }
 
     /// <summary>
     /// replaceUrl
     /// </summary>
-    public Task ReplaceUrlAsync(IntPtr options)
+    public Task ReplaceUrlAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_replaceUrl, options);
+        return CallMethodAsyncVoid(_replaceUrl, cancellationToken, options);
     }
 
     /// <summary>
     /// replaceUrl
     /// </summary>
-    public Task ReplaceUrlAsync(IntPtr options, IntPtr mode)
+    public Task ReplaceUrlAsync(IntPtr options, IntPtr mode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_replaceUrl, options, mode);
+        return CallMethodAsyncVoid(_replaceUrl, cancellationToken, options, mode);
     }
 
     /// <summary>
@@ -4026,33 +4027,33 @@ public sealed partial class RouterObject : JsObject
     /// <summary>
     /// pushNamedRoute
     /// </summary>
-    public Task PushNamedRouteAsync(IntPtr options)
+    public Task PushNamedRouteAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pushNamedRoute, options);
+        return CallMethodAsyncVoid(_pushNamedRoute, cancellationToken, options);
     }
 
     /// <summary>
     /// pushNamedRoute
     /// </summary>
-    public Task PushNamedRouteAsync(IntPtr options, IntPtr mode)
+    public Task PushNamedRouteAsync(IntPtr options, IntPtr mode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_pushNamedRoute, options, mode);
+        return CallMethodAsyncVoid(_pushNamedRoute, cancellationToken, options, mode);
     }
 
     /// <summary>
     /// replaceNamedRoute
     /// </summary>
-    public Task ReplaceNamedRouteAsync(IntPtr options)
+    public Task ReplaceNamedRouteAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_replaceNamedRoute, options);
+        return CallMethodAsyncVoid(_replaceNamedRoute, cancellationToken, options);
     }
 
     /// <summary>
     /// replaceNamedRoute
     /// </summary>
-    public Task ReplaceNamedRouteAsync(IntPtr options, IntPtr mode)
+    public Task ReplaceNamedRouteAsync(IntPtr options, IntPtr mode, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_replaceNamedRoute, options, mode);
+        return CallMethodAsyncVoid(_replaceNamedRoute, cancellationToken, options, mode);
     }
 
 }
@@ -4133,33 +4134,33 @@ public sealed partial class PromptActionObject : JsObject
     /// <summary>
     /// openCustomDialog
     /// </summary>
-    public Task OpenCustomDialogAsync(IntPtr dialogContent, IntPtr? options = null)
+    public Task OpenCustomDialogAsync(IntPtr dialogContent, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_openCustomDialog, dialogContent, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_openCustomDialog, cancellationToken, dialogContent, NapiArg.Of(options));
     }
 
     /// <summary>
     /// openCustomDialogWithController
     /// </summary>
-    public Task OpenCustomDialogWithControllerAsync(IntPtr dialogContent, IntPtr controller, IntPtr? options = null)
+    public Task OpenCustomDialogWithControllerAsync(IntPtr dialogContent, IntPtr controller, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_openCustomDialogWithController, dialogContent, controller, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_openCustomDialogWithController, cancellationToken, dialogContent, controller, NapiArg.Of(options));
     }
 
     /// <summary>
     /// updateCustomDialog
     /// </summary>
-    public Task UpdateCustomDialogAsync(IntPtr dialogContent, IntPtr options)
+    public Task UpdateCustomDialogAsync(IntPtr dialogContent, IntPtr options, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateCustomDialog, dialogContent, options);
+        return CallMethodAsyncVoid(_updateCustomDialog, cancellationToken, dialogContent, options);
     }
 
     /// <summary>
     /// closeCustomDialog
     /// </summary>
-    public Task CloseCustomDialogAsync(IntPtr dialogContent)
+    public Task CloseCustomDialogAsync(IntPtr dialogContent, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_closeCustomDialog, dialogContent);
+        return CallMethodAsyncVoid(_closeCustomDialog, cancellationToken, dialogContent);
     }
 
     /// <summary>
@@ -4205,49 +4206,49 @@ public sealed partial class PromptActionObject : JsObject
     /// <summary>
     /// openPopup
     /// </summary>
-    public Task OpenPopupAsync(IntPtr content, TargetInfo target, IntPtr? options = null)
+    public Task OpenPopupAsync(IntPtr content, TargetInfo target, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_openPopup, content, NapiArg.Of(target), NapiArg.Of(options));
+        return CallMethodAsyncVoid(_openPopup, cancellationToken, content, NapiArg.Of(target), NapiArg.Of(options));
     }
 
     /// <summary>
     /// updatePopup
     /// </summary>
-    public Task UpdatePopupAsync(IntPtr content, IntPtr options, bool? partialUpdate = null)
+    public Task UpdatePopupAsync(IntPtr content, IntPtr options, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updatePopup, content, options, NapiArg.Of(partialUpdate));
+        return CallMethodAsyncVoid(_updatePopup, cancellationToken, content, options, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
     /// closePopup
     /// </summary>
-    public Task ClosePopupAsync(IntPtr content)
+    public Task ClosePopupAsync(IntPtr content, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_closePopup, content);
+        return CallMethodAsyncVoid(_closePopup, cancellationToken, content);
     }
 
     /// <summary>
     /// openMenu
     /// </summary>
-    public Task OpenMenuAsync(IntPtr content, TargetInfo target, IntPtr? options = null)
+    public Task OpenMenuAsync(IntPtr content, TargetInfo target, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_openMenu, content, NapiArg.Of(target), NapiArg.Of(options));
+        return CallMethodAsyncVoid(_openMenu, cancellationToken, content, NapiArg.Of(target), NapiArg.Of(options));
     }
 
     /// <summary>
     /// updateMenu
     /// </summary>
-    public Task UpdateMenuAsync(IntPtr content, IntPtr options, bool? partialUpdate = null)
+    public Task UpdateMenuAsync(IntPtr content, IntPtr options, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_updateMenu, content, options, NapiArg.Of(partialUpdate));
+        return CallMethodAsyncVoid(_updateMenu, cancellationToken, content, options, NapiArg.Of(partialUpdate));
     }
 
     /// <summary>
     /// closeMenu
     /// </summary>
-    public Task CloseMenuAsync(IntPtr content)
+    public Task CloseMenuAsync(IntPtr content, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_closeMenu, content);
+        return CallMethodAsyncVoid(_closeMenu, cancellationToken, content);
     }
 
 }
@@ -5068,9 +5069,9 @@ public sealed partial class OverlayManager : JsObject
     /// <summary>
     /// openOrderOverlay
     /// </summary>
-    public Task OpenOrderOverlayAsync(IntPtr content, IntPtr? options = null)
+    public Task OpenOrderOverlayAsync(IntPtr content, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
-        return CallMethodAsyncVoid(_openOrderOverlay, content, NapiArg.Of(options));
+        return CallMethodAsyncVoid(_openOrderOverlay, cancellationToken, content, NapiArg.Of(options));
     }
 
 }

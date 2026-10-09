@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
 
@@ -79,9 +80,9 @@ public static unsafe partial class PerfTest
     /// <summary>
     /// run
     /// </summary>
-    public static Task RunAsync()
+    public static Task RunAsync(CancellationToken cancellationToken = default)
     {
-        return NodeApi.CallMethodAsyncVoid(Module, _run);
+        return NodeApi.CallMethodAsyncVoid(Module, _run, cancellationToken);
     }
 
     /// <summary>
