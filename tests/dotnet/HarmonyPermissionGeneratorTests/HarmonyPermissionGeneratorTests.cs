@@ -96,8 +96,50 @@ public sealed class HarmonyPermissionGeneratorTests
             "PermissionGeneratorTests",
             new[] { CSharpSyntaxTree.ParseText(source) });
 
+        var capabilityMap = new InMemoryAdditionalText(
+            "harmony-permissions.capabilities.json",
+            """
+            {
+              "version": 3,
+              "mauiMethods": [
+                {
+                  "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation",
+                  "methodName": "GetLocationAsync",
+                  "permission": "ohos.permission.LOCATION",
+                  "when": "inuse"
+                },
+                {
+                  "containingType": "Microsoft.Maui.Media.MediaPicker",
+                  "methodName": "CapturePhotoAsync",
+                  "permission": "ohos.permission.CAMERA",
+                  "when": "inuse"
+                },
+                {
+                  "containingType": "Microsoft.Maui.Media.MediaPicker",
+                  "methodName": "PickPhotoAsync",
+                  "permission": "ohos.permission.READ_MEDIA",
+                  "when": "inuse"
+                },
+                {
+                  "containingType": "Microsoft.Maui.Devices.Vibration",
+                  "methodName": "Vibrate",
+                  "permission": "ohos.permission.VIBRATE",
+                  "when": "always"
+                },
+                {
+                  "containingType": "Microsoft.Maui.Devices.Sensors.Accelerometer",
+                  "methodName": "Start",
+                  "permission": "ohos.permission.ACCELEROMETER",
+                  "when": "inuse"
+                }
+              ]
+            }
+            """);
+
         var generator = new HarmonyPermissionGenerator();
-        var driver = CSharpGeneratorDriver.Create(generator);
+        var driver = CSharpGeneratorDriver
+            .Create(generator)
+            .AddAdditionalTexts(ImmutableArray.Create<AdditionalText>(capabilityMap));
         driver.RunGeneratorsAndUpdateCompilation(compilation, out var updated, out _);
 
         var generated = updated.SyntaxTrees.Single(tree =>
@@ -248,6 +290,180 @@ public sealed class HarmonyPermissionGeneratorTests
     }
 
     [Fact]
+    public void Generates_read_pasteboard_for_clipboard_method()
+    {
+        const string source = """
+            namespace Microsoft.Maui.ApplicationModel.DataTransfer
+            {
+                public interface IClipboard
+                {
+                    Task<string?> GetTextAsync();
+                }
+
+                public static class Clipboard
+                {
+                    public static IClipboard Default { get; }
+                }
+            }
+
+            static class Program
+            {
+                static async Task Main()
+                {
+                    var text = await Microsoft.Maui.ApplicationModel.DataTransfer.Clipboard.Default.GetTextAsync();
+                }
+            }
+            """;
+
+        var compilation = CSharpCompilation.Create(
+            "ClipboardMethodPermissionTests",
+            new[] { CSharpSyntaxTree.ParseText(source, path: "ClipboardPage.cs") });
+
+        var capabilityMap = new InMemoryAdditionalText(
+            "harmony-permissions.capabilities.json",
+            """
+            {
+              "version": 3,
+              "mauiMethods": [
+                {
+                  "containingType": "Microsoft.Maui.ApplicationModel.DataTransfer.IClipboard",
+                  "methodName": "GetTextAsync",
+                  "permission": "ohos.permission.READ_PASTEBOARD",
+                  "when": "inuse"
+                }
+              ]
+            }
+            """);
+
+        var generator = new HarmonyPermissionGenerator();
+        var driver = CSharpGeneratorDriver
+            .Create(generator)
+            .AddAdditionalTexts(ImmutableArray.Create<AdditionalText>(capabilityMap));
+        driver.RunGeneratorsAndUpdateCompilation(compilation, out var updated, out _);
+
+        var generated = updated.SyntaxTrees.Single(tree =>
+            tree.FilePath.EndsWith("HarmonyPermissions.g.cs", StringComparison.Ordinal));
+        var text = generated.GetText().ToString();
+
+        Assert.Contains("ohos.permission.READ_PASTEBOARD|inuse|ClipboardPage.cs", text);
+    }
+
+    [Fact]
+    public void Generates_read_pasteboard_for_clipboard_property()
+    {
+        const string source = """
+            namespace Microsoft.Maui.ApplicationModel.DataTransfer
+            {
+                public interface IClipboard
+                {
+                    bool HasText { get; }
+                }
+
+                public static class Clipboard
+                {
+                    public static IClipboard Default { get; }
+                }
+            }
+
+            static class Program
+            {
+                static void Main()
+                {
+                    var hasText = Microsoft.Maui.ApplicationModel.DataTransfer.Clipboard.Default.HasText;
+                }
+            }
+            """;
+
+        var compilation = CSharpCompilation.Create(
+            "ClipboardPropertyPermissionTests",
+            new[] { CSharpSyntaxTree.ParseText(source, path: "ClipboardPage.cs") });
+
+        var capabilityMap = new InMemoryAdditionalText(
+            "harmony-permissions.capabilities.json",
+            """
+            {
+              "version": 3,
+              "mauiMembers": [
+                {
+                  "containingType": "Microsoft.Maui.ApplicationModel.DataTransfer.IClipboard",
+                  "memberName": "HasText",
+                  "memberKind": "property",
+                  "permission": "ohos.permission.READ_PASTEBOARD",
+                  "when": "inuse"
+                }
+              ]
+            }
+            """);
+
+        var generator = new HarmonyPermissionGenerator();
+        var driver = CSharpGeneratorDriver
+            .Create(generator)
+            .AddAdditionalTexts(ImmutableArray.Create<AdditionalText>(capabilityMap));
+        driver.RunGeneratorsAndUpdateCompilation(compilation, out var updated, out _);
+
+        var generated = updated.SyntaxTrees.Single(tree =>
+            tree.FilePath.EndsWith("HarmonyPermissions.g.cs", StringComparison.Ordinal));
+        var text = generated.GetText().ToString();
+
+        Assert.Contains("ohos.permission.READ_PASTEBOARD|inuse|ClipboardPage.cs", text);
+    }
+
+    [Fact]
+    public void Applies_capability_map_for_property_access()
+    {
+        const string source = """
+            namespace Microsoft.Maui.ApplicationModel
+            {
+                public static class DemoApi
+                {
+                    public static bool NeedsPermission { get; }
+                }
+            }
+
+            static class Program
+            {
+                static void Main()
+                {
+                    var value = Microsoft.Maui.ApplicationModel.DemoApi.NeedsPermission;
+                }
+            }
+            """;
+
+        var compilation = CSharpCompilation.Create(
+            "CapabilityMapTests",
+            new[] { CSharpSyntaxTree.ParseText(source, path: "DemoPage.cs") });
+
+        var capabilityMap = new InMemoryAdditionalText(
+            "harmony-permissions.capabilities.json",
+            """
+            {
+              "version": 3,
+              "mauiMembers": [
+                {
+                  "containingType": "Microsoft.Maui.ApplicationModel.DemoApi",
+                  "memberName": "NeedsPermission",
+                  "memberKind": "property",
+                  "permission": "ohos.permission.DEMO",
+                  "when": "inuse"
+                }
+              ]
+            }
+            """);
+
+        var generator = new HarmonyPermissionGenerator();
+        var driver = CSharpGeneratorDriver
+            .Create(generator)
+            .AddAdditionalTexts(ImmutableArray.Create<AdditionalText>(capabilityMap));
+        driver.RunGeneratorsAndUpdateCompilation(compilation, out var updated, out _);
+
+        var generated = updated.SyntaxTrees.Single(tree =>
+            tree.FilePath.EndsWith("HarmonyPermissions.g.cs", StringComparison.Ordinal));
+        var text = generated.GetText().ToString();
+
+        Assert.Contains("ohos.permission.DEMO|inuse|DemoPage.cs", text);
+    }
+
+    [Fact]
     public void Applies_custom_method_mapping()
     {
         const string source = """
@@ -327,6 +543,22 @@ public sealed class HarmonyPermissionGeneratorTests
             "CustomMappingConflictTests",
             new[] { CSharpSyntaxTree.ParseText(source) });
 
+        var capabilityMap = new InMemoryAdditionalText(
+            "harmony-permissions.capabilities.json",
+            """
+            {
+              "version": 3,
+              "mauiMethods": [
+                {
+                  "containingType": "Microsoft.Maui.Devices.Vibration",
+                  "methodName": "Vibrate",
+                  "permission": "ohos.permission.VIBRATE",
+                  "when": "always"
+                }
+              ]
+            }
+            """);
+
         var customMapping = new InMemoryAdditionalText(
             "harmony-permissions.custom.json",
             """
@@ -347,7 +579,7 @@ public sealed class HarmonyPermissionGeneratorTests
         var generator = new HarmonyPermissionGenerator();
         var driver = CSharpGeneratorDriver
             .Create(generator)
-            .AddAdditionalTexts(ImmutableArray.Create<AdditionalText>(customMapping));
+            .AddAdditionalTexts(ImmutableArray.Create<AdditionalText>(capabilityMap, customMapping));
         driver.RunGeneratorsAndUpdateCompilation(compilation, out var updated, out var diagnostics);
 
         var generated = updated.SyntaxTrees.Single(tree =>
@@ -424,10 +656,26 @@ public sealed class HarmonyPermissionGeneratorTests
             </ContentPage>
             """);
 
+        var capabilityMap = new InMemoryAdditionalText(
+            "harmony-permissions.capabilities.json",
+            """
+            {
+              "version": 3,
+              "mauiMethods": [
+                {
+                  "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation",
+                  "methodName": "GetLocationAsync",
+                  "permission": "ohos.permission.LOCATION",
+                  "when": "inuse"
+                }
+              ]
+            }
+            """);
+
         var generator = new HarmonyPermissionGenerator();
         var driver = CSharpGeneratorDriver
             .Create(generator)
-            .AddAdditionalTexts(ImmutableArray.Create<AdditionalText>(xaml));
+            .AddAdditionalTexts(ImmutableArray.Create<AdditionalText>(xaml, capabilityMap));
         driver.RunGeneratorsAndUpdateCompilation(compilation, out var updated, out _);
 
         var generated = updated.SyntaxTrees.Single(tree =>

@@ -96,6 +96,9 @@
     <ItemGroup>
       <AdditionalFiles Include="$(HarmonyExplicitPermissionsJson)" />
       <AdditionalFiles Condition="Exists('$(HarmonyPermissionMappingJson)')" Include="$(HarmonyPermissionMappingJson)" />
+      <AdditionalFiles Include="@(HarmonyPermissionCapabilityMap)" />
+      <AdditionalFiles Include="@(ProjectReference->'%(RootDir)%(Directory)harmony-permissions.capabilities.json')"
+                      Condition="Exists('%(RootDir)%(Directory)harmony-permissions.capabilities.json')" />
       <AdditionalFiles Include="@(MauiXaml)" />
     </ItemGroup>
   </Target>

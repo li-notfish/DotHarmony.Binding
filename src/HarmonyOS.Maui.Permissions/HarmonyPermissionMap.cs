@@ -1,6 +1,7 @@
 internal sealed class HarmonyPermissionMap
 {
     private readonly IDictionary<string, HarmonyPermissionMapping> _methodPermissions;
+    private readonly IDictionary<string, HarmonyPermissionMapping> _memberPermissions;
     private readonly IDictionary<string, HarmonyPermissionMapping> _permissionTypePermissions;
     private readonly ISet<string> _knownPermissionMethodKeys;
     private readonly IDictionary<string, string[]> _ambiguousPermissionTypes;
@@ -9,11 +10,13 @@ internal sealed class HarmonyPermissionMap
 
     private HarmonyPermissionMap(
         IDictionary<string, HarmonyPermissionMapping> methodPermissions,
+        IDictionary<string, HarmonyPermissionMapping> memberPermissions,
         IDictionary<string, HarmonyPermissionMapping> permissionTypePermissions,
         ISet<string> knownPermissionMethodKeys,
         IDictionary<string, string[]> ambiguousPermissionTypes)
     {
         _methodPermissions = methodPermissions;
+        _memberPermissions = memberPermissions;
         _permissionTypePermissions = permissionTypePermissions;
         _knownPermissionMethodKeys = knownPermissionMethodKeys;
         _ambiguousPermissionTypes = ambiguousPermissionTypes;
@@ -25,6 +28,16 @@ internal sealed class HarmonyPermissionMap
             ? mapping
             : null;
     }
+
+    public HarmonyPermissionMapping? ResolveMember(string containingType, string memberName, string memberKind)
+    {
+        return _memberPermissions.TryGetValue($"{containingType}.{memberName}.{NormalizeMemberKind(memberKind)}", out var mapping)
+            ? mapping
+            : null;
+    }
+
+    private static string NormalizeMemberKind(string memberKind)
+        => memberKind.ToLowerInvariant();
 
     // Full names (e.g. from custom mappings) win over the simple-name built-ins so
     // user types that happen to share a simple name are not silently mismatched.
@@ -57,6 +70,9 @@ internal sealed class HarmonyPermissionMap
         var methodPermissions = new Dictionary<string, HarmonyPermissionMapping>(
             _methodPermissions,
             StringComparer.Ordinal);
+        var memberPermissions = new Dictionary<string, HarmonyPermissionMapping>(
+            _memberPermissions,
+            StringComparer.Ordinal);
         var permissionTypePermissions = new Dictionary<string, HarmonyPermissionMapping>(
             _permissionTypePermissions,
             StringComparer.Ordinal);
@@ -82,6 +98,23 @@ internal sealed class HarmonyPermissionMap
             }
 
             methodPermissions[key] = new HarmonyPermissionMapping(mapping.Permission, mapping.When);
+        }
+
+        foreach (var mapping in custom.MauiMembers)
+        {
+            var key = $"{mapping.ContainingType}.{mapping.MemberName}.{NormalizeMemberKind(mapping.MemberKind)}";
+            if (memberPermissions.TryGetValue(key, out var existing) &&
+                (existing.Permission != mapping.Permission || existing.When != mapping.When) &&
+                !mapping.Override)
+            {
+                diagnostics.Add(new HarmonyPermissionMappingDiagnostic(
+                    $"Custom mapping for '{key}' conflicts with the built-in mapping and must set override to true.",
+                    sourcePath,
+                    1));
+                continue;
+            }
+
+            memberPermissions[key] = new HarmonyPermissionMapping(mapping.Permission, mapping.When);
         }
 
         foreach (var mapping in custom.MauiPermissionTypes)
@@ -112,6 +145,7 @@ internal sealed class HarmonyPermissionMap
 
         return new HarmonyPermissionMap(
             methodPermissions,
+            memberPermissions,
             permissionTypePermissions,
             knownPermissionMethodKeys,
             ambiguousPermissionTypes);
@@ -142,6 +176,16 @@ internal sealed class HarmonyPermissionMap
         }
 
         var permissionTypePermissions = new Dictionary<string, HarmonyPermissionMapping>(StringComparer.Ordinal);
+        var memberPermissions = new Dictionary<string, HarmonyPermissionMapping>(StringComparer.Ordinal);
+        foreach (var mapping in document.MauiMembers)
+        {
+            var key = $"{mapping.ContainingType}.{mapping.MemberName}.{NormalizeMemberKind(mapping.MemberKind)}";
+            if (memberPermissions.ContainsKey(key))
+            {
+                throw new InvalidOperationException($"Duplicate MAUI member permission mapping: {key}");
+            }
+            memberPermissions.Add(key, new HarmonyPermissionMapping(mapping.Permission, mapping.When));
+        }
         foreach (var mapping in document.MauiPermissionTypes)
         {
             if (permissionTypePermissions.ContainsKey(mapping.TypeName))
@@ -162,6 +206,7 @@ internal sealed class HarmonyPermissionMap
 
         return new HarmonyPermissionMap(
             methodPermissions,
+            memberPermissions,
             permissionTypePermissions,
             knownPermissionMethodKeys,
             ambiguousPermissionTypes);

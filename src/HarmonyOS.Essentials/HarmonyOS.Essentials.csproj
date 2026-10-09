@@ -46,5 +46,7 @@
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="harmony-permissions.capabilities.json" Pack="true" PackagePath="\" />
+    <None Include="build\HarmonyOS.Essentials.props" Pack="true" PackagePath="buildTransitive\" />
   </ItemGroup>
 </Project>

@@ -30,6 +30,7 @@ internal sealed class HarmonyPermissionMappingDocument
 {
     public int Version { get; set; }
     public List<MethodMapping> MauiMethods { get; set; } = new();
+    public List<MemberMapping> MauiMembers { get; set; } = new();
     public List<PermissionTypeMapping> MauiPermissionTypes { get; set; } = new();
     public List<KnownMethodMapping> KnownPermissionMethods { get; set; } = new();
     public List<AmbiguousPermissionTypeMapping> AmbiguousPermissionTypes { get; set; } = new();
@@ -53,6 +54,16 @@ internal sealed class MethodMapping
 {
     public string ContainingType { get; set; } = "";
     public string MethodName { get; set; } = "";
+    public string Permission { get; set; } = "";
+    public string When { get; set; } = "always";
+    public bool Override { get; set; }
+}
+
+internal sealed class MemberMapping
+{
+    public string ContainingType { get; set; } = "";
+    public string MemberName { get; set; } = "";
+    public string MemberKind { get; set; } = "";
     public string Permission { get; set; } = "";
     public string When { get; set; } = "always";
     public bool Override { get; set; }

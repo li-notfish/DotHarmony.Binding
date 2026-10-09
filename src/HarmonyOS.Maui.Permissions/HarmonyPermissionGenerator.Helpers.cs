@@ -14,6 +14,7 @@ public sealed partial class HarmonyPermissionGenerator
     private sealed record PermissionInvocationCandidate(
         string ContainingType,
         string MethodName,
+        string? MemberKind,
         string? PermissionTypeName,
         string? PermissionTypeFullName,
         bool IsPermissionTypeRequest,
@@ -43,58 +44,116 @@ public sealed partial class HarmonyPermissionGenerator
 
     private static PermissionInvocationCandidate? ResolvePermissionCandidate(GeneratorSyntaxContext context)
     {
-        var invocation = (InvocationExpressionSyntax)context.Node;
-        if (context.SemanticModel.GetSymbolInfo(invocation).Symbol is not IMethodSymbol method)
+        if (context.Node is InvocationExpressionSyntax invocation)
         {
-            return null;
+            if (context.SemanticModel.GetSymbolInfo(invocation).Symbol is not IMethodSymbol method)
+            {
+                return null;
+            }
+
+            var containingType = method.ContainingType?.ToDisplayString() ?? string.Empty;
+            if (string.IsNullOrEmpty(containingType))
+            {
+                return null;
+            }
+
+            var isPermissionTypeRequest =
+                containingType == "Microsoft.Maui.ApplicationModel.Permissions" &&
+                method.Name is ("RequestAsync" or "CheckStatusAsync" or "ShouldShowRationale" or "EnsureDeclared") &&
+                method.TypeArguments.Length == 1;
+
+            if (!isPermissionTypeRequest &&
+                !containingType.StartsWith("Microsoft.Maui", StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            string? permissionTypeName = null;
+            string? permissionTypeFullName = null;
+            if (isPermissionTypeRequest)
+            {
+                var typeArgument = (INamedTypeSymbol)method.TypeArguments[0];
+                permissionTypeName = typeArgument.Name;
+                permissionTypeFullName = typeArgument.ToDisplayString();
+            }
+
+            var enclosingMethod = context.Node.Ancestors()
+                .OfType<MethodDeclarationSyntax>()
+                .FirstOrDefault()
+                ?.Identifier.ValueText ?? string.Empty;
+
+            var location = invocation.GetLocation();
+            var lineSpan = location.GetLineSpan();
+            var sourcePath = string.IsNullOrEmpty(context.Node.SyntaxTree.FilePath)
+                ? "generated"
+                : context.Node.SyntaxTree.FilePath;
+
+            return new PermissionInvocationCandidate(
+                containingType,
+                method.Name,
+                MemberKind: null,
+                PermissionTypeName: permissionTypeName,
+                PermissionTypeFullName: permissionTypeFullName,
+                IsPermissionTypeRequest: isPermissionTypeRequest,
+                sourcePath,
+                lineSpan.StartLinePosition.Line + 1,
+                enclosingMethod);
         }
 
-        var containingType = method.ContainingType?.ToDisplayString() ?? string.Empty;
-        if (string.IsNullOrEmpty(containingType))
+        if (context.Node is MemberAccessExpressionSyntax memberAccess)
         {
-            return null;
+            var symbol = context.SemanticModel.GetSymbolInfo(memberAccess).Symbol;
+            string memberKind;
+            string memberName;
+            string containingType;
+
+            if (symbol is IPropertySymbol property)
+            {
+                memberKind = "property";
+                memberName = property.Name;
+                containingType = property.ContainingType?.ToDisplayString() ?? string.Empty;
+            }
+            else if (symbol is IEventSymbol @event)
+            {
+                memberKind = "event";
+                memberName = @event.Name;
+                containingType = @event.ContainingType?.ToDisplayString() ?? string.Empty;
+            }
+            else
+            {
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(containingType) ||
+                !containingType.StartsWith("Microsoft.Maui", StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            var enclosingMethod = context.Node.Ancestors()
+                .OfType<MethodDeclarationSyntax>()
+                .FirstOrDefault()
+                ?.Identifier.ValueText ?? string.Empty;
+
+            var location = memberAccess.GetLocation();
+            var lineSpan = location.GetLineSpan();
+            var sourcePath = string.IsNullOrEmpty(context.Node.SyntaxTree.FilePath)
+                ? "generated"
+                : context.Node.SyntaxTree.FilePath;
+
+            return new PermissionInvocationCandidate(
+                containingType,
+                memberName,
+                MemberKind: memberKind,
+                PermissionTypeName: null,
+                PermissionTypeFullName: null,
+                IsPermissionTypeRequest: false,
+                sourcePath,
+                lineSpan.StartLinePosition.Line + 1,
+                enclosingMethod);
         }
 
-        var isPermissionTypeRequest =
-            containingType == "Microsoft.Maui.ApplicationModel.Permissions" &&
-            method.Name is ("RequestAsync" or "CheckStatusAsync" or "ShouldShowRationale" or "EnsureDeclared") &&
-            method.TypeArguments.Length == 1;
-
-        if (!isPermissionTypeRequest &&
-            !containingType.StartsWith("Microsoft.Maui", StringComparison.Ordinal))
-        {
-            return null;
-        }
-
-        string? permissionTypeName = null;
-        string? permissionTypeFullName = null;
-        if (isPermissionTypeRequest)
-        {
-            var typeArgument = (INamedTypeSymbol)method.TypeArguments[0];
-            permissionTypeName = typeArgument.Name;
-            permissionTypeFullName = typeArgument.ToDisplayString();
-        }
-
-        var enclosingMethod = context.Node.Ancestors()
-            .OfType<MethodDeclarationSyntax>()
-            .FirstOrDefault()
-            ?.Identifier.ValueText ?? string.Empty;
-
-        var location = invocation.GetLocation();
-        var lineSpan = location.GetLineSpan();
-        var sourcePath = string.IsNullOrEmpty(context.Node.SyntaxTree.FilePath)
-            ? "generated"
-            : context.Node.SyntaxTree.FilePath;
-
-        return new PermissionInvocationCandidate(
-            containingType,
-            method.Name,
-            permissionTypeName,
-            permissionTypeFullName,
-            isPermissionTypeRequest,
-            sourcePath,
-            lineSpan.StartLinePosition.Line + 1,
-            enclosingMethod);
+        return null;
     }
 
     private static CustomMappingParseResult ParseCustomMapping(AdditionalText text)

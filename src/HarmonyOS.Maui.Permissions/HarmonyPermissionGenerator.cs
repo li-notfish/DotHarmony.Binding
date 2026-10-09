@@ -63,14 +63,17 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
     {
         var candidates = context.SyntaxProvider
             .CreateSyntaxProvider(
-                static (node, _) => node is InvocationExpressionSyntax,
+                static (node, _) =>
+                    node is InvocationExpressionSyntax or MemberAccessExpressionSyntax,
                 static (syntaxContext, _) => ResolvePermissionCandidate(syntaxContext))
             .Where(candidate => candidate is not null)
             .Select(static (candidate, _) => candidate!)
             .Collect();
 
         var customMappings = context.AdditionalTextsProvider
-            .Where(text => text.Path.EndsWith("harmony-permissions.custom.json", StringComparison.OrdinalIgnoreCase))
+            .Where(text =>
+                text.Path.EndsWith("harmony-permissions.custom.json", StringComparison.OrdinalIgnoreCase) ||
+                text.Path.EndsWith("harmony-permissions.capabilities.json", StringComparison.OrdinalIgnoreCase))
             .Select(static (text, _) => ParseCustomMapping(text))
             .Collect();
 
@@ -173,6 +176,25 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
                     inferred.Add(new ResolvedPermission(
                         mapping.Permission,
                         mapping.When,
+                        sourcePath,
+                        sourceLine));
+                    continue;
+                }
+
+                if (candidate.MemberKind is not null)
+                {
+                    var memberMapping = map.ResolveMember(
+                        candidate.ContainingType,
+                        candidate.MethodName,
+                        candidate.MemberKind);
+                    if (memberMapping is null)
+                    {
+                        continue;
+                    }
+
+                    inferred.Add(new ResolvedPermission(
+                        memberMapping.Permission,
+                        memberMapping.When,
                         sourcePath,
                         sourceLine));
                     continue;

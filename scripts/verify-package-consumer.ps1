@@ -58,6 +58,7 @@ $nugetConfig = Join-Path $WorkDir "nuget.config"
 
 @'
 using Microsoft.Maui.ApplicationModel.Communication;
+using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Microsoft.Maui.Devices;
 using Microsoft.Maui.Devices.Sensors;
 
@@ -67,6 +68,7 @@ public static class Consumer
     {
         Vibration.Default.Vibrate();
         _ = Contacts.Default.GetAllAsync();
+        _ = await Clipboard.Default.GetTextAsync();
     }
 
     public static void OnLocationClicked(object sender, EventArgs e)
@@ -138,6 +140,9 @@ if (-not ($permissionNames -contains "ohos.permission.VIBRATE")) {
 }
 if (-not ($permissionNames -contains "ohos.permission.READ_CONTACTS")) {
     throw "Consumer did not infer ohos.permission.READ_CONTACTS from the custom mapping."
+}
+if (-not ($permissionNames -contains "ohos.permission.READ_PASTEBOARD")) {
+    throw "Consumer did not infer ohos.permission.READ_PASTEBOARD from the capability map."
 }
 
 $location = @($permissions.permissions | Where-Object { $_.name -eq "ohos.permission.LOCATION" })[0]

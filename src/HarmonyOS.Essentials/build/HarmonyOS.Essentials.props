@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <HarmonyPermissionCapabilityMap Include="$(MSBuildThisFileDirectory)..\harmony-permissions.capabilities.json" />
+  </ItemGroup>
+</Project>

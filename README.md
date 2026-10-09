@@ -11,8 +11,9 @@
 最小 CI 门禁与性能基线脚本已落地，详见 ROADMAP M3 与 `docs/PERF_BASELINE.md`。
 
 **上手**：从零创建鸿蒙 MAUI 应用 / 给已有 MAUI 应用加鸿蒙平台，见 **[GETTING_STARTED.md](GETTING_STARTED.md)**。
-**权限自动推导**：MAUI 侧调用会自动生成 `module.json5` 的 `requestPermissions` 和 `usedScene`，
-并输出 `obj/harmony/permissions.report.md`；支持 ProjectReference 聚合、XAML 事件来源定位、
+**权限自动推导**：MAUI 侧的方法、属性和事件访问会自动生成 `module.json5` 的
+`requestPermissions` 和 `usedScene`，并输出 `obj/harmony/permissions.report.md`；支持
+实现库自带的 `harmony-permissions.capabilities.json` 能力契约、ProjectReference 聚合、XAML 事件来源定位、
 自定义映射与显式 `When` 覆盖，未映射或冲突场景会给出 `HMP001`–`HMP006` warning。
 **平台服务**：适配一个新的 Essentials 服务（注入点取证/五步流程/坑表），见 **[ESSENTIALS.md](ESSENTIALS.md)**。
 **风险预案**：C 原生节点 API 退出假设下的 ArkTS 引擎迁移计划见 **[MIGRATION_ARKTS_ENGINE.md](MIGRATION_ARKTS_ENGINE.md)**。
