@@ -50,6 +50,9 @@ export function requiredUsings(body: string, options: RequiredUsingsOptions = {}
     if (/(?<!System\.Text\.)\b(?:Encoding|StringBuilder|StringWriter|StringReader)\b/.test(normalized)) {
         usings.push('using System.Text;');
     }
+    if (/\bCancellationToken\b/.test(normalized)) {
+        usings.push('using System.Threading;');
+    }
     if (/\bTask(?:<|\b)/.test(normalized)) {
         usings.push('using System.Threading.Tasks;');
     }

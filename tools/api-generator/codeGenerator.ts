@@ -235,10 +235,13 @@ export class CodeGenerator {
             const cleanRet = TypeMapper.cleanOptional(method.returnType || 'void');
             const isVoid = !cleanRet || cleanRet === 'void';
             const returnTypeName = isVoid ? 'void' : TypeMapper.mapType(cleanRet);
+            const asyncParamStr = returnTypeName === 'Task'
+                ? (paramStr ? `${paramStr}, CancellationToken cancellationToken = default` : 'CancellationToken cancellationToken = default')
+                : paramStr;
             lines.push(`    /// <summary>`);
             lines.push(`    /// 调用 ${method.name} 方法`);
             lines.push(`    /// </summary>`);
-            lines.push(`    public ${returnTypeName} ${pascalName}(${paramStr})`);
+            lines.push(`    public ${returnTypeName} ${pascalName}(${asyncParamStr})`);
             lines.push('    {');
             const paramNames = method.parameters.map(p => TypeMapper.escapeCSharpKeyword(p.name)).join(', ');
             const callArgs = paramNames
@@ -253,7 +256,7 @@ export class CodeGenerator {
                     lines.push(`        return NodeApi.CallMethodAsync<${taskMatch[1]}>(${callArgs});`);
                 } else if (returnTypeName === 'Task') {
                     // Promise<void>：返回 Task，调用 CallMethodAsyncVoid
-                    lines.push(`        return NodeApi.CallMethodAsyncVoid(${callArgs});`);
+                    lines.push(`        return NodeApi.CallMethodAsyncVoid(${callArgs}, cancellationToken);`);
                 } else {
                     lines.push(`        return NodeApi.CallMethod<${returnTypeName}>(${callArgs});`);
                 }

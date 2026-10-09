@@ -1056,6 +1056,8 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
     // 清理会误删其已提交产物并逐轮级联（Windows 上 AV/编译服务器短暂锁文件，实测踩中）。
     if (failedModules.size > 0) {
         console.warn(`  Stale cleanup SKIPPED: ${failedModules.size} module(s) still failing this run: ${[...failedModules].join(', ')}`);
+    } else if (!ALL_MODE) {
+        console.warn('  Stale cleanup SKIPPED: pilot 模式只覆盖部分模块，删除会误清非 pilot 的已提交产物；只有 --all 全量轮允许清理');
     } else {
         const writtenClassNames = new Set(boundModules.map(m => m.className));
         for (const f of fs.readdirSync(apiOutputDir)) {

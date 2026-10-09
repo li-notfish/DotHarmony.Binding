@@ -248,14 +248,14 @@ declare namespace testsvc {
         expect(cs.match(/Task<string> GetAsync\(/g)?.length).toBe(1);
     });
 
-    test('AsyncCallback<void> 仅 callback 形式 → CallMethodAsyncCallbackVoid', () => {
+    test('AsyncCallback<void> 仅 callback 形式 → 可取消 CallMethodAsyncCallbackVoid', () => {
         const cs = generate(`
 declare namespace testsvc {
     function unsubscribe(callback?: AsyncCallback<void>): void;
 }
 `);
-        expect(cs).toContain('public static Task UnsubscribeAsync()');
-        expect(cs).toContain('NodeApi.CallMethodAsyncCallbackVoid(Module, _unsubscribe)');
+        expect(cs).toContain('public static Task UnsubscribeAsync(CancellationToken cancellationToken = default)');
+        expect(cs).toContain('NodeApi.CallMethodAsyncCallbackVoid(Module, _unsubscribe, cancellationToken)');
     });
 
     test('实例方法仅 callback 形式 → 实例 CallMethodAsyncCallback 助手', () => {

@@ -473,7 +473,7 @@ describe('Code Generation Tests', () => {
         expect(content).toContain('public Task<bool> IsEnabled()');
         
         // 验证 Promise<void> 返回类型
-        expect(content).toContain('public Task DoWork()');
+        expect(content).toContain('public Task DoWork(CancellationToken cancellationToken = default)');
         
         // 验证复杂类型 Promise<SomeComplexType> → Task<IntPtr>
         expect(content).toContain('public Task<IntPtr> GetHandle()');
@@ -494,6 +494,10 @@ describe('Code Generation Tests', () => {
         expect(content).toContain('return NodeApi.CallMethodAsync<long>(_jsObject, _getLongValue);');
         expect(content).toContain('return NodeApi.CallMethodAsync<uint>(_jsObject, _getUIntValue);');
         expect(content).toContain('return NodeApi.CallMethodAsync<byte>(_jsObject, _getByteValue);');
+
+        // Promise<void> 方法应暴露取消通道
+        expect(content).toContain('public Task DoWork(CancellationToken cancellationToken = default)');
+        expect(content).toContain('return NodeApi.CallMethodAsyncVoid(_jsObject, _doWork, cancellationToken);');
     });
 
     // AsyncCallback 测试（M2 2.1）
@@ -518,9 +522,13 @@ describe('Code Generation Tests', () => {
         
         // 验证 AsyncCallback<boolean> → Task<bool>
         expect(content).toContain('public Task<bool> IsEnabled()');
+
+        // AsyncCallback<void> 方法应暴露取消通道
+        expect(content).toContain('public Task DoWork(CancellationToken cancellationToken = default)');
+        expect(content).toContain('return NodeApi.CallMethodAsyncVoid(_jsObject, _doWork, cancellationToken);');
         
         // 验证 AsyncCallback<void> → Task
-        expect(content).toContain('public Task DoWork()');
+        expect(content).toContain('public Task DoWork(CancellationToken cancellationToken = default)');
         
         // 验证混合参数：AsyncCallback 移除，只保留 url 参数
         expect(content).toContain('public Task<string> FetchData(string url)');

@@ -856,11 +856,14 @@ export class ApiGenerator {
         const paramStr = m.params.map(p => this.formatParameter(p)).join(', ');
         const paramNames = m.params.map(p => this.wrapArg(p, TypeMapper.escapeCSharpKeyword(p.name))).join(', ');
         const callArgs = paramNames ? `, ${paramNames}` : '';
+        const asyncParamStr = m.retType === 'Task'
+            ? (paramStr ? `${paramStr}, CancellationToken cancellationToken = default` : 'CancellationToken cancellationToken = default')
+            : paramStr;
 
         lines.push('    /// <summary>');
         lines.push(`    /// ${m.rawName}`);
         lines.push('    /// </summary>');
-        lines.push(`    public static ${m.retType} ${m.pascalName}(${paramStr})`);
+        lines.push(`    public static ${m.retType} ${m.pascalName}(${asyncParamStr})`);
         lines.push('    {');
         const expr = this.callExpr(m.retType, 'Module', `_${m.rawName}`, callArgs, false, !!m.useCallbackBridge);
         lines.push(m.retType === 'void' ? `        ${expr};` : `        return ${expr};`);
@@ -971,7 +974,10 @@ export class ApiGenerator {
             lines.push('    /// <summary>');
             lines.push(`    /// ${m.name}`);
             lines.push('    /// </summary>');
-            lines.push(`    public ${retType} ${pascal}(${paramStr})`);
+            const asyncParamStr = retType === 'Task'
+                ? (paramStr ? `${paramStr}, CancellationToken cancellationToken = default` : 'CancellationToken cancellationToken = default')
+                : paramStr;
+            lines.push(`    public ${retType} ${pascal}(${asyncParamStr})`);
             lines.push('    {');
             const expr = this.callExpr(retType, 'this.Handle', `_${m.name}`, callArgs, true, useCallbackBridge);
             lines.push(retType === 'void' ? `        ${expr};` : `        return ${expr};`);
@@ -1099,7 +1105,9 @@ export class ApiGenerator {
 
         if (retType === 'void') return call('CallMethodVoid', '');
         if (retType === 'Task') {
-            return useCallbackBridge ? call('CallMethodAsyncCallbackVoid', '') : call('CallMethodAsyncVoid', '');
+            return useCallbackBridge
+                ? call('CallMethodAsyncCallbackVoid', ', cancellationToken')
+                : call('CallMethodAsyncVoid', ', cancellationToken');
         }
 
         const taskMatch = /^Task<(.+)>$/.exec(retType);
