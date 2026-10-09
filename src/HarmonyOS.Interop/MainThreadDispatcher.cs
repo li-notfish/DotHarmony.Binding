@@ -16,7 +16,7 @@ public static class MainThreadDispatcher
     private const int MaxQueueSize = 10_000;
 
     private static readonly Queue<Action> Queue = new();
-    private static readonly object Sync = new();
+    private static readonly Lock Sync = new();
     private static ThreadSafeFunction? _tsfn;
     private static int _queueFullCount;
 

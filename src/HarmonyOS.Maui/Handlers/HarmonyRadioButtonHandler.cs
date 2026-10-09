@@ -1,5 +1,6 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
+using HarmonyOS.Interop;
 using HarmonyOS.Bindings.NativeNode;
 using ArkRadio = HarmonyOS.ArkUI.RadioButton;
 using ArkRow = HarmonyOS.ArkUI.Row;
@@ -45,13 +46,19 @@ public class HarmonyRadioButtonHandler : HarmonyViewHandler<IRadioButton, ArkRow
     {
         base.ConnectHandler(platformView);
         if (_radio is not null)
+        {
             _radio.CheckedChanged += OnRadioChanged;
+            _radio.Click += OnClicked;
+        }
     }
 
     protected override void DisconnectHandler(ArkRow platformView)
     {
         if (_radio is not null)
+        {
             _radio.CheckedChanged -= OnRadioChanged;
+            _radio.Click -= OnClicked;
+        }
         base.DisconnectHandler(platformView);
     }
 
@@ -79,6 +86,22 @@ public class HarmonyRadioButtonHandler : HarmonyViewHandler<IRadioButton, ArkRow
         var isChecked = e.ComponentData(0).i32 == 1;
         if (VirtualView.IsChecked == isChecked)
             return;
+
         VirtualView.IsChecked = isChecked;
+    }
+
+    private void OnClicked(ArkUINodeEvent _)
+    {
+        if (_radio is not { } platformView)
+            return;
+
+        MainThreadDispatcher.Post(() =>
+        {
+            var isChecked = platformView.GetIsChecked();
+            if (VirtualView.IsChecked == isChecked)
+                return;
+
+            VirtualView.IsChecked = isChecked;
+        });
     }
 }

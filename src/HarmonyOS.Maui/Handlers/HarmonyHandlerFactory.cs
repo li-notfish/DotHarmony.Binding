@@ -5,6 +5,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 
@@ -12,7 +13,7 @@ namespace HarmonyOS.Maui.Handlers;
 
 public static class HarmonyHandlerFactory
 {
-    private static readonly object RegistryLock = new();
+    private static readonly Lock RegistryLock = new();
     private static readonly Dictionary<Type, Func<IElementHandler>> Registry = new();
 
     /// <summary>注册自定义 Handler（TView 及其派生类型优先于内置分派）。</summary>

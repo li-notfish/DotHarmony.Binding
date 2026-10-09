@@ -16,9 +16,19 @@ internal static class NativeValue
     {
         if (value == null) return IntPtr.Zero;
         var env = NapiEnv.Current;
-        var utf8 = Encoding.UTF8.GetBytes(value);
-        NativeNodeApi.napi_create_string_utf8(env, utf8, (IntPtr)utf8.Length, out var result).ThrowIfFailed();
-        return result;
+        var byteCount = Encoding.UTF8.GetByteCount(value);
+        if (byteCount <= 256)
+        {
+            Span<byte> utf8 = stackalloc byte[byteCount];
+            Encoding.UTF8.GetBytes(value.AsSpan(), utf8);
+            NativeNodeApi.napi_create_string_utf8(env, utf8, (IntPtr)byteCount, out var result).ThrowIfFailed();
+            return result;
+        }
+
+        var largeUtf8 = new byte[byteCount];
+        Encoding.UTF8.GetBytes(value.AsSpan(), largeUtf8.AsSpan());
+        NativeNodeApi.napi_create_string_utf8(env, largeUtf8.AsSpan(), (IntPtr)byteCount, out var largeResult).ThrowIfFailed();
+        return largeResult;
     }
 
     /// <summary>
@@ -99,13 +109,12 @@ internal static class NativeValue
     /// <summary>
     /// 将字节数组封送为新的 JS Uint8Array（拷贝语义）。这是 byte[] 的默认封送形态。
     /// </summary>
-    public static IntPtr FromUint8Array(byte[] value)
+    public static unsafe IntPtr FromUint8Array(ReadOnlySpan<byte> value)
     {
-        if (value == null) return IntPtr.Zero;
         var env = NapiEnv.Current;
         NativeNodeApi.napi_create_arraybuffer(env, (IntPtr)value.Length, out var data, out var buffer).ThrowIfFailed();
         if (value.Length > 0)
-            Marshal.Copy(value, 0, data, value.Length);
+            value.CopyTo(new Span<byte>((void*)data, value.Length));
         // napi_typedarray_type.napi_uint8_array = 1
         NativeNodeApi.napi_create_typedarray(env, 1, (IntPtr)value.Length, buffer, IntPtr.Zero, out var result).ThrowIfFailed();
         return result;
@@ -118,12 +127,21 @@ internal static class NativeValue
     public static IntPtr GetMapped(IntPtr obj, double key)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_get_named_property(env, obj, Encoding.UTF8.GetBytes(key.ToString("0")), out var byProp).ThrowIfFailed();
+        Span<char> keyChars = stackalloc char[32];
+        if (!key.TryFormat(keyChars, out var charsWritten, "0"))
+            throw new InvalidOperationException($"Tag {key} is too large to format.");
+
+        var formatted = keyChars[..charsWritten];
+        Span<byte> keyBytes = stackalloc byte[Encoding.UTF8.GetByteCount(formatted)];
+        Encoding.UTF8.GetBytes(formatted, keyBytes);
+        NativeNodeApi.napi_get_named_property(env, obj, keyBytes, out var byProp).ThrowIfFailed();
         NativeNodeApi.napi_typeof(env, byProp, out var byPropType).ThrowIfFailed();
         if (byPropType != NativeNodeApi.napi_valuetype.napi_undefined)
             return byProp;
-        NativeNodeApi.napi_get_named_property(env, obj, Encoding.UTF8.GetBytes("get"), out var getFn).ThrowIfFailed();
-        NativeNodeApi.napi_call_function(env, obj, getFn, 1, [From(key)], out var byGet).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, obj, "get"u8, out var getFn).ThrowIfFailed();
+        Span<IntPtr> getArgs = stackalloc IntPtr[1];
+        getArgs[0] = From(key);
+        NativeNodeApi.napi_call_function(env, obj, getFn, 1, getArgs, out var byGet).ThrowIfFailed();
         NativeNodeApi.napi_typeof(env, byGet, out var byGetType).ThrowIfFailed();
         return byGetType == NativeNodeApi.napi_valuetype.napi_undefined ? IntPtr.Zero : byGet;
     }
@@ -132,15 +150,20 @@ internal static class NativeValue
     /// 将 (数值键, napi 值) 对构造为真正的 JS Map（global→Map 构造器→new→set 逐项写入）。
     /// asset.AssetMap = Map<Tag, Value>——普通 JS 对象不被接受（实测 "Expect Map type."）。
     /// </summary>
-    public static IntPtr FromMap(params (double Key, IntPtr Value)[] entries)
+    public static IntPtr FromMap(params ReadOnlySpan<(double Key, IntPtr Value)> entries)
     {
         var env = NapiEnv.Current;
         NativeNodeApi.napi_get_global(env, out var global).ThrowIfFailed();
-        NativeNodeApi.napi_get_named_property(env, global, Encoding.UTF8.GetBytes("Map"), out var mapCtor).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, global, "Map"u8, out var mapCtor).ThrowIfFailed();
         NativeNodeApi.napi_new_instance(env, mapCtor, 0, ReadOnlySpan<IntPtr>.Empty, out var map).ThrowIfFailed();
-        NativeNodeApi.napi_get_named_property(env, map, Encoding.UTF8.GetBytes("set"), out var setFn).ThrowIfFailed();
-        foreach (var (key, value) in entries)
-            NativeNodeApi.napi_call_function(env, map, setFn, 2, [From(key), value], out _).ThrowIfFailed();
+        NativeNodeApi.napi_get_named_property(env, map, "set"u8, out var setFn).ThrowIfFailed();
+        Span<IntPtr> setArgs = stackalloc IntPtr[2];
+        foreach (ref readonly var entry in entries)
+        {
+            setArgs[0] = From(entry.Key);
+            setArgs[1] = entry.Value;
+            NativeNodeApi.napi_call_function(env, map, setFn, 2, setArgs, out _).ThrowIfFailed();
+        }
         return map;
     }
 
@@ -251,23 +274,35 @@ internal static class NativeValue
     private static IntPtr FromRecord(object value)
     {
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_create_object(env, out var obj).ThrowIfFailed();
+            NativeNodeApi.napi_create_object(env, out var obj).ThrowIfFailed();
 
-        if (value is INapiRecord serializable)
+            if (value is INapiRecord serializable)
         {
             serializable.WriteTo(env, obj);
             return obj;
         }
 
-        if (value is System.Collections.Generic.IDictionary<string, object?> dict)
-        {
-            foreach (var kvp in dict)
+            if (value is System.Collections.Generic.IDictionary<string, object?> dict)
+            {
+                Span<byte> utf8 = stackalloc byte[256];
+                foreach (var kvp in dict)
             {
                 if (kvp.Value == null) continue;
                 var napiValue = From(kvp.Value);
                 if (napiValue == IntPtr.Zero) continue;
-                var utf8 = Encoding.UTF8.GetBytes(kvp.Key);
-                NativeNodeApi.napi_set_named_property(env, obj, utf8, napiValue).ThrowIfFailed();
+                var byteCount = Encoding.UTF8.GetByteCount(kvp.Key);
+                if (byteCount <= 256)
+                {
+                    var keyBytes = utf8[..byteCount];
+                    Encoding.UTF8.GetBytes(kvp.Key.AsSpan(), keyBytes);
+                    NativeNodeApi.napi_set_named_property(env, obj, keyBytes, napiValue).ThrowIfFailed();
+                }
+                else
+                {
+                    var largeUtf8 = new byte[byteCount];
+                    Encoding.UTF8.GetBytes(kvp.Key.AsSpan(), largeUtf8.AsSpan());
+                    NativeNodeApi.napi_set_named_property(env, obj, largeUtf8.AsSpan(), napiValue).ThrowIfFailed();
+                }
             }
             return obj;
         }

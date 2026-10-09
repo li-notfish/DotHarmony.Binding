@@ -38,6 +38,8 @@ public class HarmonyPickerHandler : HarmonyViewHandler<Picker, ArkColumn>, IPick
     private INotifyCollectionChanged? _observedItemsSource;
     private INotifyCollectionChanged? _observedItems;
     private List<string> _items = new();
+    private float _pickerTouchStartX;
+    private float _pickerTouchStartY;
 
     public HarmonyPickerHandler() : base(Mapper) { }
 
@@ -67,6 +69,7 @@ public class HarmonyPickerHandler : HarmonyViewHandler<Picker, ArkColumn>, IPick
         base.ConnectHandler(platformView);
         _trigger.Click += OnTriggerClick;
         _picker.OnChange += OnChange;
+        _picker.Touch += OnPickerTouch;
         MapItemsSource(this, VirtualView);
         MapTitle(this, VirtualView);
         MapIsOpen(this, VirtualView);
@@ -76,6 +79,7 @@ public class HarmonyPickerHandler : HarmonyViewHandler<Picker, ArkColumn>, IPick
     {
         _trigger.Click -= OnTriggerClick;
         _picker.OnChange -= OnChange;
+        _picker.Touch -= OnPickerTouch;
         UnobserveItems();
         base.DisconnectHandler(platformView);
     }
@@ -152,10 +156,12 @@ public class HarmonyPickerHandler : HarmonyViewHandler<Picker, ArkColumn>, IPick
     }
 
     public static void MapIsOpen(HarmonyPickerHandler handler, Picker view)
-        => handler._picker.SetVisibility(
+    {
+        handler._picker.SetVisibility(
             view.IsOpen
                 ? ArkUI_Visibility.ARKUI_VISIBILITY_VISIBLE
                 : ArkUI_Visibility.ARKUI_VISIBILITY_NONE);
+    }
 
     private void UpdateTriggerText(Picker view)
     {
@@ -192,7 +198,32 @@ public class HarmonyPickerHandler : HarmonyViewHandler<Picker, ArkColumn>, IPick
             return;
 
         VirtualView.SelectedIndex = index;
-        VirtualView.IsOpen = false;
+
         UpdateTriggerText(VirtualView);
+    }
+
+    private void OnPickerTouch(ArkUINodeEvent e)
+    {
+        var pointer = ArkUIPointerEvent.From(e.InputEvent);
+        if (pointer.IsNull)
+            return;
+
+        switch (pointer.TouchAction)
+        {
+            case ArkPointerTouchAction.Pressed:
+                _pickerTouchStartX = pointer.X;
+                _pickerTouchStartY = pointer.Y;
+                break;
+
+            case ArkPointerTouchAction.Released:
+                const float tapToleranceVp = 8f;
+                var movedX = Math.Abs(pointer.X - _pickerTouchStartX);
+                var movedY = Math.Abs(pointer.Y - _pickerTouchStartY);
+                if (movedX > tapToleranceVp || movedY > tapToleranceVp)
+                    break;
+
+                VirtualView.IsOpen = false;
+                break;
+        }
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
+using HarmonyOS.Interop;
 using HarmonyOS.Bindings.NativeNode;
 using ArkSwitch = HarmonyOS.ArkUI.Toggle;
 
@@ -29,6 +30,7 @@ public class HarmonySwitchHandler : HarmonyViewHandler<ISwitch, ArkSwitch>, ISwi
     {
         base.ConnectHandler(platformView);
         platformView.Toggled += OnToggleChanged;
+        platformView.Click += OnClicked;
     }
 
     protected override void DisconnectHandler(ArkSwitch platformView)
@@ -62,6 +64,20 @@ public class HarmonySwitchHandler : HarmonyViewHandler<ISwitch, ArkSwitch>, ISwi
         var isOn = e.ComponentData(0).i32 == 1;
         if (VirtualView.IsOn == isOn)
             return;
+
         VirtualView.IsOn = isOn;
+    }
+
+    private void OnClicked(ArkUINodeEvent _)
+    {
+        var platformView = PlatformView;
+        MainThreadDispatcher.Post(() =>
+        {
+            var isOn = platformView.GetIsOn();
+            if (VirtualView.IsOn == isOn)
+                return;
+
+            VirtualView.IsOn = isOn;
+        });
     }
 }

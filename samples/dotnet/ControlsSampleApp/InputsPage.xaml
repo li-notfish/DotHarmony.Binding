@@ -2,24 +2,78 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ControlsSampleApp.InputsPage"
              Title="Inputs"
-             BackgroundColor="#FFFFFF">
+             BackgroundColor="#F8FAFC">
     <ScrollView>
-        <StackLayout Padding="16" Spacing="14">
-            <Label Text="CS-INPUTS-MARK" FontAttributes="Bold" FontSize="18" TextColor="#111827" />
-            <Entry Placeholder="Single line" TextColor="#111827" PlaceholderColor="#6B7280" />
-            <Editor Placeholder="Multiple lines" HeightRequest="80" TextColor="#111827" PlaceholderColor="#6B7280" />
-            <SearchBar Placeholder="Search" TextColor="#111827" PlaceholderColor="#6B7280" />
-            <Picker x:Name="DemoPicker" Title="Select item" TextColor="#111827" />
-            <DatePicker Format="D" TextColor="#111827" />
-            <TimePicker Format="T" TextColor="#111827" />
-            <Slider Minimum="0" Maximum="100" Value="40" MinimumTrackColor="#2563EB" MaximumTrackColor="#D1D5DB" />
-            <Stepper Minimum="0" Maximum="10" Increment="1" Value="2" />
-            <Switch IsToggled="True" OnColor="#16A34A" ThumbColor="#FFFFFF" />
-            <CheckBox IsChecked="True" Color="#2563EB" />
-            <StackLayout Orientation="Horizontal" Spacing="12">
-                <RadioButton Content="A" GroupName="Inputs" TextColor="#111827" />
-                <RadioButton Content="B" GroupName="Inputs" IsChecked="True" TextColor="#111827" />
-            </StackLayout>
-        </StackLayout>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="CS-INPUTS-MARK" FontSize="11" TextColor="#9CA3AF" />
+
+            <!-- Text entry -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text entry" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <Entry x:Name="NameEntry" Placeholder="Type your name" TextColor="#111827" PlaceholderColor="#6B7280" />
+                    <Label x:Name="NameEcho" Text="Hello, stranger" FontSize="14" TextColor="#4338CA" />
+                    <Editor x:Name="NotesEditor" Placeholder="Write a few lines…" HeightRequest="70"
+                            TextColor="#111827" PlaceholderColor="#6B7280" />
+                    <SearchBar x:Name="DemoSearch" Placeholder="Search something" TextColor="#111827" PlaceholderColor="#6B7280" />
+                    <Label x:Name="SearchStatus" Text="Nothing searched yet" FontSize="13" TextColor="#0F766E" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Value pickers -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Values" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <HorizontalStackLayout Spacing="12">
+                        <Label Text="Volume" FontSize="13" TextColor="#374151" VerticalOptions="Center" WidthRequest="56" />
+                        <Slider x:Name="VolumeSlider" Minimum="0" Maximum="100" Value="40"
+                                MinimumTrackColor="#2563EB" MaximumTrackColor="#D1D5DB"
+                                HorizontalOptions="FillAndExpand" />
+                        <Label x:Name="VolumeValue" Text="40" FontSize="13" FontAttributes="Bold"
+                               TextColor="#2563EB" WidthRequest="36" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="12">
+                        <Label Text="Count" FontSize="13" TextColor="#374151" VerticalOptions="Center" WidthRequest="56" />
+                        <Stepper x:Name="CountStepper" Minimum="0" Maximum="10" Increment="1" Value="2" />
+                        <Label x:Name="CountValue" Text="2" FontSize="13" FontAttributes="Bold"
+                               TextColor="#B45309" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Toggles -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Toggles" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <HorizontalStackLayout Spacing="12">
+                        <Switch x:Name="NotificationsSwitch" IsToggled="True" OnColor="#16A34A" ThumbColor="#FFFFFF" />
+                        <Label Text="Notifications" FontSize="14" TextColor="#111827" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="12">
+                        <CheckBox x:Name="TermsCheckBox" IsChecked="False" Color="#2563EB" />
+                        <Label Text="I accept the demo terms" FontSize="14" TextColor="#111827" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label Text="Size" FontSize="13" TextColor="#374151" />
+                    <HorizontalStackLayout Spacing="16">
+                        <RadioButton x:Name="SizeSmall" Content="S" GroupName="Size" TextColor="#111827" />
+                        <RadioButton x:Name="SizeMedium" Content="M" GroupName="Size" IsChecked="True" TextColor="#111827" />
+                        <RadioButton x:Name="SizeLarge" Content="L" GroupName="Size" TextColor="#111827" />
+                    </HorizontalStackLayout>
+                    <Label x:Name="ToggleStatus" Text="Notifications on · terms not accepted · size M"
+                           FontSize="13" TextColor="#7C3AED" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Choice -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Choice" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <Picker x:Name="ColorPicker" Title="Pick a theme color" TextColor="#111827" />
+                    <DatePicker x:Name="DemoDatePicker" Format="D" TextColor="#111827" />
+                    <TimePicker x:Name="DemoTimePicker" Format="T" TextColor="#111827" />
+                    <Label x:Name="ChoiceStatus" Text="No color picked" FontSize="13" TextColor="#BE123C" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

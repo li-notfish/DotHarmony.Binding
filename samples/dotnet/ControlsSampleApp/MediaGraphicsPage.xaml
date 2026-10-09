@@ -1,28 +1,43 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ControlsSampleApp.MediaGraphicsPage"
-             Title="Media and graphics"
-             BackgroundColor="#FFFFFF">
+             Title="Media"
+             BackgroundColor="#F8FAFC">
     <ScrollView>
-        <StackLayout Padding="16" Spacing="14">
-            <Label Text="CS-MEDIA-MARK" FontAttributes="Bold" FontSize="18" TextColor="#111827" />
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="CS-MEDIA-MARK" FontSize="11" TextColor="#9CA3AF" />
 
-            <WebView x:Name="DemoWebView" HeightRequest="220" />
-            <HybridWebView x:Name="DemoHybridWebView"
-                           DefaultFile="index.html"
-                           HybridRoot="hybridroot"
-                           HeightRequest="120" />
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="GraphicsView — touch to paint" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <GraphicsView x:Name="DemoGraphicsView" HeightRequest="180" BackgroundColor="#F1F5F9" />
+                    <Label x:Name="GraphicsStatus" Text="Tap or drag on the canvas" FontSize="13" TextColor="#2563EB" />
+                </VerticalStackLayout>
+            </Border>
 
-            <Grid HeightRequest="210" ColumnDefinitions="*,*,*" RowDefinitions="*,*" ColumnSpacing="8" RowSpacing="8">
-                <Ellipse Grid.Row="0" Grid.Column="0" Fill="#BBF7D0" Stroke="#16A34A" StrokeThickness="2" />
-                <Rectangle Grid.Row="0" Grid.Column="1" Fill="#BFDBFE" Stroke="#2563EB" StrokeThickness="2" RadiusX="8" RadiusY="8" />
-                <Line Grid.Row="0" Grid.Column="2" X1="10" Y1="10" X2="100" Y2="80" Stroke="#DC2626" StrokeThickness="3" />
-                <Polygon Grid.Row="1" Grid.Column="0" Points="10,10 100,20 50,90" Fill="#FED7AA" Stroke="#EA580C" StrokeThickness="2" />
-                <Polyline Grid.Row="1" Grid.Column="1" Points="10,10 100,20 50,90 10,10" Stroke="#7C3AED" StrokeThickness="3" />
-                <Path Grid.Row="1" Grid.Column="2" Data="M 10,10 L 100,20 L 50,90 Z" Fill="#FBCFE8" Stroke="#DB2777" StrokeThickness="2" />
-            </Grid>
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Vectors" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <Grid HeightRequest="170" ColumnDefinitions="*,*,*" RowDefinitions="*,*" ColumnSpacing="8" RowSpacing="8">
+                        <Ellipse Grid.Row="0" Grid.Column="0" Fill="#BBF7D0" Stroke="#16A34A" StrokeThickness="2" />
+                        <Rectangle Grid.Row="0" Grid.Column="1" Fill="#BFDBFE" Stroke="#2563EB" StrokeThickness="2" RadiusX="8" RadiusY="8" />
+                        <Line Grid.Row="0" Grid.Column="2" X1="10" Y1="10" X2="100" Y2="80" Stroke="#DC2626" StrokeThickness="3" />
+                        <Polygon Grid.Row="1" Grid.Column="0" Points="10,10 100,20 50,90" Fill="#FED7AA" Stroke="#EA580C" StrokeThickness="2" />
+                        <Polyline Grid.Row="1" Grid.Column="1" Points="10,10 100,20 50,90 10,10" Stroke="#7C3AED" StrokeThickness="3" />
+                        <Path Grid.Row="1" Grid.Column="2" Data="M 10,10 L 100,20 L 50,90 Z" Fill="#FBCFE8" Stroke="#DB2777" StrokeThickness="2" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
 
-            <GraphicsView x:Name="DemoGraphicsView" HeightRequest="150" />
-        </StackLayout>
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="WebView" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <WebView x:Name="DemoWebView" HeightRequest="200" />
+                    <Label x:Name="WebStatus" Text="Loading inline HTML…" FontSize="13" TextColor="#0F766E" />
+                    <HybridWebView x:Name="DemoHybridWebView"
+                                   DefaultFile="index.html" HybridRoot="hybridroot" HeightRequest="120" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

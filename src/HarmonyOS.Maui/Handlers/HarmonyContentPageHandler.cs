@@ -19,12 +19,44 @@ public class HarmonyContentPageHandler : ViewHandler<ContentPage, ArkColumn>
 
     public HarmonyContentPageHandler() : base(Mapper) { }
 
+    private IElementHandler? _menuBarHandler;
+
     protected override ArkColumn CreatePlatformView()
     {
         var column = new ArkColumn();
         column.SetWidthPercent(1.0f);
         column.SetHeightPercent(1.0f);
         return column;
+    }
+
+    protected override void ConnectHandler(ArkColumn platformView)
+    {
+        base.ConnectHandler(platformView);
+
+        if (VirtualView.MenuBarItems.Count == 0)
+            return;
+
+        var menuBar = new MenuBar();
+        _menuBarHandler = HarmonyHandlerFactory.Create(menuBar);
+        if (_menuBarHandler.PlatformView is ArkUINode node)
+        {
+            node.SetWidthPercent(1.0f);
+            platformView.AddChild(node);
+        }
+
+        foreach (var item in VirtualView.MenuBarItems)
+            menuBar.Add(item);
+    }
+
+    protected override void DisconnectHandler(ArkColumn platformView)
+    {
+        if (_menuBarHandler is not null)
+        {
+            HarmonyViewHandler<IView, ArkUINode>.DisposeContent(_menuBarHandler, platformView);
+            _menuBarHandler = null;
+        }
+
+        base.DisconnectHandler(platformView);
     }
 
     public static void MapContent(HarmonyContentPageHandler handler, ContentPage page)

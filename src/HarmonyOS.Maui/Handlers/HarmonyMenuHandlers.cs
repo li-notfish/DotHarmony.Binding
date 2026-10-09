@@ -4,13 +4,14 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using HarmonyOS.Bindings.NativeNode;
 using ArkButton = HarmonyOS.ArkUI.Button;
+using ArkColumn = HarmonyOS.ArkUI.Column;
 using ArkRow = HarmonyOS.ArkUI.Row;
 using ArkStack = HarmonyOS.ArkUI.Stack;
 using ArkText = HarmonyOS.ArkUI.Text;
 
 namespace HarmonyOS.Maui.Handlers;
 
-public class HarmonyMenuBarHandler : ElementHandler<MenuBar, ArkRow>
+public class HarmonyMenuBarHandler : ElementHandler<MenuBar, ArkColumn>
 {
     public static PropertyMapper<MenuBar, HarmonyMenuBarHandler> Mapper =
         new(ElementHandler.ElementMapper)
@@ -29,13 +30,24 @@ public class HarmonyMenuBarHandler : ElementHandler<MenuBar, ArkRow>
 
     public HarmonyMenuBarHandler() : base(Mapper, Commands) { }
 
-    private NativeChildTracker<ArkButton> _childTracker = null!;
+    private ArkRow _topRow = null!;
+    private ArkColumn _dropDown = null!;
+    private NativeChildTracker<ArkButton> _topTracker = null!;
+    private NativeChildTracker<ArkButton> _dropTracker = null!;
+    private MenuBarItem? _openItem;
 
-    protected override ArkRow CreatePlatformElement()
+    protected override ArkColumn CreatePlatformElement()
     {
-        var row = new ArkRow();
-        _childTracker = new NativeChildTracker<ArkButton>(row.AddChild, row.RemoveAllChildren);
-        return row;
+        var root = new ArkColumn();
+        _topRow = new ArkRow();
+        _dropDown = new ArkColumn();
+        _dropDown.SetVisibility(ArkUI_Visibility.ARKUI_VISIBILITY_NONE);
+
+        root.AddChild(_topRow);
+        root.AddChild(_dropDown);
+        _topTracker = new NativeChildTracker<ArkButton>(_topRow.AddChild, _topRow.RemoveAllChildren);
+        _dropTracker = new NativeChildTracker<ArkButton>(_dropDown.AddChild, _dropDown.RemoveAllChildren);
+        return root;
     }
 
     public static void MapIsEnabled(HarmonyMenuBarHandler handler, MenuBar view)
@@ -54,11 +66,73 @@ public class HarmonyMenuBarHandler : ElementHandler<MenuBar, ArkRow>
                 Label = barItem.Text ?? string.Empty,
                 Enabled = barItem.IsEnabled,
             };
+            button.Click += _ => ToggleDropDown(handler, barItem);
             button.SetWidth(96f);
             button.SetHeight(40f);
             buttons.Add(button);
         }
-        handler._childTracker.Replace(buttons);
+        handler._topTracker.Replace(buttons);
+        if (handler._openItem is not null)
+            handler.BuildDropDown();
+    }
+
+    private static void ToggleDropDown(HarmonyMenuBarHandler handler, MenuBarItem item)
+    {
+        handler._openItem = ReferenceEquals(handler._openItem, item) ? null : item;
+        handler.BuildDropDown();
+    }
+
+    private void BuildDropDown()
+    {
+        if (_openItem is null)
+        {
+            _dropTracker.Clear();
+            _dropDown.SetVisibility(ArkUI_Visibility.ARKUI_VISIBILITY_NONE);
+            return;
+        }
+
+        var buttons = new List<ArkButton>();
+        foreach (var child in _openItem)
+            CollectDropDownItems(child, buttons);
+        _dropTracker.Replace(buttons);
+        _dropDown.SetVisibility(buttons.Count > 0
+            ? ArkUI_Visibility.ARKUI_VISIBILITY_VISIBLE
+            : ArkUI_Visibility.ARKUI_VISIBILITY_NONE);
+    }
+
+    private static void CollectDropDownItems(IMenuElement element, List<ArkButton> buttons)
+    {
+        switch (element)
+        {
+            case MenuFlyoutSeparator:
+                var separator = new ArkButton
+                {
+                    Label = "────────",
+                    Enabled = false,
+                };
+                separator.SetWidth(160f);
+                separator.SetHeight(1f);
+                buttons.Add(separator);
+                break;
+
+            case MenuFlyoutItem item:
+                var button = new ArkButton
+                {
+                    Label = item.Text ?? string.Empty,
+                    Enabled = item.IsEnabled,
+                };
+                button.Click += _ => ((IMenuItemController)item).Activate();
+                button.SetWidth(160f);
+                button.SetHeight(40f);
+                buttons.Add(button);
+
+                if (item is MenuFlyoutSubItem subItem)
+                {
+                    foreach (var child in subItem)
+                        CollectDropDownItems(child, buttons);
+                }
+                break;
+        }
     }
 }
 
@@ -120,6 +194,7 @@ public class HarmonyMenuFlyoutHandler : ElementHandler<MenuFlyout, ArkStack>
                 Label = menuItem.Text ?? string.Empty,
                 Enabled = menuItem.IsEnabled,
             };
+            button.Click += _ => ((IMenuItemController)menuItem).Activate();
             button.SetWidth(120f);
             button.SetHeight(40f);
             buttons.Add(button);

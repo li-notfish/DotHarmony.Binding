@@ -4,29 +4,73 @@
             x:Class="ControlsSampleApp.MainPage"
             Title="Controls Samples"
             BackgroundColor="#FFFFFF">
-    <ContentPage Title="Overview">
-        <StackLayout Padding="16" Spacing="14">
-            <Label Text="CS-ALL-MARK"
-                   FontAttributes="Bold"
-                   FontSize="20"
-                   TextColor="#111827" />
-            <Label Text="Controls are grouped by category in the tabs below."
-                   TextColor="#374151" />
-            <ContentView BackgroundColor="#ECFDF5" Padding="12">
+    <ContentPage Title="Home">
+        <ScrollView BackgroundColor="#F8FAFC">
+            <VerticalStackLayout Padding="16" Spacing="12">
+                <Label Text="CS-ALL-MARK" FontSize="11" TextColor="#9CA3AF" />
+
+            <!-- Hero -->
+            <Border BackgroundColor="#1E3A8A" Padding="20" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Controls Gallery" FontAttributes="Bold" FontSize="22" TextColor="#FFFFFF" />
+                    <Label Text="Every control on the tabs below is live. Interactions land in the activity feed."
+                           FontSize="12" TextColor="#C7D2FE" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ContentPresenter -->
+            <ContentView BackgroundColor="#FFFFFF" Padding="12">
                 <ContentView.Content>
-                    <Label Text="ContentView + ContentPresenter"
-                           TextColor="#065F46" />
+                    <ContentPresenter>
+                        <ContentPresenter.Content>
+                            <Label Text="ContentPresenter" FontSize="14" TextColor="#111827" />
+                        </ContentPresenter.Content>
+                    </ContentPresenter>
                 </ContentView.Content>
             </ContentView>
-            <ContentPresenter>
-                <ContentPresenter.Content>
-                    <Label Text="ContentPresenter"
-                           TextColor="#065F46" />
-                </ContentPresenter.Content>
-            </ContentPresenter>
-        </StackLayout>
+
+            <!-- Tap counter card -->
+                <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1"
+                        Padding="16" StrokeShape="RoundRectangle 8">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Try it" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                        <Button x:Name="CounterButton"
+                                Text="Tap me"
+                                BackgroundColor="#2563EB" TextColor="#FFFFFF"
+                                CornerRadius="6" HeightRequest="44" />
+                        <Label x:Name="CounterLabel"
+                               Text="No taps yet"
+                               FontSize="13" TextColor="#4B5563" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Activity feed -->
+                <VerticalStackLayout Spacing="8">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView Color="#F59E0B" WidthRequest="4" HeightRequest="18" CornerRadius="2"
+                                 VerticalOptions="Center" />
+                        <Label Text="ACTIVITY" FontAttributes="Bold" FontSize="13" TextColor="#92400E" />
+                    </HorizontalStackLayout>
+                    <Border BackgroundColor="#FFFBEB" Stroke="#FDE68A" StrokeThickness="1"
+                            Padding="12" StrokeShape="RoundRectangle 8">
+                        <VerticalStackLayout Spacing="4">
+                            <Label x:Name="EmptyFeedLabel"
+                                   Text="Nothing yet — tap a tab and poke a control."
+                                   FontSize="12" TextColor="#92400E" />
+                            <CollectionView x:Name="FeedList" MaximumHeightRequest="150">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Text="{Binding .}" FontSize="12" TextColor="#78350F" />
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
     </ContentPage>
-    <local:BasicsPage Title="Base" />
+    <local:BasicsPage Title="Basics" />
     <local:InputsPage Title="Inputs" />
     <local:LayoutsPage Title="Layouts" />
     <local:ItemsPage Title="Items" />

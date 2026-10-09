@@ -51,7 +51,15 @@ public class HarmonyWebViewHandler : HarmonyViewHandler<WebView, ArkStack>
     }
 
     public static void MapSource(HarmonyWebViewHandler handler, WebView view)
-        => handler._status.Content = view.Source?.ToString() ?? string.Empty;
+    {
+        handler._status.Content = view.Source switch
+        {
+            HtmlWebViewSource html => html.Html ?? string.Empty,
+            UrlWebViewSource url => url.Url ?? string.Empty,
+            WebViewSource source => source.ToString() ?? string.Empty,
+            _ => string.Empty,
+        };
+    }
 
     public static void MapUserAgent(HarmonyWebViewHandler handler, WebView view)
         => HarmonyOS.Interop.HiLog.Warn("HarmonyHost", "[WebView] UserAgent is degraded on HarmonyOS.");
@@ -648,6 +656,7 @@ public class HarmonyListViewHandler : HarmonyViewHandler<ListView, ArkColumn>
         }
 
         var rows = new List<ArkText>();
+        var index = 0;
         foreach (var item in view.ItemsSource)
         {
             var text = new ArkText
@@ -655,6 +664,11 @@ public class HarmonyListViewHandler : HarmonyViewHandler<ListView, ArkColumn>
                 Content = item?.ToString() ?? string.Empty,
                 FontSize = (float)HarmonyControlDefaults.StatusTextFontSizeDefault,
             };
+            var capturedIndex = index++;
+            text.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_CLICK, _ =>
+            {
+                view.NotifyRowTapped(capturedIndex);
+            });
             rows.Add(text);
         }
         handler._rowTracker.Replace(rows);

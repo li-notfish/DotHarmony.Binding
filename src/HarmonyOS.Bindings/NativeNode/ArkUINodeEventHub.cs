@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace HarmonyOS.Bindings.NativeNode;
 
@@ -11,7 +12,7 @@ namespace HarmonyOS.Bindings.NativeNode;
 internal sealed class ArkUINodeEventHub
 {
     private readonly List<Action<ArkUINodeEvent>> _handlers = new();
-    private readonly object _gate = new();
+    private readonly Lock _gate = new();
 
     public bool IsEmpty
     {

@@ -2,32 +2,42 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ControlsSampleApp.MenusPage"
              Title="Menus"
-             BackgroundColor="#FFFFFF">
+             BackgroundColor="#F8FAFC">
     <ContentPage.MenuBarItems>
         <MenuBarItem Text="File">
-            <MenuFlyoutItem Text="New" />
+            <MenuFlyoutItem x:Name="MenuNew" Text="New" />
             <MenuFlyoutSeparator />
             <MenuFlyoutSubItem Text="Recent">
-                <MenuFlyoutItem Text="Item one" />
-                <MenuFlyoutItem Text="Item two" />
+                <MenuFlyoutItem x:Name="MenuRecentOne" Text="Item one" />
+                <MenuFlyoutItem x:Name="MenuRecentTwo" Text="Item two" />
             </MenuFlyoutSubItem>
         </MenuBarItem>
         <MenuBarItem Text="Edit">
-            <MenuFlyoutItem Text="Copy" />
+            <MenuFlyoutItem x:Name="MenuCopy" Text="Copy" />
         </MenuBarItem>
     </ContentPage.MenuBarItems>
-    <ContentPage.Resources>
-        <MenuFlyout x:Key="DemoFlyout">
-            <MenuFlyoutItem Text="Resource item" />
-            <MenuFlyoutSeparator />
-        </MenuFlyout>
-    </ContentPage.Resources>
     <ScrollView>
-        <StackLayout Padding="16" Spacing="14">
-            <Label Text="CS-MENUS-MARK" FontAttributes="Bold" FontSize="18" TextColor="#111827" />
-            <Label Text="Menu bar items are provided by the page chrome." TextColor="#374151" />
-            <Label Text="MenuFlyout and nested menu elements are declared as page resources."
-                   TextColor="#6B7280" />
-        </StackLayout>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="CS-MENUS-MARK" FontSize="11" TextColor="#9CA3AF" />
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Menu bar" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <Label Text="File and Edit live in the page menu bar. Tap items to see feedback here."
+                           FontSize="13" TextColor="#374151" />
+                    <Label x:Name="MenuStatus" Text="No menu item chosen" FontSize="13" TextColor="#2563EB" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Context flyout" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <Button x:Name="FlyoutButton" Text="Show attached flyout"
+                            BackgroundColor="#B45309" TextColor="#FFFFFF" CornerRadius="6" HeightRequest="44" />
+                    <Label x:Name="FlyoutStatus" Text="Tap the button to open the flyout"
+                           FontSize="13" TextColor="#B45309" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

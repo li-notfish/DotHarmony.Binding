@@ -305,7 +305,7 @@ public class HarmonyCollectionViewHandler : HarmonyViewHandler<MCollectionView, 
         if (selectable.SelectionMode == SelectionMode.Single)
         {
             selectable.SelectedItem = item;
-            selectable.SelectedItems = new List<object> { item! };
+            selectable.UpdateSelectedItems(new List<object> { item! });
             return;
         }
 
