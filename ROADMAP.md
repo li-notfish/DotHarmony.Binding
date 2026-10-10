@@ -180,7 +180,7 @@ Gyroscope/Compass/OrientationSensor + Geolocation/MediaPicker。IMainThread 暂�
 
 适配指南见 [ESSENTIALS.md](ESSENTIALS.md)；验证应用为 `samples/dotnet/EssentialsApp`。
 
-**留白（立项待办）**：IShare 文件分享（需跨应用 URI 授权通道）、TextToSpeech/HapticFeedback/
+**留白（立项待办）**：TextToSpeech/HapticFeedback/
 Flashlight、Map/FilePicker/Screenshot；传感器族与 Geolocation/MediaPicker 的真机/模拟器专项验证；
 电池/网络/SecureStorage 事件的模拟器触发验证。
 

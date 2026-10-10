@@ -32,6 +32,8 @@
 | Android/iOS head 工程 | `HarmonyHost`（ArkTS 宿主 + C shim 模板；targets 按应用生成实例） |
 | workload / msbuild 集成 | `scripts/`（PublishAotClang（Windows 本地 NativeAOT）+ hvigor + hdc 一键脚本）
 
+实际分层链路：`MAUI/Essentials -> HarmonyOS.Bindings (Nodes/Api) -> HarmonyOS.Interop (NAPI/PInvoke/NativeAOT) -> native`。`HarmonyOS.Interop` 是底层互操作核心，`HarmonyOS.Bindings` 负责 ArkUI 节点和 `@ohos.*` API 绑定，上层平台实现只调用绑定面。
+
 ```
 [MAUI 应用] XAML / C# 控件树（Microsoft.Maui.Controls VirtualView）
     ↓
@@ -161,7 +163,7 @@ bash scripts/deploy-hap.sh
 | `HarmonyOS.Interop` | napi 互操作核心（env 注入/封送/TSFN/HiLog） |
 | `HarmonyOS.Bindings` | ArkUI/@ohos.* 绑定（依赖 Interop） |
 | `HarmonyOS.Essentials` | Essentials 鸿蒙实现（依赖 Bindings） |
-| `HarmonyOS.Maui` | MAUI 渲染层 + **buildTransitive 宿主编排**（targets + scripts + 宿主模板随包分发；应用工程无需仓库工作副本） |
+| `HarmonyOS.Maui` | MAUI 渲染层 + **buildTransitive 宿主编排**（targets + scripts + 宿主模板随包分发；应用工程无需仓库工作副本）+ `HarmonyMauiAppBuilder` 最小 UseMauiApp 等价引导 |
 | `HarmonyOS.Templates` | `dotnet new harmony-maui` 应用模板（含 `Platforms/HarmonyOS` 启动桩） |
 
 消费方体验对齐 maui-android 单项目：`<PackageReference Include="HarmonyOS.Maui" Version="..." />` 后

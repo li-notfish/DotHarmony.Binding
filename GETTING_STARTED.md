@@ -274,7 +274,7 @@ dotnet build samples/dotnet/MyApp -t:HarmonyRun
 | Shell（tab/URI 路由/Flyout） | ✅ 支持 | TabBar、Flyout 菜单、绝对/相对路由、query、section 栈、模态、主题色；`FlyoutBehavior.Locked` 为覆盖式常驻（内容区不让宽，与 MAUI 并排布局有差异） |
 | 自绘（Shape/GraphicsView） | ✅ 已支持 | ArkUI 自绘节点（ARKUI_NODE_CUSTOM）+ OH_Drawing；ICanvas 适配器 vp 语义 |
 | CollectionView 大数据量 | ✅ 已支持 | NodeAdapter 虚拟化：按可见范围物化（实测 200 条仅物化 7 条，滚动按需推进/回滚） |
-| **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` / `Connectivity.Current` / `FileSystem.Current` / `Launcher.Default` / `SecureStorage.Default` / 传感器 / `Geolocation` / `MediaPicker` 等） | ✅ 22 个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；MauiHarmonyHost.Run 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage + Accelerometer/Magnetometer/Gyroscope/Compass/OrientationSensor/Geolocation/MediaPicker。IMainThread 暂缓（MAUI 10 无注入点）；IShare 文件分享需跨应用 URI 授权通道，留待立项；适配指南见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
+| **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` / `Connectivity.Current` / `FileSystem.Current` / `Launcher.Default` / `SecureStorage.Default` / 传感器 / `Geolocation` / `MediaPicker` 等） | ✅ 22 个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；MauiHarmonyHost.Run 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage + Accelerometer/Magnetometer/Gyroscope/Compass/OrientationSensor/Geolocation/MediaPicker。IMainThread 暂缓（MAUI 10 无注入点）；IShare 文件分享支持跨应用 fd 授权通道；适配指南见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
 | 自定义 Handler / 平台服务 | ❌ 需移植 | 按 [HANDLERS.md](HANDLERS.md) 五步流程写鸿蒙侧 Handler |
 
 ### Step 2：建鸿蒙外壳工程
@@ -347,17 +347,19 @@ DevEco 安装目录的 node/hvigor/SDK）。想用自备宿主：`-p:HarmonyGene
 `entry/src/main/module.json5` 与 `entry/src/main/resources/base/element/string.json`。
 当前覆盖的高置信度映射包括：
 
-- `Geolocation` / `Permissions.LocationWhenInUse` → `ohos.permission.LOCATION`
+- `Geolocation` / `Permissions.LocationWhenInUse` → `ohos.permission.LOCATION`, `ohos.permission.APPROXIMATELY_LOCATION`
+- `Permissions.LocationAlways` → `ohos.permission.LOCATION`, `ohos.permission.LOCATION_IN_BACKGROUND`
 - `MediaPicker.Capture*` / `Permissions.Camera` → `ohos.permission.CAMERA`
 - `MediaPicker.Pick*` / `Permissions.Photos` / `Permissions.Media` → `ohos.permission.READ_MEDIA`
 - `Vibration` / `Permissions.Vibrate` → `ohos.permission.VIBRATE`
 - `Accelerometer` / `Gyroscope` → `ohos.permission.ACCELEROMETER` / `ohos.permission.GYROSCOPE`
 - `Permissions.Microphone` / `Permissions.Speech` → `ohos.permission.MICROPHONE`
-- `Permissions.StorageRead` / `Permissions.StorageWrite` → `ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY`
-- `Permissions.Bluetooth` → `ohos.permission.USE_BLUETOOTH`
+- `Permissions.StorageRead` / `Permissions.StorageWrite` → `ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY`, `ohos.permission.READ_MEDIA`
+- `Permissions.Bluetooth` → `ohos.permission.ACCESS_BLUETOOTH`
 - `Permissions.CalendarRead` / `Permissions.CalendarWrite` → `ohos.permission.READ_CALENDAR` / `ohos.permission.WRITE_CALENDAR`
 - `Permissions.ContactsRead` / `Permissions.ContactsWrite` → `ohos.permission.READ_CONTACTS` / `ohos.permission.WRITE_CONTACTS`
 - `Permissions.PostNotifications` → `ohos.permission.PUBLISH_AGENT_REMINDER`
+- `WebView.Source` → `ohos.permission.CAMERA`, `ohos.permission.MICROPHONE`
 
 权限默认会生成 `usedScene.when`：
 
