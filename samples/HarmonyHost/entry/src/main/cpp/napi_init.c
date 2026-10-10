@@ -26,10 +26,19 @@ static void* g_app = NULL;
 typedef int (*theme_changed_fn)(void* env, int colorMode);
 static theme_changed_fn g_themeChangedCallback = NULL;
 
+typedef int (*lifecycle_changed_fn)(void* env, int lifecycleEvent);
+static lifecycle_changed_fn g_lifecycleChangedCallback = NULL;
+
 __attribute__((visibility("default")))
 void HarmonyHostSetThemeChangedCallback(void* fn)
 {
     g_themeChangedCallback = (theme_changed_fn)fn;
+}
+
+__attribute__((visibility("default")))
+void HarmonyHostSetLifecycleChangedCallback(void* fn)
+{
+    g_lifecycleChangedCallback = (lifecycle_changed_fn)fn;
 }
 
 static void loge(const char* what, const char* detail)
@@ -170,6 +179,31 @@ static napi_value NotifyThemeChanged(napi_env env, napi_callback_info info)
     return NULL;
 }
 
+static napi_value NotifyLifecycleChanged(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 1;
+    napi_value argv[1];
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    int lifecycleEvent = -1;
+    if (argc >= 1) {
+        napi_get_value_int32(env, argv[0], &lifecycleEvent);
+    }
+
+    if (!g_lifecycleChangedCallback) {
+        loge("notifyLifecycleChanged", "lifecycle callback is not registered");
+        return NULL;
+    }
+
+    int r = g_lifecycleChangedCallback((void*)env, lifecycleEvent);
+    if (r != 0) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG,
+                     "Harmony lifecycle callback failed: %{public}d", r);
+    }
+    return NULL;
+}
+
 EXTERN_C_START
 static napi_value ModuleInit(napi_env env, napi_value exports)
 {
@@ -178,6 +212,7 @@ static napi_value ModuleInit(napi_env env, napi_value exports)
         {"popPage", NULL, PopPage, NULL, NULL, NULL, napi_default, NULL},
         {"passNodeContent", NULL, PassNodeContent, NULL, NULL, NULL, napi_default, NULL},
         {"notifyThemeChanged", NULL, NotifyThemeChanged, NULL, NULL, NULL, napi_default, NULL},
+        {"notifyLifecycleChanged", NULL, NotifyLifecycleChanged, NULL, NULL, NULL, napi_default, NULL},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;

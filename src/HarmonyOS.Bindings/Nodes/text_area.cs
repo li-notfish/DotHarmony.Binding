@@ -39,6 +39,57 @@ public unsafe class TextArea : ArkUINodeBase
             ArkUIValue.U((uint)((a << 24) | (r << 16) | (g << 8) | b)));
     }
 
+    /// <summary>字符间距（NODE_TEXT_AREA_LETTER_SPACING，单位 vp）</summary>
+    public void SetLetterSpacing(float spacing)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_AREA_LETTER_SPACING, ArkUIValue.F(spacing));
+
+    /// <summary>最大输入长度（NODE_TEXT_AREA_MAX_LENGTH）</summary>
+    public int MaxLength
+    {
+        set => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_TEXT_AREA_MAX_LENGTH,
+            ArkUIValue.I(value));
+    }
+
+    /// <summary>是否可编辑（NODE_TEXT_AREA_EDITING：true=可编辑，false=只读）</summary>
+    public bool ReadOnly
+    {
+        set => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_TEXT_AREA_EDITING,
+            ArkUIValue.I(value ? 0 : 1));
+    }
+
+    /// <summary>输入类型（NODE_TEXT_AREA_TYPE，ArkUI_TextInputType）</summary>
+    public ArkUI_TextInputType InputType
+    {
+        set => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_TEXT_AREA_TYPE,
+            ArkUIValue.I((int)value));
+    }
+
+    /// <summary>选区（NODE_TEXT_AREA_TEXT_SELECTION：value[0]=start，value[1]=length）</summary>
+    public void SetSelection(int start, int length)
+        => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_TEXT_AREA_TEXT_SELECTION,
+            ArkUIValue.I(start),
+            ArkUIValue.I(length));
+
+    /// <summary>光标位置（NODE_TEXT_AREA_CARET_OFFSET）</summary>
+    public int CaretPosition
+    {
+        set => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_TEXT_AREA_CARET_OFFSET,
+            ArkUIValue.I(value));
+    }
+
+    /// <summary>是否启用输入预览/联想（NODE_TEXT_AREA_ENABLE_PREVIEW_TEXT）</summary>
+    public bool EnablePreviewText
+    {
+        set => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_TEXT_AREA_ENABLE_PREVIEW_TEXT,
+            ArkUIValue.I(value ? 1 : 0));
+    }
+
     /// <summary>onChange 事件（NODE_TEXT_AREA_ON_CHANGE，pStr=新文本）</summary>
     public event Action<ArkUINodeEvent>? TextChange
     {

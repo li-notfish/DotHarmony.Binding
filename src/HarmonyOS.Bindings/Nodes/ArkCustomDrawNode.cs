@@ -20,6 +20,8 @@ public sealed unsafe class ArkCustomDrawNode : ArkUINodeBase
     private float _vpWidth;
     private float _vpHeight;
     private bool _firstDrawLogged;
+    private int _defaultMeasuredWidth;
+    private int _defaultMeasuredHeight;
 
     public ArkCustomDrawNode() : base(ArkUI_NodeType.ARKUI_NODE_CUSTOM)
     {
@@ -78,9 +80,25 @@ public sealed unsafe class ArkCustomDrawNode : ArkUINodeBase
         var constraint = ev.ConstraintInMeasure;
         if (constraint == null)
             return;
+        if (_defaultMeasuredWidth > 0 && _defaultMeasuredHeight > 0)
+        {
+            ArkUINativeApi.SetMeasuredSize(Handle, _defaultMeasuredWidth, _defaultMeasuredHeight);
+            return;
+        }
         ArkUINativeApi.SetMeasuredSize(Handle,
             ArkUINativeApi.ConstraintMaxWidth(constraint),
             ArkUINativeApi.ConstraintMaxHeight(constraint));
+    }
+
+    /// <summary>
+    /// 为自绘控件设置固定测量尺寸（vp）。小型自绘控件必须显式限制尺寸，
+    /// 避免 Draw 回调覆盖整页。
+    /// </summary>
+    internal void SetDefaultMeasuredSize(float widthVp, float heightVp, float density)
+    {
+        density = MathF.Max(1f, density);
+        _defaultMeasuredWidth = Math.Clamp((int)(widthVp * density), 1, int.MaxValue);
+        _defaultMeasuredHeight = Math.Clamp((int)(heightVp * density), 1, int.MaxValue);
     }
 
     private void OnDrawEvent(ArkUICustomEvent ev)

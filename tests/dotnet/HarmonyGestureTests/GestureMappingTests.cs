@@ -48,7 +48,7 @@ public class MauiGestureBridgeTests
     }
 
     [Fact]
-    public void SendPointerMoved_RaisesPointerMoved()
+    public async Task SendPointerMoved_RaisesPointerMoved()
     {
         var view = new Label();
         var recognizer = new PointerGestureRecognizer();
@@ -57,6 +57,6 @@ public class MauiGestureBridgeTests
 
         MauiGestureBridge.SendPointerMoved(recognizer, view, null);
 
-        Assert.True(moved.Task.Wait(TimeSpan.FromSeconds(5)));
+        await moved.Task.WaitAsync(TimeSpan.FromSeconds(5));
     }
 }

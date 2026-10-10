@@ -15,31 +15,42 @@ public class HarmonyDeviceInfo : IDeviceInfo
 
     public string Name => HDeviceInfo.MarketName;
 
-    public string VersionString => HDeviceInfo.OsFullName;
+    public string VersionString => Version.ToString();
 
     public Version Version => ParseOsVersion();
 
     public DevicePlatform Platform => DevicePlatform.Create("OpenHarmony");
 
-    // deviceInfo.deviceType 英文字符串（"phone"/"tablet"/"wearable"/"tv"/"car"/"2in1"...）；未知兜底 Phone
-    public DeviceIdiom Idiom => HDeviceInfo.DeviceType switch
+    // deviceInfo.deviceType 英文字符串（"phone"/"tablet"/"wearable"/"tv"/"car"/"2in1"...）。
+    // 未知值保持 Unknown，避免向 MAUI 侧给出过强的 Phone 结论。
+    public DeviceIdiom Idiom => MapIdiom(HDeviceInfo.DeviceType);
+
+    public DeviceType DeviceType =>
+        IsEmulator() ? DeviceType.Virtual :
+        IsKnownDeviceType() ? DeviceType.Physical :
+        DeviceType.Unknown;
+
+    internal static DeviceIdiom MapIdiom(string deviceType) => deviceType switch
     {
+        "phone" or "mobile" => DeviceIdiom.Phone,
         "tablet" or "tablet_pc" => DeviceIdiom.Tablet,
         "tv" or "television" => DeviceIdiom.TV,
         "wearable" or "watch" => DeviceIdiom.Watch,
         "desktop" or "2in1" or "pc" => DeviceIdiom.Desktop,
-        _ => DeviceIdiom.Phone,
+        _ => DeviceIdiom.Unknown,
     };
 
-    public DeviceType DeviceType => IsEmulator() ? DeviceType.Virtual : DeviceType.Physical;
-
-    private static Version ParseOsVersion()
+    internal static Version ParseOsVersion()
     {
-        var fullName = HDeviceInfo.OsFullName;
+        return ParseOsVersion(HDeviceInfo.OsFullName, (int)HDeviceInfo.SdkApiVersion);
+    }
+
+    internal static Version ParseOsVersion(string fullName, int sdkApiVersion)
+    {
         var tail = fullName[(fullName.LastIndexOf('-') + 1)..];
         if (tail.Length > 0 && tail != fullName && System.Version.TryParse(tail, out var v))
             return v;
-        return new Version((int)HDeviceInfo.SdkApiVersion, 0);
+        return new Version(sdkApiVersion, 0);
     }
 
     private static bool IsEmulator()
@@ -52,5 +63,15 @@ public class HarmonyDeviceInfo : IDeviceInfo
                 return true;
         }
         return false;
+    }
+
+    private static bool IsKnownDeviceType()
+    {
+        return HDeviceInfo.DeviceType is
+            "phone" or "mobile" or
+            "tablet" or "tablet_pc" or
+            "tv" or "television" or
+            "wearable" or "watch" or
+            "desktop" or "2in1" or "pc";
     }
 }

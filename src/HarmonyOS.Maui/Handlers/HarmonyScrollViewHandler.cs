@@ -10,11 +10,12 @@ namespace HarmonyOS.Maui.Handlers;
 public class HarmonyScrollViewHandler : HarmonyViewHandler<IScrollView, ArkScroll>, IScrollViewHandler
 {
     /// <summary>滚动事件日志开关：插值分配走在调用点，开启才付出分配代价（与布局热路径同一纪律）</summary>
-    private static readonly bool LogScroll = false;
+    private static readonly bool LogScroll = true;
 
     public static PropertyMapper<IScrollView, IScrollViewHandler> Mapper = new(HarmonyViewMapper.Base)
     {
         [nameof(IScrollView.Content)] = MapContent,
+        [nameof(Microsoft.Maui.Controls.VisualElement.BackgroundColor)] = MapBackgroundColor,
         [nameof(IScrollView.Orientation)] = MapOrientation,
         [nameof(IScrollView.HorizontalScrollBarVisibility)] = MapHorizontalScrollBarVisibility,
         [nameof(IScrollView.VerticalScrollBarVisibility)] = MapVerticalScrollBarVisibility,
@@ -55,6 +56,16 @@ public class HarmonyScrollViewHandler : HarmonyViewHandler<IScrollView, ArkScrol
     {
         if (handler is not HarmonyScrollViewHandler h) return;
         h.UpdateContent(view.Content);
+    }
+
+    public static void MapBackgroundColor(IScrollViewHandler handler, IScrollView view)
+    {
+        if (handler is HarmonyScrollViewHandler h &&
+            view is Microsoft.Maui.Controls.VisualElement ve &&
+            ve.BackgroundColor is { } c)
+        {
+            h.PlatformView.SetBackgroundColor(c.ToUint());
+        }
     }
 
     private void UpdateContent(object? content)
@@ -106,8 +117,8 @@ public class HarmonyScrollViewHandler : HarmonyViewHandler<IScrollView, ArkScrol
 
     /// <summary>
     /// MAUI 官方测量语义：竖向滚动约束宽、横向滚动约束高（交叉轴充满），
-    /// Both 两轴均不约束；Neither 禁止滚动 → 两轴均约束到视口（内容不得越过）。
-    /// 交叉轴用百分比充满，滚动主轴交还给内容自适应。
+    /// Both 两轴均不约束；Neither 官方 CrossPlatformMeasure 同样把宽高约束
+    /// 均置为 PositiveInfinity（内容可越过视口，但禁止滚动），因此两侧都保持自然尺寸。
     /// </summary>
     internal static (bool StretchWidth, bool StretchHeight) GetContentSizing(ScrollOrientation orientation)
         => orientation switch
@@ -115,7 +126,7 @@ public class HarmonyScrollViewHandler : HarmonyViewHandler<IScrollView, ArkScrol
             ScrollOrientation.Vertical => (true, false),
             ScrollOrientation.Horizontal => (false, true),
             ScrollOrientation.Both => (false, false),
-            ScrollOrientation.Neither => (true, true),
+            ScrollOrientation.Neither => (false, false),
             _ => (true, false),
         };
 

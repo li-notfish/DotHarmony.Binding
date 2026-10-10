@@ -20,6 +20,12 @@ def emit_code_target(name: str, tgt: dict, model: Model, sem) -> str:
     per_type = tgt.get("per_type", {})
     per_fn = tgt.get("per_fn", {})
     per_enum = tgt.get("per_enum", {})
+    # per-TFM 条件包裹：目标声明 tfm_guard: true 时，文件主体包进
+    # `#if <常量>` / `#endif`（常量名取 semantics.yaml 顶层 tfm_guard，默认 HARMONYOS）。
+    # 默认不包裹（现状）；check/diff 门禁按生成文本原样比对，口径不变。
+    guard: str | None = None
+    if tgt.get("tfm_guard"):
+        guard = sem._raw.get("tfm_guard", "HARMONYOS")
 
     lines: list[str] = []
     src = ", ".join(sorted({h for h in _sources(tgt, model)}))
@@ -29,6 +35,8 @@ def emit_code_target(name: str, tgt: dict, model: Model, sem) -> str:
     if tgt.get("doc"):
         for dl in tgt["doc"].splitlines():
             lines.append(f"// {dl}")
+    if guard:
+        lines.append(f"#if {guard}")
     lines.append("#nullable enable")
     lines.append("using System;")
     lines.append("using System.Runtime.CompilerServices;")
@@ -110,6 +118,8 @@ def emit_code_target(name: str, tgt: dict, model: Model, sem) -> str:
         lines.pop()
     lines.append("")
     lines.append("#pragma warning restore CS8500")
+    if guard:
+        lines.append(f"#endif // {guard}")
     lines.append("")
     return "\n".join(lines)
 

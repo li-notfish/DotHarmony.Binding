@@ -1,0 +1,71 @@
+{
+  "version": 3,
+  "mauiMethods": [
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "GetLocationAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "GetLocationAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "GetLastKnownLocationAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "GetLastKnownLocationAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "StartListeningForegroundAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "StartListeningForegroundAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "GetLocationAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "GetLocationAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "GetLastKnownLocationAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "GetLastKnownLocationAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "StartListeningForegroundAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "StartListeningForegroundAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.GeolocationExtensions", "methodName": "GetLocationAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.GeolocationExtensions", "methodName": "GetLocationAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
+
+    { "containingType": "Microsoft.Maui.Media.IMediaPicker", "methodName": "CapturePhotoAsync", "permission": "ohos.permission.CAMERA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.IMediaPicker", "methodName": "CaptureVideoAsync", "permission": "ohos.permission.CAMERA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.IMediaPicker", "methodName": "PickPhotoAsync", "permission": "ohos.permission.READ_MEDIA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.IMediaPicker", "methodName": "PickPhotosAsync", "permission": "ohos.permission.READ_MEDIA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.IMediaPicker", "methodName": "PickVideoAsync", "permission": "ohos.permission.READ_MEDIA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.IMediaPicker", "methodName": "PickVideosAsync", "permission": "ohos.permission.READ_MEDIA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.MediaPicker", "methodName": "CapturePhotoAsync", "permission": "ohos.permission.CAMERA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.MediaPicker", "methodName": "CaptureVideoAsync", "permission": "ohos.permission.CAMERA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.MediaPicker", "methodName": "PickPhotoAsync", "permission": "ohos.permission.READ_MEDIA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.MediaPicker", "methodName": "PickPhotosAsync", "permission": "ohos.permission.READ_MEDIA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.MediaPicker", "methodName": "PickVideoAsync", "permission": "ohos.permission.READ_MEDIA", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Media.MediaPicker", "methodName": "PickVideosAsync", "permission": "ohos.permission.READ_MEDIA", "when": "inuse" },
+
+    { "containingType": "Microsoft.Maui.Devices.IVibration", "methodName": "Vibrate", "permission": "ohos.permission.VIBRATE", "when": "always" },
+    { "containingType": "Microsoft.Maui.Devices.Vibration", "methodName": "Vibrate", "permission": "ohos.permission.VIBRATE", "when": "always" },
+    { "containingType": "Microsoft.Maui.Devices.VibrationExtensions", "methodName": "Vibrate", "permission": "ohos.permission.VIBRATE", "when": "always" },
+
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IAccelerometer", "methodName": "Start", "permission": "ohos.permission.ACCELEROMETER", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Accelerometer", "methodName": "Start", "permission": "ohos.permission.ACCELEROMETER", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IGyroscope", "methodName": "Start", "permission": "ohos.permission.GYROSCOPE", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Gyroscope", "methodName": "Start", "permission": "ohos.permission.GYROSCOPE", "when": "inuse" },
+
+    {
+      "containingType": "Microsoft.Maui.ApplicationModel.DataTransfer.IClipboard",
+      "methodName": "GetTextAsync",
+      "permission": "ohos.permission.READ_PASTEBOARD",
+      "when": "inuse"
+    }
+  ],
+  "mauiMembers": [
+    {
+      "containingType": "Microsoft.Maui.Controls.WebView",
+      "memberName": "Source",
+      "memberKind": "property",
+      "permission": "ohos.permission.CAMERA",
+      "when": "inuse"
+    },
+    {
+      "containingType": "Microsoft.Maui.Controls.WebView",
+      "memberName": "Source",
+      "memberKind": "property",
+      "permission": "ohos.permission.MICROPHONE",
+      "when": "inuse"
+    },
+    {
+      "containingType": "Microsoft.Maui.ApplicationModel.DataTransfer.IClipboard",
+      "memberName": "HasText",
+      "memberKind": "property",
+      "permission": "ohos.permission.READ_PASTEBOARD",
+      "when": "inuse"
+    }
+  ]
+}

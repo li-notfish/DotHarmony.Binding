@@ -3,7 +3,8 @@
 # 版本号每次随机，避免 NuGet 全局缓存命中旧同版本包。
 param(
     [string]$FeedDir = "",
-    [string]$WorkDir = ""
+    [string]$WorkDir = "",
+    [switch]$Full
 )
 
 $ErrorActionPreference = "Stop"
@@ -31,6 +32,24 @@ $projects = @(
 )
 
 $packageVersion = "1.0.$(Get-Random -Minimum 100000 -Maximum 999999)-local"
+
+$buildPropsPath = Join-Path $repoRoot "Directory.Build.props"
+$packagesPropsPath = Join-Path $repoRoot "Directory.Packages.props"
+$templateJsonPath = Join-Path $repoRoot "src\HarmonyOS.Templates\content\harmony-maui\.template.config\template.json"
+
+$buildProps = [xml](Get-Content -LiteralPath $buildPropsPath -Raw)
+$packagesProps = [xml](Get-Content -LiteralPath $packagesPropsPath -Raw)
+$templateJson = Get-Content -LiteralPath $templateJsonPath -Raw | ConvertFrom-Json
+$expectedPackageVersion = $buildProps.Project.PropertyGroup.PackageVersion
+$expectedPublishAotClangVersion = @($packagesProps.Project.ItemGroup.PackageVersion |
+    Where-Object { $_.Include -eq "PublishAotClang" })[0].Version
+
+if ($templateJson.symbols.packageVersion.defaultValue -ne $expectedPackageVersion) {
+    throw "Template HarmonyOS.Maui version '$($templateJson.symbols.packageVersion.defaultValue)' does not match Directory.Build.props version '$expectedPackageVersion'."
+}
+if ($templateJson.symbols.publishAotClangVersion.defaultValue -ne $expectedPublishAotClangVersion) {
+    throw "Template PublishAotClang version '$($templateJson.symbols.publishAotClangVersion.defaultValue)' does not match Directory.Packages.props version '$expectedPublishAotClangVersion'."
+}
 
 foreach ($project in $projects) {
     dotnet pack (Join-Path $repoRoot $project) -c Release -o $FeedDir -p:PackageVersion=$packageVersion
@@ -71,6 +90,18 @@ if ($LASTEXITCODE -ne 0) {
 $stagedHost = Join-Path $appDir "obj\harmony\host\entry\src\main\module.json5"
 if (-not (Test-Path -LiteralPath $stagedHost)) {
     throw "Staged host not found: $stagedHost"
+}
+
+if ($Full) {
+    dotnet build (Join-Path $appDir "TemplateApp.csproj") -t:HarmonyBuildLibApp -c Release
+    if ($LASTEXITCODE -ne 0) {
+        throw "Template app NativeAOT library build failed."
+    }
+
+    dotnet build (Join-Path $appDir "TemplateApp.csproj") -t:HarmonyBuildHap -c Release
+    if ($LASTEXITCODE -ne 0) {
+        throw "Template app HAP build failed."
+    }
 }
 
 Write-Host "Template consumer verification OK."

@@ -342,10 +342,8 @@ public static class HarmonyShellNavigation
         }
     }
 
-    private static void ApplyPropertyValue(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] MPage page,
-        string propertyName,
-        string value)
+    [RequiresUnreferencedCode("Shell query routing reflects over the concrete page type.")]
+    private static void ApplyPropertyValue(MPage page, string propertyName, string value)
     {
         var property = page.GetType().GetProperty(propertyName);
         if (property?.SetMethod is null)

@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(HarmonyOSPlatformTargetFramework)</TargetFramework>
+    <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <TrimMode>full</TrimMode>
+    <IlcGenerateStackTraceData Condition="'$(Configuration)' == 'Debug'">true</IlcGenerateStackTraceData>
+
+    <OutputType>Library</OutputType>
+    <AssemblyName>app</AssemblyName>
+    <HarmonyAppTitle>Controls Samples</HarmonyAppTitle>
+    <!-- Frame, ListView, TableView, and Cell are intentionally exercised as compatibility handlers. -->
+    <NoWarn>$(NoWarn);CA2255;CS0618;IL2026;IL2104</NoWarn>
+
+    <EnableDefaultMauiItems>true</EnableDefaultMauiItems>
+    <MauiXamlInflator>SourceGen</MauiXamlInflator>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <MauiImage Include="..\HelloApp\Assets\probe_logo.png" />
+    <MauiAsset Include="Assets\hybridroot\index.html" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)../../../src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets" />
+
+</Project>

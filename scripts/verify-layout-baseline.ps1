@@ -12,24 +12,13 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot "lib\sdk.ps1")
 $baselineDir = Join-Path $root "artifacts\layout-baseline"
 $workDir = Join-Path $root "tmp\layout-compare"
 New-Item -ItemType Directory -Force $baselineDir, $workDir | Out-Null
 
-# hdc 定位（与 deploy-hap.ps1 同一顺序）
-$HDC = $null
-foreach ($base in @($env:OHOS_SDK_BASE, $env:OHSDK_HOME,
-    "D:\Harmony\OpenHarmony\Sdk", "C:\Program Files\Huawei\DevEco Studio\sdk",
-    "D:\Program Files\Huawei\DevEco Studio\sdk")) {
-    if ($base) {
-        foreach ($rel in @("26.0.0\toolchains\hdc.exe", "toolchains\hdc.exe", "default\openharmony\toolchains\hdc.exe")) {
-            $p = Join-Path $base $rel
-            if (Test-Path $p) { $HDC = $p; break }
-        }
-    }
-    if ($HDC) { break }
-}
-if (-not $HDC) { Write-Error "hdc.exe not found (set OHOS_SDK_BASE)" }
+# hdc 定位（与 deploy-hap.ps1 共用）
+$HDC = Find-HarmonyHdc
 $hdcArgs = @()
 if ($Target) { $hdcArgs += @("-t", $Target) }
 
@@ -38,6 +27,8 @@ $Steps = @(
     @{ Name = "home";   Click = $null;                      Capture = $true },
     @{ Name = "detail"; Click = "probeDetail?value=hello42"; Capture = $true },
     @{ Name = "back";   Click = "GoToAsync ..";             Capture = $false },
+    @{ Name = "grid";   Click = "GoToAsync //probeGrid";    Capture = $true },
+    @{ Name = "back2";  Click = "GoToAsync ..";             Capture = $false },
     @{ Name = "modal";  Click = "Open modal";               Capture = $true }
 )
 

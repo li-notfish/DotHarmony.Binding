@@ -6,7 +6,7 @@ using ArkSlider = HarmonyOS.ArkUI.Slider;
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Slider 的 HarmonyOS Handler（ArkUI Slider 节点）。</summary>
-public class HarmonySliderHandler : HarmonyViewHandler<ISlider, ArkSlider>
+public class HarmonySliderHandler : HarmonyViewHandler<ISlider, ArkSlider>, ISliderHandler
 {
     public static PropertyMapper<ISlider, HarmonySliderHandler> Mapper = new(HarmonyViewMapper.Base)
     {
@@ -19,6 +19,10 @@ public class HarmonySliderHandler : HarmonyViewHandler<ISlider, ArkSlider>
     };
 
     public HarmonySliderHandler() : base(Mapper) { }
+
+    ISlider ISliderHandler.VirtualView => VirtualView;
+
+    object ISliderHandler.PlatformView => PlatformView;
 
     protected override ArkSlider CreatePlatformView() => new();
 

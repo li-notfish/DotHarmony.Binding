@@ -3,6 +3,7 @@
 // 经 ROTATION_VECTOR 四元数。订阅走 Sensor 模块的 typed On/Off 配对（EventListenerRegistry
 // 保证 off 传入同一 JS 函数）；速率经 SensorOptions.interval 映射。
 #nullable enable
+using System.Collections.Generic;
 using Microsoft.Maui.Devices;
 using HarmonyOS.Bindings.Api.Util;
 using HarmonyOS.Bindings.Api;
@@ -60,6 +61,10 @@ internal static class HarmonySensorSupport
 /// <summary>Accelerometer：SensorId.Accelerometer 三轴直映射</summary>
 internal sealed class HarmonyAccelerometer : IAccelerometer
 {
+    private const double Gravity = 9.81;
+    private const double AccelerationThreshold = 169;
+    private readonly AccelerometerShakeQueue _shakeQueue = new();
+
     private bool _monitoring;
     public bool IsSupported => HarmonySensorSupport.IsSupported(MSensorId.Accelerometer);
     public bool IsMonitoring => _monitoring;
@@ -82,7 +87,78 @@ internal sealed class HarmonyAccelerometer : IAccelerometer
     }
 
     private void OnReading(AccelerometerResponse r)
-        => ReadingChanged?.Invoke(this, new AccelerometerChangedEventArgs(new AccelerometerData(r.X, r.Y, r.Z)));
+    {
+        var data = new AccelerometerData(ToGravityUnits(r.X), ToGravityUnits(r.Y), ToGravityUnits(r.Z));
+        ReadingChanged?.Invoke(this, new AccelerometerChangedEventArgs(data));
+
+        if (ShakeDetected is null)
+            return;
+
+        var now = (DateTimeOffset.UtcNow.UtcTicks / TimeSpan.TicksPerMillisecond) * 1_000_000;
+        var x = data.Acceleration.X * Gravity;
+        var y = data.Acceleration.Y * Gravity;
+        var z = data.Acceleration.Z * Gravity;
+        _shakeQueue.Add(now, x * x + y * y + z * z > AccelerationThreshold);
+        if (!_shakeQueue.IsShaking)
+            return;
+
+        _shakeQueue.Clear();
+        ShakeDetected?.Invoke(this, EventArgs.Empty);
+    }
+
+    internal static double ToGravityUnits(double metersPerSecondSquared)
+        => metersPerSecondSquared / Gravity;
+}
+
+/// <summary>
+/// MAUI-compatible shake detector: at least four samples in a 250-500ms window,
+/// with more than three quarters of them above the acceleration threshold.
+/// </summary>
+internal sealed class AccelerometerShakeQueue
+{
+    private const long MaxWindowNanoseconds = 500_000_000;
+    private const long MinWindowNanoseconds = 250_000_000;
+    private const int MinimumSampleCount = 4;
+
+    private readonly Queue<(long Timestamp, bool Accelerating)> _samples = new();
+    private int _acceleratingCount;
+
+    public void Add(long timestamp, bool accelerating)
+    {
+        Purge(timestamp - MaxWindowNanoseconds);
+        _samples.Enqueue((timestamp, accelerating));
+        if (accelerating)
+            _acceleratingCount++;
+    }
+
+    public bool IsShaking
+    {
+        get
+        {
+            if (_samples.Count < MinimumSampleCount)
+                return false;
+
+            var oldest = _samples.Peek().Timestamp;
+            var newest = _samples.Last().Timestamp;
+            return newest - oldest >= MinWindowNanoseconds &&
+                _acceleratingCount >= (_samples.Count >> 1) + (_samples.Count >> 2);
+        }
+    }
+
+    public void Clear()
+    {
+        _samples.Clear();
+        _acceleratingCount = 0;
+    }
+
+    private void Purge(long cutoff)
+    {
+        while (_samples.Count > 0 && _samples.Peek().Timestamp < cutoff)
+        {
+            if (_samples.Dequeue().Accelerating)
+                _acceleratingCount--;
+        }
+    }
 }
 
 /// <summary>Magnetometer：SensorId.MagneticField 三轴直映射</summary>

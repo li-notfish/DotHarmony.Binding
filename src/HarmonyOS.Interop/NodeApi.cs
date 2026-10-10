@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HarmonyOS.Interop;
@@ -378,6 +379,25 @@ public static class NodeApi
     }
 
     /// <summary>
+    /// 把 span 参数回调包装为 JS 回调函数。常规参数数量走栈缓冲，无逐次 IntPtr[] 分配。
+    /// </summary>
+    public static (IntPtr jsFunc, GCHandle Handle) CreateCallbackFunction(Action<ReadOnlySpan<IntPtr>> adapted)
+    {
+#if HARMONYOS
+        ArgumentNullException.ThrowIfNull(adapted);
+        var gch = GCHandle.Alloc(adapted);
+        var env = NapiEnv.Current;
+        var nameBytes = "callback"u8.ToArray();
+        NativeNodeApi.napi_create_function(
+            env, nameBytes, (IntPtr)nameBytes.Length,
+            CallbackTrampolines.ArgsTrampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc).ThrowIfFailed();
+        return (jsFunc, gch);
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>
     /// 调用组件方法（非链式）
     /// </summary>
     /// <typeparam name="T">返回类型</typeparam>
@@ -457,15 +477,35 @@ public static class NodeApi
     }
 #endif
 
+    public static Task CallMethodAsyncVoid(
+        IntPtr jsObject,
+        string methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
+#if HARMONYOS
+        => CallMethodAsyncVoid(jsObject, Encoding.UTF8.GetBytes(methodName), cancellationToken, args);
+#else
+    {
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+    }
+#endif
+
     /// <summary>调用组件方法并接为 Task&lt;T&gt;（byte[] 方法名重载，供生成器 u8 常量使用）</summary>
     public static Task<T> CallMethodAsync<T>(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<NapiArg> args)
+        => CallMethodAsync<T>(jsObject, methodName, CancellationToken.None, args);
+
+    public static Task<T> CallMethodAsync<T>(
+        IntPtr jsObject,
+        byte[] methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
         NativeNodeApi.napi_is_promise(NapiEnv.Current, result, out var isPromise).ThrowIfFailed();
         if (!isPromise)
             return Task.FromResult(ConvertResult<T>(result));
-        return PromiseTaskBridge.ToTask<T>(result);
+        return PromiseTaskBridge.ToTask<T>(result, null, cancellationToken);
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif
@@ -473,13 +513,20 @@ public static class NodeApi
 
     /// <summary>调用组件方法并接为 Task（Promise&lt;void&gt; 路线；byte[] 方法名重载）</summary>
     public static Task CallMethodAsyncVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<NapiArg> args)
+        => CallMethodAsyncVoid(jsObject, methodName, CancellationToken.None, args);
+
+    public static Task CallMethodAsyncVoid(
+        IntPtr jsObject,
+        byte[] methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
         NativeNodeApi.napi_is_promise(NapiEnv.Current, result, out var isPromise).ThrowIfFailed();
         if (!isPromise)
             return Task.CompletedTask;
-        return PromiseTaskBridge.ToTask<object>(result);
+        return PromiseTaskBridge.ToTask<object>(result, null, cancellationToken);
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif
@@ -501,13 +548,20 @@ public static class NodeApi
 
     /// <summary>调用组件方法并接为 Task&lt;T&gt;（ReadOnlySpan&lt;byte&gt; 方法名重载）</summary>
     public static Task<T> CallMethodAsync<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<NapiArg> args)
+        => CallMethodAsync<T>(jsObject, methodName, CancellationToken.None, args);
+
+    public static Task<T> CallMethodAsync<T>(
+        IntPtr jsObject,
+        ReadOnlySpan<byte> methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
         NativeNodeApi.napi_is_promise(NapiEnv.Current, result, out var isPromise).ThrowIfFailed();
         if (!isPromise)
             return Task.FromResult(ConvertResult<T>(result));
-        return PromiseTaskBridge.ToTask<T>(result);
+        return PromiseTaskBridge.ToTask<T>(result, null, cancellationToken);
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif
@@ -541,9 +595,17 @@ public static class NodeApi
     /// convert 为复杂结果类型（数组/JsObject 包装类）的显式转换委托；基元传 null。
     /// </summary>
     public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, byte[] methodName, Func<IntPtr, T>? convert, params ReadOnlySpan<NapiArg> args)
+        => CallMethodAsyncCallback(jsObject, methodName, convert, CancellationToken.None, args);
+
+    public static Task<T> CallMethodAsyncCallback<T>(
+        IntPtr jsObject,
+        byte[] methodName,
+        Func<IntPtr, T>? convert,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
-        var (jsFunc, task, abort) = CallbackTaskBridge.CreateCallback(convert);
+        var (jsFunc, task, abort) = CallbackTaskBridge.CreateCallback(convert, cancellationToken);
         // [args..., jsFunc]：NapiArg 为 struct 可 stackalloc；jsFunc 走 Of 工厂入 Ref 路径
         // NapiArg 含引用字段为托管类型不可 stackalloc——单次数组分配（零装箱收益在基元装箱）
         var argv = new NapiArg[args.Length + 1];
@@ -568,13 +630,28 @@ public static class NodeApi
 
     /// <summary>CallMethodAsyncCallback 的 Promise&lt;void&gt; 对应物（AsyncCallback&lt;void&gt;）</summary>
     public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, byte[] methodName, params ReadOnlySpan<NapiArg> args)
-        => CallMethodAsyncCallback<object>(jsObject, methodName, null, args);
+        => CallMethodAsyncCallbackVoid(jsObject, methodName, CancellationToken.None, args);
+
+    public static Task CallMethodAsyncCallbackVoid(
+        IntPtr jsObject,
+        byte[] methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
+        => CallMethodAsyncCallback<object>(jsObject, methodName, null, cancellationToken, args);
 
     /// <summary>CallMethodAsyncCallback 的 ReadOnlySpan&lt;byte&gt; 方法名重载</summary>
     public static Task<T> CallMethodAsyncCallback<T>(IntPtr jsObject, ReadOnlySpan<byte> methodName, Func<IntPtr, T>? convert, params ReadOnlySpan<NapiArg> args)
+        => CallMethodAsyncCallback(jsObject, methodName, convert, CancellationToken.None, args);
+
+    public static Task<T> CallMethodAsyncCallback<T>(
+        IntPtr jsObject,
+        ReadOnlySpan<byte> methodName,
+        Func<IntPtr, T>? convert,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
-        var (jsFunc, task, abort) = CallbackTaskBridge.CreateCallback(convert);
+        var (jsFunc, task, abort) = CallbackTaskBridge.CreateCallback(convert, cancellationToken);
         var argv = new NapiArg[args.Length + 1];
         args.CopyTo(argv);
         argv[args.Length] = NapiArg.Of(jsFunc);
@@ -595,17 +672,31 @@ public static class NodeApi
 
     /// <summary>CallMethodAsyncCallbackVoid 的 ReadOnlySpan&lt;byte&gt; 方法名重载</summary>
     public static Task CallMethodAsyncCallbackVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<NapiArg> args)
-        => CallMethodAsyncCallback<object>(jsObject, methodName, null, args);
+        => CallMethodAsyncCallbackVoid(jsObject, methodName, CancellationToken.None, args);
+
+    public static Task CallMethodAsyncCallbackVoid(
+        IntPtr jsObject,
+        ReadOnlySpan<byte> methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
+        => CallMethodAsyncCallback<object>(jsObject, methodName, null, cancellationToken, args);
 
     /// <summary>调用组件方法并接为 Task（ReadOnlySpan&lt;byte&gt; 方法名，void Promise 路线）</summary>
     public static Task CallMethodAsyncVoid(IntPtr jsObject, ReadOnlySpan<byte> methodName, params ReadOnlySpan<NapiArg> args)
+        => CallMethodAsyncVoid(jsObject, methodName, CancellationToken.None, args);
+
+    public static Task CallMethodAsyncVoid(
+        IntPtr jsObject,
+        ReadOnlySpan<byte> methodName,
+        CancellationToken cancellationToken,
+        params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         var result = InvokeMethod(jsObject, methodName, args);
         NativeNodeApi.napi_is_promise(NapiEnv.Current, result, out var isPromise).ThrowIfFailed();
         if (!isPromise)
             return Task.CompletedTask;
-        return PromiseTaskBridge.ToTask<object>(result);
+        return PromiseTaskBridge.ToTask<object>(result, null, cancellationToken);
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif

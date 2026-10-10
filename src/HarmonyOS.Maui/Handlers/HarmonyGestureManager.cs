@@ -56,7 +56,21 @@ internal sealed class HarmonyGestureManager : IDisposable
         _view.PropertyChanged -= OnViewPropertyChanged;
         DestroyPendingDragData(); // 拖拽载荷最终兜底（节点既销毁，管线已死）
         if (_touchSubscribed)
-            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_TOUCH_EVENT);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_TOUCH_EVENT, OnNodeTouch);
+        if (_dragSubscribed)
+        {
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_START, OnDragStart);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_END, OnDragEnd);
+            _dragSubscribed = false;
+        }
+        if (_dropSubscribed)
+        {
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_ENTER, OnDragEnter);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_MOVE, OnDragMove);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_LEAVE, OnDragLeave);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DROP, OnDrop);
+            _dropSubscribed = false;
+        }
         foreach (var g in _attached.Concat(_parked))
             g.Dispose();
         _attached.Clear();
@@ -101,21 +115,21 @@ internal sealed class HarmonyGestureManager : IDisposable
         // 触摸通道按需重挂：无 Pan/Swipe/Pointer 识别器时注销，避免空跑事件流
         if (_touchSubscribed)
         {
-            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_TOUCH_EVENT);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_TOUCH_EVENT, OnNodeTouch);
             _touchSubscribed = false;
         }
         if (_dragSubscribed)
         {
-            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_START);
-            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_END);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_START, OnDragStart);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_END, OnDragEnd);
             _dragSubscribed = false;
         }
         if (_dropSubscribed)
         {
-            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_ENTER);
-            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_MOVE);
-            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_LEAVE);
-            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DROP);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_ENTER, OnDragEnter);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_MOVE, OnDragMove);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DRAG_LEAVE, OnDragLeave);
+            _node.UnsubscribeEvent(ArkUI_NodeEventType.NODE_ON_DROP, OnDrop);
             _dropSubscribed = false;
         }
 

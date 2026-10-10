@@ -9,6 +9,8 @@ import { NativeCodeGenerator, EnumMetadata, NativeGap } from './nativeCodeGenera
 import { ApiGenerator, reservedModuleClassNames, moduleSubNamespace } from './apiGenerator';
 import { TypeMapper } from './typeMapper';
 import { ComponentInfo, EnumInfo, ParseResult, ParseContext, createParseContext, InterfaceInfo, ImportInfo } from './models';
+import { getSdkVersion, resolveSdkRoot } from './sdk';
+import { DEFAULT_GENERATION_METADATA, GENERATOR_VERSION, GenerationMetadata } from './generation';
 
 interface CacheEntry {
     hash: string;
@@ -31,10 +33,13 @@ export class ArkTsParser {
     /** 全局枚举名去重：同一枚举（如 Orientation）可能出现在多个模块的 .d.ts 中 */
     private generatedEnumNames = new Set<string>();
 
-    constructor(enumMetadata?: EnumMetadata) {
+    constructor(
+        enumMetadata?: EnumMetadata,
+        generationMetadata: GenerationMetadata = DEFAULT_GENERATION_METADATA,
+    ) {
         this.parser = new AstParser();
-        this.generator = new CodeGenerator();
-        this.enumGenerator = new EnumGenerator();
+        this.generator = new CodeGenerator(generationMetadata);
+        this.enumGenerator = new EnumGenerator(generationMetadata);
         if (enumMetadata) {
             this.nativeGenerator = new NativeCodeGenerator(enumMetadata);
         }
@@ -437,20 +442,19 @@ export async function main(): Promise<void> {
  * C API（Native Node）模式：从 SDK 组件 .d.ts 生成 NodeHandle 包装类。
  * 产出 src/HarmonyOS.Bindings/Nodes/*.cs 与 native-gaps.json（C API 覆盖缺口清单）。
  */
-export async function processNativeSDK(): Promise<void> {
+export async function processNativeSDK(sdkArg?: string): Promise<void> {
     const enumMetaPath = path.join(__dirname, '../../src/HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.json');
     if (!fs.existsSync(enumMetaPath)) {
         throw new Error(`enum metadata not found: ${enumMetaPath}（先运行 extract_arkui_types.py --dump-json）`);
     }
     const enumMetadata = JSON.parse(fs.readFileSync(enumMetaPath, 'utf-8')) as EnumMetadata;
-    const parser = new ArkTsParser(enumMetadata);
+    const sdkBase = resolveSdkRoot('native', { explicitPath: sdkArg });
+    const generationMetadata = {
+        generatorVersion: GENERATOR_VERSION,
+        sdkVersion: getSdkVersion(sdkBase),
+    };
+    const parser = new ArkTsParser(enumMetadata, generationMetadata);
     const context = createParseContext();
-
-    // SDK ets 根目录：OHOS_SDK_BASE 优先，其次 OHSDK_HOME/26.0.0，最后 DevEco 内置
-    const sdkBase = process.env.OHOS_SDK_BASE
-        ?? (process.env.OHSDK_HOME && fs.existsSync(path.join(process.env.OHSDK_HOME, '26.0.0', 'ets'))
-            ? path.join(process.env.OHSDK_HOME, '26.0.0')
-            : 'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony');
     const componentDir = path.join(sdkBase, 'ets', 'component');
     const outputDir = path.join(__dirname, '../../src/HarmonyOS.Bindings/Nodes');
 
@@ -508,37 +512,7 @@ export async function processNativeSDK(): Promise<void> {
  * 优先级：--sdk <path> > OHOS_SDK_HOME > OHOS_SDK_BASE > 默认路径
  */
 function detectSdkBase(cliSdkArg?: string): string {
-    if (cliSdkArg) return cliSdkArg;
-
-    const envPaths = [
-        process.env.OHOS_SDK_HOME,
-        process.env.OHOS_SDK_BASE,
-        process.env.OHSDK_HOME,
-    ].filter(Boolean) as string[];
-
-    for (const p of envPaths) {
-        // env 可能指向 .../openharmony 或 .../Sdk/<version>
-        if (fs.existsSync(path.join(p, 'ets', 'api'))) return p;
-        // 尝试下一层
-        const dirs = fs.readdirSync(p, { withFileTypes: true })
-            .filter(d => d.isDirectory()).map(d => d.name);
-        for (const d of dirs) {
-            if (fs.existsSync(path.join(p, d, 'ets', 'api'))) return path.join(p, d);
-        }
-    }
-
-    // 默认路径
-    const defaults = [
-        'C:\\Program Files\\Huawei\\DevEco Studio\\sdk\\default\\openharmony',
-        'D:\\Harmony\\OpenHarmony\\Sdk\\26.0.0',
-    ];
-    for (const d of defaults) {
-        if (fs.existsSync(path.join(d, 'ets', 'api'))) return d;
-    }
-
-    throw new Error(
-        'HarmonyOS SDK not found. Use --sdk <path>, set OHOS_SDK_HOME, or install DevEco Studio.'
-    );
+    return resolveSdkRoot('full', { explicitPath: cliSdkArg });
 }
 
 /** pilot 模式：第一批绑定目标模块 */
@@ -709,7 +683,11 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
     const componentDir = path.join(sdkBase, 'ets', 'component');
     const apiDir = path.join(sdkBase, 'ets', 'api');
 
-    const parser = new ArkTsParser();
+    const generationMetadata = {
+        generatorVersion: GENERATOR_VERSION,
+        sdkVersion: getSdkVersion(sdkBase),
+    };
+    const parser = new ArkTsParser(undefined, generationMetadata);
     const context = createParseContext();
 
     // 字符串字面量联合别名登记（生成器不猜：直接读 d.ts 定义）——
@@ -742,7 +720,7 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
 
     console.log(`\n--- APIs (${apiFiles.length}${allModules ? ' (all)' : ' pilot'} modules) ---`);
 
-    const apiGen = new ApiGenerator();
+    const apiGen = new ApiGenerator(generationMetadata);
     let apiSuccess = 0;
     let apiSkipped = 0;
     const boundModules: { module: string; local: string; className: string }[] = [];
@@ -1078,10 +1056,13 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
     // 清理会误删其已提交产物并逐轮级联（Windows 上 AV/编译服务器短暂锁文件，实测踩中）。
     if (failedModules.size > 0) {
         console.warn(`  Stale cleanup SKIPPED: ${failedModules.size} module(s) still failing this run: ${[...failedModules].join(', ')}`);
+    } else if (!ALL_MODE) {
+        console.warn('  Stale cleanup SKIPPED: pilot 模式只覆盖部分模块，删除会误清非 pilot 的已提交产物；只有 --all 全量轮允许清理');
     } else {
         const writtenClassNames = new Set(boundModules.map(m => m.className));
         for (const f of fs.readdirSync(apiOutputDir)) {
             if (!f.endsWith('.cs')) continue;
+            if (f.endsWith('.custom.cs')) continue; // 手写扩展与生成产物共存，不允许清理
             const stem = f.replace(/\.Enums\.cs$/, '').replace(/\.cs$/, '');
             if (!writtenClassNames.has(stem)) {
                 fs.unlinkSync(path.join(apiOutputDir, f));
@@ -1451,16 +1432,43 @@ function moduleSubDir(info: { subNamespace: string }): string {
     return info.subNamespace.replace(/\./g, '/');
 }
 
-if (require.main === module) {
-    const args = process.argv.slice(2);
-    if (args.includes('--native')) {
-        processNativeSDK().catch(console.error);
-    } else if (args.includes('--sdk')) {
+export interface CliActions {
+    native: (sdkArg?: string) => Promise<void>;
+    full: (sdkArg: string | undefined, allModules: boolean) => Promise<void>;
+    default: () => Promise<void>;
+}
+
+export const defaultCliActions: CliActions = {
+    native: processNativeSDK,
+    full: processFullSDK,
+    default: main,
+};
+
+export async function runCli(args: string[], actions: CliActions = defaultCliActions): Promise<number> {
+    try {
         const sdkIdx = args.indexOf('--sdk');
-        const sdkArg = args[sdkIdx + 1] && !args[sdkIdx + 1].startsWith('--')
-            ? args[sdkIdx + 1] : undefined;
-        processFullSDK(sdkArg, args.includes('--all')).catch(console.error);
-    } else {
-        main().catch(console.error);
+        const sdkArg = sdkIdx >= 0 && args[sdkIdx + 1] && !args[sdkIdx + 1].startsWith('--')
+            ? args[sdkIdx + 1]
+            : undefined;
+
+        if (args.includes('--native')) {
+            await actions.native(sdkArg);
+        } else if (sdkIdx >= 0) {
+            await actions.full(sdkArg, args.includes('--all'));
+        } else {
+            await actions.default();
+        }
+        return 0;
+    } catch (error) {
+        const message = error instanceof Error ? (error.stack ?? error.message) : String(error);
+        console.error(message);
+        process.exitCode = 1;
+        return 1;
     }
+}
+
+if (require.main === module) {
+    void runCli(process.argv.slice(2)).then(code => {
+        if (code !== 0) process.exitCode = code;
+    });
 }

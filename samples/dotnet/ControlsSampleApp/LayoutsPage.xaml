@@ -1,0 +1,77 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlsSampleApp.LayoutsPage"
+             Title="Layouts"
+             BackgroundColor="#F8FAFC">
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="CS-LAYOUTS-MARK" FontSize="11" TextColor="#9CA3AF" />
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Grid — tap a cell" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                        <BoxView x:Name="GridCellA" Grid.Row="0" Grid.Column="0" Color="#93C5FD" HeightRequest="48" CornerRadius="6" />
+                        <BoxView x:Name="GridCellB" Grid.Row="0" Grid.Column="1" Color="#86EFAC" HeightRequest="48" CornerRadius="6" />
+                        <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                               Text="Two columns, label spans both" HorizontalTextAlignment="Center"
+                               FontSize="13" TextColor="#6B7280" />
+                    </Grid>
+                    <Label x:Name="GridStatus" Text="No cell tapped" FontSize="13" TextColor="#2563EB" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="FlexLayout wrap" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Center">
+                        <BoxView Color="#FCA5A5" WidthRequest="72" HeightRequest="32" CornerRadius="6" />
+                        <BoxView Color="#FDBA74" WidthRequest="72" HeightRequest="32" CornerRadius="6" />
+                        <BoxView Color="#A5B4FC" WidthRequest="72" HeightRequest="32" CornerRadius="6" />
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Gestures" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <RefreshView x:Name="DemoRefresh" HeightRequest="110" BackgroundColor="#F0FDF4">
+                        <VerticalStackLayout Padding="12" Spacing="4">
+                            <Label Text="RefreshView — pull me down" FontSize="14" TextColor="#14532D" />
+                            <Label x:Name="RefreshStatus" Text="Never refreshed" FontSize="12" TextColor="#15803D" />
+                        </VerticalStackLayout>
+                    </RefreshView>
+                    <SwipeView x:Name="DemoSwipe" HeightRequest="72">
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem x:Name="ArchiveItem" Text="Archive" BackgroundColor="#2563EB" />
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <SwipeView.Content>
+                            <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="12" BackgroundColor="#F9FAFB">
+                                <Label Text="SwipeView — swipe right for action" FontSize="14" TextColor="#111827" VerticalOptions="Center" />
+                            </Border>
+                        </SwipeView.Content>
+                    </SwipeView>
+                    <Label x:Name="SwipeStatus" Text="No swipe action yet" FontSize="13" TextColor="#B45309" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="AbsoluteLayout" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <AbsoluteLayout HeightRequest="90">
+                        <BoxView Color="#C4B5FD"
+                                 AbsoluteLayout.LayoutBounds="10,10,120,40"
+                                 AbsoluteLayout.LayoutFlags="None"
+                                 CornerRadius="6" />
+                        <Label Text="Pinned at (10, 60)"
+                               AbsoluteLayout.LayoutBounds="10,60,150,30"
+                               AbsoluteLayout.LayoutFlags="None"
+                               FontSize="13" TextColor="#111827" />
+                    </AbsoluteLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,10 +1,14 @@
 # 一键部署：重装 HAP → 启动 → 抓取 HarmonyHost 日志。
-# SDK/hdc 定位顺序：OHOS_SDK_BASE > OHSDK_HOME > D:\Harmony\OpenHarmony\Sdk > DevEco sdk。
-param([string]$Target = "")
+# SDK/hdc 定位由 scripts/lib/sdk.ps1 统一处理。
+param(
+    [string]$Target = "",
+    [switch]$PreflightOnly
+)
 $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent $scriptDir
+. (Join-Path $scriptDir "lib\sdk.ps1")
 
 # 宿主目录：HOST_DIR 覆盖（targets 生成的按应用暂存宿主），默认共享模板
 $hostDir = if ($env:HOST_DIR) { $env:HOST_DIR } else { Join-Path $projectRoot "samples\HarmonyHost" }
@@ -27,34 +31,33 @@ $ABILITY = "EntryAbility"
 $MODULE  = "entry"
 
 # ---- 定位 hdc ----
-$candidates = @($env:OHOS_SDK_BASE, $env:OHSDK_HOME,
-    "D:\Harmony\OpenHarmony\Sdk", "C:\Program Files\Huawei\DevEco Studio\sdk",
-    "D:\Program Files\Huawei\DevEco Studio\sdk") | Where-Object { $_ }
-$HDC = $null
-foreach ($base in $candidates) {
-    foreach ($rel in @("26.0.0\toolchains\hdc.exe", "toolchains\hdc.exe", "default\openharmony\toolchains\hdc.exe")) {
-        $p = Join-Path $base $rel
-        if (Test-Path $p) { $HDC = $p; break }
-    }
-    if ($HDC) { break }
-}
-if (-not $HDC) {
-    Write-Error "找不到 hdc.exe。请设置 OHOS_SDK_BASE 指向 OpenHarmony SDK 根目录（含 26.0.0\toolchains）"
-    exit 1
-}
+$HDC = Find-HarmonyHdc
 Write-Host "hdc: $HDC"
 
-# ---- 目标设备：-Target <t> 或 $env:HDC_TARGET（多设备在线时指定）----
+# ---- 目标设备：构建 AOT/Hvigor 前完成预检 ----
+$targets = @(& $HDC list targets |
+    ForEach-Object { "$_".Trim() } |
+    Where-Object { $_ -and $_ -ne "[Empty]" })
+if (-not $targets) {
+    Write-Error "没有已连接的设备/模拟器（hdc list targets 为空）"
+    exit 1
+}
 $HDC_TARGET = if ($Target) { $Target } else { $env:HDC_TARGET }
+if ($HDC_TARGET -and $HDC_TARGET -notin $targets) {
+    Write-Error "指定目标 $HDC_TARGET 不在 hdc list targets 中（先 hdc tconn）"
+    exit 1
+}
+Write-Host "targets: $($targets -join ', ')"
+
 if ($HDC_TARGET) {
-    $known = & $HDC list targets | Where-Object { $_.Trim() -eq $HDC_TARGET }
-    if (-not $known) {
-        Write-Error "指定目标 $HDC_TARGET 不在 hdc list targets 中（先 hdc tconn）"
-        exit 1
-    }
     function Invoke-Hdc { & $HDC -t $HDC_TARGET @args }
 } else {
     function Invoke-Hdc { & $HDC @args }
+}
+
+if ($PreflightOnly) {
+    Write-Host "=== Harmony device preflight OK"
+    exit 0
 }
 
 # ---- 定位 HAP：优先安装签名产物 ----
@@ -69,14 +72,6 @@ if (-not (Test-Path $HAP)) {
 }
 Write-Host "HAP: $HAP"
 
-Write-Host "=== 1. 检查设备 ==="
-$targets = & $HDC list targets | Where-Object { $_ -match '\S' }
-if (-not $targets) {
-    Write-Error "没有已连接的设备/模拟器（hdc list targets 为空）"
-    exit 1
-}
-Write-Host "targets: $($targets -join ', ')"
-
 Write-Host "=== 2. 清空 hilog ==="
 Invoke-Hdc shell hilog -r 2>$null | Out-Null
 
@@ -90,10 +85,37 @@ if (-not ("$installOut" -match "install bundle successfully")) {
 }
 
 Write-Host "=== 4. 启动应用 ==="
-Invoke-Hdc shell aa start -a $ABILITY -b $BUNDLE -m $MODULE
+$startOutput = Invoke-Hdc shell "aa start -a $ABILITY -b $BUNDLE -m $MODULE -W" 2>&1 | Out-String
 
-Write-Host "=== 5. 等待后抓取日志 ==="
-Start-Sleep -Seconds 6
-Invoke-Hdc shell "hilog -x" |
+Write-Host "=== 5. 等待启动就绪 ==="
+$timeoutSeconds = 20.0
+if ($env:HARMONY_STARTUP_TIMEOUT_SECONDS) {
+    if (-not [double]::TryParse($env:HARMONY_STARTUP_TIMEOUT_SECONDS, [ref]$timeoutSeconds) -or $timeoutSeconds -lt 0) {
+        throw "HARMONY_STARTUP_TIMEOUT_SECONDS 必须是非负数：$($env:HARMONY_STARTUP_TIMEOUT_SECONDS)"
+    }
+}
+$deadline = [DateTime]::UtcNow.AddSeconds($timeoutSeconds)
+$ready = $false
+$recentLog = ""
+do {
+    $processOutput = (Invoke-Hdc shell "pidof $BUNDLE" 2>&1 | Out-String).Trim()
+    $recentLog = Invoke-Hdc shell "hilog -x" 2>&1 | Out-String
+    if ($processOutput -match '\b\d+\b' -or $recentLog -match 'A00000/HarmonyHost') {
+        $ready = $true
+        break
+    }
+    if ([DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 500 }
+} while ([DateTime]::UtcNow -lt $deadline)
+
+if (-not $ready) {
+    Write-Error ("启动超时（$timeoutSeconds 秒）：未发现 $BUNDLE 进程或 HarmonyHost 日志。" +
+        "aa start 输出：$($startOutput.Trim())`n最近 hilog：")
+    $recentLog -split "`n" | Select-Object -Last 40 | ForEach-Object { Write-Host $_ }
+    exit 1
+}
+
+$recentLog -split "`n" |
     Select-String -Pattern 'A00000/HarmonyHost|dlopen|libapp|dotnet|DOTNET' |
-    Select-Object -Last 40
+    Select-Object -Last 40 |
+    ForEach-Object { Write-Host $_ }
+Write-Host "=== HarmonyHost startup verified"

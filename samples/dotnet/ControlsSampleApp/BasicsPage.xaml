@@ -1,0 +1,69 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlsSampleApp.BasicsPage"
+             Title="Basics"
+             BackgroundColor="#F8FAFC">
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="CS-BASICS-MARK" FontSize="11" TextColor="#9CA3AF" />
+
+            <!-- Buttons -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Buttons" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <Button x:Name="MainButton" Text="Press me"
+                            BackgroundColor="#2563EB" TextColor="#FFFFFF" CornerRadius="6" HeightRequest="44" />
+                    <ImageButton x:Name="IconButton" Source="probe_logo.png"
+                                 BackgroundColor="#DBEAFE" HeightRequest="64" CornerRadius="6" />
+                    <Label x:Name="ButtonsStatus" Text="Nothing pressed yet" FontSize="13" TextColor="#2563EB" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Progress -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Progress" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <Button x:Name="ProgressButton" Text="Run fake task"
+                            BackgroundColor="#16A34A" TextColor="#FFFFFF" CornerRadius="6" HeightRequest="40" />
+                    <ProgressBar x:Name="DemoProgress" Progress="0" ProgressColor="#16A34A" HeightRequest="14" />
+                    <HorizontalStackLayout Spacing="8">
+                        <ActivityIndicator x:Name="Spinner" IsRunning="False" Color="#16A34A" />
+                        <Label x:Name="ProgressStatus" Text="Idle" FontSize="13" TextColor="#166534" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text & image -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text and image" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <Label Text="A Label with wrapping text that spans a little longer to show line breaking across two lines."
+                           FontSize="14" TextColor="#374151" />
+                    <Image Source="probe_logo.png" HeightRequest="72" Aspect="AspectFit" />
+                    <BoxView Color="#14B8A6" HeightRequest="6" CornerRadius="3" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Containers -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Containers" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <Border Stroke="#CBD5E1" StrokeThickness="1" BackgroundColor="#F1F5F9" Padding="10" StrokeShape="RoundRectangle 8">
+                        <Label Text="Border" FontSize="13" TextColor="#334155" />
+                    </Border>
+                    <Frame BorderColor="#94A3B8" BackgroundColor="#EEF2FF" Padding="10" CornerRadius="6">
+                        <Label Text="Frame" FontSize="13" TextColor="#3730A3" />
+                    </Frame>
+                    <ContentView BackgroundColor="#ECFDF5" Padding="10">
+                        <Label Text="ContentView + ContentPresenter" FontSize="13" TextColor="#065F46" />
+                    </ContentView>
+                    <ContentPresenter BackgroundColor="#F8FAFC" Padding="10">
+                        <ContentPresenter.Content>
+                            <Label Text="ContentPresenter" FontSize="13" TextColor="#334155" />
+                        </ContentPresenter.Content>
+                    </ContentPresenter>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

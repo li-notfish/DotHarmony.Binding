@@ -1,5 +1,6 @@
 #if HARMONYOS
 using System;
+using System.Runtime.CompilerServices;
 
 namespace HarmonyOS.Interop;
 
@@ -49,7 +50,65 @@ internal static class ValueConverter
             "Arrays and JsObject wrappers must use explicit Func<IntPtr, T> converters at generated call sites.");
     }
 
-    public static T Convert<T>(IntPtr value) => (T)ConvertTo(typeof(T), value)!;
+    public static T Convert<T>(IntPtr value)
+    {
+        if (typeof(T).IsEnum)
+            return ConvertEnum<T>(value);
+
+        return (T)ConvertTo(typeof(T), value)!;
+    }
+
+    private static TEnum ConvertEnum<TEnum>(IntPtr value)
+    {
+        var underlying = EnumUnderlyingType<TEnum>.Type;
+        if (underlying == typeof(byte))
+        {
+            var raw = NativeValue.ToByte(value);
+            return Unsafe.As<byte, TEnum>(ref raw);
+        }
+        if (underlying == typeof(sbyte))
+        {
+            var raw = (sbyte)NativeValue.ToInt(value);
+            return Unsafe.As<sbyte, TEnum>(ref raw);
+        }
+        if (underlying == typeof(short))
+        {
+            var raw = (short)NativeValue.ToInt(value);
+            return Unsafe.As<short, TEnum>(ref raw);
+        }
+        if (underlying == typeof(ushort))
+        {
+            var raw = (ushort)NativeValue.ToUInt(value);
+            return Unsafe.As<ushort, TEnum>(ref raw);
+        }
+        if (underlying == typeof(int))
+        {
+            var raw = NativeValue.ToInt(value);
+            return Unsafe.As<int, TEnum>(ref raw);
+        }
+        if (underlying == typeof(uint))
+        {
+            var raw = NativeValue.ToUInt(value);
+            return Unsafe.As<uint, TEnum>(ref raw);
+        }
+        if (underlying == typeof(long))
+        {
+            var raw = NativeValue.ToLong(value);
+            return Unsafe.As<long, TEnum>(ref raw);
+        }
+        if (underlying == typeof(ulong))
+        {
+            var raw = NativeValue.ToUInt64(value);
+            return Unsafe.As<ulong, TEnum>(ref raw);
+        }
+
+        throw new NotSupportedException($"Unsupported enum underlying type: {underlying.Name}.");
+    }
+
+    private static class EnumUnderlyingType<TEnum>
+    {
+        public static readonly Type Type = Enum.GetUnderlyingType(typeof(TEnum));
+    }
 
     /// <summary>把 napi 数组逐元素转换（生成代码的数组返回值/参数转换基础件）。</summary>
     public static TArr[] ConvertArray<TArr>(IntPtr array, Func<IntPtr, TArr> convertElement)

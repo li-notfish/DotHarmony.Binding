@@ -15,40 +15,65 @@ internal static class CallbackTrampolines
 
     private const int MaxArgs = 16;
 
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-    private static IntPtr ArgsTrampoline(IntPtr env, IntPtr info)
+    internal static IntPtr SafeReturnUndefined(IntPtr env)
     {
         try
         {
-            var argc = (IntPtr)MaxArgs;
-            Span<IntPtr> argv = stackalloc IntPtr[MaxArgs];
-            NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
-                .ThrowIfFailed();
-            var count = (int)argc;
-            IntPtr[] args;
-            if (count > MaxArgs)
-            {
-                args = new IntPtr[count];
-                var wideArgc = (IntPtr)count;
-                NativeNodeApi.napi_get_cb_info(env, info, ref wideArgc, args, out _, out _)
-                    .ThrowIfFailed();
-                count = (int)wideArgc;
-            }
-            else
-            {
-                args = new IntPtr[count];
-                for (int i = 0; i < count; i++)
-                    args[i] = argv[i];
-            }
-            if (GCHandle.FromIntPtr(data).Target is Action<IntPtr[]> adapted)
-                adapted(args);
+            NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
+            NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
+            return undefined;
         }
         catch (Exception ex)
         {
-            // 事件回调中的用户异常不得泄漏回 JS 线程（会 terminate 应用），记录后吞掉
-            HiLog.Error("HarmonyHost", $"[callback] handler threw: {ex.Message}");
+            HiLog.Error("HarmonyHost", $"[callback] safe return failed: {ex.GetType().Name}: {ex.Message}");
+            return IntPtr.Zero;
         }
-        NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
-        return undefined;
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static IntPtr ArgsTrampoline(IntPtr env, IntPtr info)
+    {
+        Span<IntPtr> argv = stackalloc IntPtr[MaxArgs];
+        int count;
+        IntPtr[]? wideArgs = null;
+        try
+        {
+            var argc = (IntPtr)MaxArgs;
+            NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
+                .ThrowIfFailed();
+            count = (int)argc;
+            if (count > MaxArgs)
+            {
+                wideArgs = new IntPtr[count];
+                var wideArgc = (IntPtr)count;
+                NativeNodeApi.napi_get_cb_info(env, info, ref wideArgc, wideArgs, out _, out _)
+                    .ThrowIfFailed();
+                count = (int)wideArgc;
+            }
+
+            var target = GCHandle.FromIntPtr(data).Target;
+            if (target is Action<ReadOnlySpan<IntPtr>> spanAdapted)
+            {
+                spanAdapted(wideArgs is null ? argv.Slice(0, count) : wideArgs.AsSpan(0, count));
+            }
+            else if (target is Action<IntPtr[]> arrayAdapted)
+            {
+                if (wideArgs is not null)
+                {
+                    arrayAdapted(wideArgs);
+                }
+                else
+                {
+                    var args = new IntPtr[count];
+                    argv.Slice(0, count).CopyTo(args);
+                    arrayAdapted(args);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            HiLog.Error("HarmonyHost", $"[callback] handler threw: {ex.GetType().Name}: {ex.Message}");
+        }
+        return SafeReturnUndefined(env);
     }
 }

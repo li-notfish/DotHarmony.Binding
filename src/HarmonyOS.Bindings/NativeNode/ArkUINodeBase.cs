@@ -17,16 +17,25 @@ namespace HarmonyOS.Bindings.NativeNode;
 ///
 /// 线程约束：所有实例方法必须在 UI 主线程调用（NativeMainThread.Ensure）。
 /// </summary>
-public abstract unsafe class ArkUINodeBase : IDisposable
+internal interface IHarmonySemanticNode
+{
+    void SetSemanticText(string text);
+    void SetSemanticDescription(string description);
+}
+
+public abstract unsafe class ArkUINodeBase : IDisposable, IHarmonySemanticNode
 {
     private ArkUI_NodeHandle _handle;
-    private readonly HashSet<ArkUI_NodeEventType> _handlers = new();
+    private readonly ArkUI_NodeType _nodeType;
+    private readonly Dictionary<ArkUI_NodeEventType, ArkUINodeEventHub> _eventHubs = new();
+    private readonly Dictionary<ArkUI_NodeEventType, Action<ArkUINodeEvent>> _eventDispatchers = new();
     private readonly int _targetId;
     private bool _disposed;
 
     protected ArkUINodeBase(ArkUI_NodeType nodeType)
     {
         NativeMainThread.Ensure();
+        _nodeType = nodeType;
         _handle = ArkUINativeApi.CreateNode(nodeType);
         if (_handle.IsNull)
             throw new InvalidOperationException($"Failed to create native node of type {nodeType}");
@@ -140,7 +149,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// 径向渐变背景（NODE_RADIAL_GRADIENT）。
     /// center 为组件相对坐标（0~1）；radius 相对半对角线（对齐 MAUI RadialGradientPaint 语义）。
     /// 属性设置时节点可能尚未布局（尺寸为 0），故经 NODE_ON_SIZE_CHANGE（独立 targetId，
-    /// 不占用用户 SubscribeEvent 的覆盖式订阅槽）在尺寸变化时按实测尺寸重算。
+    /// 不占用用户 SubscribeEvent 的多播订阅槽）在尺寸变化时按实测尺寸重算。
     /// </summary>
     public void SetRadialGradient(float centerXFrac, float centerYFrac, float radiusFrac,
         bool repeating, uint[] colors, float[] stops)
@@ -359,7 +368,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
 
     /// <summary>
     /// 区域变化观察（NODE_EVENT_ON_AREA_CHANGE，独立 targetId，不占用 On()/SubscribeEvent
-    /// 的覆盖式订阅槽；与渐变的 NODE_ON_SIZE_CHANGE 专用槽分属不同事件类型互不冲突）。
+    /// 的多播订阅槽；与渐变的 NODE_ON_SIZE_CHANGE 专用槽分属不同事件类型互不冲突）。
     /// 位置或尺寸变化即回调（无载荷），供托管布局监听子节点自量测/内容变化触发重排。
     /// </summary>
     public void SetAreaChangeObserver(Action? observer)
@@ -518,7 +527,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// 编译器对 ≤N 元素的实参栈分配（全仓最热的原生 API 路径）。</summary>
     protected void SetNumericAttribute(ArkUI_NodeAttributeType attribute, params ReadOnlySpan<ArkUI_NumberValue> values)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         fixed (ArkUI_NumberValue* p = values)
         {
             var item = new ArkUI_AttributeItem { value = p, size = values.Length };
@@ -531,7 +540,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>设置字符串型属性</summary>
     protected void SetStringAttribute(ArkUI_NodeAttributeType attribute, string value)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         // 原生侧按 NUL 结尾 C 串读取：GetBytes 不补终止符，长度恰好时会越界读
         // （短文本侥幸正常、长文本被截断/吃掉）——显式补 0，空串即 "\0"
         var utf8 = new byte[Encoding.UTF8.GetByteCount(value) + 1];
@@ -548,7 +557,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>设置对象型属性（如 ArkUI_TextStyle 等复杂结构）</summary>
     protected void SetObjectAttribute(ArkUI_NodeAttributeType attribute, void* objectPtr)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         var item = new ArkUI_AttributeItem { @object = objectPtr };
         var status = ArkUINativeApi.SetAttribute(_handle, attribute, &item);
         if (status != 0)
@@ -558,7 +567,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>复位属性到默认值</summary>
     protected void ResetAttribute(ArkUI_NodeAttributeType attribute)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         var status = ArkUINativeApi.ResetAttribute(_handle, attribute);
         if (status != 0)
             throw new InvalidOperationException($"ResetAttribute({attribute}) failed: {status}");
@@ -566,14 +575,35 @@ public abstract unsafe class ArkUINodeBase : IDisposable
 
     // ───────────────────────── 事件 ─────────────────────────
 
-    /// <summary>注册节点事件处理器（同类型事件覆盖式注册，符合 ArkUI 语义）</summary>
+    /// <summary>注册节点事件处理器；同一节点同一事件支持多个托管订阅。</summary>
     protected void On(ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
     {
-        ThrowIfDisposed();
-        _handlers.Add(eventType);
-        // 注册进全局分发总线（含首次时的原生 receiver 注册），再向节点注册事件
-        NodeEventBus.Register(_targetId, eventType, handler);
-        ArkUINativeApi.RegisterNodeEvent(_handle, eventType, _targetId, null);
+        EnsureHandle();
+        if (!_eventHubs.TryGetValue(eventType, out var hub))
+        {
+            hub = new ArkUINodeEventHub();
+            _eventHubs[eventType] = hub;
+        }
+
+        hub.Add(handler);
+        if (_eventDispatchers.ContainsKey(eventType))
+            return;
+
+        Action<ArkUINodeEvent> dispatcher = @event => _eventHubs[eventType].Invoke(@event);
+        _eventDispatchers[eventType] = dispatcher;
+        try
+        {
+            NodeEventBus.Register(_targetId, eventType, dispatcher);
+            ArkUINativeApi.RegisterNodeEvent(_handle, eventType, _targetId, null);
+        }
+        catch
+        {
+            _eventHubs.Remove(eventType);
+            _eventDispatchers.Remove(eventType);
+            NodeEventBus.Unregister(_targetId, eventType);
+            throw;
+        }
+
         HiLog.Debug("HarmonyHost",
             $"[Event] register node=0x{_handle.Handle:X} type={eventType} targetId={_targetId}");
     }
@@ -581,8 +611,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>注销节点事件处理器</summary>
     protected void Off(ArkUI_NodeEventType eventType)
     {
-        ThrowIfDisposed();
-        if (_handlers.Remove(eventType))
+        EnsureHandle();
+        if (_eventHubs.Remove(eventType) | _eventDispatchers.Remove(eventType))
         {
             NodeEventBus.Unregister(_targetId, eventType);
             ArkUINativeApi.UnregisterNodeEvent(_handle, eventType);
@@ -592,21 +622,41 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>
     /// 通用事件订阅入口。组件生成类只包装了 .d.ts 声明的事件子集；
     /// ArkUI_NodeEventType 枚举为 NDK 头文件全量（含 NODE_EVENT_ON_APPEAR / NODE_EVENT_ON_AREA_CHANGE 等），
-    /// 可经此直接使用。覆盖式注册语义与 On() 一致：同类型事件后注册者替换先注册者。
+    /// 可经此直接使用。多播注册语义与 On() 一致：同类型事件支持多个托管订阅。
     /// </summary>
     public void SubscribeEvent(ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
         => On(eventType, handler);
 
-    /// <summary>注销通用订阅（同类型覆盖式注册语义，见 SubscribeEvent）</summary>
+    /// <summary>注销该事件类型的全部托管订阅</summary>
     public void UnsubscribeEvent(ArkUI_NodeEventType eventType)
         => Off(eventType);
+
+    /// <summary>按具体 handler 精确注销；最后一个订阅移除时同步注销原生事件。</summary>
+    public void UnsubscribeEvent(ArkUI_NodeEventType eventType, Action<ArkUINodeEvent> handler)
+    {
+        EnsureHandle();
+        if (!_eventHubs.TryGetValue(eventType, out var hub) || !hub.Remove(handler))
+            return;
+
+        if (hub.IsEmpty)
+            Off(eventType);
+    }
+
+    public ArkUI_NodeType NodeType => _nodeType;
+
+    void IHarmonySemanticNode.SetSemanticText(string text)
+        => SetStringAttribute(ArkUI_NodeAttributeType.NODE_ACCESSIBILITY_TEXT, text);
+
+    void IHarmonySemanticNode.SetSemanticDescription(string description)
+        => SetStringAttribute(ArkUI_NodeAttributeType.NODE_ACCESSIBILITY_DESCRIPTION, description);
 
     // ───────────────────────── 树操作 ─────────────────────────
 
     /// <summary>追加子节点</summary>
     public void AddChild(ArkUINodeBase child)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
+        child.EnsureHandle();
         CheckAlive(child);
         var status = ArkUINativeApi.AddChild(_handle, child._handle);
         if (status != 0)
@@ -616,7 +666,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>移除子节点</summary>
     public void RemoveChild(ArkUINodeBase child)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
+        child.EnsureHandle();
         CheckAlive(child);
         var status = ArkUINativeApi.RemoveChild(_handle, child._handle);
         if (status != 0)
@@ -626,7 +677,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>移除全部子节点</summary>
     public void RemoveAllChildren()
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         var status = ArkUINativeApi.RemoveAllChildren(_handle);
         if (status != 0)
             throw new InvalidOperationException($"RemoveAllChildren failed: {status}");
@@ -635,7 +686,9 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>在指定兄弟节点后插入子节点</summary>
     public void InsertChildAfter(ArkUINodeBase child, ArkUINodeBase? sibling)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
+        child.EnsureHandle();
+        sibling?.EnsureHandle();
         CheckAlive(child);
         var status = ArkUINativeApi.InsertChildAfter(
             _handle, child._handle, sibling?._handle ?? default);
@@ -646,7 +699,8 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>在指定位置插入子节点</summary>
     public void InsertChildAt(ArkUINodeBase child, int position)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
+        child.EnsureHandle();
         CheckAlive(child);
         var status = ArkUINativeApi.InsertChildAt(_handle, child._handle, position);
         if (status != 0)
@@ -668,21 +722,21 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>可拖拽（OH_ArkUI_SetNodeDraggable；返回 0 成功）</summary>
     public int SetDraggable(bool enabled)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         return ArkUINativeApi.SetNodeDraggable(_handle, enabled);
     }
 
     /// <summary>放侧放行任意拖拽数据类型（OH_ArkUI_AllowNodeAllDropDataTypes；返回 0 成功）</summary>
     public int AllowAllDropDataTypes()
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         return ArkUINativeApi.AllowNodeAllDropDataTypes(_handle);
     }
 
     /// <summary>挂载虚拟化 adapter（NODE_LIST_NODE_ADAPTER，item.@object；返回 0 成功）</summary>
     public int SetNodeAdapter(IntPtr adapterHandle)
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         var item = new ArkUI_AttributeItem { @object = (void*)adapterHandle };
         var status = ArkUINativeApi.SetAttribute(
             _handle, ArkUI_NodeAttributeType.NODE_LIST_NODE_ADAPTER, &item);
@@ -694,7 +748,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     /// <summary>摘除虚拟化 adapter（NODE_LIST_NODE_ADAPTER 复位默认；dispose adapter 前必须先摘）</summary>
     public void ResetNodeAdapter()
     {
-        ThrowIfDisposed();
+        EnsureHandle();
         var status = ArkUINativeApi.ResetAttribute(
             _handle, ArkUI_NodeAttributeType.NODE_LIST_NODE_ADAPTER);
         if (status != 0)
@@ -732,6 +786,7 @@ public abstract unsafe class ArkUINodeBase : IDisposable
     protected virtual void Dispose(bool disposing)
     {
         if (_disposed) return;
+        EnsureHandle();
 
         if (!_handle.IsNull)
         {
@@ -739,8 +794,10 @@ public abstract unsafe class ArkUINodeBase : IDisposable
                 NodeEventBus.Unregister(_gradientSizeChangeTargetId, ArkUI_NodeEventType.NODE_ON_SIZE_CHANGE);
             if (_areaChangeObserverTargetId != 0)
                 NodeEventBus.Unregister(_areaChangeObserverTargetId, ArkUI_NodeEventType.NODE_EVENT_ON_AREA_CHANGE);
-            foreach (var eventType in _handlers)
+            foreach (var eventType in _eventHubs.Keys)
                 NodeEventBus.Unregister(_targetId, eventType);
+            foreach (var hub in _eventHubs.Values)
+                hub.Clear();
             ArkUINativeApi.DisposeNode(_handle);
             _handle = default;
         }
@@ -756,8 +813,14 @@ public abstract unsafe class ArkUINodeBase : IDisposable
 
     private void ThrowIfDisposed()
     {
+        EnsureHandle();
+    }
+
+    private void EnsureHandle()
+    {
         if (_disposed)
             throw new ObjectDisposedException(GetType().Name);
+        NativeMainThread.Ensure();
     }
 
     private static void CheckAlive(ArkUINodeBase? node)

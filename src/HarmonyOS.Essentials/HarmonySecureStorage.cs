@@ -5,6 +5,7 @@
 // BYTES Tag 值要求 Uint8Array（NativeValue.FromUint8Array），NUMBER Tag 值为 number。
 // ACCESSIBILITY=DEVICE_FIRST_UNLOCKED(1)；CONFLICT_RESOLUTION=OVERWRITE(0)；RETURN_TYPE=ALL(0)。
 #nullable enable
+using System;
 using Microsoft.Maui.Storage;
 using HAsset = HarmonyOS.Bindings.Api.Security.Asset;
 using HarmonyOS.Interop;
@@ -78,11 +79,21 @@ public class HarmonySecureStorage : ISecureStorage
         (TagAlias, Alias(key)),
         (TagSecret, Alias(value)));
 
-    static IntPtr QueryMap(params (double Key, IntPtr Value)[] entries) => NativeValue.FromMap(entries);
+    static IntPtr QueryMap(params ReadOnlySpan<(double Key, IntPtr Value)> entries) => NativeValue.FromMap(entries);
 
     static IntPtr Num(double value) => NativeValue.From(value);
 
-    // BYTES Tag 值要求 Uint8Array（From(byte[]) 的 ArrayBuffer 不被 asset 接受）
-    static IntPtr Alias(string key) =>
-        NativeValue.FromUint8Array(System.Text.Encoding.UTF8.GetBytes(key));
+    // BYTES Tag 值要求 Uint8Array（ArrayBuffer 不被 asset 接受）
+    static IntPtr Alias(string key)
+    {
+        var byteCount = System.Text.Encoding.UTF8.GetByteCount(key);
+        if (byteCount <= 256)
+        {
+            Span<byte> utf8 = stackalloc byte[byteCount];
+            System.Text.Encoding.UTF8.GetBytes(key.AsSpan(), utf8);
+            return NativeValue.FromUint8Array(utf8);
+        }
+
+        return NativeValue.FromUint8Array(System.Text.Encoding.UTF8.GetBytes(key));
+    }
 }

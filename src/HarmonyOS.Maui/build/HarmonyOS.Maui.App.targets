@@ -25,8 +25,7 @@
       HarmonySigningCertPassword     证书口令
       HarmonySigningCertPath          .cer 证书路径
       HarmonySigningProfile           .p7b profile 路径
-     注意：修改 HarmonyBundleId/HarmonyAppTitle/签名属性后需删 obj/harmony 重新 stage
-          （stage-host.ps1 按 模板mtime+内容戳 增量） -->
+     注意：stage-host.ps1 按模板相对路径和文件内容生成内容戳，配置或模板变化都会自动触发重 stage。 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
@@ -69,9 +68,17 @@
     <TrimmerRootAssembly Include="@(HarmonyBindingRootAssembly->Distinct())" />
   </ItemGroup>
 
+  <!-- Local ProjectReferences do not import referenced-package buildTransitive props. -->
+  <Import Project="..\..\HarmonyOS.Essentials\build\HarmonyOS.Essentials.props"
+          Condition="Exists('..\..\HarmonyOS.Essentials\build\HarmonyOS.Essentials.props')" />
+
+  <ItemGroup>
+    <AdditionalFiles Include="@(HarmonyPermissionCapabilityMap)" />
+  </ItemGroup>
+
   <Target Name="HarmonyGeneratePermissions"
           Condition="'$(HarmonyGenerateHost)' == 'true'"
-          Inputs="$(IntermediateOutputPath)$(TargetFileName);@(HarmonyPermission)"
+          Inputs="$(IntermediateOutputPath)$(TargetFileName);@(HarmonyPermission);@(HarmonyPermissionCapabilityMap);@(ProjectReference->'%(RootDir)%(Directory)harmony-permissions.capabilities.json')"
           Outputs="$(HarmonyPermissionsJson)"
           DependsOnTargets="Compile">
     <PropertyGroup>
@@ -97,6 +104,9 @@
     <ItemGroup>
       <AdditionalFiles Include="$(HarmonyExplicitPermissionsJson)" />
       <AdditionalFiles Condition="Exists('$(HarmonyPermissionMappingJson)')" Include="$(HarmonyPermissionMappingJson)" />
+      <AdditionalFiles Include="@(HarmonyPermissionCapabilityMap)" />
+      <AdditionalFiles Include="@(ProjectReference->'%(RootDir)%(Directory)harmony-permissions.capabilities.json')"
+                      Condition="Exists('%(RootDir)%(Directory)harmony-permissions.capabilities.json')" />
       <AdditionalFiles Include="@(MauiXaml)" />
     </ItemGroup>
   </Target>
@@ -166,6 +176,13 @@
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
+  <!-- 设备预检必须先于 NativeAOT/Hvigor：无设备时避免浪费完整构建时间。 -->
+  <Target Name="HarmonyDevicePreflight" DependsOnTargets="HarmonyStageHost">
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)deploy-hap.ps1" -PreflightOnly'
+          EnvironmentVariables="HOST_DIR=$(_HarmonyEffectiveHostDir)"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
   <Target Name="HarmonyDeploy" DependsOnTargets="HarmonyStageHost">
     <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)deploy-hap.ps1"'
           EnvironmentVariables="HOST_DIR=$(_HarmonyEffectiveHostDir)"
@@ -211,6 +228,6 @@
              Text="=== staged $(_HarmonyResourceCount) MAUI resource file(s) -> $(_HarmonyRawfileRoot)" />
   </Target>
 
-  <Target Name="HarmonyRun" DependsOnTargets="HarmonyBuildLibApp;HarmonyBuildHap;HarmonyDeploy" />
+  <Target Name="HarmonyRun" DependsOnTargets="HarmonyDevicePreflight;HarmonyBuildLibApp;HarmonyBuildHap;HarmonyDeploy" />
 
 </Project>

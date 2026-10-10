@@ -3,14 +3,8 @@
 # 用法：MSYS_NO_PATHCONV=1 bash scripts/verify-m1-uitest.sh [target]
 set -e
 TARGET="${1:-127.0.0.1:5555}"
-HDC=""
-for base in "$OHOS_SDK_BASE" "D:/Harmony/OpenHarmony/Sdk" "/mnt/d/Harmony/OpenHarmony/Sdk" "D:/Program Files/Huawei/DevEco Studio/sdk/default/openharmony" "/mnt/d/Program Files/Huawei/DevEco Studio/sdk/default/openharmony"; do
-    [ -n "$base" ] || continue
-    for rel in "26.0.0/toolchains/hdc.exe" "toolchains/hdc.exe"; do
-        [ -f "$base/$rel" ] && HDC="$base/$rel" && break 2
-    done
-done
-[ -n "$HDC" ] || { echo "hdc not found"; exit 1; }
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HDC="$(bash "$SCRIPT_DIR/lib/sdk.sh" find-hdc)" || exit 1
 t() { "$HDC" -t "$TARGET" "$@"; }
 snap() { # dumpLayout → 提取文本节点 bounds
     t shell uitest dumpLayout -p /data/local/tmp/m1.json >/dev/null 2>&1

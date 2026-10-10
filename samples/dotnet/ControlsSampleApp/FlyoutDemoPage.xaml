@@ -1,0 +1,25 @@
+<FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            x:Class="ControlsSampleApp.FlyoutDemoPage"
+            Title="Flyout page">
+    <FlyoutPage.Flyout>
+        <ContentPage Title="Flyout" BackgroundColor="#EEF2FF">
+            <StackLayout Padding="16">
+                <Label Text="CS-FLYOUT-MARK" FontAttributes="Bold" FontSize="18" TextColor="#312E81" />
+                <Label Text="Flyout pane" TextColor="#3730A3" />
+            </StackLayout>
+        </ContentPage>
+    </FlyoutPage.Flyout>
+    <FlyoutPage.Detail>
+        <ContentPage Title="Detail" BackgroundColor="#FFFFFF">
+            <StackLayout Padding="16">
+                <Label Text="Flyout detail" FontSize="18" TextColor="#111827" />
+                <Button Text="Back to samples"
+                        Clicked="OnBackClicked"
+                        BackgroundColor="#2563EB"
+                        TextColor="#FFFFFF"
+                        CornerRadius="6" />
+            </StackLayout>
+        </ContentPage>
+    </FlyoutPage.Detail>
+</FlyoutPage>

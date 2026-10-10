@@ -1,5 +1,5 @@
 // 计划承诺的绑定语义单测（headless，纯 MAUI 绑定引擎 + 本库纯协议层）：
-//   · TemplateBinding 顺序无关（属性先设/模板后应用、模板先应用/属性后改，两序等价）
+//   · TemplatedParent 绑定顺序无关（属性先设/模板后应用、模板先应用/属性后改，两序等价）
 //   · MultiBinding 聚合（StringFormat）
 //   · FallbackValue 兜底
 //   · ContentPresenter.Padding 平台映射存在性（Mapper 键检查，不依赖原生节点）
@@ -97,7 +97,10 @@ public class BindingComplianceTests
             ControlTemplate = new ControlTemplate(() =>
             {
                 var label = new Label();
-                label.SetBinding(Label.TextProperty, new TemplateBinding(nameof(Caption)));
+                label.SetBinding(Label.TextProperty, new Binding(
+                    nameof(Caption),
+                    BindingMode.Default,
+                    source: RelativeBindingSource.TemplatedParent));
                 TemplateLabel = label;
                 return new Grid { Children = { label } };
             });

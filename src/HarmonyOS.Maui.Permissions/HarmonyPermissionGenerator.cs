@@ -63,14 +63,17 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
     {
         var candidates = context.SyntaxProvider
             .CreateSyntaxProvider(
-                static (node, _) => node is InvocationExpressionSyntax,
+                static (node, _) =>
+                    node is InvocationExpressionSyntax or MemberAccessExpressionSyntax,
                 static (syntaxContext, _) => ResolvePermissionCandidate(syntaxContext))
             .Where(candidate => candidate is not null)
             .Select(static (candidate, _) => candidate!)
             .Collect();
 
         var customMappings = context.AdditionalTextsProvider
-            .Where(text => text.Path.EndsWith("harmony-permissions.custom.json", StringComparison.OrdinalIgnoreCase))
+            .Where(text =>
+                text.Path.EndsWith("harmony-permissions.custom.json", StringComparison.OrdinalIgnoreCase) ||
+                text.Path.EndsWith("harmony-permissions.capabilities.json", StringComparison.OrdinalIgnoreCase))
             .Select(static (text, _) => ParseCustomMapping(text))
             .Collect();
 
@@ -159,9 +162,9 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
                         continue;
                     }
 
-                    var mapping = map.ResolvePermissionType(
+                    var mappings = map.ResolvePermissionType(
                         candidate.PermissionTypeFullName!, candidate.PermissionTypeName!);
-                    if (mapping is null)
+                    if (mappings.Count == 0)
                     {
                         diagnostics.Add(Diagnostic.Create(
                             UnmappedPermissionType,
@@ -170,16 +173,37 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
                         continue;
                     }
 
-                    inferred.Add(new ResolvedPermission(
-                        mapping.Permission,
-                        mapping.When,
-                        sourcePath,
-                        sourceLine));
+                    foreach (var mapping in mappings)
+                    {
+                        inferred.Add(new ResolvedPermission(
+                            mapping.Permission,
+                            mapping.When,
+                            sourcePath,
+                            sourceLine));
+                    }
                     continue;
                 }
 
-                var methodMapping = map.ResolveMethod(candidate.ContainingType, candidate.MethodName);
-                if (methodMapping is null)
+                if (candidate.MemberKind is not null)
+                {
+                    var memberMappings = map.ResolveMember(
+                        candidate.ContainingType,
+                        candidate.MethodName,
+                        candidate.MemberKind);
+
+                    foreach (var mapping in memberMappings)
+                    {
+                        inferred.Add(new ResolvedPermission(
+                            mapping.Permission,
+                            mapping.When,
+                            sourcePath,
+                            sourceLine));
+                    }
+                    continue;
+                }
+
+                var methodMappings = map.ResolveMethod(candidate.ContainingType, candidate.MethodName);
+                if (methodMappings.Count == 0)
                 {
                     if (map.IsKnownPermissionMethod(candidate.ContainingType, candidate.MethodName))
                     {
@@ -193,11 +217,14 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
                     continue;
                 }
 
-                inferred.Add(new ResolvedPermission(
-                    methodMapping.Permission,
-                    methodMapping.When,
-                    sourcePath,
-                    sourceLine));
+                foreach (var mapping in methodMappings)
+                {
+                    inferred.Add(new ResolvedPermission(
+                        mapping.Permission,
+                        mapping.When,
+                        sourcePath,
+                        sourceLine));
+                }
             }
 
             var inferredNames = new HashSet<string>(

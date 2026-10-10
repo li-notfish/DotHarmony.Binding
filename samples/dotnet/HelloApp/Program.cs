@@ -7,6 +7,7 @@
 // UI 声明：MainPage.xaml（既有入口）+ VerificationShell.cs（Shell 入口，代码装配）。
 // 平台启动代码见 Platforms/HarmonyOS/HarmonyExports.cs。
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Hosting;
 using HarmonyOS.Maui.Hosting;
 
 namespace HelloApp;
@@ -16,5 +17,11 @@ public static class Program
     /// <summary>双入口开关：true = AppShell；false = NavigationPage。</summary>
     internal static bool UseShell = true;
 
-    public static void Register() => MauiHarmonyHost.RunApplication(() => new VerificationApp());
+    public static void Register()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder.UseHarmonyApp<VerificationApp>();
+        // builder.Services.AddSingleton<IMyService, MyService>();
+        builder.Build().RunHarmony();
+    }
 }

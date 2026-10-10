@@ -117,7 +117,7 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | ISecureStorage | SetDefault | security.asset（**AssetMap = 真 JS Map\<Tag,Value\>——普通对象被拒，实测 "Expect Map type."，经 NativeValue.FromMap 构造**；数字 Tag 键：SECRET=BYTES\|0x01 / ALIAS=BYTES\|0x02 / ACCESSIBILITY=NUMBER\|0x03 等；BYTES 值要求 Uint8Array——Interop 补 FromUint8Array，非 ArrayBuffer；查询结果经 GetMapped（命名属性优先/Map.get 兜底）取值；**不走 preQuery/postQuery——那是用户认证流程的 challenge**，querySync 无结果直接抛 not found 捕获 → null） | ✅ 2026-09-13（模拟器实测 set/get roundtrip） |
 | IBrowser | SetDefault | want/startAbility（{uri} 拉起系统默认浏览器）；BrowserLaunchMode 的进程内模式无系统通道，统一系统浏览器 | ✅ 2026-09-13 |
 | IPhoneDialer | SetDefault | startAbility({uri:'tel:'+number})；IsSupported 经 sim.getSimStateSync（卡槽 0，无 SIM = 不支持） | ✅ 2026-09-13 |
-| IShare | SetDefault | 文本经 startAbility({action:'ohos.want.action.sendData', type:'text/plain', parameters:{text}})；**文件分享需跨应用 URI 授权通道（ability.params.stream），抛 FeatureNotSupportedException 留待立项** | ✅ 2026-09-13（文本） |
+| IShare | SetDefault | 文本经 startAbility({action:'ohos.want.action.sendData', type:'text/plain', parameters:{text}})；文件分享经 fs.openSync(READ_ONLY) -> fd -> want { uri:'fd://fd', type:mime, parameters:{'ability.params.stream':fd} }；多文件 fd 用逗号分隔且 uri 取首个 | ✅ 已实现（文本/文件） |
 | IEmail | SetDefault | mailto: URI（to/cc/bcc/subject/body 编码进 query）+ startAbility；IsComposeSupported 尽力 true（mailto 由系统路由） | ✅ 2026-09-13 |
 | IAccelerometer / IMagnetometer / IGyroscope / ICompass / IOrientationSensor | SetDefault | @ohos.sensor on/off；SensorSpeed → interval 阶梯；Compass 走 Orientation，OrientationSensor 走 RotationVector；Accelerometer.ShakeDetected 仅声明事件，阈值状态机待补 | ✅ 已实现（专项设备验证待补） |
 | IGeolocation | SetDefault | @ohos.geoLocationManager：GetLastKnownLocation / getCurrentLocation + locationChange/locationError 事件；Cancellation 只取消托管等待（OHOS 当前定位无取消通道） | ✅ 已实现（专项设备验证待补） |
@@ -125,4 +125,4 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | ITextToSpeech / IHapticFeedback / IFlashlight | SetDefault | textToSpeech / vibrator / brightness | 远期 |
 | IMap / IFilePicker / IScreenshot | SetDefault | 各自子系统 | 远期 |
 
-已实现服务的成员级缺口（非阻塞、按价值补）：~~AppInfo.RequestedTheme/ShowSettingsUI~~（✅ 2026-09-13）、~~DeviceDisplay.KeepScreenOn~~（✅ 2026-09-13）、~~IShare 文件分享~~（需跨应用 URI 授权，见上表）、DeviceInfo.Idiom 平板判定。
+已实现服务的成员级缺口（非阻塞、按价值补）：~~AppInfo.RequestedTheme/ShowSettingsUI~~（✅ 2026-09-13）、~~DeviceDisplay.KeepScreenOn~~（✅ 2026-09-13）、~~IShare 文件分享~~（✅ 已实现，见上表）、DeviceInfo.Idiom 平板判定。

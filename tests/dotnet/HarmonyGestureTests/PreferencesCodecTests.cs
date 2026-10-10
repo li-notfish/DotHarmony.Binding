@@ -98,13 +98,22 @@ public class PreferencesCodecTests
     {
         // 外部写入的无标签数据（如裸 "123"）：非 string 类型按 MAUI 语义返回缺省
         Assert.Equal(7, HarmonyPreferences.Decode<int>("123", 7));
-        Assert.Equal(true, HarmonyPreferences.Decode<bool>("junk", true));
+        Assert.True(HarmonyPreferences.Decode<bool>("junk", true));
     }
 
     [Fact]
     public void Decode_UnknownTag_ReturnsDefault()
     {
         Assert.Equal(9, HarmonyPreferences.Decode<int>("x:whatever", 9));
+    }
+
+    [Fact]
+    public void Decode_MismatchedTag_ReturnsDefault()
+    {
+        Assert.True(HarmonyPreferences.Decode<bool>(HarmonyPreferences.Encode(1), true));
+        Assert.Equal(42, HarmonyPreferences.Decode<int>(HarmonyPreferences.Encode(true), 42));
+        Assert.Equal(4.5, HarmonyPreferences.Decode<double>(HarmonyPreferences.Encode(1), 4.5));
+        Assert.Equal(new DateTime(2026, 1, 2), HarmonyPreferences.Decode<DateTime>("o:2026-01-02T03:04:05Z", new DateTime(2026, 1, 2)));
     }
 
     [Fact]
@@ -125,6 +134,6 @@ public class PreferencesCodecTests
         // 小数点必须恒为 '.'（某些文化是 ','）——切文化后编码不得漂移
         var raw = HarmonyPreferences.Encode(1.25d);
         Assert.Equal("d:1.25", raw);
-        Assert.Equal(CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator, ".");
+        Assert.Equal(".", CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator);
     }
 }

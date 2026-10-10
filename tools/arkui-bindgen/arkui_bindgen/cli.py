@@ -23,7 +23,9 @@ from .semantics import Semantics
 def _read_text(path: Path) -> str | None:
     if not path.is_file():
         return None
-    return path.read_bytes().decode("utf-8")
+    # EOL 归一：生成物在索引中为 LF，Windows 工作副本常被 autocrlf 物化为 CRLF；
+    # 漂移门禁关心内容而非行尾（gen 始终以 LF 落盘）
+    return path.read_bytes().decode("utf-8").replace("\r\n", "\n")
 
 
 def _write(path: Path, text: str) -> bool:

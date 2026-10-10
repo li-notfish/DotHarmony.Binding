@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <TargetFrameworks>$(HarmonyOSTargetFramework);$(HarmonyOSPlatformTargetFramework)</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -11,6 +11,16 @@
     <PackageId>HarmonyOS.Bindings</PackageId>
     <Description>C# bindings for HarmonyOS ArkTS components and APIs</Description>
     <PackageTags>arkui;arkts;bindings</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- Generated API surface intentionally mirrors ArkTS member names and nullable JS values. -->
+    <NoWarn>$(NoWarn);CS0108;CS0114;CS8602;CS8604;CS8981</NoWarn>
+  </PropertyGroup>
+
+  <!-- 过渡态取舍（workload 化前）：桌面 net10.0 目标继续全量定义 HARMONYOS，
+       保持 #else 死代码语义与桌面测试资产不变；harmonyos TFM 的 HARMONYOS
+       常量由 SDK 按 TargetPlatformIdentifier 自动定义，无需在此声明。 -->
+  <PropertyGroup Condition="'$(TargetFramework)' == '$(HarmonyOSTargetFramework)'">
+    <DefineConstants>$(DefineConstants);HARMONYOS</DefineConstants>
   </PropertyGroup>
 
   <!-- @ohos.* 服务层生成器位于 tools/api-generator；
@@ -27,6 +37,10 @@
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
   <Import Project="..\HarmonyOS.Maui.Permissions\build\HarmonyOS.Maui.Permissions.targets" />
 
   <ItemGroup>
@@ -40,7 +54,10 @@
     <InternalsVisibleTo Include="HarmonyOS.Maui" />
     <!-- 引擎实验层测试需要 internal ctor（RecordingSink 注入）与 DispatchEvent -->
     <InternalsVisibleTo Include="HarmonyEngineTests" />
+    <!-- Handler/事件核心回归需要 internal 多播事件聚合器 -->
+    <InternalsVisibleTo Include="HarmonyGestureTests" />
     <!-- Essentials 装拆分前经 Maui 装 IVT 触达生成类型 internal 成员，拆分后自带条目 -->
     <InternalsVisibleTo Include="HarmonyOS.Essentials" />
+    <InternalsVisibleTo Include="app" />
   </ItemGroup>
 </Project>

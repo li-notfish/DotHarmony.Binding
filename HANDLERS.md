@@ -183,16 +183,42 @@ public class HarmonySliderHandler : ViewHandler<Microsoft.Maui.Controls.Slider, 
 Microsoft.Maui.Controls.Slider => new HarmonySliderHandler(),
 ```
 
-**B. 应用/第三方库自定义 Handler（不改本仓库）**：开放注册表，优先于内置分派，
-沿类型继承链向上找最近注册（鸿蒙宿主不走 `UseMauiApp`，此为 `ConfigureMauiHandlers` 的最小等价物）：
+**B. 应用/第三方库自定义 Handler（不改本仓库）**：推荐走官方 `MauiAppBuilder`。
+`IMauiHandlersCollection` 注册会在 `RunHarmony(MauiApp)` 时桥接到 `HarmonyHandlerFactory`
+开放注册表（官方 `Microsoft.Maui.*` Handler 会被跳过，避免覆盖内置鸿蒙 Handler）：
 
 ```csharp
-// 应用启动时（MauiHarmonyHost.Run/RunApplication 之前）
-HarmonyHandlerFactory.Register<MyCustomView>(() => new MyCustomViewHandler());
+var builder = MauiApp.CreateBuilder();
+builder.UseHarmonyApp<App>();
+builder.ConfigureMauiHandlers(handlers => handlers.AddHandler<MyCustomView, MyCustomViewHandler>());
+var app = builder.Build();
+app.RunHarmony();
 
 // 第三方库需要的托管服务（Handler.MauiContext.Services 解析口）：
 HarmonyMauiContext.RegisterService<IMyService>(new MyService());
 ```
+
+**C. 最小等价引导（HarmonyMauiAppBuilder）**：保留给不想接官方 builder 的场景。
+推荐路径仍是上面的官方 `MauiAppBuilder`；这个 shim 提供
+`ConfigureMauiHandlers` / `ConfigureServices` / `Build`，
+并作为 `HarmonyMauiContext` 链式解析末段（内置 AnimationManager → RegisterService 注册表 → DI 容器）：
+
+```csharp
+var builder = HarmonyMauiAppBuilder.CreateBuilder();
+builder.ConfigureMauiHandlers(handlers => handlers.AddHandler<MyView, MyHandler>());
+builder.ConfigureServices(services => services.AddSingleton<IMyService, MyService>());
+builder.Build();
+MauiHarmonyHost.RunApplication(() => new App());
+```
+
+**CommunityToolkit 兼容性**（实测 CommunityToolkit.Maui 15.0.1，net10.0 + NativeAOT）：
+平台无关组件（Converters / Behaviors / `CommunityToolkit.Mvvm`）开箱即用，无需任何注册
+（见 HelloApp GridProbe 页的 `InvertedBoolConverter` 实机验证）；带平台 Handler 的控件
+（DrawingView/Popup/CameraView/MediaElement 等）在 net10.0 基础包中只有 stub，
+会抛 `PlatformNotSupportedException`——需按本指南 B/C 路径逐个编写鸿蒙 Handler 后才可用。
+MCT 的 `UseMauiCommunityToolkit()` 扩展绑定官方 `MauiAppBuilder` 类型；走官方
+`MauiAppBuilder + UseHarmonyApp<TApp>() + RunHarmony` 路径可直接使用。带平台 Handler 的控件仍需
+提供鸿蒙 Handler；`HarmonyHandlerBridge` 只桥接非 `Microsoft.Maui.*` 程序集的 Handler。
 
 ### Step 4：属性映射核对清单
 
@@ -368,7 +394,7 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`），缺的只�
 | ★☆☆ | `RefreshView` | `ARKUI_NODE_REFRESH` | 下拉经 NODE_REFRESH_ON_REFRESH 置 IsRefreshing；刷新态 setter 已入生成管线（CONSTRUCTOR_OPTION_PROPS，RefreshManual.cs 已删除） | ✅ 已完成 |
 | ★☆☆ | `BoxView` | `ARKUI_NODE_STACK` | 纯色矩形（Color/BackgroundColor → 背景色） | ✅ 已完成 |
 | ★☆☆ | `ContentView` / `ContentPresenter` | `ARKUI_NODE_COLUMN` | 模板宿主（PresentedContent 槽）；空 Content 的槽位 HIT_TEST_MODE_NONE 防输入黑洞；Padding 已映射 NODE_PADDING | ✅ 已完成 |
-| ★☆☆ | `Shell` | 根 `ARKUI_NODE_STACK`（主列 + Flyout 覆盖层） | 平台 fragment 机制自建（HarmonyShellNavigation：条目/路由/推送栈/query/模态转发）；Flyout 菜单、主题色、FlyoutIsPresented/FlyoutBehavior/NavBarIsVisible/TabBarIsVisible 已覆盖（Locked 为覆盖式常驻） | ✅ 第一版完成 |
+| ★☆☆ | `Shell` | 根 `ARKUI_NODE_STACK`（主列 + 遮罩 + Flyout 面板） | 平台 fragment 机制自建（HarmonyShellNavigation：条目/路由/推送栈/query/模态转发）；Flyout 菜单、主题色、FlyoutIsPresented/FlyoutBehavior/NavBarIsVisible/TabBarIsVisible 已覆盖（Locked 为并排常驻：主列右移让宽，无遮罩） | ✅ 第一版完成 |
 | ☆ | `Shape`/自绘 | `ARKUI_NODE_CUSTOM` + `NODE_ON_DRAW` | MAUI Graphics → OH_Drawing 适配；文本/渐变/位图/测量路径仍有部分高级能力待补 | ✅ 已完成（高级能力继续补） |
 | ☆ | GestureRecognizers（Tap/Pan/Pinch/Swipe/Pointer） | NDK `ArkUI_NativeGestureAPI_1` + `NODE_TOUCH_EVENT` | 手势→MAUI Send* 协议回送；Tap/Pointer 走反射桥 | ✅ 已完成（见 §6.1） |
 

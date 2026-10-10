@@ -77,6 +77,20 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
         return root;
     }
 
+    protected override void ConnectHandler(ArkColumn platformView)
+    {
+        base.ConnectHandler(platformView);
+
+        // 首页没有显式 RequestNavigation 命令；连接时必须先同步一次现有栈，
+        // 否则 NavigationPage 只会显示标题栏，内容区保持为空。
+        var current = VirtualView.CurrentPage;
+        if (current is null)
+            return;
+
+        var stack = new[] { (Microsoft.Maui.IView)current };
+        SyncToStack(new Microsoft.Maui.NavigationRequest(stack, animated: false));
+    }
+
     protected override void DisconnectHandler(ArkColumn platformView)
     {
         if (_backButton is not null)
@@ -149,6 +163,7 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
             if (_nodes.Remove(page, out var node))
             {
                 UnsubscribeTitleTracking(page);
+                page.Handler = null; // Disconnect the page handler before releasing its native node.
                 _content!.RemoveChild(node);
                 node.Dispose();
             }

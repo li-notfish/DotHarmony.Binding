@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!-- 纯 net10.0：MAUI Controls 的 netstandard 产物提供 VirtualView/Handler 基建，
          平台视图为本仓库 HarmonyOS.Bindings 的 ArkUINodeBase（NativeAOT 友好） -->
-    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <TargetFrameworks>$(HarmonyOSTargetFramework);$(HarmonyOSPlatformTargetFramework)</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -14,12 +14,19 @@
     <PackageId>HarmonyOS.Maui</PackageId>
     <Description>.NET MAUI platform runtime for HarmonyOS: ArkUI handlers, app host orchestration (stage/build HAP/deploy via buildTransitive targets), ArkTS host template</Description>
     <PackageTags>maui;arkui;handlers</PackageTags>
-    <!-- NU5111：harmonyos/scripts/ 下的 .ps1 是 targets 调用的编排脚本而非 NuGet 安装钩子，属既定用法 -->
-    <NoWarn>$(NoWarn);NU5111</NoWarn>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- NU5110/NU5111：harmonyos/scripts/ 下的 .ps1 是 targets 调用的编排脚本而非 NuGet 安装钩子；
+         NU5128：包内同时携带 net10.0 lib 与 netstandard2.0 analyzer/lib 是既定混合布局。 -->
+    <NoWarn>$(NoWarn);NU5110;NU5111;NU5128</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == '$(HarmonyOSPlatformTargetFramework)'">
+    <DefineConstants>$(DefineConstants);HARMONYOS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,10 +54,14 @@
        注意：libapp.so 等应用侧二进制一律不进包（各应用在自己 obj 下 AOT 产出）。 -->
   <ItemGroup>
     <None Include="build\HarmonyOS.Maui.App.targets" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.targets" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
     <None Pack="true" PackagePath="harmonyos\scripts\"
-          Include="..\..\scripts\stage-host.ps1;..\..\scripts\build-hap.cmd;..\..\scripts\deploy-hap.ps1;..\..\scripts\deploy-hap.sh;..\..\scripts\export-harmony-permissions.ps1;..\..\scripts\check-harmony-permissions.ps1" />
+          Include="..\..\scripts\stage-host.ps1;..\..\scripts\build-hap.cmd;..\..\scripts\deploy-hap.ps1;..\..\scripts\deploy-hap.sh;..\..\scripts\export-harmony-permissions.ps1;..\..\scripts\check-harmony-permissions.ps1;..\..\scripts\patch-openharmony-nativeaot.ps1" />
     <None Pack="true" PackagePath="harmonyos\scripts\"
           Include="..\..\scripts\write-explicit-permissions.ps1" />
+    <!-- deploy/sign 脚本 dot-source 的共享 SDK 定位库 -->
+    <None Pack="true" PackagePath="harmonyos\scripts\lib\"
+          Include="..\..\scripts\lib\sdk.ps1;..\..\scripts\lib\sdk.sh" />
     <!-- 打包分析器及其全部 copy-local 依赖：直接收集生成器输出目录，
          避免对 NuGet 全局包路径与传递依赖版本号的硬编码。 -->
     <None Include="..\HarmonyOS.Maui.Permissions\bin\$(Configuration)\netstandard2.0\*.dll"
@@ -62,7 +73,7 @@
           PackagePath="lib\netstandard2.0\" />
     <None Pack="true" PackagePath="harmonyos\HarmonyHost\"
           Include="..\..\samples\HarmonyHost\**\*"
-          Exclude="..\..\samples\HarmonyHost\.hvigor\**;..\..\samples\HarmonyHost\entry\.cxx\**;..\..\samples\HarmonyHost\entry\build\**;..\..\samples\HarmonyHost\entry\libs\**;..\..\samples\HarmonyHost\**\oh_modules\**;..\..\samples\HarmonyHost\**\node_modules\**;..\..\samples\HarmonyHost\local.properties" />
+          Exclude="..\..\samples\HarmonyHost\.hvigor\**;..\..\samples\HarmonyHost\.idea\**;..\..\samples\HarmonyHost\.clang-tidy;..\..\samples\HarmonyHost\.clangd;..\..\samples\HarmonyHost\entry\.cxx\**;..\..\samples\HarmonyHost\entry\build\**;..\..\samples\HarmonyHost\entry\libs\**;..\..\samples\HarmonyHost\**\oh_modules\**;..\..\samples\HarmonyHost\**\node_modules\**;..\..\samples\HarmonyHost\local.properties" />
   </ItemGroup>
 
 </Project>

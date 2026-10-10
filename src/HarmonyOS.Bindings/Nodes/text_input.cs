@@ -64,6 +64,41 @@ public unsafe class TextInput : ArkUINodeBase
         set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_INPUT_EDITING, ArkUIValue.I(value ? 0 : 1));
     }
 
+    /// <summary>字符间距（NODE_TEXT_INPUT_LETTER_SPACING，单位 vp）</summary>
+    public void SetLetterSpacing(float spacing)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_INPUT_LETTER_SPACING, ArkUIValue.F(spacing));
+
+    /// <summary>选区（NODE_TEXT_INPUT_TEXT_SELECTION：value[0]=start，value[1]=length）</summary>
+    public void SetSelection(int start, int length)
+        => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_TEXT_INPUT_TEXT_SELECTION,
+            ArkUIValue.I(start),
+            ArkUIValue.I(length));
+
+    /// <summary>光标位置（NODE_TEXT_INPUT_CARET_OFFSET）</summary>
+    public int CaretPosition
+    {
+        set => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_TEXT_INPUT_CARET_OFFSET,
+            ArkUIValue.I(value));
+    }
+
+    /// <summary>是否显示清除按钮（NODE_TEXT_INPUT_CANCEL_BUTTON）</summary>
+    public bool ShowClearButton
+    {
+        set => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_TEXT_INPUT_CANCEL_BUTTON,
+            ArkUIValue.I(value ? 1 : 0));
+    }
+
+    /// <summary>是否启用输入预览/联想（NODE_TEXT_INPUT_ENABLE_PREVIEW_TEXT）</summary>
+    public bool EnablePreviewText
+    {
+        set => SetNumericAttribute(
+            ArkUI_NodeAttributeType.NODE_TEXT_INPUT_ENABLE_PREVIEW_TEXT,
+            ArkUIValue.I(value ? 1 : 0));
+    }
+
     /// <summary>onChange 事件（NODE_TEXT_INPUT_ON_CHANGE，pStr=新文本）</summary>
     public event Action<ArkUINodeEvent>? TextChange
     {

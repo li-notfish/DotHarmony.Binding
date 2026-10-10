@@ -55,6 +55,9 @@
                BackgroundColor="White" Padding="8" />
         <Button Text="Open browser to example.com"
                 Clicked="OnBrowserClicked" />
+        <Label x:Name="BrowserLabel"
+               HorizontalTextAlignment="Center"
+               BackgroundColor="White" Padding="8" />
         <Button Text="Share text"
                 Clicked="OnShareClicked" />
         <Button Text="Compose email"

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <TargetFrameworks>$(HarmonyOSTargetFramework);$(HarmonyOSPlatformTargetFramework)</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -11,10 +11,22 @@
     <PackageId>HarmonyOS.Interop</PackageId>
     <Description>Generic Node-API (napi) interop core for HarmonyOS: env injection, value marshaling, callbacks, TSFN, hilog bridge</Description>
     <PackageTags>napi;interop</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <!-- 过渡态取舍（workload 化前）：桌面 net10.0 目标继续全量定义 HARMONYOS，
+       保持 #else 死代码语义与桌面测试资产不变；harmonyos TFM 的 HARMONYOS
+       常量由 SDK 按 TargetPlatformIdentifier 自动定义，无需在此声明。 -->
+  <PropertyGroup Condition="'$(TargetFramework)' == '$(HarmonyOSTargetFramework)'">
+    <DefineConstants>$(DefineConstants);HARMONYOS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

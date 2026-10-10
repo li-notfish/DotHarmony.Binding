@@ -11,7 +11,7 @@
 |---|---|---|
 | 应用工程 | Program.cs + XAML 页面 + Platforms/HarmonyOS 启动代码 | ✅ 本文的主角 |
 | HarmonyOS.Maui | 28 个具体 Handler（30 个工厂分派形态）、手势、导航、托管布局 | ❌ 引用即可 |
-| HarmonyOS.Essentials | MAUI Essentials 鸿蒙实现（22 服务） | ❌ 引用即可（MauiHarmonyHost.Run 自动安装） |
+| HarmonyOS.Essentials | MAUI Essentials 鸿蒙实现（22 服务） | ❌ 引用即可（`RunHarmony(MauiApp)` / `MauiHarmonyHost.Run` 自动安装） |
 | HarmonyOS.Bindings | ArkUI NDK 原生节点 + 438 个 @ohos.* 模块绑定 | ❌ 引用即可（仅声明用到的 @ohos 模块） |
 | HarmonyOS.Interop | napi 互操作核心独立装 | ❌ 引用即可 |
 | HarmonyHost（ArkTS 宿主） | dlopen libapp.so 的壳工程模板 | ❌ 由 targets 自动生成按应用实例（见 §4） |
@@ -23,10 +23,37 @@
 | 工具 | 用途 | 说明 |
 |---|---|---|
 | .NET 10 SDK（Windows） | 本机编译检查（C#/XAML 编译期验证） | `dotnet --version` ≥ 10 |
+| Node.js + Python 3 | TS/NDK 生成器与本地工具 | 未安装生成器步骤会直接失败 |
 | PublishAotClang | Windows 本地 NativeAOT 交叉编译 libapp.so | 由 `Directory.Build.props` 自动引用；内置 Zig / clang / objcopy |
-| DevEco Studio | hvigor 打 HAP、hdc 部署、模拟器 | 记住安装路径，脚本自动探测常见位置 |
+| DevEco Studio + HarmonyOS/OpenHarmony SDK | hvigor 打 HAP、NDK、hdc 部署、模拟器 | 记住安装路径；SDK 按语义版本倒序选择，不固定 26 |
+| 模拟器或真机 | `HarmonyRun` 设备预检、安装、启动 | 设备必须先于 AOT 构建处于在线状态 |
+| 调试签名材料 | 真机安装 | `.p12`、`.cer`、`.p7b`、keystore/证书别名、两组口令需成套 |
 
-以上工具链就绪后，仓库根目录：
+先执行环境自检：
+
+```powershell
+# 不连接设备；确定工具链、SDK 与 hdc 可用
+pwsh scripts/check-harmony-env.ps1
+
+# 最终运行前再检查设备；Bash 对应 --check-device
+pwsh scripts/check-harmony-env.ps1 -CheckDevice
+bash scripts/check-harmony-env.sh --check-device
+```
+
+SDK 可通过生成器 `--sdk <版本目录或集合根目录>` 或 `OHOS_SDK_BASE` /
+`OHOS_SDK_HOME` / `OHSDK_HOME` 指定。未指定时脚本选择最高可用稳定版本；
+无效环境变量只告警并回退，没有有效候选时一次性列出候选和缺失布局。
+
+启动 DevEco 模拟器或真机后检查连接：
+
+```bash
+hdc list targets
+# 预期至少出现一个非 [Empty] 的 host:port
+hdc tconn 127.0.0.1:5555   # 模拟器未连接时按实际地址执行
+HDC_TARGET=127.0.0.1:5555 hdc list targets   # 多设备时先确认目标
+```
+
+以上工具链和设备就绪后，在仓库根目录运行：
 
 ```powershell
 # 一键验证链路（HelloApp 示例：libapp.so 双架构 → HAP → 部署到模拟器）
@@ -37,6 +64,16 @@ bash scripts/deploy-hap.sh         # hdc 安装 + 启动（多设备：HDC_TARGE
 ```
 
 或直接在示例工程上：`dotnet build samples/dotnet/HelloApp -t:HarmonyRun`（等价上面三步）。
+
+`HarmonyRun` 的执行顺序与失败定位：
+
+| 顺序 | 阶段 | 常见失败 |
+|---:|---|---|
+| 1 | `HarmonyDevicePreflight` | `hdc list targets` 为空、`HDC_TARGET` 不存在；此阶段失败不会启动 AOT/Hvigor |
+| 2 | staging + 权限生成 | 模板 JSON5 结构变化、bundleId 非法、权限报告冲突 |
+| 3 | NativeAOT arm64/x64 | PublishAotClang 未还原、RID/交叉工具链错误、产物缺失 |
+| 4 | Hvigor HAP + 可选签名 | `node.exe`/`hvigorw.js` 缺失、SDK 布局不完整、签名六项不全 |
+| 5 | 安装与启动 | 安装失败、权限/profile 不匹配、20 秒内无进程和 `HarmonyHost` 日志 |
 
 ---
 
@@ -61,9 +98,17 @@ dotnet build MyApp -t:HarmonyRun         # 全链路
 ```
 
 模板工程已含：`Platforms/HarmonyOS/HarmonyExports.cs`（NativeAOT 导出薄转发层）、
-`Program.cs`（`MauiHarmonyHost.Run` 入口）、示例 `MainPage.xaml`。
+`Program.cs`（官方 `MauiAppBuilder` + `UseHarmonyApp<TApp>()` + `RunHarmony` 入口）、示例 `MainPage.xaml`。
 宿主编排 targets 由 `HarmonyOS.Maui` 包经 buildTransitive 自动导入，工程内无需手写 Import。
 release 签名通过属性簇配置（见 README「NuGet 包与模板」一节）。
+
+模板工程的目标框架是平台 TFM `net10.0-harmonyos`，其平台注册片段
+（`TargetPlatformSupported` 等三行属性 + `SdkSupportedTargetPlatformVersion` 一项）
+已内联在模板 csproj 中。**若把 `HarmonyOS.Maui` 加到既有工程并改用 `net10.0-harmonyos`**，
+需把同一片段复制到该工程（或 Directory.Build.targets）——首次还原时 NuGet
+buildTransitive 导入尚不存在，包内片段无法生效（NETSDK1139/NU1012）；同时需显式
+`PackageReference Include="PublishAotClang"`（作为传递依赖时 build 资产被排除，
+Windows 交叉 NativeAOT 会报 Cross-OS native compilation is not supported）。
 
 ## 2. 路线 B：仓库内参照开发（samples/dotnet/）
 
@@ -126,14 +171,20 @@ release 签名通过属性簇配置（见 README「NuGet 包与模板」一节�
 
 ```csharp
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Hosting;
 using HarmonyOS.Maui.Hosting;
 
 namespace MyApp;
 
 public static class Program
 {
-    // 根页面工厂在 UI 主线程被调用；根页用 NavigationPage 即可获得标准 PushAsync/PopAsync
-    public static void Register() => MauiHarmonyHost.Run(() => new NavigationPage(new MainPage()));
+    public static void Register()
+    {
+        var app = MauiApp.CreateBuilder()
+            .UseHarmonyApp<App>()
+            .Build();
+        app.RunHarmony();
+    }
 }
 ```
 
@@ -229,7 +280,7 @@ dotnet build samples/dotnet/MyApp -t:HarmonyRun
 | Shell（tab/URI 路由/Flyout） | ✅ 支持 | TabBar、Flyout 菜单、绝对/相对路由、query、section 栈、模态、主题色；`FlyoutBehavior.Locked` 为覆盖式常驻（内容区不让宽，与 MAUI 并排布局有差异） |
 | 自绘（Shape/GraphicsView） | ✅ 已支持 | ArkUI 自绘节点（ARKUI_NODE_CUSTOM）+ OH_Drawing；ICanvas 适配器 vp 语义 |
 | CollectionView 大数据量 | ✅ 已支持 | NodeAdapter 虚拟化：按可见范围物化（实测 200 条仅物化 7 条，滚动按需推进/回滚） |
-| **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` / `Connectivity.Current` / `FileSystem.Current` / `Launcher.Default` / `SecureStorage.Default` / 传感器 / `Geolocation` / `MediaPicker` 等） | ✅ 22 个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；MauiHarmonyHost.Run 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage + Accelerometer/Magnetometer/Gyroscope/Compass/OrientationSensor/Geolocation/MediaPicker。IMainThread 暂缓（MAUI 10 无注入点）；IShare 文件分享需跨应用 URI 授权通道，留待立项；适配指南见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
+| **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` / `Connectivity.Current` / `FileSystem.Current` / `Launcher.Default` / `SecureStorage.Default` / 传感器 / `Geolocation` / `MediaPicker` 等） | ✅ 22 个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；`RunHarmony(MauiApp)` / `MauiHarmonyHost.Run` 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage + Accelerometer/Magnetometer/Gyroscope/Compass/OrientationSensor/Geolocation/MediaPicker。IMainThread 暂缓（MAUI 10 无注入点）；IShare 文件分享支持跨应用 fd 授权通道；适配指南见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
 | 自定义 Handler / 平台服务 | ❌ 需移植 | 按 [HANDLERS.md](HANDLERS.md) 五步流程写鸿蒙侧 Handler |
 
 ### Step 2：建鸿蒙外壳工程
@@ -249,8 +300,15 @@ dotnet build samples/dotnet/MyApp -t:HarmonyRun
 `Program.cs` 里组装鸿蒙入口（替代你原 AppShell 的角色）：
 
 ```csharp
+using Microsoft.Maui.Hosting;
+
 public static void Register()
-    => MauiHarmonyHost.Run(() => new NavigationPage(new YourExistingMainPage()));
+{
+    var app = MauiApp.CreateBuilder()
+        .UseHarmonyApp<App>()
+        .Build();
+    app.RunHarmony();
+}
 ```
 
 你的页面代码不用改——`INavigation`、生命周期事件、绑定全部照旧。
@@ -279,7 +337,8 @@ public static void Register()
 | 3. 部署 | `scripts/deploy-hap.sh` / `scripts/deploy-hap.ps1` | 优先安装 signed HAP，无签名产物时回退 unsigned；启动并跟踪 HarmonyHost 日志 | `HDC_TARGET` 设备选择 |
 | 4. 布局回归 | `scripts/verify-layout-baseline.ps1` | 样本关键界面截图与基线像素 diff；`-Update` 生成基线（分辨率相关，基线存 artifacts/ 不入库） | `-App` / `-Target` / `-Tolerance` |
 
-其它 targets：`HarmonyStageHost` / `HarmonyBuildLibApp` / `HarmonyBuildHap` / `HarmonyDeploy` 可单独执行。
+其它 targets：`HarmonyDevicePreflight` / `HarmonyStageHost` / `HarmonyBuildLibApp` /
+`HarmonyBuildHap` / `HarmonyDeploy` 可单独执行。
 如果只想手动打某个样例的 HAP，可以用：
 ```powershell
 .\scripts\build-hap.cmd WeatherTwentyOne
@@ -301,17 +360,19 @@ DevEco 安装目录的 node/hvigor/SDK）。想用自备宿主：`-p:HarmonyGene
 `entry/src/main/module.json5` 与 `entry/src/main/resources/base/element/string.json`。
 当前覆盖的高置信度映射包括：
 
-- `Geolocation` / `Permissions.LocationWhenInUse` → `ohos.permission.LOCATION`
+- `Geolocation` / `Permissions.LocationWhenInUse` → `ohos.permission.LOCATION`, `ohos.permission.APPROXIMATELY_LOCATION`
+- `Permissions.LocationAlways` → `ohos.permission.LOCATION`, `ohos.permission.LOCATION_IN_BACKGROUND`
 - `MediaPicker.Capture*` / `Permissions.Camera` → `ohos.permission.CAMERA`
 - `MediaPicker.Pick*` / `Permissions.Photos` / `Permissions.Media` → `ohos.permission.READ_MEDIA`
 - `Vibration` / `Permissions.Vibrate` → `ohos.permission.VIBRATE`
 - `Accelerometer` / `Gyroscope` → `ohos.permission.ACCELEROMETER` / `ohos.permission.GYROSCOPE`
 - `Permissions.Microphone` / `Permissions.Speech` → `ohos.permission.MICROPHONE`
-- `Permissions.StorageRead` / `Permissions.StorageWrite` → `ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY`
-- `Permissions.Bluetooth` → `ohos.permission.USE_BLUETOOTH`
+- `Permissions.StorageRead` / `Permissions.StorageWrite` → `ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY`, `ohos.permission.READ_MEDIA`
+- `Permissions.Bluetooth` → `ohos.permission.ACCESS_BLUETOOTH`
 - `Permissions.CalendarRead` / `Permissions.CalendarWrite` → `ohos.permission.READ_CALENDAR` / `ohos.permission.WRITE_CALENDAR`
 - `Permissions.ContactsRead` / `Permissions.ContactsWrite` → `ohos.permission.READ_CONTACTS` / `ohos.permission.WRITE_CONTACTS`
 - `Permissions.PostNotifications` → `ohos.permission.PUBLISH_AGENT_REMINDER`
+- `WebView.Source` → `ohos.permission.CAMERA`, `ohos.permission.MICROPHONE`
 
 权限默认会生成 `usedScene.when`：
 
@@ -409,6 +470,10 @@ re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——�
 | 症状 | 去哪看 |
 |---|---|
 | 部署后白屏/闪退 | `hdc shell hilog \| grep HarmonyHost`；`.NET UI built successfully` 是否出现 |
+| 设备预检失败 | 启动模拟器/真机，运行 `hdc list targets`；必要时 `hdc tconn <host:port>`，多设备设置 `HDC_TARGET` |
+| 启动 20 秒超时 | 查看脚本附带的最近 hilog，重点筛 `HarmonyHost`、`dlopen`、`libapp`、`dotnet` |
+| 找不到 node/hvigor | 设置 `DEVECO_HOME`，或先运行 `scripts/check-harmony-env.ps1` |
+| 真机安装被拒 | 确认 debug profile 与签名六项成套；release profile 不应直接用于调试设备 |
 | 导航静默失败、后续导航全挂 | FireAndForget 吞了异常——确认已按 §2 改造 `FireAndForgetNavigation` 打 hilog（HelloApp 版可照抄） |
 | Windows 本地 AOT 失败 | 检查 `PublishAotClang` 包是否还原成功，以及 .NET 10 SDK 是否可用 |
 | hdc 命令路径被 Git Bash 吃掉 | 前缀 `MSYS_NO_PATHCONV=1` |

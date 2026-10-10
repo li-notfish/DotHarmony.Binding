@@ -1,4 +1,4 @@
-// Essentials 全部 16 服务的标准入口验证：DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery /
+// Essentials 服务的标准入口验证：DeviceInfo / DeviceDisplay / AppInfo / Clipboard / Preferences / Battery /
 // Vibration / Connectivity / FileSystem / Launcher / Browser / PhoneDialer / Share / Email / SecureStorage / MainThread。
 // 实现由 HarmonyOS.Maui 启动时注入；netstandard 缺省实现会 throw——本页任何一栏有值即注入生效。
 // 剪贴板读权限（READ_PASTEBOARD，user_grant）：首次点击会弹系统授权对话框，
@@ -197,9 +197,17 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void OnBrowserClicked(object? sender, EventArgs e)
+    private async void OnBrowserClicked(object? sender, EventArgs e)
     {
-        _ = Browser.Default.OpenAsync("https://example.com");
+        try
+        {
+            await Browser.Default.OpenAsync("https://example.com");
+            BrowserLabel.Text = "browser: opened example.com";
+        }
+        catch (Exception ex)
+        {
+            BrowserLabel.Text = "browser FAILED: " + ex.GetType().Name + ": " + ex;
+        }
     }
 
     private async void OnShareClicked(object? sender, EventArgs e)

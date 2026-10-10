@@ -30,28 +30,36 @@ internal sealed class ThreadSafeFunction : IDisposable
         var tsfn = new ThreadSafeFunction();
         tsfn._gch = GCHandle.Alloc(tsfn);
 
-        var env = NapiEnv.Current;
-        ReadOnlySpan<byte> resourceNameBytes = "ThreadSafeFunction"u8;
-        NativeNodeApi.napi_create_string_utf8(env, resourceNameBytes, (IntPtr)resourceNameBytes.Length, out var resourceName).ThrowIfFailed();
+        try
+        {
+            var env = NapiEnv.Current;
+            ReadOnlySpan<byte> resourceNameBytes = "ThreadSafeFunction"u8;
+            NativeNodeApi.napi_create_string_utf8(env, resourceNameBytes, (IntPtr)resourceNameBytes.Length, out var resourceName).ThrowIfFailed();
 
-        // GCHandle 在 finalize 回调（TSFN 真正销毁、队列清空之后）释放，
-        // 而不是 Release/Abort 时——abort 后已入队的消息仍会派发到 CallJsTrampoline，
-        // 过早释放 GCHandle 会 UAF。
-        NativeNodeApi.napi_create_threadsafe_function(
-            env,
-            func: default,
-            async_resource: default,
-            async_resource_name: resourceName,
-            max_queue_size: (IntPtr)0,
-            initial_thread_count: (IntPtr)1,
-            thread_finalize_data: GCHandle.ToIntPtr(tsfn._gch),
-            thread_finalize_callback: FinalizeTrampolinePtr,
-            context: GCHandle.ToIntPtr(tsfn._gch),
-            call_js: GetCallJsTrampoline(),
-            out var tsfnHandle).ThrowIfFailed();
+            // GCHandle 在 finalize 回调（TSFN 真正销毁、队列清空之后）释放，
+            // 而不是 Release/Abort 时——abort 后已入队的消息仍会派发到 CallJsTrampoline，
+            // 过早释放 GCHandle 会 UAF。
+            NativeNodeApi.napi_create_threadsafe_function(
+                env,
+                func: default,
+                async_resource: default,
+                async_resource_name: resourceName,
+                max_queue_size: (IntPtr)0,
+                initial_thread_count: (IntPtr)1,
+                thread_finalize_data: GCHandle.ToIntPtr(tsfn._gch),
+                thread_finalize_callback: FinalizeTrampolinePtr,
+                context: GCHandle.ToIntPtr(tsfn._gch),
+                call_js: GetCallJsTrampoline(),
+                out var tsfnHandle).ThrowIfFailed();
 
-        tsfn._tsfnHandle = tsfnHandle;
-        return tsfn;
+            tsfn._tsfnHandle = tsfnHandle;
+            return tsfn;
+        }
+        catch
+        {
+            tsfn._gch.Free();
+            throw;
+        }
     }
 
     /// <summary>
@@ -87,8 +95,8 @@ internal sealed class ThreadSafeFunction : IDisposable
         lock (_sync)
         {
             if (_disposed) return;
-            _disposed = true;
-            ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_release);
+            if (ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_release))
+                _disposed = true;
         }
         // GCHandle 由 FinalizeTrampoline 释放（勿在此 Free——见 Create 注释）
     }
@@ -101,18 +109,26 @@ internal sealed class ThreadSafeFunction : IDisposable
         lock (_sync)
         {
             if (_disposed) return;
-            _disposed = true;
-            ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_abort);
+            if (ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_abort))
+                _disposed = true;
         }
     }
 
-    private void ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode mode)
+    private bool ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode mode)
     {
         if (_tsfnHandle != IntPtr.Zero)
         {
-            NativeNodeApi.napi_release_threadsafe_function(_tsfnHandle, mode);
+            var status = NativeNodeApi.napi_release_threadsafe_function(_tsfnHandle, mode);
+            if (status != napi_status.napi_ok)
+            {
+                HiLog.Error("TSFN", $"release failed: {status}");
+                return false;
+            }
             _tsfnHandle = IntPtr.Zero;
+            return true;
         }
+
+        return true;
     }
 
     public void Dispose() => Release();

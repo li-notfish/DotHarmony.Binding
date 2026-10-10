@@ -51,21 +51,30 @@ public sealed class EventListenerRegistry
         }
     }
 
+
     /// <summary>解除订阅并释放资源；未找到订阅时返回 false。</summary>
     public bool Remove(object key, Action<IntPtr> off)
     {
         ListenerEntry entry;
         lock (_lock)
         {
-            if (!_listeners.Remove(key, out entry))
+            if (!_listeners.TryGetValue(key, out entry))
                 return false;
         }
+
         try
         {
             off(entry.JsFuncRef.Value);
         }
-        finally
+        catch
         {
+            return false;
+        }
+
+        lock (_lock)
+        {
+            if (!_listeners.Remove(key, out var removed) || !ReferenceEquals(removed.JsFuncRef, entry.JsFuncRef))
+                return false;
             NodeApi.FreeEventHandle(entry.Gch);
             entry.JsFuncRef.Dispose();
         }

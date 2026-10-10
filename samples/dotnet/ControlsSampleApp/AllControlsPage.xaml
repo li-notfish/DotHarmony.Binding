@@ -1,0 +1,146 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlsSampleApp.AllControlsPage"
+             Title="Controls Samples"
+             BackgroundColor="#FFFFFF">
+    <ScrollView>
+        <StackLayout Padding="16" Spacing="18">
+            <Label Text="CS-ALLCONTROLS-MARK" FontAttributes="Bold" FontSize="20" TextColor="#111827" />
+
+            <Label Text="Basics" FontAttributes="Bold" FontSize="18" TextColor="#2563EB" />
+            <Label Text="CS-BASICS-MARK" TextColor="#111827" />
+            <Button Text="Button" BackgroundColor="#2563EB" TextColor="#FFFFFF" CornerRadius="6" />
+            <Image Source="probe_logo.png" HeightRequest="80" Aspect="AspectFit" />
+            <ImageButton Source="probe_logo.png" BackgroundColor="#E5E7EB" HeightRequest="72" WidthRequest="120" CornerRadius="6" />
+            <BoxView Color="#14B8A6" HeightRequest="32" CornerRadius="6" />
+            <ActivityIndicator IsRunning="True" Color="#2563EB" />
+            <ProgressBar Progress="0.45" ProgressColor="#16A34A" HeightRequest="18" />
+            <Border Stroke="#CBD5E1" StrokeThickness="1" BackgroundColor="#F8FAFC" Padding="12" StrokeShape="RoundRectangle 8">
+                <Label Text="Border" TextColor="#111827" />
+            </Border>
+            <Frame BorderColor="#94A3B8" BackgroundColor="#EEF2FF" Padding="12" CornerRadius="6">
+                <Label Text="Frame" TextColor="#111827" />
+            </Frame>
+            <ContentView BackgroundColor="#ECFDF5" Padding="12">
+                <ContentView.Content>
+                    <Label Text="ContentView + ContentPresenter" TextColor="#065F46" />
+                </ContentView.Content>
+            </ContentView>
+
+            <Label Text="Inputs" FontAttributes="Bold" FontSize="18" TextColor="#2563EB" />
+            <Label Text="CS-INPUTS-MARK" TextColor="#111827" />
+            <Entry Placeholder="Single line" TextColor="#111827" PlaceholderColor="#6B7280" />
+            <Editor Placeholder="Multiple lines" HeightRequest="80" TextColor="#111827" PlaceholderColor="#6B7280" />
+            <SearchBar Placeholder="Search" TextColor="#111827" PlaceholderColor="#6B7280" />
+            <Picker x:Name="DemoPicker" Title="Select item" TextColor="#111827" />
+            <DatePicker Format="D" TextColor="#111827" />
+            <TimePicker Format="T" TextColor="#111827" />
+            <Slider Minimum="0" Maximum="100" Value="40" MinimumTrackColor="#2563EB" MaximumTrackColor="#D1D5DB" />
+            <Stepper Minimum="0" Maximum="10" Increment="1" Value="2" />
+            <Switch IsToggled="True" OnColor="#16A34A" ThumbColor="#FFFFFF" />
+            <CheckBox IsChecked="True" Color="#2563EB" />
+            <StackLayout Orientation="Horizontal" Spacing="12">
+                <RadioButton Content="A" GroupName="Inputs" TextColor="#111827" />
+                <RadioButton Content="B" GroupName="Inputs" IsChecked="True" TextColor="#111827" />
+            </StackLayout>
+
+            <Label Text="Layouts" FontAttributes="Bold" FontSize="18" TextColor="#2563EB" />
+            <Label Text="CS-LAYOUTS-MARK" TextColor="#111827" />
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                <BoxView Grid.Row="0" Grid.Column="0" Color="#93C5FD" HeightRequest="36" CornerRadius="6" />
+                <BoxView Grid.Row="0" Grid.Column="1" Color="#86EFAC" HeightRequest="36" CornerRadius="6" />
+                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="Grid span" HorizontalTextAlignment="Center" TextColor="#111827" />
+            </Grid>
+            <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Center">
+                <BoxView Color="#FCA5A5" WidthRequest="72" HeightRequest="32" CornerRadius="6" />
+                <BoxView Color="#FDBA74" WidthRequest="72" HeightRequest="32" CornerRadius="6" />
+                <BoxView Color="#A5B4FC" WidthRequest="72" HeightRequest="32" CornerRadius="6" />
+            </FlexLayout>
+            <AbsoluteLayout HeightRequest="90">
+                <BoxView Color="#C4B5FD" AbsoluteLayout.LayoutBounds="0,0,120,40" AbsoluteLayout.LayoutFlags="PositionProportional" CornerRadius="6" />
+                <Label Text="AbsoluteLayout" AbsoluteLayout.LayoutBounds="0.5,1,150,30" AbsoluteLayout.LayoutFlags="All" TextColor="#111827" />
+            </AbsoluteLayout>
+            <RefreshView x:Name="DemoRefresh" HeightRequest="120">
+                <StackLayout Padding="8">
+                    <Label Text="RefreshView content" TextColor="#111827" />
+                    <Label Text="Pull to refresh" TextColor="#6B7280" />
+                </StackLayout>
+            </RefreshView>
+            <SwipeView HeightRequest="80">
+                <SwipeView.LeftItems>
+                    <SwipeItems>
+                        <SwipeItem Text="Archive" BackgroundColor="#2563EB" />
+                        <SwipeItemView BackgroundColor="#DBEAFE">
+                            <Label Text="Custom" TextColor="#111827" VerticalOptions="Center" />
+                        </SwipeItemView>
+                    </SwipeItems>
+                </SwipeView.LeftItems>
+                <SwipeView.Content>
+                    <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="12" BackgroundColor="#F9FAFB">
+                        <Label Text="SwipeView" TextColor="#111827" VerticalOptions="Center" />
+                    </Border>
+                </SwipeView.Content>
+            </SwipeView>
+
+            <Label Text="Items" FontAttributes="Bold" FontSize="18" TextColor="#2563EB" />
+            <Label Text="CS-ITEMS-MARK" TextColor="#111827" />
+            <CollectionView x:Name="DemoCollection" HeightRequest="150">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding .}" TextColor="#111827" Padding="10" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <CarouselView x:Name="DemoCarousel" HeightRequest="120" Loop="False">
+                <CarouselView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BackgroundColor="#EEF2FF" Stroke="#C7D2FE" Padding="12" StrokeShape="RoundRectangle 8">
+                            <Label Text="{Binding .}" TextColor="#312E81" FontSize="18" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                        </Border>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+            <IndicatorView x:Name="DemoIndicator" IndicatorColor="#CBD5E1" SelectedIndicatorColor="#2563EB" IndicatorSize="8" HorizontalOptions="Center" />
+            <ListView x:Name="DemoList" HeightRequest="140">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding .}" Detail="ListView item" TextColor="#111827" DetailColor="#6B7280" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <TableView Intent="Settings">
+                <TableRoot Title="Compatibility cells">
+                    <TableSection Title="Cells">
+                        <TextCell Text="Text cell" Detail="Text detail" TextColor="#111827" />
+                        <ImageCell Text="Image cell" Detail="Local image" ImageSource="probe_logo.png" TextColor="#111827" />
+                        <EntryCell Label="Entry cell" Placeholder="Type here" />
+                        <SwitchCell Text="Switch cell" On="True" />
+                        <ViewCell>
+                            <StackLayout Padding="12">
+                                <Label Text="View cell" TextColor="#111827" />
+                            </StackLayout>
+                        </ViewCell>
+                    </TableSection>
+                </TableRoot>
+            </TableView>
+
+            <Label Text="Media and graphics" FontAttributes="Bold" FontSize="18" TextColor="#2563EB" />
+            <Label Text="CS-MEDIA-MARK" TextColor="#111827" />
+            <WebView x:Name="DemoWebView" HeightRequest="220" />
+            <HybridWebView x:Name="DemoHybridWebView" DefaultFile="index.html" HybridRoot="hybridroot" HeightRequest="120" />
+            <Grid HeightRequest="210" ColumnDefinitions="*,*,*" RowDefinitions="*,*" ColumnSpacing="8" RowSpacing="8">
+                <Ellipse Grid.Row="0" Grid.Column="0" Fill="#BBF7D0" Stroke="#16A34A" StrokeThickness="2" />
+                <Rectangle Grid.Row="0" Grid.Column="1" Fill="#BFDBFE" Stroke="#2563EB" StrokeThickness="2" RadiusX="8" RadiusY="8" />
+                <Line Grid.Row="0" Grid.Column="2" X1="10" Y1="10" X2="100" Y2="80" Stroke="#DC2626" StrokeThickness="3" />
+                <Polygon Grid.Row="1" Grid.Column="0" Points="10,10 100,20 50,90" Fill="#FED7AA" Stroke="#EA580C" StrokeThickness="2" />
+                <Polyline Grid.Row="1" Grid.Column="1" Points="10,10 100,20 50,90 10,10" Stroke="#7C3AED" StrokeThickness="3" />
+                <Path Grid.Row="1" Grid.Column="2" Data="M 10,10 L 100,20 L 50,90 Z" Fill="#FBCFE8" Stroke="#DB2777" StrokeThickness="2" />
+            </Grid>
+            <GraphicsView x:Name="DemoGraphicsView" HeightRequest="150" />
+
+            <Label Text="Menus" FontAttributes="Bold" FontSize="18" TextColor="#2563EB" />
+            <Label Text="CS-MENUS-MARK" TextColor="#111827" />
+            <Label Text="Menu bar and flyout declarations are provided by page chrome." TextColor="#374151" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

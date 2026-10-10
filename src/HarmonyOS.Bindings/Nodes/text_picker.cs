@@ -22,19 +22,66 @@ public unsafe partial class TextPicker : ArkUINodeBase
         set => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_PICKER_SELECTED_INDEX, ArkUIValue.I(value));
     }
 
-    /// <summary>单列选项范围（NODE_TEXT_PICKER_OPTION_RANGE：value[0].i32=1 单列，string 以 ';' 分隔）</summary>
+    /// <summary>单列选项范围（NODE_TEXT_PICKER_OPTION_RANGE：value[0].i32=0 单列，string 以 ';' 分隔）</summary>
     public void SetRange(System.Collections.Generic.IReadOnlyList<string> options)
     {
-        var utf8 = System.Text.Encoding.UTF8.GetBytes(string.Join(";", options));
-        var values = new ArkUI_NumberValue[] { ArkUIValue.I(1) }; // ArkUI_TextPickerRangeType: 1 = 单列字符串
-        fixed (byte* p = utf8)
-        fixed (ArkUI_NumberValue* v = values)
+        ArgumentNullException.ThrowIfNull(options);
+
+        var charCount = 0;
+        for (var i = 0; i < options.Count; i++)
         {
-            var item = new ArkUI_AttributeItem { value = v, size = 1, @string = p };
-            var status = ArkUINativeApi.SetAttribute(Handle, ArkUI_NodeAttributeType.NODE_TEXT_PICKER_OPTION_RANGE, &item);
-            if (status != 0)
-                throw new InvalidOperationException("SetAttribute(NODE_TEXT_PICKER_OPTION_RANGE) failed: " + status);
+            if (i > 0) charCount++;
+            charCount += options[i]?.Length ?? 0;
         }
+
+        if (charCount <= 256)
+        {
+            char* chars = stackalloc char[charCount];
+            var charsSpan = new Span<char>(chars, charCount);
+            WriteRange(charsSpan, options);
+
+            var byteCount = System.Text.Encoding.UTF8.GetByteCount(charsSpan);
+            byte* utf8 = stackalloc byte[byteCount + 1];
+            var utf8Span = new Span<byte>(utf8, byteCount + 1);
+            System.Text.Encoding.UTF8.GetBytes(charsSpan, utf8Span);
+            utf8Span[byteCount] = 0;
+            SetRangeCore(utf8);
+            return;
+        }
+
+        var joined = string.Join(';', options);
+        var largeUtf8 = new byte[System.Text.Encoding.UTF8.GetByteCount(joined) + 1];
+        System.Text.Encoding.UTF8.GetBytes(joined.AsSpan(), largeUtf8.AsSpan());
+        fixed (byte* p = largeUtf8)
+            SetRangeCore(p);
+    }
+
+    private static void WriteRange(Span<char> destination, System.Collections.Generic.IReadOnlyList<string> options)
+    {
+        var position = 0;
+        for (var i = 0; i < options.Count; i++)
+        {
+            if (i > 0)
+                destination[position++] = ';';
+
+            var option = options[i];
+            if (string.IsNullOrEmpty(option))
+                continue;
+
+            option.AsSpan().CopyTo(destination[position..]);
+            position += option.Length;
+        }
+    }
+
+    private void SetRangeCore(byte* utf8)
+    {
+        ArkUI_NumberValue* values = stackalloc ArkUI_NumberValue[1];
+        values[0] = ArkUIValue.I(0); // ArkUI_TextPickerRangeType: 0 = 单列字符串
+
+        var item = new ArkUI_AttributeItem { value = values, size = 1, @string = utf8 };
+        var status = ArkUINativeApi.SetAttribute(Handle, ArkUI_NodeAttributeType.NODE_TEXT_PICKER_OPTION_RANGE, &item);
+        if (status != 0)
+            throw new InvalidOperationException("SetAttribute(NODE_TEXT_PICKER_OPTION_RANGE) failed: " + status);
     }
 
     private Action<ArkUINodeEvent>? _onOnChange;

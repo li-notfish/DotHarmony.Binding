@@ -1,5 +1,6 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
+using HarmonyOS.Interop;
 using HarmonyOS.Bindings.NativeNode;
 using ArkCheckBox = HarmonyOS.ArkUI.CheckBox;
 
@@ -28,11 +29,13 @@ public class HarmonyCheckBoxHandler : HarmonyViewHandler<ICheckBox, ArkCheckBox>
     {
         base.ConnectHandler(platformView);
         platformView.CheckedChanged += OnCheckBoxChanged;
+        platformView.Click += OnClicked;
     }
 
     protected override void DisconnectHandler(ArkCheckBox platformView)
     {
         platformView.CheckedChanged -= OnCheckBoxChanged;
+        platformView.Click -= OnClicked;
         base.DisconnectHandler(platformView);
     }
 
@@ -54,6 +57,20 @@ public class HarmonyCheckBoxHandler : HarmonyViewHandler<ICheckBox, ArkCheckBox>
         var isChecked = e.ComponentData(0).i32 == 1;
         if (VirtualView.IsChecked == isChecked)
             return;
+
         VirtualView.IsChecked = isChecked;
+    }
+
+    private void OnClicked(ArkUINodeEvent _)
+    {
+        var platformView = PlatformView;
+        MainThreadDispatcher.Post(() =>
+        {
+            var isChecked = platformView.GetIsChecked();
+            if (VirtualView.IsChecked == isChecked)
+                return;
+
+            VirtualView.IsChecked = isChecked;
+        });
     }
 }

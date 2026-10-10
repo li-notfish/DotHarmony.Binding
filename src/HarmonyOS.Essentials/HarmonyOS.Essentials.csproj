@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!-- 纯 net10.0：MAUI Essentials 接口（IBattery/IGeolocation/IPreferences...）由
          Microsoft.Maui.Controls 包的 netstandard 产物提供，鸿蒙实现注入其静态入口 -->
-    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <TargetFrameworks>$(HarmonyOSTargetFramework);$(HarmonyOSPlatformTargetFramework)</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -13,6 +13,11 @@
     <PackageId>HarmonyOS.Essentials</PackageId>
     <Description>MAUI Essentials implementations for HarmonyOS (device info, sensors, geolocation, picker, storage, connectivity, ...)</Description>
     <PackageTags>maui;essentials</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == '$(HarmonyOSPlatformTargetFramework)'">
+    <DefineConstants>$(DefineConstants);HARMONYOS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,5 +42,11 @@
     <!-- 单位换算/枚举映射等纯逻辑测试（EssentialsMappingTests 等 5 个套件）触达 internal 成员 -->
     <InternalsVisibleTo Include="HarmonyGestureTests" />
     <InternalsVisibleTo Include="HarmonyOS.Maui" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="harmony-permissions.capabilities.json" Pack="true" PackagePath="\" />
+    <None Include="build\HarmonyOS.Essentials.props" Pack="true" PackagePath="buildTransitive\" />
   </ItemGroup>
 </Project>

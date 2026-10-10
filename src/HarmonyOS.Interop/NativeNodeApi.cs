@@ -30,6 +30,14 @@ internal static partial class NativeNodeApi
         IntPtr bufsize,
         out IntPtr result);
 
+    [LibraryImport(NApiLib, EntryPoint = "napi_get_value_string_utf8")]
+    internal static partial napi_status napi_get_value_string_utf8(
+        napi_env env,
+        napi_value value,
+        Span<byte> buf,
+        IntPtr bufsize,
+        out IntPtr result);
+
     #endregion
 
     #region 数值操作

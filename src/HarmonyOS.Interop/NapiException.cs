@@ -12,8 +12,14 @@ namespace HarmonyOS.Interop;
 /// </summary>
 public sealed class NapiException : Exception
 {
-    internal NapiException(napi_status status, string op, long? errorCode = null)
-        : base($"NAPI call '{op}' failed with status {status} ({(int)status})")
+    internal NapiException(
+        napi_status status,
+        string op,
+        long? errorCode = null,
+        string? detail = null)
+        : base(
+            $"NAPI call '{op}' failed with status {status} ({(int)status})" +
+            (string.IsNullOrEmpty(detail) ? string.Empty : $": {detail}"))
     {
         Status = status;
         Operation = op;
@@ -23,5 +29,6 @@ public sealed class NapiException : Exception
     internal napi_status Status { get; }
     public string Operation { get; }
     public long? ErrorCode { get; }
+    public string? Detail { get; }
 }
 #endif

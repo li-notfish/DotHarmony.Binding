@@ -11,8 +11,9 @@
 最小 CI 门禁与性能基线脚本已落地，详见 ROADMAP M3 与 `docs/PERF_BASELINE.md`。
 
 **上手**：从零创建鸿蒙 MAUI 应用 / 给已有 MAUI 应用加鸿蒙平台，见 **[GETTING_STARTED.md](GETTING_STARTED.md)**。
-**权限自动推导**：MAUI 侧调用会自动生成 `module.json5` 的 `requestPermissions` 和 `usedScene`，
-并输出 `obj/harmony/permissions.report.md`；支持 ProjectReference 聚合、XAML 事件来源定位、
+**权限自动推导**：MAUI 侧的方法、属性和事件访问会自动生成 `module.json5` 的
+`requestPermissions` 和 `usedScene`，并输出 `obj/harmony/permissions.report.md`；支持
+实现库自带的 `harmony-permissions.capabilities.json` 能力契约、ProjectReference 聚合、XAML 事件来源定位、
 自定义映射与显式 `When` 覆盖，未映射或冲突场景会给出 `HMP001`–`HMP006` warning。
 **平台服务**：适配一个新的 Essentials 服务（注入点取证/五步流程/坑表），见 **[ESSENTIALS.md](ESSENTIALS.md)**。
 **风险预案**：C 原生节点 API 退出假设下的 ArkTS 引擎迁移计划见 **[MIGRATION_ARKTS_ENGINE.md](MIGRATION_ARKTS_ENGINE.md)**。
@@ -30,6 +31,8 @@
 | 各平台 Handler（Android/iOS/...） | `HarmonyOS.Maui`（MAUI 控件 → ArkUI 原生节点，不 fork dotnet/maui） |
 | Android/iOS head 工程 | `HarmonyHost`（ArkTS 宿主 + C shim 模板；targets 按应用生成实例） |
 | workload / msbuild 集成 | `scripts/`（PublishAotClang（Windows 本地 NativeAOT）+ hvigor + hdc 一键脚本）
+
+实际分层链路：`MAUI/Essentials -> HarmonyOS.Bindings (Nodes/Api) -> HarmonyOS.Interop (NAPI/PInvoke/NativeAOT) -> native`。`HarmonyOS.Interop` 是底层互操作核心，`HarmonyOS.Bindings` 负责 ArkUI 节点和 `@ohos.*` API 绑定，上层平台实现只调用绑定面。
 
 ```
 [MAUI 应用] XAML / C# 控件树（Microsoft.Maui.Controls VirtualView）
@@ -61,8 +64,19 @@
 
 ## 快速开始
 
-环境：Node.js + npm（解析器）、Python 3（头文件提取）、.NET 10 SDK（绑定库）、
-DevEco Studio（内置 HarmonyOS SDK/NDK/hvigor）、PublishAotClang（Windows 本地 NativeAOT）。
+### 前置条件
+
+| 工具/材料 | 用途 | 检查或配置 |
+|---|---|---|
+| .NET 10 SDK、Node.js、Python 3 | 生成器与绑定库构建 | `pwsh scripts/check-harmony-env.ps1` 或 `bash scripts/check-harmony-env.sh` |
+| DevEco Studio、HarmonyOS/OpenHarmony SDK | hvigor、NDK、`hdc` | 脚本按语义版本倒序选择最高可用版本；固定 SDK 26 不是前置条件 |
+| 模拟器或真机 | `HarmonyRun` 设备预检与部署 | 启动设备后运行 `hdc list targets`；空列表可执行 `hdc tconn 127.0.0.1:5555`（按实际地址） |
+| PublishAotClang | Windows 本地 NativeAOT 交叉编译 | 由 `Directory.Build.props` 还原 |
+| 签名材料 | 真机/release 安装 | `.p12`、`.cer`、`.p7b`、keystore/证书别名及两组口令；模拟器调试可使用 unsigned HAP |
+
+生成器/脚本可用 `--sdk <版本目录或集合根目录>`、`OHOS_SDK_BASE`、`OHOS_SDK_HOME`、`OHSDK_HOME`
+指定 SDK；未指定时才按优先级回退到 DevEco 内置 SDK 和历史默认路径。环境变量无效时会告警并继续回退。
+连接设备可增加 `scripts/check-harmony-env.ps1 -CheckDevice` 或 `scripts/check-harmony-env.sh --check-device`。
 
 ```bash
 # 1. 解析器构建 + 测试（79 用例）
@@ -92,15 +106,37 @@ cmd //c scripts\build-hap.cmd
 bash scripts/deploy-hap.sh
 ```
 
+> 生成范围：仓库当前没有生成宿主 C 代码的链路；生成器产出 C# 绑定与元数据，
+> `HarmonyHost` / `HarmonyHostEngine` 的 C/CMake 仍按手写模板维护。
+
+`HarmonyRun` 按以下顺序执行，前一步失败不会进入后一步：
+
+| 阶段 | 失败时先检查 |
+|---|---|
+| 设备预检 | `hdc list targets` 是否为空；多设备时设置 `HDC_TARGET=<host:port>` |
+| 宿主 staging / 权限 | bundleId、模板 JSON5 结构、`obj/harmony/permissions.report.md` |
+| NativeAOT | `dotnet publish` 的 RID、PublishAotClang 还原、arm64/x64 产物 |
+| HAP / 签名 | `node.exe`、`hvigorw.js`、DevEco SDK、签名六项是否成套 |
+| 部署与启动 | HAP 安装结果、`hilog` 中 `HarmonyHost`/`libapp`/`dotnet` 标记；20 秒未就绪会返回非零并附最近 hilog |
+
 > 云调试/真机安装注意：`normal` 应用只会声明 `normal` 等级权限；生成器会按 SDK 的
 > `PermissionDefinitions.json` 自动过滤。调试设备请使用 **debug profile**，release profile
 > 只用于发布渠道，直接安装到云调试手机通常会失败。
+
+### 样例矩阵
+
+| 典型场景 | 样例 | 覆盖重点 |
+|---|---|---|
+| 纯 UI 渲染 | `HelloApp`、`WeatherTwentyOne` | Handler、XAML/布局/手势/导航、天气列表与视觉状态 |
+| 硬件 API 调用 | `ApiDemo`、`EssentialsApp` | `@ohos.*` 模块、Promise/事件、设备/传感器/定位/剪贴板/Browser |
+| 复杂互操作 | `EngineLab`、`PerfApp` | ArkTS 引擎节点回流、NativeAOT/TSFN/回调压力与性能基线 |
 
 ## 脚本工具链（scripts/）
 
 | 脚本 | 用途 | 说明 |
 |---|---|---|
 | `stage-host.ps1` | 宿主工程生成：模板 → 按应用实例（重写 bundleName/应用名） | 由 targets 的 HarmonyStageHost 调用（内容戳增量）；`HarmonyGenerateHost=false` 可跳过 |
+| `check-harmony-env.ps1` / `.sh` | 生成、构建、部署环境自检 | 检查 .NET/Node/Python/DevEco/SDK/hdc；`-CheckDevice` / `--check-device` 可选检查设备 |
 | `patch-openharmony-nativeaot.ps1` | 修补 arm64 NativeAOT runtime 的 NUMA 探测调用 | 由 `HarmonyBuildLibApp` 自动执行；避免云真机 seccomp 拦截 `get_mempolicy` |
 | `build-hap.cmd` | hvigor 打 HAP | DevEco Studio 路径自动探测，`DEVECO_HOME` 可覆盖；`HOST_DIR` 指向按应用暂存宿主（targets 自动设置） |
 | `build-hap.cmd <样例名>` | hvigor 打指定样例的 HAP | 支持 `WeatherTwentyOne`、样例目录或 staged host 目录；省略参数时仍默认 `samples/HarmonyHost` |
@@ -112,7 +148,7 @@ bash scripts/deploy-hap.sh
 
 | 变量 | 作用 | 探测顺序 |
 |---|---|---|
-| `OHOS_SDK_BASE` | OpenHarmony SDK 根目录（含 `26.0.0/toolchains`） | → `OHSDK_HOME` → `D:\Harmony\OpenHarmony\Sdk` → DevEco 内置 sdk |
+| `OHOS_SDK_BASE` | OpenHarmony SDK 版本根目录或版本集合根目录（可解析出 `toolchains/hdc.exe`） | → `OHOS_SDK_HOME` → `OHSDK_HOME` → DevEco 内置 sdk → 本机历史默认路径 |
 | `DEVECO_HOME` | DevEco Studio 安装目录 | → `D:\Program Files\Huawei\DevEco Studio` → C 盘同名 |
 | `HOST_DIR` | 宿主目录覆盖（三脚本通用；targets 生成模式自动指向 `obj/harmony/host`） | `samples/HarmonyHost` |
 
@@ -127,7 +163,7 @@ bash scripts/deploy-hap.sh
 | `HarmonyOS.Interop` | napi 互操作核心（env 注入/封送/TSFN/HiLog） |
 | `HarmonyOS.Bindings` | ArkUI/@ohos.* 绑定（依赖 Interop） |
 | `HarmonyOS.Essentials` | Essentials 鸿蒙实现（依赖 Bindings） |
-| `HarmonyOS.Maui` | MAUI 渲染层 + **buildTransitive 宿主编排**（targets + scripts + 宿主模板随包分发；应用工程无需仓库工作副本） |
+| `HarmonyOS.Maui` | MAUI 渲染层 + **buildTransitive 宿主编排**（targets + scripts + 宿主模板随包分发；应用工程无需仓库工作副本）+ 官方 `MauiAppBuilder` 桥（`UseHarmonyApp<TApp>()` 注册 `IApplication`，`RunHarmony(MauiApp)` 接入鸿蒙宿主） |
 | `HarmonyOS.Templates` | `dotnet new harmony-maui` 应用模板（含 `Platforms/HarmonyOS` 启动桩） |
 
 消费方体验对齐 maui-android 单项目：`<PackageReference Include="HarmonyOS.Maui" Version="..." />` 后
@@ -186,10 +222,14 @@ src/HarmonyOS.Bindings/      绑定库（net10.0, AOT/trim 友好；Api/ 438 个
 src/HarmonyOS.Essentials/    MAUI Essentials 鸿蒙实现独立装（DeviceInfo/剪贴板/Preferences/五类传感器/定位/选图等 22 服务）
 src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/ContentPage → ArkUI 节点）
 samples/HarmonyHost/         鸿蒙宿主模板（ArkTS + C shim + CMake + ohosImports.ets 模块登记；targets 按应用 stage 到 obj/harmony/host）
+samples/HarmonyHostEngine/   ArkTS 引擎宿主模板（EngineLab 的 DynamicNode/EngineBridge 路线）
 samples/dotnet/HelloApp/     M1 控件 demo（XAML + NativeAOT → libapp.so）
+samples/dotnet/WeatherTwentyOne/ 复杂 XAML/资源/ViewModel 的纯 UI 渲染样例
 samples/dotnet/ApiDemo/      M2 API 绑定 demo（模块验证/Promise→Task/TSFN；DEMO_APP=ApiDemo 切换）
 samples/dotnet/EssentialsApp/ M2.4 Essentials 验证（22 服务：信息栏 + 剪贴板授权回环 + Preferences 持久化 + Battery/Vibration/Connectivity + SecureStorage 回环 + Browser/Share/Email + 传感器/定位/选图）
-                             两者的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
+samples/dotnet/EngineLab/    ArkTS 引擎与 .NET 节点回流的复杂互操作样例
+samples/dotnet/PerfApp/      NativeAOT、TSFN、回调与事件总线压力/性能样例
+                             样例的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
                              对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
                              由 src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets 提供
 scripts/                     stage-host / build-hap / deploy-hap 一键工具链（+ verify-*-uitest 行为回归）

@@ -6,6 +6,10 @@ namespace HarmonyOS.ArkUI;
 
 public unsafe partial class Text
 {
+    /// <summary>字符间距（NODE_TEXT_LETTER_SPACING，单位 vp）</summary>
+    public void SetLetterSpacing(float spacing)
+        => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_LETTER_SPACING, ArkUIValue.F(spacing));
+
     /// <summary>最大行数（NODE_TEXT_MAX_LINES，i32）</summary>
     public void SetMaxLines(int maxLines)
         => SetNumericAttribute(ArkUI_NodeAttributeType.NODE_TEXT_MAX_LINES, ArkUIValue.I(maxLines));

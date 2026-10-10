@@ -75,7 +75,7 @@ public sealed class ArkTsCommand
             ArkTsCommandOp.SetEvents => string.Join(",", Events ?? []),
             _ => "",
         };
-        return $"{Op}(id={NodeId}{(detail.Length > 0 ? $", {detail}" : "")})";
+        return $"{Op}(id={NodeId}{(detail?.Length > 0 ? $", {detail}" : "")})";
     }
 }
 

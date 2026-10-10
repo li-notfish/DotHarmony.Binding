@@ -11,36 +11,12 @@ $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
+. (Join-Path $scriptDir "..\lib\sdk.ps1")
 
 Write-Host "=== Device Matrix: enumerate connected devices ==="
 
-# Locate hdc (same probe order as collect-baseline.ps1)
-$hdcCandidates = @(
-    $env:OHOS_SDK_BASE,
-    $env:OHSDK_HOME,
-    "C:\Program Files\Huawei\DevEco Studio\sdk",
-    "D:\Program Files\Huawei\DevEco Studio\sdk\default\openharmony",
-    "C:\Program Files\Huawei\DevEco Studio\sdk\default\openharmony",
-    "D:\Harmony\OpenHarmony\Sdk"
-) | Where-Object { $_ }
-
-$hdc = $null
-foreach ($base in $hdcCandidates) {
-    foreach ($relative in @("26.0.0\toolchains\hdc.exe", "toolchains\hdc.exe")) {
-        $candidate = Join-Path $base $relative
-        if (Test-Path -LiteralPath $candidate) {
-            $hdc = $candidate
-            break
-        }
-    }
-    if ($hdc) {
-        break
-    }
-}
-
-if (-not $hdc) {
-    throw "hdc.exe not found. Set OHOS_SDK_BASE to the OpenHarmony SDK root."
-}
+# Locate hdc through the shared SDK resolver.
+$hdc = Find-HarmonyHdc
 
 Write-Host "hdc: $hdc"
 

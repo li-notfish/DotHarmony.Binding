@@ -384,33 +384,44 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
             if (handler.PlatformView is not ArkUINode node) continue;
             var bounds = MAbsolute.GetLayoutBounds((MBindableObject)view);
             var flags = MAbsolute.GetLayoutFlags((MBindableObject)view);
-            bool sizeProp = flags.HasFlag(MALayoutFlags.SizeProportional);
-            bool posProp = flags.HasFlag(MALayoutFlags.PositionProportional);
-
-            bool wAuto = !sizeProp && bounds.Width == MAbsolute.AutoSize;
-            bool hAuto = !sizeProp && bounds.Height == AbsoluteLayout.AutoSize;
-            float w = sizeProp ? (float)bounds.Width * _containerW : (float)bounds.Width;
-            float h = sizeProp ? (float)bounds.Height * _containerH : (float)bounds.Height;
-
-            // 比例定位锚定的是"扣除自身尺寸后的可放置区"
-            float x = posProp ? (float)bounds.X * (_containerW - w) : (float)bounds.X;
-            float y = posProp ? (float)bounds.Y * (_containerH - h) : (float)bounds.Y;
-
-            // MAUI 子节点 Margin：定位偏移总是生效；比例/显式尺寸维内缩，auto 维不缩
-            var mg = view.Margin;
-            float mgL = (float)mg.Left, mgT = (float)mg.Top, mgR = (float)mg.Right, mgB = (float)mg.Bottom;
-            if (mgL > 0 || mgT > 0 || mgR > 0 || mgB > 0)
-            {
-                x += mgL; y += mgT;
-                if (!wAuto) w = Math.Max(w - mgL - mgR, 0);
-                if (!hAuto) h = Math.Max(h - mgT - mgB, 0);
-            }
+            var (x, y, w, h, wAuto, hAuto) = ResolveAbsoluteBounds(
+                flags, bounds, _containerW, _containerH, view.Margin);
 
             if (!wAuto) { if (w > 0) node.SetWidth(w); else node.SetWidthAuto(); }
             if (!hAuto) { if (h > 0) node.SetHeight(h); else node.SetHeightAuto(); }
             node.SetPosition(Math.Max(x, 0), Math.Max(y, 0));
             node.SetZIndex(ZIndexOrder.EffectiveZ(view));
         }
+    }
+
+    /// <summary>AbsoluteLayout 子节点 bounds 解析（纯函数，供单测）：SizeProportional 按容器
+    /// 比例求尺寸，PositionProportional 锚定"扣除自身尺寸后的可放置区"；Margin 定位偏移总是
+    /// 生效，比例/显式尺寸维内缩，auto 维不缩（让内容自撑）。</summary>
+    internal static (float X, float Y, float W, float H, bool WAuto, bool HAuto) ResolveAbsoluteBounds(
+        MALayoutFlags flags, Microsoft.Maui.Graphics.Rect bounds,
+        float containerW, float containerH, Thickness margin)
+    {
+        bool sizeProp = flags.HasFlag(MALayoutFlags.SizeProportional);
+        bool posProp = flags.HasFlag(MALayoutFlags.PositionProportional);
+
+        bool wAuto = !sizeProp && bounds.Width == MAbsolute.AutoSize;
+        bool hAuto = !sizeProp && bounds.Height == MAbsolute.AutoSize;
+        float w = sizeProp ? (float)bounds.Width * containerW : (float)bounds.Width;
+        float h = sizeProp ? (float)bounds.Height * containerH : (float)bounds.Height;
+
+        // 比例定位锚定的是"扣除自身尺寸后的可放置区"
+        float x = posProp ? (float)bounds.X * (containerW - w) : (float)bounds.X;
+        float y = posProp ? (float)bounds.Y * (containerH - h) : (float)bounds.Y;
+
+        float mgL = (float)margin.Left, mgT = (float)margin.Top,
+              mgR = (float)margin.Right, mgB = (float)margin.Bottom;
+        if (mgL > 0 || mgT > 0 || mgR > 0 || mgB > 0)
+        {
+            x += mgL; y += mgT;
+            if (!wAuto) w = Math.Max(w - mgL - mgR, 0);
+            if (!hAuto) h = Math.Max(h - mgT - mgB, 0);
+        }
+        return (x, y, w, h, wAuto, hAuto);
     }
 
     /// <summary>
@@ -437,6 +448,15 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     /// 实测 Button 塌成 19x8），信原生前帧自量测（px→vp）。</summary>
     private (float W, float H) MeasureChild(IView view, ArkUINode node, float density)
     {
+        // ScrollView 在 Grid Auto 轨道存在 ArkUI 自量测回环：托管 IContentView 测量
+        // 会把首帧 viewport 高反向写回内容，Pivot 表头实测被撑到 256px 并压入 Star 行。
+        // 原生 MeasuredSize 是稳定锚点；尚未量测（首帧）才回退托管测量。
+        if (view is IScrollView)
+        {
+            var nat = NaturalSize(view, node, density);
+            if (nat.H > 0 && nat.W > 0)
+                return nat;
+        }
         if (view is IContentView or ContentPresenter && view.Handler is not null)
         {
             try
@@ -488,7 +508,7 @@ public class HarmonyManagedLayoutHandler : HarmonyViewHandler<MControlsLayout, A
     }
 
     /// <summary>按 Absolute/Auto/Star 语义解析轨道尺寸（vp）；无 Star 时剩余空间留空。</summary>
-    private static float[] ResolveTracks(GridUnitType[] units, float[] values, float[] autoSizes, float container)
+    internal static float[] ResolveTracks(GridUnitType[] units, float[] values, float[] autoSizes, float container)
     {
         var result = new float[units.Length];
         float fixedTotal = 0;

@@ -22,6 +22,13 @@ public class VirtualNodeTests
         return (node, sink);
     }
 
+    private static KeyValuePair<string, object?> FirstAttr(ArkTsCommand command)
+    {
+        var attrs = command.Attrs;
+        Assert.NotNull(attrs);
+        return attrs[0];
+    }
+
     [Fact]
     public void Create_QueuesCreateCommandWithType()
     {
@@ -54,17 +61,21 @@ public class VirtualNodeTests
         Assert.Equal(ArkTsCommandOp.Create, sink.Commands[0].Op);
         var width = sink.Commands[1];
         Assert.Equal(ArkTsCommandOp.SetAttrs, width.Op);
-        Assert.Equal("width", width.Attrs![0].Key);
-        Assert.Equal(12f, width.Attrs[0].Value);
+        var widthAttr = FirstAttr(width);
+        Assert.Equal("width", widthAttr.Key);
+        Assert.Equal(12f, widthAttr.Value);
 
-        Assert.Equal("height", sink.Commands[2].Attrs![0].Key);
-        Assert.Equal("50%", sink.Commands[2].Attrs[0].Value);
+        var heightAttr = FirstAttr(sink.Commands[2]);
+        Assert.Equal("height", heightAttr.Key);
+        Assert.Equal("50%", heightAttr.Value);
 
-        Assert.Equal("text", sink.Commands[3].Attrs![0].Key);
-        Assert.Equal("hi", sink.Commands[3].Attrs[0].Value);
+        var textAttr = FirstAttr(sink.Commands[3]);
+        Assert.Equal("text", textAttr.Key);
+        Assert.Equal("hi", textAttr.Value);
 
-        Assert.Equal("backgroundColor", sink.Commands[4].Attrs![0].Key);
-        Assert.Equal("#FF336699", sink.Commands[4].Attrs[0].Value);
+        var backgroundAttr = FirstAttr(sink.Commands[4]);
+        Assert.Equal("backgroundColor", backgroundAttr.Key);
+        Assert.Equal("#FF336699", backgroundAttr.Value);
     }
 
     [Fact]
@@ -175,10 +186,12 @@ public class VirtualNodeTests
 
         var cmds = sink.Commands.Where(c => c.Op == ArkTsCommandOp.SetAttrs).ToList();
         Assert.Equal(2, cmds.Count);
-        Assert.Equal("x", cmds[0].Attrs![0].Key);
-        Assert.Equal(16f, cmds[0].Attrs[0].Value);
-        Assert.Equal("y", cmds[1].Attrs![0].Key);
-        Assert.Equal(32f, cmds[1].Attrs[0].Value);
+        var xAttr = FirstAttr(cmds[0]);
+        Assert.Equal("x", xAttr.Key);
+        Assert.Equal(16f, xAttr.Value);
+        var yAttr = FirstAttr(cmds[1]);
+        Assert.Equal("y", yAttr.Key);
+        Assert.Equal(32f, yAttr.Value);
     }
 
     [Fact]
@@ -186,14 +199,19 @@ public class VirtualNodeTests
     {
         var (image, sink) = NewNode("Image");
         image.SetImageSource("icon.png");
-        Assert.Equal("src", sink.Commands.Last(c => c.Op == ArkTsCommandOp.SetAttrs).Attrs![0].Key);
-        Assert.Equal("icon.png", sink.Commands.Last(c => c.Op == ArkTsCommandOp.SetAttrs).Attrs![0].Value);
+        var imageAttr = FirstAttr(sink.Commands.Last(c => c.Op == ArkTsCommandOp.SetAttrs));
+        Assert.Equal("src", imageAttr.Key);
+        Assert.Equal("icon.png", imageAttr.Value);
 
         var (entry, entrySink) = NewNode("Entry");
         entry.SetPlaceholder("type here").SetText("abc");
         var attrs = entrySink.Commands.Where(c => c.Op == ArkTsCommandOp.SetAttrs).ToList();
-        Assert.Equal(("placeholder", "type here"), (attrs[0].Attrs![0].Key, attrs[0].Attrs[0].Value));
-        Assert.Equal(("text", "abc"), (attrs[1].Attrs![0].Key, attrs[1].Attrs[0].Value));
+        var placeholderAttr = FirstAttr(attrs[0]);
+        Assert.Equal("placeholder", placeholderAttr.Key);
+        Assert.Equal("type here", placeholderAttr.Value);
+        var entryTextAttr = FirstAttr(attrs[1]);
+        Assert.Equal("text", entryTextAttr.Key);
+        Assert.Equal("abc", entryTextAttr.Value);
     }
 
     [Fact]

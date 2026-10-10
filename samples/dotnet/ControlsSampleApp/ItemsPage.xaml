@@ -1,0 +1,80 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlsSampleApp.ItemsPage"
+             Title="Items"
+             BackgroundColor="#F8FAFC">
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="CS-ITEMS-MARK" FontSize="11" TextColor="#9CA3AF" />
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="CollectionView — tap to select" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <CollectionView x:Name="DemoCollection" HeightRequest="160" SelectionMode="Single">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Label Text="{Binding .}" TextColor="#111827" Padding="10" />
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label x:Name="CollectionStatus" Text="Nothing selected" FontSize="13" TextColor="#2563EB" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="CarouselView + IndicatorView" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <CarouselView x:Name="DemoCarousel" HeightRequest="100" Loop="False">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BackgroundColor="#EEF2FF" Stroke="#C7D2FE" Padding="12" StrokeShape="RoundRectangle 8">
+                                    <Label Text="{Binding .}" TextColor="#312E81" FontSize="18"
+                                           HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                    </CarouselView>
+                    <IndicatorView x:Name="DemoIndicator"
+                                   IndicatorColor="#CBD5E1" SelectedIndicatorColor="#2563EB"
+                                   IndicatorSize="8" HorizontalOptions="Center" />
+                    <Label x:Name="CarouselStatus" Text="Position: 0" FontSize="13"
+                           TextColor="#312E81" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ListView and cells" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <ListView x:Name="DemoList" HeightRequest="140" HasUnevenRows="False">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextCell Text="{Binding .}" Detail="Tap me" TextColor="#111827" DetailColor="#6B7280" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <Label x:Name="ListStatus" Text="Tap a row" FontSize="13" TextColor="#0F766E" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" Padding="16" StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="TableView" FontAttributes="Bold" FontSize="16" TextColor="#111827" />
+                    <TableView x:Name="DemoTable" HeightRequest="150" HasUnevenRows="True">
+                        <TableRoot>
+                            <TableSection>
+                                <TextCell Text="Text cell" Detail="TableView item" TextColor="#111827" DetailColor="#6B7280" />
+                                <EntryCell Label="Entry cell" Placeholder="Type here" />
+                                <SwitchCell Text="Switch cell" On="True" />
+                                <ViewCell>
+                                    <StackLayout Padding="12">
+                                        <Label Text="View cell" TextColor="#111827" />
+                                    </StackLayout>
+                                </ViewCell>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -13,6 +13,7 @@ public class HarmonyRefreshViewHandler : HarmonyViewHandler<IRefreshView, ArkRef
         [nameof(IRefreshView.IsRefreshing)] = MapIsRefreshing,
         [nameof(IRefreshView.Content)] = MapContent,
         [nameof(IRefreshView.RefreshColor)] = MapRefreshColor,
+        [nameof(IRefreshView.IsRefreshEnabled)] = MapIsRefreshEnabled,
     };
 
     public HarmonyRefreshViewHandler() : base(Mapper) { }
@@ -37,6 +38,12 @@ public class HarmonyRefreshViewHandler : HarmonyViewHandler<IRefreshView, ArkRef
     {
         if (handler is HarmonyRefreshViewHandler h)
             h.PlatformView.IsRefreshing = view.IsRefreshing;
+    }
+
+    public static void MapIsRefreshEnabled(IRefreshViewHandler handler, IRefreshView view)
+    {
+        if (handler is HarmonyRefreshViewHandler h)
+            h.PlatformView.PullToRefresh = view.IsRefreshEnabled;
     }
 
     public static void MapContent(IRefreshViewHandler handler, IRefreshView view)
@@ -67,7 +74,8 @@ public class HarmonyRefreshViewHandler : HarmonyViewHandler<IRefreshView, ArkRef
 
     public static void MapRefreshColor(IRefreshViewHandler handler, IRefreshView view)
     {
-        // ArkUI C API Refresh 无进度球颜色属性，视觉跟随系统主题（gap：NODE 无对应枚举）
+        // ArkUI C API Refresh 无进度球颜色属性，视觉跟随系统主题。
+        HarmonyOS.Interop.HiLog.Warn("HarmonyHost", "[RefreshView] RefreshColor is degraded on HarmonyOS.");
     }
 
     private void OnRefreshing(ArkUINodeEvent e)

@@ -31,14 +31,11 @@ public abstract class ArkUIComponentBase : IDisposable
     {
         if (!_disposed)
         {
-            if (disposing)
+            foreach (var gch in _eventHandles)
             {
-                foreach (var gch in _eventHandles)
-                {
-                    NodeApi.FreeEventHandle(gch);
-                }
-                _eventHandles.Clear();
+                NodeApi.FreeEventHandle(gch);
             }
+            _eventHandles.Clear();
             NodeApi.DestroyComponent(_jsObject);
             _jsObject = IntPtr.Zero;
             _disposed = true;

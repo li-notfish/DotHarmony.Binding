@@ -30,6 +30,9 @@ public class HarmonyShare : IShare
 
     public async Task RequestAsync(ShareFileRequest request)
     {
+        if (request.File is null)
+            throw new ArgumentException("ShareFileRequest.File is null", nameof(request));
+
         int fd = OpenReadOnly(request.File.FullPath);
         try
         {
@@ -55,7 +58,7 @@ public class HarmonyShare : IShare
 
     public async Task RequestAsync(ShareMultipleFilesRequest request)
     {
-        if (request.Files.Count == 0)
+        if (request.Files is not { Count: > 0 })
             throw new ArgumentException("ShareMultipleFilesRequest.Files is empty", nameof(request));
         // 多文件：fd 列表入 ability.params.stream（逗号分隔）+ uri 取首个；接收方按序读
         var fds = new List<int>();

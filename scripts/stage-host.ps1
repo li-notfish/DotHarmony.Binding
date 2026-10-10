@@ -52,10 +52,38 @@ if ($signingEnabled) {
 
 $buildStamp = Join-Path $Destination ".stage-stamp"
 # 修改 staging 行为时递增该版本，让已有暂存宿主自动重建。
-$stageVersion = "3"
-# 模板最新 mtime：任一模板文件改动（EntryAbility/ohosImports/module.json5 等）都应触发重导出
-$templateLatestMtime = (Get-ChildItem $Template -Recurse -File |
-    Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1).LastWriteTimeUtc
+$stageVersion = "4"
+
+function Get-TemplateContentHash([string]$Root) {
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $rootPath = (Resolve-Path -LiteralPath $Root).Path.TrimEnd('\', '/')
+        $files = @(Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force |
+            Sort-Object { $_.FullName.Substring($rootPath.Length) })
+        foreach ($file in $files) {
+            $relative = $file.FullName.Substring($rootPath.Length).TrimStart('\', '/').Replace('\', '/')
+            $pathBytes = [System.Text.Encoding]::UTF8.GetBytes($relative)
+            $lengthBytes = [System.BitConverter]::GetBytes([int64]$file.Length)
+            [void]$sha.TransformBlock($pathBytes, 0, $pathBytes.Length, $null, 0)
+            [void]$sha.TransformBlock($lengthBytes, 0, $lengthBytes.Length, $null, 0)
+            $stream = [System.IO.File]::OpenRead($file.FullName)
+            try {
+                $buffer = [byte[]]::new(81920)
+                while (($read = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+                    [void]$sha.TransformBlock($buffer, 0, $read, $null, 0)
+                }
+            } finally {
+                $stream.Dispose()
+            }
+        }
+        [void]$sha.TransformFinalBlock([byte[]]::new(0), 0, 0)
+        return [System.Convert]::ToHexString($sha.Hash)
+    } finally {
+        $sha.Dispose()
+    }
+}
+
+$templateHash = Get-TemplateContentHash $Template
 # 签名参数参与内容戳（变化则重 stage）；口令只参与哈希不落明文
 $signingStamp = if ($signingEnabled) {
     $h = [System.BitConverter]::ToString(
@@ -71,9 +99,8 @@ if ($PermissionsJson -and (Test-Path -LiteralPath $PermissionsJson)) {
             [System.IO.File]::ReadAllBytes($PermissionsJson)))
     $permissionsStamp = "permissions:$permissionsHash"
 }
-$stampContent = "$stageVersion|$BundleId|$AppTitle|$permissionsStamp|$signingStamp"
+$stampContent = "$stageVersion|template:$templateHash|$BundleId|$AppTitle|$permissionsStamp|$signingStamp"
 $upToDate = (Test-Path $buildStamp) -and
-    ((Get-Item $buildStamp).LastWriteTimeUtc -ge $templateLatestMtime) -and
     ((Get-Content $buildStamp -Raw).Trim() -eq $stampContent.Trim())
 if ($upToDate) {
     Write-Host "=== host staged (up-to-date): $Destination"
@@ -94,28 +121,66 @@ foreach ($stale in @("entry/build", "entry/.cxx", ".hvigor")) {
 
 # 1) bundleName
 $appJson = Join-Path $Destination "AppScope/app.json5"
-(Set-Content $appJson ((Get-Content $appJson -Raw) -replace '"bundleName"\s*:\s*"[^"]*"', "`"bundleName`": `"$BundleId`"")) | Out-Null
+$appText = Get-Content $appJson -Raw
+$bundlePattern = [regex]'"bundleName"\s*:\s*"[^"]*"'
+if (-not $bundlePattern.IsMatch($appText)) {
+    throw "宿主模板结构无法识别：AppScope/app.json5 缺少 bundleName 字段"
+}
+$appText = $bundlePattern.Replace($appText, "`"bundleName`": `"$BundleId`"", 1)
+if ($appText -notmatch ('"bundleName"\s*:\s*"' + [regex]::Escape($BundleId) + '"')) {
+    throw "宿主暂存校验失败：bundleName 未更新为 $BundleId"
+}
+Set-Content $appJson $appText
+
+function Set-RequiredJsonValue([string]$Path, [string]$Name, [string]$Value, [string]$Description) {
+    if (-not (Test-Path -LiteralPath $Path)) {
+        throw "宿主模板结构无法识别：缺少 $Description 资源文件 $Path"
+    }
+    $text = Get-Content -LiteralPath $Path -Raw
+    $pattern = [regex]('("' + [regex]::Escape($Name) + '"\s*,\s*"value"\s*:\s*")[^"]*(")')
+    if (-not $pattern.IsMatch($text)) {
+        throw "宿主模板结构无法识别：$Description 中缺少 $Name"
+    }
+    $escaped = $Value.Replace('\', '\\').Replace('"', '\"').Replace('$', '$$')
+    $updated = $pattern.Replace($text, '${1}' + $escaped + '${2}', 1)
+    if ($updated -eq $text) { throw "宿主暂存替换未生效：$Description / $Name" }
+    Set-Content -LiteralPath $Path -Value $updated
+    $json = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    $entry = @($json.string) | Where-Object { $_.name -eq $Name } | Select-Object -First 1
+    if (-not $entry -or $entry.value -cne $Value) {
+        throw "宿主暂存校验失败：$Description / $Name 最终值不是 '$Value'"
+    }
+}
 
 # 2) 应用显示名（AppScope 资源，module/ability 的 label 都引用它）
 $appString = Join-Path $Destination "AppScope/resources/base/element/string.json"
 if (Test-Path $appString) {
-    (Set-Content $appString ((Get-Content $appString -Raw) -replace
-        ('("name"\s*:\s*"app_name"\s*,\s*"value"\s*:\s*")[^"]*(")'), ('$1' + $AppTitle.Replace('$', '$$') + '$2'))) | Out-Null
+    Set-RequiredJsonValue $appString "app_name" $AppTitle "AppScope 应用名"
+} else {
+    throw "宿主模板结构无法识别：缺少 AppScope 应用名资源文件"
 }
 
 # 3) Ability 显示名（入口模块资源：launcher/最近任务/权限弹窗上看到的名字走这条，
 #    不改则全部共用模板的 HarmonyHost —— staging 语义就是把这一层也拨过去）
 $abilityString = Join-Path $Destination "entry/src/main/resources/base/element/string.json"
 if (Test-Path $abilityString) {
-    (Set-Content $abilityString ((Get-Content $abilityString -Raw) -replace
-        ('("name"\s*:\s*"EntryAbility_label"\s*,\s*"value"\s*:\s*")[^"]*(")'), ('$1' + $AppTitle.Replace('$', '$$') + '$2'))) | Out-Null
+    Set-RequiredJsonValue $abilityString "EntryAbility_label" $AppTitle "入口 Ability 标签"
+} else {
+    throw "宿主模板结构无法识别：缺少入口 Ability 标签资源文件"
 }
 
 # 4) 清空模板继承的 signingConfigs。签名由 hap-sign-tool 处理，避免 hvigor
 #    对 storePassword/keyPassword 明文字段的 32 字符校验限制。
 $buildProfile = Join-Path $Destination "build-profile.json5"
 $profileText = Get-Content $buildProfile -Raw
-$profileText = $profileText -replace '"signingConfigs"\s*:\s*\[[\s\S]*?\]\s*,\s*"products"', "`"signingConfigs`": [],`r`n    `"products`""
+$signingPattern = [regex]'"signingConfigs"\s*:\s*\[[\s\S]*?\]\s*,\s*"products"'
+if (-not $signingPattern.IsMatch($profileText)) {
+    throw "宿主模板结构无法识别：build-profile.json5 缺少 signingConfigs/products"
+}
+$profileText = $signingPattern.Replace($profileText, "`"signingConfigs`": [],`r`n    `"products`"", 1)
+if ($profileText -notmatch '"signingConfigs"\s*:\s*\[\s*\]\s*,\s*"products"') {
+    throw "宿主暂存校验失败：signingConfigs 未清空"
+}
 Set-Content $buildProfile $profileText
 
 # 5) 根据应用代码推导出的权限生成 module.json5 与权限说明资源。

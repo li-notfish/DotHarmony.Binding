@@ -1,0 +1,22 @@
+<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:local="clr-namespace:ControlsSampleApp"
+            x:Class="ControlsSampleApp.TabbedDemoPage"
+            Title="Controls Samples">
+    <local:BasicsPage Title="Basics" />
+    <local:InputsPage Title="Inputs" />
+    <local:LayoutsPage Title="Layouts" />
+    <local:ItemsPage Title="Items" />
+    <local:MediaGraphicsPage Title="Media" />
+    <local:MenusPage Title="Menus" />
+    <local:FlyoutDemoPage Title="Flyout" />
+    <local:ShellDemoPage Title="Shell" />
+    <ContentPage Title="Overview">
+        <Label Text="CS-TABBED-MARK"
+               FontAttributes="Bold"
+               FontSize="18"
+               TextColor="#111827"
+               VerticalOptions="Center"
+               HorizontalOptions="Center" />
+    </ContentPage>
+</TabbedPage>

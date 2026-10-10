@@ -12,10 +12,25 @@ public class AppShell : Shell
 {
     public static AppShell? Instance { get; private set; }
 
+    /// <summary>Locked ↔ Flyout 切换（主页按钮与 Flyout 头部入口共用）。</summary>
+    public static void ToggleFlyoutBehavior()
+    {
+        var sh = Instance!;
+        sh.FlyoutBehavior = sh.FlyoutBehavior == FlyoutBehavior.Locked
+            ? FlyoutBehavior.Flyout : FlyoutBehavior.Locked;
+        HiLog.Info("VProbe", $"[V][BEHAVIOR] {sh.FlyoutBehavior}");
+    }
+
     public AppShell()
     {
         Instance = this;
         HarmonyShellNavigation.RegisterRoute("probeDetail", typeof(ProbeDetailPage));
+        HarmonyShellNavigation.RegisterRoute("probeGrid", typeof(GridProbePage));
+
+        // Locked 并排后内容区极窄，主页按钮可能不可达：Flyout 头部常驻一个切回入口
+        var headerToggle = new Button { Text = "切换 Locked/Flyout" };
+        headerToggle.Clicked += (_, _) => ToggleFlyoutBehavior();
+        FlyoutHeader = headerToggle;
 
         Items.Add(new ShellItem
         {
@@ -81,7 +96,20 @@ public class ShellHomePage : ContentPage
         };
         layout.Children.Add(modalBtn);
 
-        // M2 探针：FlyoutIsPresented 双向 / NavBar / TabBar / 标题热更新
+        var gridBtn = new Button { Text = "GoToAsync //probeGrid" };
+        gridBtn.Clicked += async (_, _) =>
+            await HarmonyShellNavigation.GoToAsync(AppShell.Instance!, "//probeGrid");
+        layout.Children.Add(gridBtn);
+
+        // M2 探针：FlyoutBehavior / FlyoutIsPresented 双向 / NavBar / TabBar / 标题热更新
+        // （Locked 切换放最前：Locked 并排后内容区极窄，靠后的按钮会被挤出可视区）
+        var lockBtn = new Button { Text = "Toggle FlyoutBehavior Locked" };
+        lockBtn.Clicked += (_, _) =>
+        {
+            AppShell.ToggleFlyoutBehavior();
+        };
+        layout.Children.Add(lockBtn);
+
         var flyoutBtn = new Button { Text = "Open flyout via FlyoutIsPresented" };
         flyoutBtn.Clicked += (_, _) =>
         {
@@ -159,7 +187,7 @@ public class ShellHomePage : ContentPage
         neither.SetAppThemeColor(
             ScrollView.BackgroundColorProperty,
             Colors.Beige,
-            Color.FromHex("#2A2A30"));
+            Color.FromArgb("#2A2A30"));
         layout.Children.Add(neither);
 
         layout.Children.Add(_status);
@@ -205,6 +233,66 @@ public class ProbeDetailPage : ContentPage, IQueryAttributable
     {
         base.OnAppearing();
         HiLog.Info("VProbe", "[V][SHELL] detail appearing");
+    }
+}
+
+/// <summary>W2 布局夹具：Star 列（2*,1*）+ Auto/Star 混合行 + AbsoluteLayout 比例定位。</summary>
+public class GridProbePage : ContentPage
+{
+    public GridProbePage()
+    {
+        Title = "GridProbe";
+        var root = new VerticalStackLayout { Spacing = 12, Padding = 12 };
+
+        // Star 列 + Auto 行：两列按 2:1 分宽，首行随内容高
+        var grid = new Grid
+        {
+            ColumnDefinitions =
+            {
+                new ColumnDefinition(new GridLength(2, GridUnitType.Star)),
+                new ColumnDefinition(new GridLength(1, GridUnitType.Star)),
+            },
+            RowDefinitions =
+            {
+                new RowDefinition(GridLength.Auto),
+                new RowDefinition(new GridLength(1, GridUnitType.Star)),
+            },
+            HeightRequest = 220,
+        };
+        var header = new Label { Text = "Auto row, span 2", BackgroundColor = Colors.LightGray };
+        Grid.SetColumnSpan(header, 2);
+        grid.Children.Add(header);
+        var left = new Label { Text = "2* col", BackgroundColor = Colors.LightBlue, VerticalTextAlignment = TextAlignment.Center };
+        Grid.SetRow(left, 1);
+        grid.Children.Add(left);
+        var right = new Button { Text = "1* col" };
+        Grid.SetRow(right, 1);
+        Grid.SetColumn(right, 1);
+        grid.Children.Add(right);
+        root.Children.Add(grid);
+
+        // AbsoluteLayout 比例定位：50% 宽贴右下
+        var abs = new Microsoft.Maui.Controls.AbsoluteLayout { HeightRequest = 160, BackgroundColor = Colors.Beige };
+        var box = new BoxView { Color = Colors.Orange };
+        Microsoft.Maui.Controls.AbsoluteLayout.SetLayoutFlags(box, Microsoft.Maui.Layouts.AbsoluteLayoutFlags.All);
+        Microsoft.Maui.Controls.AbsoluteLayout.SetLayoutBounds(box, new Microsoft.Maui.Graphics.Rect(0.5, 0.5, 0.5, 0.5));
+        abs.Children.Add(box);
+        root.Children.Add(abs);
+
+        var back = new Button { Text = "GoToAsync .." };
+        back.Clicked += async (_, _) => await HarmonyShellNavigation.GoToAsync(AppShell.Instance!, "..");
+        root.Children.Add(back);
+
+        // MCT 平台无关组件验证：InvertedBoolConverter（纯托管 IValueConverter，无需注册）
+        var toggle = new Microsoft.Maui.Controls.Switch { IsToggled = true };
+        var dependent = new Label { Text = "MCT InvertedBoolConverter: visible when OFF" };
+        dependent.SetBinding(VisualElement.IsVisibleProperty, new Microsoft.Maui.Controls.Binding(
+            nameof(Switch.IsToggled), source: toggle,
+            converter: new CommunityToolkit.Maui.Converters.InvertedBoolConverter()));
+        root.Children.Add(toggle);
+        root.Children.Add(dependent);
+
+        Content = root;
     }
 }
 

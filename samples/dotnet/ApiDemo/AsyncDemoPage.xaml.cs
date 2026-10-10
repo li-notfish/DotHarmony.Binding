@@ -1,3 +1,4 @@
+using System.Text;
 using HarmonyOS.Bindings.Api;
 using HarmonyOS.Interop;
 
@@ -160,7 +161,25 @@ public partial class AsyncDemoPage : ContentPage
         }
         catch (ArkTSException ex)
         {
-            ResultLabel.Text = $"ArkTS Error caught: {ex.Reason}\nFull message: {ex.Message}";
+            ResultLabel.Text = $"ArkTS Error caught: code={ex.ErrorCode}, reason={ex.Reason}\nFull message: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"Error: {ex.GetType().Name}: {ex.Message}";
+        }
+    }
+
+    private async void OnTestCallbackReject(object? sender, EventArgs e)
+    {
+        try
+        {
+            var result = await NodeApi.CallMethodAsyncCallback<string>(
+                NodeApi.GetGlobal(), Encoding.UTF8.GetBytes("willFailCallback"), null);
+            ResultLabel.Text = $"Should not reach here: {result}";
+        }
+        catch (ArkTSException ex)
+        {
+            ResultLabel.Text = $"ArkTS callback error caught: code={ex.ErrorCode}, reason={ex.Reason}";
         }
         catch (Exception ex)
         {

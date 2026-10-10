@@ -3,6 +3,7 @@
 // 是平行类型树（不可互相模式匹配），XAML BackgroundColor 产物为 SolidColorBrush。
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using System.Diagnostics.CodeAnalysis;
 using HarmonyOS.Bindings.NativeNode;
 using ArkUINode = HarmonyOS.Bindings.NativeNode.ArkUINodeBase;
 
@@ -24,6 +25,7 @@ public static class BrushHelper
     }
 
     /// <summary>把 Brush 翻译为节点背景：纯色、线性/径向渐变（NODE_*_GRADIENT）、图片（NODE_BACKGROUND_IMAGE）</summary>
+    [RequiresUnreferencedCode("ImageBrush is internal in MAUI and requires reflection over its properties.")]
     public static void ApplyBackground(ArkUINode node, Brush? brush)
     {
         switch (brush)
