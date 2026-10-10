@@ -1,6 +1,9 @@
 {
   "version": 3,
   "mauiMethods": [],
+  "mauiMembers": [
+    { "containingType": "Microsoft.Maui.Networking.Connectivity", "memberName": "Current", "memberKind": "property", "permission": "ohos.permission.GET_NETWORK_INFO", "when": "inuse" }
+  ],
   "mauiPermissionTypes": [
     { "typeName": "LocationWhenInUse", "permission": "ohos.permission.LOCATION", "when": "inuse" },
     { "typeName": "LocationAlways", "permission": "ohos.permission.LOCATION", "when": "always" },
