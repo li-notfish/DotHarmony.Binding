@@ -4,6 +4,7 @@
   "mauiPermissionTypes": [
     { "typeName": "LocationWhenInUse", "permission": "ohos.permission.LOCATION", "when": "inuse" },
     { "typeName": "LocationAlways", "permission": "ohos.permission.LOCATION", "when": "always" },
+    { "typeName": "LocationAlways", "permission": "ohos.permission.LOCATION_IN_BACKGROUND", "when": "always" },
     { "typeName": "Camera", "permission": "ohos.permission.CAMERA", "when": "inuse" },
     { "typeName": "Photos", "permission": "ohos.permission.READ_MEDIA", "when": "inuse" },
     { "typeName": "PhotosAddOnly", "permission": "ohos.permission.READ_MEDIA", "when": "inuse" },
@@ -11,7 +12,7 @@
     { "typeName": "Microphone", "permission": "ohos.permission.MICROPHONE", "when": "inuse" },
     { "typeName": "Speech", "permission": "ohos.permission.MICROPHONE", "when": "inuse" },
     { "typeName": "Vibrate", "permission": "ohos.permission.VIBRATE", "when": "always" },
-    { "typeName": "Bluetooth", "permission": "ohos.permission.USE_BLUETOOTH", "when": "inuse" },
+    { "typeName": "Bluetooth", "permission": "ohos.permission.ACCESS_BLUETOOTH", "when": "inuse" },
     { "typeName": "CalendarRead", "permission": "ohos.permission.READ_CALENDAR", "when": "inuse" },
     { "typeName": "CalendarWrite", "permission": "ohos.permission.WRITE_CALENDAR", "when": "inuse" },
     { "typeName": "ContactsRead", "permission": "ohos.permission.READ_CONTACTS", "when": "inuse" },

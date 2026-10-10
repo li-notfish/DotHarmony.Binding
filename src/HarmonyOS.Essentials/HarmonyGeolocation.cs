@@ -17,6 +17,7 @@ namespace HarmonyOS.Essentials;
 internal sealed class HarmonyGeolocation : IGeolocation
 {
     public const string LocationPermission = "ohos.permission.LOCATION";
+    public const string ApproximateLocationPermission = "ohos.permission.APPROXIMATELY_LOCATION";
 
     private Action<IntPtr>? _onLocationChange;
     private Action<HarmonyOS.ArkUI.LocationError>? _onLocationError;
@@ -24,7 +25,7 @@ internal sealed class HarmonyGeolocation : IGeolocation
     private readonly IHarmonyPermissionGate _permissionGate;
 
     public HarmonyGeolocation()
-        : this(new HarmonyPermissionGate(LocationPermission))
+        : this(new HarmonyPermissionGate(LocationPermission, ApproximateLocationPermission))
     {
     }
 
@@ -41,7 +42,7 @@ internal sealed class HarmonyGeolocation : IGeolocation
 
     public async Task<Location?> GetLastKnownLocationAsync()
     {
-        await _permissionGate.EnsureGrantedAsync(LocationPermission).ConfigureAwait(true);
+        await _permissionGate.EnsureGrantedAsync(LocationPermission, ApproximateLocationPermission).ConfigureAwait(true);
         if (!GeoLocationManager.IsLocationEnabled())
             throw new FeatureNotEnabledException("Location is not enabled on this device.");
 
@@ -53,7 +54,7 @@ internal sealed class HarmonyGeolocation : IGeolocation
     {
         ArgumentNullException.ThrowIfNull(request);
         cancelToken.ThrowIfCancellationRequested();
-        await _permissionGate.EnsureGrantedAsync(LocationPermission).ConfigureAwait(true);
+        await _permissionGate.EnsureGrantedAsync(LocationPermission, ApproximateLocationPermission).ConfigureAwait(true);
         if (!GeoLocationManager.IsLocationEnabled())
             throw new FeatureNotEnabledException("Location is not enabled on this device.");
         var req = new CurrentLocationRequest(
@@ -69,7 +70,7 @@ internal sealed class HarmonyGeolocation : IGeolocation
         ArgumentNullException.ThrowIfNull(request);
         if (_listening)
             throw new InvalidOperationException("Already listening for location updates");
-        await _permissionGate.EnsureGrantedAsync(LocationPermission).ConfigureAwait(true);
+        await _permissionGate.EnsureGrantedAsync(LocationPermission, ApproximateLocationPermission).ConfigureAwait(true);
         if (!GeoLocationManager.IsLocationEnabled())
             throw new FeatureNotEnabledException("Location is not enabled on this device.");
 

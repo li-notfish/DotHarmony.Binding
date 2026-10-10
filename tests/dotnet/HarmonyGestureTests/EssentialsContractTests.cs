@@ -56,10 +56,11 @@ public class EssentialsContractTests
     {
         public int CallCount { get; private set; }
 
-        public Task EnsureGrantedAsync(string permission)
+        public Task EnsureGrantedAsync(params string[] permissions)
         {
             CallCount++;
-            throw new PermissionException($"Permission was not granted: {permission}");
+            throw new PermissionException(
+                $"Permission was not granted: {string.Join(", ", permissions)}");
         }
     }
 }

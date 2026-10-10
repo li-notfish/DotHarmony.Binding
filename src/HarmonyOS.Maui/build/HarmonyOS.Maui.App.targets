@@ -68,9 +68,17 @@
     <TrimmerRootAssembly Include="@(HarmonyBindingRootAssembly->Distinct())" />
   </ItemGroup>
 
+  <!-- Local ProjectReferences do not import referenced-package buildTransitive props. -->
+  <Import Project="..\..\HarmonyOS.Essentials\build\HarmonyOS.Essentials.props"
+          Condition="Exists('..\..\HarmonyOS.Essentials\build\HarmonyOS.Essentials.props')" />
+
+  <ItemGroup>
+    <AdditionalFiles Include="@(HarmonyPermissionCapabilityMap)" />
+  </ItemGroup>
+
   <Target Name="HarmonyGeneratePermissions"
           Condition="'$(HarmonyGenerateHost)' == 'true'"
-          Inputs="$(IntermediateOutputPath)$(TargetFileName);@(HarmonyPermission)"
+          Inputs="$(IntermediateOutputPath)$(TargetFileName);@(HarmonyPermission);@(HarmonyPermissionCapabilityMap);@(ProjectReference->'%(RootDir)%(Directory)harmony-permissions.capabilities.json')"
           Outputs="$(HarmonyPermissionsJson)"
           DependsOnTargets="Compile">
     <PropertyGroup>

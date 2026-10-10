@@ -6,6 +6,7 @@ actually uses. It supports three sources:
 1. **Built-in permission types**  
    `HarmonyOS.Maui.Permissions` maps MAUI's `Permissions.RequestAsync<T>()`
    permission types to HarmonyOS permissions.
+   A permission type may map to multiple permissions.
 
 2. **Library capability maps**  
    A library can ship `harmony-permissions.capabilities.json` next to its
@@ -52,6 +53,7 @@ then verifies that `permissions.json`, `module.json5`, and
 ```
 
 `memberKind` is `property` or `event`. Method calls use `mauiMethods`.
+Methods, members, and permission types may map to multiple permissions.
 
 ## Build outputs
 

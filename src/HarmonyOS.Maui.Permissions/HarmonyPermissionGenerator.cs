@@ -162,9 +162,9 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
                         continue;
                     }
 
-                    var mapping = map.ResolvePermissionType(
+                    var mappings = map.ResolvePermissionType(
                         candidate.PermissionTypeFullName!, candidate.PermissionTypeName!);
-                    if (mapping is null)
+                    if (mappings.Count == 0)
                     {
                         diagnostics.Add(Diagnostic.Create(
                             UnmappedPermissionType,
@@ -173,35 +173,37 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
                         continue;
                     }
 
-                    inferred.Add(new ResolvedPermission(
-                        mapping.Permission,
-                        mapping.When,
-                        sourcePath,
-                        sourceLine));
+                    foreach (var mapping in mappings)
+                    {
+                        inferred.Add(new ResolvedPermission(
+                            mapping.Permission,
+                            mapping.When,
+                            sourcePath,
+                            sourceLine));
+                    }
                     continue;
                 }
 
                 if (candidate.MemberKind is not null)
                 {
-                    var memberMapping = map.ResolveMember(
+                    var memberMappings = map.ResolveMember(
                         candidate.ContainingType,
                         candidate.MethodName,
                         candidate.MemberKind);
-                    if (memberMapping is null)
-                    {
-                        continue;
-                    }
 
-                    inferred.Add(new ResolvedPermission(
-                        memberMapping.Permission,
-                        memberMapping.When,
-                        sourcePath,
-                        sourceLine));
+                    foreach (var mapping in memberMappings)
+                    {
+                        inferred.Add(new ResolvedPermission(
+                            mapping.Permission,
+                            mapping.When,
+                            sourcePath,
+                            sourceLine));
+                    }
                     continue;
                 }
 
-                var methodMapping = map.ResolveMethod(candidate.ContainingType, candidate.MethodName);
-                if (methodMapping is null)
+                var methodMappings = map.ResolveMethod(candidate.ContainingType, candidate.MethodName);
+                if (methodMappings.Count == 0)
                 {
                     if (map.IsKnownPermissionMethod(candidate.ContainingType, candidate.MethodName))
                     {
@@ -215,11 +217,14 @@ public sealed partial class HarmonyPermissionGenerator : IIncrementalGenerator
                     continue;
                 }
 
-                inferred.Add(new ResolvedPermission(
-                    methodMapping.Permission,
-                    methodMapping.When,
-                    sourcePath,
-                    sourceLine));
+                foreach (var mapping in methodMappings)
+                {
+                    inferred.Add(new ResolvedPermission(
+                        mapping.Permission,
+                        mapping.When,
+                        sourcePath,
+                        sourceLine));
+                }
             }
 
             var inferredNames = new HashSet<string>(

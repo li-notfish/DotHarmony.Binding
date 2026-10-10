@@ -2,12 +2,19 @@
   "version": 3,
   "mauiMethods": [
     { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "GetLocationAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "GetLocationAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
     { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "GetLastKnownLocationAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "GetLastKnownLocationAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
     { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "StartListeningForegroundAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.IGeolocation", "methodName": "StartListeningForegroundAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
     { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "GetLocationAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "GetLocationAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
     { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "GetLastKnownLocationAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "GetLastKnownLocationAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
     { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "StartListeningForegroundAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.Geolocation", "methodName": "StartListeningForegroundAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
     { "containingType": "Microsoft.Maui.Devices.Sensors.GeolocationExtensions", "methodName": "GetLocationAsync", "permission": "ohos.permission.LOCATION", "when": "inuse" },
+    { "containingType": "Microsoft.Maui.Devices.Sensors.GeolocationExtensions", "methodName": "GetLocationAsync", "permission": "ohos.permission.APPROXIMATELY_LOCATION", "when": "inuse" },
 
     { "containingType": "Microsoft.Maui.Media.IMediaPicker", "methodName": "CapturePhotoAsync", "permission": "ohos.permission.CAMERA", "when": "inuse" },
     { "containingType": "Microsoft.Maui.Media.IMediaPicker", "methodName": "CaptureVideoAsync", "permission": "ohos.permission.CAMERA", "when": "inuse" },
@@ -39,6 +46,20 @@
     }
   ],
   "mauiMembers": [
+    {
+      "containingType": "Microsoft.Maui.Controls.WebView",
+      "memberName": "Source",
+      "memberKind": "property",
+      "permission": "ohos.permission.CAMERA",
+      "when": "inuse"
+    },
+    {
+      "containingType": "Microsoft.Maui.Controls.WebView",
+      "memberName": "Source",
+      "memberKind": "property",
+      "permission": "ohos.permission.MICROPHONE",
+      "when": "inuse"
+    },
     {
       "containingType": "Microsoft.Maui.ApplicationModel.DataTransfer.IClipboard",
       "memberName": "HasText",

@@ -9,36 +9,47 @@ namespace HarmonyOS.Essentials;
 
 internal interface IHarmonyPermissionGate
 {
-    Task EnsureGrantedAsync(string permission);
+    Task EnsureGrantedAsync(params string[] permissions);
 }
 
 internal sealed class HarmonyPermissionGate : IHarmonyPermissionGate
 {
-    private readonly string _permission;
+    private readonly string[] _permissions;
 
-    public HarmonyPermissionGate(string permission)
+    public HarmonyPermissionGate(params string[] permissions)
     {
-        _permission = permission ?? throw new ArgumentNullException(nameof(permission));
+        _permissions = permissions ?? throw new ArgumentNullException(nameof(permissions));
+
+        if (_permissions.Length == 0)
+            throw new ArgumentException("At least one permission is required.", nameof(permissions));
     }
 
-    public async Task EnsureGrantedAsync(string permission)
+    public async Task EnsureGrantedAsync(params string[] permissions)
     {
-        if (permission != _permission)
-            throw new ArgumentException($"Unexpected permission: {permission}", nameof(permission));
+        if (permissions.Length != _permissions.Length ||
+            permissions.Where((permission, index) => permission != _permissions[index]).Any())
+        {
+            throw new ArgumentException(
+                $"Unexpected permissions: {string.Join(", ", permissions)}",
+                nameof(permissions));
+        }
 
         var context = NodeApi.GetProperty(NodeApi.GetGlobal(), "abilityContext"u8);
         if (context == IntPtr.Zero)
             throw new PermissionException("host did not export globalThis.abilityContext");
 
         var manager = AbilityAccessCtrl.CreateAtManager();
-        var status = manager.GetSelfPermissionStatus(permission);
-        if (status == HarmonyOS.ArkUI.PermissionStatus.Granted)
+        if (_permissions.All(permission =>
+                manager.GetSelfPermissionStatus(permission) == HarmonyOS.ArkUI.PermissionStatus.Granted))
             return;
 
-        await manager.RequestPermissionsFromUserAsync(context, [permission]).ConfigureAwait(true);
+        await manager.RequestPermissionsFromUserAsync(context, _permissions).ConfigureAwait(true);
 
-        status = manager.GetSelfPermissionStatus(permission);
-        if (status != HarmonyOS.ArkUI.PermissionStatus.Granted)
-            throw new PermissionException($"Permission was not granted: {permission}");
+        var missing = _permissions
+            .Where(permission => manager.GetSelfPermissionStatus(permission) != HarmonyOS.ArkUI.PermissionStatus.Granted)
+            .ToArray();
+
+        if (missing.Length > 0)
+            throw new PermissionException($"Permission was not granted: {string.Join(", ", missing)}");
     }
 }
