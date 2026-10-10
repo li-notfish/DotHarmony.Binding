@@ -5,11 +5,24 @@
 // （经 HarmonyNavigationPageHandler 转接 IStackNavigation 协议到 ArkUI）。
 // 平台启动代码见 Platforms/HarmonyOS/HarmonyExports.cs。
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Hosting;
 using HarmonyOS.Maui.Hosting;
 
 namespace ApiDemo;
 
 public static class Program
 {
-    public static void Register() => MauiHarmonyHost.Run(() => new NavigationPage(new MainPage()));
+    public static void Register()
+    {
+        var app = MauiApp.CreateBuilder()
+            .UseHarmonyApp<ApiDemoApp>()
+            .Build();
+        app.RunHarmony();
+    }
+}
+
+public sealed class ApiDemoApp : Application
+{
+    protected override Window CreateWindow(IActivationState? activationState)
+        => new(new NavigationPage(new MainPage()));
 }

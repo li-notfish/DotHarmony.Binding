@@ -21,8 +21,19 @@ public static class HarmonyHandlerFactory
         where TView : Microsoft.Maui.Controls.Element
     {
         ArgumentNullException.ThrowIfNull(factory);
+        Register(typeof(TView), factory);
+    }
+
+    /// <summary>运行时注册（官方 Handler 集合桥接用；viewType 必须是 Element）。</summary>
+    internal static void Register(Type viewType, Func<IElementHandler> factory)
+    {
+        ArgumentNullException.ThrowIfNull(viewType);
+        ArgumentNullException.ThrowIfNull(factory);
+        if (!typeof(Microsoft.Maui.Controls.Element).IsAssignableFrom(viewType))
+            throw new ArgumentException($"viewType must be assignable to Element: {viewType.Name}", nameof(viewType));
+
         lock (RegistryLock)
-            Registry[typeof(TView)] = factory;
+            Registry[viewType] = factory;
     }
 
     /// <summary>注销自定义 Handler（返回 false 表示未注册过）。</summary>

@@ -3,11 +3,24 @@
 // 实现由 HarmonyOS.Maui 启动时注入（RootBuilder 时机，见 HANDLERS.md §6.2）。
 // 平台启动代码见 Platforms/HarmonyOS/HarmonyExports.cs。
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Hosting;
 using HarmonyOS.Maui.Hosting;
 
 namespace EssentialsApp;
 
 public static class Program
 {
-    public static void Register() => MauiHarmonyHost.Run(() => new MainPage());
+    public static void Register()
+    {
+        var app = MauiApp.CreateBuilder()
+            .UseHarmonyApp<EssentialsAppHost>()
+            .Build();
+        app.RunHarmony();
+    }
+}
+
+public sealed class EssentialsAppHost : Application
+{
+    protected override Window CreateWindow(IActivationState? activationState)
+        => new(new MainPage());
 }

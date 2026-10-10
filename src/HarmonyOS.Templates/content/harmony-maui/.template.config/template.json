@@ -17,7 +17,7 @@
     "packageVersion": {
       "type": "parameter",
       "datatype": "string",
-      "defaultValue": "1.1.0",
+      "defaultValue": "1.2.0",
       "replaces": "HarmonyPackageVersion",
       "description": "Version of the HarmonyOS.Maui package to reference."
     },

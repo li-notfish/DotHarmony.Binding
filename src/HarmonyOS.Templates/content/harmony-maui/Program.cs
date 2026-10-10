@@ -10,12 +10,10 @@ public static class Program
 {
     public static void Register()
     {
-        HarmonyDispatcher.EnsureRegistered();
-
         var builder = MauiApp.CreateBuilder();
+        builder.UseHarmonyApp<App>();
         // builder.Services.AddSingleton<IMyService, MyService>();
-        builder.Build();
-        MauiHarmonyHost.RunApplication(() => new App());
+        builder.Build().RunHarmony();
     }
 }
 
