@@ -164,7 +164,7 @@ Promise/AsyncCallback 回调桥接（`PromiseTaskBridge` / `CallbackTaskBridge`�
 ### 2.4 Essentials 平台实现（22 服务）
 
 接线原理：MAUI 10 Essentials 静态入口在 netstandard 产物中缺省实现全部 throw，但留有 internal
-`SetCurrent`/`SetDefault` 注入点。`HarmonyEssentials.Install()`（`MauiHarmonyHost.Run` 自动调用）经
+`SetCurrent`/`SetDefault` 注入点。`HarmonyEssentials.Install()`（`RunHarmony(MauiApp)` / `MauiHarmonyHost.Run` 自动调用）经
 `[DynamicDependency]` 收根 + `CreateDelegate` 缓存完成注入，MAUI 生态代码零改造可用。
 
 22 个服务：DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/

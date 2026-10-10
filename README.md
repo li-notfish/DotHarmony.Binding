@@ -163,7 +163,7 @@ bash scripts/deploy-hap.sh
 | `HarmonyOS.Interop` | napi 互操作核心（env 注入/封送/TSFN/HiLog） |
 | `HarmonyOS.Bindings` | ArkUI/@ohos.* 绑定（依赖 Interop） |
 | `HarmonyOS.Essentials` | Essentials 鸿蒙实现（依赖 Bindings） |
-| `HarmonyOS.Maui` | MAUI 渲染层 + **buildTransitive 宿主编排**（targets + scripts + 宿主模板随包分发；应用工程无需仓库工作副本）+ `HarmonyMauiAppBuilder` 最小 UseMauiApp 等价引导 |
+| `HarmonyOS.Maui` | MAUI 渲染层 + **buildTransitive 宿主编排**（targets + scripts + 宿主模板随包分发；应用工程无需仓库工作副本）+ 官方 `MauiAppBuilder` 桥（`UseHarmonyApp<TApp>()` 注册 `IApplication`，`RunHarmony(MauiApp)` 接入鸿蒙宿主） |
 | `HarmonyOS.Templates` | `dotnet new harmony-maui` 应用模板（含 `Platforms/HarmonyOS` 启动桩） |
 
 消费方体验对齐 maui-android 单项目：`<PackageReference Include="HarmonyOS.Maui" Version="..." />` 后

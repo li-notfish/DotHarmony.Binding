@@ -11,7 +11,7 @@
 |---|---|---|
 | 应用工程 | Program.cs + XAML 页面 + Platforms/HarmonyOS 启动代码 | ✅ 本文的主角 |
 | HarmonyOS.Maui | 28 个具体 Handler（30 个工厂分派形态）、手势、导航、托管布局 | ❌ 引用即可 |
-| HarmonyOS.Essentials | MAUI Essentials 鸿蒙实现（22 服务） | ❌ 引用即可（MauiHarmonyHost.Run 自动安装） |
+| HarmonyOS.Essentials | MAUI Essentials 鸿蒙实现（22 服务） | ❌ 引用即可（`RunHarmony(MauiApp)` / `MauiHarmonyHost.Run` 自动安装） |
 | HarmonyOS.Bindings | ArkUI NDK 原生节点 + 438 个 @ohos.* 模块绑定 | ❌ 引用即可（仅声明用到的 @ohos 模块） |
 | HarmonyOS.Interop | napi 互操作核心独立装 | ❌ 引用即可 |
 | HarmonyHost（ArkTS 宿主） | dlopen libapp.so 的壳工程模板 | ❌ 由 targets 自动生成按应用实例（见 §4） |
@@ -98,7 +98,7 @@ dotnet build MyApp -t:HarmonyRun         # 全链路
 ```
 
 模板工程已含：`Platforms/HarmonyOS/HarmonyExports.cs`（NativeAOT 导出薄转发层）、
-`Program.cs`（`MauiHarmonyHost.Run` 入口）、示例 `MainPage.xaml`。
+`Program.cs`（官方 `MauiAppBuilder` + `UseHarmonyApp<TApp>()` + `RunHarmony` 入口）、示例 `MainPage.xaml`。
 宿主编排 targets 由 `HarmonyOS.Maui` 包经 buildTransitive 自动导入，工程内无需手写 Import。
 release 签名通过属性簇配置（见 README「NuGet 包与模板」一节）。
 
@@ -171,14 +171,20 @@ Windows 交叉 NativeAOT 会报 Cross-OS native compilation is not supported）�
 
 ```csharp
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Hosting;
 using HarmonyOS.Maui.Hosting;
 
 namespace MyApp;
 
 public static class Program
 {
-    // 根页面工厂在 UI 主线程被调用；根页用 NavigationPage 即可获得标准 PushAsync/PopAsync
-    public static void Register() => MauiHarmonyHost.Run(() => new NavigationPage(new MainPage()));
+    public static void Register()
+    {
+        var app = MauiApp.CreateBuilder()
+            .UseHarmonyApp<App>()
+            .Build();
+        app.RunHarmony();
+    }
 }
 ```
 
@@ -274,7 +280,7 @@ dotnet build samples/dotnet/MyApp -t:HarmonyRun
 | Shell（tab/URI 路由/Flyout） | ✅ 支持 | TabBar、Flyout 菜单、绝对/相对路由、query、section 栈、模态、主题色；`FlyoutBehavior.Locked` 为覆盖式常驻（内容区不让宽，与 MAUI 并排布局有差异） |
 | 自绘（Shape/GraphicsView） | ✅ 已支持 | ArkUI 自绘节点（ARKUI_NODE_CUSTOM）+ OH_Drawing；ICanvas 适配器 vp 语义 |
 | CollectionView 大数据量 | ✅ 已支持 | NodeAdapter 虚拟化：按可见范围物化（实测 200 条仅物化 7 条，滚动按需推进/回滚） |
-| **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` / `Connectivity.Current` / `FileSystem.Current` / `Launcher.Default` / `SecureStorage.Default` / 传感器 / `Geolocation` / `MediaPicker` 等） | ✅ 22 个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；MauiHarmonyHost.Run 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage + Accelerometer/Magnetometer/Gyroscope/Compass/OrientationSensor/Geolocation/MediaPicker。IMainThread 暂缓（MAUI 10 无注入点）；IShare 文件分享支持跨应用 fd 授权通道；适配指南见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
+| **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` / `Connectivity.Current` / `FileSystem.Current` / `Launcher.Default` / `SecureStorage.Default` / 传感器 / `Geolocation` / `MediaPicker` 等） | ✅ 22 个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；`RunHarmony(MauiApp)` / `MauiHarmonyHost.Run` 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage + Accelerometer/Magnetometer/Gyroscope/Compass/OrientationSensor/Geolocation/MediaPicker。IMainThread 暂缓（MAUI 10 无注入点）；IShare 文件分享支持跨应用 fd 授权通道；适配指南见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
 | 自定义 Handler / 平台服务 | ❌ 需移植 | 按 [HANDLERS.md](HANDLERS.md) 五步流程写鸿蒙侧 Handler |
 
 ### Step 2：建鸿蒙外壳工程
@@ -294,8 +300,15 @@ dotnet build samples/dotnet/MyApp -t:HarmonyRun
 `Program.cs` 里组装鸿蒙入口（替代你原 AppShell 的角色）：
 
 ```csharp
+using Microsoft.Maui.Hosting;
+
 public static void Register()
-    => MauiHarmonyHost.Run(() => new NavigationPage(new YourExistingMainPage()));
+{
+    var app = MauiApp.CreateBuilder()
+        .UseHarmonyApp<App>()
+        .Build();
+    app.RunHarmony();
+}
 ```
 
 你的页面代码不用改——`INavigation`、生命周期事件、绑定全部照旧。

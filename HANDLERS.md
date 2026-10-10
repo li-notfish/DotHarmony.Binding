@@ -183,21 +183,25 @@ public class HarmonySliderHandler : ViewHandler<Microsoft.Maui.Controls.Slider, 
 Microsoft.Maui.Controls.Slider => new HarmonySliderHandler(),
 ```
 
-**B. 应用/第三方库自定义 Handler（不改本仓库）**：开放注册表，优先于内置分派，
-沿类型继承链向上找最近注册（鸿蒙宿主不走官方 `MauiAppBuilder`，此为 `ConfigureMauiHandlers` 的最小等价物）：
+**B. 应用/第三方库自定义 Handler（不改本仓库）**：推荐走官方 `MauiAppBuilder`。
+`IMauiHandlersCollection` 注册会在 `RunHarmony(MauiApp)` 时桥接到 `HarmonyHandlerFactory`
+开放注册表（官方 `Microsoft.Maui.*` Handler 会被跳过，避免覆盖内置鸿蒙 Handler）：
 
 ```csharp
-// 应用启动时（MauiHarmonyHost.Run/RunApplication 之前）
-HarmonyHandlerFactory.Register<MyCustomView>(() => new MyCustomViewHandler());
+var builder = MauiApp.CreateBuilder();
+builder.UseHarmonyApp<App>();
+builder.ConfigureMauiHandlers(handlers => handlers.AddHandler<MyCustomView, MyCustomViewHandler>());
+var app = builder.Build();
+app.RunHarmony();
 
 // 第三方库需要的托管服务（Handler.MauiContext.Services 解析口）：
 HarmonyMauiContext.RegisterService<IMyService>(new MyService());
 ```
 
-**C. 最小官方 `MauiAppBuilder` 等价引导（HarmonyMauiAppBuilder）**：API 形状对齐 MAUI 模板——
-`ConfigureMauiHandlers`（`AddHandler<TView, THandler>`，落到上面的开放注册表）+ `ConfigureServices`
-（标准 `IServiceCollection`，Build 后作为 `HarmonyMauiContext` 链式解析末段：
-内置 AnimationManager → RegisterService 注册表 → DI 容器）：
+**C. 最小等价引导（HarmonyMauiAppBuilder）**：保留给不想接官方 builder 的场景。
+推荐路径仍是上面的官方 `MauiAppBuilder`；这个 shim 提供
+`ConfigureMauiHandlers` / `ConfigureServices` / `Build`，
+并作为 `HarmonyMauiContext` 链式解析末段（内置 AnimationManager → RegisterService 注册表 → DI 容器）：
 
 ```csharp
 var builder = HarmonyMauiAppBuilder.CreateBuilder();
@@ -212,8 +216,9 @@ MauiHarmonyHost.RunApplication(() => new App());
 （见 HelloApp GridProbe 页的 `InvertedBoolConverter` 实机验证）；带平台 Handler 的控件
 （DrawingView/Popup/CameraView/MediaElement 等）在 net10.0 基础包中只有 stub，
 会抛 `PlatformNotSupportedException`——需按本指南 B/C 路径逐个编写鸿蒙 Handler 后才可用。
-MCT 的 `UseMauiCommunityToolkit()` 扩展绑定官方 `MauiAppBuilder` 类型，不能直接用于
-`HarmonyMauiAppBuilder`；其内部注册逻辑可手工展开为 `ConfigureMauiHandlers` 委托。
+MCT 的 `UseMauiCommunityToolkit()` 扩展绑定官方 `MauiAppBuilder` 类型；走官方
+`MauiAppBuilder + UseHarmonyApp<TApp>() + RunHarmony` 路径可直接使用。带平台 Handler 的控件仍需
+提供鸿蒙 Handler；`HarmonyHandlerBridge` 只桥接非 `Microsoft.Maui.*` 程序集的 Handler。
 
 ### Step 4：属性映射核对清单
 
