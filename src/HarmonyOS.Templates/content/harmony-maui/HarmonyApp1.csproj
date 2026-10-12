@@ -44,12 +44,25 @@
     <SdkSupportedTargetPlatformVersion Include="1.0" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <HarmonyEnableWeb Condition="'$(HarmonyEnableWeb)' == ''">false</HarmonyEnableWeb>
+  </PropertyGroup>
+
   <ItemGroup>
     <!-- buildTransitive targets ship HarmonyStageHost/HarmonyBuildLibApp/HarmonyBuildHap/HarmonyDeploy/HarmonyRun -->
     <PackageReference Include="HarmonyOS.Maui" Version="HarmonyPackageVersion" />
     <!-- 必须显式引用：作为传递依赖时 build 资产被 exclude，Crosscompile.targets 不导入，
          Windows 交叉 NativeAOT 会报 Cross-OS native compilation is not supported -->
     <PackageReference Include="PublishAotClang" Version="HarmonyPublishAotClangVersion" />
+    <PackageReference Condition="'$(HarmonyEnableWeb)' == 'true'"
+                    Include="HarmonyOS.Maui.Web"
+                    Version="HarmonyPackageVersion" />
+    <HarmonyPermission Condition="'$(HarmonyEnableWeb)' == 'true'"
+                       Include="ohos.permission.INTERNET" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(HarmonyEnableWeb)' == 'true'">
+    <Compile Include="Platforms\HarmonyOS\HarmonyWebExports.cs" />
   </ItemGroup>
 
 </Project>
