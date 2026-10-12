@@ -6,6 +6,9 @@ using global::HarmonyOS.Maui.Web;
 
 namespace BlazorHybridApp.Platforms.HarmonyOS;
 
+// Verified: the current OpenHarmony ILC toolchain only exports [UnmanagedCallersOnly]
+// methods from the entry assembly (library-defined ones never reach app.so's dynamic
+// symbol table), so every libapp.so app needs this thin forwarding layer.
 internal static class NativeExports
 {
     [UnmanagedCallersOnly(EntryPoint = "HarmonyInit")]

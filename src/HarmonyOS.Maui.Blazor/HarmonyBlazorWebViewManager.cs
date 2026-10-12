@@ -34,7 +34,9 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
         ArgumentNullException.ThrowIfNull(surface);
         _surface = surface;
 
-        _surface.RegisterMessageHandler(message => MessageReceivedInternal(AppOriginUri, message));
+        // 走自研 AOT 安全 IPC 接收器——官方 WebViewManager.MessageReceived → IpcReceiver 的
+        // JsonElement[] 反序列化在 NativeAOT 下依赖本程序集注册的 converter，只作兜底不可靠。
+        _surface.RegisterMessageHandler(message => HarmonyIpcReceiver.Dispatch(this, message));
         _surface.SetSchemeHandler("https", HandleSchemeRequest);
     }
 
@@ -52,12 +54,15 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
         catch (Exception ex)
         {
             HiLog.Error("HarmonyWeb", $"[blazor-manager] load url failed: {ex.GetType().Name}: {ex.Message}");
+            return;
         }
         StartBlazorAsync();
     }
 
     private void StartBlazorAsync()
     {
+        // ArkWeb 的 JavaScript proxy 注入存在启动窗口，过早调用 Blazor.start 会让
+        // WebViewManager 在页面上下文完成前进入渲染流程；500ms 是原实测稳定值。
         HarmonyDispatcher.Instance.DispatchDelayed(TimeSpan.FromMilliseconds(500), () =>
         {
             try
@@ -100,7 +105,9 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
                 out var stream,
                 out var headers))
         {
-            using var ms = new MemoryStream();
+            using var ms = stream.CanSeek
+                ? new MemoryStream((int)Math.Min(stream.Length, int.MaxValue))
+                : new MemoryStream();
             stream.CopyTo(ms);
             var contentType = headers.TryGetValue("Content-Type", out var type)
                 ? type
@@ -109,11 +116,6 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
         }
 
         return new HarmonyWebResponse(404, "text/plain", System.Text.Encoding.UTF8.GetBytes("Not Found"));
-    }
-
-    internal void MessageReceivedInternal(Uri uri, string message)
-    {
-        MessageReceived(uri, message);
     }
 }
 

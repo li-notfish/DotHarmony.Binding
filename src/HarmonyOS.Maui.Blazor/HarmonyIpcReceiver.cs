@@ -57,8 +57,8 @@ internal static class HarmonyIpcReceiver
         out JsonElement arguments)
     {
         messageType = string.Empty;
-        document = JsonDocument.Parse("[]");
-        arguments = document.RootElement;
+        document = null!;
+        arguments = default;
 
         if (string.IsNullOrEmpty(message) || !message.StartsWith(Prefix, StringComparison.Ordinal))
             return false;
@@ -98,13 +98,14 @@ internal static class HarmonyIpcReceiver
                 var jsRuntime = GetPageService(manager, "JSRuntime");
                 var invocationInfo = new DotNetInvocationInfo(
                     arguments[2].GetString(),
-                    arguments[3].GetString(),
+                    arguments[3].GetString()
+                        ?? throw new InvalidOperationException("BeginInvokeDotNet missing methodIdentifier."),
                     arguments[4].GetInt64(),
                     arguments[1].GetString());
                 DotNetDispatcher.BeginInvokeDotNet(
                     (JSRuntime)jsRuntime,
                     invocationInfo,
-                    arguments[5].GetString());
+                    arguments[5].GetString() ?? "null");
                 return;
             case "EndInvokeJS":
                 if (arguments.GetArrayLength() < 4)

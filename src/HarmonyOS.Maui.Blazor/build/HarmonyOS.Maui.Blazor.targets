@@ -23,6 +23,10 @@
       <_HarmonyBlazorModulesJson Condition="'$(_HarmonyBlazorModulesJson)' == '' AND Exists('$(MSBuildProjectDirectory)\obj\harmony\publish\$(RuntimeIdentifier)\wwwroot\_framework\blazor.modules.json')">$(MSBuildProjectDirectory)\obj\harmony\publish\$(RuntimeIdentifier)\wwwroot\_framework\blazor.modules.json</_HarmonyBlazorModulesJson>
       <_HarmonyBlazorModulesJson Condition="'$(_HarmonyBlazorModulesJson)' == ''">$(NuGetPackageRoot)\microsoft.aspnetcore.components.webview\$(HarmonyAspNetCoreComponentsWebViewVersion)\staticwebassets\blazor.modules.json</_HarmonyBlazorModulesJson>
     </PropertyGroup>
+    <Error Condition="!Exists('$(_HarmonyBlazorWebViewJs)')"
+           Text="blazor.webview.js not found. Expected beside HarmonyOS.Maui.Blazor.targets, under obj\harmony\publish\$(RuntimeIdentifier)\wwwroot\_framework\, or in NuGetPackageRoot microsoft.aspnetcore.components.webview\$(HarmonyAspNetCoreComponentsWebViewVersion)\staticwebassets\ (set HarmonyAspNetCoreComponentsWebViewVersion when consuming outside this repo)." />
+    <Error Condition="!Exists('$(_HarmonyBlazorModulesJson)')"
+           Text="blazor.modules.json not found at '$(_HarmonyBlazorModulesJson)'." />
     <Copy SourceFiles="$(_HarmonyBlazorWebViewJs)"
           DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\src\main\resources\rawfile\wwwroot\_framework\blazor.webview.js"
           SkipUnchangedFiles="true" />

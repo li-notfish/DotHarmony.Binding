@@ -16,32 +16,45 @@ namespace HarmonyOS.Maui.Blazor;
 internal static class HarmonyIpcJsonOptions
 {
     private static bool _configured;
+    private static readonly object Sync = new();
 
     public static void Configure()
     {
         if (_configured)
             return;
 
-        try
+        lock (Sync)
         {
-        var options = GetProviderOptions();
-        if (!options.IsReadOnly)
-        {
-            if (!options.Converters.OfType<HarmonyJsonElementArrayConverter>().Any())
-                options.Converters.Insert(0, new HarmonyJsonElementArrayConverter());
-            if (!options.Converters.OfType<HarmonyJSCallResultTypeConverter>().Any())
-                options.Converters.Insert(0, new HarmonyJSCallResultTypeConverter());
-            if (!options.Converters.OfType<HarmonyNavigationOptionsConverter>().Any())
-                options.Converters.Insert(0, new HarmonyNavigationOptionsConverter());
-        }
-            options.TypeInfoResolver = JsonTypeInfoResolver.Combine(
-                HarmonyIpcJsonContext.Default,
-                options.TypeInfoResolver);
-            _configured = true;
-        }
-        catch (Exception ex)
-        {
-            HiLog.Error("HarmonyWeb", $"[blazor-ipc] configure failed: {ex.GetType().Name}: {ex.Message}");
+            if (_configured)
+                return;
+            try
+            {
+                var options = GetProviderOptions();
+                if (options.IsReadOnly)
+                {
+                    // options 已被首次序列化锁定：converter 插入与 TypeInfoResolver 赋值均会抛/无效。
+                    // 必须在首次 Blazor IPC 之前完成配置——记录硬错误而不是静默降级。
+                    HiLog.Error("HarmonyWeb",
+                        "[blazor-ipc] JsonSerializerOptionsProvider.Options is already read-only; "
+                        + "call UseHarmonyBlazorWebView() before any Blazor serialization occurs.");
+                    return;
+                }
+                if (!options.Converters.OfType<HarmonyJsonElementArrayConverter>().Any())
+                    options.Converters.Insert(0, new HarmonyJsonElementArrayConverter());
+                if (!options.Converters.OfType<HarmonyJSCallResultTypeConverter>().Any())
+                    options.Converters.Insert(0, new HarmonyJSCallResultTypeConverter());
+                if (!options.Converters.OfType<HarmonyNavigationOptionsConverter>().Any())
+                    options.Converters.Insert(0, new HarmonyNavigationOptionsConverter());
+                options.TypeInfoResolver = JsonTypeInfoResolver.Combine(
+                    HarmonyIpcJsonContext.Default,
+                    options.TypeInfoResolver);
+                _configured = true;
+            }
+            catch (Exception ex)
+            {
+                // 不置位 _configured：下次调用重试并再次上报，避免一次性吞掉配置失败
+                HiLog.Error("HarmonyWeb", $"[blazor-ipc] configure failed: {ex.GetType().Name}: {ex.Message}");
+            }
         }
     }
 
