@@ -12,4 +12,8 @@ internal static class NativeWebExports
     [UnmanagedCallersOnly(EntryPoint = "HarmonyWebInterceptRequest")]
     private static nint HarmonyWebInterceptRequest(nint env, nint urlValue, nint createResponseValue)
         => HarmonyWebRuntime.InterceptRequestCore(env, urlValue, createResponseValue);
+
+    [UnmanagedCallersOnly(EntryPoint = "HarmonyWebReceiveMessage")]
+    private static int HarmonyWebReceiveMessage(nint env, nint messageValue)
+        => HarmonyWebRuntime.ReceiveMessageCore(env, messageValue);
 }

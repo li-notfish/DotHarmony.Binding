@@ -130,6 +130,12 @@ $webExportsPath = Join-Path $webAppDir "Platforms\HarmonyOS\HarmonyWebExports.cs
 if (-not (Test-Path -LiteralPath $webExportsPath)) {
     throw "harmony-maui-web template does not contain HarmonyWebExports.cs."
 }
+$webExportsText = Get-Content -LiteralPath $webExportsPath -Raw
+foreach ($export in @("HarmonyWebInit", "HarmonyWebInterceptRequest", "HarmonyWebReceiveMessage")) {
+    if ($webExportsText -notmatch [regex]::Escape($export)) {
+        throw "harmony-maui-web HarmonyWebExports.cs is missing the $export export."
+    }
+}
 
 $webStagedIndex = Join-Path $webAppDir "obj\harmony\host\entry\src\main\ets\pages\Index.ets"
 $webStagedModule = Join-Path $webAppDir "obj\harmony\host\entry\src\main\module.json5"
