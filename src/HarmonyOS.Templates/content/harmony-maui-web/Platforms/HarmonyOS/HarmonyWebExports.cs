@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using global::HarmonyOS.Maui.Web;
 
-namespace HarmonyApp1.Platforms.HarmonyOS;
+namespace HarmonyWebApp1.Platforms.HarmonyOS;
 
 internal static class NativeWebExports
 {

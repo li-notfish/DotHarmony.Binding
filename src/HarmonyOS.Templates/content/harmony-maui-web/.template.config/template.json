@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "ArkTsBinding",
+  "classifications": [ "HarmonyOS", "MAUI", "Web", "App" ],
+  "identity": "HarmonyOS.Templates.MauiWebApp.CSharp",
+  "name": "HarmonyOS MAUI Web App",
+  "description": "A .NET MAUI-style app for HarmonyOS with the opt-in WebView bridge, NativeAOT shared library, staged ArkTS host, and Internet permission.",
+  "shortName": "harmony-maui-web",
+  "sourceName": "HarmonyWebApp1",
+  "defaultName": "HarmonyWebApp1",
+  "preferNameDirectory": true,
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "symbols": {
+    "packageVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "1.2.0",
+      "replaces": "HarmonyPackageVersion",
+      "description": "Version of the HarmonyOS.Maui package to reference."
+    },
+    "publishAotClangVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "1.0.5",
+      "replaces": "HarmonyPublishAotClangVersion",
+      "description": "Version of the PublishAotClang package to reference."
+    }
+  }
+}
