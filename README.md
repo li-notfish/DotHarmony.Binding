@@ -107,7 +107,7 @@ bash scripts/deploy-hap.sh
 ```
 
 > 生成范围：仓库当前没有生成宿主 C 代码的链路；生成器产出 C# 绑定与元数据，
-> `HarmonyHost` / `HarmonyHostEngine` 的 C/CMake 仍按手写模板维护。
+> `HarmonyHost` 的 C/CMake 仍按手写模板维护，EngineLab 通过本地 Host overlay 增量覆盖。
 
 `HarmonyRun` 按以下顺序执行，前一步失败不会进入后一步：
 
@@ -224,12 +224,11 @@ src/HarmonyOS.Bindings/      绑定库（net10.0, AOT/trim 友好；Api/ 438 个
 src/HarmonyOS.Essentials/    MAUI Essentials 鸿蒙实现独立装（DeviceInfo/剪贴板/Preferences/五类传感器/定位/选图等 22 服务）
 src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/ContentPage → ArkUI 节点）
 samples/HarmonyHost/         共享鸿蒙宿主核心（ArkTS + C shim + CMake + ohosImports.ets 模块登记；targets 按应用 stage 到 obj/harmony/host，Web target 再注入 overlay）
-samples/HarmonyHostEngine/   ArkTS 引擎宿主模板（EngineLab 的 DynamicNode/EngineBridge 路线）
+samples/dotnet/EngineLab/    ArkTS 引擎与 .NET 节点回流的复杂互操作样例（共享宿主 + 本地 Host overlay）
 samples/dotnet/HelloApp/     M1 控件 demo（XAML + NativeAOT → libapp.so）
 samples/dotnet/WeatherTwentyOne/ 复杂 XAML/资源/ViewModel 的纯 UI 渲染样例
 samples/dotnet/ApiDemo/      M2 API 绑定 demo（模块验证/Promise→Task/TSFN；DEMO_APP=ApiDemo 切换）
 samples/dotnet/EssentialsApp/ M2.4 Essentials 验证（22 服务：信息栏 + 剪贴板授权回环 + Preferences 持久化 + Battery/Vibration/Connectivity + SecureStorage 回环 + Browser/Share/Email + 传感器/定位/选图）
-samples/dotnet/EngineLab/    ArkTS 引擎与 .NET 节点回流的复杂互操作样例
 samples/dotnet/PerfApp/      NativeAOT、TSFN、回调与事件总线压力/性能样例
                              样例的 Platforms/HarmonyOS/ 放平台启动代码（NativeExports 薄转发层，
                              对齐 MAUI Platforms/Android/MainActivity 惯例）；一键编排 targets
