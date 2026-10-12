@@ -262,6 +262,8 @@ tests/                       jest（解析器/生成器 79 用例）
 - **手势识别**：TapGestureRecognizer/PanGestureRecognizer/PinchGestureRecognizer/SwipeGestureRecognizer/PointerGestureRecognizer 全支持（`HarmonyViewHandler` 基类统一挂载；Tap/Pinch 走 NDK 原生手势，Pan/Swipe/Pointer 走触摸流——pan 原生手势事件数据不可靠，实测沉淀；Tap/Pointer 经 AOT 安全的反射桥触发 internal SendTapped/SendPointer*）；Drag/Drop 识别器（长按起拖 + UDMF 载荷，DRAG_END 销毁）已支持；PanUpdated 单位 vp（等价 iOS points）；未支持：鼠标 ButtonsMask 区分、hover 通道、Pinch 真机多点触控专项
 - **模拟器与云真机验证**：x86_64 模拟器与 arm64 云真机均已通过端到端启动验证；
   arm64 云真机需要上述 NativeAOT NUMA 探测补丁，当前由工具链自动完成。
+- **Blazor Hybrid（实验）**：`samples/dotnet/BlazorHybridApp` 已在模拟器跑通 Router 起始路由、
+  首次渲染和 WebView 原生点击触发的 Blazor 事件分发；outgoing IPC 的 AOT 兼容性由 source generator 与显式 converter 兜底。
 - **手势注入**：Metro Hub 场景此前现象为"注入/触摸滑动点击均无响应"，今已确认为 ContentPresenter 空槽命中测试黑洞所致（非模拟器注入限制），随 ContentPresenter/ContentView 宿主修复一并解决（`verify-zindex-probe.ps1` 的 `uitest uiInput click` 逐步走查在模拟器实测可用）；剩余限制：Pinch 多点触控注入通道，真机验收仍以实际触摸为准
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
 - **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；438/438 模块已全量转正编译，无灰度清单
