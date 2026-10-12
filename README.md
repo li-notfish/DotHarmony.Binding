@@ -156,7 +156,7 @@ bash scripts/deploy-hap.sh
 
 ## NuGet 包与模板
 
-五个包经 `dotnet pack -c Release -o dist` 产出（版本统一由根 `Directory.Build.props` 的 `PackageVersion` 供给）：
+七个包经 `dotnet pack -c Release -o dist` 产出（版本统一由根 `Directory.Build.props` 的 `PackageVersion` 供给）：
 
 | 包 | 内容 |
 |---|---|
@@ -164,7 +164,9 @@ bash scripts/deploy-hap.sh
 | `HarmonyOS.Bindings` | ArkUI/@ohos.* 绑定（依赖 Interop） |
 | `HarmonyOS.Essentials` | Essentials 鸿蒙实现（依赖 Bindings） |
 | `HarmonyOS.Maui` | MAUI 渲染层 + **buildTransitive 宿主编排**（targets + scripts + 宿主模板随包分发；应用工程无需仓库工作副本）+ 官方 `MauiAppBuilder` 桥（`UseHarmonyApp<TApp>()` 注册 `IApplication`，`RunHarmony(MauiApp)` 接入鸿蒙宿主） |
-| `HarmonyOS.Templates` | `dotnet new harmony-maui` 应用模板（含 `Platforms/HarmonyOS` 启动桩） |
+| `HarmonyOS.Maui.Web` | opt-in WebView surface + MAUI WebView handler（`host/Index.ets` 作为共享宿主的 Web 覆盖层） |
+| `HarmonyOS.Maui.Blazor` | Blazor Hybrid 集成（基于 HarmonyOS.Maui.Web） |
+| `HarmonyOS.Templates` | `dotnet new harmony-maui` / `dotnet new harmony-maui-web` 应用模板（含 `Platforms/HarmonyOS` 启动桩） |
 
 消费方体验对齐 maui-android 单项目：`<PackageReference Include="HarmonyOS.Maui" Version="..." />` 后
 `dotnet build -t:HarmonyStageHost / -t:HarmonyRun` 即可（targets 由包内 `buildTransitive/HarmonyOS.Maui.targets` 自动导入）。
@@ -221,7 +223,7 @@ src/HarmonyOS.Bindings/      绑定库（net10.0, AOT/trim 友好；Api/ 438 个
   └─ Hosting/Host.cs         libapp.so 导出入口
 src/HarmonyOS.Essentials/    MAUI Essentials 鸿蒙实现独立装（DeviceInfo/剪贴板/Preferences/五类传感器/定位/选图等 22 服务）
 src/HarmonyOS.Maui/          MAUI Handler 包（Button/Label/StackLayout/ContentPage → ArkUI 节点）
-samples/HarmonyHost/         鸿蒙宿主模板（ArkTS + C shim + CMake + ohosImports.ets 模块登记；targets 按应用 stage 到 obj/harmony/host）
+samples/HarmonyHost/         共享鸿蒙宿主核心（ArkTS + C shim + CMake + ohosImports.ets 模块登记；targets 按应用 stage 到 obj/harmony/host，Web target 再注入 overlay）
 samples/HarmonyHostEngine/   ArkTS 引擎宿主模板（EngineLab 的 DynamicNode/EngineBridge 路线）
 samples/dotnet/HelloApp/     M1 控件 demo（XAML + NativeAOT → libapp.so）
 samples/dotnet/WeatherTwentyOne/ 复杂 XAML/资源/ViewModel 的纯 UI 渲染样例
@@ -274,7 +276,7 @@ tests/                       jest（解析器/生成器 79 用例）
 详细的后续路线、实现方案与难点分析见 **[ROADMAP.md](ROADMAP.md)**：
 - M1（完成）：MAUI 基本面——布局对齐、导航（NavigationPage 转接）、手势识别、CollectionView 虚拟化、 .NET 10 / C# 14 优化批次；剩真机验证
 - M2（完成）：服务层——TSFN 异步层、@ohos.\* 全量生成（438/438）、Promise→Task/事件/ArrayBuffer/Map 封送、Essentials 22 服务、端到端模拟器验证
-- M3（核心完成，收尾中）：装配分层、NDK 头文件生成器（`tools/arkui-bindgen`，镜像已全部切换为生成式）、NuGet 打包与 `dotnet new harmony-maui` 模板已完成；最小 CI 门禁、性能基线脚本与 MAUI 权限自动推导已就绪
+- M3（核心完成，收尾中）：装配分层、NDK 头文件生成器（`tools/arkui-bindgen`，镜像已全部切换为生成式）、NuGet 打包与 `dotnet new harmony-maui` / `harmony-maui-web` 模板已完成；最小 CI 门禁、性能基线脚本与 MAUI 权限自动推导已就绪
 
 ## 致谢 / Acknowledgements
 
