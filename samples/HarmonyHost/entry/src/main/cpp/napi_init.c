@@ -17,6 +17,9 @@ typedef int (*harmony_init_t)(void* env);
 typedef int (*harmony_buildui_t)(void* env, void* nodeContentValue);
 typedef int (*harmony_poppage_t)(void* env);
 typedef int (*harmony_themechanged_t)(void* env, int colorMode);
+typedef int (*harmony_web_init_t)(void* env, void* webViewValue);
+typedef void* (*harmony_web_intercept_t)(void* env, void* urlValue, void* createResponseValue);
+typedef int (*harmony_web_receive_t)(void* env, void* messageValue);
 
 static void* g_app = NULL;
 
@@ -148,6 +151,82 @@ static napi_value PassNodeContent(napi_env env, napi_callback_info info)
     return NULL;
 }
 
+static napi_value PassWebView(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 1;
+    napi_value argv[1];
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    if (argc < 1) {
+        loge("passWebView", "missing WebviewController argument");
+        return NULL;
+    }
+
+    harmony_web_init_t webInit = (harmony_web_init_t)dlsym(g_app, "HarmonyWebInit");
+    if (!webInit) {
+        loge("dlsym HarmonyWebInit", dlerror());
+        return NULL;
+    }
+
+    int r = webInit((void*)env, (void*)argv[0]);
+    if (r == 0) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG,
+                     ".NET WebView bridge initialized");
+    } else {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG,
+                     "HarmonyWebInit failed: %{public}d", r);
+    }
+    return NULL;
+}
+
+static napi_value InterceptWebViewRequest(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 2;
+    napi_value argv[2];
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    if (argc < 2) {
+        loge("interceptWebViewRequest", "missing url or response factory");
+        return NULL;
+    }
+
+    harmony_web_intercept_t intercept =
+        (harmony_web_intercept_t)dlsym(g_app, "HarmonyWebInterceptRequest");
+    if (!intercept) {
+        loge("dlsym HarmonyWebInterceptRequest", dlerror());
+        return NULL;
+    }
+
+    return (napi_value)intercept((void*)env, (void*)argv[0], (void*)argv[1]);
+}
+
+static napi_value ReceiveWebViewMessage(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 1;
+    napi_value argv[1];
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    if (argc < 1) {
+        loge("receiveWebViewMessage", "missing message");
+        return NULL;
+    }
+
+    harmony_web_receive_t receive =
+        (harmony_web_receive_t)dlsym(g_app, "HarmonyWebReceiveMessage");
+    if (!receive) {
+        loge("dlsym HarmonyWebReceiveMessage", dlerror());
+        return NULL;
+    }
+
+    if (receive((void*)env, (void*)argv[0]) != 0) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG, "HarmonyWebReceiveMessage failed");
+    }
+    return NULL;
+}
+
 // 系统 colorMode 变化：转发给 .NET，走 MAUI IApplication.ThemeChanged 标准路径
 static napi_value NotifyThemeChanged(napi_env env, napi_callback_info info)
 {
@@ -211,6 +290,9 @@ static napi_value ModuleInit(napi_env env, napi_value exports)
         {"initDotnet", NULL, InitDotnet, NULL, NULL, NULL, napi_default, NULL},
         {"popPage", NULL, PopPage, NULL, NULL, NULL, napi_default, NULL},
         {"passNodeContent", NULL, PassNodeContent, NULL, NULL, NULL, napi_default, NULL},
+        {"passWebView", NULL, PassWebView, NULL, NULL, NULL, napi_default, NULL},
+        {"interceptWebViewRequest", NULL, InterceptWebViewRequest, NULL, NULL, NULL, napi_default, NULL},
+        {"receiveWebViewMessage", NULL, ReceiveWebViewMessage, NULL, NULL, NULL, napi_default, NULL},
         {"notifyThemeChanged", NULL, NotifyThemeChanged, NULL, NULL, NULL, napi_default, NULL},
         {"notifyLifecycleChanged", NULL, NotifyLifecycleChanged, NULL, NULL, NULL, napi_default, NULL},
     };

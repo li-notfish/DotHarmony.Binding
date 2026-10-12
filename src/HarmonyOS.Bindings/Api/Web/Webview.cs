@@ -5,6 +5,7 @@
 // </auto-generated>
 #nullable enable
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
@@ -416,6 +417,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void LoadUrl(string url, WebHeader[]? headers = null)
     {
+        if (headers is null)
+        {
+            CallMethodVoid(_loadUrl, url);
+            return;
+        }
+
         CallMethodVoid(_loadUrl, url, NapiArg.Of(headers));
     }
 
@@ -544,6 +551,18 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void RegisterJavaScriptProxy(IntPtr jsObject, string name, string[] methodList, string[]? asyncMethodList = null, string? permission = null)
     {
+        if (asyncMethodList is null && permission is null)
+        {
+            CallMethodVoid(_registerJavaScriptProxy, jsObject, name, NapiArg.Of(methodList));
+            return;
+        }
+
+        if (permission is null)
+        {
+            CallMethodVoid(_registerJavaScriptProxy, jsObject, name, NapiArg.Of(methodList), NapiArg.Of(asyncMethodList));
+            return;
+        }
+
         CallMethodVoid(_registerJavaScriptProxy, jsObject, name, NapiArg.Of(methodList), NapiArg.Of(asyncMethodList), permission);
     }
 
@@ -2238,6 +2257,9 @@ public sealed partial class WebDownloadDelegate : JsObject
 public sealed partial class WebSchemeHandler : JsObject
 {
     public WebSchemeHandler(IntPtr handle) : base(handle) { }
+    private static ReadOnlySpan<byte> _WebSchemeHandler => "WebSchemeHandler"u8;
+    public WebSchemeHandler()
+        : this(NodeApi.CreateInstance(Webview.Module, _WebSchemeHandler)) { }
     private static ReadOnlySpan<byte> _onRequestStart => "onRequestStart"u8;
     private static ReadOnlySpan<byte> _onRequestStop => "onRequestStop"u8;
     /// <summary>
@@ -2245,7 +2267,14 @@ public sealed partial class WebSchemeHandler : JsObject
     /// </summary>
     public void OnRequestStart(System.Func<WebSchemeHandlerRequest, WebResourceHandler, bool> callback)
     {
-        CallMethodVoid(_onRequestStart, NapiArg.Of(callback));
+        var (jsFunc, handle) = NodeApi.CreateValueCallbackFunction(
+            (Func<ReadOnlySpan<IntPtr>, object?>)(args =>
+            {
+                _ = callback(new WebSchemeHandlerRequest(args[0]), new WebResourceHandler(args[1]));
+                return true;
+            }));
+        _onRequestStartHandle = handle;
+        CallMethodVoid(_onRequestStart, jsFunc);
     }
 
     /// <summary>
@@ -2255,6 +2284,8 @@ public sealed partial class WebSchemeHandler : JsObject
     {
         CallMethodVoid(_onRequestStop, callback);
     }
+
+    private GCHandle _onRequestStartHandle;
 
 }
 

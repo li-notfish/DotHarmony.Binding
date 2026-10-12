@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PackageId>HarmonyOS.Maui.Web</PackageId>
+    <Description>Opt-in HarmonyOS WebView surface and MAUI WebView handler bridge</Description>
+    <PackageTags>maui;harmonyos;webview</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
+    <ProjectReference Include="..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="HarmonyGestureTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="build\HarmonyOS.Maui.Web.targets" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.Web.targets" />
+    <None Include="build\Index.web.ets" Pack="true" PackagePath="buildTransitive\Index.web.ets" />
+  </ItemGroup>
+
+</Project>

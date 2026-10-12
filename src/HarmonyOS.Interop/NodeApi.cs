@@ -97,6 +97,38 @@ public static class NodeApi
 #endif
     }
 
+    /// <summary>创建空 JS object（供桥层挂属性/方法）。</summary>
+    public static IntPtr CreateObject()
+    {
+#if HARMONYOS
+        NativeNodeApi.napi_create_object(NapiEnv.Current, out var obj).ThrowIfFailed();
+        return obj;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>读取 JS string 值；非 string 返回 null。</summary>
+    public static string? ToString(IntPtr value) => NativeValue.ToString(value);
+
+    /// <summary>调用任意 JS function，用于宿主传入的同步回调。</summary>
+    public static IntPtr CallFunction(IntPtr function, params ReadOnlySpan<NapiArg> args)
+    {
+#if HARMONYOS
+        if (function == IntPtr.Zero)
+            throw new ArgumentNullException(nameof(function));
+        IntPtr[]? pooled = args.Length > StackArgvCapacity ? new IntPtr[args.Length] : null;
+        Span<IntPtr> argv = pooled ?? stackalloc IntPtr[StackArgvCapacity];
+        for (int i = 0; i < args.Length; i++)
+            argv[i] = NativeValue.From(args[i]);
+        NativeNodeApi.napi_call_function(NapiEnv.Current, IntPtr.Zero, function, args.Length, argv, out var result)
+            .ThrowIfFailed();
+        return result;
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
     /// <summary>
     /// 设置组件属性（支持链式调用）
     /// </summary>
@@ -391,6 +423,26 @@ public static class NodeApi
         NativeNodeApi.napi_create_function(
             env, nameBytes, (IntPtr)nameBytes.Length,
             CallbackTrampolines.ArgsTrampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc).ThrowIfFailed();
+        return (jsFunc, gch);
+#else
+        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
+#endif
+    }
+
+    /// <summary>
+    /// 把带返回值的 C# 回调包装为 JS callback（返回值经 NativeValue.From 封送）。
+    /// </summary>
+    public static (IntPtr jsFunc, GCHandle Handle) CreateValueCallbackFunction(
+        Func<ReadOnlySpan<IntPtr>, object?> adapted)
+    {
+#if HARMONYOS
+        ArgumentNullException.ThrowIfNull(adapted);
+        var gch = GCHandle.Alloc(adapted);
+        var env = NapiEnv.Current;
+        var nameBytes = "callback"u8.ToArray();
+        NativeNodeApi.napi_create_function(
+            env, nameBytes, (IntPtr)nameBytes.Length,
+            CallbackTrampolines.ValueTrampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc).ThrowIfFailed();
         return (jsFunc, gch);
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");

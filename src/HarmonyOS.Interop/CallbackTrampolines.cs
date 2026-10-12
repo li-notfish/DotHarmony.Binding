@@ -13,6 +13,9 @@ internal static class CallbackTrampolines
     internal static readonly IntPtr ArgsTrampolinePtr =
         (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr>)&ArgsTrampoline;
 
+    internal static readonly IntPtr ValueTrampolinePtr =
+        (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr>)&ValueTrampoline;
+
     private const int MaxArgs = 16;
 
     internal static IntPtr SafeReturnUndefined(IntPtr env)
@@ -69,6 +72,56 @@ internal static class CallbackTrampolines
                     arrayAdapted(args);
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            HiLog.Error("HarmonyHost", $"[callback] handler threw: {ex.GetType().Name}: {ex.Message}");
+        }
+        return SafeReturnUndefined(env);
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static IntPtr ValueTrampoline(IntPtr env, IntPtr info)
+    {
+        Span<IntPtr> argv = stackalloc IntPtr[MaxArgs];
+        int count;
+        IntPtr[]? wideArgs = null;
+        try
+        {
+            var argc = (IntPtr)MaxArgs;
+            NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
+                .ThrowIfFailed();
+            count = (int)argc;
+            if (count > MaxArgs)
+            {
+                wideArgs = new IntPtr[count];
+                var wideArgc = (IntPtr)count;
+                NativeNodeApi.napi_get_cb_info(env, info, ref wideArgc, wideArgs, out _, out _)
+                    .ThrowIfFailed();
+                count = (int)wideArgc;
+            }
+
+            var target = GCHandle.FromIntPtr(data).Target;
+            object? result = null;
+            if (target is Func<ReadOnlySpan<IntPtr>, object?> spanAdapted)
+            {
+                result = spanAdapted(wideArgs is null ? argv.Slice(0, count) : wideArgs.AsSpan(0, count));
+            }
+            else if (target is Func<IntPtr[], object?> arrayAdapted)
+            {
+                if (wideArgs is not null)
+                {
+                    result = arrayAdapted(wideArgs);
+                }
+                else
+                {
+                    var args = new IntPtr[count];
+                    argv.Slice(0, count).CopyTo(args);
+                    result = arrayAdapted(args);
+                }
+            }
+
+            return NativeValue.From(result);
         }
         catch (Exception ex)
         {

@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Maui.Web\HarmonyOS.Maui.Web.csproj" />
   </ItemGroup>
 
 </Project>
