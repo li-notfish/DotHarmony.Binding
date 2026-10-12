@@ -977,6 +977,11 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public Task<double> WriteAsync(byte[] buffer, WriteOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<double>(_write, NapiArg.Of(buffer));
+        }
+
         return CallMethodAsync<double>(_write, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
@@ -993,6 +998,11 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public double WriteSync(byte[] buffer, WriteOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<double>(_writeSync, NapiArg.Of(buffer));
+        }
+
         return CallMethod<double>(_writeSync, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
@@ -1001,6 +1011,11 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public Task<double> ReadAsync(byte[] buffer, ReadOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<double>(_read, NapiArg.OfArrayBuffer(buffer));
+        }
+
         return CallMethodAsync<double>(_read, NapiArg.OfArrayBuffer(buffer), NapiArg.Of(options));
     }
 
@@ -1017,6 +1032,11 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public double ReadSync(byte[] buffer, ReadOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<double>(_readSync, NapiArg.OfArrayBuffer(buffer));
+        }
+
         return CallMethod<double>(_readSync, NapiArg.OfArrayBuffer(buffer), NapiArg.Of(options));
     }
 
@@ -1184,6 +1204,11 @@ public sealed partial class FsFile : JsObject
     /// </summary>
     public Task LockAsync(bool? exclusive = null, CancellationToken cancellationToken = default)
     {
+        if (exclusive is null)
+        {
+            return CallMethodAsyncVoid(_lock, cancellationToken);
+        }
+
         return CallMethodAsyncVoid(_lock, cancellationToken, NapiArg.Of(exclusive));
     }
 
@@ -1200,6 +1225,12 @@ public sealed partial class FsFile : JsObject
     /// </summary>
     public void TryLock(bool? exclusive = null)
     {
+        if (exclusive is null)
+        {
+            CallMethodVoid(_tryLock);
+            return;
+        }
+
         CallMethodVoid(_tryLock, NapiArg.Of(exclusive));
     }
 
@@ -1370,6 +1401,11 @@ public sealed partial class ReadStream : JsObject
     /// </summary>
     public double Seek(double offset, global::HarmonyOS.ArkUI.WhenceType? whence = null)
     {
+        if (whence is null)
+        {
+            return CallMethod<double>(_seek, offset);
+        }
+
         return CallMethod<double>(_seek, offset, NapiArg.Of(whence));
     }
 
@@ -1414,6 +1450,11 @@ public sealed partial class WriteStream : JsObject
     /// </summary>
     public double Seek(double offset, global::HarmonyOS.ArkUI.WhenceType? whence = null)
     {
+        if (whence is null)
+        {
+            return CallMethod<double>(_seek, offset);
+        }
+
         return CallMethod<double>(_seek, offset, NapiArg.Of(whence));
     }
 

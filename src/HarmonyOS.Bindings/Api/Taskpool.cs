@@ -370,6 +370,12 @@ public sealed partial class LongTask : JsObject
     /// </summary>
     public void SetTransferList(byte[][]? transfer = null)
     {
+        if (transfer is null)
+        {
+            CallMethodVoid(_setTransferList);
+            return;
+        }
+
         CallMethodVoid(_setTransferList, NapiArg.Of(transfer));
     }
 
@@ -386,6 +392,12 @@ public sealed partial class LongTask : JsObject
     /// </summary>
     public void OnReceiveData(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_onReceiveData);
+            return;
+        }
+
         CallMethodVoid(_onReceiveData, NapiArg.Of(callback));
     }
 
@@ -558,6 +570,12 @@ public sealed partial class TaskpoolTask : JsObject
     /// </summary>
     public void SetTransferList(byte[][]? transfer = null)
     {
+        if (transfer is null)
+        {
+            CallMethodVoid(_setTransferList);
+            return;
+        }
+
         CallMethodVoid(_setTransferList, NapiArg.Of(transfer));
     }
 
@@ -574,6 +592,12 @@ public sealed partial class TaskpoolTask : JsObject
     /// </summary>
     public void OnReceiveData(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_onReceiveData);
+            return;
+        }
+
         CallMethodVoid(_onReceiveData, NapiArg.Of(callback));
     }
 
@@ -682,6 +706,11 @@ public sealed partial class AsyncRunner : JsObject
     /// </summary>
     public Task<IntPtr> ExecuteAsync(Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
+        if (priority is null)
+        {
+            return CallMethodAsync<IntPtr>(_execute, NapiArg.Of(task));
+        }
+
         return CallMethodAsync<IntPtr>(_execute, NapiArg.Of(task), NapiArg.Of(priority));
     }
 

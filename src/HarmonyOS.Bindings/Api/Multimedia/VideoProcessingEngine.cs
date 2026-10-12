@@ -108,6 +108,11 @@ public sealed partial class ImageProcessor : JsObject
     /// </summary>
     public Task<IntPtr> EnhanceDetailAsync(IntPtr sourceImage, double width, double height, global::HarmonyOS.ArkUI.MultimediaVideoProcessingEngineQualityLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethodAsync<IntPtr>(_enhanceDetail, sourceImage, width, height);
+        }
+
         return CallMethodAsync<IntPtr>(_enhanceDetail, sourceImage, width, height, NapiArg.Of(level));
     }
 
@@ -116,6 +121,11 @@ public sealed partial class ImageProcessor : JsObject
     /// </summary>
     public IntPtr EnhanceDetailSync(IntPtr sourceImage, double width, double height, global::HarmonyOS.ArkUI.MultimediaVideoProcessingEngineQualityLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethod<IntPtr>(_enhanceDetailSync, sourceImage, width, height);
+        }
+
         return CallMethod<IntPtr>(_enhanceDetailSync, sourceImage, width, height, NapiArg.Of(level));
     }
 
@@ -124,6 +134,11 @@ public sealed partial class ImageProcessor : JsObject
     /// </summary>
     public Task<IntPtr> EnhanceDetailAsync(IntPtr sourceImage, double scale, global::HarmonyOS.ArkUI.MultimediaVideoProcessingEngineQualityLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethodAsync<IntPtr>(_enhanceDetail, sourceImage, scale);
+        }
+
         return CallMethodAsync<IntPtr>(_enhanceDetail, sourceImage, scale, NapiArg.Of(level));
     }
 
@@ -132,6 +147,11 @@ public sealed partial class ImageProcessor : JsObject
     /// </summary>
     public IntPtr EnhanceDetailSync(IntPtr sourceImage, double scale, global::HarmonyOS.ArkUI.MultimediaVideoProcessingEngineQualityLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethod<IntPtr>(_enhanceDetailSync, sourceImage, scale);
+        }
+
         return CallMethod<IntPtr>(_enhanceDetailSync, sourceImage, scale, NapiArg.Of(level));
     }
 

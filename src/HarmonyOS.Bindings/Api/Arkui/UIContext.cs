@@ -2233,6 +2233,11 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public string GetFilteredInspectorTree(string[]? filters = null)
     {
+        if (filters is null)
+        {
+            return CallMethod<string>(_getFilteredInspectorTree);
+        }
+
         return CallMethod<string>(_getFilteredInspectorTree, NapiArg.Of(filters));
     }
 
@@ -2241,6 +2246,11 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public string GetFilteredInspectorTreeById(string id, double depth, string[]? filters = null)
     {
+        if (filters is null)
+        {
+            return CallMethod<string>(_getFilteredInspectorTreeById, id, depth);
+        }
+
         return CallMethod<string>(_getFilteredInspectorTreeById, id, depth, NapiArg.Of(filters));
     }
 
@@ -2657,6 +2667,16 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null, CancellationToken cancellationToken = default)
     {
+        if (sheetOptions is null && targetId is null)
+        {
+            return CallMethodAsyncVoid(_openBindSheet, cancellationToken, bindSheetContent);
+        }
+
+        if (targetId is null)
+        {
+            return CallMethodAsyncVoid(_openBindSheet, cancellationToken, bindSheetContent, NapiArg.Of(sheetOptions));
+        }
+
         return CallMethodAsyncVoid(_openBindSheet, cancellationToken, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
     }
 
@@ -2665,6 +2685,11 @@ public sealed partial class UIContextObject : JsObject
     /// </summary>
     public Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
+        if (partialUpdate is null)
+        {
+            return CallMethodAsyncVoid(_updateBindSheet, cancellationToken, bindSheetContent, sheetOptions);
+        }
+
         return CallMethodAsyncVoid(_updateBindSheet, cancellationToken, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
     }
 
@@ -3234,6 +3259,11 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public string GetFilteredInspectorTree(string[]? filters = null)
     {
+        if (filters is null)
+        {
+            return CallMethod<string>(_getFilteredInspectorTree);
+        }
+
         return CallMethod<string>(_getFilteredInspectorTree, NapiArg.Of(filters));
     }
 
@@ -3242,6 +3272,11 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public string GetFilteredInspectorTreeById(string id, double depth, string[]? filters = null)
     {
+        if (filters is null)
+        {
+            return CallMethod<string>(_getFilteredInspectorTreeById, id, depth);
+        }
+
         return CallMethod<string>(_getFilteredInspectorTreeById, id, depth, NapiArg.Of(filters));
     }
 
@@ -3658,6 +3693,16 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public Task OpenBindSheetAsync(IntPtr bindSheetContent, IntPtr? sheetOptions = null, double? targetId = null, CancellationToken cancellationToken = default)
     {
+        if (sheetOptions is null && targetId is null)
+        {
+            return CallMethodAsyncVoid(_openBindSheet, cancellationToken, bindSheetContent);
+        }
+
+        if (targetId is null)
+        {
+            return CallMethodAsyncVoid(_openBindSheet, cancellationToken, bindSheetContent, NapiArg.Of(sheetOptions));
+        }
+
         return CallMethodAsyncVoid(_openBindSheet, cancellationToken, bindSheetContent, NapiArg.Of(sheetOptions), NapiArg.Of(targetId));
     }
 
@@ -3666,6 +3711,11 @@ public sealed partial class ResolvedUIContext : JsObject
     /// </summary>
     public Task UpdateBindSheetAsync(IntPtr bindSheetContent, IntPtr sheetOptions, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
+        if (partialUpdate is null)
+        {
+            return CallMethodAsyncVoid(_updateBindSheet, cancellationToken, bindSheetContent, sheetOptions);
+        }
+
         return CallMethodAsyncVoid(_updateBindSheet, cancellationToken, bindSheetContent, sheetOptions, NapiArg.Of(partialUpdate));
     }
 
@@ -3941,6 +3991,12 @@ public sealed partial class RouterObject : JsObject
     /// </summary>
     public void Back(IntPtr? options = null)
     {
+        if (options is null)
+        {
+            CallMethodVoid(_back);
+            return;
+        }
+
         CallMethodVoid(_back, NapiArg.Of(options));
     }
 
@@ -3949,6 +4005,12 @@ public sealed partial class RouterObject : JsObject
     /// </summary>
     public void Back(double index, IntPtr? @params = null)
     {
+        if (@params is null)
+        {
+            CallMethodVoid(_back, index);
+            return;
+        }
+
         CallMethodVoid(_back, index, NapiArg.Of(@params));
     }
 
@@ -4136,6 +4198,11 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task OpenCustomDialogAsync(IntPtr dialogContent, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_openCustomDialog, cancellationToken, dialogContent);
+        }
+
         return CallMethodAsyncVoid(_openCustomDialog, cancellationToken, dialogContent, NapiArg.Of(options));
     }
 
@@ -4144,6 +4211,11 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task OpenCustomDialogWithControllerAsync(IntPtr dialogContent, IntPtr controller, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_openCustomDialogWithController, cancellationToken, dialogContent, controller);
+        }
+
         return CallMethodAsyncVoid(_openCustomDialogWithController, cancellationToken, dialogContent, controller, NapiArg.Of(options));
     }
 
@@ -4176,6 +4248,16 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task<double> PresentCustomDialogAsync(IntPtr builder, IntPtr? controller = null, IntPtr? options = null)
     {
+        if (controller is null && options is null)
+        {
+            return CallMethodAsync<double>(_presentCustomDialog, builder);
+        }
+
+        if (options is null)
+        {
+            return CallMethodAsync<double>(_presentCustomDialog, builder, NapiArg.Of(controller));
+        }
+
         return CallMethodAsync<double>(_presentCustomDialog, builder, NapiArg.Of(controller), NapiArg.Of(options));
     }
 
@@ -4208,6 +4290,11 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task OpenPopupAsync(IntPtr content, TargetInfo target, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_openPopup, cancellationToken, content, NapiArg.Of(target));
+        }
+
         return CallMethodAsyncVoid(_openPopup, cancellationToken, content, NapiArg.Of(target), NapiArg.Of(options));
     }
 
@@ -4216,6 +4303,11 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task UpdatePopupAsync(IntPtr content, IntPtr options, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
+        if (partialUpdate is null)
+        {
+            return CallMethodAsyncVoid(_updatePopup, cancellationToken, content, options);
+        }
+
         return CallMethodAsyncVoid(_updatePopup, cancellationToken, content, options, NapiArg.Of(partialUpdate));
     }
 
@@ -4232,6 +4324,11 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task OpenMenuAsync(IntPtr content, TargetInfo target, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_openMenu, cancellationToken, content, NapiArg.Of(target));
+        }
+
         return CallMethodAsyncVoid(_openMenu, cancellationToken, content, NapiArg.Of(target), NapiArg.Of(options));
     }
 
@@ -4240,6 +4337,11 @@ public sealed partial class PromptActionObject : JsObject
     /// </summary>
     public Task UpdateMenuAsync(IntPtr content, IntPtr options, bool? partialUpdate = null, CancellationToken cancellationToken = default)
     {
+        if (partialUpdate is null)
+        {
+            return CallMethodAsyncVoid(_updateMenu, cancellationToken, content, options);
+        }
+
         return CallMethodAsyncVoid(_updateMenu, cancellationToken, content, options, NapiArg.Of(partialUpdate));
     }
 
@@ -4351,6 +4453,12 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void RemoveGlobalGestureListener(global::HarmonyOS.ArkUI.GestureListenerType type, IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_removeGlobalGestureListener, (int)type);
+            return;
+        }
+
         CallMethodVoid(_removeGlobalGestureListener, (int)type, NapiArg.Of(callback));
     }
 
@@ -4367,6 +4475,12 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void OffSwiperContentUpdate(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSwiperContentUpdate);
+            return;
+        }
+
         CallMethodVoid(_offSwiperContentUpdate, NapiArg.Of(callback));
     }
 
@@ -4383,6 +4497,12 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void OffSwiperContentUpdate(IntPtr config, IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSwiperContentUpdate, config);
+            return;
+        }
+
         CallMethodVoid(_offSwiperContentUpdate, config, NapiArg.Of(callback));
     }
 
@@ -4399,6 +4519,12 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void OffRouterPageSizeChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offRouterPageSizeChange);
+            return;
+        }
+
         CallMethodVoid(_offRouterPageSizeChange, NapiArg.Of(callback));
     }
 
@@ -4415,6 +4541,12 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void OffNavDestinationSizeChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offNavDestinationSizeChange);
+            return;
+        }
+
         CallMethodVoid(_offNavDestinationSizeChange, NapiArg.Of(callback));
     }
 
@@ -4431,6 +4563,12 @@ public sealed partial class UIObserver : JsObject
     /// </summary>
     public void OffNavDestinationSizeChangeByUniqueId(double navigationUniqueId, IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offNavDestinationSizeChangeByUniqueId, navigationUniqueId);
+            return;
+        }
+
         CallMethodVoid(_offNavDestinationSizeChangeByUniqueId, navigationUniqueId, NapiArg.Of(callback));
     }
 
@@ -5015,6 +5153,12 @@ public sealed partial class OverlayManager : JsObject
     /// </summary>
     public void AddComponentContent(IntPtr content, double? index = null)
     {
+        if (index is null)
+        {
+            CallMethodVoid(_addComponentContent, content);
+            return;
+        }
+
         CallMethodVoid(_addComponentContent, content, NapiArg.Of(index));
     }
 
@@ -5023,6 +5167,12 @@ public sealed partial class OverlayManager : JsObject
     /// </summary>
     public void AddComponentContentWithOrder(IntPtr content, global::HarmonyOS.Bindings.Api.LevelOrder? levelOrder = null)
     {
+        if (levelOrder is null)
+        {
+            CallMethodVoid(_addComponentContentWithOrder, content);
+            return;
+        }
+
         CallMethodVoid(_addComponentContentWithOrder, content, NapiArg.Of(levelOrder));
     }
 
@@ -5071,6 +5221,11 @@ public sealed partial class OverlayManager : JsObject
     /// </summary>
     public Task OpenOrderOverlayAsync(IntPtr content, IntPtr? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_openOrderOverlay, cancellationToken, content);
+        }
+
         return CallMethodAsyncVoid(_openOrderOverlay, cancellationToken, content, NapiArg.Of(options));
     }
 
@@ -5215,6 +5370,11 @@ public sealed partial class MeasureUtils : JsObject
     /// </summary>
     public IntPtr[] GetParagraphs(IntPtr styledString, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod(_getParagraphs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), styledString);
+        }
+
         return CallMethod(_getParagraphs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), styledString, NapiArg.Of(options));
     }
 
@@ -5254,6 +5414,12 @@ public sealed partial class FocusController : JsObject
     /// </summary>
     public void Activate(bool isActive, bool? autoInactive = null)
     {
+        if (autoInactive is null)
+        {
+            CallMethodVoid(_activate, isActive);
+            return;
+        }
+
         CallMethodVoid(_activate, isActive, NapiArg.Of(autoInactive));
     }
 
@@ -5314,6 +5480,18 @@ public sealed partial class CursorController : JsObject
     /// </summary>
     public void SetCustomCursor(IntPtr value, double? focusX = null, double? focusY = null)
     {
+        if (focusX is null && focusY is null)
+        {
+            CallMethodVoid(_setCustomCursor, value);
+            return;
+        }
+
+        if (focusY is null)
+        {
+            CallMethodVoid(_setCustomCursor, value, NapiArg.Of(focusX));
+            return;
+        }
+
         CallMethodVoid(_setCustomCursor, value, NapiArg.Of(focusX), NapiArg.Of(focusY));
     }
 
@@ -5356,6 +5534,11 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public Task<IntPtr> GetAsync(string id, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<IntPtr>(_get, id);
+        }
+
         return CallMethodAsync<IntPtr>(_get, id, NapiArg.Of(options));
     }
 
@@ -5364,6 +5547,21 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public Task<IntPtr> CreateFromBuilderAsync(IntPtr builder, double? delay = null, bool? checkImageStatus = null, IntPtr? options = null)
     {
+        if (delay is null && checkImageStatus is null && options is null)
+        {
+            return CallMethodAsync<IntPtr>(_createFromBuilder, builder);
+        }
+
+        if (checkImageStatus is null && options is null)
+        {
+            return CallMethodAsync<IntPtr>(_createFromBuilder, builder, NapiArg.Of(delay));
+        }
+
+        if (options is null)
+        {
+            return CallMethodAsync<IntPtr>(_createFromBuilder, builder, NapiArg.Of(delay), NapiArg.Of(checkImageStatus));
+        }
+
         return CallMethodAsync<IntPtr>(_createFromBuilder, builder, NapiArg.Of(delay), NapiArg.Of(checkImageStatus), NapiArg.Of(options));
     }
 
@@ -5372,6 +5570,11 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public IntPtr GetSync(string id, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<IntPtr>(_getSync, id);
+        }
+
         return CallMethod<IntPtr>(_getSync, id, NapiArg.Of(options));
     }
 
@@ -5380,6 +5583,11 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public Task<IntPtr> GetWithUniqueIdAsync(double uniqueId, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<IntPtr>(_getWithUniqueId, uniqueId);
+        }
+
         return CallMethodAsync<IntPtr>(_getWithUniqueId, uniqueId, NapiArg.Of(options));
     }
 
@@ -5388,6 +5596,11 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public IntPtr GetSyncWithUniqueId(double uniqueId, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<IntPtr>(_getSyncWithUniqueId, uniqueId);
+        }
+
         return CallMethod<IntPtr>(_getSyncWithUniqueId, uniqueId, NapiArg.Of(options));
     }
 
@@ -5396,6 +5609,21 @@ public sealed partial class ComponentSnapshotObject : JsObject
     /// </summary>
     public Task<IntPtr> CreateFromComponentAsync(IntPtr content, double? delay = null, bool? checkImageStatus = null, IntPtr? options = null)
     {
+        if (delay is null && checkImageStatus is null && options is null)
+        {
+            return CallMethodAsync<IntPtr>(_createFromComponent, content);
+        }
+
+        if (checkImageStatus is null && options is null)
+        {
+            return CallMethodAsync<IntPtr>(_createFromComponent, content, NapiArg.Of(delay));
+        }
+
+        if (options is null)
+        {
+            return CallMethodAsync<IntPtr>(_createFromComponent, content, NapiArg.Of(delay), NapiArg.Of(checkImageStatus));
+        }
+
         return CallMethodAsync<IntPtr>(_createFromComponent, content, NapiArg.Of(delay), NapiArg.Of(checkImageStatus), NapiArg.Of(options));
     }
 

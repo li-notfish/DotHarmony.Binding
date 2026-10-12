@@ -116,6 +116,12 @@ public sealed partial class ComponentObserver : JsObject
     /// </summary>
     public void OffDrawChildren(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDrawChildren);
+            return;
+        }
+
         CallMethodVoid(_offDrawChildren, NapiArg.Of(callback));
     }
 
@@ -132,6 +138,12 @@ public sealed partial class ComponentObserver : JsObject
     /// </summary>
     public void OffLayoutChildren(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offLayoutChildren);
+            return;
+        }
+
         CallMethodVoid(_offLayoutChildren, NapiArg.Of(callback));
     }
 

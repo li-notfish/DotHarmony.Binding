@@ -106,6 +106,12 @@ public sealed partial class CdsmClient : JsObject
     /// </summary>
     public void OffCdsmInfoChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offCdsmInfoChange);
+            return;
+        }
+
         CallMethodVoid(_offCdsmInfoChange, NapiArg.Of(callback));
     }
 

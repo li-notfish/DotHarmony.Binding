@@ -376,6 +376,11 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<ZipOutputInfo> CompressAsync(byte[] dest, byte[] source, double? sourceLen = null)
     {
+        if (sourceLen is null)
+        {
+            return CallMethodAsync(_compress, static h => new ZipOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source));
+        }
+
         return CallMethodAsync(_compress, static h => new ZipOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source), NapiArg.Of(sourceLen));
     }
 
@@ -384,6 +389,11 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<ZipOutputInfo> Compress2Async(byte[] dest, byte[] source, global::HarmonyOS.ArkUI.CompressLevel level, double? sourceLen = null)
     {
+        if (sourceLen is null)
+        {
+            return CallMethodAsync(_compress2, static h => new ZipOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source), (int)level);
+        }
+
         return CallMethodAsync(_compress2, static h => new ZipOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source), (int)level, NapiArg.Of(sourceLen));
     }
 
@@ -400,6 +410,11 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<ZipOutputInfo> UncompressAsync(byte[] dest, byte[] source, double? sourceLen = null)
     {
+        if (sourceLen is null)
+        {
+            return CallMethodAsync(_uncompress, static h => new ZipOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source));
+        }
+
         return CallMethodAsync(_uncompress, static h => new ZipOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source), NapiArg.Of(sourceLen));
     }
 
@@ -408,6 +423,11 @@ public sealed partial class Zip : JsObject
     /// </summary>
     public Task<DecompressionOutputInfo> Uncompress2Async(byte[] dest, byte[] source, double? sourceLen = null)
     {
+        if (sourceLen is null)
+        {
+            return CallMethodAsync(_uncompress2, static h => new DecompressionOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source));
+        }
+
         return CallMethodAsync(_uncompress2, static h => new DecompressionOutputInfo(h), NapiArg.OfArrayBuffer(dest), NapiArg.OfArrayBuffer(source), NapiArg.Of(sourceLen));
     }
 

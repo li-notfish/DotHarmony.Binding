@@ -110,6 +110,11 @@ public sealed partial class DistributedObject : JsObject
     /// </summary>
     public bool SetSessionId(string? sessionId = null)
     {
+        if (sessionId is null)
+        {
+            return CallMethod<bool>(_setSessionId);
+        }
+
         return CallMethod<bool>(_setSessionId, sessionId);
     }
 

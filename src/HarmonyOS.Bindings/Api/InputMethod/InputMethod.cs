@@ -409,6 +409,11 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task AttachWithUiContextAsync(global::HarmonyOS.Bindings.Api.Arkui.UIContextObject uiContext, TextConfig textConfig, AttachOptions? attachOptions = null, CancellationToken cancellationToken = default)
     {
+        if (attachOptions is null)
+        {
+            return CallMethodAsyncVoid(_attachWithUIContext, cancellationToken, NapiArg.Of(uiContext), NapiArg.Of(textConfig));
+        }
+
         return CallMethodAsyncVoid(_attachWithUIContext, cancellationToken, NapiArg.Of(uiContext), NapiArg.Of(textConfig), NapiArg.Of(attachOptions));
     }
 
@@ -521,6 +526,11 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task SendMessageAsync(string msgId, byte[]? msgParam = null, CancellationToken cancellationToken = default)
     {
+        if (msgParam is null)
+        {
+            return CallMethodAsyncVoid(_sendMessage, cancellationToken, msgId);
+        }
+
         return CallMethodAsyncVoid(_sendMessage, cancellationToken, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 
@@ -529,6 +539,12 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public void RecvMessage(MessageHandler? msgHandler = null)
     {
+        if (msgHandler is null)
+        {
+            CallMethodVoid(_recvMessage);
+            return;
+        }
+
         CallMethodVoid(_recvMessage, NapiArg.Of(msgHandler));
     }
 
@@ -1046,6 +1062,12 @@ public sealed partial class MessageHandler : JsObject
     /// </summary>
     public void OnMessage(string msgId, byte[]? msgParam = null)
     {
+        if (msgParam is null)
+        {
+            CallMethodVoid(_onMessage, msgId);
+            return;
+        }
+
         CallMethodVoid(_onMessage, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 

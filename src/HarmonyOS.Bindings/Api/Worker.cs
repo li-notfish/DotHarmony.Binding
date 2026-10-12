@@ -141,6 +141,12 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// </summary>
     public void RemoveEventListener(string type, EventListener? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_removeEventListener, type);
+            return;
+        }
+
         CallMethodVoid(_removeEventListener, type, NapiArg.Of(callback));
     }
 
@@ -173,6 +179,12 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessage(IntPtr messageObject, PostMessageOptions? options = null)
     {
+        if (options is null)
+        {
+            CallMethodVoid(_postMessage, messageObject);
+            return;
+        }
+
         CallMethodVoid(_postMessage, messageObject, NapiArg.Of(options));
     }
 
@@ -253,6 +265,12 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void RemoveEventListener(string type, WorkerEventListener? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_removeEventListener, type);
+            return;
+        }
+
         CallMethodVoid(_removeEventListener, type, NapiArg.Of(callback));
     }
 
@@ -285,6 +303,12 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessage(IntPtr messageObject, PostMessageOptions? options = null)
     {
+        if (options is null)
+        {
+            CallMethodVoid(_postMessage, messageObject);
+            return;
+        }
+
         CallMethodVoid(_postMessage, messageObject, NapiArg.Of(options));
     }
 
@@ -293,6 +317,12 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessageWithSharedSendable(IntPtr message, byte[][]? transfer = null)
     {
+        if (transfer is null)
+        {
+            CallMethodVoid(_postMessageWithSharedSendable, message);
+            return;
+        }
+
         CallMethodVoid(_postMessageWithSharedSendable, message, NapiArg.Of(transfer));
     }
 
@@ -309,6 +339,12 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessageAtFront(IntPtr message, global::HarmonyOS.ArkUI.WorkerPriority priority, byte[][]? transfer = null)
     {
+        if (transfer is null)
+        {
+            CallMethodVoid(_postMessageAtFront, message, (int)priority);
+            return;
+        }
+
         CallMethodVoid(_postMessageAtFront, message, (int)priority, NapiArg.Of(transfer));
     }
 
@@ -381,6 +417,12 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void PostMessage(IntPtr message, PostMessageOptions? options = null)
     {
+        if (options is null)
+        {
+            CallMethodVoid(_postMessage, message);
+            return;
+        }
+
         CallMethodVoid(_postMessage, message, NapiArg.Of(options));
     }
 
@@ -389,6 +431,12 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void PostMessageWithSharedSendable(IntPtr message, byte[][]? transfer = null)
     {
+        if (transfer is null)
+        {
+            CallMethodVoid(_postMessageWithSharedSendable, message);
+            return;
+        }
+
         CallMethodVoid(_postMessageWithSharedSendable, message, NapiArg.Of(transfer));
     }
 
@@ -413,6 +461,12 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void Off(string type, WorkerEventListener? listener = null)
     {
+        if (listener is null)
+        {
+            CallMethodVoid(_off, type);
+            return;
+        }
+
         CallMethodVoid(_off, type, NapiArg.Of(listener));
     }
 
@@ -445,6 +499,12 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void RemoveEventListener(string type, WorkerEventListener? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_removeEventListener, type);
+            return;
+        }
+
         CallMethodVoid(_removeEventListener, type, NapiArg.Of(callback));
     }
 
@@ -469,6 +529,12 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void UnregisterGlobalCallObject(string? instanceName = null)
     {
+        if (instanceName is null)
+        {
+            CallMethodVoid(_unregisterGlobalCallObject);
+            return;
+        }
+
         CallMethodVoid(_unregisterGlobalCallObject, instanceName);
     }
 
@@ -566,6 +632,12 @@ public sealed partial class WorkerObject : JsObject
     /// </summary>
     public void PostMessage(IntPtr message, PostMessageOptions? options = null)
     {
+        if (options is null)
+        {
+            CallMethodVoid(_postMessage, message);
+            return;
+        }
+
         CallMethodVoid(_postMessage, message, NapiArg.Of(options));
     }
 
@@ -590,6 +662,12 @@ public sealed partial class WorkerObject : JsObject
     /// </summary>
     public void Off(string type, EventListener? listener = null)
     {
+        if (listener is null)
+        {
+            CallMethodVoid(_off, type);
+            return;
+        }
+
         CallMethodVoid(_off, type, NapiArg.Of(listener));
     }
 

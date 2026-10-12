@@ -275,6 +275,21 @@ public sealed partial class Model : JsObject
     /// </summary>
     public bool ExportModel(string modelFile, global::HarmonyOS.ArkUI.QuantizationType? quantizationType = null, bool? exportInferenceOnly = null, string[]? outputTensorName = null)
     {
+        if (quantizationType is null && exportInferenceOnly is null && outputTensorName is null)
+        {
+            return CallMethod<bool>(_exportModel, modelFile);
+        }
+
+        if (exportInferenceOnly is null && outputTensorName is null)
+        {
+            return CallMethod<bool>(_exportModel, modelFile, NapiArg.Of(quantizationType));
+        }
+
+        if (outputTensorName is null)
+        {
+            return CallMethod<bool>(_exportModel, modelFile, NapiArg.Of(quantizationType), NapiArg.Of(exportInferenceOnly));
+        }
+
         return CallMethod<bool>(_exportModel, modelFile, NapiArg.Of(quantizationType), NapiArg.Of(exportInferenceOnly), NapiArg.Of(outputTensorName));
     }
 
@@ -283,6 +298,21 @@ public sealed partial class Model : JsObject
     /// </summary>
     public bool ExportWeightsCollaborateWithMicro(string weightFile, bool? isInference = null, bool? enableFp16 = null, string[]? changeableWeightsName = null)
     {
+        if (isInference is null && enableFp16 is null && changeableWeightsName is null)
+        {
+            return CallMethod<bool>(_exportWeightsCollaborateWithMicro, weightFile);
+        }
+
+        if (enableFp16 is null && changeableWeightsName is null)
+        {
+            return CallMethod<bool>(_exportWeightsCollaborateWithMicro, weightFile, NapiArg.Of(isInference));
+        }
+
+        if (changeableWeightsName is null)
+        {
+            return CallMethod<bool>(_exportWeightsCollaborateWithMicro, weightFile, NapiArg.Of(isInference), NapiArg.Of(enableFp16));
+        }
+
         return CallMethod<bool>(_exportWeightsCollaborateWithMicro, weightFile, NapiArg.Of(isInference), NapiArg.Of(enableFp16), NapiArg.Of(changeableWeightsName));
     }
 

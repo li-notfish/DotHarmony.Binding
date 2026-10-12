@@ -109,6 +109,11 @@ public sealed partial class SerialPort : JsObject
     /// </summary>
     public Task OpenAsync(SerialConfigs? config = null, CancellationToken cancellationToken = default)
     {
+        if (config is null)
+        {
+            return CallMethodAsyncVoid(_open, cancellationToken);
+        }
+
         return CallMethodAsyncVoid(_open, cancellationToken, NapiArg.Of(config));
     }
 
@@ -125,6 +130,11 @@ public sealed partial class SerialPort : JsObject
     /// </summary>
     public Task<double> WriteAsync(byte[] data, double? timeout = null)
     {
+        if (timeout is null)
+        {
+            return CallMethodAsync<double>(_write, NapiArg.Of(data));
+        }
+
         return CallMethodAsync<double>(_write, NapiArg.Of(data), NapiArg.Of(timeout));
     }
 
@@ -141,6 +151,12 @@ public sealed partial class SerialPort : JsObject
     /// </summary>
     public void OffDataRead(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDataRead);
+            return;
+        }
+
         CallMethodVoid(_offDataRead, NapiArg.Of(callback));
     }
 
@@ -197,6 +213,12 @@ public sealed partial class SerialPort : JsObject
     /// </summary>
     public void OffDisconnect(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDisconnect);
+            return;
+        }
+
         CallMethodVoid(_offDisconnect, NapiArg.Of(callback));
     }
 

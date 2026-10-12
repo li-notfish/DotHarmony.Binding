@@ -298,6 +298,11 @@ public sealed partial class RemoteObject : JsObject
     /// </summary>
     public bool OnRemoteMessageRequest(double code, MessageSequence data, MessageSequence reply, MessageOption options, CallingInfo? callingInfo = null)
     {
+        if (callingInfo is null)
+        {
+            return CallMethod<bool>(_onRemoteMessageRequest, code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options));
+        }
+
         return CallMethod<bool>(_onRemoteMessageRequest, code, NapiArg.Of(data), NapiArg.Of(reply), NapiArg.Of(options), NapiArg.Of(callingInfo));
     }
 

@@ -187,6 +187,12 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffGetReport(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offGetReport);
+            return;
+        }
+
         CallMethodVoid(_offGetReport, NapiArg.Of(callback));
     }
 
@@ -203,6 +209,12 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffSetReport(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSetReport);
+            return;
+        }
+
         CallMethodVoid(_offSetReport, NapiArg.Of(callback));
     }
 
@@ -219,6 +231,12 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffInterruptDataReceived(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offInterruptDataReceived);
+            return;
+        }
+
         CallMethodVoid(_offInterruptDataReceived, NapiArg.Of(callback));
     }
 
@@ -235,6 +253,12 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffSetProtocol(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSetProtocol);
+            return;
+        }
+
         CallMethodVoid(_offSetProtocol, NapiArg.Of(callback));
     }
 
@@ -251,6 +275,12 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffVirtualCableUnplug(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offVirtualCableUnplug);
+            return;
+        }
+
         CallMethodVoid(_offVirtualCableUnplug, NapiArg.Of(callback));
     }
 

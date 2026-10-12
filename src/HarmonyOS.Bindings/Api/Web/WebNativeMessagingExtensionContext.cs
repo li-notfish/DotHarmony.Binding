@@ -119,6 +119,11 @@ public sealed partial class WebNativeMessagingExtensionContextObject : JsObject
     /// </summary>
     public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, global::HarmonyOS.Bindings.Api.App.Ability.StartOptionsObject? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_startAbility, cancellationToken, NapiArg.Of(want));
+        }
+
         return CallMethodAsyncVoid(_startAbility, cancellationToken, NapiArg.Of(want), NapiArg.Of(options));
     }
 
@@ -127,6 +132,11 @@ public sealed partial class WebNativeMessagingExtensionContextObject : JsObject
     /// </summary>
     public Task<IntPtr> StartAbilityForResultAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, global::HarmonyOS.Bindings.Api.App.Ability.StartOptionsObject? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<IntPtr>(_startAbilityForResult, NapiArg.Of(want));
+        }
+
         return CallMethodAsync<IntPtr>(_startAbilityForResult, NapiArg.Of(want), NapiArg.Of(options));
     }
 

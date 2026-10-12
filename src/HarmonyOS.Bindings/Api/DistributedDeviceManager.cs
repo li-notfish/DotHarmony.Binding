@@ -176,6 +176,12 @@ public sealed partial class DeviceManagerObject : JsObject
     /// </summary>
     public void StartDiscovering(IntPtr discoverParam, IntPtr? filterOptions = null)
     {
+        if (filterOptions is null)
+        {
+            CallMethodVoid(_startDiscovering, discoverParam);
+            return;
+        }
+
         CallMethodVoid(_startDiscovering, discoverParam, NapiArg.Of(filterOptions));
     }
 

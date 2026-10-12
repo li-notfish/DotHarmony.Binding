@@ -434,6 +434,11 @@ public sealed partial class MediaKeySession : JsObject
     /// </summary>
     public Task<MediaKeyRequest> GenerateMediaKeyRequestAsync(string mimeType, byte[] initData, double mediaKeyType, OptionsData[]? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_generateMediaKeyRequest, static h => new MediaKeyRequest(h), mimeType, NapiArg.Of(initData), mediaKeyType);
+        }
+
         return CallMethodAsync(_generateMediaKeyRequest, static h => new MediaKeyRequest(h), mimeType, NapiArg.Of(initData), mediaKeyType, NapiArg.Of(options));
     }
 

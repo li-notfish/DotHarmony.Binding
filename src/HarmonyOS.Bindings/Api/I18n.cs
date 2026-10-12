@@ -289,6 +289,24 @@ public sealed partial class I18nCalendar : JsObject
     /// </summary>
     public void Set(double year, double month, double date, double? hour = null, double? minute = null, double? second = null)
     {
+        if (hour is null && minute is null && second is null)
+        {
+            CallMethodVoid(_set, year, month, date);
+            return;
+        }
+
+        if (minute is null && second is null)
+        {
+            CallMethodVoid(_set, year, month, date, NapiArg.Of(hour));
+            return;
+        }
+
+        if (second is null)
+        {
+            CallMethodVoid(_set, year, month, date, NapiArg.Of(hour), NapiArg.Of(minute));
+            return;
+        }
+
         CallMethodVoid(_set, year, month, date, NapiArg.Of(hour), NapiArg.Of(minute), NapiArg.Of(second));
     }
 
@@ -361,6 +379,11 @@ public sealed partial class I18nCalendar : JsObject
     /// </summary>
     public bool IsWeekend(IntPtr? date = null)
     {
+        if (date is null)
+        {
+            return CallMethod<bool>(_isWeekend);
+        }
+
         return CallMethod<bool>(_isWeekend, NapiArg.Of(date));
     }
 
@@ -435,6 +458,11 @@ public sealed partial class BreakIterator : JsObject
     /// </summary>
     public double Next(double? index = null)
     {
+        if (index is null)
+        {
+            return CallMethod<double>(_next);
+        }
+
         return CallMethod<double>(_next, NapiArg.Of(index));
     }
 
@@ -549,6 +577,16 @@ public sealed partial class TimeZone : JsObject
     /// </summary>
     public string GetDisplayName(string? locale = null, bool? isDST = null)
     {
+        if (locale is null && isDST is null)
+        {
+            return CallMethod<string>(_getDisplayName);
+        }
+
+        if (isDST is null)
+        {
+            return CallMethod<string>(_getDisplayName, locale);
+        }
+
         return CallMethod<string>(_getDisplayName, locale, NapiArg.Of(isDST));
     }
 
@@ -565,6 +603,11 @@ public sealed partial class TimeZone : JsObject
     /// </summary>
     public double GetOffset(double? date = null)
     {
+        if (date is null)
+        {
+            return CallMethod<double>(_getOffset);
+        }
+
         return CallMethod<double>(_getOffset, NapiArg.Of(date));
     }
 
@@ -722,6 +765,24 @@ public sealed partial class ChineseCalendar : JsObject
     /// </summary>
     public void Set(double year, double month, double date, double? hour = null, double? minute = null, double? second = null)
     {
+        if (hour is null && minute is null && second is null)
+        {
+            CallMethodVoid(_set, year, month, date);
+            return;
+        }
+
+        if (minute is null && second is null)
+        {
+            CallMethodVoid(_set, year, month, date, NapiArg.Of(hour));
+            return;
+        }
+
+        if (second is null)
+        {
+            CallMethodVoid(_set, year, month, date, NapiArg.Of(hour), NapiArg.Of(minute));
+            return;
+        }
+
         CallMethodVoid(_set, year, month, date, NapiArg.Of(hour), NapiArg.Of(minute), NapiArg.Of(second));
     }
 
@@ -794,6 +855,11 @@ public sealed partial class ChineseCalendar : JsObject
     /// </summary>
     public bool IsWeekend(IntPtr? date = null)
     {
+        if (date is null)
+        {
+            return CallMethod<bool>(_isWeekend);
+        }
+
         return CallMethod<bool>(_isWeekend, NapiArg.Of(date));
     }
 
@@ -896,6 +962,11 @@ public sealed partial class HolidayManager : JsObject
     /// </summary>
     public bool IsHoliday(IntPtr? date = null)
     {
+        if (date is null)
+        {
+            return CallMethod<bool>(_isHoliday);
+        }
+
         return CallMethod<bool>(_isHoliday, NapiArg.Of(date));
     }
 
@@ -904,6 +975,11 @@ public sealed partial class HolidayManager : JsObject
     /// </summary>
     public IntPtr[] GetHolidayInfoItemArray(double? year = null)
     {
+        if (year is null)
+        {
+            return CallMethod(_getHolidayInfoItemArray, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        }
+
         return CallMethod(_getHolidayInfoItemArray, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(year));
     }
 
@@ -1024,6 +1100,11 @@ public sealed partial class SymbolDateTimeFormat : JsObject
     /// </summary>
     public string Format(double? date = null)
     {
+        if (date is null)
+        {
+            return CallMethod<string>(_format);
+        }
+
         return CallMethod<string>(_format, NapiArg.Of(date));
     }
 
@@ -1048,6 +1129,11 @@ public sealed partial class SymbolDateTimeFormat : JsObject
     /// </summary>
     public IntPtr[] FormatToParts(double? date = null)
     {
+        if (date is null)
+        {
+            return CallMethod(_formatToParts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        }
+
         return CallMethod(_formatToParts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(date));
     }
 
@@ -1108,6 +1194,11 @@ public sealed partial class SymbolNumberFormat : JsObject
     /// </summary>
     public IntPtr[] FormatToParts(double? value = null)
     {
+        if (value is null)
+        {
+            return CallMethod(_formatToParts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        }
+
         return CallMethod(_formatToParts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(value));
     }
 
@@ -1173,6 +1264,11 @@ public sealed partial class ZoneRules : JsObject
     /// </summary>
     public ZoneOffsetTransition NextTransition(double? date = null)
     {
+        if (date is null)
+        {
+            return CallMethod(_nextTransition, static h => new ZoneOffsetTransition(h));
+        }
+
         return CallMethod(_nextTransition, static h => new ZoneOffsetTransition(h), NapiArg.Of(date));
     }
 

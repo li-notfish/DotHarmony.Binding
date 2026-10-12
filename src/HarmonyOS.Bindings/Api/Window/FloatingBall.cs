@@ -156,6 +156,12 @@ public sealed partial class FloatingBallController : JsObject
     /// </summary>
     public void OffDestroy(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDestroy);
+            return;
+        }
+
         CallMethodVoid(_offDestroy, NapiArg.Of(callback));
     }
 

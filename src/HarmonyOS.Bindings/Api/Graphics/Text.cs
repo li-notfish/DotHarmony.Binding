@@ -678,6 +678,12 @@ public sealed partial class FontCollection : JsObject
     /// </summary>
     public void LoadFontSyncWithCheck(string name, string path, double? index = null)
     {
+        if (index is null)
+        {
+            CallMethodVoid(_loadFontSyncWithCheck, name, path);
+            return;
+        }
+
         CallMethodVoid(_loadFontSyncWithCheck, name, path, NapiArg.Of(index));
     }
 
@@ -686,6 +692,11 @@ public sealed partial class FontCollection : JsObject
     /// </summary>
     public Task LoadFontWithCheckAsync(string name, string path, double? index = null, CancellationToken cancellationToken = default)
     {
+        if (index is null)
+        {
+            return CallMethodAsyncVoid(_loadFontWithCheck, cancellationToken, name, path);
+        }
+
         return CallMethodAsyncVoid(_loadFontWithCheck, cancellationToken, name, path, NapiArg.Of(index));
     }
 
@@ -992,6 +1003,11 @@ public sealed partial class Run : JsObject
     /// </summary>
     public double[] GetStringIndices(Range? range = null)
     {
+        if (range is null)
+        {
+            return CallMethod(_getStringIndices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)));
+        }
+
         return CallMethod(_getStringIndices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(range));
     }
 

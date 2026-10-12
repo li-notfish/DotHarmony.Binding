@@ -212,6 +212,16 @@ public sealed partial class TextDecoder : JsObject
     /// </summary>
     public TextDecoder Create(string? encoding = null, TextDecoderOptions? options = null)
     {
+        if (encoding is null && options is null)
+        {
+            return CallMethod(_create, static h => new TextDecoder(h));
+        }
+
+        if (options is null)
+        {
+            return CallMethod(_create, static h => new TextDecoder(h), encoding);
+        }
+
         return CallMethod(_create, static h => new TextDecoder(h), encoding, NapiArg.Of(options));
     }
 
@@ -220,6 +230,11 @@ public sealed partial class TextDecoder : JsObject
     /// </summary>
     public string Decode(byte[] input, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<string>(_decode, NapiArg.Of(input));
+        }
+
         return CallMethod<string>(_decode, NapiArg.Of(input), NapiArg.Of(options));
     }
 
@@ -228,6 +243,11 @@ public sealed partial class TextDecoder : JsObject
     /// </summary>
     public string DecodeWithStream(byte[] input, DecodeWithStreamOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<string>(_decodeWithStream, NapiArg.Of(input));
+        }
+
         return CallMethod<string>(_decodeWithStream, NapiArg.Of(input), NapiArg.Of(options));
     }
 
@@ -236,6 +256,11 @@ public sealed partial class TextDecoder : JsObject
     /// </summary>
     public string DecodeToString(byte[] input, DecodeToStringOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<string>(_decodeToString, NapiArg.Of(input));
+        }
+
         return CallMethod<string>(_decodeToString, NapiArg.Of(input), NapiArg.Of(options));
     }
 
@@ -266,6 +291,11 @@ public sealed partial class TextEncoder : JsObject
     /// </summary>
     public TextEncoder Create(string? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod(_create, static h => new TextEncoder(h));
+        }
+
         return CallMethod(_create, static h => new TextEncoder(h), encoding);
     }
 
@@ -274,6 +304,11 @@ public sealed partial class TextEncoder : JsObject
     /// </summary>
     public byte[] Encode(string? input = null)
     {
+        if (input is null)
+        {
+            return CallMethod(_encode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)));
+        }
+
         return CallMethod(_encode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), input);
     }
 
@@ -282,6 +317,11 @@ public sealed partial class TextEncoder : JsObject
     /// </summary>
     public byte[] EncodeInto(string? input = null)
     {
+        if (input is null)
+        {
+            return CallMethod(_encodeInto, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)));
+        }
+
         return CallMethod(_encodeInto, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), input);
     }
 
@@ -755,6 +795,11 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public byte[] EncodeSync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod(_encodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src));
+        }
+
         return CallMethod(_encodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), NapiArg.Of(options));
     }
 
@@ -763,6 +808,11 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public string EncodeToStringSync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<string>(_encodeToStringSync, NapiArg.Of(src));
+        }
+
         return CallMethod<string>(_encodeToStringSync, NapiArg.Of(src), NapiArg.Of(options));
     }
 
@@ -771,6 +821,11 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public byte[] DecodeSync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod(_decodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src));
+        }
+
         return CallMethod(_decodeSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), NapiArg.Of(options));
     }
 
@@ -779,6 +834,11 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public Task<byte[]> EncodeAsync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_encode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src));
+        }
+
         return CallMethodAsync(_encode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), NapiArg.Of(options));
     }
 
@@ -787,6 +847,11 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public Task<string> EncodeToStringAsync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<string>(_encodeToString, NapiArg.Of(src));
+        }
+
         return CallMethodAsync<string>(_encodeToString, NapiArg.Of(src), NapiArg.Of(options));
     }
 
@@ -795,6 +860,11 @@ public sealed partial class Base64Helper : JsObject
     /// </summary>
     public Task<byte[]> DecodeAsync(byte[] src, global::HarmonyOS.ArkUI.Type? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_decode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src));
+        }
+
         return CallMethodAsync(_decode, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(src), NapiArg.Of(options));
     }
 
@@ -1192,6 +1262,11 @@ public sealed partial class StringDecoder : JsObject
     /// </summary>
     public string End(string? chunk = null)
     {
+        if (chunk is null)
+        {
+            return CallMethod<string>(_end);
+        }
+
         return CallMethod<string>(_end, chunk);
     }
 

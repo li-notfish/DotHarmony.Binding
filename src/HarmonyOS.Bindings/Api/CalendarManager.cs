@@ -110,6 +110,11 @@ public sealed partial class CalendarManagerObject : JsObject
     /// </summary>
     public Task<Calendar> GetCalendarAsync(CalendarAccount? calendarAccount = null)
     {
+        if (calendarAccount is null)
+        {
+            return CallMethodAsync(_getCalendar, static h => new Calendar(h));
+        }
+
         return CallMethodAsync(_getCalendar, static h => new Calendar(h), NapiArg.Of(calendarAccount));
     }
 
@@ -208,6 +213,16 @@ public sealed partial class Calendar : JsObject
     /// </summary>
     public Task<IntPtr[]> GetEventsAsync(EventFilter? eventFilter = null, object[]? eventKey = null)
     {
+        if (eventFilter is null && eventKey is null)
+        {
+            return CallMethodAsync(_getEvents, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        }
+
+        if (eventKey is null)
+        {
+            return CallMethodAsync(_getEvents, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(eventFilter));
+        }
+
         return CallMethodAsync(_getEvents, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(eventFilter), NapiArg.Of(eventKey));
     }
 
@@ -248,6 +263,16 @@ public sealed partial class Calendar : JsObject
     /// </summary>
     public Task<IntPtr[]> QueryEventInstancesAsync(double start, double end, double[]? ids = null, object[]? eventKey = null)
     {
+        if (ids is null && eventKey is null)
+        {
+            return CallMethodAsync(_queryEventInstances, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), start, end);
+        }
+
+        if (eventKey is null)
+        {
+            return CallMethodAsync(_queryEventInstances, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), start, end, NapiArg.Of(ids));
+        }
+
         return CallMethodAsync(_queryEventInstances, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), start, end, NapiArg.Of(ids), NapiArg.Of(eventKey));
     }
 

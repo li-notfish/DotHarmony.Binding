@@ -111,6 +111,11 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// </summary>
     public Task CloseKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null, CancellationToken cancellationToken = default)
     {
+        if (kvConfig is null)
+        {
+            return CallMethodAsyncVoid(_closeKVStore, cancellationToken, appId, storeId);
+        }
+
         return CallMethodAsyncVoid(_closeKVStore, cancellationToken, appId, storeId, NapiArg.Of(kvConfig));
     }
 
@@ -127,6 +132,11 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// </summary>
     public Task DeleteKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null, CancellationToken cancellationToken = default)
     {
+        if (kvConfig is null)
+        {
+            return CallMethodAsyncVoid(_deleteKVStore, cancellationToken, appId, storeId);
+        }
+
         return CallMethodAsyncVoid(_deleteKVStore, cancellationToken, appId, storeId, NapiArg.Of(kvConfig));
     }
 

@@ -764,6 +764,12 @@ public sealed partial class BluetoothGattServer : JsObject
     /// </summary>
     public void StartAdvertising(BluetoothAdvertiseSetting setting, IntPtr advData, IntPtr? advResponse = null)
     {
+        if (advResponse is null)
+        {
+            CallMethodVoid(_startAdvertising, NapiArg.Of(setting), advData);
+            return;
+        }
+
         CallMethodVoid(_startAdvertising, NapiArg.Of(setting), advData, NapiArg.Of(advResponse));
     }
 

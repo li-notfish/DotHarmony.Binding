@@ -187,6 +187,12 @@ public sealed partial class VpnObserver : JsObject
     /// </summary>
     public void OffAuthorizationResult(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offAuthorizationResult);
+            return;
+        }
+
         CallMethodVoid(_offAuthorizationResult, NapiArg.Of(callback));
     }
 

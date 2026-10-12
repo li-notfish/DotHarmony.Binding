@@ -202,6 +202,11 @@ public sealed partial class CameraManager : JsObject
     /// </summary>
     public PhotoOutput CreatePhotoOutput(Profile? profile = null)
     {
+        if (profile is null)
+        {
+            return CallMethod(_createPhotoOutput, static h => new PhotoOutput(h));
+        }
+
         return CallMethod(_createPhotoOutput, static h => new PhotoOutput(h), NapiArg.Of(profile));
     }
 
@@ -956,6 +961,11 @@ public sealed partial class PreviewOutput : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.ImageRotation GetPreviewRotation(double? displayRotation = null)
     {
+        if (displayRotation is null)
+        {
+            return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getPreviewRotation);
+        }
+
         return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getPreviewRotation, NapiArg.Of(displayRotation));
     }
 
@@ -964,6 +974,12 @@ public sealed partial class PreviewOutput : JsObject
     /// </summary>
     public void SetPreviewRotation(global::HarmonyOS.ArkUI.ImageRotation previewRotation, bool? isDisplayLocked = null)
     {
+        if (isDisplayLocked is null)
+        {
+            CallMethodVoid(_setPreviewRotation, (int)previewRotation);
+            return;
+        }
+
         CallMethodVoid(_setPreviewRotation, (int)previewRotation, NapiArg.Of(isDisplayLocked));
     }
 
@@ -1211,6 +1227,12 @@ public sealed partial class PhotoOutput : JsObject
     /// </summary>
     public void OffCapturePhotoAvailable(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offCapturePhotoAvailable);
+            return;
+        }
+
         CallMethodVoid(_offCapturePhotoAvailable, NapiArg.Of(callback));
     }
 
@@ -1275,6 +1297,11 @@ public sealed partial class PhotoOutput : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.ImageRotation GetPhotoRotation(double? deviceDegree = null)
     {
+        if (deviceDegree is null)
+        {
+            return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getPhotoRotation);
+        }
+
         return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getPhotoRotation, NapiArg.Of(deviceDegree));
     }
 
@@ -1708,6 +1735,11 @@ public sealed partial class VideoOutput : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.ImageRotation GetVideoRotation(double? deviceDegree = null)
     {
+        if (deviceDegree is null)
+        {
+            return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getVideoRotation);
+        }
+
         return CallMethod<global::HarmonyOS.ArkUI.ImageRotation>(_getVideoRotation, NapiArg.Of(deviceDegree));
     }
 

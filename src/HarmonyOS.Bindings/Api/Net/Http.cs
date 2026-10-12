@@ -122,6 +122,11 @@ public sealed partial class HttpRequest : JsObject
     /// </summary>
     public IntPtr RequestSync(string url, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<IntPtr>(_requestSync, url);
+        }
+
         return CallMethod<IntPtr>(_requestSync, url, NapiArg.Of(options));
     }
 

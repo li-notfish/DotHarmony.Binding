@@ -480,6 +480,11 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MoveWindowToAsync(double x, double y, MoveConfiguration? moveConfiguration = null, CancellationToken cancellationToken = default)
     {
+        if (moveConfiguration is null)
+        {
+            return CallMethodAsyncVoid(_moveWindowToAsync, cancellationToken, x, y);
+        }
+
         return CallMethodAsyncVoid(_moveWindowToAsync, cancellationToken, x, y, NapiArg.Of(moveConfiguration));
     }
 
@@ -496,6 +501,11 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MoveWindowToGlobalAsync(double x, double y, MoveConfiguration? moveConfiguration = null, CancellationToken cancellationToken = default)
     {
+        if (moveConfiguration is null)
+        {
+            return CallMethodAsyncVoid(_moveWindowToGlobal, cancellationToken, x, y);
+        }
+
         return CallMethodAsyncVoid(_moveWindowToGlobal, cancellationToken, x, y, NapiArg.Of(moveConfiguration));
     }
 
@@ -536,6 +546,21 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetRelativePositionToParentWindowEnabledAsync(bool enabled, global::HarmonyOS.ArkUI.WindowAnchor? anchor = null, double? offsetX = null, double? offsetY = null, CancellationToken cancellationToken = default)
     {
+        if (anchor is null && offsetX is null && offsetY is null)
+        {
+            return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, cancellationToken, enabled);
+        }
+
+        if (offsetX is null && offsetY is null)
+        {
+            return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, cancellationToken, enabled, NapiArg.Of(anchor));
+        }
+
+        if (offsetY is null)
+        {
+            return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, cancellationToken, enabled, NapiArg.Of(anchor), NapiArg.Of(offsetX));
+        }
+
         return CallMethodAsyncVoid(_setRelativePositionToParentWindowEnabled, cancellationToken, enabled, NapiArg.Of(anchor), NapiArg.Of(offsetX), NapiArg.Of(offsetY));
     }
 
@@ -672,6 +697,11 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetSpecificSystemBarEnabledAsync(IntPtr name, bool enable, bool? enableAnimation = null, CancellationToken cancellationToken = default)
     {
+        if (enableAnimation is null)
+        {
+            return CallMethodAsyncVoid(_setSpecificSystemBarEnabled, cancellationToken, name, enable);
+        }
+
         return CallMethodAsyncVoid(_setSpecificSystemBarEnabled, cancellationToken, name, enable, NapiArg.Of(enableAnimation));
     }
 
@@ -1128,6 +1158,16 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetContentAspectRatioAsync(double ratio, bool? isPersistent = null, bool? needUpdateRect = null, CancellationToken cancellationToken = default)
     {
+        if (isPersistent is null && needUpdateRect is null)
+        {
+            return CallMethodAsyncVoid(_setContentAspectRatio, cancellationToken, ratio);
+        }
+
+        if (needUpdateRect is null)
+        {
+            return CallMethodAsyncVoid(_setContentAspectRatio, cancellationToken, ratio, NapiArg.Of(isPersistent));
+        }
+
         return CallMethodAsyncVoid(_setContentAspectRatio, cancellationToken, ratio, NapiArg.Of(isPersistent), NapiArg.Of(needUpdateRect));
     }
 
@@ -1160,6 +1200,11 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null, CancellationToken cancellationToken = default)
     {
+        if (presentation is null)
+        {
+            return CallMethodAsyncVoid(_maximize, cancellationToken);
+        }
+
         return CallMethodAsyncVoid(_maximize, cancellationToken, NapiArg.Of(presentation));
     }
 
@@ -1168,6 +1213,16 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MaximizeAsync(global::HarmonyOS.ArkUI.MaximizePresentation? presentation = null, bool? acrossDisplay = null, CancellationToken cancellationToken = default)
     {
+        if (presentation is null && acrossDisplay is null)
+        {
+            return CallMethodAsyncVoid(_maximize, cancellationToken);
+        }
+
+        if (acrossDisplay is null)
+        {
+            return CallMethodAsyncVoid(_maximize, cancellationToken, NapiArg.Of(presentation));
+        }
+
         return CallMethodAsyncVoid(_maximize, cancellationToken, NapiArg.Of(presentation), NapiArg.Of(acrossDisplay));
     }
 
@@ -1176,6 +1231,11 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task MaximizeWithOptionsAsync(MaximizeOptions? maximizeOptions = null, CancellationToken cancellationToken = default)
     {
+        if (maximizeOptions is null)
+        {
+            return CallMethodAsyncVoid(_maximizeWithOptions, cancellationToken);
+        }
+
         return CallMethodAsyncVoid(_maximizeWithOptions, cancellationToken, NapiArg.Of(maximizeOptions));
     }
 
@@ -1264,6 +1324,11 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task RestoreMainWindowAsync(IntPtr? wantParameters = null, CancellationToken cancellationToken = default)
     {
+        if (wantParameters is null)
+        {
+            return CallMethodAsyncVoid(_restoreMainWindow, cancellationToken);
+        }
+
         return CallMethodAsyncVoid(_restoreMainWindow, cancellationToken, NapiArg.Of(wantParameters));
     }
 
@@ -1368,6 +1433,12 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public void SetWindowTitleButtonVisible(bool isMaximizeButtonVisible, bool isMinimizeButtonVisible, bool? isCloseButtonVisible = null)
     {
+        if (isCloseButtonVisible is null)
+        {
+            CallMethodVoid(_setWindowTitleButtonVisible, isMaximizeButtonVisible, isMinimizeButtonVisible);
+            return;
+        }
+
         CallMethodVoid(_setWindowTitleButtonVisible, isMaximizeButtonVisible, isMinimizeButtonVisible, NapiArg.Of(isCloseButtonVisible));
     }
 
@@ -1544,6 +1615,16 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public Task SetTitleAndDockHoverShownAsync(bool? isTitleHoverShown = null, bool? isDockHoverShown = null, CancellationToken cancellationToken = default)
     {
+        if (isTitleHoverShown is null && isDockHoverShown is null)
+        {
+            return CallMethodAsyncVoid(_setTitleAndDockHoverShown, cancellationToken);
+        }
+
+        if (isDockHoverShown is null)
+        {
+            return CallMethodAsyncVoid(_setTitleAndDockHoverShown, cancellationToken, NapiArg.Of(isTitleHoverShown));
+        }
+
         return CallMethodAsyncVoid(_setTitleAndDockHoverShown, cancellationToken, NapiArg.Of(isTitleHoverShown), NapiArg.Of(isDockHoverShown));
     }
 
@@ -1648,6 +1729,12 @@ public sealed partial class WindowObject : JsObject
     /// </summary>
     public void OffWindowPostureModeChange(global::HarmonyOS.ArkUI.WindowPostureMode mode, IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offWindowPostureModeChange, (int)mode);
+            return;
+        }
+
         CallMethodVoid(_offWindowPostureModeChange, (int)mode, NapiArg.Of(callback));
     }
 

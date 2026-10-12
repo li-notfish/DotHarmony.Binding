@@ -1245,6 +1245,11 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public Task SendMessageAsync(string msgId, byte[]? msgParam = null, CancellationToken cancellationToken = default)
     {
+        if (msgParam is null)
+        {
+            return CallMethodAsyncVoid(_sendMessage, cancellationToken, msgId);
+        }
+
         return CallMethodAsyncVoid(_sendMessage, cancellationToken, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 
@@ -1253,6 +1258,12 @@ public sealed partial class InputClient : JsObject
     /// </summary>
     public void RecvMessage(InputMethodEngineMessageHandler? msgHandler = null)
     {
+        if (msgHandler is null)
+        {
+            CallMethodVoid(_recvMessage);
+            return;
+        }
+
         CallMethodVoid(_recvMessage, NapiArg.Of(msgHandler));
     }
 
@@ -1776,6 +1787,12 @@ public sealed partial class InputMethodEngineMessageHandler : JsObject
     /// </summary>
     public void OnMessage(string msgId, byte[]? msgParam = null)
     {
+        if (msgParam is null)
+        {
+            CallMethodVoid(_onMessage, msgId);
+            return;
+        }
+
         CallMethodVoid(_onMessage, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 

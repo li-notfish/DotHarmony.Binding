@@ -323,7 +323,7 @@ export class TypeMapper {
         return 'IntPtr';
     }
 
-    private static splitTypeArguments(typeArgsStr: string): string[] {
+    public static splitTypeArguments(typeArgsStr: string): string[] {
         // 按逗号分割，但要考虑嵌套的尖括号
         const result: string[] = [];
         let depth = 0;

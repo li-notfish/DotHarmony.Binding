@@ -361,6 +361,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffDesktopLyricVisibilityChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDesktopLyricVisibilityChanged);
+            return;
+        }
+
         CallMethodVoid(_offDesktopLyricVisibilityChanged, NapiArg.Of(callback));
     }
 
@@ -393,6 +399,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffDesktopLyricStateChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDesktopLyricStateChanged);
+            return;
+        }
+
         CallMethodVoid(_offDesktopLyricStateChanged, NapiArg.Of(callback));
     }
 
@@ -513,6 +525,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffPlay(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPlay);
+            return;
+        }
+
         CallMethodVoid(_offPlay, NapiArg.Of(callback));
     }
 
@@ -521,6 +539,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffPlayNext(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPlayNext);
+            return;
+        }
+
         CallMethodVoid(_offPlayNext, NapiArg.Of(callback));
     }
 
@@ -529,6 +553,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffPlayPrevious(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPlayPrevious);
+            return;
+        }
+
         CallMethodVoid(_offPlayPrevious, NapiArg.Of(callback));
     }
 
@@ -537,6 +567,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffFastForward(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offFastForward);
+            return;
+        }
+
         CallMethodVoid(_offFastForward, NapiArg.Of(callback));
     }
 
@@ -545,6 +581,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffRewind(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offRewind);
+            return;
+        }
+
         CallMethodVoid(_offRewind, NapiArg.Of(callback));
     }
 
@@ -1379,6 +1421,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffDesktopLyricEnabled(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDesktopLyricEnabled);
+            return;
+        }
+
         CallMethodVoid(_offDesktopLyricEnabled, NapiArg.Of(callback));
     }
 
@@ -1411,6 +1459,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffDesktopLyricVisibilityChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDesktopLyricVisibilityChanged);
+            return;
+        }
+
         CallMethodVoid(_offDesktopLyricVisibilityChanged, NapiArg.Of(callback));
     }
 
@@ -1443,6 +1497,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffDesktopLyricStateChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDesktopLyricStateChanged);
+            return;
+        }
+
         CallMethodVoid(_offDesktopLyricStateChanged, NapiArg.Of(callback));
     }
 
@@ -1467,6 +1527,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffMediaCenterControlTypeChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offMediaCenterControlTypeChanged);
+            return;
+        }
+
         CallMethodVoid(_offMediaCenterControlTypeChanged, NapiArg.Of(callback));
     }
 
@@ -1515,6 +1581,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffSupportedPlaySpeedsChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSupportedPlaySpeedsChange);
+            return;
+        }
+
         CallMethodVoid(_offSupportedPlaySpeedsChange, NapiArg.Of(callback));
     }
 
@@ -1531,6 +1603,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffSupportedLoopModesChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSupportedLoopModesChange);
+            return;
+        }
+
         CallMethodVoid(_offSupportedLoopModesChange, NapiArg.Of(callback));
     }
 
@@ -1919,6 +1997,11 @@ public sealed partial class AVCastPickerHelper : JsObject
     /// </summary>
     public Task SelectAsync(IntPtr? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_select, cancellationToken);
+        }
+
         return CallMethodAsyncVoid(_select, cancellationToken, NapiArg.Of(options));
     }
 

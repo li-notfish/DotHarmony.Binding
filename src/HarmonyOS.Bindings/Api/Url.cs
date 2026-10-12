@@ -125,6 +125,12 @@ public sealed partial class URLSearchParams : JsObject
     /// </summary>
     public void ForEach(System.Action<string, string, URLSearchParams> callbackFn, IntPtr? thisArg = null)
     {
+        if (thisArg is null)
+        {
+            CallMethodVoid(_forEach, NapiArg.Of(callbackFn));
+            return;
+        }
+
         CallMethodVoid(_forEach, NapiArg.Of(callbackFn), NapiArg.Of(thisArg));
     }
 
@@ -247,6 +253,12 @@ public sealed partial class URLParams : JsObject
     /// </summary>
     public void ForEach(System.Action<string, string, URLParams> callbackFn, IntPtr? thisArg = null)
     {
+        if (thisArg is null)
+        {
+            CallMethodVoid(_forEach, NapiArg.Of(callbackFn));
+            return;
+        }
+
         CallMethodVoid(_forEach, NapiArg.Of(callbackFn), NapiArg.Of(thisArg));
     }
 
@@ -409,6 +421,11 @@ public sealed partial class URL : JsObject
     /// </summary>
     public URL ParseUrl(string url, string? @base = null)
     {
+        if (@base is null)
+        {
+            return CallMethod(_parseURL, static h => new URL(h), url);
+        }
+
         return CallMethod(_parseURL, static h => new URL(h), url, @base);
     }
 

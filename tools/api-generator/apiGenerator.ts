@@ -964,8 +964,7 @@ export class ApiGenerator {
             const pascal = withAsyncSuffix(toPascalCase(m.name), retType);
             if (pascal === spec.csharpName) continue;
             const paramStr = mappedParams.map(p => this.formatParameter(p)).join(', ');
-            const paramNames = mappedParams.map(p => this.wrapArg(p, TypeMapper.escapeCSharpKeyword(p.name))).join(', ');
-            const callArgs = paramNames ? `, ${paramNames}` : '';
+            const mappedArgs = mappedParams.map(p => this.wrapArg(p, TypeMapper.escapeCSharpKeyword(p.name)));
 
             const sigKey = `${pascal}(${mappedParams.map(p => p.type).join(',')})`;
             if (generatedSigs.has(sigKey)) continue;
@@ -979,8 +978,59 @@ export class ApiGenerator {
                 : paramStr;
             lines.push(`    public ${retType} ${pascal}(${asyncParamStr})`);
             lines.push('    {');
-            const expr = this.callExpr(retType, 'this.Handle', `_${m.name}`, callArgs, true, useCallbackBridge);
-            lines.push(retType === 'void' ? `        ${expr};` : `        return ${expr};`);
+            // System.Func<...> 回调参数（带返回值的 JS 回调，如 WebSchemeHandler.onRequestStart）：
+            // 必须经 CreateValueCallbackFunction 桥接返回值（常规 NapiArg.Of 封送无返回通道）；
+            // 适配 lambda 透传回调返回值，GCHandle 生命周期由 NodeApi finalizer 管理。
+            const preLines: string[] = [];
+            for (let k = 0; k < mappedParams.length; k++) {
+                const p = mappedParams[k];
+                if (p.optional) continue;
+                const funcMatch = /^System\.Func<(.+)>$/.exec(p.type);
+                if (!funcMatch) continue;
+                const argTypes = TypeMapper.splitTypeArguments(funcMatch[1])
+                    .map(t => t.trim()).slice(0, -1);
+                const name = TypeMapper.escapeCSharpKeyword(p.name);
+                const invoke = argTypes.length === 0
+                    ? `args => ${name}()`
+                    : `args => ${name}(${argTypes.map((t, i) => this.convertArgExpr(t, `args[${i}]`)).join(', ')})`;
+                preLines.push(`        var (${name}JsFunc, _) = NodeApi.CreateValueCallbackFunction(`);
+                preLines.push(`            (Func<ReadOnlySpan<IntPtr>, object?>)(${invoke}));`);
+                mappedArgs[k] = `${name}JsFunc`;
+            }
+            if (preLines.length > 0) lines.push(...preLines, '');
+
+            // 尾部连续可选参数：为 null 时省略实参——可选 TS 参数语义是"缺省=undefined"，
+            // 直接封送 null 会被 ArkAPI 当作显式 null（如 RegisterJavaScriptProxy 的 permission）
+            const trailing = (() => {
+                let n = 0;
+                for (let k = mappedParams.length - 1; k >= 0 && mappedParams[k].optional; k--) n++;
+                return n;
+            })();
+            const emitCall = (argCount: number) => {
+                const args = mappedArgs.slice(0, argCount).join(', ');
+                const callArgsK = args ? `, ${args}` : '';
+                const expr = this.callExpr(retType, 'this.Handle', `_${m.name}`, callArgsK, true, useCallbackBridge);
+                lines.push(retType === 'void' ? `        ${expr};` : `        return ${expr};`);
+            };
+            for (let drop = trailing; drop >= 1; drop--) {
+                const kept = mappedParams.length - drop;
+                const nulls = mappedParams.slice(kept)
+                    .map(p => `${TypeMapper.escapeCSharpKeyword(p.name)} is null`);
+                lines.push(`        if (${nulls.join(' && ')})`);
+                lines.push('        {');
+                {
+                    const args = mappedArgs.slice(0, kept).join(', ');
+                    const callArgsK = args ? `, ${args}` : '';
+                    const exprK = this.callExpr(retType, 'this.Handle', `_${m.name}`, callArgsK, true, useCallbackBridge);
+                    lines.push(retType === 'void'
+                        ? `            ${exprK};`
+                        : `            return ${exprK};`);
+                    if (retType === 'void') lines.push('            return;');
+                }
+                lines.push('        }');
+                lines.push('');
+            }
+            emitCall(mappedParams.length);
             lines.push('    }');
             lines.push('');
         }

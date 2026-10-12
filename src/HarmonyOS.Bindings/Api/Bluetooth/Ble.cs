@@ -366,6 +366,12 @@ public sealed partial class GattServer : JsObject
     /// </summary>
     public void Connect(string deviceId, bool? autoConnect = null)
     {
+        if (autoConnect is null)
+        {
+            CallMethodVoid(_connect, deviceId);
+            return;
+        }
+
         CallMethodVoid(_connect, deviceId, NapiArg.Of(autoConnect));
     }
 
@@ -446,6 +452,12 @@ public sealed partial class GattServer : JsObject
     /// </summary>
     public void OffBlePhyUpdate(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offBlePhyUpdate);
+            return;
+        }
+
         CallMethodVoid(_offBlePhyUpdate, NapiArg.Of(callback));
     }
 
@@ -873,6 +885,12 @@ public sealed partial class GattClientDevice : JsObject
     /// </summary>
     public void OffBlePhyUpdate(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offBlePhyUpdate);
+            return;
+        }
+
         CallMethodVoid(_offBlePhyUpdate, NapiArg.Of(callback));
     }
 
@@ -1026,6 +1044,11 @@ public sealed partial class BleScanner : JsObject
     /// </summary>
     public Task StartScanAsync(IntPtr[] filters, ScanOptions? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_startScan, cancellationToken, NapiArg.Of(filters));
+        }
+
         return CallMethodAsyncVoid(_startScan, cancellationToken, NapiArg.Of(filters), NapiArg.Of(options));
     }
 

@@ -294,6 +294,12 @@ public sealed partial class EmitterObject : JsObject
     /// </summary>
     public void Emit(string eventId, IntPtr? data = null)
     {
+        if (data is null)
+        {
+            CallMethodVoid(_emit, eventId);
+            return;
+        }
+
         CallMethodVoid(_emit, eventId, NapiArg.Of(data));
     }
 
@@ -302,6 +308,12 @@ public sealed partial class EmitterObject : JsObject
     /// </summary>
     public void Emit(string eventId, EmitterOptions options, IntPtr? data = null)
     {
+        if (data is null)
+        {
+            CallMethodVoid(_emit, eventId, NapiArg.Of(options));
+            return;
+        }
+
         CallMethodVoid(_emit, eventId, NapiArg.Of(options), NapiArg.Of(data));
     }
 

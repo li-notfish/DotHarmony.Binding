@@ -339,6 +339,11 @@ public sealed partial class X509Cert : JsObject
     /// </summary>
     public DataBlob GetSubjectName(global::HarmonyOS.ArkUI.EncodingType? encodingType = null)
     {
+        if (encodingType is null)
+        {
+            return CallMethod(_getSubjectName, static h => new DataBlob(h));
+        }
+
         return CallMethod(_getSubjectName, static h => new DataBlob(h), NapiArg.Of(encodingType));
     }
 
@@ -1252,6 +1257,11 @@ public sealed partial class CmsGenerator : JsObject
     /// </summary>
     public IntPtr DoFinal(byte[] data, CmsGeneratorOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<IntPtr>(_doFinal, NapiArg.Of(data));
+        }
+
         return CallMethod<IntPtr>(_doFinal, NapiArg.Of(data), NapiArg.Of(options));
     }
 
@@ -1260,6 +1270,11 @@ public sealed partial class CmsGenerator : JsObject
     /// </summary>
     public byte[] DoFinalSync(byte[] data, CmsGeneratorOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod(_doFinalSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(data));
+        }
+
         return CallMethod(_doFinalSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(data), NapiArg.Of(options));
     }
 

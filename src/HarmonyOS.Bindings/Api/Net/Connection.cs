@@ -707,6 +707,11 @@ public sealed partial class NetHandle : JsObject
     /// </summary>
     public Task<NetAddress[]> GetAddressesByNameWithOptionsAsync(string host, QueryOptions? option = null)
     {
+        if (option is null)
+        {
+            return CallMethodAsync(_getAddressesByNameWithOptions, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host);
+        }
+
         return CallMethodAsync(_getAddressesByNameWithOptions, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host, NapiArg.Of(option));
     }
 

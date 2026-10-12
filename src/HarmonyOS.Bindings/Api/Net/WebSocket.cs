@@ -425,6 +425,11 @@ public sealed partial class WebSocketServer : JsObject
     /// </summary>
     public Task<bool> CloseAsync(WebSocketConnection connection, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<bool>(_close, NapiArg.Of(connection));
+        }
+
         return CallMethodAsync<bool>(_close, NapiArg.Of(connection), NapiArg.Of(options));
     }
 

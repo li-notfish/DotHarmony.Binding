@@ -432,6 +432,12 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void Seek(double timeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null)
     {
+        if (mode is null)
+        {
+            CallMethodVoid(_seek, timeMs);
+            return;
+        }
+
         CallMethodVoid(_seek, timeMs, NapiArg.Of(mode));
     }
 
@@ -464,6 +470,11 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SelectTrackAsync(double index, global::HarmonyOS.ArkUI.SwitchMode? mode = null, CancellationToken cancellationToken = default)
     {
+        if (mode is null)
+        {
+            return CallMethodAsyncVoid(_selectTrack, cancellationToken, index);
+        }
+
         return CallMethodAsyncVoid(_selectTrack, cancellationToken, index, NapiArg.Of(mode));
     }
 
@@ -488,6 +499,11 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SetMediaSourceAsync(MediaSource src, PlaybackStrategy? strategy = null, CancellationToken cancellationToken = default)
     {
+        if (strategy is null)
+        {
+            return CallMethodAsyncVoid(_setMediaSource, cancellationToken, NapiArg.Of(src));
+        }
+
         return CallMethodAsyncVoid(_setMediaSource, cancellationToken, NapiArg.Of(src), NapiArg.Of(strategy));
     }
 
@@ -512,6 +528,16 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task AddSubtitleFromFdAsync(double fd, double? offset = null, double? length = null, CancellationToken cancellationToken = default)
     {
+        if (offset is null && length is null)
+        {
+            return CallMethodAsyncVoid(_addSubtitleFromFd, cancellationToken, fd);
+        }
+
+        if (length is null)
+        {
+            return CallMethodAsyncVoid(_addSubtitleFromFd, cancellationToken, fd, NapiArg.Of(offset));
+        }
+
         return CallMethodAsyncVoid(_addSubtitleFromFd, cancellationToken, fd, NapiArg.Of(offset), NapiArg.Of(length));
     }
 
@@ -592,6 +618,11 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SetPlaybackRangeAsync(double startTimeMs, double endTimeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null, CancellationToken cancellationToken = default)
     {
+        if (mode is null)
+        {
+            return CallMethodAsyncVoid(_setPlaybackRange, cancellationToken, startTimeMs, endTimeMs);
+        }
+
         return CallMethodAsyncVoid(_setPlaybackRange, cancellationToken, startTimeMs, endTimeMs, NapiArg.Of(mode));
     }
 
@@ -664,6 +695,11 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task<string> AddPlaybackMediaSourceAsync(MediaSource src, string? id = null)
     {
+        if (id is null)
+        {
+            return CallMethodAsync<string>(_addPlaybackMediaSource, NapiArg.Of(src));
+        }
+
         return CallMethodAsync<string>(_addPlaybackMediaSource, NapiArg.Of(src), id);
     }
 
@@ -792,6 +828,12 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void OffMetricsEvent(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offMetricsEvent);
+            return;
+        }
+
         CallMethodVoid(_offMetricsEvent, NapiArg.Of(callback));
     }
 
@@ -808,6 +850,12 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void OffPlaybackContentChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPlaybackContentChanged);
+            return;
+        }
+
         CallMethodVoid(_offPlaybackContentChanged, NapiArg.Of(callback));
     }
 
@@ -824,6 +872,12 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void OffTimedMetaData(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offTimedMetaData);
+            return;
+        }
+
         CallMethodVoid(_offTimedMetaData, NapiArg.Of(callback));
     }
 
@@ -2439,6 +2493,12 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsEventListenerLoadingError(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offAdsEventListenerLoadingError);
+            return;
+        }
+
         CallMethodVoid(_offAdsEventListenerLoadingError, NapiArg.Of(callback));
     }
 
@@ -2447,6 +2507,12 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsListenerAdsStarted(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offAdsListenerAdsStarted);
+            return;
+        }
+
         CallMethodVoid(_offAdsListenerAdsStarted, NapiArg.Of(callback));
     }
 
@@ -2455,6 +2521,12 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsListenerAdsSkipped(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offAdsListenerAdsSkipped);
+            return;
+        }
+
         CallMethodVoid(_offAdsListenerAdsSkipped, NapiArg.Of(callback));
     }
 
@@ -2463,6 +2535,12 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsListenerAdsCompleted(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offAdsListenerAdsCompleted);
+            return;
+        }
+
         CallMethodVoid(_offAdsListenerAdsCompleted, NapiArg.Of(callback));
     }
 
@@ -3250,6 +3328,12 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public void SetUrlSource(string url, IntPtr? headers = null)
     {
+        if (headers is null)
+        {
+            CallMethodVoid(_setUrlSource, url);
+            return;
+        }
+
         CallMethodVoid(_setUrlSource, url, NapiArg.Of(headers));
     }
 
@@ -3332,6 +3416,11 @@ public sealed partial class AVImageGenerator : JsObject
     /// </summary>
     public Task<IntPtr> FetchScaledFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryMode, OutputSize? outputSize = null)
     {
+        if (outputSize is null)
+        {
+            return CallMethodAsync<IntPtr>(_fetchScaledFrameByTime, timeUs, (int)queryMode);
+        }
+
         return CallMethodAsync<IntPtr>(_fetchScaledFrameByTime, timeUs, (int)queryMode, NapiArg.Of(outputSize));
     }
 
@@ -3396,6 +3485,12 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void RemoveDownloadTask(string? taskId = null)
     {
+        if (taskId is null)
+        {
+            CallMethodVoid(_removeDownloadTask);
+            return;
+        }
+
         CallMethodVoid(_removeDownloadTask, taskId);
     }
 
@@ -3404,6 +3499,12 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void PauseDownloadTask(string? taskId = null)
     {
+        if (taskId is null)
+        {
+            CallMethodVoid(_pauseDownloadTask);
+            return;
+        }
+
         CallMethodVoid(_pauseDownloadTask, taskId);
     }
 
@@ -3412,6 +3513,12 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void ResumeDownloadTask(string? taskId = null)
     {
+        if (taskId is null)
+        {
+            CallMethodVoid(_resumeDownloadTask);
+            return;
+        }
+
         CallMethodVoid(_resumeDownloadTask, taskId);
     }
 
@@ -3468,6 +3575,12 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void OffStatusChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offStatusChange);
+            return;
+        }
+
         CallMethodVoid(_offStatusChange, NapiArg.Of(callback));
     }
 
@@ -3476,6 +3589,12 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void OffProgressChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offProgressChange);
+            return;
+        }
+
         CallMethodVoid(_offProgressChange, NapiArg.Of(callback));
     }
 

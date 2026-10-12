@@ -153,6 +153,11 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<string> CreatePhotoAssetAsync(global::HarmonyOS.ArkUI.PhotoType photoType, string extension, string? title = null)
     {
+        if (title is null)
+        {
+            return CallMethodAsync<string>(_createPhotoAsset, (int)photoType, extension);
+        }
+
         return CallMethodAsync<string>(_createPhotoAsset, (int)photoType, extension, title);
     }
 
@@ -185,6 +190,12 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public void UnRegisterChange(string uri, IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_unRegisterChange, uri);
+            return;
+        }
+
         CallMethodVoid(_unRegisterChange, uri, NapiArg.Of(callback));
     }
 
@@ -289,6 +300,12 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public void OffMediaLibraryAvailability(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offMediaLibraryAvailability);
+            return;
+        }
+
         CallMethodVoid(_offMediaLibraryAvailability, NapiArg.Of(callback));
     }
 
@@ -321,6 +338,18 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public void OffSinglePhotoAlbumChange(Album? album = null, IntPtr? callback = null)
     {
+        if (album is null && callback is null)
+        {
+            CallMethodVoid(_offSinglePhotoAlbumChange);
+            return;
+        }
+
+        if (callback is null)
+        {
+            CallMethodVoid(_offSinglePhotoAlbumChange, NapiArg.Of(album));
+            return;
+        }
+
         CallMethodVoid(_offSinglePhotoAlbumChange, NapiArg.Of(album), NapiArg.Of(callback));
     }
 
@@ -337,6 +366,18 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public void OffSinglePhotoChange(PhotoAsset? asset = null, IntPtr? callback = null)
     {
+        if (asset is null && callback is null)
+        {
+            CallMethodVoid(_offSinglePhotoChange);
+            return;
+        }
+
+        if (callback is null)
+        {
+            CallMethodVoid(_offSinglePhotoChange, NapiArg.Of(asset));
+            return;
+        }
+
         CallMethodVoid(_offSinglePhotoChange, NapiArg.Of(asset), NapiArg.Of(callback));
     }
 
@@ -353,6 +394,11 @@ public sealed partial class PhotoAccessHelperObject : JsObject
     /// </summary>
     public Task<RecentPhotoInfo> GetRecentPhotoInfoAsync(RecentPhotoOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_getRecentPhotoInfo, static h => new RecentPhotoInfo(h));
+        }
+
         return CallMethodAsync(_getRecentPhotoInfo, static h => new RecentPhotoInfo(h), NapiArg.Of(options));
     }
 
@@ -495,6 +541,11 @@ public sealed partial class MediaAssetChangeRequest : JsObject
     /// </summary>
     public MediaAssetChangeRequest CreateAssetRequest(IntPtr context, global::HarmonyOS.ArkUI.PhotoType photoType, string extension, CreateOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod(_createAssetRequest, static h => new MediaAssetChangeRequest(h), context, (int)photoType, extension);
+        }
+
         return CallMethod(_createAssetRequest, static h => new MediaAssetChangeRequest(h), context, (int)photoType, extension, NapiArg.Of(options));
     }
 

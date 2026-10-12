@@ -858,6 +858,11 @@ public sealed partial class ImagePixelMap : JsObject
     /// </summary>
     public Task ApplyScaleAsync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel? level = null, CancellationToken cancellationToken = default)
     {
+        if (level is null)
+        {
+            return CallMethodAsyncVoid(_applyScale, cancellationToken, x, y);
+        }
+
         return CallMethodAsyncVoid(_applyScale, cancellationToken, x, y, NapiArg.Of(level));
     }
 
@@ -866,6 +871,12 @@ public sealed partial class ImagePixelMap : JsObject
     /// </summary>
     public void ApplyScaleSync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel? level = null)
     {
+        if (level is null)
+        {
+            CallMethodVoid(_applyScaleSync, x, y);
+            return;
+        }
+
         CallMethodVoid(_applyScaleSync, x, y, NapiArg.Of(level));
     }
 
@@ -906,6 +917,11 @@ public sealed partial class ImagePixelMap : JsObject
     /// </summary>
     public Task<ImagePixelMap> CreateScaledPixelMapAsync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethodAsync(_createScaledPixelMap, static h => new ImagePixelMap(h), x, y);
+        }
+
         return CallMethodAsync(_createScaledPixelMap, static h => new ImagePixelMap(h), x, y, NapiArg.Of(level));
     }
 
@@ -914,6 +930,11 @@ public sealed partial class ImagePixelMap : JsObject
     /// </summary>
     public ImagePixelMap CreateScaledPixelMapSync(double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethod(_createScaledPixelMapSync, static h => new ImagePixelMap(h), x, y);
+        }
+
         return CallMethod(_createScaledPixelMapSync, static h => new ImagePixelMap(h), x, y, NapiArg.Of(level));
     }
 
@@ -1170,6 +1191,11 @@ public sealed partial class ImagePixelMap : JsObject
     /// </summary>
     public ImagePixelMap CreateCroppedAndScaledPixelMapSync(ImageRegion region, double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethod(_createCroppedAndScaledPixelMapSync, static h => new ImagePixelMap(h), NapiArg.Of(region), x, y);
+        }
+
         return CallMethod(_createCroppedAndScaledPixelMapSync, static h => new ImagePixelMap(h), NapiArg.Of(region), x, y, NapiArg.Of(level));
     }
 
@@ -1178,6 +1204,11 @@ public sealed partial class ImagePixelMap : JsObject
     /// </summary>
     public Task<ImagePixelMap> CreateCroppedAndScaledPixelMapAsync(ImageRegion region, double x, double y, global::HarmonyOS.ArkUI.AntiAliasingLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethodAsync(_createCroppedAndScaledPixelMap, static h => new ImagePixelMap(h), NapiArg.Of(region), x, y);
+        }
+
         return CallMethodAsync(_createCroppedAndScaledPixelMap, static h => new ImagePixelMap(h), NapiArg.Of(region), x, y, NapiArg.Of(level));
     }
 
@@ -1311,6 +1342,11 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public ImageInfo GetImageInfoSync(double? index = null)
     {
+        if (index is null)
+        {
+            return CallMethod(_getImageInfoSync, static h => new ImageInfo(h));
+        }
+
         return CallMethod(_getImageInfoSync, static h => new ImageInfo(h), NapiArg.Of(index));
     }
 
@@ -1319,6 +1355,11 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public Task<ImagePixelMap> CreatePixelMapAsync(IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_createPixelMap, static h => new ImagePixelMap(h));
+        }
+
         return CallMethodAsync(_createPixelMap, static h => new ImagePixelMap(h), NapiArg.Of(options));
     }
 
@@ -1335,6 +1376,16 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public Task<ImagePixelMap> CreatePixelMapUsingAllocatorAsync(IntPtr? options = null, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null)
     {
+        if (options is null && allocatorType is null)
+        {
+            return CallMethodAsync(_createPixelMapUsingAllocator, static h => new ImagePixelMap(h));
+        }
+
+        if (allocatorType is null)
+        {
+            return CallMethodAsync(_createPixelMapUsingAllocator, static h => new ImagePixelMap(h), NapiArg.Of(options));
+        }
+
         return CallMethodAsync(_createPixelMapUsingAllocator, static h => new ImagePixelMap(h), NapiArg.Of(options), NapiArg.Of(allocatorType));
     }
 
@@ -1343,6 +1394,11 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public ImagePixelMap CreatePixelMapSync(IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod(_createPixelMapSync, static h => new ImagePixelMap(h));
+        }
+
         return CallMethod(_createPixelMapSync, static h => new ImagePixelMap(h), NapiArg.Of(options));
     }
 
@@ -1351,6 +1407,16 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public ImagePixelMap CreatePixelMapUsingAllocatorSync(IntPtr? options = null, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null)
     {
+        if (options is null && allocatorType is null)
+        {
+            return CallMethod(_createPixelMapUsingAllocatorSync, static h => new ImagePixelMap(h));
+        }
+
+        if (allocatorType is null)
+        {
+            return CallMethod(_createPixelMapUsingAllocatorSync, static h => new ImagePixelMap(h), NapiArg.Of(options));
+        }
+
         return CallMethod(_createPixelMapUsingAllocatorSync, static h => new ImagePixelMap(h), NapiArg.Of(options), NapiArg.Of(allocatorType));
     }
 
@@ -1359,6 +1425,11 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public Task<ImagePixelMap[]> CreatePixelMapListAsync(IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_createPixelMapList, h => ValueConverter.ConvertArray(h, static e => new ImagePixelMap(e)));
+        }
+
         return CallMethodAsync(_createPixelMapList, h => ValueConverter.ConvertArray(h, static e => new ImagePixelMap(e)), NapiArg.Of(options));
     }
 
@@ -1399,6 +1470,11 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public Task<string> GetImagePropertyAsync(global::HarmonyOS.ArkUI.PropertyKey key, ImagePropertyOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<string>(_getImageProperty, (int)key);
+        }
+
         return CallMethodAsync<string>(_getImageProperty, (int)key, NapiArg.Of(options));
     }
 
@@ -1407,6 +1483,11 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public Task<string> GetImagePropertyAsync(string key, GetImagePropertyOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<string>(_getImageProperty, key);
+        }
+
         return CallMethodAsync<string>(_getImageProperty, key, NapiArg.Of(options));
     }
 
@@ -1487,6 +1568,11 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public Task<Picture> CreatePictureAsync(DecodingOptionsForPicture? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_createPicture, static h => new Picture(h));
+        }
+
         return CallMethodAsync(_createPicture, static h => new Picture(h), NapiArg.Of(options));
     }
 
@@ -1503,6 +1589,16 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public Task<ImageMetadata> ReadImageMetadataAsync(string[]? propertyKeys = null, double? index = null)
     {
+        if (propertyKeys is null && index is null)
+        {
+            return CallMethodAsync(_readImageMetadata, static h => new ImageMetadata(h));
+        }
+
+        if (index is null)
+        {
+            return CallMethodAsync(_readImageMetadata, static h => new ImageMetadata(h), NapiArg.Of(propertyKeys));
+        }
+
         return CallMethodAsync(_readImageMetadata, static h => new ImageMetadata(h), NapiArg.Of(propertyKeys), NapiArg.Of(index));
     }
 
@@ -1519,6 +1615,16 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public Task<ImageMetadata> ReadImageMetadataByTypeAsync(global::HarmonyOS.ArkUI.MetadataType[]? metadataTypes = null, double? index = null)
     {
+        if (metadataTypes is null && index is null)
+        {
+            return CallMethodAsync(_readImageMetadataByType, static h => new ImageMetadata(h));
+        }
+
+        if (index is null)
+        {
+            return CallMethodAsync(_readImageMetadataByType, static h => new ImageMetadata(h), NapiArg.Of(metadataTypes));
+        }
+
         return CallMethodAsync(_readImageMetadataByType, static h => new ImageMetadata(h), NapiArg.Of(metadataTypes), NapiArg.Of(index));
     }
 
@@ -1535,6 +1641,11 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public Task<ImagePixelMap> CreateThumbnailAsync(DecodingOptionsForThumbnail? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_createThumbnail, static h => new ImagePixelMap(h));
+        }
+
         return CallMethodAsync(_createThumbnail, static h => new ImagePixelMap(h), NapiArg.Of(options));
     }
 
@@ -1543,6 +1654,11 @@ public sealed partial class ImageSource : JsObject
     /// </summary>
     public ImagePixelMap CreateThumbnailSync(DecodingOptionsForThumbnail? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod(_createThumbnailSync, static h => new ImagePixelMap(h));
+        }
+
         return CallMethod(_createThumbnailSync, static h => new ImagePixelMap(h), NapiArg.Of(options));
     }
 
@@ -1688,6 +1804,11 @@ public sealed partial class ImagePacker : JsObject
     /// </summary>
     public Task PackBinaryImageToTiffFileAsync(BinaryBufferInfo bufferInfo, double fd, PackingOptionsForTiff? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_packBinaryImageToTiffFile, cancellationToken, NapiArg.Of(bufferInfo), fd);
+        }
+
         return CallMethodAsyncVoid(_packBinaryImageToTiffFile, cancellationToken, NapiArg.Of(bufferInfo), fd, NapiArg.Of(options));
     }
 
@@ -1696,6 +1817,11 @@ public sealed partial class ImagePacker : JsObject
     /// </summary>
     public Task<byte[]> PackBinaryImageToTiffDataAsync(BinaryBufferInfo bufferInfo, PackingOptionsForTiff? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_packBinaryImageToTiffData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(bufferInfo));
+        }
+
         return CallMethodAsync(_packBinaryImageToTiffData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(bufferInfo), NapiArg.Of(options));
     }
 
@@ -2019,6 +2145,11 @@ public sealed partial class Picture : JsObject
     /// </summary>
     public Task<ImagePixelMap> GetHdrComposedPixelmapWithOptionsAsync(HdrComposeOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_getHdrComposedPixelmapWithOptions, static h => new ImagePixelMap(h));
+        }
+
         return CallMethodAsync(_getHdrComposedPixelmapWithOptions, static h => new ImagePixelMap(h), NapiArg.Of(options));
     }
 
@@ -4981,6 +5112,11 @@ public sealed partial class XMPMetadata : JsObject
     /// </summary>
     public Task SetValueAsync(string path, global::HarmonyOS.ArkUI.XMPTagType type, string? value = null, CancellationToken cancellationToken = default)
     {
+        if (value is null)
+        {
+            return CallMethodAsyncVoid(_setValue, cancellationToken, path, (int)type);
+        }
+
         return CallMethodAsyncVoid(_setValue, cancellationToken, path, (int)type, value);
     }
 
@@ -5005,7 +5141,22 @@ public sealed partial class XMPMetadata : JsObject
     /// </summary>
     public void EnumerateTags(System.Func<string, XMPTag, bool> callback, string? rootPath = null, XMPEnumerateOptions? options = null)
     {
-        CallMethodVoid(_enumerateTags, NapiArg.Of(callback), rootPath, NapiArg.Of(options));
+        var (callbackJsFunc, _) = NodeApi.CreateValueCallbackFunction(
+            (Func<ReadOnlySpan<IntPtr>, object?>)(args => callback((NativeValue.ToString(args[0]) ?? string.Empty), new XMPTag(args[1]))));
+
+        if (rootPath is null && options is null)
+        {
+            CallMethodVoid(_enumerateTags, callbackJsFunc);
+            return;
+        }
+
+        if (options is null)
+        {
+            CallMethodVoid(_enumerateTags, callbackJsFunc, rootPath);
+            return;
+        }
+
+        CallMethodVoid(_enumerateTags, callbackJsFunc, rootPath, NapiArg.Of(options));
     }
 
     /// <summary>
@@ -5013,6 +5164,16 @@ public sealed partial class XMPMetadata : JsObject
     /// </summary>
     public Task<IntPtr> GetTagsAsync(string? rootPath = null, XMPEnumerateOptions? options = null)
     {
+        if (rootPath is null && options is null)
+        {
+            return CallMethodAsync<IntPtr>(_getTags);
+        }
+
+        if (options is null)
+        {
+            return CallMethodAsync<IntPtr>(_getTags, rootPath);
+        }
+
         return CallMethodAsync<IntPtr>(_getTags, rootPath, NapiArg.Of(options));
     }
 

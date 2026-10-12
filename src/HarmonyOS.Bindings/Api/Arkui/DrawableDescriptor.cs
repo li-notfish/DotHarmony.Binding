@@ -541,6 +541,11 @@ public sealed partial class AnimatedDrawableDescriptor : JsObject
     /// </summary>
     public AnimationController GetAnimationController(string? id = null)
     {
+        if (id is null)
+        {
+            return CallMethod(_getAnimationController, static h => new AnimationController(h));
+        }
+
         return CallMethod(_getAnimationController, static h => new AnimationController(h), id);
     }
 

@@ -127,6 +127,11 @@ public sealed partial class AudioHapticManager : JsObject
     /// </summary>
     public Task<AudioHapticPlayer> CreatePlayerAsync(double id, AudioHapticPlayerOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_createPlayer, static h => new AudioHapticPlayer(h), id);
+        }
+
         return CallMethodAsync(_createPlayer, static h => new AudioHapticPlayer(h), id, NapiArg.Of(options));
     }
 

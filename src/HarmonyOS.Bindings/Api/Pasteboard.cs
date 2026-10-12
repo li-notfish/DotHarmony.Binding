@@ -624,6 +624,12 @@ public sealed partial class SystemPasteboard : JsObject
     /// </summary>
     public void OffRemoteUpdate(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offRemoteUpdate);
+            return;
+        }
+
         CallMethodVoid(_offRemoteUpdate, NapiArg.Of(callback));
     }
 

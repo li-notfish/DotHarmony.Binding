@@ -300,6 +300,12 @@ public sealed partial class ArcSwiperController : JsObject
     /// </summary>
     public void FinishAnimation(IntPtr? handler = null)
     {
+        if (handler is null)
+        {
+            CallMethodVoid(_finishAnimation);
+            return;
+        }
+
         CallMethodVoid(_finishAnimation, NapiArg.Of(handler));
     }
 

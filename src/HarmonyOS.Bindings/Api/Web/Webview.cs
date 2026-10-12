@@ -5,7 +5,6 @@
 // </auto-generated>
 #nullable enable
 using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using HarmonyOS.Interop;
@@ -409,6 +408,18 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void LoadData(string data, string mimeType, string encoding, string? baseUrl = null, string? historyUrl = null)
     {
+        if (baseUrl is null && historyUrl is null)
+        {
+            CallMethodVoid(_loadData, data, mimeType, encoding);
+            return;
+        }
+
+        if (historyUrl is null)
+        {
+            CallMethodVoid(_loadData, data, mimeType, encoding, baseUrl);
+            return;
+        }
+
         CallMethodVoid(_loadData, data, mimeType, encoding, baseUrl, historyUrl);
     }
 
@@ -527,6 +538,11 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public WebMessagePort[] CreateWebMessagePorts(bool? isExtentionType = null)
     {
+        if (isExtentionType is null)
+        {
+            return CallMethod(_createWebMessagePorts, h => ValueConverter.ConvertArray(h, static e => new WebMessagePort(e)));
+        }
+
         return CallMethod(_createWebMessagePorts, h => ValueConverter.ConvertArray(h, static e => new WebMessagePort(e)), NapiArg.Of(isExtentionType));
     }
 
@@ -723,6 +739,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void ScrollTo(double x, double y, double? duration = null)
     {
+        if (duration is null)
+        {
+            CallMethodVoid(_scrollTo, x, y);
+            return;
+        }
+
         CallMethodVoid(_scrollTo, x, y, NapiArg.Of(duration));
     }
 
@@ -731,6 +753,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void ScrollBy(double deltaX, double deltaY, double? duration = null)
     {
+        if (duration is null)
+        {
+            CallMethodVoid(_scrollBy, deltaX, deltaY);
+            return;
+        }
+
         CallMethodVoid(_scrollBy, deltaX, deltaY, NapiArg.Of(duration));
     }
 
@@ -795,6 +823,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PrefetchPage(string url, WebHeader[]? additionalHeaders = null)
     {
+        if (additionalHeaders is null)
+        {
+            CallMethodVoid(_prefetchPage, url);
+            return;
+        }
+
         CallMethodVoid(_prefetchPage, url, NapiArg.Of(additionalHeaders));
     }
 
@@ -803,6 +837,18 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PrefetchPage(string url, WebHeader[]? additionalHeaders = null, PrefetchOptions? prefetchOptions = null)
     {
+        if (additionalHeaders is null && prefetchOptions is null)
+        {
+            CallMethodVoid(_prefetchPage, url);
+            return;
+        }
+
+        if (prefetchOptions is null)
+        {
+            CallMethodVoid(_prefetchPage, url, NapiArg.Of(additionalHeaders));
+            return;
+        }
+
         CallMethodVoid(_prefetchPage, url, NapiArg.Of(additionalHeaders), NapiArg.Of(prefetchOptions));
     }
 
@@ -891,6 +937,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetScrollable(bool enable, global::HarmonyOS.ArkUI.ScrollType? type = null)
     {
+        if (type is null)
+        {
+            CallMethodVoid(_setScrollable, enable);
+            return;
+        }
+
         CallMethodVoid(_setScrollable, enable, NapiArg.Of(type));
     }
 
@@ -1115,6 +1167,24 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PrefetchResource(WebviewRequestInfo request, WebHeader[]? additionalHeaders = null, string? cacheKey = null, double? cacheValidTime = null)
     {
+        if (additionalHeaders is null && cacheKey is null && cacheValidTime is null)
+        {
+            CallMethodVoid(_prefetchResource, NapiArg.Of(request));
+            return;
+        }
+
+        if (cacheKey is null && cacheValidTime is null)
+        {
+            CallMethodVoid(_prefetchResource, NapiArg.Of(request), NapiArg.Of(additionalHeaders));
+            return;
+        }
+
+        if (cacheValidTime is null)
+        {
+            CallMethodVoid(_prefetchResource, NapiArg.Of(request), NapiArg.Of(additionalHeaders), cacheKey);
+            return;
+        }
+
         CallMethodVoid(_prefetchResource, NapiArg.Of(request), NapiArg.Of(additionalHeaders), cacheKey, NapiArg.Of(cacheValidTime));
     }
 
@@ -1435,6 +1505,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void ClearBlanklessLoadingCache(string[]? keys = null)
     {
+        if (keys is null)
+        {
+            CallMethodVoid(_clearBlanklessLoadingCache);
+            return;
+        }
+
         CallMethodVoid(_clearBlanklessLoadingCache, NapiArg.Of(keys));
     }
 
@@ -2257,9 +2333,6 @@ public sealed partial class WebDownloadDelegate : JsObject
 public sealed partial class WebSchemeHandler : JsObject
 {
     public WebSchemeHandler(IntPtr handle) : base(handle) { }
-    private static ReadOnlySpan<byte> _WebSchemeHandler => "WebSchemeHandler"u8;
-    public WebSchemeHandler()
-        : this(NodeApi.CreateInstance(Webview.Module, _WebSchemeHandler)) { }
     private static ReadOnlySpan<byte> _onRequestStart => "onRequestStart"u8;
     private static ReadOnlySpan<byte> _onRequestStop => "onRequestStop"u8;
     /// <summary>
@@ -2267,14 +2340,10 @@ public sealed partial class WebSchemeHandler : JsObject
     /// </summary>
     public void OnRequestStart(System.Func<WebSchemeHandlerRequest, WebResourceHandler, bool> callback)
     {
-        var (jsFunc, handle) = NodeApi.CreateValueCallbackFunction(
-            (Func<ReadOnlySpan<IntPtr>, object?>)(args =>
-            {
-                _ = callback(new WebSchemeHandlerRequest(args[0]), new WebResourceHandler(args[1]));
-                return true;
-            }));
-        _onRequestStartHandle = handle;
-        CallMethodVoid(_onRequestStart, jsFunc);
+        var (callbackJsFunc, _) = NodeApi.CreateValueCallbackFunction(
+            (Func<ReadOnlySpan<IntPtr>, object?>)(args => callback(new WebSchemeHandlerRequest(args[0]), new WebResourceHandler(args[1]))));
+
+        CallMethodVoid(_onRequestStart, callbackJsFunc);
     }
 
     /// <summary>
@@ -2284,8 +2353,6 @@ public sealed partial class WebSchemeHandler : JsObject
     {
         CallMethodVoid(_onRequestStop, callback);
     }
-
-    private GCHandle _onRequestStartHandle;
 
 }
 

@@ -182,6 +182,12 @@ public sealed partial class UIExtensionContentSessionObject : JsObject
     /// </summary>
     public void LoadContent(string path, IntPtr? storage = null)
     {
+        if (storage is null)
+        {
+            CallMethodVoid(_loadContent, path);
+            return;
+        }
+
         CallMethodVoid(_loadContent, path, NapiArg.Of(storage));
     }
 
@@ -190,6 +196,12 @@ public sealed partial class UIExtensionContentSessionObject : JsObject
     /// </summary>
     public void LoadContentByName(string name, IntPtr? storage = null)
     {
+        if (storage is null)
+        {
+            CallMethodVoid(_loadContentByName, name);
+            return;
+        }
+
         CallMethodVoid(_loadContentByName, name, NapiArg.Of(storage));
     }
 
