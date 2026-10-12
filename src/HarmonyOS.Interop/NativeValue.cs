@@ -17,6 +17,14 @@ internal static class NativeValue
         if (value == null) return IntPtr.Zero;
         var env = NapiEnv.Current;
         var byteCount = Encoding.UTF8.GetByteCount(value);
+        if (byteCount == 0)
+        {
+            // Node-API requires a non-null string pointer even for length 0.
+            Span<byte> empty = stackalloc byte[1];
+            empty[0] = 0;
+            NativeNodeApi.napi_create_string_utf8(env, empty, IntPtr.Zero, out var emptyResult).ThrowIfFailed();
+            return emptyResult;
+        }
         if (byteCount <= 256)
         {
             Span<byte> utf8 = stackalloc byte[byteCount];
