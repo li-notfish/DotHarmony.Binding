@@ -10,6 +10,7 @@ public interface IHarmonyWebViewSurface
     Task LoadUrlAsync(string url);
     Task LoadDataAsync(string html, string baseUrl);
     Task<string> RunScriptAsync(string script);
+    void SetCustomUserAgent(string userAgent);
     void RegisterMessageHandler(Action<string> handler);
     void SetSchemeHandler(string scheme, Func<HarmonyWebRequest, HarmonyWebResponse> handler);
     HarmonyWebResponse? InterceptRequest(HarmonyWebRequest request);

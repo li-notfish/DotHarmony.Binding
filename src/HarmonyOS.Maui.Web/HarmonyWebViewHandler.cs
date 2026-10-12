@@ -46,8 +46,8 @@ public sealed class HarmonyWebViewHandler : HarmonyViewHandler<WebView, ArkStack
     public static void MapUserAgent(HarmonyWebViewHandler handler, WebView view)
     {
         if (view.UserAgent is { Length: > 0 } userAgent)
-            _ = handler.Surface?.RunScriptAsync(
-                $"Object.defineProperty(navigator, 'userAgent', {{ value: '{userAgent}', configurable: true }})");
+            // 原生 UA 通道：JS 改写 navigator.userAgent 既不转义（注入面）也会被 ArkWeb 内置规则覆盖
+            handler.Surface?.SetCustomUserAgent(userAgent);
     }
 
     public static void MapGoBack(HarmonyWebViewHandler handler, WebView view, object? args)

@@ -13,6 +13,12 @@ public static class HarmonyWebRuntime
     {
         try
         {
+            // 单实例 surface：第二个 passWebView 会覆盖全局入口导致消息/拦截串台，直接拒绝并报错
+            if (Current is not null)
+            {
+                HiLog.Error("HarmonyWeb", "InitializeCore: surface already initialized; multiple WebView hosts are not supported.");
+                return -2;
+            }
             Host.InitializeCore(env);
             var surface = new HarmonyArkWebViewSurface(webViewValue);
             surface.InitializeAsync().GetAwaiter().GetResult();

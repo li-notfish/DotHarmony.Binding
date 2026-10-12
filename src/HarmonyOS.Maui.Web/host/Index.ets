@@ -38,6 +38,7 @@ struct Index {
   private webController: webview.WebviewController = new webview.WebviewController();
   private externalBridge: ExternalBridge = new ExternalBridge();
   private readonly baseUri: string = 'https://localhost/';
+  private nodeContentPassed: boolean = false;
 
   aboutToAppear(): void {
     native.initDotnet();
@@ -101,6 +102,11 @@ struct Index {
           console.error(`[host] error receive: ${event.request.getRequestUrl()}`);
         })
         .onPageEnd(() => {
+          // NodeContent 只需交接一次；后续页面加载完成不再重发
+          if (this.nodeContentPassed) {
+            return;
+          }
+          this.nodeContentPassed = true;
           setTimeout(() => {
             native.passNodeContent(this.nodeContent);
           }, 0);

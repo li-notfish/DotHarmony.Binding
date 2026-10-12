@@ -23,6 +23,22 @@ typedef int (*harmony_web_receive_t)(void* env, void* messageValue);
 
 static void* g_app = NULL;
 
+// Web 通道导出符号缓存：dlsym 仅在首次调用时解析（surface 可选，无导出时保持 NULL 并短路）
+static harmony_web_init_t g_webInit = NULL;
+static harmony_web_intercept_t g_webIntercept = NULL;
+static harmony_web_receive_t g_webReceive = NULL;
+static bool g_webSymbolsResolved = false;
+
+static void resolve_web_symbols(void)
+{
+    if (g_webSymbolsResolved) return;
+    g_webSymbolsResolved = true;
+    if (!g_app) return;
+    g_webInit = (harmony_web_init_t)dlsym(g_app, "HarmonyWebInit");
+    g_webIntercept = (harmony_web_intercept_t)dlsym(g_app, "HarmonyWebInterceptRequest");
+    g_webReceive = (harmony_web_receive_t)dlsym(g_app, "HarmonyWebReceiveMessage");
+}
+
 // 主题回调注册表：.NET 库代码（HarmonyOS.Maui）在初始化时经 libentry 导出符号
 // 主动注册函数指针——ILC 只导出入口程序集的 [UnmanagedCallersOnly]，库内方法无法
 // 经 dlsym 发现，但取函数指针不受此限。注册后优先于 dlsym 回退路径。
@@ -163,13 +179,13 @@ static napi_value PassWebView(napi_env env, napi_callback_info info)
         return NULL;
     }
 
-    harmony_web_init_t webInit = (harmony_web_init_t)dlsym(g_app, "HarmonyWebInit");
-    if (!webInit) {
-        loge("dlsym HarmonyWebInit", dlerror());
+    resolve_web_symbols();
+    if (!g_webInit) {
+        loge("passWebView", "HarmonyWebInit export not found in libapp.so");
         return NULL;
     }
 
-    int r = webInit((void*)env, (void*)argv[0]);
+    int r = g_webInit((void*)env, (void*)argv[0]);
     if (r == 0) {
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG,
                      ".NET WebView bridge initialized");
@@ -192,14 +208,13 @@ static napi_value InterceptWebViewRequest(napi_env env, napi_callback_info info)
         return NULL;
     }
 
-    harmony_web_intercept_t intercept =
-        (harmony_web_intercept_t)dlsym(g_app, "HarmonyWebInterceptRequest");
-    if (!intercept) {
-        loge("dlsym HarmonyWebInterceptRequest", dlerror());
+    resolve_web_symbols();
+    if (!g_webIntercept) {
+        loge("interceptWebViewRequest", "HarmonyWebInterceptRequest export not found in libapp.so");
         return NULL;
     }
 
-    return (napi_value)intercept((void*)env, (void*)argv[0], (void*)argv[1]);
+    return (napi_value)g_webIntercept((void*)env, (void*)argv[0], (void*)argv[1]);
 }
 
 static napi_value ReceiveWebViewMessage(napi_env env, napi_callback_info info)
@@ -214,14 +229,13 @@ static napi_value ReceiveWebViewMessage(napi_env env, napi_callback_info info)
         return NULL;
     }
 
-    harmony_web_receive_t receive =
-        (harmony_web_receive_t)dlsym(g_app, "HarmonyWebReceiveMessage");
-    if (!receive) {
-        loge("dlsym HarmonyWebReceiveMessage", dlerror());
+    resolve_web_symbols();
+    if (!g_webReceive) {
+        loge("receiveWebViewMessage", "HarmonyWebReceiveMessage export not found in libapp.so");
         return NULL;
     }
 
-    if (receive((void*)env, (void*)argv[0]) != 0) {
+    if (g_webReceive((void*)env, (void*)argv[0]) != 0) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG, "HarmonyWebReceiveMessage failed");
     }
     return NULL;

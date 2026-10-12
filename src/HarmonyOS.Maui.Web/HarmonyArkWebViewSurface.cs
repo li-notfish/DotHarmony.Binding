@@ -49,6 +49,13 @@ public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface
         return _controller.RunJavaScriptAsync(script);
     }
 
+    public void SetCustomUserAgent(string userAgent)
+    {
+        ArgumentNullException.ThrowIfNull(userAgent);
+        // 原生 UA 通道；须在页面加载前生效，由 WebviewController.setCustomUserAgent 保证
+        _controller.SetCustomUserAgent(userAgent);
+    }
+
     public void RegisterMessageHandler(Action<string> handler)
     {
         ArgumentNullException.ThrowIfNull(handler);
