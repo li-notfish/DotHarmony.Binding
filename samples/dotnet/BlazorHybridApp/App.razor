@@ -1,0 +1,16 @@
+@using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager Nav
+
+<div class="nav">
+    <button class="nav-item" @onclick='() => Nav.NavigateTo("counter")'>Counter</button>
+    <button class="nav-item" @onclick='() => Nav.NavigateTo("about")'>About</button>
+</div>
+
+<Router AppAssembly="typeof(BlazorHybridApp.BlazorApp).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(BlazorHybridApp.Layout.MainLayout)" />
+    </Found>
+    <NotFound>
+        <p>Page not found.</p>
+    </NotFound>
+</Router>

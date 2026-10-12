@@ -1,0 +1,19 @@
+<Directives xmlns="http://schemas.microsoft.com/netfx/2013/01/metadata">
+  <Application>
+    <Assembly Name="app" Dynamic="Required All"/>
+    <Assembly Name="Microsoft.AspNetCore.Components" Dynamic="Required All"/>
+    <Assembly Name="Microsoft.AspNetCore.Components.Web" Dynamic="Required All"/>
+    <Assembly Name="Microsoft.AspNetCore.Components.WebView" Dynamic="Required All"/>
+    <Assembly Name="Microsoft.JSInterop" Dynamic="Required All"/>
+    <Assembly Name="System.Text.Json">
+      <Type Name="System.Text.Json.Serialization.Converters.ArrayConverter`2[[System.Text.Json.JsonElement[]],[System.Text.Json.JsonElement]]" Dynamic="Required All"/>
+      <Type Name="System.Text.Json.Serialization.Converters.ArrayConverter`2[[Microsoft.AspNetCore.Components.Web.JSComponentConfigurationStore+JSComponentParameter[],Microsoft.AspNetCore.Components.Web],[Microsoft.AspNetCore.Components.Web.JSComponentConfigurationStore+JSComponentParameter,Microsoft.AspNetCore.Components.Web]]" Dynamic="Required All"/>
+      <Type Name="System.Text.Json.Serialization.Converters.EnumConverter`1[[Microsoft.JSInterop.JSCallResultType,Microsoft.JSInterop]]" Dynamic="Required All"/>
+      <Type Name="System.Text.Json.Serialization.Converters.EnumConverter`1[[Microsoft.JSInterop.Infrastructure.JSCallType,Microsoft.JSInterop]]" Dynamic="Required All"/>
+      <Type Name="System.Text.Json.Serialization.Converters.ObjectDefaultConverter`1[[System.Threading.Tasks.VoidTaskResult,System.Private.CoreLib]]" Dynamic="Required All"/>
+    </Assembly>
+    <Assembly Name="Microsoft.JSInterop">
+      <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TaskResultGetter`1[[System.Threading.Tasks.VoidTaskResult,System.Private.CoreLib]]" Dynamic="Required All"/>
+    </Assembly>
+  </Application>
+</Directives>

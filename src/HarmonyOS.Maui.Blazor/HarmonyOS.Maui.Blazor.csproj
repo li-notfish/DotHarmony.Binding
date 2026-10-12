@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PackageId>HarmonyOS.Maui.Blazor</PackageId>
+    <Description>Opt-in MAUI Blazor Hybrid support for HarmonyOS WebView</Description>
+    <PackageTags>maui;blazor;harmonyos;webview</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HarmonyOS.Maui.Web\HarmonyOS.Maui.Web.csproj" />
+    <ProjectReference Include="..\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
+    <ProjectReference Include="..\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="HarmonyGestureTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="build\HarmonyOS.Maui.Blazor.targets" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.Blazor.targets" />
+    <None Include="$(PkgMicrosoft_AspNetCore_Components_WebView)\staticwebassets\blazor.webview.js"
+          Pack="true" PackagePath="buildTransitive\blazor.webview.js" />
+    <None Include="$(PkgMicrosoft_AspNetCore_Components_WebView)\staticwebassets\blazor.modules.json"
+          Pack="true" PackagePath="buildTransitive\blazor.modules.json" />
+  </ItemGroup>
+
+</Project>

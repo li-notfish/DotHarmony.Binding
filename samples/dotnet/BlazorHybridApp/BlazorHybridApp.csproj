@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>$(HarmonyOSPlatformTargetFramework)</TargetFramework>
+    <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <HarmonyEnableWeb>true</HarmonyEnableWeb>
+
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <TrimMode>full</TrimMode>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+    <IlcGenerateStackTraceData Condition="'$(Configuration)' == 'Debug'">true</IlcGenerateStackTraceData>
+
+    <OutputType>Library</OutputType>
+    <AssemblyName>app</AssemblyName>
+    <HarmonyAppTitle>Blazor Hybrid</HarmonyAppTitle>
+    <NoWarn>$(NoWarn);CA2255;CS0618;IL2026;IL2104</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <HarmonyPermission Include="ohos.permission.INTERNET" />
+    <TrimmerRootDescriptor Include="BlazorRuntimeRoots.xml" />
+    <RdXmlFile Include="BlazorRuntimeRoots.rd.xml" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Maui.Web\HarmonyOS.Maui.Web.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Maui.Blazor\HarmonyOS.Maui.Blazor.csproj" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)../../../src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)../../../src/HarmonyOS.Maui.Web/build/HarmonyOS.Maui.Web.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)../../../src/HarmonyOS.Maui.Blazor/build/HarmonyOS.Maui.Blazor.targets" />
+
+</Project>

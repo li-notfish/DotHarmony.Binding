@@ -1,0 +1,7 @@
+<linker>
+  <assembly fullname="Microsoft.AspNetCore.Components" preserve="all" />
+  <assembly fullname="Microsoft.AspNetCore.Components.WebView" preserve="all" />
+  <assembly fullname="Microsoft.JSInterop" preserve="all" />
+  <assembly fullname="System.Text.Json" preserve="all" />
+  <assembly fullname="app" preserve="all" />
+</linker>
