@@ -10,7 +10,8 @@ import { EngineBridge } from './EngineBridge';
 @Component
 export struct DynamicNode {
   @Prop node: RenderNode;
-  bridge: EngineBridge = new EngineBridge();
+  // 无默认值：调用方必须注入共享 EngineBridge——默认 new 会给每个节点各起一份 Scene/display 查询
+  bridge!: EngineBridge;
 
   /** 绝对定位（vp）；未设置时传 undefined（ArkUI 修饰符对 undefined 不生效） */
   private positionValue(): Position | undefined {

@@ -28,15 +28,20 @@ export class EngineBridge {
   private scene: EngineScene = new EngineScene();
   private onEvent: EngineEventCallback | null = null;
   private listener: TreeListener | null = null;
-  private density: number = 3.25;
+  private densityCache: number = 0;
 
-  constructor() {
-    try {
-      this.density = display.getDefaultDisplaySync().densityPixels;
-    } catch (err) {
-      // 查询失败仅影响 px 换算精度，保底 3.25
-      console.warn(`[EngineBridge] density query failed: ${err}`);
+  /** display 查询改为懒加载（构造期不触碰系统服务，便于宿主组件默认实例的零成本开销） */
+  private get density(): number {
+    if (this.densityCache === 0) {
+      try {
+        this.densityCache = display.getDefaultDisplaySync().densityPixels;
+      } catch (err) {
+        // 查询失败仅影响 px 换算精度，保底 3.25
+        console.warn(`[EngineBridge] density query failed: ${err}`);
+        this.densityCache = 3.25;
+      }
     }
+    return this.densityCache;
   }
 
   /** EngineHost 注册渲染快照监听（有变更的 applyCommands 后同步回调） */
