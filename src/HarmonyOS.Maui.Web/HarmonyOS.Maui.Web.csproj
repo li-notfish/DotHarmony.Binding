@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <None Include="build\HarmonyOS.Maui.Web.targets" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.Web.targets" />
-    <None Include="build\Index.web.ets" Pack="true" PackagePath="buildTransitive\Index.web.ets" />
+    <None Include="host\Index.ets" Pack="true" PackagePath="host\Index.ets" />
   </ItemGroup>
 
 </Project>
