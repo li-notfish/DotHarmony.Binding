@@ -18,6 +18,16 @@ internal static class CallbackTrampolines
 
     private const int MaxArgs = 16;
 
+#if HARMONYOS
+    /// <summary>napi_add_finalizer 回调：JS 函数被 GC 时释放托管回调的 GCHandle。</summary>
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    internal static void FreeGCHandle(IntPtr env, IntPtr data, IntPtr hint)
+    {
+        if (data != IntPtr.Zero)
+            GCHandle.FromIntPtr(data).Free();
+    }
+#endif
+
     internal static IntPtr SafeReturnUndefined(IntPtr env)
     {
         try

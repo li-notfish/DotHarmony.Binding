@@ -121,7 +121,10 @@ public static class NodeApi
         Span<IntPtr> argv = pooled ?? stackalloc IntPtr[StackArgvCapacity];
         for (int i = 0; i < args.Length; i++)
             argv[i] = NativeValue.From(args[i]);
-        NativeNodeApi.napi_call_function(NapiEnv.Current, IntPtr.Zero, function, args.Length, argv, out var result)
+        var env = NapiEnv.Current;
+        // recv 必须是有效 napi_value（Node-API 规范）；传 null 依赖实现的宽容度
+        NativeNodeApi.napi_get_undefined(env, out var recv).ThrowIfFailed();
+        NativeNodeApi.napi_call_function(env, recv, function, args.Length, argv, out var result)
             .ThrowIfFailed();
         return result;
 #else
@@ -431,6 +434,7 @@ public static class NodeApi
 
     /// <summary>
     /// 把带返回值的 C# 回调包装为 JS callback（返回值经 NativeValue.From 封送）。
+    /// GCHandle 经由 napi_add_finalizer 随 JS 函数 GC 释放，调用方无需自行回收。
     /// </summary>
     public static (IntPtr jsFunc, GCHandle Handle) CreateValueCallbackFunction(
         Func<ReadOnlySpan<IntPtr>, object?> adapted)
@@ -440,9 +444,24 @@ public static class NodeApi
         var gch = GCHandle.Alloc(adapted);
         var env = NapiEnv.Current;
         var nameBytes = "callback"u8.ToArray();
-        NativeNodeApi.napi_create_function(
-            env, nameBytes, (IntPtr)nameBytes.Length,
-            CallbackTrampolines.ValueTrampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc).ThrowIfFailed();
+        NativeNodeApi.napi_value jsFunc;
+        try
+        {
+            NativeNodeApi.napi_create_function(
+                env, nameBytes, (IntPtr)nameBytes.Length,
+                CallbackTrampolines.ValueTrampolinePtr, GCHandle.ToIntPtr(gch), out jsFunc).ThrowIfFailed();
+            unsafe
+            {
+                NativeNodeApi.napi_add_finalizer(
+                    env, jsFunc, GCHandle.ToIntPtr(gch),
+                    &CallbackTrampolines.FreeGCHandle, IntPtr.Zero, null).ThrowIfFailed();
+            }
+        }
+        catch
+        {
+            gch.Free();
+            throw;
+        }
         return (jsFunc, gch);
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
