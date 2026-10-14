@@ -9,6 +9,10 @@ namespace HarmonyOS.Maui.Web;
 
 public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface
 {
+    public event Action? ProxyReady;
+
+    public bool IsProxyReady { get; private set; }
+
     private readonly WebviewController _controller;
     private GCHandle _messageHandle;
     private Action<string>? _messageHandler;
@@ -84,5 +88,11 @@ public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface
     internal void ReceiveMessage(string message)
     {
         _messageHandler?.Invoke(message);
+    }
+
+    internal void RaiseProxyReady()
+    {
+        IsProxyReady = true;
+        ProxyReady?.Invoke();
     }
 }

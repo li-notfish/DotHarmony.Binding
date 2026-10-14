@@ -5,5 +5,7 @@ add_library(entry SHARED napi_init.c)
 
 find_library(hilog-lib hilog_ndk.z)
 find_library(ace-napi-lib ace_napi.z)
+# NDK ArkWeb：proxy-valid 就绪信号（OH_NativeArkWeb_SetJavaScriptProxyValidCallback）
+find_library(ohweb-lib ohweb)
 
-target_link_libraries(entry PUBLIC ${hilog-lib} ${ace-napi-lib})
+target_link_libraries(entry PUBLIC ${hilog-lib} ${ace-napi-lib} ${ohweb-lib})

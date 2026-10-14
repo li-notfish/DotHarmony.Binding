@@ -131,7 +131,7 @@ if (-not (Test-Path -LiteralPath $webExportsPath)) {
     throw "harmony-maui-web template does not contain HarmonyWebExports.cs."
 }
 $webExportsText = Get-Content -LiteralPath $webExportsPath -Raw
-foreach ($export in @("HarmonyWebInit", "HarmonyWebInterceptRequest", "HarmonyWebReceiveMessage")) {
+foreach ($export in @("HarmonyWebInit", "HarmonyWebInterceptRequest", "HarmonyWebReceiveMessage", "HarmonyWebProxyReady", "HarmonyWebInterceptNative")) {
     if ($webExportsText -notmatch [regex]::Escape($export)) {
         throw "harmony-maui-web HarmonyWebExports.cs is missing the $export export."
     }
