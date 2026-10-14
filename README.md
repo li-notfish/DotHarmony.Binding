@@ -164,7 +164,7 @@ bash scripts/deploy-hap.sh
 | `HarmonyOS.Bindings` | ArkUI/@ohos.* 绑定（依赖 Interop） |
 | `HarmonyOS.Essentials` | Essentials 鸿蒙实现（依赖 Bindings） |
 | `HarmonyOS.Maui` | MAUI 渲染层 + **buildTransitive 宿主编排**（targets + scripts + 宿主模板随包分发；应用工程无需仓库工作副本）+ 官方 `MauiAppBuilder` 桥（`UseHarmonyApp<TApp>()` 注册 `IApplication`，`RunHarmony(MauiApp)` 接入鸿蒙宿主） |
-| `HarmonyOS.Maui.Web` | opt-in WebView surface + MAUI WebView handler（`host/Index.ets` 作为共享宿主的 Web 覆盖层） |
+| `HarmonyOS.Maui.Web` | opt-in WebView surface + MAUI WebView handler（`host/Index.ets` 作为共享宿主的 Web 覆盖层；https 拦截走 NDK scheme handler；单 surface 设计，一个应用仅支持一个 WebView 宿主） |
 | `HarmonyOS.Maui.Blazor` | Blazor Hybrid 集成（基于 HarmonyOS.Maui.Web） |
 | `HarmonyOS.Templates` | `dotnet new harmony-maui` / `dotnet new harmony-maui-web` 应用模板（含 `Platforms/HarmonyOS` 启动桩） |
 
@@ -265,6 +265,11 @@ tests/                       jest（解析器/生成器 79 用例）
   arm64 云真机需要上述 NativeAOT NUMA 探测补丁，当前由工具链自动完成。
 - **Blazor Hybrid（实验）**：`samples/dotnet/BlazorHybridApp` 已在模拟器跑通 Router 起始路由、
   首次渲染和 WebView 原生点击触发的 Blazor 事件分发；outgoing IPC 的 AOT 兼容性由 source generator 与显式 converter 兜底。
+  架构要点：`https://localhost/` 拦截已切换 NDK `OH_ArkWeb_SetSchemeHandler`（webTag `harmony-web` 寻址，
+  IO 线程决策 → TSFN 投递 env 线程处理 → `HarmonyHostWebRespond` 回写），ArkTS 侧仅剩 `external` 消息桥
+  （JS 函数闭包参数无法经 NDK proxy 回调承载）；`Blazor.start()` 启动采用实测 500ms 起步 + `__bwv` IPC
+  回执自确认重试——NDK `SetJavaScriptProxyValidCallback` 实测是"proxy 注册窗口"而非渲染就绪信号，
+  不用于启动门控（基建已挂，留作未来 NDK proxy 注册的触发点）。
 - **手势注入**：Metro Hub 场景此前现象为"注入/触摸滑动点击均无响应"，今已确认为 ContentPresenter 空槽命中测试黑洞所致（非模拟器注入限制），随 ContentPresenter/ContentView 宿主修复一并解决（`verify-zindex-probe.ps1` 的 `uitest uiInput click` 逐步走查在模拟器实测可用）；剩余限制：Pinch 多点触控注入通道，真机验收仍以实际触摸为准
 - **napi handle scope 未系统化**：当前依赖宿主线程已有的 scope，规范做法待补
 - **跨模块类型导入降级 IntPtr**：`@ohos.*` 模块间 `import type` 的类型（Want/NetAddress 等）不生成强类型（立项待做）；438/438 模块已全量转正编译，无灰度清单
