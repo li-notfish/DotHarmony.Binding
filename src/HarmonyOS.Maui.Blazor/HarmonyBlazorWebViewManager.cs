@@ -61,19 +61,37 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
 
     private void StartBlazorAsync()
     {
-        // ArkWeb 的 JavaScript proxy 注入存在启动窗口，过早调用 Blazor.start 会让
-        // WebViewManager 在页面上下文完成前进入渲染流程；500ms 是原实测稳定值。
+        // 实测（2026-10-14 模拟器）：NDK proxy-valid 回调是"可注册 proxy"的窗口信号，
+        // 先于渲染流水线就绪——用它触发 Blazor.start 会复现白屏（OnRenderCompleted TypeError）。
+        // 保留 500ms 实测安全值起步；以 __bwv IPC 回执（AttachPage 为首条）做自验证，未确认则重试。
         HarmonyDispatcher.Instance.DispatchDelayed(TimeSpan.FromMilliseconds(500), () =>
         {
+            _ = StartUntilConfirmedAsync();
+        });
+    }
+
+    private volatile bool _ipcConfirmed;
+
+    internal void NoteBlazorIpc() => _ipcConfirmed = true;
+
+    private async Task StartUntilConfirmedAsync()
+    {
+        const int maxAttempts = 3;
+        for (var attempt = 1; attempt <= maxAttempts && !_ipcConfirmed; attempt++)
+        {
+            HiLog.Info("HarmonyWeb", $"[blazor-manager] Blazor.start attempt {attempt}");
             try
             {
-                _ = _surface.RunScriptAsync("Blazor.start();");
+                await _surface.RunScriptAsync("Blazor.start();").ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 HiLog.Error("HarmonyWeb", $"[blazor-manager] start failed: {ex.GetType().Name}: {ex.Message}");
             }
-        });
+            await Task.Delay(1500).ConfigureAwait(false);
+        }
+        if (!_ipcConfirmed)
+            HiLog.Error("HarmonyWeb", "[blazor-manager] Blazor.start unconfirmed after retries; page may stay blank");
     }
 
     protected override void SendMessage(string message)

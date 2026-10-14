@@ -32,6 +32,9 @@ internal static class HarmonyIpcReceiver
         if (!TryParseMessage(message, out var messageType, out var document, out var arguments))
             return;
 
+        // 任何 __bwv 消息即证明 blazor.webview.js 已完成初始化——供启动重试的自确认
+        manager.NoteBlazorIpc();
+
         _ = manager.Dispatcher.InvokeAsync(async () =>
         {
             try
