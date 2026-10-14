@@ -19,6 +19,11 @@ typedef int (*harmony_poppage_t)(void* env);
 typedef int (*harmony_themechanged_t)(void* env, int colorMode);
 typedef int (*harmony_web_init_t)(void* env, void* webViewValue);
 typedef void* (*harmony_web_intercept_t)(void* env, void* urlValue, void* createResponseValue);
+typedef int (*harmony_engine_init_t)(void* env, void* bridgeValue);
+
+// ArkTS 引擎实验通道（EngineLab）：dlsym 惰性解析，非引擎应用无导出时短路
+static harmony_engine_init_t g_engineInit = NULL;
+static bool g_engineResolved = false;
 typedef int (*harmony_web_receive_t)(void* env, void* messageValue);
 
 static void* g_app = NULL;
@@ -167,6 +172,38 @@ static napi_value PassNodeContent(napi_env env, napi_callback_info info)
     return NULL;
 }
 
+// ArkTS 引擎通道（共享 shim 内置，EngineLab 场景）：桥对象交给 libapp.so 的 HarmonyEngineInit 导出；
+// 引擎 ETS 经 Host overlay 注入，C 通道自此不再需要 overlay 自持副本。
+static napi_value InitEngine(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 1;
+    napi_value argv[1];
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    if (argc < 1) {
+        loge("initEngine", "missing engine bridge argument");
+        return NULL;
+    }
+
+    if (!g_engineResolved) {
+        g_engineResolved = true;
+        g_engineInit = (harmony_engine_init_t)dlsym(g_app, "HarmonyEngineInit");
+    }
+    if (!g_engineInit) {
+        loge("initEngine", "HarmonyEngineInit export not found in libapp.so");
+        return NULL;
+    }
+
+    int r = g_engineInit((void*)env, (void*)argv[0]);
+    if (r == 0) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG, "ArkTS engine bridge attached");
+    } else {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG, "HarmonyEngineInit failed: %{public}d", r);
+    }
+    return NULL;
+}
+
 static napi_value PassWebView(napi_env env, napi_callback_info info)
 {
     if (!ensure_runtime(env)) return NULL;
@@ -307,6 +344,7 @@ static napi_value ModuleInit(napi_env env, napi_value exports)
         {"passWebView", NULL, PassWebView, NULL, NULL, NULL, napi_default, NULL},
         {"interceptWebViewRequest", NULL, InterceptWebViewRequest, NULL, NULL, NULL, napi_default, NULL},
         {"receiveWebViewMessage", NULL, ReceiveWebViewMessage, NULL, NULL, NULL, napi_default, NULL},
+        {"initEngine", NULL, InitEngine, NULL, NULL, NULL, napi_default, NULL},
         {"notifyThemeChanged", NULL, NotifyThemeChanged, NULL, NULL, NULL, napi_default, NULL},
         {"notifyLifecycleChanged", NULL, NotifyLifecycleChanged, NULL, NULL, NULL, napi_default, NULL},
     };

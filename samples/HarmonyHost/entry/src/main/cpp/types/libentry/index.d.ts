@@ -9,3 +9,5 @@ export const interceptWebViewRequest: (
   createResponse: (code: number, message: string, mimeType: string, data: ArrayBuffer) => WebResourceResponse
 ) => WebResourceResponse;
 export const receiveWebViewMessage: (message: string) => void;
+/** ArkTS 引擎桥通道（EngineLab；非引擎应用无需调用，dlsym 缺失时底层静默短路） */
+export const initEngine: (bridge: object) => void;
