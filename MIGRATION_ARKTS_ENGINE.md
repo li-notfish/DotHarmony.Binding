@@ -25,7 +25,7 @@
 | `NativeNode/ArkUIGestureApi.cs` + `Nodes/Gestures/` | `ArkUI_NativeGestureAPI_1` | ❌ 重写为 ArkTS 声明式手势 |
 | `NativeNode/ArkUIAnimateApi.cs` | `ArkUI_NativeAnimateAPI_1.animateTo` | ❌ 换 ArkTS animateTo |
 | 宿主 `napi_init.c`（NodeContent 桥） | `OH_ArkUI_GetNodeContentFromWindow` + C 节点填充 | ❌ 改为引擎根组件 |
-| `src/HarmonyOS.Maui/Handlers/*`（28 个具体 Handler + 布局 + 导航） | 只调包装方法 | ✅ 存活 |
+| `src/HarmonyOS.Maui/Handlers/*`（58 个具体 Handler + 布局 + 导航） | 只调包装方法 | ✅ 存活 |
 | 手势翻译层（`HarmonyGestureManager` 的 Send* 协议回送） | 平台无关 | ✅ 存活（仅事件源更换） |
 | `@ohos.*` 绑定、napi 运行时桥（TSFN/Promise） | Node-API（ArkTS 运行时稳定面） | ✅ 完全无关 |
 
@@ -244,4 +244,5 @@ C NDK API 是 ArkUI-X 跨平台与游戏引擎接入的官方通道，整体移�
 单次 napi 冲刷；4 节点 onAreaChange 量测回流（根 1320x2409px @3.50 密度，影子缓存生效）；
 uitest 点击按钮 → click 回流 → `flushed 1 commands`（单次 napi）→ dumpLayout 显示
 "clicked 0 times"→"clicked 1 times"。§2.4 硬点①的影子量测与指令批合并的核心语义即此验证。
-**P2 完整版的远端构建/模拟器验证（tick 冲刷、增量 diff、Entry/定位/扩展节点）待执行。**
+P2 扩展场景（16ms tick 冲刷、增量 diff、Entry 文本回流、定位属性）已由
+`samples/dotnet/EngineLab` 覆盖；复跑方式：`dotnet build samples/dotnet/EngineLab -t:HarmonyRun`。

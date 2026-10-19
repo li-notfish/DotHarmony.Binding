@@ -25,8 +25,8 @@ MAUI 的 Essentials 静态入口（`DeviceInfo.Current` / `Preferences.Default` 
 
 ### Step 1：取证注入点（MAUI 源码，勿猜）
 
-注入点在 `D:\Harmony\maui\src\Essentials\src\<Service>\<Service>.shared.cs`
-（MAUI 源码本地副本在 `D:\Harmony\maui`）。命名规律：
+注入点在 MAUI 源码的 `src/Essentials/src/<Service>/<Service>.shared.cs`
+（用本机 MAUI 源码副本或 GitHub 上的 dotnet/maui 对应版本；下文路径不再假设某个固定盘符）。命名规律：
 
 | 形态 | setter | 例 |
 |---|---|---|
@@ -119,7 +119,7 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | IPhoneDialer | SetDefault | startAbility({uri:'tel:'+number})；IsSupported 经 sim.getSimStateSync（卡槽 0，无 SIM = 不支持） | ✅ 2026-09-13 |
 | IShare | SetDefault | 文本经 startAbility({action:'ohos.want.action.sendData', type:'text/plain', parameters:{text}})；文件分享经 fs.openSync(READ_ONLY) -> fd -> want { uri:'fd://fd', type:mime, parameters:{'ability.params.stream':fd} }；多文件 fd 用逗号分隔且 uri 取首个 | ✅ 已实现（文本/文件） |
 | IEmail | SetDefault | mailto: URI（to/cc/bcc/subject/body 编码进 query）+ startAbility；IsComposeSupported 尽力 true（mailto 由系统路由） | ✅ 2026-09-13 |
-| IAccelerometer / IMagnetometer / IGyroscope / ICompass / IOrientationSensor | SetDefault | @ohos.sensor on/off；SensorSpeed → interval 阶梯；Compass 走 Orientation，OrientationSensor 走 RotationVector；Accelerometer.ShakeDetected 仅声明事件，阈值状态机待补 | ✅ 已实现（专项设备验证待补） |
+| IAccelerometer / IMagnetometer / IGyroscope / ICompass / IOrientationSensor | SetDefault | @ohos.sensor on/off；SensorSpeed → interval 阶梯；Compass 走 Orientation，OrientationSensor 走 RotationVector；Accelerometer.ShakeDetected 由 `AccelerometerShakeQueue`（幅值阈值 + 时间窗）触发 | ✅ 已实现（专项设备验证待补） |
 | IGeolocation | SetDefault | @ohos.geoLocationManager：GetLastKnownLocation / getCurrentLocation + locationChange/locationError 事件；Cancellation 只取消托管等待（OHOS 当前定位无取消通道） | ✅ 已实现（专项设备验证待补） |
 | IMediaPicker | SetDefault | @ohos.file.picker（选图/选视频，支持多选）+ @ohos.multimedia.camera.picker（拍照/录像）；结果复制到 cache，失败时回退原 URI | ✅ 已实现（专项设备验证待补） |
 | ITextToSpeech / IHapticFeedback / IFlashlight | SetDefault | textToSpeech / vibrator / brightness | 远期 |

@@ -7,7 +7,7 @@
 
 - UI 通道：ArkUI NDK C API（`ArkUI_NativeNodeAPI_1`）→ `ArkUINodeBase` 稳定句柄
 - 服务通道：napi（`napi_load_module("=@ohos.xxx")`）→ `@ohos.*` 全量模块端到端
-- MAUI Handler 包：28 个具体 Handler（30 个工厂分派形态，含 Shell 第一版）+ 六类手势识别器（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）+ XAML（SourceGen 编译期，NativeAOT 零反射）；
+- MAUI Handler 包：58 个具体 Handler（60 个工厂分派形态，含 Shell/Flyout/TabbedPage）+ 六类手势识别器（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）+ XAML（SourceGen 编译期，NativeAOT 零反射）；
   代码风格与 dotnet/maui 官方 handler 模式一致；漏斗纪律（Handler 层禁直连原生 API）由 `FunnelDisciplineTests` 机械强制
 - 工具链：`HarmonyStageHost`（宿主工程按应用自动生成）→ `PublishAotClang`（Windows 本地 NativeAOT 双架构）
   → `build-hap.cmd`（hvigor）→ `deploy-hap`（hdc）；`dotnet build -t:HarmonyRun` 一键直达
@@ -70,13 +70,13 @@ Span>1 的 Auto 轨道未做专项实测（按需立项）。
   （`Window.Parent = Application`）；模态 `PushModalAsync/PopModalAsync` 经 `RootNavigationAdapter` 承接，
   系统返回键优先关闭模态
 
-**Shell 结论**：第一版已支持（TabBar 条目切换、绝对/相对路由与 `..` 返回、注册路由推送、
-query parameters、section 栈 PushAsync、模态转发、生命周期透传）。未覆盖：Flyout 菜单视觉、
-Shell 主题色（当前静态兜底）；TabbedPage 为后续候选。
+**Shell 结论**：已支持 TabBar、Flyout 面板/菜单项/遮罩/动画、绝对/相对路由与 `..` 返回、
+注册路由推送、query parameters、section 栈 PushAsync、模态转发、生命周期透传、Shell 主题色；
+`FlyoutBehavior.Locked` 为并排布局。`TabbedPage` Handler 已落地。
 
 ### 1.4 控件 Handler
 
-28 个具体 Handler / 30 个工厂分派形态（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout、
+58 个具体 Handler / 60 个工厂分派形态（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout、
 Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/Border(BoxView)/
 RefreshView/Picker/DatePicker/TimePicker、CollectionView/CarouselView、Shape/GraphicsView 自绘、
 ContentView/ContentPresenter、Shell 第一版）。新控件适配指南见
@@ -206,22 +206,28 @@ Flashlight、Map/FilePicker/Screenshot；传感器族与 Geolocation/MediaPicker
 - **单项目体验**：`dotnet build -t:HarmonyStageHost / -t:HarmonyRun`（宿主按应用自动生成，
   内容戳增量）
 
-### 待办
+### 已完成（原待办项）
 
 - **CI**：最小 PR 门禁已落地（最小 NativeAOT 样例构建、arm64 `app.so` 的
-  `get_mempolicy` 短路补丁校验）；`arkui_bindgen check` 因依赖本机 OpenHarmony SDK
-  保持本地门禁；全量单测与 HAP 全链冒烟暂不阻塞合入
+  `get_mempolicy` 短路补丁校验、权限报告、HandlerAudit）；`arkui_bindgen check` 因依赖本机
+  OpenHarmony SDK 保持本地门禁；全量单测与 HAP 全链冒烟暂不阻塞合入
 - **性能基线**：`scripts/perf/collect-baseline.ps1` 与 `docs/PERF_BASELINE.md` 已落地，
-  覆盖 libapp.so/HAP 体积、冷启动、TSFN 吞吐，持续记录不告警
+  覆盖 libapp.so/HAP 体积、冷启动、运行时初始化、首帧、TSFN 吞吐，持续记录不告警
 - **权限自动推导**：Roslyn source generator 扫描应用侧 MAUI/Essentials 调用，自动生成
   `module.json5` 的 `requestPermissions`；显式 `HarmonyPermission` 仍可补充尚未映射的权限
-  - v1.1 已开始：新增 `HarmonyPermissionReport` 与 `HMP001` 未映射权限诊断
-  - v1.2 已开始：新增 `HarmonyPermissionCheck`，CI 上传 `permissions.report.md`
+  - v1.1 已完成：`HarmonyPermissionReport` 与 `HMP001` 未映射权限诊断
+  - v1.2 已完成：`HarmonyPermissionCheck`，CI 上传 `permissions.report.md`
   - v2 已完成：映射表外置为 `permission-mapping.json`，扩展常用 Essentials 权限，
     支持 `usedScene`、显式 `When` 覆盖与 ProjectReference 聚合；`HMP002`–`HMP004`
     覆盖已知 API 缺映射、显式权限未使用、映射歧义三类诊断，并通过本地 NuGet 包消费者验收
   - v3 已完成：支持 `harmony-permissions.custom.json` 自定义映射、XAML 事件来源定位、
     `HMP005`/`HMP006` 冲突与格式诊断；包消费者验收覆盖 XAML + 自定义映射 + ProjectReference
+
+### 仍待办
+
+- 真机矩阵扩展与性能调参；hover/mouse ButtonsMask、Pinch 多点触控注入通道
+- 减少 `IntPtr` 降级：按 `artifacts/generator/api-intptr-report.json` 逐项补 TypeMapper 映射
+- 逐次调用级 napi handle scope 的 RAII 封装
 - **平台 TFM 第一步（已完成）**：`net10.0-harmonyos` 落地——Interop/Bindings 双目标
   （`net10.0;net10.0-harmonyos`），`HARMONYOS` 常量改为 TFM 驱动（harmonyos TFM 由 SDK 按
   TargetPlatformIdentifier 自动定义；桌面 net10.0 目标在库级 props 过渡性全量定义，

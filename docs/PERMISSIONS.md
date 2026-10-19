@@ -23,9 +23,10 @@ actually uses. It supports three sources:
    </ItemGroup>
    ```
 
-The final manifest is generated from the union of these sources. The build
-then verifies that `permissions.json`, `module.json5`, and
-`permissions.report.md` describe the same permission set.
+The final manifest is generated from the union of these sources. `HarmonyPermissionCheck`
+is an explicit target (it is **not** wired into every build) and verifies that
+`permissions.json`, `module.json5`, and `permissions.report.md` describe the same permission set:
+`dotnet build <project> -t:HarmonyPermissionCheck`.
 
 ## Capability map schema
 

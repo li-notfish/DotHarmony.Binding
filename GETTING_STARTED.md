@@ -10,7 +10,7 @@
 | 层 | 内容 | 你是否要写 |
 |---|---|---|
 | 应用工程 | Program.cs + XAML 页面 + Platforms/HarmonyOS 启动代码 | ✅ 本文的主角 |
-| HarmonyOS.Maui | 28 个具体 Handler（30 个工厂分派形态）、手势、导航、托管布局 | ❌ 引用即可 |
+| HarmonyOS.Maui | 58 个具体 Handler（60 个工厂分派形态）、手势、导航、托管布局 | ❌ 引用即可 |
 | HarmonyOS.Essentials | MAUI Essentials 鸿蒙实现（22 服务） | ❌ 引用即可（`RunHarmony(MauiApp)` / `MauiHarmonyHost.Run` 自动安装） |
 | HarmonyOS.Bindings | ArkUI NDK 原生节点 + 438 个 @ohos.* 模块绑定 | ❌ 引用即可（仅声明用到的 @ohos 模块） |
 | HarmonyOS.Interop | napi 互操作核心独立装 | ❌ 引用即可 |
@@ -22,12 +22,19 @@
 
 | 工具 | 用途 | 说明 |
 |---|---|---|
-| .NET 10 SDK（Windows） | 本机编译检查（C#/XAML 编译期验证） | `dotnet --version` ≥ 10 |
-| Node.js + Python 3 | TS/NDK 生成器与本地工具 | 未安装生成器步骤会直接失败 |
+| .NET 10 SDK | 本机编译检查（C#/XAML 编译期验证） | `dotnet --version` ≥ 10 |
+| PowerShell 7+（`pwsh`） | 所有 staging / 签名 / 部署脚本与 MSBuild Exec | **Windows 自带的 `powershell.exe` 5.1 不够**；`winget install Microsoft.PowerShell` 或 DevEco 终端 |
+| Git Bash（`bash`） | `deploy-hap.sh` / `check-harmony-env.sh` / 验证脚本 | Windows 安装 Git for Windows；也可全部改用 `.ps1` |
+| Node.js ≥ 18 + Python 3 | TS/NDK 生成器与本地工具 | 未安装生成器步骤会直接失败 |
 | PublishAotClang | Windows 本地 NativeAOT 交叉编译 libapp.so | 由 `Directory.Build.props` 自动引用；内置 Zig / clang / objcopy |
-| DevEco Studio + HarmonyOS/OpenHarmony SDK | hvigor 打 HAP、NDK、hdc 部署、模拟器 | 记住安装路径；SDK 按语义版本倒序选择，不固定 26 |
-| 模拟器或真机 | `HarmonyRun` 设备预检、安装、启动 | 设备必须先于 AOT 构建处于在线状态 |
-| 调试签名材料 | 真机安装 | `.p12`、`.cer`、`.p7b`、keystore/证书别名、两组口令需成套 |
+| DevEco Studio 5.1+ + HarmonyOS/OpenHarmony SDK | hvigor 打 HAP、NDK、hdc 部署、模拟器 | 记住安装路径；宿主 `hvigor-config.json5` 使用 modelVersion 5.1.0，过旧的 DevEco 会报不透明的 hvigor 错误；SDK 按语义版本倒序选择，staging 会把探测到的版本写入宿主 `build-profile.json5`，不再固定 26 |
+| 模拟器或真机 | `HarmonyRun` 设备预检、安装、启动 | 设备必须先于 AOT 构建处于在线状态；真机需开启开发者模式与 USB 调试 |
+| 调试签名材料（仅真机） | 真机安装 | `.p12`、`.cer`、`.p7b`、keystore/证书别名、两组口令需成套；模拟器可用 unsigned HAP |
+| ohpm（DevEco 自带） | 安装宿主 ArkTS 依赖 | 首次构建或 `oh_modules` 缺失时需要；`build-hap.cmd` 会自动尝试 `ohpm install` |
+
+> 宿主工程的 `compatibleSdkVersion` / `targetSdkVersion` / `runtimeOS` 由 `stage-host.ps1`
+> 按本机 SDK 自动重写；需要交叉编译到另一版本时设 `HarmonyCompatibleSdkVersion` 或
+> `HARMONY_COMPATIBLE_SDK_VERSION`。
 
 先执行环境自检：
 
@@ -41,7 +48,7 @@ bash scripts/check-harmony-env.sh --check-device
 ```
 
 SDK 可通过生成器 `--sdk <版本目录或集合根目录>` 或 `OHOS_SDK_BASE` /
-`OHOS_SDK_HOME` / `OHSDK_HOME` 指定。未指定时脚本选择最高可用稳定版本；
+`OHOS_SDK_HOME` / `DEVECO_SDK_HOME` 指定。未指定时脚本选择最高可用稳定版本；
 无效环境变量只告警并回退，没有有效候选时一次性列出候选和缺失布局。
 
 启动 DevEco 模拟器或真机后检查连接：
@@ -50,20 +57,25 @@ SDK 可通过生成器 `--sdk <版本目录或集合根目录>` 或 `OHOS_SDK_BA
 hdc list targets
 # 预期至少出现一个非 [Empty] 的 host:port
 hdc tconn 127.0.0.1:5555   # 模拟器未连接时按实际地址执行
-HDC_TARGET=127.0.0.1:5555 hdc list targets   # 多设备时先确认目标
+hdc -t 127.0.0.1:5555 shell echo ok   # 多设备时用 -t 指定目标
 ```
 
-以上工具链和设备就绪后，在仓库根目录运行：
+以上工具链和设备就绪后，在仓库根目录运行一条命令：
 
 ```powershell
-# 一键验证链路（HelloApp 示例：libapp.so 双架构 → HAP → 部署到模拟器）
-dotnet publish samples/dotnet/HelloApp -c Release -r linux-musl-arm64
-dotnet publish samples/dotnet/HelloApp -c Release -r linux-musl-x64
-scripts\build-hap.cmd              # hvigor 打包
-bash scripts/deploy-hap.sh         # hdc 安装 + 启动（多设备：HDC_TARGET=127.0.0.1:5555）
+# 推荐：自动 stage 宿主 → 双架构 NativeAOT → HAP → 安装/启动
+dotnet build samples/dotnet/HelloApp -t:HarmonyRun
 ```
 
-或直接在示例工程上：`dotnet build samples/dotnet/HelloApp -t:HarmonyRun`（等价上面三步）。
+需要分段排查时，**必须使用该应用的暂存宿主**（`samples/HarmonyHost` 只是模板，不可部署）：
+
+```powershell
+dotnet build samples/dotnet/HelloApp -t:HarmonyStageHost
+dotnet build samples/dotnet/HelloApp -t:HarmonyBuildLibApp   # 产出并复制 libapp.so 到暂存宿主
+$env:HOST_DIR = "samples/dotnet/HelloApp/obj/harmony/host"
+.\scripts\build-hap.cmd
+pwsh scripts/deploy-hap.ps1
+```
 
 `HarmonyRun` 的执行顺序与失败定位：
 
@@ -83,8 +95,9 @@ bash scripts/deploy-hap.sh         # hdc 安装 + 启动（多设备：HDC_TARGE
 或后续发布的远端源）。
 
 ```powershell
-# 1. 安装应用模板（本地包）
-dotnet new install <dist 目录>\HarmonyOS.Templates.1.0.0.nupkg
+# 1. 安装应用模板（本地包；版本号与 Directory.Build.props 的 PackageVersion 一致）
+dotnet new install <dist 目录>\HarmonyOS.Templates.1.2.0.nupkg
+#    不确定文件名时：Get-ChildItem <dist>\HarmonyOS.Templates.*.nupkg | Select-Object -Last 1
 
 # 2. 实例化（目录与命名空间取项目名）
 dotnet new harmony-maui -n MyApp
@@ -155,8 +168,9 @@ Windows 交叉 NativeAOT 会报 Cross-OS native compilation is not supported）�
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
-    <ProjectReference Include="..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
+    <!-- 从 samples/dotnet/MyApp 到仓库根是三层：MyApp → dotnet → samples → 根 -->
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
   </ItemGroup>
 
   <!-- MAUI 风格一键编排：dotnet build -t:HarmonyRun（libapp.so → HAP → 部署） -->
@@ -277,7 +291,7 @@ dotnet build samples/dotnet/MyApp -t:HarmonyRun
 | MVVM（ViewModel/绑定/Command） | ✅ 直接复用 | 数据绑定走 MAUI 标准管线 |
 | `Navigation.PushAsync/PopAsync/PushModalAsync` | ✅ 直接复用 | 经 IStackNavigation 协议转接到 ArkUI |
 | 手势识别（Tap/Pan/Pinch/Swipe/Pointer） | ✅ 直接复用 | 注意 PanUpdated 单位为 vp（等价 iOS points，非 Android px） |
-| Shell（tab/URI 路由/Flyout） | ✅ 支持 | TabBar、Flyout 菜单、绝对/相对路由、query、section 栈、模态、主题色；`FlyoutBehavior.Locked` 为覆盖式常驻（内容区不让宽，与 MAUI 并排布局有差异） |
+| Shell（tab/URI 路由/Flyout） | ✅ 支持 | TabBar、Flyout 面板/菜单项/遮罩、绝对/相对路由、query、section 栈、模态、主题色；`FlyoutBehavior.Locked` 为主列右移收窄的并排布局（与 MAUI 官方一致） |
 | 自绘（Shape/GraphicsView） | ✅ 已支持 | ArkUI 自绘节点（ARKUI_NODE_CUSTOM）+ OH_Drawing；ICanvas 适配器 vp 语义 |
 | CollectionView 大数据量 | ✅ 已支持 | NodeAdapter 虚拟化：按可见范围物化（实测 200 条仅物化 7 条，滚动按需推进/回滚） |
 | **Essentials 标准 API**（`DeviceInfo.Current` / `Preferences.Set` / `Clipboard.SetTextAsync` / `Battery.Default` / `Connectivity.Current` / `FileSystem.Current` / `Launcher.Default` / `SecureStorage.Default` / 传感器 / `Geolocation` / `MediaPicker` 等） | ✅ 22 个服务 | 启动时经 `[DynamicDependency]+CreateDelegate` 桥经 SetCurrent/SetDefault 注入；`RunHarmony(MauiApp)` / `MauiHarmonyHost.Run` 自动安装。DeviceInfo/DeviceDisplay/AppInfo/Clipboard/Preferences/Battery/Vibration/Connectivity/FileSystem/Launcher/Browser/PhoneDialer/Share/Email/SecureStorage + Accelerometer/Magnetometer/Gyroscope/Compass/OrientationSensor/Geolocation/MediaPicker。IMainThread 暂缓（MAUI 10 无注入点）；IShare 文件分享支持跨应用 fd 授权通道；适配指南见 [ESSENTIALS.md](ESSENTIALS.md)。验证应用 samples/dotnet/EssentialsApp |
@@ -329,12 +343,12 @@ public static void Register()
 
 ## 4. 构建链路详解（一键背后的三步）
 
-| 步骤 | 脚本 | 做什么 | 关键环境变量 |
+| 步骤 | 脚本 / target | 做什么 | 关键环境变量 |
 |---|---|---|---|
-| 1. AOT 编译 | PublishAotClang / MSBuild | Windows 本地直接 `dotnet publish -r linux-musl-arm64` / `-r linux-musl-x64`；arm64 云真机会自动应用 NativeAOT NUMA 探测补丁 | — |
-| 2. 打 HAP | `scripts/build-hap.cmd` | hvigor assembleHap 生成 unsigned HAP（DevEco 路径自动探测） | — |
+| 1. AOT 编译 | `HarmonyBuildLibApp`（PublishAotClang） | `dotnet publish -r linux-musl-arm64` / `-r linux-musl-x64`，并把 `app.so` 复制进暂存宿主；arm64 云真机会自动应用 NativeAOT NUMA 探测补丁 | — |
+| 2. 打 HAP | `scripts/build-hap.cmd` | hvigor assembleHap 生成 unsigned HAP（DevEco 路径自动探测；要求暂存宿主，缺 ohpm 依赖时自动尝试安装） | `HOST_DIR`（必须指向 `<sample>/obj/harmony/host`，targets 会自动设置） |
 | 2b. 签名 | `scripts/sign-hap.ps1` | 提供完整 `HarmonySigning*` 属性时自动调用 `hap-sign-tool.jar`，输出 `entry-default-signed.hap` | — |
-| 3. 部署 | `scripts/deploy-hap.sh` / `scripts/deploy-hap.ps1` | 优先安装 signed HAP，无签名产物时回退 unsigned；启动并跟踪 HarmonyHost 日志 | `HDC_TARGET` 设备选择 |
+| 3. 部署 | `scripts/deploy-hap.sh` / `scripts/deploy-hap.ps1` | 安装 signed HAP（仅当不旧于 unsigned），否则 unsigned；启动并跟踪 HarmonyHost 日志 | `HDC_TARGET` 设备选择 |
 | 4. 布局回归 | `scripts/verify-layout-baseline.ps1` | 样本关键界面截图与基线像素 diff；`-Update` 生成基线（分辨率相关，基线存 artifacts/ 不入库） | `-App` / `-Target` / `-Tolerance` |
 
 其它 targets：`HarmonyDevicePreflight` / `HarmonyStageHost` / `HarmonyBuildLibApp` /
@@ -343,9 +357,12 @@ public static void Register()
 ```powershell
 .\scripts\build-hap.cmd WeatherTwentyOne
 ```
-该命令会自动使用 `samples/dotnet/WeatherTwentyOne/obj/harmony/host`。也可以传样例目录或 staged host 目录。
+该命令要求该样例已经过 `-t:HarmonyStageHost` / `-t:HarmonyRun` 暂存，并使用
+`samples/dotnet/WeatherTwentyOne/obj/harmony/host`；**不会回退到共享模板**。也可以传样例目录或
+staged host 目录；无暂存宿主时直接报错并给修复命令。
 可用属性：`HarmonyHostRoot`（宿主模板目录）、`HarmonyGenerateHost`（默认 true）、`HarmonyBundleId`、
-`HarmonyAppTitle`、`HarmonyHostDir`、`HarmonyPowerShell`（默认 `pwsh`，需 PowerShell 7+）。
+`HarmonyAppTitle`、`HarmonyHostDir`、`HarmonyCompatibleSdkVersion`、`HarmonyRuntimeOS`、
+`HarmonyPowerShell`（默认 `pwsh`，需 PowerShell 7+）。
 签名属性：`HarmonySigningKeystore/KeystorePassword/CertAlias/CertPassword/CertPath/Profile`。
 签名不写入 hvigor 的 `build-profile.json5`，因此不受 hvigor 对 `storePassword/keyPassword`
 至少 32 字符的校验限制；signed HAP 位于应用 `obj/harmony/host/entry/build/default/outputs/default/`。
@@ -416,7 +433,8 @@ ProjectReference 聚合，运行时反射不参与推导。`HarmonyPermission` �
 构建后可单独查看权限报告：
 
 ```powershell
-dotnet build -t:HarmonyPermissionReport
+# 在应用工程上执行（示例：MyApp）
+dotnet build samples/dotnet/MyApp -t:HarmonyPermissionReport
 ```
 
 报告位于 `obj/harmony/permissions.report.md`，内容分为：
@@ -443,7 +461,8 @@ source generator 会给出 `HMP001` warning。
 如需校验 `permissions.json` 与 `module.json5` 是否一致，可运行：
 
 ```powershell
-dotnet build -t:HarmonyPermissionCheck
+# 注意：该 target 不会自动随普通 build 执行，需要显式调用
+dotnet build samples/dotnet/MyApp -t:HarmonyPermissionCheck
 ```
 
 发布包的本地消费验收可运行：
@@ -455,13 +474,13 @@ dotnet build -t:HarmonyPermissionCheck
 该脚本会打包并从本地 NuGet feed 创建临时消费者工程，验证包还原、编译、
 `HarmonyPermissionCheck`、XAML 事件来源、自定义映射，以及 `LOCATION` / `VIBRATE` 权限推导。
 
-**用到了新的 @ohos.* 模块**？在 `samples/HarmonyHost/entry/src/main/ets/ohosImports.ets` 登记一行
-re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——宿主模板层面的修改改模板即可，
-暂存实例会在下次构建自动带上。
+**用到了新的 @ohos.* 模块**？通常不需要手工登记：`api-generator` 全量生成时会重写
+`samples/HarmonyHost/entry/src/main/ets/ohosImports.ets`（当前 438 个模块）。只有在调试生成器或
+模块本身不可生成时，才需要临时手工补一行 re-export（详见 HANDLERS §4.4）。
 
 **真机**：arm64 云真机启动链路已验证；`HarmonyBuildLibApp` 会自动应用
 `patch-openharmony-nativeaot.ps1`，规避云真机 seccomp 对 `get_mempolicy` 的拦截。
-剩余待验证项是更广的真机矩阵与性能调参（ROADMAP 1.5）。
+剩余工作是更广的真机矩阵与性能调参（ROADMAP 1.5），不是基本启动链路的阻塞项。
 
 ---
 
@@ -483,7 +502,7 @@ re-export（`napi_load_module` 的平台铁律，详见 HANDLERS §4.4）——�
 
 ## 6. 当前能力边界（决定接入评估的细节）
 
-- **控件**：28 个具体 Handler / 30 个工厂分派形态（基础控件 + Picker/RefreshView/BoxView + CollectionView 虚拟化/CarouselView + Shape/GraphicsView 自绘 + Shell 第一版）
+- **控件**：58 个具体 Handler / 60 个工厂分派形态（基础控件 + Picker/RefreshView/BoxView + CollectionView 虚拟化/CarouselView + Shape/GraphicsView 自绘 + Shell/Flyout/TabbedPage/WebView 等）
 - **手势**：Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop；hover、鼠标按键区分待做
 - **布局**：StackLayout（flex 托管）+ Grid/AbsoluteLayout（MAUI 托管，对齐/ZIndex/Auto 轨道自适应已对齐）
 - **自绘**：Shape + GraphicsView（ArkUI 自绘节点 + OH_Drawing）
