@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <MauiImage Include="..\HelloApp\Assets\probe_logo.png" />
+    <MauiImage Include="Assets\probe_logo.png" />
     <MauiAsset Include="Assets\hybridroot\index.html" />
   </ItemGroup>
 

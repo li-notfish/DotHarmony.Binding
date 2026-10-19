@@ -76,4 +76,5 @@
     <local:ItemsPage Title="Items" />
     <local:MediaGraphicsPage Title="Media" />
     <local:MenusPage Title="Menus" />
+    <local:MorePage Title="More" />
 </TabbedPage>
