@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using HarmonyOS.Maui.Blazor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls;
@@ -19,12 +22,123 @@ public sealed class HarmonyBlazorWebViewTests
     }
 
     [Fact]
+    public void HostPageAndStartPath_AreBindable()
+    {
+        // 对齐官方 StartPath 的 BindableProperty 语义，并把 HostPage 也提升为 BindableProperty，
+        // 使 XAML 绑定与 PropertyMapper 变更通知可用。
+        Assert.NotNull(HarmonyBlazorWebView.HostPageProperty);
+        Assert.Equal(nameof(HarmonyBlazorWebView.HostPage), HarmonyBlazorWebView.HostPageProperty.PropertyName);
+        Assert.Equal(typeof(string), HarmonyBlazorWebView.HostPageProperty.ReturnType);
+        Assert.NotNull(HarmonyBlazorWebView.StartPathProperty);
+        Assert.Equal(nameof(HarmonyBlazorWebView.StartPath), HarmonyBlazorWebView.StartPathProperty.PropertyName);
+
+        var view = new HarmonyBlazorWebView { HostPage = "wwwroot/index.html", StartPath = "/counter" };
+        Assert.Equal("wwwroot/index.html", view.HostPage);
+        Assert.Equal("/counter", view.StartPath);
+
+        // 未设置 HostPage 时保持 null；StartPath 回落到默认 "/"
+        var fresh = new HarmonyBlazorWebView();
+        Assert.Null(fresh.HostPage);
+        Assert.Equal("/", fresh.StartPath);
+    }
+
+    [Fact]
     public void RootComponentsCollection_PreservesJSComponentStore()
     {
         var jsComponents = new Microsoft.AspNetCore.Components.Web.JSComponentConfigurationStore();
         var collection = new HarmonyRootComponentsCollection(jsComponents);
 
         Assert.Same(jsComponents, collection.JSComponents);
+    }
+
+    [Fact]
+    public async Task AddRootComponentAsync_AddsComponentToCollection()
+    {
+        var view = new HarmonyBlazorWebView();
+
+        await view.AddRootComponentAsync(typeof(object), "#app", new Dictionary<string, object?> { ["name"] = "demo" });
+
+        var component = Assert.Single(view.RootComponents);
+        Assert.Equal("#app", component.Selector);
+        Assert.Equal(typeof(object), component.ComponentType);
+        Assert.NotNull(component.Parameters);
+        Assert.Equal("demo", component.Parameters!["name"]);
+    }
+
+    [Fact]
+    public async Task RemoveRootComponentAsync_RemovesMatchingSelector()
+    {
+        var view = new HarmonyBlazorWebView();
+        await view.AddRootComponentAsync(typeof(object), "#app");
+        await view.AddRootComponentAsync(typeof(string), "#header");
+
+        await view.RemoveRootComponentAsync("#app");
+
+        var remaining = Assert.Single(view.RootComponents);
+        Assert.Equal("#header", remaining.Selector);
+    }
+
+    [Fact]
+    public void UrlLoading_DefaultStrategyIsOpenExternally()
+    {
+        // 官方默认：外链交给系统浏览器（OpenExternally）
+        var args = new HarmonyUrlLoadingEventArgs(new Uri("https://example.com/"), HarmonyUrlLoadingStrategy.OpenExternally);
+        Assert.Equal(HarmonyUrlLoadingStrategy.OpenExternally, args.UrlLoadingStrategy);
+        Assert.Equal(new Uri("https://example.com/"), args.Url);
+    }
+
+    [Fact]
+    public void UrlLoadingStrategy_MatchesOfficialValues()
+    {
+        // 官方枚举（Microsoft.AspNetCore.Components.WebView.UrlLoadingStrategy）：
+        // OpenExternally = 0, OpenInWebView = 1, CancelLoad = 2 —— 这里只要求语义对位，不绑定数值。
+        Assert.Equal("CancelLoad", nameof(HarmonyUrlLoadingStrategy.CancelLoad));
+        Assert.Equal("OpenInWebView", nameof(HarmonyUrlLoadingStrategy.OpenInWebView));
+        Assert.Equal("OpenExternally", nameof(HarmonyUrlLoadingStrategy.OpenExternally));
+    }
+
+    [Fact]
+    public void LifecycleEvents_CanBeSubscribed()
+    {
+        var view = new HarmonyBlazorWebView();
+        var initCount = 0;
+
+        view.BlazorWebViewInitializing += (_, _) => initCount++;
+        view.RaiseBlazorWebViewInitializing(new HarmonyBlazorWebViewInitializingEventArgs());
+
+        Assert.Equal(1, initCount);
+    }
+
+    [Fact]
+    public void WebResourceRequested_UnhandledByDefault()
+    {
+        var view = new HarmonyBlazorWebView();
+        var args = new HarmonyWebResourceRequestedEventArgs(
+            new HarmonyOS.Maui.Web.HarmonyWebRequest("https://localhost/_framework/blazor.webview.js", "GET"));
+
+        var handled = view.RaiseWebResourceRequested(args);
+
+        Assert.False(handled);
+        Assert.False(args.Handled);
+    }
+
+    [Fact]
+    public void WebResourceRequested_CanHandOverResponse()
+    {
+        var view = new HarmonyBlazorWebView();
+        view.WebResourceRequested += (_, args) =>
+        {
+            args.Handled = true;
+            args.Response = new HarmonyOS.Maui.Web.HarmonyWebResponse(200, "text/plain", "ok"u8.ToArray());
+        };
+
+        var request = new HarmonyWebResourceRequestedEventArgs(
+            new HarmonyOS.Maui.Web.HarmonyWebRequest("https://localhost/custom", "GET"));
+        var handled = view.RaiseWebResourceRequested(request);
+
+        Assert.True(handled);
+        Assert.True(request.Handled);
+        Assert.Equal(200, request.Response!.StatusCode);
     }
 
     [Fact]
@@ -38,6 +152,8 @@ public sealed class HarmonyBlazorWebViewTests
         Assert.Equal("application/octet-stream", HarmonyBlazorMimeMap.Resolve("blob.bin"));
         Assert.Equal("text/javascript", HarmonyBlazorMimeMap.Resolve("app.js?v=1"));
         Assert.Equal("text/html", HarmonyBlazorMimeMap.Resolve("index.html#start"));
+        // RCL 静态资产路径同样按扩展名解析
+        Assert.Equal("text/css", HarmonyBlazorMimeMap.Resolve("https://localhost/_content/Lib/styles.css"));
     }
 
     [Fact]
