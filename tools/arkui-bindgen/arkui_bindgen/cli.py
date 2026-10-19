@@ -83,12 +83,13 @@ def run(argv: list[str]) -> int:
 
     for _target_name, tgt in sem.enum_targets.items():
         wanted = list(tgt.get("include_enums", []))
-        attr_enum_names: set[str] = set()
-        for f in attr_files:
-            attr_enum_names.update(parse_headers([f], include_roots).enums.keys())
+        # attr 枚举已随 all_headers 解析进 model，无需逐文件重复 parse
+        attr_names = {f.name for f in attr_files}
+        attr_enum_names = {n for n, e in model.enums.items() if e.header in attr_names}
         wanted += sorted(attr_enum_names)
         src_desc = ", ".join(headers_cfg.get("files", []) + [g + "/*.h" for g in glob_dirs])
-        text = emit_enum_file(model.enums, wanted, src_desc)
+        text = emit_enum_file(model.enums, wanted, src_desc,
+                              flags_enums=set(sem.get("enum_meta", {}).get("flags", [])))
 
         out_path = out_dir / tgt["file"]
         if args.command == "gen":

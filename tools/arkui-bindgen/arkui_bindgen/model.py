@@ -60,6 +60,7 @@ class StructModel:
     fields: list[FieldModel] = field(default_factory=list)
     is_union: bool = False
     header: str = ""
+    doc: str = ""          # 头文件注释原文（@brief / @since）
 
     @property
     def is_function_table(self) -> bool:
@@ -72,6 +73,7 @@ class FunctionModel:
     ret: CType = None        # type: ignore[assignment]
     args: list[FieldModel] = field(default_factory=list)
     header: str = ""
+    doc: str = ""          # 头文件注释原文（@brief / @since）
 
 
 @dataclass

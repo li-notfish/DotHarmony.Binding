@@ -78,6 +78,14 @@ enum_renames:
   "anon:ui_input_event.h:UI_MOUSE_EVENT_ACTION_UNKNOWN": UI_MouseEventAction
   "anon:ui_input_event.h:UI_MOUSE_EVENT_BUTTON_NONE": UI_MouseEventButton
 
+# 枚举语义元数据。flags 列表中的枚举发 [Flags]（头文件注释/用法明确按位组合）。
+enum_meta:
+  flags:
+    - ArkUI_AccessibilityActionType   # native_type.h: 1 << N action set
+    - ArkUI_UIState                   # common_attributes.h: PRESSED | FOCUSED
+    - ArkUI_SafeAreaEdge              # layout.h: TOP | BOTTOM
+    - ArkUI_ModifierKeyName           # ui_input_event.h: 1 << N modifier keys
+
 enum_targets:
   node_types:
     file: ArkUINodeTypes.g.cs
@@ -85,6 +93,7 @@ enum_targets:
     # 主头文件中要进 g.cs 的枚举（9 个，与旧产物交集核验过）；
     # node_attributes/*.h 的 107 个枚举由收割面全量带入，合计 116。
     include_enums:
+      - ArkUI_AccessibilityActionType
       - ArkUI_AnimationCurve
       - ArkUI_FinishCallbackType
       - ArkUI_LengthMetricUnit
@@ -252,6 +261,7 @@ code_targets:
       - ArkUI_GestureInterruptResult
       - ArkUI_GestureRecognizerState
       - ArkUI_UIInputEvent_Type
+      - ArkUI_ModifierKeyName
       - "anon:ui_input_event.h:UI_TOUCH_EVENT_ACTION_CANCEL"
       - "anon:ui_input_event.h:UI_INPUT_EVENT_SOURCE_TYPE_UNKNOWN"
       - "anon:ui_input_event.h:UI_MOUSE_EVENT_ACTION_UNKNOWN"
@@ -358,6 +368,11 @@ code_targets:
         member_prefix_strip: ARKUI_UIINPUTEVENT_TYPE_
         member_case: pascal
         doc: "/// <summary>ArkUI_UIInputEvent_Type（ui_input_event.h ~100 行）</summary>"
+      ArkUI_ModifierKeyName:
+        flags: true
+        member_prefix_strip: ARKUI_MODIFIER_KEY_
+        member_case: pascal
+        doc: "/// <summary>修饰键位掩码（Ctrl/Shift/Alt/Fn，ui_input_event.h ~262 行）</summary>"
       "anon:ui_input_event.h:UI_TOUCH_EVENT_ACTION_CANCEL":
         visibility: internal
         member_prefix_strip: UI_TOUCH_EVENT_ACTION_
@@ -401,7 +416,8 @@ code_targets:
         doc: "/// <summary>屏幕相对坐标，px（ui_input_event.h）</summary>"
       OH_ArkUI_PointerEvent_GetPressure:
         doc: "/// <summary>按压压力（0~1），不支持时返回 0</summary>"
-    ignore_scopes: [ArkUI_GestureRecognizer]
+    # ArkUI_GestureRecognizer 是手写托管包装；ModifierKeyName 为新增枚举（legacy 快照中不存在）
+    ignore_scopes: [ArkUI_GestureRecognizer, ArkUI_ModifierKeyName]
     snapshot: snapshots/ArkUIGestureApi.legacy.cs
 
   # A3：自绘节点自定义事件访问器（native_node.h API 11+/12+）。
