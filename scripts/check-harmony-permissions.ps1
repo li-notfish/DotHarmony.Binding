@@ -16,9 +16,6 @@ if (-not (Test-Path -LiteralPath $PermissionsJson)) {
 if (-not (Test-Path -LiteralPath $ModuleJson5)) {
     throw "module.json5 not found: $ModuleJson5"
 }
-if ($ReportPath -and -not (Test-Path -LiteralPath $ReportPath)) {
-    throw "Permission report not found: $ReportPath"
-}
 
 $manifest = Get-Content -LiteralPath $PermissionsJson -Raw | ConvertFrom-Json
 $module = Get-Content -LiteralPath $ModuleJson5 -Raw | ConvertFrom-Json

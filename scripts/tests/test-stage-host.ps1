@@ -12,14 +12,27 @@ New-Item -ItemType Directory -Path $work | Out-Null
 Copy-Item -LiteralPath $source -Destination $work -Recurse
 
 function Invoke-Stage {
+    # 显式版本，避免测试依赖本机安装的 SDK；同时验证 build-profile 会被重写
     $script:StageOutput = & $pwsh -NoProfile -File $stage -Template $template -Destination $destination `
-        -BundleId com.example.stage -AppTitle "Stage Test" 2>&1 | Out-String
+        -BundleId com.example.stage -AppTitle "Stage Test" `
+        -SdkVersion 12 -RuntimeOS OpenHarmony 2>&1 | Out-String
     $script:StageExit = $LASTEXITCODE
 }
 
 try {
     Invoke-Stage
     if ($StageExit -ne 0) { throw "initial staging failed: $StageOutput" }
+    $profile = Get-Content (Join-Path $destination "build-profile.json5") -Raw
+    if ($profile -notmatch '"compatibleSdkVersion"\s*:\s*"12"') {
+        throw "compatibleSdkVersion was not rewritten: $profile"
+    }
+    if ($profile -notmatch '"targetSdkVersion"\s*:\s*"12"') {
+        throw "targetSdkVersion was not rewritten: $profile"
+    }
+    if ($profile -notmatch '"runtimeOS"\s*:\s*"OpenHarmony"') {
+        throw "runtimeOS was not rewritten: $profile"
+    }
+    Write-Output "PASS SDK version rewrite"
     $firstStamp = (Get-Content (Join-Path $destination ".stage-stamp") -Raw).Trim()
 
     $entryAbility = Join-Path $template "entry\src\main\ets\entryability\EntryAbility.ets"

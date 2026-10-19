@@ -19,9 +19,15 @@ Write-Host "=== 1. 清空日志 ==="
 Invoke-Hdc shell hilog -r 2>$null | Out-Null
 
 function Find-TextBounds([string]$want) {
+    Invoke-Hdc shell rm -f /data/local/tmp/_zp_dump.json | Out-Null
     Invoke-Hdc shell "uitest dumpLayout -p /data/local/tmp/_zp_dump.json" | Out-Null
-    Invoke-Hdc file recv /data/local/tmp/_zp_dump.json (Join-Path $outDir "_dump.json") | Out-Null
-    $json = Get-Content (Join-Path $outDir "_dump.json") -Raw | ConvertFrom-Json
+    $localDump = Join-Path $outDir "_dump.json"
+    Remove-Item -LiteralPath $localDump -ErrorAction SilentlyContinue
+    Invoke-Hdc file recv /data/local/tmp/_zp_dump.json $localDump | Out-Null
+    if (-not (Test-Path -LiteralPath $localDump)) {
+        throw "dumpLayout 未产出本地文件：$localDump"
+    }
+    $json = Get-Content $localDump -Raw | ConvertFrom-Json
     $queue = [System.Collections.Generic.Queue[object]]::new()
     $queue.Enqueue($json)
     while ($queue.Count -gt 0) {

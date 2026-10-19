@@ -2,6 +2,7 @@
 set -u
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+. "$SCRIPT_DIR/lib/sdk.sh"
 CHECK_DEVICE=0
 if [ "${1:-}" = "--check-device" ]; then
     CHECK_DEVICE=1
@@ -43,6 +44,22 @@ for candidate in "${DEVECO_HOME:-}" \
 done
 if [ -n "$DEVECO_FOUND" ]; then
     ok "DevEco Studio / hvigor" "$DEVECO_FOUND"
+    if [ -f "$DEVECO_FOUND/tools/hvigor/hvigor/hvigor-config.json5" ]; then
+        MODEL_VERSION="$(sed -n 's/.*"modelVersion"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' \
+            "$DEVECO_FOUND/tools/hvigor/hvigor/hvigor-config.json5" 2>/dev/null | head -n 1)"
+        [ -n "$MODEL_VERSION" ] && ok "hvigor model" "$MODEL_VERSION"
+    fi
+    OHPM=""
+    for candidate in "$DEVECO_FOUND/tools/ohpm/bin/ohpm.bat" "$DEVECO_FOUND/tools/ohpm/bin/ohpm"; do
+        [ -f "$candidate" ] && { OHPM="$candidate"; break; }
+    done
+    if [ -n "$OHPM" ]; then
+        ok "ohpm" "$OHPM"
+    elif command -v ohpm >/dev/null 2>&1; then
+        ok "ohpm" "$(command -v ohpm)"
+    else
+        printf '[SKIP] ohpm: not found (staged host may still build if oh_modules is present)\n'
+    fi
 else
     fail "DevEco Studio / hvigor" "hvigorw.js not found; set DEVECO_HOME"
 fi
@@ -54,7 +71,12 @@ elif [ -n "$DEVECO_FOUND" ] && [ -x "$DEVECO_FOUND/tools/node/node.exe" ]; then
     NODE_CMD="$DEVECO_FOUND/tools/node/node.exe"
 fi
 if [ -n "$NODE_CMD" ]; then
-    ok "Node.js" "$("$NODE_CMD" --version 2>/dev/null)"
+    NODE_VERSION="$("$NODE_CMD" --version 2>/dev/null | tr -d 'v')"
+    NODE_MAJOR="${NODE_VERSION%%.*}"
+    case "$NODE_MAJOR" in
+        ''|*[!0-9]*) fail "Node.js" "无法解析版本: ${NODE_VERSION:-unknown}" ;;
+        *) if [ "$NODE_MAJOR" -ge 18 ]; then ok "Node.js" "v$NODE_VERSION"; else fail "Node.js" "需要 >= 18，当前 v$NODE_VERSION"; fi ;;
+    esac
 else
     fail "Node.js" "node not found"
 fi
@@ -70,16 +92,17 @@ else
 fi
 
 HDC=""
-SDK_ROOT=""
-if SDK_ROOT="$(bash "$SCRIPT_DIR/lib/sdk.sh" sdk-root 2>/dev/null)" &&
-   HDC="$(bash "$SCRIPT_DIR/lib/sdk.sh" find-hdc 2>/dev/null)"; then
-    PACKAGE_VERSION="$(sed -n 's/.*"platformVersion"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' \
-        "$SDK_ROOT/ets/oh-uni-package.json" 2>/dev/null | head -n 1)"
-    PACKAGE_VERSION="${PACKAGE_VERSION:-$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' \
-        "$SDK_ROOT/oh-uni-package.json" 2>/dev/null | head -n 1)}"
-    ok "SDK / hdc" "SDK ${PACKAGE_VERSION:-unknown}, hdc=$HDC"
+if harmony_find_sdk_root; then
+    SDK_ROOT="$HARMONY_SDK_ROOT"
+    harmony_read_sdk_version "$SDK_ROOT"
+    if harmony_read_sdk_api_version "$SDK_ROOT"; then API_VERSION="$HARMONY_SDK_API_VERSION"; else API_VERSION="unknown"; fi
+    if harmony_find_hdc; then
+        ok "SDK / hdc" "SDK ${HARMONY_SDK_VERSION:-unknown} / API $API_VERSION, hdc=$HDC"
+    else
+        fail "SDK / hdc" "SDK found at $SDK_ROOT but hdc missing; set HARMONY_HDC"
+    fi
 else
-    fail "SDK / hdc" "SDK/hdc discovery failed; set OHOS_SDK_BASE or OHSDK_HOME"
+    fail "SDK / hdc" "SDK not found; set OHOS_SDK_BASE / OHSDK_HOME / DEVECO_SDK_HOME"
 fi
 
 if [ "$CHECK_DEVICE" -eq 1 ]; then

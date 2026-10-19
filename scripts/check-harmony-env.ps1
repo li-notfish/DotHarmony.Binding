@@ -23,7 +23,10 @@ Test-Requirement ".NET SDK" {
 
 Test-Requirement "Node.js" {
     $null = Get-Command node -ErrorAction Stop
-    (& node --version 2>&1 | Select-Object -Last 1).ToString().Trim()
+    $version = (& node --version 2>&1 | Select-Object -Last 1).ToString().Trim().TrimStart('v')
+    $major = if ($version -match '^\d+') { [int]$Matches[0] } else { 0 }
+    if ($major -lt 18) { throw "需要 Node.js >= 18，当前为 $version" }
+    "v$version"
 }
 
 Test-Requirement "Python" {
@@ -41,7 +44,14 @@ Test-Requirement "DevEco Studio / hvigor" {
     ) | Where-Object { $_ -and (Test-Path (Join-Path $_ "tools\hvigor\bin\hvigorw.js")) }
     if (-not $candidates) { throw "未找到 hvigorw.js；请设置 DEVECO_HOME" }
     $script:devEco = $candidates | Select-Object -First 1
-    $script:devEco
+    $ohpm = @(
+        (Join-Path $script:devEco "tools\ohpm\bin\ohpm.bat"),
+        (Join-Path $script:devEco "tools\ohpm\bin\ohpm")
+    ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+    $script:OhpmPath = $ohpm
+    $detail = $script:devEco
+    if ($ohpm) { $detail += " / ohpm=$ohpm" } else { Write-Host "[SKIP] ohpm: not found (staged host may still build if oh_modules exists)" }
+    $detail
 }
 
 Test-Requirement "SDK / hdc" {

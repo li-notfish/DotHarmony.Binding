@@ -77,7 +77,9 @@ function Invoke-Hdc {
     }
 }
 
-$targets = & $hdc list targets | Where-Object { $_ -match '\S' }
+$targets = & $hdc list targets |
+    ForEach-Object { "$_".Trim() } |
+    Where-Object { $_ -and $_ -ne "[Empty]" }
 if (-not $targets) {
     throw "No connected HarmonyOS device or emulator was found."
 }

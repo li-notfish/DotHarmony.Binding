@@ -3,12 +3,15 @@
 # （CarouselView 位置回传/跳转、Grid Span>1 Auto 轨道、Drag&Drop）
 # 用法：MSYS_NO_PATHCONV=1 bash scripts/verify-m3tail-uitest.sh [essentials|hello] [target]
 # 结果在界面 Label（不在日志）；每点一个按钮读一次。
-set -e
+set -euo pipefail
 MODE="${1:-essentials}"
 TARGET="${2:-127.0.0.1:5555}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HDC="$(bash "$SCRIPT_DIR/lib/sdk.sh" find-hdc)" || exit 1
 t() { "$HDC" -t "$TARGET" "$@"; }
+
+FAILED=0
+fail() { echo "FAIL: $*"; FAILED=$((FAILED + 1)); }
 
 mkdir -p tmp
 DUMP=tmp/m3tail.json
@@ -79,23 +82,23 @@ if [ "$MODE" = "essentials" ]; then
     t shell uitest uiInput swipe 360 2000 360 500 300 >/dev/null 2>&1 || true
     sleep 2
     echo "--- Accelerometer 2s window"
-    click "Accelerometer 2s window" || true
+    click "Accelerometer 2s window" || fail "accelerometer button not found"
     sleep 3.5
-    snap | grep -E "accel|compass" || echo "FAIL: accel label not found"
+    snap | grep -E "accel|compass" || fail "accel label not found"
     echo "--- Compass single reading"
-    click "Compass single reading" || true
+    click "Compass single reading" || fail "compass button not found"
     sleep 3
-    snap | grep -E "heading|compass" || echo "FAIL: compass label not found"
+    snap | grep -E "heading|compass" || fail "compass label not found"
     echo "--- Geolocation current"
-    click "Geolocation current" || true
+    click "Geolocation current" || fail "geolocation button not found"
     sleep 8
-    snap | grep -E "geo:" || echo "FAIL: geolocation label not found"
+    snap | grep -E "geo:" || fail "geolocation label not found"
     echo "--- Pick photo（弹选择器后按 Back 取消）"
-    click "Pick photo" || true
+    click "Pick photo" || fail "pick photo button not found"
     sleep 3
     t shell uitest uiInput keyEvent Back >/dev/null 2>&1 || true
     sleep 2
-    snap | grep -E "picked|canceled|FAILED" || echo "note: picker result label not captured"
+    snap | grep -E "picked|canceled|FAILED" || fail "picker result label not captured"
 else
     BUNDLE="com.arktsbinding.helloapp"
     t shell aa force-stop "$BUNDLE" >/dev/null 2>&1 || true
@@ -103,17 +106,17 @@ else
     t shell aa start -a EntryAbility -b "$BUNDLE" >/dev/null 2>&1
     sleep 8
     echo "=== 1. 进 Controls 页"
-    click "Controls demo (10 widgets)" || true
+    click "Controls demo (10 widgets)" || fail "Controls demo entry not found"
     sleep 2
     echo "=== 2. Carousel 跳转到第 3 页（pos label 应变 2）"
     # Carousel/Jump 现位于页面顶部（Entry/Editor 之后），单次小幅上滑即可全部露出
     t shell uitest uiInput swipe 360 1800 360 1200 300 >/dev/null 2>&1 || true
     sleep 1
-    click "跳到第 3 页" || true
+    click "跳到第 3 页" || fail "carousel jump button not found"
     sleep 2
-    snap | grep -E "carousel pos" || echo "FAIL: carousel pos label not found"
+    snap | grep -E "carousel pos" || fail "carousel pos label not found"
     echo "=== 3. Span>1 Auto 轨道（span3 标签应完整显示）"
-    snap | grep "span3-wide" || echo "FAIL: span3 label not found"
+    snap | grep "span3-wide" || fail "span3 label not found"
     echo "=== 4. Drag&Drop（长按拖动源 → 目标）"
     C=$(coords2 "长按拖我 (drag me)" "放到这里 (drop here)" || true)
     SX=$(echo "$C" | awk 'NR==1{print $1}'); SY=$(echo "$C" | awk 'NR==1{print $2}')
@@ -122,9 +125,9 @@ else
         # uiInput drag（长按起拖语义；swipe 是高速滑动不触发 NODE_ON_DRAG_START，实测）
         t shell uitest uiInput drag "$SX" "$SY" "$TX" "$TY" 400 >/dev/null 2>&1 || true
         sleep 2
-        snap | grep -E "drop: " || echo "FAIL: drop label unchanged"
+        snap | grep -E "drop: " || fail "drop label unchanged"
     else
-        echo "FAIL: drag source/target not found: [$C]"
+        fail "drag source/target not found: [$C]"
     fi
     echo "=== 5. Shape/自绘（滚动到 Shapes 网格 + GraphicsView，截图人工核验）"
     t shell uitest uiInput swipe 360 1800 360 900 400 >/dev/null 2>&1 || true
@@ -132,6 +135,10 @@ else
     sleep 2
     t shell snapshot_display -f /data/local/tmp/m3tail_draw.jpeg >/dev/null 2>&1 || true
     t file recv /data/local/tmp/m3tail_draw.jpeg tmp/m3tail_draw.jpeg >/dev/null 2>&1 || true
-    [ -s tmp/m3tail_draw.jpeg ] && echo "screenshot saved: tmp/m3tail_draw.jpeg" || echo "note: screenshot not captured"
+    [ -s tmp/m3tail_draw.jpeg ] && echo "screenshot saved: tmp/m3tail_draw.jpeg" || fail "screenshot not captured"
+fi
+if [ "$FAILED" -ne 0 ]; then
+    echo "=== FAILED: $FAILED assertion(s)"
+    exit 1
 fi
 echo "=== done"

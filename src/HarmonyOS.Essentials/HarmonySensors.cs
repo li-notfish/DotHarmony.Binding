@@ -69,7 +69,7 @@ internal sealed class HarmonyAccelerometer : IAccelerometer
     public bool IsSupported => HarmonySensorSupport.IsSupported(MSensorId.Accelerometer);
     public bool IsMonitoring => _monitoring;
     public event EventHandler<AccelerometerChangedEventArgs>? ReadingChanged;
-    public event EventHandler? ShakeDetected; // 摇晃检测需幅值阈值状态机，声明不触发
+    public event EventHandler? ShakeDetected; // 由 AccelerometerShakeQueue 按幅值阈值 + 时间窗触发
 
     public void Start(SensorSpeed sensorSpeed)
     {
