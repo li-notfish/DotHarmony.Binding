@@ -280,7 +280,14 @@ tests/                       jest（解析器/生成器 79 用例）
   不再依赖固定延迟；NDK `SetJavaScriptProxyValidCallback` 实测是"proxy 注册窗口"而非渲染就绪信号，不用于启动门控。
   静态资产按官方分层：publish 产物 `wwwroot`（含 RCL `_content/{库}/` 与 `_framework/`）整体 stage 进 rawfile；
   多实例 surface 按 webTag 注册（`HarmonyWebRuntime.GetSurface(tag)`）。样例新增 JS Interop 页（IJSRuntime 双向 +
-  `[JSInvokable]` 回调）。未对齐：`InputFile` 的 JS→.NET 大块字节流、BlazorWebView 与原生控件的同页混排（内嵌 WebView 节点）。
+  `[JSInvokable]` 回调）。
+- **内嵌布局（与官方 `BlazorWebView` 对齐）**：Web 不再全屏覆盖宿主页，而是参与 MAUI 布局。
+  宿主 `Index.ets` 用 `BuilderNode` 把 `Web` 包成节点，`getFrameNode()` → `OH_ArkUI_GetNodeHandleFromNapiValue`
+  （本次新增绑定）→ `ArkUI_NodeHandle`，经 `HarmonyWebInitWithNode` 交给 .NET；handler 在 `ConnectHandler`
+  时把该节点挂进自己的平台容器（`OH_ArkUI_NodeContent_AddNode`/`AddChild`），并在容器 `NODE_ON_SIZE_CHANGE`
+  时同步尺寸，使 Web 随 MAUI 布局伸缩。控制器就绪由 `onControllerAttached` 精确驱动（不用延时启发式）。
+  实测：`Grid` 中 Web 占 star 行、原生 `Button` 占 Auto 行，两者各自独立响应点击。
+  未对齐：`InputFile` 的 JS→.NET 大块字节流。
 - **手势注入**：Metro Hub 场景此前现象为"注入/触摸滑动点击均无响应"，今已确认为 ContentPresenter 空槽命中测试黑洞所致（非模拟器注入限制），随 ContentPresenter/ContentView 宿主修复一并解决（`verify-zindex-probe.ps1` 的 `uitest uiInput click` 逐步走查在模拟器实测可用）；剩余限制：Pinch 多点触控注入通道，真机验收仍以实际触摸为准
 - **napi handle scope**：模块加载路径已显式 open/close；逐次调用仍依赖宿主线程已有 scope，统一 RAII 封装待补
 - **跨模块类型导入**：`Want` / `NetAddress` 等已生成为强类型包装并在跨模块签名中复用；仅未映射的复杂 options bag 仍退化为 `IntPtr`（生成后可在 `artifacts/generator/api-intptr-report.json` 查看清单）

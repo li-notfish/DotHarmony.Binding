@@ -247,6 +247,42 @@ Flashlight、Map/FilePicker/Screenshot；传感器族与 Geolocation/MediaPicker
 
 ---
 
+## M4 —— Blazor 内嵌布局（已完成）
+
+官方 `BlazorWebView` 是普通 `Microsoft.Maui.Controls.View`，可放进任意页面参与布局。此前鸿蒙侧
+Web 只能以宿主页全屏覆盖存在，与原生控件无法同页共存。M4 打通了节点化路径。
+
+### 实现链
+
+1. 宿主 `Index.ets` 用 `BuilderNode` 包装 `Web`，`getFrameNode()` 得到 FrameNode
+2. `OH_ArkUI_GetNodeHandleFromNapiValue`（本次新增绑定，`arkui-bindgen` 登记 + 快照同步）
+   把 FrameNode 映射为 `ArkUI_NodeHandle`
+3. `HarmonyWebInitWithNode` 导出携带 webTag + 节点句柄，`HarmonyWebRuntime.InitializeWithNodeCore`
+   交给 surface（`SetPlatformNode`）
+4. handler `ConnectHandler` 时 `TryAttachPlatformNode(container.Handle)` 把节点挂进 MAUI 平台容器
+5. 容器 `NODE_ON_SIZE_CHANGE` → `SetPlatformNodeSize` 把 MAUI 布局尺寸写回 Web 节点（NODE_WIDTH/HEIGHT）
+
+### 实测结论（x86_64 模拟器）
+
+- `Grid` 中 Web 占 star 行、原生 `Button` 占 Auto 行，bounds 各自正确（`Web [0,137][1320,2636]` /
+  `Text [381,2664][940,2730]`）
+- 两者**各自独立响应点击**：Blazor 内部 `Increment` 生效，原生按钮 `Clicked` 触发
+- 链路日志：`embedded web node=ok` → `surface bound to web node 0x…` → `attached to MAUI layout
+  container` → `Blazor started, __bwv handshake confirmed`
+
+### 平台约束（实测沉淀）
+
+- `WebviewController` 必须先与 `Web` 组件完成关联才能调 API（否则 `registerJavaScriptProxy` 抛
+  "must be associated with a Web component"）。用 `onControllerAttached` 精确驱动，不要用延时。
+- `BuilderNode.build()` 最多接受 3 个参数（builder / arg / options），多参数须打包成单个对象类型。
+- ArkTS 严格模式禁止隐式 `any`；`typeof` 结果不能直接参与类型推断，需显式标注。
+- 新增 NDK 函数必须追加到 `semantics.yaml` 的 `functions` **列表末尾**，插在中间会让后续所有
+  P/Invoke 顺序错位（快照逐签名比对会报一大片）。
+- `arkui_bindgen check` 在 `core.autocrlf=true` 的工作区会因 CRLF/LF 差异误报全文件漂移，
+  属环境问题；用归一化比对确认生成物本身一致。
+
+---
+
 ## 平台铁律速查（实测沉淀，实现前必读）
 
 | # | 铁律 |

@@ -16,12 +16,16 @@ dotnet build samples/dotnet/BlazorHybridApp -t:HarmonyRun
 - **API 面**（对齐官方 `BlazorWebView`）：BindableProperty 的 `HostPage`/`StartPath`、
   `RootComponents`、`AddRootComponentAsync`/`RemoveRootComponentAsync`、
   `UrlLoading` + `UrlLoadingStrategy`、`BlazorWebViewInitializing`/`Initialized`。
+- **内嵌布局**：`BlazorApp` 把 WebView 放进 `Grid` 的 star 行、原生 `Label`/`Button` 放 Auto 行，
+  验证 Web 与原生控件同页混排、各自独立响应点击（官方 `BlazorWebView` 的常规用法）。
 - **JS Interop**：`JsInterop.razor` 演示 .NET → JS（`IJSRuntime.InvokeAsync`）与
   JS → .NET（`DotNetObjectReference` + `[JSInvokable]`）双向调用。
 
 ## 说明
 
 - 使用 `HarmonyOS.Maui.Blazor` + NDK ArkWeb scheme handler。
-- 宿主目前为单个 Web 组件（固定 webTag `harmony-web`）；.NET 侧 surface 已按 webTag 注册
-  （`HarmonyWebRuntime.GetSurface`），多实例能力待宿主提供多 Web 组件后启用。
+- 宿主目前为单个 BuilderNode 承载的 Web；.NET 侧 surface 已按 webTag 注册
+  （`HarmonyWebRuntime.GetSurface`），多实例能力待宿主提供多个 BuilderNode 后启用。
+- 内嵌模式要求 `WebviewController` 与 Web 组件完成关联（`onControllerAttached`）后才能调用其 API，
+  宿主已按该事件驱动，不再使用延时。
 - 属于实验功能，稳定 API 以 MAUI/Controls 示例为准。
