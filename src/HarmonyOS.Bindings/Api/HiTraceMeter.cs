@@ -16,51 +16,8 @@ public static unsafe partial class HiTraceMeter
 {
     private const string ModuleName = "@ohos.hiTraceMeter";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[hiTraceMeter] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _startTrace => "startTrace"u8;
     private static ReadOnlySpan<byte> _finishTrace => "finishTrace"u8;
@@ -74,88 +31,99 @@ public static unsafe partial class HiTraceMeter
     private static ReadOnlySpan<byte> _unregisterTraceListener => "unregisterTraceListener"u8;
 
     /// <summary>
-    /// startTrace
+    /// Starts an asynchronous trace.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void StartTrace(string name, double taskId)
     {
         NodeApi.CallMethodVoid(Module, _startTrace, name, taskId);
     }
 
     /// <summary>
-    /// finishTrace
+    /// Stops an asynchronous trace.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void FinishTrace(string name, double taskId)
     {
         NodeApi.CallMethodVoid(Module, _finishTrace, name, taskId);
     }
 
     /// <summary>
-    /// traceByValue
+    /// Traces the value changes of an integer variable.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void TraceByValue(string name, double count)
     {
         NodeApi.CallMethodVoid(Module, _traceByValue, name, count);
     }
 
     /// <summary>
-    /// startSyncTrace
+    /// Starts a synchronous trace with the trace output level specified. For details, see
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void StartSyncTrace(global::HarmonyOS.ArkUI.HiTraceOutputLevel level, string name, string? customArgs = null)
     {
         NodeApi.CallMethodVoid(Module, _startSyncTrace, (int)level, name, customArgs);
     }
 
     /// <summary>
-    /// finishSyncTrace
+    /// Stops a synchronous trace with the trace output level specified.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void FinishSyncTrace(global::HarmonyOS.ArkUI.HiTraceOutputLevel level)
     {
         NodeApi.CallMethodVoid(Module, _finishSyncTrace, (int)level);
     }
 
     /// <summary>
-    /// startAsyncTrace
+    /// Starts an asynchronous trace with the trace output level specified.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void StartAsyncTrace(global::HarmonyOS.ArkUI.HiTraceOutputLevel level, string name, double taskId, string customCategory, string? customArgs = null)
     {
         NodeApi.CallMethodVoid(Module, _startAsyncTrace, (int)level, name, taskId, customCategory, customArgs);
     }
 
     /// <summary>
-    /// finishAsyncTrace
+    /// Stops an asynchronous trace with the trace output level specified.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void FinishAsyncTrace(global::HarmonyOS.ArkUI.HiTraceOutputLevel level, string name, double taskId)
     {
         NodeApi.CallMethodVoid(Module, _finishAsyncTrace, (int)level, name, taskId);
     }
 
     /// <summary>
-    /// traceByValue
+    /// Traces an integer with the trace output level specified. It is used to mark the name and value of a predefined
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void TraceByValue(global::HarmonyOS.ArkUI.HiTraceOutputLevel level, string name, double count)
     {
         NodeApi.CallMethodVoid(Module, _traceByValue, (int)level, name, count);
     }
 
     /// <summary>
-    /// isTraceEnabled
+    /// Checks whether application trace capture is enabled.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static bool IsTraceEnabled()
     {
         return NodeApi.CallMethod<bool>(Module, _isTraceEnabled);
     }
 
     /// <summary>
-    /// registerTraceListener
+    /// Registers a callback to notify whether the application trace capture is enabled. This API uses a synchronous
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static double RegisterTraceListener(IntPtr callback)
     {
         return NodeApi.CallMethod<double>(Module, _registerTraceListener, callback);
     }
 
     /// <summary>
-    /// unregisterTraceListener
+    /// Unregisters the callback function used to notify whether the trace capture is enabled, which is registered using
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static double UnregisterTraceListener(double index)
     {
         return NodeApi.CallMethod<double>(Module, _unregisterTraceListener, index);

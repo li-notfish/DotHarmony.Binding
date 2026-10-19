@@ -16,75 +16,35 @@ public static unsafe partial class Bytrace
 {
     private const string ModuleName = "@ohos.bytrace";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[bytrace] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _startTrace => "startTrace"u8;
     private static ReadOnlySpan<byte> _finishTrace => "finishTrace"u8;
     private static ReadOnlySpan<byte> _traceByValue => "traceByValue"u8;
 
     /// <summary>
-    /// startTrace
+    /// Records a trace marking it as the start of a task, can with the expected completion time between
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void StartTrace(string name, double taskId, double? expectedTime = null)
     {
         NodeApi.CallMethodVoid(Module, _startTrace, name, taskId, NapiArg.Of(expectedTime));
     }
 
     /// <summary>
-    /// finishTrace
+    /// Records a trace and marks it as the end of a task.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void FinishTrace(string name, double taskId)
     {
         NodeApi.CallMethodVoid(Module, _finishTrace, name, taskId);
     }
 
     /// <summary>
-    /// traceByValue
+    /// Records a trace for generating a count, such as clock pulse and the number of layers.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void TraceByValue(string name, double count)
     {
         NodeApi.CallMethodVoid(Module, _traceByValue, name, count);

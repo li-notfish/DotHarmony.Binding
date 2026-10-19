@@ -17,51 +17,8 @@ public static unsafe partial class Buffer
 {
     private const string ModuleName = "@ohos.buffer";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[buffer] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _alloc => "alloc"u8;
     private static ReadOnlySpan<byte> _allocUninitializedFromPool => "allocUninitializedFromPool"u8;
@@ -75,112 +32,126 @@ public static unsafe partial class Buffer
     private static ReadOnlySpan<byte> _transcode => "transcode"u8;
 
     /// <summary>
-    /// alloc
+    /// Creates and initializes a **Buffer** object of the specified length.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static BufferObject Alloc(double size, string? fill = null, IntPtr? encoding = null)
     {
         return NodeApi.CallMethod(Module, _alloc, static h => new BufferObject(h), size, fill, NapiArg.Of(encoding));
     }
 
     /// <summary>
-    /// allocUninitializedFromPool
+    /// Creates a **Buffer** object of the specified size from the buffer pool, without initializing it.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static BufferObject AllocUninitializedFromPool(double size)
     {
         return NodeApi.CallMethod(Module, _allocUninitializedFromPool, static h => new BufferObject(h), size);
     }
 
     /// <summary>
-    /// allocUninitialized
+    /// Creates a **Buffer** object of the specified size, without initializing it. This API does not allocate memory from
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static BufferObject AllocUninitialized(double size)
     {
         return NodeApi.CallMethod(Module, _allocUninitialized, static h => new BufferObject(h), size);
     }
 
     /// <summary>
-    /// byteLength
+    /// Obtains the number of bytes of a string based on the encoding format.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ByteLength(string @string, IntPtr? encoding = null)
     {
         return NodeApi.CallMethod<double>(Module, _byteLength, @string, NapiArg.Of(encoding));
     }
 
     /// <summary>
-    /// concat
+    /// Concatenates an array of **Buffer** objects of the specified length into a new object.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static BufferObject Concat(BufferObject[] list, double? totalLength = null)
     {
         return NodeApi.CallMethod(Module, _concat, static h => new BufferObject(h), NapiArg.Of(list), NapiArg.Of(totalLength));
     }
 
     /// <summary>
-    /// from
+    /// Creates a **Buffer** object with the specified array.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static BufferObject From(double[] array)
     {
         return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), NapiArg.Of(array));
     }
 
     /// <summary>
-    /// from
+    /// Creates a **Buffer** object of the specified length that shares memory with ArrayBuffer.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static BufferObject From(byte[] arrayBuffer, double? byteOffset = null, double? length = null)
     {
         return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), NapiArg.Of(arrayBuffer), NapiArg.Of(byteOffset), NapiArg.Of(length));
     }
 
     /// <summary>
-    /// from
+    /// Copies the data of a passed **Buffer** object to create a new **Buffer** object and returns the new one.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static BufferObject From(BufferObject buffer)
     {
         return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), NapiArg.Of(buffer));
     }
 
     /// <summary>
-    /// from
+    /// Creates a **Buffer** object based on the specified object.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static BufferObject From(IntPtr @object, double offsetOrEncoding, double length)
     {
         return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), @object, offsetOrEncoding, length);
     }
 
     /// <summary>
-    /// from
+    /// Creates a **Buffer** object based on a string in the given encoding format.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static BufferObject From(IntPtr @string, IntPtr? encoding = null)
     {
         return NodeApi.CallMethod(Module, _from, static h => new BufferObject(h), @string, NapiArg.Of(encoding));
     }
 
     /// <summary>
-    /// isBuffer
+    /// Checks whether the specified object is a **Buffer** object.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool IsBuffer(IntPtr obj)
     {
         return NodeApi.CallMethod<bool>(Module, _isBuffer, obj);
     }
 
     /// <summary>
-    /// isEncoding
+    /// Checks whether the encoding format is supported.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool IsEncoding(string encoding)
     {
         return NodeApi.CallMethod<bool>(Module, _isEncoding, encoding);
     }
 
     /// <summary>
-    /// compare
+    /// Compares two **Buffer** objects. This API is used for sorting **Buffer** objects.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr Compare(BufferObject buf1, BufferObject buf2)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _compare, NapiArg.Of(buf1), NapiArg.Of(buf2));
     }
 
     /// <summary>
-    /// transcode
+    /// Transcodes a **Buffer** or **Uint8Array** object from one encoding format to another.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static BufferObject Transcode(BufferObject source, string fromEnc, string toEnc)
     {
         return NodeApi.CallMethod(Module, _transcode, static h => new BufferObject(h), NapiArg.Of(source), fromEnc, toEnc);

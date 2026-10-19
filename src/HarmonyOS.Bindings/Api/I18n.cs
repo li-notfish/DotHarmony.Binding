@@ -18,51 +18,8 @@ public static unsafe partial class I18n
 {
     private const string ModuleName = "@ohos.i18n";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[i18n] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getDisplayCountry => "getDisplayCountry"u8;
     private static ReadOnlySpan<byte> _getDisplayLanguage => "getDisplayLanguage"u8;
@@ -86,160 +43,180 @@ public static unsafe partial class I18n
     private static ReadOnlySpan<byte> _getChineseCalendar => "getChineseCalendar"u8;
 
     /// <summary>
-    /// getDisplayCountry
+    /// Obtains the localized name of the specified country/region.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string GetDisplayCountry(string country, string locale, bool? sentenceCase = null)
     {
         return NodeApi.CallMethod<string>(Module, _getDisplayCountry, country, locale, NapiArg.Of(sentenceCase));
     }
 
     /// <summary>
-    /// getDisplayLanguage
+    /// Obtains the localized script for the specified language.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string GetDisplayLanguage(string language, string locale, bool? sentenceCase = null)
     {
         return NodeApi.CallMethod<string>(Module, _getDisplayLanguage, language, locale, NapiArg.Of(sentenceCase));
     }
 
     /// <summary>
-    /// getSystemLanguage
+    /// Obtains the system language.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string GetSystemLanguage()
     {
         return NodeApi.CallMethod<string>(Module, _getSystemLanguage);
     }
 
     /// <summary>
-    /// getSystemRegion
+    /// Obtains the system region.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string GetSystemRegion()
     {
         return NodeApi.CallMethod<string>(Module, _getSystemRegion);
     }
 
     /// <summary>
-    /// getSystemLocale
+    /// Obtains the system locale.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string GetSystemLocale()
     {
         return NodeApi.CallMethod<string>(Module, _getSystemLocale);
     }
 
     /// <summary>
-    /// getCalendar
+    /// Obtains the **Calendar** object for the specified locale and calendar type.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static I18nCalendar GetCalendar(string locale, string? type = null)
     {
         return NodeApi.CallMethod(Module, _getCalendar, static h => new I18nCalendar(h), locale, type);
     }
 
     /// <summary>
-    /// isRTL
+    /// Checks whether a language is an RTL language. For an RTL language,
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool IsRtl(string locale)
     {
         return NodeApi.CallMethod<bool>(Module, _isRTL, locale);
     }
 
     /// <summary>
-    /// getLineInstance
+    /// Obtains a **BreakIterator** object. The **BreakIterator** object maintains an internal break iterator that can be
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static BreakIterator GetLineInstance(string locale)
     {
         return NodeApi.CallMethod(Module, _getLineInstance, static h => new BreakIterator(h), locale);
     }
 
     /// <summary>
-    /// getInstance
+    /// Creates an **IndexUtil** object.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static IndexUtil GetInstance(string? locale = null)
     {
         return NodeApi.CallMethod(Module, _getInstance, static h => new IndexUtil(h), locale);
     }
 
     /// <summary>
-    /// is24HourClock
+    /// Checks whether the 24-hour clock is used.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool Is24HourClock()
     {
         return NodeApi.CallMethod<bool>(Module, _is24HourClock);
     }
 
     /// <summary>
-    /// set24HourClock
+    /// Sets the 24-hour clock.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool Set24HourClock(bool option)
     {
         return NodeApi.CallMethod<bool>(Module, _set24HourClock, option);
     }
 
     /// <summary>
-    /// addPreferredLanguage
+    /// Adds a preferred language to the specified position on the preferred language list.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool AddPreferredLanguage(string language, double? index = null)
     {
         return NodeApi.CallMethod<bool>(Module, _addPreferredLanguage, language, NapiArg.Of(index));
     }
 
     /// <summary>
-    /// removePreferredLanguage
+    /// Removes a preferred language from the specified position on the preferred language list.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool RemovePreferredLanguage(double index)
     {
         return NodeApi.CallMethod<bool>(Module, _removePreferredLanguage, index);
     }
 
     /// <summary>
-    /// getPreferredLanguageList
+    /// Obtains the list of preferred languages.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static string[] GetPreferredLanguageList()
     {
         return NodeApi.CallMethod(Module, _getPreferredLanguageList, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// getFirstPreferredLanguage
+    /// Obtains the first language in the preferred language list.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static string GetFirstPreferredLanguage()
     {
         return NodeApi.CallMethod<string>(Module, _getFirstPreferredLanguage);
     }
 
     /// <summary>
-    /// getTimeZone
+    /// Obtains the **TimeZone** object corresponding to the specified time zone ID.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static TimeZone GetTimeZone(string? zoneID = null)
     {
         return NodeApi.CallMethod(Module, _getTimeZone, static h => new TimeZone(h), zoneID);
     }
 
     /// <summary>
-    /// getSimpleDateTimeFormatByPattern
+    /// Obtains a **SimpleDateTimeFormat** object based on the specified pattern string. For details about the difference
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static SimpleDateTimeFormat GetSimpleDateTimeFormatByPattern(string pattern, IntPtr? locale = null)
     {
         return NodeApi.CallMethod(Module, _getSimpleDateTimeFormatByPattern, static h => new SimpleDateTimeFormat(h), pattern, NapiArg.Of(locale));
     }
 
     /// <summary>
-    /// getSimpleDateTimeFormatBySkeleton
+    /// Obtains a **SimpleDateTimeFormat** object based on the specified skeleton. For details about the difference between
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static SimpleDateTimeFormat GetSimpleDateTimeFormatBySkeleton(string skeleton, IntPtr? locale = null)
     {
         return NodeApi.CallMethod(Module, _getSimpleDateTimeFormatBySkeleton, static h => new SimpleDateTimeFormat(h), skeleton, NapiArg.Of(locale));
     }
 
     /// <summary>
-    /// getSimpleNumberFormatBySkeleton
+    /// Obtains a **SimpleNumberFormat** object based on the specified skeleton.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static SimpleNumberFormat GetSimpleNumberFormatBySkeleton(string skeleton, IntPtr? locale = null)
     {
         return NodeApi.CallMethod(Module, _getSimpleNumberFormatBySkeleton, static h => new SimpleNumberFormat(h), skeleton, NapiArg.Of(locale));
     }
 
     /// <summary>
-    /// getChineseCalendar
+    /// Obtains the ChineseCalendar object for the specified locale.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static ChineseCalendar GetChineseCalendar(IntPtr? locale = null)
     {
         return NodeApi.CallMethod(Module, _getChineseCalendar, static h => new ChineseCalendar(h), NapiArg.Of(locale));

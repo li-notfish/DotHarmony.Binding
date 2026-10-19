@@ -16,51 +16,8 @@ public static unsafe partial class JsLeakWatcher
 {
     private const string ModuleName = "@ohos.hiviewdfx.jsLeakWatcher";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[hiviewdfx.jsLeakWatcher] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _enable => "enable"u8;
     private static ReadOnlySpan<byte> _watch => "watch"u8;
@@ -69,48 +26,54 @@ public static unsafe partial class JsLeakWatcher
     private static ReadOnlySpan<byte> _enableLeakWatcher => "enableLeakWatcher"u8;
 
     /// <summary>
-    /// enable
+    /// Enables the detection for JS object leaks. This function is disabled by default.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void Enable(bool isEnable)
     {
         NodeApi.CallMethodVoid(Module, _enable, isEnable);
     }
 
     /// <summary>
-    /// watch
+    /// Registers the object to be checked.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void Watch(IntPtr obj, string msg)
     {
         NodeApi.CallMethodVoid(Module, _watch, obj, msg);
     }
 
     /// <summary>
-    /// check
+    /// Obtains the list of objects that are leaked and registered using **jsLeakWatcher.watch()**. Objects that are not
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string Check()
     {
         return NodeApi.CallMethod<string>(Module, _check);
     }
 
     /// <summary>
-    /// dump
+    /// Dumps the list of leaked objects and VM memory snapshot.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string[] Dump(string filePath)
     {
         return NodeApi.CallMethod(Module, _dump, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), filePath);
     }
 
     /// <summary>
-    /// enableLeakWatcher
+    /// Enables the detection for JS object leaks. This function is disabled by default.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void EnableLeakWatcher(bool isEnabled, string[] configs, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _enableLeakWatcher, isEnabled, NapiArg.Of(configs), callback);
     }
 
     /// <summary>
-    /// enableLeakWatcher
+    /// Enables the ArkTS object leak detection.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void EnableLeakWatcher(bool isEnabled, LeakWatcherConfig configs, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _enableLeakWatcher, isEnabled, NapiArg.Of(configs), callback);

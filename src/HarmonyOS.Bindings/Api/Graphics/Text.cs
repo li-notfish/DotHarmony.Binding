@@ -19,51 +19,8 @@ public static unsafe partial class Text
 {
     private const string ModuleName = "@ohos.graphics.text";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[graphics.text] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getSystemFontFullNamesByType => "getSystemFontFullNamesByType"u8;
     private static ReadOnlySpan<byte> _getFontPathsByType => "getFontPathsByType"u8;
@@ -77,80 +34,90 @@ public static unsafe partial class Text
     private static ReadOnlySpan<byte> _getFontCount => "getFontCount"u8;
 
     /// <summary>
-    /// getSystemFontFullNamesByType
+    /// Obtains the full names of all fonts of the specified type. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<string[]> GetSystemFontFullNamesByTypeAsync(global::HarmonyOS.ArkUI.SystemFontType fontType)
     {
         return NodeApi.CallMethodAsync(Module, _getSystemFontFullNamesByType, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), (int)fontType);
     }
 
     /// <summary>
-    /// getFontPathsByType
+    /// Obtains the paths of all font files of a specified font type.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static string[] GetFontPathsByType(global::HarmonyOS.ArkUI.SystemFontType fontType)
     {
         return NodeApi.CallMethod(Module, _getFontPathsByType, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), (int)fontType);
     }
 
     /// <summary>
-    /// getFontDescriptorByFullName
+    /// Obtains the font descriptor based on the font name and type. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<IntPtr> GetFontDescriptorByFullNameAsync(string fullName, global::HarmonyOS.ArkUI.SystemFontType fontType)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getFontDescriptorByFullName, fullName, (int)fontType);
     }
 
     /// <summary>
-    /// matchFontDescriptors
+    /// Obtains all system font descriptors that match the provided font descriptor. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<IntPtr[]> MatchFontDescriptorsAsync(IntPtr desc)
     {
         return NodeApi.CallMethodAsync(Module, _matchFontDescriptors, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), desc);
     }
 
     /// <summary>
-    /// setTextHighContrast
+    /// Sets the high contrast mode for text rendering.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetTextHighContrast(global::HarmonyOS.ArkUI.TextHighContrast action)
     {
         NodeApi.CallMethodVoid(Module, _setTextHighContrast, (int)action);
     }
 
     /// <summary>
-    /// setTextUndefinedGlyphDisplay
+    /// Sets the glyph type to be used when characters are mapped to the .notdef (undefined) glyph.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetTextUndefinedGlyphDisplay(global::HarmonyOS.ArkUI.TextUndefinedGlyphDisplay noGlyphShow)
     {
         NodeApi.CallMethodVoid(Module, _setTextUndefinedGlyphDisplay, (int)noGlyphShow);
     }
 
     /// <summary>
-    /// getFontDescriptorsFromPath
+    /// Obtains an array of font descriptors by font file path. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<IntPtr[]> GetFontDescriptorsFromPathAsync(string path)
     {
         return NodeApi.CallMethodAsync(Module, _getFontDescriptorsFromPath, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), path);
     }
 
     /// <summary>
-    /// isFontSupported
+    /// Checks whether the system supports the specified font file. You can use this API to verify the availability of a
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static bool IsFontSupported(string fontURL)
     {
         return NodeApi.CallMethod<bool>(Module, _isFontSupported, fontURL);
     }
 
     /// <summary>
-    /// getFontUnicodeSet
+    /// Obtains an array of font Unicode by font file path. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<double[]> GetFontUnicodeSetAsync(string path, double index)
     {
         return NodeApi.CallMethodAsync(Module, _getFontUnicodeSet, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), path, index);
     }
 
     /// <summary>
-    /// getFontCount
+    /// Obtains the number of font files contained in a font file based on the font file path.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double GetFontCount(string path)
     {
         return NodeApi.CallMethod<double>(Module, _getFontCount, path);

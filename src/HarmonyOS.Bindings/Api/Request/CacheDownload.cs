@@ -17,51 +17,8 @@ public static unsafe partial class CacheDownload
 {
     private const string ModuleName = "@ohos.request.cacheDownload";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[request.cacheDownload] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _download => "download"u8;
     private static ReadOnlySpan<byte> _cancel => "cancel"u8;
@@ -79,112 +36,126 @@ public static unsafe partial class CacheDownload
     private static ReadOnlySpan<byte> _setGlobalTimeoutOptions => "setGlobalTimeoutOptions"u8;
 
     /// <summary>
-    /// download
+    /// Downloads a task from a specified URL. If the transfer is successful, the data is downloaded to the memory cache
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void Download(string url, IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _download, url, options);
     }
 
     /// <summary>
-    /// cancel
+    /// Cancels an ongoing download task based on the URL. The saved memory cache and file cache are not affected.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void Cancel(string url)
     {
         NodeApi.CallMethodVoid(Module, _cancel, url);
     }
 
     /// <summary>
-    /// setMemoryCacheSize
+    /// Sets the upper limit of the memory cache size for the **cacheDownload** component.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void SetMemoryCacheSize(double bytes)
     {
         NodeApi.CallMethodVoid(Module, _setMemoryCacheSize, bytes);
     }
 
     /// <summary>
-    /// setFileCacheSize
+    /// Sets the upper limit of the file cache size for the **cacheDownload** component.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void SetFileCacheSize(double bytes)
     {
         NodeApi.CallMethodVoid(Module, _setFileCacheSize, bytes);
     }
 
     /// <summary>
-    /// getDownloadInfo
+    /// Obtains the download information based on the URL. The download information is stored in the download information
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static DownloadInfo GetDownloadInfo(string url)
     {
         return NodeApi.CallMethod(Module, _getDownloadInfo, static h => new DownloadInfo(h), url);
     }
 
     /// <summary>
-    /// setDownloadInfoListSize
+    /// Sets the size of the download information list.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetDownloadInfoListSize(double size)
     {
         NodeApi.CallMethodVoid(Module, _setDownloadInfoListSize, size);
     }
 
     /// <summary>
-    /// clearMemoryCache
+    /// Clears this memory cache.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void ClearMemoryCache()
     {
         NodeApi.CallMethodVoid(Module, _clearMemoryCache);
     }
 
     /// <summary>
-    /// clearFileCache
+    /// Clears this file cache.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void ClearFileCache()
     {
         NodeApi.CallMethodVoid(Module, _clearFileCache);
     }
 
     /// <summary>
-    /// onDownloadSuccess
+    /// Subscribes to the pre-download completion events. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnDownloadSuccess(string url, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onDownloadSuccess, url, callback);
     }
 
     /// <summary>
-    /// onDownloadError
+    /// Subscribes to the pre-download error events. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnDownloadError(string url, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onDownloadError, url, callback);
     }
 
     /// <summary>
-    /// offDownloadSuccess
+    /// Unsubscribes from the pre-download completion events. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OffDownloadSuccess(string url, IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offDownloadSuccess, url, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// offDownloadError
+    /// Unsubscribes from the pre-download error events. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OffDownloadError(string url, IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offDownloadError, url, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// setGlobalRetryOptions
+    /// Sets retry options for all tasks.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetGlobalRetryOptions(RetryOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _setGlobalRetryOptions, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// setGlobalTimeoutOptions
+    /// Sets timeout configuration for all tasks.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetGlobalTimeoutOptions(TimeoutOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _setGlobalTimeoutOptions, NapiArg.Of(options));

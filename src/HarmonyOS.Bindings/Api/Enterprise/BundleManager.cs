@@ -20,51 +20,8 @@ public static unsafe partial class BundleManager
 {
     private const string ModuleName = "@ohos.enterprise.bundleManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.bundleManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _addAllowedInstallBundlesSync => "addAllowedInstallBundlesSync"u8;
     private static ReadOnlySpan<byte> _removeAllowedInstallBundlesSync => "removeAllowedInstallBundlesSync"u8;
@@ -86,152 +43,171 @@ public static unsafe partial class BundleManager
     private static ReadOnlySpan<byte> _getInstalledBundleStorageStats => "getInstalledBundleStorageStats"u8;
 
     /// <summary>
-    /// addAllowedInstallBundlesSync
+    /// Adds the applications that can be installed by the current or specified user. The reinstallation of system apps
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void AddAllowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedInstallBundlesSync, NapiArg.Of(admin), NapiArg.Of(appIds), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// removeAllowedInstallBundlesSync
+    /// Removes the applications that can be installed by the current or specified user.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void RemoveAllowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedInstallBundlesSync, NapiArg.Of(admin), NapiArg.Of(appIds), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// getAllowedInstallBundlesSync
+    /// Obtains the applications that can be installed by the current or specified user.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string[] GetAllowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double? accountId = null)
     {
         return NodeApi.CallMethod(Module, _getAllowedInstallBundlesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// addDisallowedInstallBundlesSync
+    /// Adds the applications that are not allowed to be installed by the current or specified user. The reinstallation of
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void AddDisallowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedInstallBundlesSync, NapiArg.Of(admin), NapiArg.Of(appIds), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// removeDisallowedInstallBundlesSync
+    /// Removes the applications that cannot be installed by the current or specified user.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void RemoveDisallowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedInstallBundlesSync, NapiArg.Of(admin), NapiArg.Of(appIds), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// getDisallowedInstallBundlesSync
+    /// Obtains the applications that cannot be installed by the current or specified user.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string[] GetDisallowedInstallBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double? accountId = null)
     {
         return NodeApi.CallMethod(Module, _getDisallowedInstallBundlesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// addDisallowedUninstallBundlesSync
+    /// Adds the applications that are not allowed to be uninstalled by the current or specified user.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void AddDisallowedUninstallBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedUninstallBundlesSync, NapiArg.Of(admin), NapiArg.Of(appIds), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// removeDisallowedUninstallBundlesSync
+    /// Removes the applications that cannot be uninstalled by the current or specified user through the specified device
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void RemoveDisallowedUninstallBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedUninstallBundlesSync, NapiArg.Of(admin), NapiArg.Of(appIds), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// getDisallowedUninstallBundlesSync
+    /// Obtains the bundles that cannot be uninstalled by the current or specified user.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string[] GetDisallowedUninstallBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double? accountId = null)
     {
         return NodeApi.CallMethod(Module, _getDisallowedUninstallBundlesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// uninstall
+    /// Uninstalls a specified bundle of the current or specified user. The **isKeepData** parameter specifies whether to
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task UninstallAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double? userId = null, bool? isKeepData = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _uninstall, cancellationToken, NapiArg.Of(admin), bundleName, NapiArg.Of(userId), NapiArg.Of(isKeepData));
     }
 
     /// <summary>
-    /// install
+    /// Installs specified applications. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task InstallAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] hapFilePaths, IntPtr? installParam = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _install, cancellationToken, NapiArg.Of(admin), NapiArg.Of(hapFilePaths), NapiArg.Of(installParam));
     }
 
     /// <summary>
-    /// installForResult
+    /// Installs the application bundle in the specified path and returns the installation result. This API uses a promise
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task InstallForResultAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] hapFilePaths, IntPtr? installParam = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _installForResult, cancellationToken, NapiArg.Of(admin), NapiArg.Of(hapFilePaths), NapiArg.Of(installParam));
     }
 
     /// <summary>
-    /// addInstallationAllowedAppDistributionTypes
+    /// Adds the distribution type of the application that can be installed. Only applications of the distribution type
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void AddInstallationAllowedAppDistributionTypes(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.AppDistributionType[] appDistributionTypes)
     {
         NodeApi.CallMethodVoid(Module, _addInstallationAllowedAppDistributionTypes, NapiArg.Of(admin), NapiArg.Of(appDistributionTypes));
     }
 
     /// <summary>
-    /// removeInstallationAllowedAppDistributionTypes
+    /// Removes the distribution type of an application. If only some distribution types in the array are removed, the
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void RemoveInstallationAllowedAppDistributionTypes(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.AppDistributionType[] appDistributionTypes)
     {
         NodeApi.CallMethodVoid(Module, _removeInstallationAllowedAppDistributionTypes, NapiArg.Of(admin), NapiArg.Of(appDistributionTypes));
     }
 
     /// <summary>
-    /// getInstallationAllowedAppDistributionTypes
+    /// Obtains the distribution type of the signing certificate used by applications that can be installed.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static global::HarmonyOS.ArkUI.AppDistributionType[] GetInstallationAllowedAppDistributionTypes(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getInstallationAllowedAppDistributionTypes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.AppDistributionType>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// getInstalledBundleList
+    /// Obtains the applications installed by a specified user on a device. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<BundleInfo[]> GetInstalledBundleListAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethodAsync(Module, _getInstalledBundleList, h => ValueConverter.ConvertArray(h, static e => new BundleInfo(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// getInstalledBundleList
+    /// Obtains the list of applications installed by a specified user based on the specified **bundleInfoGetFlag**. This
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<BundleInfo[]> GetInstalledBundleListAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, double bundleInfoGetFlag)
     {
         return NodeApi.CallMethodAsync(Module, _getInstalledBundleList, h => ValueConverter.ConvertArray(h, static e => new BundleInfo(e)), NapiArg.Of(admin), accountId, bundleInfoGetFlag);
     }
 
     /// <summary>
-    /// installMarketApps
+    /// Downloads and installs an application from AppGallery.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static void InstallMarketApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] bundleNames)
     {
         NodeApi.CallMethodVoid(Module, _installMarketApps, NapiArg.Of(admin), NapiArg.Of(bundleNames));
     }
 
     /// <summary>
-    /// getInstalledBundleStorageStats
+    /// Obtains the storage usage of installed applications of a specified user on a device. This API uses a promise to
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<BundleStorageStats[]> GetInstalledBundleStorageStatsAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] bundleNames, double accountId)
     {
         return NodeApi.CallMethodAsync(Module, _getInstalledBundleStorageStats, h => ValueConverter.ConvertArray(h, static e => new BundleStorageStats(e)), NapiArg.Of(admin), NapiArg.Of(bundleNames), accountId);

@@ -20,51 +20,8 @@ public static unsafe partial class InputMethodEngine
 {
     private const string ModuleName = "@ohos.inputMethodEngine";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[inputMethodEngine] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _ENTER_KEY_TYPE_UNSPECIFIED => "ENTER_KEY_TYPE_UNSPECIFIED"u8;
     private static ReadOnlySpan<byte> _ENTER_KEY_TYPE_GO => "ENTER_KEY_TYPE_GO"u8;
@@ -110,222 +67,264 @@ public static unsafe partial class InputMethodEngine
     private static ReadOnlySpan<byte> _createKeyboardDelegate => "createKeyboardDelegate"u8;
 
     /// <summary>
-    /// ENTER_KEY_TYPE_UNSPECIFIED
+    /// No function is specified for the key.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double EnterKeyTypeUnspecified => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ENTER_KEY_TYPE_UNSPECIFIED));
 
     /// <summary>
-    /// ENTER_KEY_TYPE_GO
+    /// Key that executes a command or navigates to a specific location.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double EnterKeyTypeGo => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ENTER_KEY_TYPE_GO));
 
     /// <summary>
-    /// ENTER_KEY_TYPE_SEARCH
+    /// Key that initiates a search operation.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double EnterKeyTypeSearch => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ENTER_KEY_TYPE_SEARCH));
 
     /// <summary>
-    /// ENTER_KEY_TYPE_SEND
+    /// Key that sends the text to its target.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double EnterKeyTypeSend => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ENTER_KEY_TYPE_SEND));
 
     /// <summary>
-    /// ENTER_KEY_TYPE_NEXT
+    /// Key that moves the focus to the next item in a sequence.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double EnterKeyTypeNext => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ENTER_KEY_TYPE_NEXT));
 
     /// <summary>
-    /// ENTER_KEY_TYPE_DONE
+    /// Key that indicates that a task or input is complete.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double EnterKeyTypeDone => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ENTER_KEY_TYPE_DONE));
 
     /// <summary>
-    /// ENTER_KEY_TYPE_PREVIOUS
+    /// Key that moves the focus to the previous item in a sequence.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double EnterKeyTypePrevious => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ENTER_KEY_TYPE_PREVIOUS));
 
     /// <summary>
-    /// ENTER_KEY_TYPE_NEWLINE
+    /// Key that inserts a new line.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double EnterKeyTypeNewline => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ENTER_KEY_TYPE_NEWLINE));
 
     /// <summary>
-    /// PATTERN_NULL
+    /// Any type of edit box.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double PatternNull => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_NULL));
 
     /// <summary>
-    /// PATTERN_TEXT
+    /// Text edit box.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double PatternText => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_TEXT));
 
     /// <summary>
-    /// PATTERN_NUMBER
+    /// Number edit box.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double PatternNumber => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_NUMBER));
 
     /// <summary>
-    /// PATTERN_PHONE
+    /// Phone number edit box.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double PatternPhone => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_PHONE));
 
     /// <summary>
-    /// PATTERN_DATETIME
+    /// Date edit box.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double PatternDatetime => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_DATETIME));
 
     /// <summary>
-    /// PATTERN_EMAIL
+    /// Email edit box.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double PatternEmail => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_EMAIL));
 
     /// <summary>
-    /// PATTERN_URI
+    /// URI edit box.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double PatternUri => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_URI));
 
     /// <summary>
-    /// PATTERN_PASSWORD
+    /// Password edit box.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double PatternPassword => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_PASSWORD));
 
     /// <summary>
-    /// PATTERN_PASSWORD_SCREEN_LOCK
+    /// Screen lock password edit box.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static double PatternPasswordScreenLock => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_PASSWORD_SCREEN_LOCK));
 
     /// <summary>
-    /// PATTERN_PASSWORD_NUMBER
+    /// Numeric password edit box.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static double PatternPasswordNumber => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_PASSWORD_NUMBER));
 
     /// <summary>
-    /// PATTERN_USER_NAME
+    /// User name edit box. The value is fixed at 10.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static double PatternUserName => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_USER_NAME));
 
     /// <summary>
-    /// PATTERN_NEW_PASSWORD
+    /// New password edit box. The value is fixed at 11.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static double PatternNewPassword => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_NEW_PASSWORD));
 
     /// <summary>
-    /// PATTERN_NUMBER_DECIMAL
+    /// Edit box for numbers with decimal points. The value is fixed at 12.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static double PatternNumberDecimal => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_NUMBER_DECIMAL));
 
     /// <summary>
-    /// PATTERN_ONE_TIME_CODE
+    /// Verification code edit box. The value is fixed at 13.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static double PatternOneTimeCode => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PATTERN_ONE_TIME_CODE));
 
     /// <summary>
-    /// FLAG_SELECTING
+    /// The edit box is being selected.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double FlagSelecting => NativeValue.ToDouble(NodeApi.GetProperty(Module, _FLAG_SELECTING));
 
     /// <summary>
-    /// FLAG_SINGLE_LINE
+    /// The edit box allows only single-line input.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double FlagSingleLine => NativeValue.ToDouble(NodeApi.GetProperty(Module, _FLAG_SINGLE_LINE));
 
     /// <summary>
-    /// DISPLAY_MODE_PART
+    /// The edit box is displayed in half-screen mode.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double DisplayModePart => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DISPLAY_MODE_PART));
 
     /// <summary>
-    /// DISPLAY_MODE_FULL
+    /// The edit box is displayed in full screen.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double DisplayModeFull => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DISPLAY_MODE_FULL));
 
     /// <summary>
-    /// OPTION_ASCII
+    /// ASCII values are allowed.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double OptionAscii => NativeValue.ToDouble(NodeApi.GetProperty(Module, _OPTION_ASCII));
 
     /// <summary>
-    /// OPTION_NONE
+    /// No input attribute is specified.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double OptionNone => NativeValue.ToDouble(NodeApi.GetProperty(Module, _OPTION_NONE));
 
     /// <summary>
-    /// OPTION_AUTO_CAP_CHARACTERS
+    /// Characters are allowed.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double OptionAutoCapCharacters => NativeValue.ToDouble(NodeApi.GetProperty(Module, _OPTION_AUTO_CAP_CHARACTERS));
 
     /// <summary>
-    /// OPTION_AUTO_CAP_SENTENCES
+    /// Sentences are allowed.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double OptionAutoCapSentences => NativeValue.ToDouble(NodeApi.GetProperty(Module, _OPTION_AUTO_CAP_SENTENCES));
 
     /// <summary>
-    /// OPTION_AUTO_WORDS
+    /// Words are allowed.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double OptionAutoWords => NativeValue.ToDouble(NodeApi.GetProperty(Module, _OPTION_AUTO_WORDS));
 
     /// <summary>
-    /// OPTION_MULTI_LINE
+    /// Multiple lines are allowed.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double OptionMultiLine => NativeValue.ToDouble(NodeApi.GetProperty(Module, _OPTION_MULTI_LINE));
 
     /// <summary>
-    /// OPTION_NO_FULLSCREEN
+    /// Half-screen style.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double OptionNoFullscreen => NativeValue.ToDouble(NodeApi.GetProperty(Module, _OPTION_NO_FULLSCREEN));
 
     /// <summary>
-    /// CURSOR_UP
+    /// The caret moves upward.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double CursorUp => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CURSOR_UP));
 
     /// <summary>
-    /// CURSOR_DOWN
+    /// The caret moves downward.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double CursorDown => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CURSOR_DOWN));
 
     /// <summary>
-    /// CURSOR_LEFT
+    /// The caret moves leftward.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double CursorLeft => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CURSOR_LEFT));
 
     /// <summary>
-    /// CURSOR_RIGHT
+    /// The caret moves rightward.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double CursorRight => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CURSOR_RIGHT));
 
     /// <summary>
-    /// WINDOW_TYPE_INPUT_METHOD_FLOAT
+    /// The input method is displayed in a floating window.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double WindowTypeInputMethodFloat => NativeValue.ToDouble(NodeApi.GetProperty(Module, _WINDOW_TYPE_INPUT_METHOD_FLOAT));
 
     /// <summary>
-    /// getInputMethodAbility
+    /// Obtains an [InputMethodAbility] instance for the input method. This API
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static InputMethodAbility GetInputMethodAbility()
     {
         return NodeApi.CallMethod(Module, _getInputMethodAbility, static h => new InputMethodAbility(h));
     }
 
     /// <summary>
-    /// getInputMethodEngine
+    /// Obtains an [InputMethodEngine] instance for the input method.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static InputMethodEngineObject GetInputMethodEngine()
     {
         return NodeApi.CallMethod(Module, _getInputMethodEngine, static h => new InputMethodEngineObject(h));
     }
 
     /// <summary>
-    /// getKeyboardDelegate
+    /// Obtains a [KeyboardDelegate] instance for the input method.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static KeyboardDelegate GetKeyboardDelegate()
     {
         return NodeApi.CallMethod(Module, _getKeyboardDelegate, static h => new KeyboardDelegate(h));
     }
 
     /// <summary>
-    /// createKeyboardDelegate
+    /// Obtains a [KeyboardDelegate] instance for the input method. The input
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static KeyboardDelegate CreateKeyboardDelegate()
     {
         return NodeApi.CallMethod(Module, _createKeyboardDelegate, static h => new KeyboardDelegate(h));

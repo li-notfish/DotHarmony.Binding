@@ -18,75 +18,35 @@ public static unsafe partial class AbilityManager
 {
     private const string ModuleName = "@ohos.app.ability.abilityManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[app.ability.abilityManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getAbilityRunningInfos => "getAbilityRunningInfos"u8;
     private static ReadOnlySpan<byte> _restartSelfAtomicService => "restartSelfAtomicService"u8;
     private static ReadOnlySpan<byte> _isEmbeddedUIExtensionSupported => "isEmbeddedUIExtensionSupported"u8;
 
     /// <summary>
-    /// getAbilityRunningInfos
+    /// Obtains the UIAbility running information. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<IntPtr[]> GetAbilityRunningInfosAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAbilityRunningInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// restartSelfAtomicService
+    /// Restarts the current atomic service.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void RestartSelfAtomicService(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _restartSelfAtomicService, context);
     }
 
     /// <summary>
-    /// isEmbeddedUIExtensionSupported
+    /// Indicates whether the current device supports EmbeddedUIExtensionAbility.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsEmbeddedUiExtensionSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isEmbeddedUIExtensionSupported);

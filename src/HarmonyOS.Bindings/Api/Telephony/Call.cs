@@ -19,51 +19,8 @@ public static unsafe partial class Call
 {
     private const string ModuleName = "@ohos.telephony.call";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[telephony.call] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _dial => "dial"u8;
     private static ReadOnlySpan<byte> _makeCall => "makeCall"u8;
@@ -82,160 +39,180 @@ public static unsafe partial class Call
     private static ReadOnlySpan<byte> _getCallTransferInfo => "getCallTransferInfo"u8;
 
     /// <summary>
-    /// dial
+    /// Initiates a call. You can set call options as needed. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<bool> DialAsync(string phoneNumber, DialOptions options)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _dial, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// dial
+    /// Initiates a call. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<bool> DialAsync(string phoneNumber)
     {
         return NodeApi.CallMethodAsyncCallback<bool>(Module, _dial, null, phoneNumber);
     }
 
     /// <summary>
-    /// makeCall
+    /// Launches the call screen and displays the dialed number. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task MakeCallAsync(string phoneNumber, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _makeCall, cancellationToken, phoneNumber);
     }
 
     /// <summary>
-    /// makeCall
+    /// Launches the call screen and displays the dialed number. This API uses a promise to return the result. This API can
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task MakeCallAsync(string phoneNumber, MakeCallOptions? options = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _makeCall, cancellationToken, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// makeCall
+    /// Launches the call screen and displays the dialed number. This API uses a promise to return the result. You need to
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task MakeCallAsync(IntPtr context, string phoneNumber, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _makeCall, cancellationToken, context, phoneNumber);
     }
 
     /// <summary>
-    /// makeCallWithToken
+    /// Go to the dial screen and the called number is displayed.The authentication challenge value is returned.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<string> MakeCallWithTokenAsync(string phoneNumber, MakeCallOptions? options = null)
     {
         return NodeApi.CallMethodAsync<string>(Module, _makeCallWithToken, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// hasCall
+    /// Checks whether a call is in progress. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<bool> HasCallAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _hasCall);
     }
 
     /// <summary>
-    /// hasCallSync
+    /// Checks whether a call is in progress.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool HasCallSync()
     {
         return NodeApi.CallMethod<bool>(Module, _hasCallSync);
     }
 
     /// <summary>
-    /// getCallState
+    /// Obtains the call status. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<global::HarmonyOS.ArkUI.TelephonyCallCallState> GetCallStateAsync()
     {
         return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.TelephonyCallCallState>(Module, _getCallState);
     }
 
     /// <summary>
-    /// getCallStateSync
+    /// Obtains the call status.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static global::HarmonyOS.ArkUI.TelephonyCallCallState GetCallStateSync()
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.TelephonyCallCallState>(Module, _getCallStateSync);
     }
 
     /// <summary>
-    /// hasVoiceCapability
+    /// Checks whether a device supports voice calls.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool HasVoiceCapability()
     {
         return NodeApi.CallMethod<bool>(Module, _hasVoiceCapability);
     }
 
     /// <summary>
-    /// isEmergencyPhoneNumber
+    /// Checks whether the called number is an emergency number based on the phone number. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsEmergencyPhoneNumberAsync(string phoneNumber, EmergencyNumberOptions options)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isEmergencyPhoneNumber, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// isEmergencyPhoneNumber
+    /// Checks whether the called number is an emergency number. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsEmergencyPhoneNumberAsync(string phoneNumber)
     {
         return NodeApi.CallMethodAsyncCallback<bool>(Module, _isEmergencyPhoneNumber, null, phoneNumber);
     }
 
     /// <summary>
-    /// formatPhoneNumber
+    /// Formats a phone number based on specified formatting options. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<string> FormatPhoneNumberAsync(string phoneNumber, NumberFormatOptions options)
     {
         return NodeApi.CallMethodAsync<string>(Module, _formatPhoneNumber, phoneNumber, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// formatPhoneNumber
+    /// Formats a phone number. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<string> FormatPhoneNumberAsync(string phoneNumber)
     {
         return NodeApi.CallMethodAsyncCallback<string>(Module, _formatPhoneNumber, null, phoneNumber);
     }
 
     /// <summary>
-    /// formatPhoneNumberToE164
+    /// Converts a phone number into the E.164 format. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<string> FormatPhoneNumberToE164Async(string phoneNumber, string countryCode)
     {
         return NodeApi.CallMethodAsync<string>(Module, _formatPhoneNumberToE164, phoneNumber, countryCode);
     }
 
     /// <summary>
-    /// answerCall
+    /// Answers a call. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task AnswerCallAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _answerCall, cancellationToken);
     }
 
     /// <summary>
-    /// hangUpCall
+    /// Ends a call. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task HangUpCallAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _hangUpCall, cancellationToken);
     }
 
     /// <summary>
-    /// rejectCall
+    /// Rejects a call. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task RejectCallAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _rejectCall, cancellationToken);
     }
 
     /// <summary>
-    /// getCallTransferInfo
+    /// Obtains call transfer information with the phone number. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<CallTransferResult> GetCallTransferInfoAsync(global::HarmonyOS.ArkUI.CallTransferType type, string number)
     {
         return NodeApi.CallMethodAsync(Module, _getCallTransferInfo, static h => new CallTransferResult(h), (int)type, number);

@@ -19,51 +19,8 @@ public static unsafe partial class Settings
 {
     private const string ModuleName = "@ohos.settings";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[settings] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _DEVICE_SHARED => "DEVICE_SHARED"u8;
     private static ReadOnlySpan<byte> _USER_PROPERTY => "USER_PROPERTY"u8;
@@ -165,591 +122,693 @@ public static unsafe partial class Settings
     private static ReadOnlySpan<byte> _isDoubleClickAppForSelf => "isDoubleClickAppForSelf"u8;
 
     /// <summary>
-    /// DEVICE_SHARED
+    /// Provide the domain name for device shared Key.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static string DeviceShared => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVICE_SHARED)) ?? string.Empty;
 
     /// <summary>
-    /// USER_PROPERTY
+    /// Provide the domain name for user property.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static string UserProperty => NativeValue.ToString(NodeApi.GetProperty(Module, _USER_PROPERTY)) ?? string.Empty;
 
     /// <summary>
-    /// DATE_FORMAT
+    /// Indicates the date format.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DateFormat => NativeValue.ToString(NodeApi.GetProperty(Module, _DATE_FORMAT)) ?? string.Empty;
 
     /// <summary>
-    /// TIME_FORMAT
+    /// Specifies whether the time is displayed in 12-hour or 24-hour format.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string TimeFormat => NativeValue.ToString(NodeApi.GetProperty(Module, _TIME_FORMAT)) ?? string.Empty;
 
     /// <summary>
-    /// AUTO_GAIN_TIME
+    /// Specifies whether the date, time, and time zone are automatically obtained from the Network
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AutoGainTime => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_GAIN_TIME)) ?? string.Empty;
 
     /// <summary>
-    /// AUTO_GAIN_TIME_ZONE
+    /// Specifies whether the time zone is automatically obtained from NITZ.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AutoGainTimeZone => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_GAIN_TIME_ZONE)) ?? string.Empty;
 
     /// <summary>
-    /// FONT_SCALE
+    /// Indicates the scaling factor of fonts, which is a float number.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string FontScale => NativeValue.ToString(NodeApi.GetProperty(Module, _FONT_SCALE)) ?? string.Empty;
 
     /// <summary>
-    /// SCREEN_BRIGHTNESS_STATUS
+    /// Indicates the screen brightness. The value ranges from 0 to 255.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string ScreenBrightnessStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _SCREEN_BRIGHTNESS_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// AUTO_SCREEN_BRIGHTNESS
+    /// Specifies whether automatic screen brightness adjustment is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AutoScreenBrightness => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_SCREEN_BRIGHTNESS)) ?? string.Empty;
 
     /// <summary>
-    /// AUTO_SCREEN_BRIGHTNESS_MODE
+    /// Indicates the value of {@code AUTO_SCREEN_BRIGHTNESS} when automatic screen brightness adjustment is used.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double AutoScreenBrightnessMode => NativeValue.ToDouble(NodeApi.GetProperty(Module, _AUTO_SCREEN_BRIGHTNESS_MODE));
 
     /// <summary>
-    /// MANUAL_SCREEN_BRIGHTNESS_MODE
+    /// Indicates the value of {@code AUTO_SCREEN_BRIGHTNESS} when manual screen brightness adjustment is used.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ManualScreenBrightnessMode => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MANUAL_SCREEN_BRIGHTNESS_MODE));
 
     /// <summary>
-    /// SCREEN_OFF_TIMEOUT
+    /// Indicates the duration that the device waits before going to sleep after a period of inactivity, in
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string ScreenOffTimeout => NativeValue.ToString(NodeApi.GetProperty(Module, _SCREEN_OFF_TIMEOUT)) ?? string.Empty;
 
     /// <summary>
-    /// DEFAULT_SCREEN_ROTATION
+    /// Indicates the screen rotation when no other policy is available.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DefaultScreenRotation => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_SCREEN_ROTATION)) ?? string.Empty;
 
     /// <summary>
-    /// ANIMATOR_DURATION_SCALE
+    /// Indicates the scaling factor for the animation duration.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AnimatorDurationScale => NativeValue.ToString(NodeApi.GetProperty(Module, _ANIMATOR_DURATION_SCALE)) ?? string.Empty;
 
     /// <summary>
-    /// TRANSITION_ANIMATION_SCALE
+    /// Indicates the scaling factor for transition animations.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string TransitionAnimationScale => NativeValue.ToString(NodeApi.GetProperty(Module, _TRANSITION_ANIMATION_SCALE)) ?? string.Empty;
 
     /// <summary>
-    /// WINDOW_ANIMATION_SCALE
+    /// Indicates the scaling factor for normal window animations.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string WindowAnimationScale => NativeValue.ToString(NodeApi.GetProperty(Module, _WINDOW_ANIMATION_SCALE)) ?? string.Empty;
 
     /// <summary>
-    /// DISPLAY_INVERSION_STATUS
+    /// Specifies whether display color inversion is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DisplayInversionStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _DISPLAY_INVERSION_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// SETUP_WIZARD_FINISHED
+    /// Specifies whether the startup wizard has been run.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string SetupWizardFinished => NativeValue.ToString(NodeApi.GetProperty(Module, _SETUP_WIZARD_FINISHED)) ?? string.Empty;
 
     /// <summary>
-    /// END_BUTTON_ACTION
+    /// Specifies what happens after the user presses the call end button if the user is not in a call.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string EndButtonAction => NativeValue.ToString(NodeApi.GetProperty(Module, _END_BUTTON_ACTION)) ?? string.Empty;
 
     /// <summary>
-    /// ACCELEROMETER_ROTATION_STATUS
+    /// Specifies whether the accelerometer is used to change screen orientation, that is, whether auto-rotation is
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AccelerometerRotationStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _ACCELEROMETER_ROTATION_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// AIRPLANE_MODE_STATUS
+    /// Specifies whether airplane mode is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AirplaneModeStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _AIRPLANE_MODE_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// DEVICE_PROVISION_STATUS
+    /// Specifies whether the device is provisioned.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DeviceProvisionStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVICE_PROVISION_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// HDC_STATUS
+    /// Specifies whether the hard disk controller (HDC) on USB devices is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string HdcStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _HDC_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// BOOT_COUNTING
+    /// Indicates the number of boot operations after the device is powered on.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string BootCounting => NativeValue.ToString(NodeApi.GetProperty(Module, _BOOT_COUNTING)) ?? string.Empty;
 
     /// <summary>
-    /// CONTACT_METADATA_SYNC_STATUS
+    /// Specifies whether contact metadata synchronization is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string ContactMetadataSyncStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _CONTACT_METADATA_SYNC_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// DEVELOPMENT_SETTINGS_STATUS
+    /// Specifies whether developer options are enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DevelopmentSettingsStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVELOPMENT_SETTINGS_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// DEVICE_NAME
+    /// Indicates the device name.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DeviceName => NativeValue.ToString(NodeApi.GetProperty(Module, _DEVICE_NAME)) ?? string.Empty;
 
     /// <summary>
-    /// USB_STORAGE_STATUS
+    /// Specifies whether USB mass storage is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string UsbStorageStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _USB_STORAGE_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// DEBUGGER_WAITING
+    /// Specifies whether the device waits for the debugger when starting an application to debug.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DebuggerWaiting => NativeValue.ToString(NodeApi.GetProperty(Module, _DEBUGGER_WAITING)) ?? string.Empty;
 
     /// <summary>
-    /// DEBUG_APP_PACKAGE
+    /// Indicates the bundle name of the application to debug.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DebugAppPackage => NativeValue.ToString(NodeApi.GetProperty(Module, _DEBUG_APP_PACKAGE)) ?? string.Empty;
 
     /// <summary>
-    /// ACCESSIBILITY_STATUS
+    /// Specifies whether any accessibility feature is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AccessibilityStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _ACCESSIBILITY_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// ACTIVATED_ACCESSIBILITY_SERVICES
+    /// Indicates the list of accessibility features that have been activated.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string ActivatedAccessibilityServices => NativeValue.ToString(NodeApi.GetProperty(Module, _ACTIVATED_ACCESSIBILITY_SERVICES)) ?? string.Empty;
 
     /// <summary>
-    /// GEOLOCATION_ORIGINS_ALLOWED
+    /// Indicates the default geographical location that can be used by the browser. Multiple geographical locations
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string GeolocationOriginsAllowed => NativeValue.ToString(NodeApi.GetProperty(Module, _GEOLOCATION_ORIGINS_ALLOWED)) ?? string.Empty;
 
     /// <summary>
-    /// SKIP_USE_HINTS
+    /// Specifies whether an application should attempt to skip all introductory hints at the first startup. This is
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string SkipUseHints => NativeValue.ToString(NodeApi.GetProperty(Module, _SKIP_USE_HINTS)) ?? string.Empty;
 
     /// <summary>
-    /// TOUCH_EXPLORATION_STATUS
+    /// Indicates whether touch exploration is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string TouchExplorationStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _TOUCH_EXPLORATION_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// DEFAULT_INPUT_METHOD
+    /// Indicates the default input method and its ID.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DefaultInputMethod => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_INPUT_METHOD)) ?? string.Empty;
 
     /// <summary>
-    /// ACTIVATED_INPUT_METHOD_SUB_MODE
+    /// Indicates the default input method keyboard type and its ID.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string ActivatedInputMethodSubMode => NativeValue.ToString(NodeApi.GetProperty(Module, _ACTIVATED_INPUT_METHOD_SUB_MODE)) ?? string.Empty;
 
     /// <summary>
-    /// ACTIVATED_INPUT_METHODS
+    /// Indicates the list of input methods that have been activated.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string ActivatedInputMethods => NativeValue.ToString(NodeApi.GetProperty(Module, _ACTIVATED_INPUT_METHODS)) ?? string.Empty;
 
     /// <summary>
-    /// SELECTOR_VISIBILITY_FOR_INPUT_METHOD
+    /// Specifies whether the input method selector is visible.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string SelectorVisibilityForInputMethod => NativeValue.ToString(NodeApi.GetProperty(Module, _SELECTOR_VISIBILITY_FOR_INPUT_METHOD)) ?? string.Empty;
 
     /// <summary>
-    /// AUTO_CAPS_TEXT_INPUT
+    /// Specifies whether automatic capitalization is enabled for the text editor.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AutoCapsTextInput => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_CAPS_TEXT_INPUT)) ?? string.Empty;
 
     /// <summary>
-    /// AUTO_PUNCTUATE_TEXT_INPUT
+    /// Specifies whether automatic punctuation is enabled for the text editor. Automatic punctuation enables the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AutoPunctuateTextInput => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_PUNCTUATE_TEXT_INPUT)) ?? string.Empty;
 
     /// <summary>
-    /// AUTO_REPLACE_TEXT_INPUT
+    /// Specifies whether autocorrect is enabled for the text editor. Autocorrect enables the text editor to correct
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AutoReplaceTextInput => NativeValue.ToString(NodeApi.GetProperty(Module, _AUTO_REPLACE_TEXT_INPUT)) ?? string.Empty;
 
     /// <summary>
-    /// SHOW_PASSWORD_TEXT_INPUT
+    /// Specifies whether password presentation is enabled in the text editor. Password presentation enables the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string ShowPasswordTextInput => NativeValue.ToString(NodeApi.GetProperty(Module, _SHOW_PASSWORD_TEXT_INPUT)) ?? string.Empty;
 
     /// <summary>
-    /// DATA_ROAMING_STATUS
+    /// Specifies whether data roaming is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DataRoamingStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _DATA_ROAMING_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// HTTP_PROXY_CFG
+    /// Indicates the host name and port number of the global HTTP proxy.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string HttpProxyCfg => NativeValue.ToString(NodeApi.GetProperty(Module, _HTTP_PROXY_CFG)) ?? string.Empty;
 
     /// <summary>
-    /// NETWORK_PREFERENCE_USAGE
+    /// Indicates the user preferences of the network to use.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string NetworkPreferenceUsage => NativeValue.ToString(NodeApi.GetProperty(Module, _NETWORK_PREFERENCE_USAGE)) ?? string.Empty;
 
     /// <summary>
-    /// RTT_CALLING_STATUS
+    /// Specifies whether real-time text (RTT) calling is enabled. If enabled, incoming and outgoing calls are
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string RttCallingStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _RTT_CALLING_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// VIBRATE_WHILE_RINGING
+    /// Indicates whether the device vibrates when it is ringing for an incoming call.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string VibrateWhileRinging => NativeValue.ToString(NodeApi.GetProperty(Module, _VIBRATE_WHILE_RINGING)) ?? string.Empty;
 
     /// <summary>
-    /// DEFAULT_ALARM_ALERT
+    /// Indicates the storage area of the system default alarm.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DefaultAlarmAlert => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_ALARM_ALERT)) ?? string.Empty;
 
     /// <summary>
-    /// DTMF_TONE_TYPE_WHILE_DIALING
+    /// Indicates the type of the dual-tone multifrequency (DTMF) tone played when dialing.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DtmfToneTypeWhileDialing => NativeValue.ToString(NodeApi.GetProperty(Module, _DTMF_TONE_TYPE_WHILE_DIALING)) ?? string.Empty;
 
     /// <summary>
-    /// DTMF_TONE_WHILE_DIALING
+    /// Specifies whether the DTMF tone is played when dialing.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DtmfToneWhileDialing => NativeValue.ToString(NodeApi.GetProperty(Module, _DTMF_TONE_WHILE_DIALING)) ?? string.Empty;
 
     /// <summary>
-    /// AFFECTED_MODE_RINGER_STREAMS
+    /// Specifies which audio streams are affected by changes on the ringing mode and Do Not Disturb (DND) mode.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AffectedModeRingerStreams => NativeValue.ToString(NodeApi.GetProperty(Module, _AFFECTED_MODE_RINGER_STREAMS)) ?? string.Empty;
 
     /// <summary>
-    /// AFFECTED_MUTE_STREAMS
+    /// Specifies which audio streams are affected by the mute mode.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AffectedMuteStreams => NativeValue.ToString(NodeApi.GetProperty(Module, _AFFECTED_MUTE_STREAMS)) ?? string.Empty;
 
     /// <summary>
-    /// DEFAULT_NOTIFICATION_SOUND
+    /// Indicates the storage area of the system default notification tone.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DefaultNotificationSound => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_NOTIFICATION_SOUND)) ?? string.Empty;
 
     /// <summary>
-    /// DEFAULT_RINGTONE
+    /// Indicates the storage area of the system default ringtone.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DefaultRingtone => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_RINGTONE)) ?? string.Empty;
 
     /// <summary>
-    /// SOUND_EFFECTS_STATUS
+    /// Specifies whether the sound effects are enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string SoundEffectsStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _SOUND_EFFECTS_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// VIBRATE_STATUS
+    /// Specifies whether the device vibrates for an event. This parameter is used inside the system.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string VibrateStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _VIBRATE_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// HAPTIC_FEEDBACK_STATUS
+    /// Indicates whether the device enables haptic feedback.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string HapticFeedbackStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _HAPTIC_FEEDBACK_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// DEFAULT_TTS_PITCH
+    /// Indicates the default pitch of the text-to-speech (TTS) engine.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DefaultTtsPitch => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_TTS_PITCH)) ?? string.Empty;
 
     /// <summary>
-    /// DEFAULT_TTS_RATE
+    /// Indicates the default speech rate of the TTS engine. 100 = 1x.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DefaultTtsRate => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_TTS_RATE)) ?? string.Empty;
 
     /// <summary>
-    /// DEFAULT_TTS_SYNTH
+    /// Indicates the default TTS engine.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DefaultTtsSynth => NativeValue.ToString(NodeApi.GetProperty(Module, _DEFAULT_TTS_SYNTH)) ?? string.Empty;
 
     /// <summary>
-    /// ENABLED_TTS_PLUGINS
+    /// Indicates the list of activated plug-in packages used for TTS. Multiple plug-in packages are separated by
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string EnabledTtsPlugins => NativeValue.ToString(NodeApi.GetProperty(Module, _ENABLED_TTS_PLUGINS)) ?? string.Empty;
 
     /// <summary>
-    /// BLUETOOTH_DISCOVER_ABILITY_STATUS
+    /// Specifies whether the device can be discovered or connected by other devices through Bluetooth.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string BluetoothDiscoverAbilityStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_DISCOVER_ABILITY_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// BLUETOOTH_DISCOVER_TIMEOUT
+    /// Indicates the duration (in seconds) that the device can be discovered through Bluetooth.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string BluetoothDiscoverTimeout => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_DISCOVER_TIMEOUT)) ?? string.Empty;
 
     /// <summary>
-    /// AIRPLANE_MODE_RADIOS
+    /// Indicates the list of radio signals to be disabled when airplane mode is enabled. Multiple radio
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string AirplaneModeRadios => NativeValue.ToString(NodeApi.GetProperty(Module, _AIRPLANE_MODE_RADIOS)) ?? string.Empty;
 
     /// <summary>
-    /// BLUETOOTH_STATUS
+    /// Specifies whether Bluetooth is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string BluetoothStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// BLUETOOTH_RADIO
+    /// A constant of {@code AIRPLANE_MODE_RADIOS} to indicate that Bluetooth is disabled in airplane mode.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string BluetoothRadio => NativeValue.ToString(NodeApi.GetProperty(Module, _BLUETOOTH_RADIO)) ?? string.Empty;
 
     /// <summary>
-    /// CELL_RADIO
+    /// A constant of {@code AIRPLANE_MODE_RADIOS} to indicate that cellular radio is disabled in airplane mode.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string CellRadio => NativeValue.ToString(NodeApi.GetProperty(Module, _CELL_RADIO)) ?? string.Empty;
 
     /// <summary>
-    /// NFC_RADIO
+    /// A constant of {@code AIRPLANE_MODE_RADIOS} to indicate that NFC is disabled in airplane mode.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string NfcRadio => NativeValue.ToString(NodeApi.GetProperty(Module, _NFC_RADIO)) ?? string.Empty;
 
     /// <summary>
-    /// WIFI_RADIO
+    /// A constant of {@code AIRPLANE_MODE_RADIOS} to indicate that Wi-Fi is disabled in airplane mode.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string WifiRadio => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_RADIO)) ?? string.Empty;
 
     /// <summary>
-    /// OWNER_LOCKDOWN_WIFI_CFG
+    /// Specifies whether the Wi-Fi configuration created by the application of the device owner should be
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string OwnerLockdownWifiCfg => NativeValue.ToString(NodeApi.GetProperty(Module, _OWNER_LOCKDOWN_WIFI_CFG)) ?? string.Empty;
 
     /// <summary>
-    /// WIFI_DHCP_MAX_RETRY_COUNT
+    /// Indicates the maximum number of attempts to obtain an IP address from the DHCP server.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string WifiDhcpMaxRetryCount => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_DHCP_MAX_RETRY_COUNT)) ?? string.Empty;
 
     /// <summary>
-    /// WIFI_TO_MOBILE_DATA_AWAKE_TIMEOUT
+    /// Indicates the maximum duration to hold a wake lock when waiting for the mobile data connection to
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string WifiToMobileDataAwakeTimeout => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_TO_MOBILE_DATA_AWAKE_TIMEOUT)) ?? string.Empty;
 
     /// <summary>
-    /// WIFI_STATUS
+    /// Specifies whether Wi-Fi is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string WifiStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// WIFI_WATCHDOG_STATUS
+    /// Specifies whether Wi-Fi watchdog is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string WifiWatchdogStatus => NativeValue.ToString(NodeApi.GetProperty(Module, _WIFI_WATCHDOG_STATUS)) ?? string.Empty;
 
     /// <summary>
-    /// getURI
+    /// Constructs a URI for a specific name-value pair for monitoring data of the ability that uses the Data
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr> GetUriAsync(string name)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getURI, name);
     }
 
     /// <summary>
-    /// getValue
+    /// Obtains the value of a specified character string in the database.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr> GetValueAsync(IntPtr dataAbilityHelper, string name)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getValue, dataAbilityHelper, name);
     }
 
     /// <summary>
-    /// getValue
+    /// Get value from settingsdata
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<string> GetValueAsync(IntPtr context, string name, string domainName)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getValue, context, name, domainName);
     }
 
     /// <summary>
-    /// setValue
+    /// Set settingsdata value.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<bool> SetValueAsync(IntPtr context, string name, string value)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _setValue, context, name, value);
     }
 
     /// <summary>
-    /// setValue
+    /// Set settingsdata value.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<bool> SetValueAsync(IntPtr context, string name, string value, string domainName)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _setValue, context, name, value, domainName);
     }
 
     /// <summary>
-    /// enableAirplaneMode
+    /// Enables or disables airplane mode.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task EnableAirplaneModeAsync(bool enable, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _enableAirplaneMode, cancellationToken, enable);
     }
 
     /// <summary>
-    /// canShowFloating
+    /// Checks whether a specified application can show as a floating window.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> CanShowFloatingAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _canShowFloating);
     }
 
     /// <summary>
-    /// getUriSync
+    /// Get settingsdata uri (synchronous method)
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static string GetUriSync(string name)
     {
         return NodeApi.CallMethod<string>(Module, _getUriSync, name);
     }
 
     /// <summary>
-    /// getValueSync
+    /// Get value from settingsdata(synchronous method)
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static string GetValueSync(IntPtr dataAbilityHelper, string name, string defValue)
     {
         return NodeApi.CallMethod<string>(Module, _getValueSync, dataAbilityHelper, name, defValue);
     }
 
     /// <summary>
-    /// getValueSync
+    /// Get value from settingsdata(synchronous method).
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static string GetValueSync(IntPtr context, string name, string defValue, string domainName)
     {
         return NodeApi.CallMethod<string>(Module, _getValueSync, context, name, defValue, domainName);
     }
 
     /// <summary>
-    /// setValueSync
+    /// Set settingsdata value(synchronous method)
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool SetValueSync(IntPtr dataAbilityHelper, string name, string value)
     {
         return NodeApi.CallMethod<bool>(Module, _setValueSync, dataAbilityHelper, name, value);
     }
 
     /// <summary>
-    /// setValueSync
+    /// Set settingsdata value(synchronous method).
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static bool SetValueSync(IntPtr context, string name, string value, string domainName)
     {
         return NodeApi.CallMethod<bool>(Module, _setValueSync, context, name, value, domainName);
     }
 
     /// <summary>
-    /// registerKeyObserver
+    /// Monitor registration key(synchronous method)
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task RegisterKeyObserverAsync(IntPtr context, string name, string domainName, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _registerKeyObserver, cancellationToken, context, name, domainName);
     }
 
     /// <summary>
-    /// unregisterKeyObserver
+    /// Monitor unregister key(synchronous method)
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static bool UnregisterKeyObserver(IntPtr context, string name, string domainName)
     {
         return NodeApi.CallMethod<bool>(Module, _unregisterKeyObserver, context, name, domainName);
     }
 
     /// <summary>
-    /// openNetworkManagerSettings
+    /// Open the network manager settings page.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<bool> OpenNetworkManagerSettingsAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _openNetworkManagerSettings, context);
     }
 
     /// <summary>
-    /// openInputMethodSettings
+    /// Open the input method settings page.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OpenInputMethodSettings(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openInputMethodSettings, context);
     }
 
     /// <summary>
-    /// openInputMethodDetail
+    /// Open the input method detail page.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OpenInputMethodDetail(IntPtr context, string bundleName, string inputMethodId)
     {
         NodeApi.CallMethodVoid(Module, _openInputMethodDetail, context, bundleName, inputMethodId);
     }
 
     /// <summary>
-    /// openMobileNetworkSettingsPage
+    /// Open the mobile network settings page.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OpenMobileNetworkSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openMobileNetworkSettingsPage, context);
     }
 
     /// <summary>
-    /// openDisplaySettingsPage
+    /// Open the display settings page.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OpenDisplaySettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openDisplaySettingsPage, context);
     }
 
     /// <summary>
-    /// openScreenRefreshRateSettingsPage
+    /// Open the screen refresh rate settings page.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OpenScreenRefreshRateSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openScreenRefreshRateSettingsPage, context);
     }
 
     /// <summary>
-    /// openSoundSettingsPage
+    /// Open the sound settings page.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OpenSoundSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openSoundSettingsPage, context);
     }
 
     /// <summary>
-    /// openBiometricsSettingsPage
+    /// Open the biometrics and password settings page.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void OpenBiometricsSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openBiometricsSettingsPage, context);
     }
 
     /// <summary>
-    /// openAboutDeviceSettingsPage
+    /// Open the about device settings page.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OpenAboutDeviceSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openAboutDeviceSettingsPage, context);
     }
 
     /// <summary>
-    /// openNfcSettingsPage
+    /// Open the NFC settings page.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void OpenNfcSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openNfcSettingsPage, context);
     }
 
     /// <summary>
-    /// openAppDetailSettingsPage
+    /// Open the app detail settings page.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OpenAppDetailSettingsPage(IntPtr context, string bundleName, double? appIndex = null)
     {
         NodeApi.CallMethodVoid(Module, _openAppDetailSettingsPage, context, bundleName, NapiArg.Of(appIndex));
     }
 
     /// <summary>
-    /// openDoubleClickSettingsPage
+    /// 1. Opens the settings page for double-pressing the Down key.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void OpenDoubleClickSettingsPage(IntPtr context)
     {
         NodeApi.CallMethodVoid(Module, _openDoubleClickSettingsPage, context);
     }
 
     /// <summary>
-    /// isDoubleClickAppForSelf
+    /// 1. Checks whether the application started by double-pressing the Down key is the application itself.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<bool> IsDoubleClickAppForSelfAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isDoubleClickAppForSelf);

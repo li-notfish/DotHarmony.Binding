@@ -20,51 +20,8 @@ public static unsafe partial class Socket
 {
     private const string ModuleName = "@ohos.net.socket";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[net.socket] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _constructUDPSocketInstance => "constructUDPSocketInstance"u8;
     private static ReadOnlySpan<byte> _constructMulticastSocketInstance => "constructMulticastSocketInstance"u8;
@@ -76,72 +33,81 @@ public static unsafe partial class Socket
     private static ReadOnlySpan<byte> _constructLocalSocketServerInstance => "constructLocalSocketServerInstance"u8;
 
     /// <summary>
-    /// constructUDPSocketInstance
+    /// Creates a **UDPSocket** object.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static UDPSocket ConstructUdpSocketInstance()
     {
         return NodeApi.CallMethod(Module, _constructUDPSocketInstance, static h => new UDPSocket(h));
     }
 
     /// <summary>
-    /// constructMulticastSocketInstance
+    /// Creates a **MulticastSocket** object.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static MulticastSocket ConstructMulticastSocketInstance()
     {
         return NodeApi.CallMethod(Module, _constructMulticastSocketInstance, static h => new MulticastSocket(h));
     }
 
     /// <summary>
-    /// constructTCPSocketInstance
+    /// Creates a **TCPSocket** object.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static TCPSocket ConstructTcpSocketInstance()
     {
         return NodeApi.CallMethod(Module, _constructTCPSocketInstance, static h => new TCPSocket(h));
     }
 
     /// <summary>
-    /// constructTLSSocketInstance
+    /// Creates a **TLSSocket** object.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static TLSSocket ConstructTlsSocketInstance()
     {
         return NodeApi.CallMethod(Module, _constructTLSSocketInstance, static h => new TLSSocket(h));
     }
 
     /// <summary>
-    /// constructTLSSocketInstance
+    /// Upgrades a **TCPSocket** connection to a **TLSSocket** connection.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static TLSSocket ConstructTlsSocketInstance(TCPSocket tcpSocket)
     {
         return NodeApi.CallMethod(Module, _constructTLSSocketInstance, static h => new TLSSocket(h), NapiArg.Of(tcpSocket));
     }
 
     /// <summary>
-    /// constructTCPSocketServerInstance
+    /// Creates a **TCPSocketServer** object.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static TCPSocketServer ConstructTcpSocketServerInstance()
     {
         return NodeApi.CallMethod(Module, _constructTCPSocketServerInstance, static h => new TCPSocketServer(h));
     }
 
     /// <summary>
-    /// constructTLSSocketServerInstance
+    /// Creates a **TLSSocketServer** object.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static TLSSocketServer ConstructTlsSocketServerInstance()
     {
         return NodeApi.CallMethod(Module, _constructTLSSocketServerInstance, static h => new TLSSocketServer(h));
     }
 
     /// <summary>
-    /// constructLocalSocketInstance
+    /// Creates a **LocalSocket** object.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static LocalSocket ConstructLocalSocketInstance()
     {
         return NodeApi.CallMethod(Module, _constructLocalSocketInstance, static h => new LocalSocket(h));
     }
 
     /// <summary>
-    /// constructLocalSocketServerInstance
+    /// Creates a **LocalSocketServer** object.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static LocalSocketServer ConstructLocalSocketServerInstance()
     {
         return NodeApi.CallMethod(Module, _constructLocalSocketServerInstance, static h => new LocalSocketServer(h));

@@ -20,51 +20,8 @@ public static unsafe partial class SecurityManager
 {
     private const string ModuleName = "@ohos.enterprise.securityManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.securityManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getSecurityStatus => "getSecurityStatus"u8;
     private static ReadOnlySpan<byte> _installUserCertificate => "installUserCertificate"u8;
@@ -94,240 +51,270 @@ public static unsafe partial class SecurityManager
     private static ReadOnlySpan<byte> _isScreenLockDisabledForAccount => "isScreenLockDisabledForAccount"u8;
 
     /// <summary>
-    /// getSecurityStatus
+    /// Obtains the security status of the current device. This API is applicable to scenarios such as device compliance
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string GetSecurityStatus(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string item)
     {
         return NodeApi.CallMethod<string>(Module, _getSecurityStatus, NapiArg.Of(admin), item);
     }
 
     /// <summary>
-    /// installUserCertificate
+    /// Installs a user certificate. This API uses a promise to return the result. Enterprises can use this API to install
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<string> InstallUserCertificateAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, CertBlob certificate)
     {
         return NodeApi.CallMethodAsync<string>(Module, _installUserCertificate, NapiArg.Of(admin), NapiArg.Of(certificate));
     }
 
     /// <summary>
-    /// installUserCertificate
+    /// Installs a user certificate based on the system account. Enterprises can install independent certificates for
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static string InstallUserCertificate(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, CertBlob certificate, double accountId)
     {
         return NodeApi.CallMethod<string>(Module, _installUserCertificate, NapiArg.Of(admin), NapiArg.Of(certificate), accountId);
     }
 
     /// <summary>
-    /// uninstallUserCertificate
+    /// Uninstalls a user certificate. This API uses a promise to return the result. This API is applicable to enterprise
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task UninstallUserCertificateAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string certUri, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _uninstallUserCertificate, cancellationToken, NapiArg.Of(admin), certUri);
     }
 
     /// <summary>
-    /// getUserCertificates
+    /// Obtains the user certificate of a specified system account. Enterprises can use this API to query the list of user
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static string[] GetUserCertificates(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getUserCertificates, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// setPasswordPolicy
+    /// Sets the device screen lock password policy. After the policy is set, when a user sets a lock screen password, if
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetPasswordPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, PasswordPolicy policy)
     {
         NodeApi.CallMethodVoid(Module, _setPasswordPolicy, NapiArg.Of(admin), NapiArg.Of(policy));
     }
 
     /// <summary>
-    /// getPasswordPolicy
+    /// Obtains the device screen lock password policy.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static PasswordPolicy GetPasswordPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getPasswordPolicy, static h => new PasswordPolicy(h), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setAppClipboardPolicy
+    /// Sets the device clipboard policy. After the policy is set, applications will be restricted in their clipboard usage
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetAppClipboardPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double tokenId, global::HarmonyOS.ArkUI.ClipboardPolicy policy)
     {
         NodeApi.CallMethodVoid(Module, _setAppClipboardPolicy, NapiArg.Of(admin), tokenId, (int)policy);
     }
 
     /// <summary>
-    /// getAppClipboardPolicy
+    /// Obtains the device clipboard policy.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string GetAppClipboardPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double? tokenId = null)
     {
         return NodeApi.CallMethod<string>(Module, _getAppClipboardPolicy, NapiArg.Of(admin), NapiArg.Of(tokenId));
     }
 
     /// <summary>
-    /// setAppClipboardPolicy
+    /// Sets the device clipboard policy of a specified application for a specified user. After the policy is set, the
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void SetAppClipboardPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double accountId, global::HarmonyOS.ArkUI.ClipboardPolicy policy)
     {
         NodeApi.CallMethodVoid(Module, _setAppClipboardPolicy, NapiArg.Of(admin), bundleName, accountId, (int)policy);
     }
 
     /// <summary>
-    /// getAppClipboardPolicy
+    /// Obtains the device clipboard policy of a specified application for a specified user.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static string GetAppClipboardPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double accountId)
     {
         return NodeApi.CallMethod<string>(Module, _getAppClipboardPolicy, NapiArg.Of(admin), bundleName, accountId);
     }
 
     /// <summary>
-    /// setWatermarkImage
+    /// Sets a watermark policy for a specified application of a specified user. Currently, a maximum of 100 policies can
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void SetWatermarkImage(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, string source, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _setWatermarkImage, NapiArg.Of(admin), bundleName, source, accountId);
     }
 
     /// <summary>
-    /// cancelWatermarkImage
+    /// Cancels the watermark policy for a specified user. When an application no longer requires watermark protection or
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void CancelWatermarkImage(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _cancelWatermarkImage, NapiArg.Of(admin), bundleName, accountId);
     }
 
     /// <summary>
-    /// setWatermarkImage
+    /// Sets a watermark policy for a specified application of a specified user. Currently, a maximum of 100 policies can
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetWatermarkImage(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, string source, double accountId, WatermarkProperties properties)
     {
         NodeApi.CallMethodVoid(Module, _setWatermarkImage, NapiArg.Of(admin), bundleName, source, accountId, NapiArg.Of(properties));
     }
 
     /// <summary>
-    /// getWatermarkImageApps
+    /// Obtains the list of application bundle names for which watermarks have been set for a specified user.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static string[] GetWatermarkImageApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getWatermarkImageApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// setPermissionManagedState
+    /// Sets the management policy for the [user_grant permission]:Permissions of a specified
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetPermissionManagedState(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, SecurityManagerApplicationInstance applicationInstance, string[] permissions, global::HarmonyOS.ArkUI.PermissionManagedState managedState)
     {
         NodeApi.CallMethodVoid(Module, _setPermissionManagedState, NapiArg.Of(admin), NapiArg.Of(applicationInstance), NapiArg.Of(permissions), (int)managedState);
     }
 
     /// <summary>
-    /// getPermissionManagedState
+    /// Obtains the management policy for the [user_grant permission]:Permissions of a specified
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static global::HarmonyOS.ArkUI.PermissionManagedState GetPermissionManagedState(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, SecurityManagerApplicationInstance applicationInstance, string permission)
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.PermissionManagedState>(Module, _getPermissionManagedState, NapiArg.Of(admin), NapiArg.Of(applicationInstance), permission);
     }
 
     /// <summary>
-    /// setExternalSourceExtensionsPolicy
+    /// Sets the management policy for extensions from external sources. After the policy is set, the system controls the
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static void SetExternalSourceExtensionsPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr policy)
     {
         NodeApi.CallMethodVoid(Module, _setExternalSourceExtensionsPolicy, NapiArg.Of(admin), policy);
     }
 
     /// <summary>
-    /// getExternalSourceExtensionsPolicy
+    /// Obtains the management policy for extensions from external sources.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static IntPtr GetExternalSourceExtensionsPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getExternalSourceExtensionsPolicy, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// installEnterpriseReSignatureCertificate
+    /// Installs the enterprise application re-signing certificate. After the installation is successful, the enterprise
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void InstallEnterpriseReSignatureCertificate(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string certificateAlias, double fd, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _installEnterpriseReSignatureCertificate, NapiArg.Of(admin), certificateAlias, fd, accountId);
     }
 
     /// <summary>
-    /// uninstallEnterpriseReSignatureCertificate
+    /// Uninstalls the enterprise application re-signing certificate. After the enterprise re-signing certificate is
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void UninstallEnterpriseReSignatureCertificate(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string certificateAlias, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _uninstallEnterpriseReSignatureCertificate, NapiArg.Of(admin), certificateAlias, accountId);
     }
 
     /// <summary>
-    /// setScreenWatermarkImage
+    /// Sets a screen watermark policy, which takes effect for all users.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetScreenWatermarkImage(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr pixelMap)
     {
         NodeApi.CallMethodVoid(Module, _setScreenWatermarkImage, NapiArg.Of(admin), pixelMap);
     }
 
     /// <summary>
-    /// cancelScreenWatermarkImage
+    /// Cancels a screen watermark policy, which takes effect for all users. After the cancellation is successful, the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void CancelScreenWatermarkImage(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         NodeApi.CallMethodVoid(Module, _cancelScreenWatermarkImage, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setDisallowedPermission
+    /// Disables the specified permission of the specified user. After the permission is disabled, all applications under
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetDisallowedPermission(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string permission, bool disallow, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _setDisallowedPermission, NapiArg.Of(admin), permission, disallow, accountId);
     }
 
     /// <summary>
-    /// getDisallowedPermissions
+    /// Obtains the list of disabled permissions of a specified user.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static string[] GetDisallowedPermissions(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getDisallowedPermissions, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// addAllowedPermissionBundle
+    /// Adds an application to the permission usage exception list. Applications in the list are not subject to the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void AddAllowedPermissionBundle(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string permission, IntPtr applicationInstance)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedPermissionBundle, NapiArg.Of(admin), permission, applicationInstance);
     }
 
     /// <summary>
-    /// removeAllowedPermissionBundle
+    /// Removes an application from the permission usage exception list. After the application is removed, it cannot use
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void RemoveAllowedPermissionBundle(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string permission, IntPtr applicationInstance)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedPermissionBundle, NapiArg.Of(admin), permission, applicationInstance);
     }
 
     /// <summary>
-    /// getAllowedPermissionBundles
+    /// Obtains the list of applications in the permission exception list.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static IntPtr[] GetAllowedPermissionBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string permission, double accountId)
     {
         return NodeApi.CallMethod(Module, _getAllowedPermissionBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(admin), permission, accountId);
     }
 
     /// <summary>
-    /// setScreenLockDisabledForAccount
+    /// Disables or enables swipe-to-unlock for the current user. When enabled, the user must swipe on the screen after the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetScreenLockDisabledForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool disable)
     {
         NodeApi.CallMethodVoid(Module, _setScreenLockDisabledForAccount, NapiArg.Of(admin), disable);
     }
 
     /// <summary>
-    /// isScreenLockDisabledForAccount
+    /// Checks whether swipe-to-unlock is disabled for the current user.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsScreenLockDisabledForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<bool>(Module, _isScreenLockDisabledForAccount, NapiArg.Of(admin));

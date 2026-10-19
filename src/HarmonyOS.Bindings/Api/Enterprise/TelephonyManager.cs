@@ -17,51 +17,8 @@ public static unsafe partial class TelephonyManager
 {
     private const string ModuleName = "@ohos.enterprise.telephonyManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.telephonyManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _setSimDisabled => "setSimDisabled"u8;
     private static ReadOnlySpan<byte> _setSimEnabled => "setSimEnabled"u8;
@@ -79,112 +36,126 @@ public static unsafe partial class TelephonyManager
     private static ReadOnlySpan<byte> _getDefaultData => "getDefaultData"u8;
 
     /// <summary>
-    /// setSimDisabled
+    /// Disables the SIM card in the specified slot. After being disabled, the SIM card in the specified slot cannot be
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetSimDisabled(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double slotId)
     {
         NodeApi.CallMethodVoid(Module, _setSimDisabled, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
-    /// setSimEnabled
+    /// Enables the SIM card in a specified slot. After it has been disabled with **setSimDisabled**, the card must be
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetSimEnabled(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double slotId)
     {
         NodeApi.CallMethodVoid(Module, _setSimEnabled, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
-    /// isSimDisabled
+    /// Checks whether the SIM card in a specified slot is disabled. This API is applicable in scenarios where enterprise
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsSimDisabled(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double slotId)
     {
         return NodeApi.CallMethod<bool>(Module, _isSimDisabled, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
-    /// addOutgoingCallPolicyNumbers
+    /// Adds the trustlist or blocklist for outgoing calls. If no list is set, all numbers can make outgoing calls. Once a
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void AddOutgoingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr policy, string[] numbers)
     {
         NodeApi.CallMethodVoid(Module, _addOutgoingCallPolicyNumbers, NapiArg.Of(admin), policy, NapiArg.Of(numbers));
     }
 
     /// <summary>
-    /// removeOutgoingCallPolicyNumbers
+    /// Removes the trustlist or blocklist for outgoing calls. If the list is not set, the removal fails. For example, an
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void RemoveOutgoingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr policy, string[] numbers)
     {
         NodeApi.CallMethodVoid(Module, _removeOutgoingCallPolicyNumbers, NapiArg.Of(admin), policy, NapiArg.Of(numbers));
     }
 
     /// <summary>
-    /// getOutgoingCallPolicyNumbers
+    /// Obtains the trustlist or blocklist for outgoing calls.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string[] GetOutgoingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr policy)
     {
         return NodeApi.CallMethod(Module, _getOutgoingCallPolicyNumbers, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), policy);
     }
 
     /// <summary>
-    /// addIncomingCallPolicyNumbers
+    /// Adds the trustlist or blocklist for incoming calls. If no list is set, all numbers can make incoming calls. Once a
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void AddIncomingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr policy, string[] numbers)
     {
         NodeApi.CallMethodVoid(Module, _addIncomingCallPolicyNumbers, NapiArg.Of(admin), policy, NapiArg.Of(numbers));
     }
 
     /// <summary>
-    /// removeIncomingCallPolicyNumbers
+    /// Removes the trustlist or blocklist for incoming calls. If the list is not set, the removal fails. For example, an
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void RemoveIncomingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr policy, string[] numbers)
     {
         NodeApi.CallMethodVoid(Module, _removeIncomingCallPolicyNumbers, NapiArg.Of(admin), policy, NapiArg.Of(numbers));
     }
 
     /// <summary>
-    /// getIncomingCallPolicyNumbers
+    /// Obtains the trustlist or blocklist for incoming calls.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string[] GetIncomingCallPolicyNumbers(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr policy)
     {
         return NodeApi.CallMethod(Module, _getIncomingCallPolicyNumbers, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), policy);
     }
 
     /// <summary>
-    /// hangupCalling
+    /// Ends the current call. Only carrier calls are supported, excluding MeeTime calls. For example, an enterprise device
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void HangupCalling(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         NodeApi.CallMethodVoid(Module, _hangupCalling, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// activeSim
+    /// Activates the SIM card in the specified slot. In scenarios where a SIM card is inserted but not yet activated, this
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void ActiveSim(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double slotId)
     {
         NodeApi.CallMethodVoid(Module, _activeSim, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
-    /// deactiveSim
+    /// Deactivates the SIM card in the specified slot. After deactivation, the SIM card in that slot cannot be used for
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void DeactiveSim(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double slotId)
     {
         NodeApi.CallMethodVoid(Module, _deactiveSim, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
-    /// setDefaultData
+    /// Sets the SIM card in the specified slot as the default data SIM card. The device will use the data connection from
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetDefaultData(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double slotId)
     {
         NodeApi.CallMethodVoid(Module, _setDefaultData, NapiArg.Of(admin), slotId);
     }
 
     /// <summary>
-    /// getDefaultData
+    /// Obtains the slot ID of the SIM card currently used as the default data SIM card on the device. For example, an
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static double GetDefaultData(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<double>(Module, _getDefaultData, NapiArg.Of(admin));

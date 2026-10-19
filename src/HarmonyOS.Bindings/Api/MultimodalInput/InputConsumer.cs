@@ -17,91 +17,53 @@ public static unsafe partial class InputConsumer
 {
     private const string ModuleName = "@ohos.multimodalInput.inputConsumer";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[multimodalInput.inputConsumer] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getAllSystemHotkeys => "getAllSystemHotkeys"u8;
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _off => "off"u8;
 
     /// <summary>
-    /// getAllSystemHotkeys
+    /// Obtains all system shortcut keys. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<HotkeyOptions[]> GetAllSystemHotkeysAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAllSystemHotkeys, h => ValueConverter.ConvertArray(h, static e => new HotkeyOptions(e)));
     }
 
     /// <summary>
-    /// on
+    /// Subscribes to application shortcut key change events. This API obtains combination key input events that meet the
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void On(string type, HotkeyOptions hotkeyOptions, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(hotkeyOptions), callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from application shortcut key change events. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void Off(string type, HotkeyOptions hotkeyOptions, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(hotkeyOptions), callback);
     }
 
     /// <summary>
-    /// on
+    /// Subscribes to key press events. If the current application is in the foreground focus window, a callback is
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static void On(string type, KeyPressedConfig options, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(options), callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from key press events. This API uses an asynchronous callback to return the result. If the API call is
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);

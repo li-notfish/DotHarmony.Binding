@@ -16,51 +16,8 @@ public static unsafe partial class Fastbuffer
 {
     private const string ModuleName = "@ohos.fastbuffer";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[fastbuffer] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _alloc => "alloc"u8;
     private static ReadOnlySpan<byte> _allocUninitializedFromPool => "allocUninitializedFromPool"u8;
@@ -74,104 +31,117 @@ public static unsafe partial class Fastbuffer
     private static ReadOnlySpan<byte> _transcode => "transcode"u8;
 
     /// <summary>
-    /// alloc
+    /// Allocates a new FastBuffer for a fixed size bytes. If fill is undefined, the FastBuffer will be zero-filled.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer Alloc(double size, string? fill = null, IntPtr? encoding = null)
     {
         return NodeApi.CallMethod(Module, _alloc, static h => new FastBuffer(h), size, fill, NapiArg.Of(encoding));
     }
 
     /// <summary>
-    /// allocUninitializedFromPool
+    /// Allocates a new FastBuffer for a fixed size bytes. The FastBuffer will not be initially filled.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer AllocUninitializedFromPool(double size)
     {
         return NodeApi.CallMethod(Module, _allocUninitializedFromPool, static h => new FastBuffer(h), size);
     }
 
     /// <summary>
-    /// allocUninitialized
+    /// Allocates a new un-pooled FastBuffer for a fixed size bytes. The FastBuffer will not be initially filled.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer AllocUninitialized(double size)
     {
         return NodeApi.CallMethod(Module, _allocUninitialized, static h => new FastBuffer(h), size);
     }
 
     /// <summary>
-    /// byteLength
+    /// Returns the byte length of a string when encoded using `encoding`.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static double ByteLength(string value, IntPtr? encoding = null)
     {
         return NodeApi.CallMethod<double>(Module, _byteLength, value, NapiArg.Of(encoding));
     }
 
     /// <summary>
-    /// concat
+    /// Returns a new `FastBuffer` which is the result of concatenating all the `FastBuffer`instances in the `list` together.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer Concat(FastBuffer[] list, double? totalLength = null)
     {
         return NodeApi.CallMethod(Module, _concat, static h => new FastBuffer(h), NapiArg.Of(list), NapiArg.Of(totalLength));
     }
 
     /// <summary>
-    /// from
+    /// Allocates a new FastBuffer using an array of bytes in the range 0 – 255. Array entries outside that range will be truncated to fit into it.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer From(double[] array)
     {
         return NodeApi.CallMethod(Module, _from, static h => new FastBuffer(h), NapiArg.Of(array));
     }
 
     /// <summary>
-    /// from
+    /// This creates a view of the ArrayBuffer without copying the underlying memory.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer From(byte[] arrayBuffer, double? byteOffset = null, double? length = null)
     {
         return NodeApi.CallMethod(Module, _from, static h => new FastBuffer(h), NapiArg.Of(arrayBuffer), NapiArg.Of(byteOffset), NapiArg.Of(length));
     }
 
     /// <summary>
-    /// from
+    /// Copies the passed buffer data onto a new FastBuffer instance.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer From(FastBuffer buffer)
     {
         return NodeApi.CallMethod(Module, _from, static h => new FastBuffer(h), NapiArg.Of(buffer));
     }
 
     /// <summary>
-    /// from
+    /// Creates a new FastBuffer containing string. The encoding parameter identifies the character encoding
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer From(string value, IntPtr? encoding = null)
     {
         return NodeApi.CallMethod(Module, _from, static h => new FastBuffer(h), value, NapiArg.Of(encoding));
     }
 
     /// <summary>
-    /// isBuffer
+    /// Returns true if obj is a FastBuffer, false otherwise
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsBuffer(IntPtr obj)
     {
         return NodeApi.CallMethod<bool>(Module, _isBuffer, obj);
     }
 
     /// <summary>
-    /// isEncoding
+    /// Returns true if encoding is the name of a supported character encoding, or false otherwise.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsEncoding(string encoding)
     {
         return NodeApi.CallMethod<bool>(Module, _isEncoding, encoding);
     }
 
     /// <summary>
-    /// compare
+    /// Compares buf1 to buf2
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static IntPtr Compare(FastBuffer buf1, FastBuffer buf2)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _compare, NapiArg.Of(buf1), NapiArg.Of(buf2));
     }
 
     /// <summary>
-    /// transcode
+    /// Re-encodes the given FastBuffer or Uint8Array instance from one character encoding to another.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer Transcode(FastBuffer source, string fromEnc, string toEnc)
     {
         return NodeApi.CallMethod(Module, _transcode, static h => new FastBuffer(h), NapiArg.Of(source), fromEnc, toEnc);

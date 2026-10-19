@@ -20,51 +20,8 @@ public static unsafe partial class Request
 {
     private const string ModuleName = "@ohos.request";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[request] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _EXCEPTION_PERMISSION => "EXCEPTION_PERMISSION"u8;
     private static ReadOnlySpan<byte> _EXCEPTION_PARAMCHECK => "EXCEPTION_PARAMCHECK"u8;
@@ -113,272 +70,318 @@ public static unsafe partial class Request
     private static ReadOnlySpan<byte> _deleteGroup => "deleteGroup"u8;
 
     /// <summary>
-    /// EXCEPTION_PERMISSION
+    /// (Universal error codes) Permission verification failed.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ExceptionPermission => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_PERMISSION));
 
     /// <summary>
-    /// EXCEPTION_PARAMCHECK
+    /// (Universal error codes) Parameter check failed.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ExceptionParamcheck => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_PARAMCHECK));
 
     /// <summary>
-    /// EXCEPTION_UNSUPPORTED
+    /// (Universal error codes) The device does not support this API.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ExceptionUnsupported => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_UNSUPPORTED));
 
     /// <summary>
-    /// EXCEPTION_FILEIO
+    /// (Specific error codes) Abnormal file operation.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ExceptionFileio => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_FILEIO));
 
     /// <summary>
-    /// EXCEPTION_FILEPATH
+    /// (Specific error codes) Abnormal file path.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ExceptionFilepath => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_FILEPATH));
 
     /// <summary>
-    /// EXCEPTION_SERVICE
+    /// (Specific error codes) Abnormal service.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ExceptionService => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_SERVICE));
 
     /// <summary>
-    /// EXCEPTION_OTHERS
+    /// (Specific error codes) Other errors.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ExceptionOthers => NativeValue.ToDouble(NodeApi.GetProperty(Module, _EXCEPTION_OTHERS));
 
     /// <summary>
-    /// NETWORK_MOBILE
+    /// (Network type) Bit flag download allowed on a mobile network.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double NetworkMobile => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NETWORK_MOBILE));
 
     /// <summary>
-    /// NETWORK_WIFI
+    /// (Network type) Bit flag download allowed on a WLAN.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double NetworkWifi => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NETWORK_WIFI));
 
     /// <summary>
-    /// ERROR_CANNOT_RESUME
+    /// (Download error codes) Failure to resume the download due to network errors.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ErrorCannotResume => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_CANNOT_RESUME));
 
     /// <summary>
-    /// ERROR_DEVICE_NOT_FOUND
+    /// (Download error codes) Failure to find a storage device such as a memory card.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ErrorDeviceNotFound => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_DEVICE_NOT_FOUND));
 
     /// <summary>
-    /// ERROR_FILE_ALREADY_EXISTS
+    /// (Download error codes) Failure to download the file because it already exists.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ErrorFileAlreadyExists => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_FILE_ALREADY_EXISTS));
 
     /// <summary>
-    /// ERROR_FILE_ERROR
+    /// (Download error codes) File operation failed.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ErrorFileError => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_FILE_ERROR));
 
     /// <summary>
-    /// ERROR_HTTP_DATA_ERROR
+    /// (Download error codes) HTTP transmission failed.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ErrorHttpDataError => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_HTTP_DATA_ERROR));
 
     /// <summary>
-    /// ERROR_INSUFFICIENT_SPACE
+    /// (Download error codes) Insufficient storage space.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ErrorInsufficientSpace => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_INSUFFICIENT_SPACE));
 
     /// <summary>
-    /// ERROR_TOO_MANY_REDIRECTS
+    /// (Download error codes) Error caused by too many network redirections.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ErrorTooManyRedirects => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_TOO_MANY_REDIRECTS));
 
     /// <summary>
-    /// ERROR_UNHANDLED_HTTP_CODE
+    /// (Download error codes) Unidentified HTTP code.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ErrorUnhandledHttpCode => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_UNHANDLED_HTTP_CODE));
 
     /// <summary>
-    /// ERROR_UNKNOWN
+    /// (Download error codes) Unknown error.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ErrorUnknown => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_UNKNOWN));
 
     /// <summary>
-    /// ERROR_OFFLINE
+    /// (Download error codes) No network connection.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ErrorOffline => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_OFFLINE));
 
     /// <summary>
-    /// ERROR_UNSUPPORTED_NETWORK_TYPE
+    /// (Download error codes) Network type mismatch.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ErrorUnsupportedNetworkType => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ERROR_UNSUPPORTED_NETWORK_TYPE));
 
     /// <summary>
-    /// PAUSED_QUEUED_FOR_WIFI
+    /// (Causes of download pause) Download paused and queuing for a WLAN connection because the file size exceeds the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double PausedQueuedForWifi => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_QUEUED_FOR_WIFI));
 
     /// <summary>
-    /// PAUSED_WAITING_FOR_NETWORK
+    /// (Causes of download pause) Download paused due to a network connection problem.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double PausedWaitingForNetwork => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_WAITING_FOR_NETWORK));
 
     /// <summary>
-    /// PAUSED_WAITING_TO_RETRY
+    /// (Causes of download pause) Download paused due to network error and then retried.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double PausedWaitingToRetry => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_WAITING_TO_RETRY));
 
     /// <summary>
-    /// PAUSED_BY_USER
+    /// (Causes of download pause) The user paused the session.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double PausedByUser => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_BY_USER));
 
     /// <summary>
-    /// PAUSED_UNKNOWN
+    /// (Causes of download pause) Download paused due to unknown reasons.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double PausedUnknown => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PAUSED_UNKNOWN));
 
     /// <summary>
-    /// SESSION_SUCCESSFUL
+    /// (Download task status codes) Successful download.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double SessionSuccessful => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_SUCCESSFUL));
 
     /// <summary>
-    /// SESSION_RUNNING
+    /// (Download task status codes) Download in progress.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double SessionRunning => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_RUNNING));
 
     /// <summary>
-    /// SESSION_PENDING
+    /// (Download task status codes) Download pending.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double SessionPending => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_PENDING));
 
     /// <summary>
-    /// SESSION_PAUSED
+    /// (Download task status codes) Download paused.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double SessionPaused => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_PAUSED));
 
     /// <summary>
-    /// SESSION_FAILED
+    /// (Download task status codes) Download failure without retry.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double SessionFailed => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SESSION_FAILED));
 
     /// <summary>
-    /// download
+    /// Downloads a file. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<DownloadTask> DownloadAsync(IntPtr config)
     {
         return NodeApi.CallMethodAsync(Module, _download, static h => new DownloadTask(h), config);
     }
 
     /// <summary>
-    /// downloadFile
+    /// Downloads a file. This API uses an asynchronous callback to return the result. HTTP is supported. You can use
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<DownloadTask> DownloadFileAsync(IntPtr context, IntPtr config)
     {
         return NodeApi.CallMethodAsync(Module, _downloadFile, static h => new DownloadTask(h), context, config);
     }
 
     /// <summary>
-    /// upload
+    /// Uploads a file. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<UploadTask> UploadAsync(IntPtr config)
     {
         return NodeApi.CallMethodAsync(Module, _upload, static h => new UploadTask(h), config);
     }
 
     /// <summary>
-    /// uploadFile
+    /// Uploads a file. This API uses an asynchronous callback to return the result. HTTP is supported. You can use
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<UploadTask> UploadFileAsync(IntPtr context, IntPtr config)
     {
         return NodeApi.CallMethodAsync(Module, _uploadFile, static h => new UploadTask(h), context, config);
     }
 
     /// <summary>
-    /// VISIBILITY_COMPLETION
+    /// ([Notification]
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static IntPtr VisibilityCompletion => NodeApi.GetProperty(Module, _VISIBILITY_COMPLETION);
 
     /// <summary>
-    /// VISIBILITY_PROGRESS
+    /// ([Notification]
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static IntPtr VisibilityProgress => NodeApi.GetProperty(Module, _VISIBILITY_PROGRESS);
 
     /// <summary>
-    /// create
+    /// Creates an upload or download task and adds it to the queue. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<Task> CreateAsync(IntPtr context, IntPtr config)
     {
         return NodeApi.CallMethodAsync<Task>(Module, _create, context, config);
     }
 
     /// <summary>
-    /// getTask
+    /// Obtains task information based on the task ID. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<Task> GetTaskAsync(IntPtr context, string id, string? token = null)
     {
         return NodeApi.CallMethodAsync<Task>(Module, _getTask, context, id, token);
     }
 
     /// <summary>
-    /// remove
+    /// Removes a specified task of the invoker. If the task is being executed, the task is forced to stop. This API uses
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task RemoveAsync(string id, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _remove, cancellationToken, id);
     }
 
     /// <summary>
-    /// show
+    /// Queries the task details based on the task ID. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<IntPtr> ShowAsync(string id)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _show, id);
     }
 
     /// <summary>
-    /// touch
+    /// Queries the task details based on the task ID and token. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<IntPtr> TouchAsync(string id, string token)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _touch, id, token);
     }
 
     /// <summary>
-    /// search
+    /// Searches for task IDs based on
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<string[]> SearchAsync()
     {
         return NodeApi.CallMethodAsyncCallback(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// search
+    /// Searches for task IDs based on
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<string[]> SearchAsync(RequestFilter filter)
     {
         return NodeApi.CallMethodAsync(Module, _search, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(filter));
     }
 
     /// <summary>
-    /// createGroup
+    /// Creates a group based on
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task<string> CreateGroupAsync(IntPtr config)
     {
         return NodeApi.CallMethodAsync<string>(Module, _createGroup, config);
     }
 
     /// <summary>
-    /// attachGroup
+    /// Attaches multiple download task IDs to a specified group ID. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task AttachGroupAsync(string gid, string[] tids, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _attachGroup, cancellationToken, gid, NapiArg.Of(tids));
     }
 
     /// <summary>
-    /// deleteGroup
+    /// Deletes a specified group. No task ID can be added to the group. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task DeleteGroupAsync(string gid, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteGroup, cancellationToken, gid);

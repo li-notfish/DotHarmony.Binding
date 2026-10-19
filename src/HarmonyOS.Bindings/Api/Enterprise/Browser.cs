@@ -17,51 +17,8 @@ public static unsafe partial class Browser
 {
     private const string ModuleName = "@ohos.enterprise.browser";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.browser] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _setPolicySync => "setPolicySync"u8;
     private static ReadOnlySpan<byte> _getPoliciesSync => "getPoliciesSync"u8;
@@ -71,48 +28,54 @@ public static unsafe partial class Browser
     private static ReadOnlySpan<byte> _getSelfManagedBrowserPolicy => "getSelfManagedBrowserPolicy"u8;
 
     /// <summary>
-    /// setPolicySync
+    /// Sets a browser sub-policy for a specified browser. This API is applicable to scenarios where an enterprise needs to
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetPolicySync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string appId, string policyName, string policyValue)
     {
         NodeApi.CallMethodVoid(Module, _setPolicySync, NapiArg.Of(admin), appId, policyName, policyValue);
     }
 
     /// <summary>
-    /// getPoliciesSync
+    /// Obtains the browser policy by app ID.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string GetPoliciesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string appId)
     {
         return NodeApi.CallMethod<string>(Module, _getPoliciesSync, NapiArg.Of(admin), appId);
     }
 
     /// <summary>
-    /// setManagedBrowserPolicy
+    /// Sets a browser policy for a specified browser. This API is applicable to scenarios where an enterprise needs to
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void SetManagedBrowserPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, string policyName, string policyValue)
     {
         NodeApi.CallMethodVoid(Module, _setManagedBrowserPolicy, NapiArg.Of(admin), bundleName, policyName, policyValue);
     }
 
     /// <summary>
-    /// getManagedBrowserPolicy
+    /// Obtains the policy of a specified browser based on the application bundle name. This API is applicable to scenarios
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static byte[] GetManagedBrowserPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName)
     {
         return NodeApi.CallMethod(Module, _getManagedBrowserPolicy, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(admin), bundleName);
     }
 
     /// <summary>
-    /// getSelfManagedBrowserPolicyVersion
+    /// Obtains the browser policy version of the current device.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static string GetSelfManagedBrowserPolicyVersion()
     {
         return NodeApi.CallMethod<string>(Module, _getSelfManagedBrowserPolicyVersion);
     }
 
     /// <summary>
-    /// getSelfManagedBrowserPolicy
+    /// Obtains the browser policy of the current device.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static byte[] GetSelfManagedBrowserPolicy()
     {
         return NodeApi.CallMethod(Module, _getSelfManagedBrowserPolicy, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)));

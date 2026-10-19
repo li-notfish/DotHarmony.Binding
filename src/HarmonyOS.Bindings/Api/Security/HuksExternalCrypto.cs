@@ -19,51 +19,8 @@ public static unsafe partial class HuksExternalCrypto
 {
     private const string ModuleName = "@ohos.security.huksExternalCrypto";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[security.huksExternalCrypto] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _registerProvider => "registerProvider"u8;
     private static ReadOnlySpan<byte> _unregisterProvider => "unregisterProvider"u8;
@@ -77,80 +34,90 @@ public static unsafe partial class HuksExternalCrypto
     private static ReadOnlySpan<byte> _getErrorInfo => "getErrorInfo"u8;
 
     /// <summary>
-    /// registerProvider
+    /// Registers a specified external Provider. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task RegisterProviderAsync(string providerName, HuksExternalCryptoParam[] @params, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _registerProvider, cancellationToken, providerName, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// unregisterProvider
+    /// Unregisters a specified external Provider. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task UnregisterProviderAsync(string providerName, HuksExternalCryptoParam[]? @params = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _unregisterProvider, cancellationToken, providerName, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// getUkeyPinAuthState
+    /// Obtains the PIN authentication state. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<global::HarmonyOS.ArkUI.HuksExternalPinAuthState> GetUkeyPinAuthStateAsync(string resourceId, HuksExternalCryptoParam[]? @params = null)
     {
         return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.HuksExternalPinAuthState>(Module, _getUkeyPinAuthState, resourceId, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// clearUkeyPinAuthState
+    /// Clear the PIN auth state of the specified resource ID.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task ClearUkeyPinAuthStateAsync(string resourceId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _clearUkeyPinAuthState, cancellationToken, resourceId);
     }
 
     /// <summary>
-    /// getProperty
+    /// Obtains a property value. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<HuksExternalCryptoParam[]> GetPropertyAsync(string resourceId, string propertyId, HuksExternalCryptoParam[]? @params = null)
     {
         return NodeApi.CallMethodAsync(Module, _getProperty, h => ValueConverter.ConvertArray(h, static e => new HuksExternalCryptoParam(e)), resourceId, propertyId, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// setProperty
+    /// The set-type operations of the external crypto extension support calling custom interfaces.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task SetPropertyAsync(string resourceId, string propertyId, HuksExternalCryptoParam[]? @params = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setProperty, cancellationToken, resourceId, propertyId, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// getResourceId
+    /// Obtain the resource ID of the provider.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<string> GetResourceIdAsync(string providerName, HuksExternalCryptoParam[] @params)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getResourceId, providerName, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// openResource
+    /// Open resource by specific resource ID.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task OpenResourceAsync(string resourceId, HuksExternalCryptoParam[]? @params = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _openResource, cancellationToken, resourceId, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// closeResource
+    /// Close the resource with a specific resource ID.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task CloseResourceAsync(string resourceId, HuksExternalCryptoParam[]? @params = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _closeResource, cancellationToken, resourceId, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// getErrorInfo
+    /// Get the detailed error information.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static HuksExternalErrorInfo GetErrorInfo()
     {
         return NodeApi.CallMethod(Module, _getErrorInfo, static h => new HuksExternalErrorInfo(h));

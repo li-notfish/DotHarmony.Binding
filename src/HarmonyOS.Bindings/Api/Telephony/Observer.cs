@@ -17,51 +17,8 @@ public static unsafe partial class Observer
 {
     private const string ModuleName = "@ohos.telephony.observer";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[telephony.observer] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _off => "off"u8;
@@ -73,80 +30,90 @@ public static unsafe partial class Observer
     private static ReadOnlySpan<byte> _offGetSimActiveState => "offGetSimActiveState"u8;
 
     /// <summary>
-    /// on
+    /// Registers an observer for network status change events. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// on
+    /// Registers an observer for network status change events of the SIM card in the specified slot. This API uses an
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static void On(string type, ObserverOptions options, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(options), callback);
     }
 
     /// <summary>
-    /// off
+    /// Unregisters the observer for network status change events. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// on
+    /// Registers an observer for extended call status change events. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static void On(string type, IntPtr callback, ObserverOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// onCCallStateChange
+    /// Subscribes to the carrier call state changes and obtains the call number. This method uses an asynchronous callback
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnCCallStateChange(IntPtr callback, ObserverOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _onCCallStateChange, callback, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// offCCallStateChange
+    /// Cancels the listening on the carrier call status and obtaining of the call number by a third-party application.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OffCCallStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offCCallStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// onCommunicationStateChange
+    /// This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnCommunicationStateChange(IntPtr callback, ObserverOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _onCommunicationStateChange, callback, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// offCommunicationStateChange
+    /// Unsubscribes from the callback for listening to the 5A state.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffCommunicationStateChange(IntPtr callback, ObserverOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _offCommunicationStateChange, callback, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// onGetSimActiveState
+    /// Registers an observer for SIM card activation state changes. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnGetSimActiveState(double slotId, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onGetSimActiveState, slotId, callback);
     }
 
     /// <summary>
-    /// offGetSimActiveState
+    /// Unregisters an observer for SIM card activation state changes. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OffGetSimActiveState(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offGetSimActiveState, NapiArg.Of(callback));

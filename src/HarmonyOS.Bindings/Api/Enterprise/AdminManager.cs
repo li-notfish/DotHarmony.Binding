@@ -19,51 +19,8 @@ public static unsafe partial class AdminManager
 {
     private const string ModuleName = "@ohos.enterprise.adminManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.adminManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _disableAdmin => "disableAdmin"u8;
     private static ReadOnlySpan<byte> _isByodAdmin => "isByodAdmin"u8;
@@ -78,88 +35,99 @@ public static unsafe partial class AdminManager
     private static ReadOnlySpan<byte> _enableSelfDeviceAdmin => "enableSelfDeviceAdmin"u8;
 
     /// <summary>
-    /// disableAdmin
+    /// Disables a device administrator application for the specified user. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task DisableAdminAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double? userId = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _disableAdmin, cancellationToken, NapiArg.Of(admin), NapiArg.Of(userId));
     }
 
     /// <summary>
-    /// isByodAdmin
+    /// Checks whether the current application is activated as a BYOD device administrator application based on the
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsByodAdmin(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<bool>(Module, _isByodAdmin, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// subscribeManagedEventSync
+    /// Subscribes to system management events. After the call is successful, the device administrator application will
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SubscribeManagedEventSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.ManagedEvent[] managedEvents)
     {
         NodeApi.CallMethodVoid(Module, _subscribeManagedEventSync, NapiArg.Of(admin), NapiArg.Of(managedEvents));
     }
 
     /// <summary>
-    /// unsubscribeManagedEventSync
+    /// Unsubscribes from system management events. After the API is successfully called, no notifications for the
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void UnsubscribeManagedEventSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.ManagedEvent[] managedEvents)
     {
         NodeApi.CallMethodVoid(Module, _unsubscribeManagedEventSync, NapiArg.Of(admin), NapiArg.Of(managedEvents));
     }
 
     /// <summary>
-    /// setDelegatedPolicies
+    /// Delegates other applications to set device management policies. The applications must request the permissions
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void SetDelegatedPolicies(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, string[] policies)
     {
         NodeApi.CallMethodVoid(Module, _setDelegatedPolicies, NapiArg.Of(admin), bundleName, NapiArg.Of(policies));
     }
 
     /// <summary>
-    /// getDelegatedPolicies
+    /// Queries the list of policies that can be accessed by the delegated application.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static string[] GetDelegatedPolicies(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName)
     {
         return NodeApi.CallMethod(Module, _getDelegatedPolicies, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), bundleName);
     }
 
     /// <summary>
-    /// getDelegatedBundleNames
+    /// Queries the delegated applications that can access a delegation policy and output the list of delegated
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static string[] GetDelegatedBundleNames(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string policy)
     {
         return NodeApi.CallMethod(Module, _getDelegatedBundleNames, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), policy);
     }
 
     /// <summary>
-    /// startAdminProvision
+    /// Enables the device administrator application to open a page for the BYOD administrator to perform activation.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void StartAdminProvision(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.AdminType type, IntPtr context, IntPtr parameters)
     {
         NodeApi.CallMethodVoid(Module, _startAdminProvision, NapiArg.Of(admin), (int)type, context, parameters);
     }
 
     /// <summary>
-    /// enableDeviceAdmin
+    /// Enables a [DA](docroot://mdm/mdm-kit-term.md#device-admin-da) application by a
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task EnableDeviceAdminAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _enableDeviceAdmin, cancellationToken, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// disableDeviceAdmin
+    /// Disables a [DA](docroot://mdm/mdm-kit-term.md#device-admin-da) application by a
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task DisableDeviceAdminAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _disableDeviceAdmin, cancellationToken, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// enableSelfDeviceAdmin
+    /// Allows an MDM application to enable itself in scenarios where it is not pre-enabled on the enterprise device. This
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void EnableSelfDeviceAdmin(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string credential)
     {
         NodeApi.CallMethodVoid(Module, _enableSelfDeviceAdmin, NapiArg.Of(admin), credential);

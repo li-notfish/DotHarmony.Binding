@@ -18,51 +18,8 @@ public static unsafe partial class NotificationManager
 {
     private const string ModuleName = "@ohos.notificationManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[notificationManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _publish => "publish"u8;
     private static ReadOnlySpan<byte> _cancel => "cancel"u8;
@@ -89,200 +46,225 @@ public static unsafe partial class NotificationManager
     private static ReadOnlySpan<byte> _isGeofenceEnabled => "isGeofenceEnabled"u8;
 
     /// <summary>
-    /// publish
+    /// Publishes a notification. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task PublishAsync(IntPtr request, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _publish, cancellationToken, request);
     }
 
     /// <summary>
-    /// cancel
+    /// Cancels a notification with the specified ID. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task CancelAsync(double id, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _cancel, cancellationToken, id);
     }
 
     /// <summary>
-    /// cancel
+    /// Cancels a published notification based on the notification ID and label. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task CancelAsync(double id, string label, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cancel, cancellationToken, id, label);
     }
 
     /// <summary>
-    /// cancelAll
+    /// Cancels all notifications of this application. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task CancelAllAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cancelAll, cancellationToken);
     }
 
     /// <summary>
-    /// addSlot
+    /// Adds a notification slot of a specified type. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task AddSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType type, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _addSlot, cancellationToken, (int)type);
     }
 
     /// <summary>
-    /// getSlot
+    /// Obtains a notification slot of a specified type. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr> GetSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType slotType)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getSlot, (int)slotType);
     }
 
     /// <summary>
-    /// getSlots
+    /// Obtains all notification slots of this application. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr[]> GetSlotsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getSlots, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// removeSlot
+    /// Removes a notification slot of a specified type for this application. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task RemoveSlotAsync(global::HarmonyOS.ArkUI.NotificationManagerSlotType slotType, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeSlot, cancellationToken, (int)slotType);
     }
 
     /// <summary>
-    /// removeAllSlots
+    /// Removes all notification slots for this application. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task RemoveAllSlotsAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeAllSlots, cancellationToken);
     }
 
     /// <summary>
-    /// isNotificationEnabled
+    /// Queries the notification authorization status of the current application. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<bool> IsNotificationEnabledAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isNotificationEnabled);
     }
 
     /// <summary>
-    /// isNotificationEnabledSync
+    /// Synchronously queries the notification authorization status of the current application.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsNotificationEnabledSync()
     {
         return NodeApi.CallMethod<bool>(Module, _isNotificationEnabledSync);
     }
 
     /// <summary>
-    /// getActiveNotificationCount
+    /// Obtains the number of active notifications of this application. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetActiveNotificationCountAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getActiveNotificationCount);
     }
 
     /// <summary>
-    /// getActiveNotifications
+    /// Obtains the active notifications of this application. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr[]> GetActiveNotificationsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getActiveNotifications, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// getNotificationParameters
+    /// Obtains some information about the **wantAgent** field in
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<IntPtr> GetNotificationParametersAsync(double id, string? label = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getNotificationParameters, id, label);
     }
 
     /// <summary>
-    /// cancelGroup
+    /// Cancels notifications under a notification group of this application. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task CancelGroupAsync(string groupName, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cancelGroup, cancellationToken, groupName);
     }
 
     /// <summary>
-    /// isSupportTemplate
+    /// Checks whether a specified template is supported before using
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool> IsSupportTemplateAsync(string templateName)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isSupportTemplate, templateName);
     }
 
     /// <summary>
-    /// requestEnableNotification
+    /// Requests notification to be enabled for this application. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task RequestEnableNotificationAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _requestEnableNotification, cancellationToken);
     }
 
     /// <summary>
-    /// requestEnableNotification
+    /// Requests notification to be enabled for this application. You can call this API to display a dialog box prompting
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task RequestEnableNotificationAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _requestEnableNotification, cancellationToken, context);
     }
 
     /// <summary>
-    /// isDistributedEnabled
+    /// Checks whether the device supports cross-device notifications. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool> IsDistributedEnabledAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isDistributedEnabled);
     }
 
     /// <summary>
-    /// setBadgeNumber
+    /// Sets the notification badge number. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task SetBadgeNumberAsync(double badgeNumber, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setBadgeNumber, cancellationToken, badgeNumber);
     }
 
     /// <summary>
-    /// getNotificationSetting
+    /// Obtains the notification settings of the application, including the switch statuses for
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<NotificationSetting> GetNotificationSettingAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getNotificationSetting, static h => new NotificationSetting(h));
     }
 
     /// <summary>
-    /// openNotificationSettings
+    /// Opens the notification settings page of the application, which is displayed in semi-modal mode and can be used to
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static Task OpenNotificationSettingsAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _openNotificationSettings, cancellationToken, context);
     }
 
     /// <summary>
-    /// openNotificationSettingsWithResult
+    /// Opens the notification settings page of the application, which is presented in a semi-modal window
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<NotificationSetting> OpenNotificationSettingsWithResultAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsync(Module, _openNotificationSettingsWithResult, static h => new NotificationSetting(h), context);
     }
 
     /// <summary>
-    /// getBadgeNumber
+    /// Obtains the badge number of this application. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<double> GetBadgeNumberAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getBadgeNumber);
     }
 
     /// <summary>
-    /// isGeofenceEnabled
+    /// Checks whether geofencing is enabled. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<bool> IsGeofenceEnabledAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isGeofenceEnabled);

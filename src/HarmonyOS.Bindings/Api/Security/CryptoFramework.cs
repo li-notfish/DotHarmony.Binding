@@ -18,51 +18,8 @@ public static unsafe partial class CryptoFramework
 {
     private const string ModuleName = "@ohos.security.cryptoFramework";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[security.cryptoFramework] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createRandom => "createRandom"u8;
     private static ReadOnlySpan<byte> _createAsyKeyGenerator => "createAsyKeyGenerator"u8;
@@ -78,104 +35,117 @@ public static unsafe partial class CryptoFramework
     private static ReadOnlySpan<byte> _createKem => "createKem"u8;
 
     /// <summary>
-    /// createRandom
+    /// Creates a **Random** instance.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Random CreateRandom()
     {
         return NodeApi.CallMethod(Module, _createRandom, static h => new Random(h));
     }
 
     /// <summary>
-    /// createAsyKeyGenerator
+    /// Creates an **AsyKeyGenerator** instance based on the specified algorithm.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static AsyKeyGenerator CreateAsyKeyGenerator(string algName)
     {
         return NodeApi.CallMethod(Module, _createAsyKeyGenerator, static h => new AsyKeyGenerator(h), algName);
     }
 
     /// <summary>
-    /// createSymKeyGenerator
+    /// Creates a symmetric key generator instance with the specified algorithm.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static SymKeyGenerator CreateSymKeyGenerator(string algName)
     {
         return NodeApi.CallMethod(Module, _createSymKeyGenerator, static h => new SymKeyGenerator(h), algName);
     }
 
     /// <summary>
-    /// createMac
+    /// Creates a **Mac** instance.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Mac CreateMac(string algName)
     {
         return NodeApi.CallMethod(Module, _createMac, static h => new Mac(h), algName);
     }
 
     /// <summary>
-    /// createMac
+    /// Creates a **Mac** instance.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Mac CreateMac(MacSpec macSpec)
     {
         return NodeApi.CallMethod(Module, _createMac, static h => new Mac(h), NapiArg.Of(macSpec));
     }
 
     /// <summary>
-    /// createMd
+    /// Creates an **Md** instance.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Md CreateMd(string algName)
     {
         return NodeApi.CallMethod(Module, _createMd, static h => new Md(h), algName);
     }
 
     /// <summary>
-    /// createCipher
+    /// Creates a **Cipher** instance.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Cipher CreateCipher(string transformation)
     {
         return NodeApi.CallMethod(Module, _createCipher, static h => new Cipher(h), transformation);
     }
 
     /// <summary>
-    /// createSign
+    /// Creates a **Sign** instance.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Sign CreateSign(string algName)
     {
         return NodeApi.CallMethod(Module, _createSign, static h => new Sign(h), algName);
     }
 
     /// <summary>
-    /// createVerify
+    /// Creates a **Verify** instance.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Verify CreateVerify(string algName)
     {
         return NodeApi.CallMethod(Module, _createVerify, static h => new Verify(h), algName);
     }
 
     /// <summary>
-    /// createKeyAgreement
+    /// Creates a **KeyAgreement** instance.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static KeyAgreement CreateKeyAgreement(string algName)
     {
         return NodeApi.CallMethod(Module, _createKeyAgreement, static h => new KeyAgreement(h), algName);
     }
 
     /// <summary>
-    /// createAsyKeyGeneratorBySpec
+    /// Creates an **AsyKeyGeneratorBySpec** instance based on the specified key specifications.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static AsyKeyGeneratorBySpec CreateAsyKeyGeneratorBySpec(AsyKeySpec asyKeySpec)
     {
         return NodeApi.CallMethod(Module, _createAsyKeyGeneratorBySpec, static h => new AsyKeyGeneratorBySpec(h), NapiArg.Of(asyKeySpec));
     }
 
     /// <summary>
-    /// createKdf
+    /// Creates a key derivation function instance.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Kdf CreateKdf(string algName)
     {
         return NodeApi.CallMethod(Module, _createKdf, static h => new Kdf(h), algName);
     }
 
     /// <summary>
-    /// createKem
+    /// Creates a Kem instance for key encapsulation and decapsulation operations.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Kem CreateKem(global::HarmonyOS.ArkUI.KemAlgNameId algNameId)
     {
         return NodeApi.CallMethod(Module, _createKem, static h => new Kem(h), (int)algNameId);

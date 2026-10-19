@@ -19,51 +19,8 @@ public static unsafe partial class Preferences
 {
     private const string ModuleName = "@ohos.data.preferences";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[data.preferences] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _MAX_KEY_LENGTH => "MAX_KEY_LENGTH"u8;
     private static ReadOnlySpan<byte> _MAX_VALUE_LENGTH => "MAX_VALUE_LENGTH"u8;
@@ -75,90 +32,102 @@ public static unsafe partial class Preferences
     private static ReadOnlySpan<byte> _removePreferencesFromCacheSync => "removePreferencesFromCacheSync"u8;
 
     /// <summary>
-    /// MAX_KEY_LENGTH
+    /// Maximum key length, which is 1,024 bytes.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double MaxKeyLength => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_KEY_LENGTH));
 
     /// <summary>
-    /// MAX_VALUE_LENGTH
+    /// Maximum value length, which is 16 MB.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double MaxValueLength => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_VALUE_LENGTH));
 
     /// <summary>
-    /// getPreferences
+    /// Obtains a **Preferences** instance. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<PreferencesObject> GetPreferencesAsync(IntPtr context, string name)
     {
         return NodeApi.CallMethodAsync(Module, _getPreferences, static h => new PreferencesObject(h), context, name);
     }
 
     /// <summary>
-    /// getPreferences
+    /// Obtains a **Preferences** instance. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<PreferencesObject> GetPreferencesAsync(IntPtr context, PreferencesOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _getPreferences, static h => new PreferencesObject(h), context, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// getPreferencesSync
+    /// Obtains a **Preferences** instance. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static PreferencesObject GetPreferencesSync(IntPtr context, PreferencesOptions options)
     {
         return NodeApi.CallMethod(Module, _getPreferencesSync, static h => new PreferencesObject(h), context, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// isStorageTypeSupported
+    /// Checks whether the specified storage type is supported. This API returns the result synchronously. If the storage
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static bool IsStorageTypeSupported(global::HarmonyOS.ArkUI.StorageType type)
     {
         return NodeApi.CallMethod<bool>(Module, _isStorageTypeSupported, (int)type);
     }
 
     /// <summary>
-    /// deletePreferences
+    /// Deletes a specified **Preferences** instance from the cache. If the **Preferences** instance has a corresponding
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task DeletePreferencesAsync(IntPtr context, string name, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, cancellationToken, context, name);
     }
 
     /// <summary>
-    /// deletePreferences
+    /// Deletes a specified **Preferences** instance from the cache. If the **Preferences** instance has a corresponding
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task DeletePreferencesAsync(IntPtr context, PreferencesOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deletePreferences, cancellationToken, context, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// removePreferencesFromCache
+    /// Removes a **Preferences** instance from the cache. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task RemovePreferencesFromCacheAsync(IntPtr context, string name, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, cancellationToken, context, name);
     }
 
     /// <summary>
-    /// removePreferencesFromCache
+    /// Removes a **Preferences** instance from the cache. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task RemovePreferencesFromCacheAsync(IntPtr context, PreferencesOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removePreferencesFromCache, cancellationToken, context, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// removePreferencesFromCacheSync
+    /// Removes a **Preferences** instance from the cache. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void RemovePreferencesFromCacheSync(IntPtr context, string name)
     {
         NodeApi.CallMethodVoid(Module, _removePreferencesFromCacheSync, context, name);
     }
 
     /// <summary>
-    /// removePreferencesFromCacheSync
+    /// Removes a **Preferences** instance from the cache. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void RemovePreferencesFromCacheSync(IntPtr context, PreferencesOptions options)
     {
         NodeApi.CallMethodVoid(Module, _removePreferencesFromCacheSync, context, NapiArg.Of(options));

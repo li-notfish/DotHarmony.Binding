@@ -142,63 +142,103 @@ internal unsafe struct ArkUI_NativeNodeAPI_1
 
 internal static unsafe partial class ArkUINativeApi
 {
+    /// <summary>Obtains a &lt;b&gt;NodeContent&lt;/b&gt; object on the ArkTS side and maps it to an &lt;b&gt;ArkUI_NodeContentHandle&lt;/b&gt; object on the native side.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_GetNodeContentFromNapiValue(IntPtr env, IntPtr napiValue, out IntPtr content);
 
+    /// <summary>Adds an ArkUI component node to the specified **NodeContent** object.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeContent_AddNode(IntPtr content, ArkUI_NodeHandle node);
 
+    /// <summary>Removes an ArkUI component node from the specified **NodeContent** object.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeContent_RemoveNode(IntPtr content, ArkUI_NodeHandle node);
 
+    /// <summary>Inserts an ArkUI component node into a specific position of the specified **NodeContent** object.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeContent_InsertNode(IntPtr content, ArkUI_NodeHandle node, int position);
 
+    /// <summary>Obtains the type of a component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeEvent_GetEventType(ArkUI_NodeEvent* @event);
 
+    /// <summary>Obtains the custom ID of a component event. * The event ID is passed in as a parameter when the {@link registerNodeEvent} function is called and can be applied to the dispatch logic of the same event entry function {@link registerNodeEventReceiver}.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeEvent_GetTargetId(ArkUI_NodeEvent* @event);
 
+    /// <summary>Obtains the component object that triggers a component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeEvent_GetNodeHandle(ArkUI_NodeEvent* @event);
 
+    /// <summary>Obtains input event (for example, touch event) data for a component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeEvent_GetInputEvent(ArkUI_NodeEvent* @event);
 
+    /// <summary>Obtains the numerical data in a component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeEvent_GetNodeComponentEvent(ArkUI_NodeEvent* @event);
 
+    /// <summary>Obtains the string data in a component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeEvent_GetStringAsyncEvent(ArkUI_NodeEvent* @event);
 
+    /// <summary>Obtains the ArkUI_TextChangeEvent data from a component event.</summary>
+    /// <remarks>@since 15</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeEvent_GetTextChangeEvent(ArkUI_NodeEvent* @event);
 
+    /// <summary>Obtains the custom data in a component event. * This parameter is passed in {@link registerNodeEvent} and can be applied to the service logic when the event is triggered.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeEvent_GetUserData(ArkUI_NodeEvent* @event);
 
+    /// <summary>Obtains the numeric-type parameter of a component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeEvent_GetNumberValue(ArkUI_NodeEvent* @event, int index, ArkUI_NumberValue* value);
 
+    /// <summary>Obtains a **DragEvent** object from the specified **NodeEvent** object.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeEvent_GetDragEvent(ArkUI_NodeEvent* @event);
 
+    /// <summary>Sets whether the component is draggable.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_SetNodeDraggable(ArkUI_NodeHandle node, [MarshalAs(UnmanagedType.U1)] bool enabled);
 
+    /// <summary>Configures the specified component to allow any data types. This API resets the settings configured through {@link OH_ArkUI_SetNodeAllowedDropDataTypes}.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_AllowNodeAllDropDataTypes(ArkUI_NodeHandle node);
 
+    /// <summary>Set drag data for a drag event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_DragEvent_SetData(void* @event, IntPtr data);
 
+    /// <summary>Obtains the default drag data from a drag event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_DragEvent_GetUdmfData(void* @event, IntPtr data);
 
+    /// <summary>Obtains the x-coordinate of the touch point relative to the window from a drag event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial float OH_ArkUI_DragEvent_GetTouchPointXToWindow(void* @event);
 
+    /// <summary>Obtains the y-coordinate of the touch point relative to the window from a drag event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial float OH_ArkUI_DragEvent_GetTouchPointYToWindow(void* @event);
 }

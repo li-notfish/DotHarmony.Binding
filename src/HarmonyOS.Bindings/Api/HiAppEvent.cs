@@ -18,51 +18,8 @@ public static unsafe partial class HiAppEvent
 {
     private const string ModuleName = "@ohos.hiAppEvent";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[hiAppEvent] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _USER_LOGIN => "USER_LOGIN"u8;
     private static ReadOnlySpan<byte> _USER_LOGOUT => "USER_LOGOUT"u8;
@@ -74,46 +31,54 @@ public static unsafe partial class HiAppEvent
     private static ReadOnlySpan<byte> _configure => "configure"u8;
 
     /// <summary>
-    /// USER_LOGIN
+    /// User login event.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string UserLogin => NativeValue.ToString(NodeApi.GetProperty(Module, _USER_LOGIN)) ?? string.Empty;
 
     /// <summary>
-    /// USER_LOGOUT
+    /// User logout event.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string UserLogout => NativeValue.ToString(NodeApi.GetProperty(Module, _USER_LOGOUT)) ?? string.Empty;
 
     /// <summary>
-    /// DISTRIBUTED_SERVICE_START
+    /// Distributed service event.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DistributedServiceStart => NativeValue.ToString(NodeApi.GetProperty(Module, _DISTRIBUTED_SERVICE_START)) ?? string.Empty;
 
     /// <summary>
-    /// USER_ID
+    /// User id.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string UserId => NativeValue.ToString(NodeApi.GetProperty(Module, _USER_ID)) ?? string.Empty;
 
     /// <summary>
-    /// DISTRIBUTED_SERVICE_NAME
+    /// Distributed service name.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DistributedServiceName => NativeValue.ToString(NodeApi.GetProperty(Module, _DISTRIBUTED_SERVICE_NAME)) ?? string.Empty;
 
     /// <summary>
-    /// DISTRIBUTED_SERVICE_INSTANCE_ID
+    /// Distributed service instance id.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string DistributedServiceInstanceId => NativeValue.ToString(NodeApi.GetProperty(Module, _DISTRIBUTED_SERVICE_INSTANCE_ID)) ?? string.Empty;
 
     /// <summary>
-    /// write
+    /// Writes event information to the event file of the current day. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task WriteAsync(string eventName, global::HarmonyOS.ArkUI.HiAppEventEventType eventType, IntPtr keyValues, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _write, cancellationToken, eventName, (int)eventType, keyValues);
     }
 
     /// <summary>
-    /// configure
+    /// Configures the application event logging function, such as setting the event logging switch and maximum size of the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool Configure(ConfigOption config)
     {
         return NodeApi.CallMethod<bool>(Module, _configure, NapiArg.Of(config));

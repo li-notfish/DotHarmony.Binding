@@ -16,51 +16,8 @@ public static unsafe partial class Font
 {
     private const string ModuleName = "@ohos.font";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[font] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _registerFont => "registerFont"u8;
     private static ReadOnlySpan<byte> _getSystemFontList => "getSystemFontList"u8;
@@ -68,32 +25,36 @@ public static unsafe partial class Font
     private static ReadOnlySpan<byte> _getUIFontConfig => "getUIFontConfig"u8;
 
     /// <summary>
-    /// registerFont
+    /// Registers a custom font with the font manager.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void RegisterFont(FontOptions options)
     {
         NodeApi.CallMethodVoid(Module, _registerFont, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// getSystemFontList
+    /// Obtains this system font list.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string[] GetSystemFontList()
     {
         return NodeApi.CallMethod(Module, _getSystemFontList, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// getFontByName
+    /// Obtains information about a system font based on the font name.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static FontInfo GetFontByName(string fontName)
     {
         return NodeApi.CallMethod(Module, _getFontByName, static h => new FontInfo(h), fontName);
     }
 
     /// <summary>
-    /// getUIFontConfig
+    /// Obtains the UI font configuration information in the system font configuration file.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static IntPtr GetUiFontConfig()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getUIFontConfig);

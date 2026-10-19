@@ -20,51 +20,8 @@ public static unsafe partial class RelationalStore
 {
     private const string ModuleName = "@ohos.data.relationalStore";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[data.relationalStore] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getRdbStore => "getRdbStore"u8;
     private static ReadOnlySpan<byte> _getRdbStoreSync => "getRdbStoreSync"u8;
@@ -77,80 +34,90 @@ public static unsafe partial class RelationalStore
     private static ReadOnlySpan<byte> _getQuerySqlInfo => "getQuerySqlInfo"u8;
 
     /// <summary>
-    /// getRdbStore
+    /// Obtains an RdbStore instance. You can set the **config** parameter as required and use **RdbStore** APIs to perform
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<RelationalStoreRdbStore> GetRdbStoreAsync(IntPtr context, RelationalStoreStoreConfig config)
     {
         return NodeApi.CallMethodAsync(Module, _getRdbStore, static h => new RelationalStoreRdbStore(h), context, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// getRdbStoreSync
+    /// Obtains a RDB store.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static RelationalStoreRdbStore GetRdbStoreSync(IntPtr context, RelationalStoreStoreConfig config)
     {
         return NodeApi.CallMethod(Module, _getRdbStoreSync, static h => new RelationalStoreRdbStore(h), context, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// deleteRdbStore
+    /// Deletes the RDB store with the specified database file name. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task DeleteRdbStoreAsync(IntPtr context, string name, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, cancellationToken, context, name);
     }
 
     /// <summary>
-    /// deleteRdbStore
+    /// Deletes an RDB store. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task DeleteRdbStoreAsync(IntPtr context, RelationalStoreStoreConfig config, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteRdbStore, cancellationToken, context, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// isVectorSupported
+    /// Checks whether the system supports vector stores.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static bool IsVectorSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isVectorSupported);
     }
 
     /// <summary>
-    /// isTokenizerSupported
+    /// Checks whether the specified tokenizer is supported. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static bool IsTokenizerSupported(global::HarmonyOS.ArkUI.Tokenizer tokenizer)
     {
         return NodeApi.CallMethod<bool>(Module, _isTokenizerSupported, (int)tokenizer);
     }
 
     /// <summary>
-    /// getInsertSqlInfo
+    /// Obtains the SQL statement used to insert data. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static IntPtr GetInsertSqlInfo(string table, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getInsertSqlInfo, table, values, NapiArg.Of(conflict));
     }
 
     /// <summary>
-    /// getUpdateSqlInfo
+    /// Obtains the SQL statement used to update data. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static IntPtr GetUpdateSqlInfo(RelationalStoreRdbPredicates predicates, IntPtr values, global::HarmonyOS.ArkUI.ConflictResolution? conflict = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getUpdateSqlInfo, NapiArg.Of(predicates), values, NapiArg.Of(conflict));
     }
 
     /// <summary>
-    /// getDeleteSqlInfo
+    /// Obtains the SQL statement used to delete data. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static IntPtr GetDeleteSqlInfo(RelationalStoreRdbPredicates predicates)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getDeleteSqlInfo, NapiArg.Of(predicates));
     }
 
     /// <summary>
-    /// getQuerySqlInfo
+    /// Obtains the SQL statement used to query data. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static IntPtr GetQuerySqlInfo(RelationalStoreRdbPredicates predicates, string[]? columns = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getQuerySqlInfo, NapiArg.Of(predicates), NapiArg.Of(columns));

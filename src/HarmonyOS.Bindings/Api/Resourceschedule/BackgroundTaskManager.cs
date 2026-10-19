@@ -19,51 +19,8 @@ public static unsafe partial class BackgroundTaskManager
 {
     private const string ModuleName = "@ohos.resourceschedule.backgroundTaskManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[resourceschedule.backgroundTaskManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _cancelSuspendDelay => "cancelSuspendDelay"u8;
     private static ReadOnlySpan<byte> _getRemainingDelayTime => "getRemainingDelayTime"u8;
@@ -77,120 +34,135 @@ public static unsafe partial class BackgroundTaskManager
     private static ReadOnlySpan<byte> _off => "off"u8;
 
     /// <summary>
-    /// cancelSuspendDelay
+    /// Cancels a transient task.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void CancelSuspendDelay(double requestId)
     {
         NodeApi.CallMethodVoid(Module, _cancelSuspendDelay, requestId);
     }
 
     /// <summary>
-    /// getRemainingDelayTime
+    /// Obtains the remaining time of a transient task. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetRemainingDelayTimeAsync(double requestId)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getRemainingDelayTime, requestId);
     }
 
     /// <summary>
-    /// requestSuspendDelay
+    /// Requests a transient task.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static DelaySuspendInfo RequestSuspendDelay(string reason, IntPtr callback)
     {
         return NodeApi.CallMethod(Module, _requestSuspendDelay, static h => new DelaySuspendInfo(h), reason, callback);
     }
 
     /// <summary>
-    /// getTransientTaskInfo
+    /// Obtains all transient task information, including the remaining quota of the current day. This API uses a promise
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<IntPtr> GetTransientTaskInfoAsync()
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getTransientTaskInfo);
     }
 
     /// <summary>
-    /// startBackgroundRunning
+    /// Requests a continuous task of a specific type. This API uses an asynchronous callback to return the result. After a
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task StartBackgroundRunningAsync(IntPtr context, global::HarmonyOS.ArkUI.ResourcescheduleBackgroundTaskManagerBackgroundMode bgMode, IntPtr wantAgent, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, cancellationToken, context, (int)bgMode, wantAgent);
     }
 
     /// <summary>
-    /// startBackgroundRunning
+    /// Requests continuous tasks of multiple types. This API uses a promise to return the result. After a continuous task
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<IntPtr> StartBackgroundRunningAsync(IntPtr context, string[] bgModes, IntPtr wantAgent)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _startBackgroundRunning, context, NapiArg.Of(bgModes), wantAgent);
     }
 
     /// <summary>
-    /// startBackgroundRunning
+    /// Requests a continuous task. This API allows a UIAbility (ServiceAbility in the FA model) to request multiple
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task<IntPtr> StartBackgroundRunningAsync(IntPtr context, ContinuousTaskRequest request)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _startBackgroundRunning, context, NapiArg.Of(request));
     }
 
     /// <summary>
-    /// updateBackgroundRunning
+    /// Updates continuous tasks of multiple types. This API uses a promise to return the result. After a continuous task
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<IntPtr> UpdateBackgroundRunningAsync(IntPtr context, string[] bgModes)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _updateBackgroundRunning, context, NapiArg.Of(bgModes));
     }
 
     /// <summary>
-    /// updateBackgroundRunning
+    /// Updates a continuous task. This API uses a promise to return the result. After a continuous task is successfully
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task<IntPtr> UpdateBackgroundRunningAsync(IntPtr context, ContinuousTaskRequest request)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _updateBackgroundRunning, context, NapiArg.Of(request));
     }
 
     /// <summary>
-    /// stopBackgroundRunning
+    /// Cancels all continuous tasks in the current UIAbility (ServiceAbility in the FA model). This API uses an
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task StopBackgroundRunningAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopBackgroundRunning, cancellationToken, context);
     }
 
     /// <summary>
-    /// stopBackgroundRunning
+    /// Cancels a continuous task with the specified ID. This API uses a promise to return the result. You can also call
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task StopBackgroundRunningAsync(IntPtr context, double continuousTaskId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopBackgroundRunning, cancellationToken, context, continuousTaskId);
     }
 
     /// <summary>
-    /// getAllContinuousTasks
+    /// Obtains all continuous task information, including the task ID and type. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<ContinuousTaskInfo[]> GetAllContinuousTasksAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsync(Module, _getAllContinuousTasks, h => ValueConverter.ConvertArray(h, static e => new ContinuousTaskInfo(e)), context);
     }
 
     /// <summary>
-    /// getAllContinuousTasks
+    /// Obtains all continuous task information, including the task ID and type. It supports specifying whether to include
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<ContinuousTaskInfo[]> GetAllContinuousTasksAsync(IntPtr context, bool includeSuspended)
     {
         return NodeApi.CallMethodAsync(Module, _getAllContinuousTasks, h => ValueConverter.ConvertArray(h, static e => new ContinuousTaskInfo(e)), context, includeSuspended);
     }
 
     /// <summary>
-    /// on
+    /// Subscribes to continuous task cancellation events. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from continuous task cancellation events. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);

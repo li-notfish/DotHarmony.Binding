@@ -18,51 +18,8 @@ public static unsafe partial class Tag
 {
     private const string ModuleName = "@ohos.nfc.tag";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[nfc.tag] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _NFC_A => "NFC_A"u8;
     private static ReadOnlySpan<byte> _NFC_B => "NFC_B"u8;
@@ -105,292 +62,333 @@ public static unsafe partial class Tag
     private static ReadOnlySpan<byte> _SKIP_NDEF => "SKIP_NDEF"u8;
 
     /// <summary>
-    /// NFC_A
+    /// Indicates an NFC-A tag.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double NfcA => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NFC_A));
 
     /// <summary>
-    /// NFC_B
+    /// Indicates an NFC-B tag.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double NfcB => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NFC_B));
 
     /// <summary>
-    /// ISO_DEP
+    /// Indicates an ISO_DEP tag.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double IsoDep => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ISO_DEP));
 
     /// <summary>
-    /// NFC_F
+    /// Indicates an NFC-F tag.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double NfcF => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NFC_F));
 
     /// <summary>
-    /// NFC_V
+    /// Indicates an NFC-V tag.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double NfcV => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NFC_V));
 
     /// <summary>
-    /// NDEF
+    /// Indicates an NDEF tag.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double Ndef => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NDEF));
 
     /// <summary>
-    /// NDEF_FORMATABLE
+    /// Indicates an NDEF Formatable tag.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double NdefFormatable => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NDEF_FORMATABLE));
 
     /// <summary>
-    /// MIFARE_CLASSIC
+    /// Indicates an MIFARE CLASSIC tag.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double MifareClassic => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MIFARE_CLASSIC));
 
     /// <summary>
-    /// MIFARE_ULTRALIGHT
+    /// Indicates an MIFARE ULTRALIGHT tag.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double MifareUltralight => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MIFARE_ULTRALIGHT));
 
     /// <summary>
-    /// NFC_BARCODE
+    /// Indicates an NfcBarcode tag.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static double NfcBarcode => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NFC_BARCODE));
 
     /// <summary>
-    /// RTD_TEXT
+    /// RTD type TEXT, see NFC Record Type Definition (RTD) Specification.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double[] RtdText => ValueConverter.ConvertArray(NodeApi.GetProperty(Module, _RTD_TEXT), static e => ValueConverter.Convert<double>(e));
 
     /// <summary>
-    /// RTD_URI
+    /// RTD type URI, see NFC Record Type Definition (RTD) Specification.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double[] RtdUri => ValueConverter.ConvertArray(NodeApi.GetProperty(Module, _RTD_URI), static e => ValueConverter.Convert<double>(e));
 
     /// <summary>
-    /// getNfcATag
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static IntPtr GetNfcATag(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNfcATag, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getNfcA
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetNfcA(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNfcA, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getNfcBTag
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static IntPtr GetNfcBTag(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNfcBTag, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getNfcB
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetNfcB(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNfcB, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getNfcFTag
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static IntPtr GetNfcFTag(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNfcFTag, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getNfcF
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetNfcF(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNfcF, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getNfcVTag
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static IntPtr GetNfcVTag(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNfcVTag, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getNfcV
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetNfcV(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNfcV, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getIsoDep
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetIsoDep(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getIsoDep, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getNdef
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetNdef(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNdef, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getMifareClassic
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetMifareClassic(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getMifareClassic, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getMifareUltralight
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetMifareUltralight(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getMifareUltralight, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getNdefFormatable
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetNdefFormatable(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getNdefFormatable, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getBarcodeTag
+    /// Obtains an  object based on the tag information.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static IntPtr GetBarcodeTag(TagInfo tagInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getBarcodeTag, NapiArg.Of(tagInfo));
     }
 
     /// <summary>
-    /// getTagInfo
+    /// Parse a  object from Want.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static TagInfo GetTagInfo(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
     {
         return NodeApi.CallMethod(Module, _getTagInfo, static h => new TagInfo(h), NapiArg.Of(want));
     }
 
     /// <summary>
-    /// registerForegroundDispatch
+    /// Register tag foreground dispatch. Dispatches to this application only if a tag discovered.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<TagInfo> RegisterForegroundDispatchAsync(IntPtr elementName, double[] discTech)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _registerForegroundDispatch, static h => new TagInfo(h), elementName, NapiArg.Of(discTech));
     }
 
     /// <summary>
-    /// unregisterForegroundDispatch
+    /// Unregister tag foreground dispatch.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void UnregisterForegroundDispatch(IntPtr elementName)
     {
         NodeApi.CallMethodVoid(Module, _unregisterForegroundDispatch, elementName);
     }
 
     /// <summary>
-    /// on
+    /// Set reader mode enabled when the specific application is foreground. Dispatches to this application only if a tag discovered.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void On(string type, IntPtr elementName, double[] discTech, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, elementName, NapiArg.Of(discTech), callback);
     }
 
     /// <summary>
-    /// off
+    /// Disable foreground reader mode settings explicitly.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void Off(string type, IntPtr elementName, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, elementName, callback);
     }
 
     /// <summary>
-    /// on
+    /// Set reader mode enabled when the specific application is on foreground and set card presence interval.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void On(string type, IntPtr elementName, double[] discTech, IntPtr callback, double interval)
     {
         NodeApi.CallMethodVoid(Module, _on, type, elementName, NapiArg.Of(discTech), callback, interval);
     }
 
     /// <summary>
-    /// makeUriRecord
+    /// Creates an NDEF record with uri data.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static NdefRecord MakeUriRecord(string uri)
     {
         return NodeApi.CallMethod(Module, _makeUriRecord, static h => new NdefRecord(h), uri);
     }
 
     /// <summary>
-    /// makeTextRecord
+    /// Creates an NDEF record with text data.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static NdefRecord MakeTextRecord(string text, string locale)
     {
         return NodeApi.CallMethod(Module, _makeTextRecord, static h => new NdefRecord(h), text, locale);
     }
 
     /// <summary>
-    /// makeApplicationRecord
+    /// Creates an NDEF Record with OpenHarmony application bundle name.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static NdefRecord MakeApplicationRecord(string bundleName)
     {
         return NodeApi.CallMethod(Module, _makeApplicationRecord, static h => new NdefRecord(h), bundleName);
     }
 
     /// <summary>
-    /// makeMimeRecord
+    /// Creates an NDEF record with mime data.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static NdefRecord MakeMimeRecord(string mimeType, double[] mimeData)
     {
         return NodeApi.CallMethod(Module, _makeMimeRecord, static h => new NdefRecord(h), mimeType, NapiArg.Of(mimeData));
     }
 
     /// <summary>
-    /// makeExternalRecord
+    /// Creates an NDEF record with external data.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static NdefRecord MakeExternalRecord(string domainName, string type, double[] externalData)
     {
         return NodeApi.CallMethod(Module, _makeExternalRecord, static h => new NdefRecord(h), domainName, type, NapiArg.Of(externalData));
     }
 
     /// <summary>
-    /// createNdefMessage
+    /// Creates an NDEF message with raw bytes.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr CreateNdefMessage(double[] data)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createNdefMessage, NapiArg.Of(data));
     }
 
     /// <summary>
-    /// createNdefMessage
+    /// Creates an NDEF message with record list.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr CreateNdefMessage(NdefRecord[] ndefRecords)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createNdefMessage, NapiArg.Of(ndefRecords));
     }
 
     /// <summary>
-    /// messageToBytes
+    /// Parses an NDEF message into raw bytes.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double[] MessageToBytes(IntPtr ndefMessage)
     {
         return NodeApi.CallMethod(Module, _messageToBytes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), ndefMessage);
     }
 
     /// <summary>
-    /// SKIP_NDEF
+    /// Skip NDEF when app is reading a card in the foreground.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static double SkipNdef => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SKIP_NDEF));
 
     private static readonly EventListenerRegistry _eventListeners = new();

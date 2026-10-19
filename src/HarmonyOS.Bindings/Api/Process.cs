@@ -16,51 +16,8 @@ public static unsafe partial class Process
 {
     private const string ModuleName = "@ohos.process";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[process] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _uid => "uid"u8;
     private static ReadOnlySpan<byte> _pid => "pid"u8;
@@ -80,119 +37,135 @@ public static unsafe partial class Process
     private static ReadOnlySpan<byte> _kill => "kill"u8;
 
     /// <summary>
-    /// uid
+    /// User identifier (UID) of the process.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double Uid => NativeValue.ToDouble(NodeApi.GetProperty(Module, _uid));
 
     /// <summary>
-    /// pid
+    /// Process ID (PID) of the process.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double Pid => NativeValue.ToDouble(NodeApi.GetProperty(Module, _pid));
 
     /// <summary>
-    /// tid
+    /// Thread ID (TID) of the thread.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double Tid => NativeValue.ToDouble(NodeApi.GetProperty(Module, _tid));
 
     /// <summary>
-    /// isIsolatedProcess
+    /// Checks whether this process is isolated.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool IsIsolatedProcess()
     {
         return NodeApi.CallMethod<bool>(Module, _isIsolatedProcess);
     }
 
     /// <summary>
-    /// isAppUid
+    /// Checks whether a UID belongs to this application.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool IsAppUid(double v)
     {
         return NodeApi.CallMethod<bool>(Module, _isAppUid, v);
     }
 
     /// <summary>
-    /// is64Bit
+    /// Checks whether this process is running in a 64-bit environment.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool Is64Bit()
     {
         return NodeApi.CallMethod<bool>(Module, _is64Bit);
     }
 
     /// <summary>
-    /// getUidForName
+    /// Obtains the UID of a user from the user database of the system based on the specified user name.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double GetUidForName(string v)
     {
         return NodeApi.CallMethod<double>(Module, _getUidForName, v);
     }
 
     /// <summary>
-    /// getThreadPriority
+    /// Obtains the thread priority based on the specified TID.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double GetThreadPriority(double v)
     {
         return NodeApi.CallMethod<double>(Module, _getThreadPriority, v);
     }
 
     /// <summary>
-    /// getStartRealtime
+    /// Obtains the duration (excluding the system sleep time), in milliseconds, from the time the system starts to the
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double GetStartRealtime()
     {
         return NodeApi.CallMethod<double>(Module, _getStartRealtime);
     }
 
     /// <summary>
-    /// getPastCpuTime
+    /// Obtains the CPU time (in milliseconds) from the time the process starts to the current time.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double GetPastCpuTime()
     {
         return NodeApi.CallMethod<double>(Module, _getPastCpuTime);
     }
 
     /// <summary>
-    /// getSystemConfig
+    /// Obtains the system configuration.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double GetSystemConfig(double name)
     {
         return NodeApi.CallMethod<double>(Module, _getSystemConfig, name);
     }
 
     /// <summary>
-    /// getEnvironmentVar
+    /// Obtains the value of an environment variable.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static string GetEnvironmentVar(string name)
     {
         return NodeApi.CallMethod<string>(Module, _getEnvironmentVar, name);
     }
 
     /// <summary>
-    /// abort
+    /// Aborts a process and generates a core file. This method will cause a process to exit immediately. Exercise
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Abort()
     {
         NodeApi.CallMethodVoid(Module, _abort);
     }
 
     /// <summary>
-    /// exit
+    /// Terminates this process.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Exit(double code)
     {
         NodeApi.CallMethodVoid(Module, _exit, code);
     }
 
     /// <summary>
-    /// uptime
+    /// Obtains the running time of the current system, in seconds.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double Uptime()
     {
         return NodeApi.CallMethod<double>(Module, _uptime);
     }
 
     /// <summary>
-    /// kill
+    /// Sends a signal to a specified process to terminate it.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool Kill(double signal, double pid)
     {
         return NodeApi.CallMethod<bool>(Module, _kill, signal, pid);

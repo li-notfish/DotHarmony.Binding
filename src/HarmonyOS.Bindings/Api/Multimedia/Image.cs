@@ -19,51 +19,8 @@ public static unsafe partial class Image
 {
     private const string ModuleName = "@ohos.multimedia.image";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[multimedia.image] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createPixelMapFromPixels => "createPixelMapFromPixels"u8;
     private static ReadOnlySpan<byte> _createPixelMapFromPixelsSync => "createPixelMapFromPixelsSync"u8;
@@ -112,412 +69,471 @@ public static unsafe partial class Image
     private static ReadOnlySpan<byte> _getImagePackerSupportedFormats => "getImagePackerSupportedFormats"u8;
 
     /// <summary>
-    /// createPixelMapFromPixels
+    /// Creates a PixelMap from existing pixel data. The pixel data will be copied and converted to the specified
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<ImagePixelMap> CreatePixelMapFromPixelsAsync(byte[] pixels, InitializationOptions param)
     {
         return NodeApi.CallMethodAsync(Module, _createPixelMapFromPixels, static h => new ImagePixelMap(h), NapiArg.OfArrayBuffer(pixels), NapiArg.Of(param));
     }
 
     /// <summary>
-    /// createPixelMapFromPixelsSync
+    /// Creates a PixelMap from existing pixel data. The pixel data will be copied and converted to the specified
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static ImagePixelMap CreatePixelMapFromPixelsSync(byte[] pixels, InitializationOptions param)
     {
         return NodeApi.CallMethod(Module, _createPixelMapFromPixelsSync, static h => new ImagePixelMap(h), NapiArg.OfArrayBuffer(pixels), NapiArg.Of(param));
     }
 
     /// <summary>
-    /// createPixelMap
+    /// Create pixelmap by data buffer.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<ImagePixelMap> CreatePixelMapAsync(byte[] colors, InitializationOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _createPixelMap, static h => new ImagePixelMap(h), NapiArg.OfArrayBuffer(colors), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// createPixelMapSync
+    /// Create pixelmap by data buffer.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static ImagePixelMap CreatePixelMapSync(byte[] colors, InitializationOptions options)
     {
         return NodeApi.CallMethod(Module, _createPixelMapSync, static h => new ImagePixelMap(h), NapiArg.OfArrayBuffer(colors), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// createPixelMapUsingAllocator
+    /// Create pixelmap by data buffer based on opts, the memory type used by the PixelMap can be specified
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<ImagePixelMap> CreatePixelMapUsingAllocatorAsync(byte[] colors, InitializationOptions param, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null)
     {
         return NodeApi.CallMethodAsync(Module, _createPixelMapUsingAllocator, static h => new ImagePixelMap(h), NapiArg.OfArrayBuffer(colors), NapiArg.Of(param), NapiArg.Of(allocatorType));
     }
 
     /// <summary>
-    /// createPixelMapUsingAllocatorSync
+    /// Create pixelmap by data buffer based on opts, the memory type used by the PixelMap can be specified
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static ImagePixelMap CreatePixelMapUsingAllocatorSync(byte[] colors, InitializationOptions param, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null)
     {
         return NodeApi.CallMethod(Module, _createPixelMapUsingAllocatorSync, static h => new ImagePixelMap(h), NapiArg.OfArrayBuffer(colors), NapiArg.Of(param), NapiArg.Of(allocatorType));
     }
 
     /// <summary>
-    /// createEmptyPixelMap
+    /// Creates an empty PixelMap.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static ImagePixelMap CreateEmptyPixelMap(InitializationOptions param)
     {
         return NodeApi.CallMethod(Module, _createEmptyPixelMap, static h => new ImagePixelMap(h), NapiArg.Of(param));
     }
 
     /// <summary>
-    /// createPixelMapSync
+    /// Create an empty pixelmap.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static ImagePixelMap CreatePixelMapSync(InitializationOptions options)
     {
         return NodeApi.CallMethod(Module, _createPixelMapSync, static h => new ImagePixelMap(h), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// createPixelMapUsingAllocatorSync
+    /// Create an empty pixelmap by data buffer based on opts, the memory type used by the PixelMap can be specified
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static ImagePixelMap CreatePixelMapUsingAllocatorSync(InitializationOptions param, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null)
     {
         return NodeApi.CallMethod(Module, _createPixelMapUsingAllocatorSync, static h => new ImagePixelMap(h), NapiArg.Of(param), NapiArg.Of(allocatorType));
     }
 
     /// <summary>
-    /// createPremultipliedPixelMap
+    /// Transforms pixelmap from unpremultiplied alpha format to premultiplied alpha format.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task CreatePremultipliedPixelMapAsync(ImagePixelMap src, ImagePixelMap dst, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _createPremultipliedPixelMap, cancellationToken, NapiArg.Of(src), NapiArg.Of(dst));
     }
 
     /// <summary>
-    /// createUnpremultipliedPixelMap
+    /// Transforms pixelmap from premultiplied alpha format to unpremultiplied alpha format.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task CreateUnpremultipliedPixelMapAsync(ImagePixelMap src, ImagePixelMap dst, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _createUnpremultipliedPixelMap, cancellationToken, NapiArg.Of(src), NapiArg.Of(dst));
     }
 
     /// <summary>
-    /// createPixelMapFromParcel
+    /// Creates a PixelMap object based on MessageSequence parameter.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static ImagePixelMap CreatePixelMapFromParcel(IntPtr sequence)
     {
         return NodeApi.CallMethod(Module, _createPixelMapFromParcel, static h => new ImagePixelMap(h), sequence);
     }
 
     /// <summary>
-    /// createPixelMapFromSurface
+    /// Creates a PixelMap object from surface id.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<ImagePixelMap> CreatePixelMapFromSurfaceAsync(string surfaceId, ImageRegion region)
     {
         return NodeApi.CallMethodAsync(Module, _createPixelMapFromSurface, static h => new ImagePixelMap(h), surfaceId, NapiArg.Of(region));
     }
 
     /// <summary>
-    /// createPixelMapFromSurfaceSync
+    /// Creates a PixelMap object from surface id.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static ImagePixelMap CreatePixelMapFromSurfaceSync(string surfaceId, ImageRegion region)
     {
         return NodeApi.CallMethod(Module, _createPixelMapFromSurfaceSync, static h => new ImagePixelMap(h), surfaceId, NapiArg.Of(region));
     }
 
     /// <summary>
-    /// createPixelMapFromSurface
+    /// Creates a PixelMap object from surface id.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task<ImagePixelMap> CreatePixelMapFromSurfaceAsync(string surfaceId)
     {
         return NodeApi.CallMethodAsync(Module, _createPixelMapFromSurface, static h => new ImagePixelMap(h), surfaceId);
     }
 
     /// <summary>
-    /// createPixelMapFromSurfaceSync
+    /// Creates a PixelMap object from surface id.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static ImagePixelMap CreatePixelMapFromSurfaceSync(string surfaceId)
     {
         return NodeApi.CallMethod(Module, _createPixelMapFromSurfaceSync, static h => new ImagePixelMap(h), surfaceId);
     }
 
     /// <summary>
-    /// createPixelMapFromSurfaceWithTransformation
+    /// Creates a PixelMap object based on the ID of a Surface with transformation.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<ImagePixelMap> CreatePixelMapFromSurfaceWithTransformationAsync(string surfaceId, bool transformEnabled)
     {
         return NodeApi.CallMethodAsync(Module, _createPixelMapFromSurfaceWithTransformation, static h => new ImagePixelMap(h), surfaceId, transformEnabled);
     }
 
     /// <summary>
-    /// createPixelMapFromSurfaceWithTransformationSync
+    /// Creates a PixelMap object based on the ID of a Surface with transformation.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static ImagePixelMap CreatePixelMapFromSurfaceWithTransformationSync(string surfaceId, bool transformEnabled)
     {
         return NodeApi.CallMethod(Module, _createPixelMapFromSurfaceWithTransformationSync, static h => new ImagePixelMap(h), surfaceId, transformEnabled);
     }
 
     /// <summary>
-    /// createImageSource
+    /// Creates an ImageSource instance based on a given URI.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static ImageSource CreateImageSource(string uri)
     {
         return NodeApi.CallMethod(Module, _createImageSource, static h => new ImageSource(h), uri);
     }
 
     /// <summary>
-    /// createImageSource
+    /// Creates an ImageSource instance based on a given URI.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ImageSource CreateImageSource(string uri, SourceOptions options)
     {
         return NodeApi.CallMethod(Module, _createImageSource, static h => new ImageSource(h), uri, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// createImageSource
+    /// Creates an ImageSource instance based on a given file descriptor.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static ImageSource CreateImageSource(double fd)
     {
         return NodeApi.CallMethod(Module, _createImageSource, static h => new ImageSource(h), fd);
     }
 
     /// <summary>
-    /// createImageSource
+    /// Creates an ImageSource instance based on a given file descriptor.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ImageSource CreateImageSource(double fd, SourceOptions options)
     {
         return NodeApi.CallMethod(Module, _createImageSource, static h => new ImageSource(h), fd, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// createImageSource
+    /// Creates an ImageSource instance based on buffers. The data passed by **buf** must be undecoded. Do not pass the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ImageSource CreateImageSource(byte[] buf)
     {
         return NodeApi.CallMethod(Module, _createImageSource, static h => new ImageSource(h), NapiArg.OfArrayBuffer(buf));
     }
 
     /// <summary>
-    /// createImageSource
+    /// Creates an ImageSource instance based on buffers. The data passed by **buf** must be undecoded. Do not pass the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ImageSource CreateImageSource(byte[] buf, SourceOptions options)
     {
         return NodeApi.CallMethod(Module, _createImageSource, static h => new ImageSource(h), NapiArg.OfArrayBuffer(buf), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// createImageSource
+    /// Creates an ImageSource instance based on the raw file descriptor of an image resource file.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static ImageSource CreateImageSource(IntPtr rawfile, SourceOptions? options = null)
     {
         return NodeApi.CallMethod(Module, _createImageSource, static h => new ImageSource(h), rawfile, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// CreateIncrementalSource
+    /// Creates an ImageSource instance in incremental mode based on buffers. Such an instance does not support reading or
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ImageSource CreateIncrementalSource(byte[] buf)
     {
         return NodeApi.CallMethod(Module, _CreateIncrementalSource, static h => new ImageSource(h), NapiArg.OfArrayBuffer(buf));
     }
 
     /// <summary>
-    /// CreateIncrementalSource
+    /// Creates an ImageSource instance in incremental mode based on buffers. Such an instance does not support reading or
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ImageSource CreateIncrementalSource(byte[] buf, SourceOptions? options = null)
     {
         return NodeApi.CallMethod(Module, _CreateIncrementalSource, static h => new ImageSource(h), NapiArg.OfArrayBuffer(buf), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// createImagePacker
+    /// Creates an ImagePacker instance.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static ImagePacker CreateImagePacker()
     {
         return NodeApi.CallMethod(Module, _createImagePacker, static h => new ImagePacker(h));
     }
 
     /// <summary>
-    /// createImageReceiver
+    /// Creates an ImageReceiver instance by specifying the image width, height, format, and capacity. The ImageReceiver
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ImageReceiver CreateImageReceiver(double width, double height, double format, double capacity)
     {
         return NodeApi.CallMethod(Module, _createImageReceiver, static h => new ImageReceiver(h), width, height, format, capacity);
     }
 
     /// <summary>
-    /// createImageReceiver
+    /// Creates an ImageReceiver instance by specifying the image size, format, and capacity. The ImageReceiver acts as the
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static ImageReceiver CreateImageReceiver(ImageSize size, global::HarmonyOS.ArkUI.ImageFormat format, double capacity)
     {
         return NodeApi.CallMethod(Module, _createImageReceiver, static h => new ImageReceiver(h), NapiArg.Of(size), (int)format, capacity);
     }
 
     /// <summary>
-    /// createImageReceiver
+    /// Creates an ImageReceiver instance.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static ImageReceiver CreateImageReceiver(ImageReceiverOptions? options = null)
     {
         return NodeApi.CallMethod(Module, _createImageReceiver, static h => new ImageReceiver(h), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// createImageCreator
+    /// Creates an ImageCreator instance by specifying the image width, height, format, and capacity.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ImageCreator CreateImageCreator(double width, double height, double format, double capacity)
     {
         return NodeApi.CallMethod(Module, _createImageCreator, static h => new ImageCreator(h), width, height, format, capacity);
     }
 
     /// <summary>
-    /// createImageCreator
+    /// Creates an ImageCreator instance by specifying the image size, format, and capacity.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static ImageCreator CreateImageCreator(ImageSize size, global::HarmonyOS.ArkUI.ImageFormat format, double capacity)
     {
         return NodeApi.CallMethod(Module, _createImageCreator, static h => new ImageCreator(h), NapiArg.Of(size), (int)format, capacity);
     }
 
     /// <summary>
-    /// createPicture
+    /// Creates a Picture object based on a main PixelMap.
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static Picture CreatePicture(ImagePixelMap mainPixelmap)
     {
         return NodeApi.CallMethod(Module, _createPicture, static h => new Picture(h), NapiArg.Of(mainPixelmap));
     }
 
     /// <summary>
-    /// createPictureFromParcel
+    /// Creates a Picture object from a MessageSequence object.
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static Picture CreatePictureFromParcel(IntPtr sequence)
     {
         return NodeApi.CallMethod(Module, _createPictureFromParcel, static h => new Picture(h), sequence);
     }
 
     /// <summary>
-    /// createAuxiliaryPicture
+    /// Creates an AuxiliaryPicture instance based on the ArrayBuffer image data, auxiliary picture size, and auxiliary
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static AuxiliaryPicture CreateAuxiliaryPicture(byte[] buffer, ImageSize size, global::HarmonyOS.ArkUI.AuxiliaryPictureType type)
     {
         return NodeApi.CallMethod(Module, _createAuxiliaryPicture, static h => new AuxiliaryPicture(h), NapiArg.OfArrayBuffer(buffer), NapiArg.Of(size), (int)type);
     }
 
     /// <summary>
-    /// createAuxiliaryPictureUsingAllocator
+    /// Create an &lt;b&gt;AuxiliaryPicture&lt;/b&gt; object, the memory type used by the AuxiliaryPicture can be specified by
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static AuxiliaryPicture CreateAuxiliaryPictureUsingAllocator(IntPtr auxiliaryPictureInfo, global::HarmonyOS.ArkUI.AllocatorType? allocatorType = null, byte[]? pixels = null)
     {
         return NodeApi.CallMethod(Module, _createAuxiliaryPictureUsingAllocator, static h => new AuxiliaryPicture(h), auxiliaryPictureInfo, NapiArg.Of(allocatorType), NapiArg.OfArrayBuffer(pixels));
     }
 
     /// <summary>
-    /// XMAGE_WATERMARK_MODE_AT_THE_BOTTOM
+    /// The XMAGE watermark is at the bottom of the photo.The value is 9.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double XmageWatermarkModeAtTheBottom => NativeValue.ToDouble(NodeApi.GetProperty(Module, _XMAGE_WATERMARK_MODE_AT_THE_BOTTOM));
 
     /// <summary>
-    /// XMAGE_WATERMARK_MODE_BORDER
+    /// The XMAGE watermark is around the edges of the photo.The value is 10.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double XmageWatermarkModeBorder => NativeValue.ToDouble(NodeApi.GetProperty(Module, _XMAGE_WATERMARK_MODE_BORDER));
 
     /// <summary>
-    /// CAPTURE_MODE_PROFESSIONAL
+    /// Capture mode: professional.The value is 2.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeProfessional => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_PROFESSIONAL));
 
     /// <summary>
-    /// CAPTURE_MODE_FRONT_LENS_NIGHT_VIEW
+    /// Capture mode: night view with front lens.The value is 7.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeFrontLensNightView => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_FRONT_LENS_NIGHT_VIEW));
 
     /// <summary>
-    /// CAPTURE_MODE_PANORAMA
+    /// Capture mode: panorama.The value is 8.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModePanorama => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_PANORAMA));
 
     /// <summary>
-    /// CAPTURE_MODE_TAIL_LIGHT
+    /// Capture mode: tail light.The value is 9.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeTailLight => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_TAIL_LIGHT));
 
     /// <summary>
-    /// CAPTURE_MODE_LIGHT_GRAFFITI
+    /// Capture mode: light graffiti.The value is 10.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeLightGraffiti => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_LIGHT_GRAFFITI));
 
     /// <summary>
-    /// CAPTURE_MODE_SILKY_WATER
+    /// Capture mode: silky water.The value is 11.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeSilkyWater => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_SILKY_WATER));
 
     /// <summary>
-    /// CAPTURE_MODE_STAR_TRACK
+    /// Capture mode: star track.The value is 12.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeStarTrack => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_STAR_TRACK));
 
     /// <summary>
-    /// CAPTURE_MODE_WIDEAPERTURE
+    /// Capture mode: wide aperture.The value is 19.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeWideaperture => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_WIDEAPERTURE));
 
     /// <summary>
-    /// CAPTURE_MODE_MOVING_PHOTO
+    /// Capture mode: moving photos.The value is 20.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeMovingPhoto => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_MOVING_PHOTO));
 
     /// <summary>
-    /// CAPTURE_MODE_PORTRAIT
+    /// Capture mode: portrait.The value is 23.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModePortrait => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_PORTRAIT));
 
     /// <summary>
-    /// CAPTURE_MODE_REAR_LENS_NIGHT_VIEW
+    /// Capture mode: night view with rear lens.The value is 42.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeRearLensNightView => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_REAR_LENS_NIGHT_VIEW));
 
     /// <summary>
-    /// CAPTURE_MODE_SUPER_MACRO
+    /// Capture mode: super macro.The value is 47.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeSuperMacro => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_SUPER_MACRO));
 
     /// <summary>
-    /// CAPTURE_MODE_SNAP_SHOT
+    /// Capture mode: snap shot.The value is 62.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double CaptureModeSnapShot => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAPTURE_MODE_SNAP_SHOT));
 
     /// <summary>
-    /// XMP_BASIC
+    /// XMP namespace: XMP basic.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static XMPNamespace XmpBasic => new XMPNamespace(NodeApi.GetProperty(Module, _XMP_BASIC));
 
     /// <summary>
-    /// XMP_RIGHTS
+    /// XMP namespace: XMP rights.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static XMPNamespace XmpRights => new XMPNamespace(NodeApi.GetProperty(Module, _XMP_RIGHTS));
 
     /// <summary>
-    /// EXIF
+    /// XMP namespace: exif.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static XMPNamespace Exif => new XMPNamespace(NodeApi.GetProperty(Module, _EXIF));
 
     /// <summary>
-    /// DUBLIN_CORE
+    /// XMP namespace: dublin core.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static XMPNamespace DublinCore => new XMPNamespace(NodeApi.GetProperty(Module, _DUBLIN_CORE));
 
     /// <summary>
-    /// TIFF
+    /// XMP namespace: tiff.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static XMPNamespace Tiff => new XMPNamespace(NodeApi.GetProperty(Module, _TIFF));
 
     /// <summary>
-    /// getImageSourceSupportedFormats
+    /// Obtains the supported decoding formats, represented by MIME types.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string[] GetImageSourceSupportedFormats()
     {
         return NodeApi.CallMethod(Module, _getImageSourceSupportedFormats, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// getImagePackerSupportedFormats
+    /// Obtains the supported encoding formats, represented by MIME types.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string[] GetImagePackerSupportedFormats()
     {
         return NodeApi.CallMethod(Module, _getImagePackerSupportedFormats, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));

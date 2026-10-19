@@ -16,51 +16,8 @@ public static unsafe partial class AppRecovery
 {
     private const string ModuleName = "@ohos.app.ability.appRecovery";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[app.ability.appRecovery] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _enableAppRecovery => "enableAppRecovery"u8;
     private static ReadOnlySpan<byte> _restartApp => "restartApp"u8;
@@ -68,40 +25,45 @@ public static unsafe partial class AppRecovery
     private static ReadOnlySpan<byte> _saveAppState => "saveAppState"u8;
 
     /// <summary>
-    /// enableAppRecovery
+    /// Enables application recovery. After this API is called, the first ability that is displayed when the application is
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void EnableAppRecovery(global::HarmonyOS.ArkUI.RestartFlag? restart = null, global::HarmonyOS.ArkUI.SaveOccasionFlag? saveOccasion = null, global::HarmonyOS.ArkUI.SaveModeFlag? saveMode = null)
     {
         NodeApi.CallMethodVoid(Module, _enableAppRecovery, NapiArg.Of(restart), NapiArg.Of(saveOccasion), NapiArg.Of(saveMode));
     }
 
     /// <summary>
-    /// restartApp
+    /// Restarts the current process and starts the first ability that is displayed when the application is started. If the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void RestartApp()
     {
         NodeApi.CallMethodVoid(Module, _restartApp);
     }
 
     /// <summary>
-    /// setRestartWant
+    /// Sets an ability that will be recovered. The ability must be a UIAbility in the current bundle.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void SetRestartWant(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
     {
         NodeApi.CallMethodVoid(Module, _setRestartWant, NapiArg.Of(want));
     }
 
     /// <summary>
-    /// saveAppState
+    /// Saves the application state. This API can be used together with the APIs of
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool SaveAppState()
     {
         return NodeApi.CallMethod<bool>(Module, _saveAppState);
     }
 
     /// <summary>
-    /// saveAppState
+    /// Saves the ability state, which will be used for recovery. This API can be used together with the APIs of
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool SaveAppState(IntPtr? context = null)
     {
         return NodeApi.CallMethod<bool>(Module, _saveAppState, NapiArg.Of(context));

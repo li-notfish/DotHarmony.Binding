@@ -18,51 +18,8 @@ public static unsafe partial class Accessibility
 {
     private const string ModuleName = "@ohos.accessibility";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[accessibility] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _isOpenAccessibility => "isOpenAccessibility"u8;
     private static ReadOnlySpan<byte> _isOpenAccessibilitySync => "isOpenAccessibilitySync"u8;
@@ -99,264 +56,297 @@ public static unsafe partial class Accessibility
     private static ReadOnlySpan<byte> _setSeniorModeStateForSelf => "setSeniorModeStateForSelf"u8;
 
     /// <summary>
-    /// isOpenAccessibility
+    /// Checks whether an accessibility application is enabled. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsOpenAccessibilityAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isOpenAccessibility);
     }
 
     /// <summary>
-    /// isOpenAccessibilitySync
+    /// Checks whether any accessibility application has been enabled in the system. To obtain information about
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool IsOpenAccessibilitySync()
     {
         return NodeApi.CallMethod<bool>(Module, _isOpenAccessibilitySync);
     }
 
     /// <summary>
-    /// isOpenTouchGuide
+    /// Checks whether touch guide mode is enabled. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsOpenTouchGuideAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isOpenTouchGuide);
     }
 
     /// <summary>
-    /// isOpenTouchGuideSync
+    /// Checks whether touch guide mode is enabled.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool IsOpenTouchGuideSync()
     {
         return NodeApi.CallMethod<bool>(Module, _isOpenTouchGuideSync);
     }
 
     /// <summary>
-    /// isScreenReaderOpenSync
+    /// Checks whether screen reader mode is enabled.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static bool IsScreenReaderOpenSync()
     {
         return NodeApi.CallMethod<bool>(Module, _isScreenReaderOpenSync);
     }
 
     /// <summary>
-    /// getAbilityLists
+    /// Obtains the accessibility application list. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<AccessibilityAbilityInfo[]> GetAbilityListsAsync(IntPtr abilityType, IntPtr stateType)
     {
         return NodeApi.CallMethodAsync(Module, _getAbilityLists, h => ValueConverter.ConvertArray(h, static e => new AccessibilityAbilityInfo(e)), abilityType, stateType);
     }
 
     /// <summary>
-    /// getAccessibilityExtensionList
+    /// Obtains the accessibility application list. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<AccessibilityAbilityInfo[]> GetAccessibilityExtensionListAsync(IntPtr abilityType, IntPtr stateType)
     {
         return NodeApi.CallMethodAsync(Module, _getAccessibilityExtensionList, h => ValueConverter.ConvertArray(h, static e => new AccessibilityAbilityInfo(e)), abilityType, stateType);
     }
 
     /// <summary>
-    /// getAccessibilityExtensionListSync
+    /// Query the list of accessibility applications in the current system, which can be queried by criteria.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static AccessibilityAbilityInfo[] GetAccessibilityExtensionListSync(IntPtr abilityType, IntPtr stateType)
     {
         return NodeApi.CallMethod(Module, _getAccessibilityExtensionListSync, h => ValueConverter.ConvertArray(h, static e => new AccessibilityAbilityInfo(e)), abilityType, stateType);
     }
 
     /// <summary>
-    /// sendEvent
+    /// Sends an accessibility event. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task SendEventAsync(EventInfo @event, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _sendEvent, cancellationToken, NapiArg.Of(@event));
     }
 
     /// <summary>
-    /// sendAccessibilityEvent
+    /// Sends an accessibility event. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task SendAccessibilityEventAsync(EventInfo @event, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _sendAccessibilityEvent, cancellationToken, NapiArg.Of(@event));
     }
 
     /// <summary>
-    /// getTouchModeSync
+    /// Queries single- or double-touch mode.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string GetTouchModeSync()
     {
         return NodeApi.CallMethod<string>(Module, _getTouchModeSync);
     }
 
     /// <summary>
-    /// on
+    /// Subscribes to the state changes of the accessibility application. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from the state changes of the accessibility application. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// getCaptionsManager
+    /// Obtains a **CaptionsManager** instance.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static CaptionsManager GetCaptionsManager()
     {
         return NodeApi.CallMethod(Module, _getCaptionsManager, static h => new CaptionsManager(h));
     }
 
     /// <summary>
-    /// onAnimationReduceStateChange
+    /// Subscribes to the state changes in animation reduction mode. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnAnimationReduceStateChange(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onAnimationReduceStateChange, callback);
     }
 
     /// <summary>
-    /// offAnimationReduceStateChange
+    /// Unsubscribes from the state changes in animation reduction mode. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OffAnimationReduceStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offAnimationReduceStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// isAnimationReduceEnabledSync
+    /// Checks whether animation reduction mode is enabled with a synchronous method.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static bool IsAnimationReduceEnabledSync()
     {
         return NodeApi.CallMethod<bool>(Module, _isAnimationReduceEnabledSync);
     }
 
     /// <summary>
-    /// isAnimationReduceEnabled
+    /// Checks whether animation reduction mode is enabled. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<bool> IsAnimationReduceEnabledAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isAnimationReduceEnabled);
     }
 
     /// <summary>
-    /// onFlashReminderStateChange
+    /// Subscribes to the state changes in flash alerts mode. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnFlashReminderStateChange(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onFlashReminderStateChange, callback);
     }
 
     /// <summary>
-    /// offFlashReminderStateChange
+    /// Unsubscribes from the state changes in flash alerts mode. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OffFlashReminderStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offFlashReminderStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// isFlashReminderEnabledSync
+    /// Checks whether flash alerts mode is enabled with a synchronous method.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static bool IsFlashReminderEnabledSync()
     {
         return NodeApi.CallMethod<bool>(Module, _isFlashReminderEnabledSync);
     }
 
     /// <summary>
-    /// isFlashReminderEnabled
+    /// Checks whether flash alerts mode is enabled. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<bool> IsFlashReminderEnabledAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isFlashReminderEnabled);
     }
 
     /// <summary>
-    /// onAudioMonoStateChange
+    /// Subscribes to the state changes in mono audio mode. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnAudioMonoStateChange(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onAudioMonoStateChange, callback);
     }
 
     /// <summary>
-    /// offAudioMonoStateChange
+    /// Unsubscribes from the state changes in mono audio mode. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OffAudioMonoStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offAudioMonoStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// isAudioMonoEnabledSync
+    /// Checks whether mono audio mode is enabled with a synchronous mode.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static bool IsAudioMonoEnabledSync()
     {
         return NodeApi.CallMethod<bool>(Module, _isAudioMonoEnabledSync);
     }
 
     /// <summary>
-    /// isAudioMonoEnabled
+    /// Checks whether mono audio mode is enabled. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<bool> IsAudioMonoEnabledAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isAudioMonoEnabled);
     }
 
     /// <summary>
-    /// isSeniorModeEnabled
+    /// Checks whether the senior mode is enabled. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<bool> IsSeniorModeEnabledAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isSeniorModeEnabled);
     }
 
     /// <summary>
-    /// onSeniorModeStateChange
+    /// Listens for enabling status changes of the senior mode. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnSeniorModeStateChange(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onSeniorModeStateChange, callback);
     }
 
     /// <summary>
-    /// offSeniorModeStateChange
+    /// Cancels listening for the senior mode change event. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffSeniorModeStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offSeniorModeStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// onSeniorModeStateChangeForSelf
+    /// Register an observer for this application's senior mode state changes.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnSeniorModeStateChangeForSelf(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onSeniorModeStateChangeForSelf, callback);
     }
 
     /// <summary>
-    /// offSeniorModeStateChangeForSelf
+    /// Unregister the observer for this application's senior mode state changes.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffSeniorModeStateChangeForSelf(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offSeniorModeStateChangeForSelf, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// getSeniorModeStateForSelf
+    /// Check if this application's senior mode is enabled.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<bool> GetSeniorModeStateForSelfAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _getSeniorModeStateForSelf);
     }
 
     /// <summary>
-    /// setSeniorModeStateForSelf
+    /// Set this application's senior mode.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task SetSeniorModeStateForSelfAsync(bool state, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setSeniorModeStateForSelf, cancellationToken, state);

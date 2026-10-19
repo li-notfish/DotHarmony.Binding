@@ -19,51 +19,8 @@ public static unsafe partial class CertManagerDialog
 {
     private const string ModuleName = "@ohos.security.certManagerDialog";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[security.certManagerDialog] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _openCertificateManagerDialog => "openCertificateManagerDialog"u8;
     private static ReadOnlySpan<byte> _openInstallCertificateDialog => "openInstallCertificateDialog"u8;
@@ -74,64 +31,72 @@ public static unsafe partial class CertManagerDialog
     private static ReadOnlySpan<byte> _supportsCACertDialog => "supportsCACertDialog"u8;
 
     /// <summary>
-    /// openCertificateManagerDialog
+    /// Opens the certificate management dialog box and displays the page of the specified type. After the interface is
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static Task OpenCertificateManagerDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateDialogPageType pageType, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _openCertificateManagerDialog, cancellationToken, context, (int)pageType);
     }
 
     /// <summary>
-    /// openInstallCertificateDialog
+    /// Opens the Certificate Management Install Certificate dialog box. After the certificate is successfully installed,
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<string> OpenInstallCertificateDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateType certType, global::HarmonyOS.ArkUI.CertificateScope certScope, byte[] cert)
     {
         return NodeApi.CallMethodAsync<string>(Module, _openInstallCertificateDialog, context, (int)certType, (int)certScope, NapiArg.Of(cert));
     }
 
     /// <summary>
-    /// openAuthorizeDialog
+    /// Opens the authorization page of the certificate management dialog box to grant a credential to the application.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<string> OpenAuthorizeDialogAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsync<string>(Module, _openAuthorizeDialog, context);
     }
 
     /// <summary>
-    /// openCertificateDetailDialog
+    /// Opens the Certificate Management dialog box to display the certificate details. After the interface is invoked
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task OpenCertificateDetailDialogAsync(IntPtr context, byte[] cert, CertificateDialogProperty property, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _openCertificateDetailDialog, cancellationToken, context, NapiArg.Of(cert), NapiArg.Of(property));
     }
 
     /// <summary>
-    /// openUninstallCertificateDialog
+    /// Open the Certificate Management Uninstall Certificate dialog. The corresponding page is displayed. Use Promise
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task OpenUninstallCertificateDialogAsync(IntPtr context, global::HarmonyOS.ArkUI.CertificateType certType, string certUri, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _openUninstallCertificateDialog, cancellationToken, context, (int)certType, certUri);
     }
 
     /// <summary>
-    /// openAuthorizeDialog
+    /// Opens the Certificate Credential Authorization page of the Certificate Management dialog box. On the page that is
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<CertReference> OpenAuthorizeDialogAsync(IntPtr context, IntPtr authorizeRequest)
     {
         return NodeApi.CallMethodAsync(Module, _openAuthorizeDialog, static h => new CertReference(h), context, authorizeRequest);
     }
 
     /// <summary>
-    /// openUkeyAuthDialog
+    /// Opens the PIN authentication dialog box of the USB Key credential. On the displayed page, the user can enter the
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task OpenUkeyAuthDialogAsync(IntPtr context, UkeyAuthRequest ukeyAuthRequest, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _openUkeyAuthDialog, cancellationToken, context, NapiArg.Of(ukeyAuthRequest));
     }
 
     /// <summary>
-    /// supportsCACertDialog
+    /// Check whether the device supports the [openCertificateDetailDialog]* certificateManagerDialog.openCertificateDetailDialog, [openInstallCertificateDialog]* certificateManagerDialog.openInstallCertificateDialog, and [openUninstallCertificateDialog]* certificateManagerDialog.openUninstallCertificateDialog interfaces to open the dialog box for managing CA
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool SupportsCaCertDialog()
     {
         return NodeApi.CallMethod<bool>(Module, _supportsCACertDialog);

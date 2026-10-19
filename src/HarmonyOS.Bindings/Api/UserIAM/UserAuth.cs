@@ -19,51 +19,8 @@ public static unsafe partial class UserAuth
 {
     private const string ModuleName = "@ohos.userIAM.userAuth";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[userIAM.userAuth] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _MAX_ALLOWABLE_REUSE_DURATION => "MAX_ALLOWABLE_REUSE_DURATION"u8;
     private static ReadOnlySpan<byte> _PERMANENT_LOCKOUT_DURATION => "PERMANENT_LOCKOUT_DURATION"u8;
@@ -75,58 +32,66 @@ public static unsafe partial class UserAuth
     private static ReadOnlySpan<byte> _getUserAuthInstance => "getUserAuthInstance"u8;
 
     /// <summary>
-    /// MAX_ALLOWABLE_REUSE_DURATION
+    /// Maximum reuse duration of the authentication result, in milliseconds. The value is **300000** (5 minutes). This
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr MaxAllowableReuseDuration => NodeApi.GetProperty(Module, _MAX_ALLOWABLE_REUSE_DURATION);
 
     /// <summary>
-    /// PERMANENT_LOCKOUT_DURATION
+    /// Permanent lockout duration, in milliseconds. The value is **0x7fffffff**. When the number of failed authentication
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static double PermanentLockoutDuration => NativeValue.ToDouble(NodeApi.GetProperty(Module, _PERMANENT_LOCKOUT_DURATION));
 
     /// <summary>
-    /// getAuthenticator
+    /// Obtains an **Authenticator** instance for user authentication.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static UserAuthAuthenticator GetAuthenticator()
     {
         return NodeApi.CallMethod(Module, _getAuthenticator, static h => new UserAuthAuthenticator(h));
     }
 
     /// <summary>
-    /// getAvailableStatus
+    /// Checks whether the specified authentication capability is supported. This API is used to check whether the current
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void GetAvailableStatus(global::HarmonyOS.ArkUI.UserAuthType authType, global::HarmonyOS.ArkUI.AuthTrustLevel authTrustLevel)
     {
         NodeApi.CallMethodVoid(Module, _getAvailableStatus, (int)authType, (int)authTrustLevel);
     }
 
     /// <summary>
-    /// getEnrolledState
+    /// Obtains the credential state. This API is used to obtain the credential enrollment information of a specified
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static EnrolledState GetEnrolledState(global::HarmonyOS.ArkUI.UserAuthType authType)
     {
         return NodeApi.CallMethod(Module, _getEnrolledState, static h => new EnrolledState(h), (int)authType);
     }
 
     /// <summary>
-    /// getAuthLockState
+    /// Queries the lockout state of the specified authentication type. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<AuthLockState> GetAuthLockStateAsync(global::HarmonyOS.ArkUI.UserAuthType authType)
     {
         return NodeApi.CallMethodAsync(Module, _getAuthLockState, static h => new AuthLockState(h), (int)authType);
     }
 
     /// <summary>
-    /// getAuthInstance
+    /// Obtains an **AuthInstance** instance for user authentication.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetAuthInstance(byte[] challenge, global::HarmonyOS.ArkUI.UserAuthType authType, global::HarmonyOS.ArkUI.AuthTrustLevel authTrustLevel)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getAuthInstance, NapiArg.Of(challenge), (int)authType, (int)authTrustLevel);
     }
 
     /// <summary>
-    /// getUserAuthInstance
+    /// Obtains a [UserAuthInstance] instance for user authentication. The user
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static UserAuthInstance GetUserAuthInstance(AuthParam authParam, IntPtr widgetParam)
     {
         return NodeApi.CallMethod(Module, _getUserAuthInstance, static h => new UserAuthInstance(h), NapiArg.Of(authParam), widgetParam);

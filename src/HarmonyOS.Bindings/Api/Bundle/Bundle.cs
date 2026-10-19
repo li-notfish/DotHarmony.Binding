@@ -18,51 +18,8 @@ public static unsafe partial class Bundle
 {
     private const string ModuleName = "@ohos.bundle";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[bundle] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getBundleInfo => "getBundleInfo"u8;
     private static ReadOnlySpan<byte> _getAbilityInfo => "getAbilityInfo"u8;
@@ -79,144 +36,162 @@ public static unsafe partial class Bundle
     private static ReadOnlySpan<byte> _isApplicationEnabled => "isApplicationEnabled"u8;
 
     /// <summary>
-    /// getBundleInfo
+    /// Obtains the bundle information based on a given bundle name and bundle options. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr> GetBundleInfoAsync(string bundleName, double bundleFlags, BundleOptions options)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getBundleInfo, bundleName, bundleFlags, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// getBundleInfo
+    /// Obtains the bundle information based on a given bundle name. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr> GetBundleInfoAsync(string bundleName, double bundleFlags)
     {
         return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _getBundleInfo, null, bundleName, bundleFlags);
     }
 
     /// <summary>
-    /// getAbilityInfo
+    /// Obtains the ability information based on a given bundle name and ability name. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr> GetAbilityInfoAsync(string bundleName, string abilityName)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getAbilityInfo, bundleName, abilityName);
     }
 
     /// <summary>
-    /// getApplicationInfo
+    /// Obtains the application information of the specified user based on a given bundle name. This API uses an
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr> GetApplicationInfoAsync(string bundleName, double bundleFlags, double userId)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getApplicationInfo, bundleName, bundleFlags, userId);
     }
 
     /// <summary>
-    /// getApplicationInfo
+    /// Obtains the application information based on a given bundle name. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr> GetApplicationInfoAsync(string bundleName, double bundleFlags)
     {
         return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _getApplicationInfo, null, bundleName, bundleFlags);
     }
 
     /// <summary>
-    /// queryAbilityByWant
+    /// Obtains the ability information of the specified user based on given Want. This API uses an asynchronous callback
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr[]> QueryAbilityByWantAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, double bundleFlags, double userId)
     {
         return NodeApi.CallMethodAsync(Module, _queryAbilityByWant, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(want), bundleFlags, userId);
     }
 
     /// <summary>
-    /// queryAbilityByWant
+    /// Obtains the ability information based on given Want. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr[]> QueryAbilityByWantAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, double bundleFlags)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryAbilityByWant, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(want), bundleFlags);
     }
 
     /// <summary>
-    /// getAllBundleInfo
+    /// Obtains the information of all bundles of the specified user. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr[]> GetAllBundleInfoAsync(global::HarmonyOS.ArkUI.BundleBundleBundleFlag bundleFlag, double userId)
     {
         return NodeApi.CallMethodAsync(Module, _getAllBundleInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), (int)bundleFlag, userId);
     }
 
     /// <summary>
-    /// getAllBundleInfo
+    /// Obtains the information of all bundles of the current user. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr[]> GetAllBundleInfoAsync(global::HarmonyOS.ArkUI.BundleBundleBundleFlag bundleFlag)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _getAllBundleInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), (int)bundleFlag);
     }
 
     /// <summary>
-    /// getAllApplicationInfo
+    /// Obtains the information about all applications. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr[]> GetAllApplicationInfoAsync(double bundleFlags, double userId)
     {
         return NodeApi.CallMethodAsync(Module, _getAllApplicationInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), bundleFlags, userId);
     }
 
     /// <summary>
-    /// getAllApplicationInfo
+    /// Obtains the information about all applications of the current user. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr[]> GetAllApplicationInfoAsync(double bundleFlags)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _getAllApplicationInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), bundleFlags);
     }
 
     /// <summary>
-    /// getNameForUid
+    /// Obtains bundle name by the given uid.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<string> GetNameForUidAsync(double uid)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getNameForUid, uid);
     }
 
     /// <summary>
-    /// getBundleArchiveInfo
+    /// Obtains information about the bundles contained in a HAP file. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr> GetBundleArchiveInfoAsync(string hapFilePath, double bundleFlags)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getBundleArchiveInfo, hapFilePath, bundleFlags);
     }
 
     /// <summary>
-    /// getLaunchWantForBundle
+    /// Obtains the Want object that launches the specified application. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<global::HarmonyOS.Bindings.Api.App.Ability.WantObject> GetLaunchWantForBundleAsync(string bundleName)
     {
         return NodeApi.CallMethodAsync(Module, _getLaunchWantForBundle, static h => new global::HarmonyOS.Bindings.Api.App.Ability.WantObject(h), bundleName);
     }
 
     /// <summary>
-    /// getAbilityLabel
+    /// Obtains the application name based on a given bundle name and ability name. This API uses an asynchronous callback
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<string> GetAbilityLabelAsync(string bundleName, string abilityName)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getAbilityLabel, bundleName, abilityName);
     }
 
     /// <summary>
-    /// getAbilityIcon
+    /// Obtains the [PixelMap]@ohos.multimedia.image:image of the icon corresponding to a given bundle name and
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<IntPtr> GetAbilityIconAsync(string bundleName, string abilityName)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getAbilityIcon, bundleName, abilityName);
     }
 
     /// <summary>
-    /// isAbilityEnabled
+    /// Checks whether the ability that matches a given AbilityInfo object is enabled. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<bool> IsAbilityEnabledAsync(IntPtr info)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isAbilityEnabled, info);
     }
 
     /// <summary>
-    /// isApplicationEnabled
+    /// Checks whether an application is enabled based on a given bundle name. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<bool> IsApplicationEnabledAsync(string bundleName)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isApplicationEnabled, bundleName);

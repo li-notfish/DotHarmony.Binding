@@ -18,51 +18,8 @@ public static unsafe partial class CommonEventManager
 {
     private const string ModuleName = "@ohos.commonEventManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[commonEventManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _publish => "publish"u8;
     private static ReadOnlySpan<byte> _createSubscriber => "createSubscriber"u8;
@@ -72,56 +29,63 @@ public static unsafe partial class CommonEventManager
     private static ReadOnlySpan<byte> _unsubscribe => "unsubscribe"u8;
 
     /// <summary>
-    /// publish
+    /// Publishes a common event. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task PublishAsync(string @event, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _publish, cancellationToken, @event);
     }
 
     /// <summary>
-    /// publish
+    /// Publishes a common event. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task PublishAsync(string @event, IntPtr options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _publish, cancellationToken, @event, options);
     }
 
     /// <summary>
-    /// createSubscriber
+    /// Creates a subscriber. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr> CreateSubscriberAsync(IntPtr subscribeInfo)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createSubscriber, subscribeInfo);
     }
 
     /// <summary>
-    /// createSubscriberSync
+    /// Creates a subscriber synchronously.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static IntPtr CreateSubscriberSync(IntPtr subscribeInfo)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createSubscriberSync, subscribeInfo);
     }
 
     /// <summary>
-    /// subscribe
+    /// Subscribes to a common event. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr> SubscribeAsync(IntPtr subscriber)
     {
         return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _subscribe, null, subscriber);
     }
 
     /// <summary>
-    /// subscribeToEvent
+    /// Subscribes to a common event. This API uses a promise to return the result, indicating subscription success or
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task SubscribeToEventAsync(IntPtr subscriber, IntPtr callback, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _subscribeToEvent, cancellationToken, subscriber, callback);
     }
 
     /// <summary>
-    /// unsubscribe
+    /// Unsubscribes from a common event. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task UnsubscribeAsync(IntPtr subscriber, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _unsubscribe, cancellationToken, subscriber);

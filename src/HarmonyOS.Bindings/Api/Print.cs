@@ -20,51 +20,8 @@ public static unsafe partial class Print
 {
     private const string ModuleName = "@ohos.print";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[print] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _print => "print"u8;
     private static ReadOnlySpan<byte> _startPrint => "startPrint"u8;
@@ -86,160 +43,180 @@ public static unsafe partial class Print
     private static ReadOnlySpan<byte> _notifyWatermarkComplete => "notifyWatermarkComplete"u8;
 
     /// <summary>
-    /// print
+    /// Prints files. This API uses an asynchronous callback to return the result. To start the system print preview page,
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<PrintTask> PrintAsync(string[] files)
     {
         return NodeApi.CallMethodAsync(Module, _print, static h => new PrintTask(h), NapiArg.Of(files));
     }
 
     /// <summary>
-    /// print
+    /// Prints files. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<PrintTask> PrintAsync(string[] files, IntPtr context)
     {
         return NodeApi.CallMethodAsync(Module, _print, static h => new PrintTask(h), NapiArg.Of(files), context);
     }
 
     /// <summary>
-    /// print
+    /// Prints a file. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<PrintTask> PrintAsync(string jobName, PrintDocumentAdapter printAdapter, PrintAttributes printAttributes, IntPtr context)
     {
         return NodeApi.CallMethodAsync(Module, _print, static h => new PrintTask(h), jobName, NapiArg.Of(printAdapter), NapiArg.Of(printAttributes), context);
     }
 
     /// <summary>
-    /// startPrint
+    /// Prints a file or binary data. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task StartPrintAsync(PrintJobData job, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startPrint, cancellationToken, NapiArg.Of(job));
     }
 
     /// <summary>
-    /// startDiscoverPrinter
+    /// Discovers printers by specifying the extension list. The discovered printers contain the specified print extension
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task StartDiscoverPrinterAsync(string[] extensionList, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startDiscoverPrinter, cancellationToken, NapiArg.Of(extensionList));
     }
 
     /// <summary>
-    /// stopDiscoverPrinter
+    /// Stops discovering printers. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task StopDiscoverPrinterAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopDiscoverPrinter, cancellationToken);
     }
 
     /// <summary>
-    /// connectPrinter
+    /// Connects to a printer by printer ID. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task ConnectPrinterAsync(string printerId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _connectPrinter, cancellationToken, printerId);
     }
 
     /// <summary>
-    /// updatePrintJobState
+    /// Updates the print job state. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task UpdatePrintJobStateAsync(string jobId, global::HarmonyOS.ArkUI.PrintJobState state, global::HarmonyOS.ArkUI.PrintJobSubState subState, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updatePrintJobState, cancellationToken, jobId, (int)state, (int)subState);
     }
 
     /// <summary>
-    /// getAddedPrinters
+    /// Obtains the list of printers added to the system. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<string[]> GetAddedPrintersAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAddedPrinters, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// addPrinterToDiscovery
+    /// Adds a printer to the printer discovery list. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task AddPrinterToDiscoveryAsync(PrinterInformation printerInformation, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _addPrinterToDiscovery, cancellationToken, NapiArg.Of(printerInformation));
     }
 
     /// <summary>
-    /// updatePrinterInDiscovery
+    /// Updates the printer capabilities to the printer discovery list. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task UpdatePrinterInDiscoveryAsync(PrinterInformation printerInformation, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updatePrinterInDiscovery, cancellationToken, NapiArg.Of(printerInformation));
     }
 
     /// <summary>
-    /// removePrinterFromDiscovery
+    /// Removes a printer from the printer discovery list. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task RemovePrinterFromDiscoveryAsync(string printerId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removePrinterFromDiscovery, cancellationToken, printerId);
     }
 
     /// <summary>
-    /// getPrinterInformationById
+    /// Obtains printer information based on the printer ID. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<PrinterInformation> GetPrinterInformationByIdAsync(string printerId)
     {
         return NodeApi.CallMethodAsync(Module, _getPrinterInformationById, static h => new PrinterInformation(h), printerId);
     }
 
     /// <summary>
-    /// updatePrinterInformation
+    /// Updates the information of a printer in the system. This API uses a promise to return the result. Currently, only
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task UpdatePrinterInformationAsync(PrinterInformation printerInformation, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updatePrinterInformation, cancellationToken, NapiArg.Of(printerInformation));
     }
 
     /// <summary>
-    /// on
+    /// Registers a listener for the printer change events. This API uses a callback to return the result.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unregisters the listener for printer state change events. This API uses a callback to return the result.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// addPrinter
+    /// Add a printer to system.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<bool> AddPrinterAsync(string printerName, string uri, string? ppdName = null, string? options = null)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _addPrinter, printerName, uri, ppdName, options);
     }
 
     /// <summary>
-    /// registerWatermarkCallback
+    /// Register to listen for watermark handling.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void RegisterWatermarkCallback(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _registerWatermarkCallback, callback);
     }
 
     /// <summary>
-    /// unregisterWatermarkCallback
+    /// Unregister to listen for watermark handling.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void UnregisterWatermarkCallback(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _unregisterWatermarkCallback, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// notifyWatermarkComplete
+    /// Notify watermark complete.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void NotifyWatermarkComplete(string jobId, global::HarmonyOS.ArkUI.WatermarkHandleResult result)
     {
         NodeApi.CallMethodVoid(Module, _notifyWatermarkComplete, jobId, (int)result);

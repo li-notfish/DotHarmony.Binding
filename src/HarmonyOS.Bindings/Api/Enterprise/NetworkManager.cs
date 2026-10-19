@@ -18,51 +18,8 @@ public static unsafe partial class NetworkManager
 {
     private const string ModuleName = "@ohos.enterprise.networkManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.networkManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getAllNetworkInterfacesSync => "getAllNetworkInterfacesSync"u8;
     private static ReadOnlySpan<byte> _getIpAddressSync => "getIpAddressSync"u8;
@@ -89,192 +46,216 @@ public static unsafe partial class NetworkManager
     private static ReadOnlySpan<byte> _setEthernetConfig => "setEthernetConfig"u8;
 
     /// <summary>
-    /// getAllNetworkInterfacesSync
+    /// Obtains all activated wired network interfaces. This API is suitable for enterprise network management scenarios,
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string[] GetAllNetworkInterfacesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getAllNetworkInterfacesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// getIpAddressSync
+    /// Obtains the device IP address based on the network interface. This API is suitable for enterprise network
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string GetIPAddressSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string networkInterface)
     {
         return NodeApi.CallMethod<string>(Module, _getIpAddressSync, NapiArg.Of(admin), networkInterface);
     }
 
     /// <summary>
-    /// getMacSync
+    /// Obtains the MAC address of a device based on the network interface. This API is suitable for enterprise network
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string GetMacSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string networkInterface)
     {
         return NodeApi.CallMethod<string>(Module, _getMacSync, NapiArg.Of(admin), networkInterface);
     }
 
     /// <summary>
-    /// isNetworkInterfaceDisabledSync
+    /// Queries whether a specified network interface is disabled.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsNetworkInterfaceDisabledSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string networkInterface)
     {
         return NodeApi.CallMethod<bool>(Module, _isNetworkInterfaceDisabledSync, NapiArg.Of(admin), networkInterface);
     }
 
     /// <summary>
-    /// setNetworkInterfaceDisabledSync
+    /// Disables the device from using the specified network interface. This API is suitable for enterprise network
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetNetworkInterfaceDisabledSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string networkInterface, bool isDisabled)
     {
         NodeApi.CallMethodVoid(Module, _setNetworkInterfaceDisabledSync, NapiArg.Of(admin), networkInterface, isDisabled);
     }
 
     /// <summary>
-    /// setGlobalProxySync
+    /// Sets the global network proxy. This API is suitable for enterprise network management scenarios, such as setting a
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetGlobalProxySync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr httpProxy)
     {
         NodeApi.CallMethodVoid(Module, _setGlobalProxySync, NapiArg.Of(admin), httpProxy);
     }
 
     /// <summary>
-    /// setGlobalProxyForAccount
+    /// Sets the network proxy for a specified user. This API is suitable for network management scenarios in enterprise
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void SetGlobalProxyForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr httpProxy, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _setGlobalProxyForAccount, NapiArg.Of(admin), httpProxy, accountId);
     }
 
     /// <summary>
-    /// getGlobalProxySync
+    /// Obtains the global network proxy. This API is suitable for enterprise network management scenarios, such as
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr GetGlobalProxySync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getGlobalProxySync, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// getGlobalProxyForAccount
+    /// Obtains the network proxy for a specified user. This API is suitable for network management scenarios in enterprise
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static IntPtr GetGlobalProxyForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getGlobalProxyForAccount, NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// addFirewallRule
+    /// Adds firewall rules for the device. This API is suitable for enterprise network security
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void AddFirewallRule(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, FirewallRule firewallRule)
     {
         NodeApi.CallMethodVoid(Module, _addFirewallRule, NapiArg.Of(admin), NapiArg.Of(firewallRule));
     }
 
     /// <summary>
-    /// removeFirewallRule
+    /// Removes a firewall rule. This API is suitable for enterprise network security policy adjustment scenarios, such as
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void RemoveFirewallRule(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, FirewallRule? firewallRule = null)
     {
         NodeApi.CallMethodVoid(Module, _removeFirewallRule, NapiArg.Of(admin), NapiArg.Of(firewallRule));
     }
 
     /// <summary>
-    /// getFirewallRules
+    /// Queries firewall rules of a device. This API is suitable for enterprise network security audit scenarios, such as
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static FirewallRule[] GetFirewallRules(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getFirewallRules, h => ValueConverter.ConvertArray(h, static e => new FirewallRule(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addDomainFilterRule
+    /// Adds domain name filtering rules for the device.&lt;!--RP3--&gt;&lt;!--RP3End--&gt;
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void AddDomainFilterRule(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, DomainFilterRule domainFilterRule)
     {
         NodeApi.CallMethodVoid(Module, _addDomainFilterRule, NapiArg.Of(admin), NapiArg.Of(domainFilterRule));
     }
 
     /// <summary>
-    /// removeDomainFilterRule
+    /// Removes the domain name filtering rules. This API is suitable for enterprise network security policy adjustment
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void RemoveDomainFilterRule(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, DomainFilterRule? domainFilterRule = null)
     {
         NodeApi.CallMethodVoid(Module, _removeDomainFilterRule, NapiArg.Of(admin), NapiArg.Of(domainFilterRule));
     }
 
     /// <summary>
-    /// getDomainFilterRules
+    /// Obtains domain name filtering rules. This API is suitable for enterprise network security audit scenarios, such as
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static DomainFilterRule[] GetDomainFilterRules(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getDomainFilterRules, h => ValueConverter.ConvertArray(h, static e => new DomainFilterRule(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addApn
+    /// Adds an access point name (APN).
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void AddApn(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr apnInfo)
     {
         NodeApi.CallMethodVoid(Module, _addApn, NapiArg.Of(admin), apnInfo);
     }
 
     /// <summary>
-    /// deleteApn
+    /// Deletes the APN. This API is suitable for enterprise mobile network configuration management scenarios, such as
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void DeleteApn(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string apnId)
     {
         NodeApi.CallMethodVoid(Module, _deleteApn, NapiArg.Of(admin), apnId);
     }
 
     /// <summary>
-    /// updateApn
+    /// Updates the APN. This API is suitable for enterprise mobile network configuration management scenarios, such as
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void UpdateApn(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr apnInfo, string apnId)
     {
         NodeApi.CallMethodVoid(Module, _updateApn, NapiArg.Of(admin), apnInfo, apnId);
     }
 
     /// <summary>
-    /// setPreferredApn
+    /// Sets the preferred APN.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetPreferredApn(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string apnId)
     {
         NodeApi.CallMethodVoid(Module, _setPreferredApn, NapiArg.Of(admin), apnId);
     }
 
     /// <summary>
-    /// queryApn
+    /// Queries the APN ID. This API is suitable for enterprise mobile network configuration audit scenarios, such as
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string[] QueryApn(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr apnInfo)
     {
         return NodeApi.CallMethod(Module, _queryApn, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), apnInfo);
     }
 
     /// <summary>
-    /// queryApn
+    /// Queries the APN parameter information. This API is suitable for enterprise mobile network configuration audit
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static IntPtr QueryApn(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string apnId)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _queryApn, NapiArg.Of(admin), apnId);
     }
 
     /// <summary>
-    /// turnOnMobileData
+    /// Turns on mobile data.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void TurnOnMobileData(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool isForce)
     {
         NodeApi.CallMethodVoid(Module, _turnOnMobileData, NapiArg.Of(admin), isForce);
     }
 
     /// <summary>
-    /// turnOffMobileData
+    /// Turns off mobile data.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void TurnOffMobileData(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         NodeApi.CallMethodVoid(Module, _turnOffMobileData, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setEthernetConfig
+    /// Sets the IP address of a specific Ethernet interface. This API is suitable for enterprise network management
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void SetEthernetConfig(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string networkInterface, InterfaceConfig config)
     {
         NodeApi.CallMethodVoid(Module, _setEthernetConfig, NapiArg.Of(admin), networkInterface, NapiArg.Of(config));

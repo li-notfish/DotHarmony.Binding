@@ -19,51 +19,8 @@ public static unsafe partial class InputDevice
 {
     private const string ModuleName = "@ohos.multimodalInput.inputDevice";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[multimodalInput.inputDevice] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _off => "off"u8;
@@ -81,112 +38,126 @@ public static unsafe partial class InputDevice
     private static ReadOnlySpan<byte> _isFunctionKeyEnabled => "isFunctionKeyEnabled"u8;
 
     /// <summary>
-    /// on
+    /// Enables listening for device hot swap events. When performing this operation, you need to connect to external
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void On(string type, IntPtr listener)
     {
         NodeApi.CallMethodVoid(Module, _on, type, listener);
     }
 
     /// <summary>
-    /// off
+    /// Disables listening for device hot swap events. This API is called before the application exits. This API uses an
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Off(string type, IntPtr listener)
     {
         NodeApi.CallMethodVoid(Module, _off, type, listener);
     }
 
     /// <summary>
-    /// getDeviceIds
+    /// Obtains the IDs of all input devices. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double[]> GetDeviceIdsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getDeviceIds, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)));
     }
 
     /// <summary>
-    /// getDevice
+    /// Obtains the information about the input device with the specified ID. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<IntPtr> GetDeviceAsync(double deviceId)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getDevice, deviceId);
     }
 
     /// <summary>
-    /// getDeviceList
+    /// Obtains the IDs of all input devices. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double[]> GetDeviceListAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getDeviceList, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)));
     }
 
     /// <summary>
-    /// getDeviceInfo
+    /// Obtains information about the specified input device. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr> GetDeviceInfoAsync(double deviceId)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getDeviceInfo, deviceId);
     }
 
     /// <summary>
-    /// getDeviceInfoSync
+    /// Obtains information about the specified input device.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static IntPtr GetDeviceInfoSync(double deviceId)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getDeviceInfoSync, deviceId);
     }
 
     /// <summary>
-    /// supportKeys
+    /// Queries whether a specified input device supports specified keys. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool[]> SupportKeysAsync(double deviceId, IntPtr[] keys)
     {
         return NodeApi.CallMethodAsync(Module, _supportKeys, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<bool>(e)), deviceId, NapiArg.Of(keys));
     }
 
     /// <summary>
-    /// supportKeysSync
+    /// Checks whether the input device supports the specified keys.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool[] SupportKeysSync(double deviceId, IntPtr[] keys)
     {
         return NodeApi.CallMethod(Module, _supportKeysSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<bool>(e)), deviceId, NapiArg.Of(keys));
     }
 
     /// <summary>
-    /// getKeyboardType
+    /// Obtains the keyboard type of the input device, such as full keyboard and numeric keypad. The keyboard type of the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<global::HarmonyOS.ArkUI.KeyboardType> GetKeyboardTypeAsync(double deviceId)
     {
         return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.KeyboardType>(Module, _getKeyboardType, deviceId);
     }
 
     /// <summary>
-    /// getKeyboardTypeSync
+    /// Obtains the keyboard type of the input device.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static global::HarmonyOS.ArkUI.KeyboardType GetKeyboardTypeSync(double deviceId)
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.KeyboardType>(Module, _getKeyboardTypeSync, deviceId);
     }
 
     /// <summary>
-    /// getIntervalSinceLastInput
+    /// Obtains the interval (including the device sleep time) elapsed since the last system input event. This API uses a
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<double> GetIntervalSinceLastInputAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getIntervalSinceLastInput);
     }
 
     /// <summary>
-    /// setFunctionKeyEnabled
+    /// Specifies whether to enable a function key (for example, **CapsLock**). This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task SetFunctionKeyEnabledAsync(global::HarmonyOS.ArkUI.FunctionKey functionKey, bool enabled, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setFunctionKeyEnabled, cancellationToken, (int)functionKey, enabled);
     }
 
     /// <summary>
-    /// isFunctionKeyEnabled
+    /// Checks whether the specified function key (for example, **CapsLock**) is enabled. This API uses a promise to return
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task<bool> IsFunctionKeyEnabledAsync(global::HarmonyOS.ArkUI.FunctionKey functionKey)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isFunctionKeyEnabled, (int)functionKey);

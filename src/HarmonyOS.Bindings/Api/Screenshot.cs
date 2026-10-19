@@ -18,66 +18,25 @@ public static unsafe partial class Screenshot
 {
     private const string ModuleName = "@ohos.screenshot";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[screenshot] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _capture => "capture"u8;
     private static ReadOnlySpan<byte> _pick => "pick"u8;
 
     /// <summary>
-    /// capture
+    /// Takes a screenshot of the entire screen. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<IntPtr> CaptureAsync(CaptureOption? options = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _capture, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// pick
+    /// Obtains this screenshot. Currently, only the screenshot of the display whose ID is **0** can be obtained. (If a
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<IntPtr> PickAsync()
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _pick);

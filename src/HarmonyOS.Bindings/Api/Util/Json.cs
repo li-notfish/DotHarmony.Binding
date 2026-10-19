@@ -17,51 +17,8 @@ public static unsafe partial class Json
 {
     private const string ModuleName = "@ohos.util.json";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[util.json] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _parse => "parse"u8;
     private static ReadOnlySpan<byte> _stringify => "stringify"u8;
@@ -69,40 +26,45 @@ public static unsafe partial class Json
     private static ReadOnlySpan<byte> _remove => "remove"u8;
 
     /// <summary>
-    /// parse
+    /// Parses a JSON string into an ArkTS object or null.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr Parse(string text, IntPtr? reviver = null, ParseOptions? options = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _parse, text, NapiArg.Of(reviver), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// stringify
+    /// Converts an ArkTS object or array into a JSON string. In the case of a container, linear containers are supported,
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string Stringify(IntPtr value, double? replacer = null, string? space = null)
     {
         return NodeApi.CallMethod<string>(Module, _stringify, value, NapiArg.Of(replacer), space);
     }
 
     /// <summary>
-    /// stringify
+    /// Converts an ArkTS object or array into a JSON string. In the case of a container, linear containers are supported,
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string Stringify(IntPtr value, IntPtr? replacer = null, string? space = null)
     {
         return NodeApi.CallMethod<string>(Module, _stringify, value, NapiArg.Of(replacer), space);
     }
 
     /// <summary>
-    /// has
+    /// Checks whether an ArkTS object contains a key. This API can be used for related operations after
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool Has(IntPtr obj, string property)
     {
         return NodeApi.CallMethod<bool>(Module, _has, obj, property);
     }
 
     /// <summary>
-    /// remove
+    /// Removes a key from an ArkTS object. This API can be used for related operations after
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void Remove(IntPtr obj, string property)
     {
         NodeApi.CallMethodVoid(Module, _remove, obj, property);

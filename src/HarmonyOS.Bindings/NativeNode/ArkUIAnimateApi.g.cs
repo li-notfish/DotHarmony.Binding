@@ -5,13 +5,14 @@
 // （native_animate.h 逐项核实），勿按惯例补 version。
 #nullable enable
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HarmonyOS.Bindings.NativeNode;
 
 #pragma warning disable CS8500
 
+/// <summary>Defines the event callback type.</summary>
+/// <remarks>@since 12</remarks>
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct ArkUI_ContextCallback
 {
@@ -19,6 +20,8 @@ internal unsafe struct ArkUI_ContextCallback
     public delegate* unmanaged<void*, void> Callback;
 }
 
+/// <summary>Defines the callback type for when the animation playback is complete.</summary>
+/// <remarks>@since 12</remarks>
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct ArkUI_AnimateCompleteCallback
 {
@@ -27,6 +30,8 @@ internal unsafe struct ArkUI_AnimateCompleteCallback
     public void* UserData;
 }
 
+/// <summary>Declares the native animation APIs provided by ArkUI.</summary>
+/// <remarks>@since 12</remarks>
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct ArkUI_NativeAnimateAPI_1
 {
@@ -42,15 +47,23 @@ internal static unsafe partial class ArkUINativeApi
     [LibraryImport(ArkuiLib)]
     internal static partial IntPtr OH_ArkUI_GetContextByNode(ArkUI_NodeHandle node);
 
+    /// <summary>Creates an animation configuration.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial IntPtr OH_ArkUI_AnimateOption_Create();
 
+    /// <summary>Disposes of an animation configuration.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial void OH_ArkUI_AnimateOption_Dispose(IntPtr option);
 
+    /// <summary>Sets the animation duration, in milliseconds.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial void OH_ArkUI_AnimateOption_SetDuration(IntPtr option, int value);
 
+    /// <summary>Animation curve.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial void OH_ArkUI_AnimateOption_SetCurve(IntPtr option, ArkUI_AnimationCurve value);
 }

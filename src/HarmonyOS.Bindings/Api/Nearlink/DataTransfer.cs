@@ -20,51 +20,8 @@ public static unsafe partial class DataTransfer
 {
     private const string ModuleName = "@ohos.nearlink.dataTransfer";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[nearlink.dataTransfer] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createPort => "createPort"u8;
     private static ReadOnlySpan<byte> _destroyPort => "destroyPort"u8;
@@ -78,80 +35,90 @@ public static unsafe partial class DataTransfer
     private static ReadOnlySpan<byte> _getConnectionState => "getConnectionState"u8;
 
     /// <summary>
-    /// createPort
+    /// Creates a NearLink listening port that can receive data by UUID.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void CreatePort(string uuid)
     {
         NodeApi.CallMethodVoid(Module, _createPort, uuid);
     }
 
     /// <summary>
-    /// destroyPort
+    /// Destroys a listen port and releases related resources by UUID.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void DestroyPort(string uuid)
     {
         NodeApi.CallMethodVoid(Module, _destroyPort, uuid);
     }
 
     /// <summary>
-    /// connect
+    /// Connects to a server. If the connection is successful, data can be sent to the server.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task ConnectAsync(ConnectionParams @params, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _connect, cancellationToken, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// disconnect
+    /// Disconnects or stops an ongoing connection to a server.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task DisconnectAsync(ConnectionParams @params, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _disconnect, cancellationToken, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// onConnectionStateChanged
+    /// Subscribes to the connection state change event.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnConnectionStateChanged(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onConnectionStateChanged, callback);
     }
 
     /// <summary>
-    /// offConnectionStateChanged
+    /// Unsubscribes from the connection state change event.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffConnectionStateChanged(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offConnectionStateChanged, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// writeData
+    /// Writes data by address and UUID.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task WriteDataAsync(DataParams @params, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _writeData, cancellationToken, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// onReadData
+    /// Subscribes to the event reported when data is read from the port.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnReadData(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onReadData, callback);
     }
 
     /// <summary>
-    /// offReadData
+    /// Unsubscribes from the event reported when data is read from the port.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffReadData(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offReadData, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// getConnectionState
+    /// Obtains the connection status for data transfer.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static global::HarmonyOS.ArkUI.ConnectionState GetConnectionState(ConnectionStateParams @params)
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.ConnectionState>(Module, _getConnectionState, NapiArg.Of(@params));

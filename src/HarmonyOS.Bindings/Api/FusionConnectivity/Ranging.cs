@@ -18,51 +18,8 @@ public static unsafe partial class Ranging
 {
     private const string ModuleName = "@ohos.FusionConnectivity.ranging";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[FusionConnectivity.ranging] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _isRangingSupported => "isRangingSupported"u8;
     private static ReadOnlySpan<byte> _getRangingCapability => "getRangingCapability"u8;
@@ -74,64 +31,72 @@ public static unsafe partial class Ranging
     private static ReadOnlySpan<byte> _offRangingStateChange => "offRangingStateChange"u8;
 
     /// <summary>
-    /// isRangingSupported
+    /// Checks whether the current device supports the ranging feature.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsRangingSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isRangingSupported);
     }
 
     /// <summary>
-    /// getRangingCapability
+    /// Queries whether the current device supports ranging capability.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<RangingCapabilitySupported> GetRangingCapabilityAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getRangingCapability, static h => new RangingCapabilitySupported(h));
     }
 
     /// <summary>
-    /// startRanging
+    /// Initiates ranging with a specified device.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void StartRanging(RangingParams @params, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _startRanging, NapiArg.Of(@params), callback);
     }
 
     /// <summary>
-    /// stopRanging
+    /// Stops ongoing ranging operations.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void StopRanging(IntPtr callback, RangingParams? @params = null)
     {
         NodeApi.CallMethodVoid(Module, _stopRanging, callback, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// startPassiveRanging
+    /// Starts passive ranging mode.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<double> StartPassiveRangingAsync(global::HarmonyOS.ArkUI.RangingTypes capabilityType)
     {
         return NodeApi.CallMethodAsync<double>(Module, _startPassiveRanging, (int)capabilityType);
     }
 
     /// <summary>
-    /// stopPassiveRanging
+    /// Stops passive ranging mode.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void StopPassiveRanging(double handle, global::HarmonyOS.ArkUI.RangingTypes capabilityType)
     {
         NodeApi.CallMethodVoid(Module, _stopPassiveRanging, handle, (int)capabilityType);
     }
 
     /// <summary>
-    /// onRangingStateChange
+    /// Registers a callback to receive ranging state change notifications.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnRangingStateChange(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onRangingStateChange, callback);
     }
 
     /// <summary>
-    /// offRangingStateChange
+    /// Unsubscribe from ranging state change events.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffRangingStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offRangingStateChange, NapiArg.Of(callback));

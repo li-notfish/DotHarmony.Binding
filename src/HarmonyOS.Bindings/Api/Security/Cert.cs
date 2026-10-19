@@ -19,51 +19,8 @@ public static unsafe partial class Cert
 {
     private const string ModuleName = "@ohos.security.cert";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[security.cert] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createX509Cert => "createX509Cert"u8;
     private static ReadOnlySpan<byte> _createCertExtension => "createCertExtension"u8;
@@ -82,144 +39,162 @@ public static unsafe partial class Cert
     private static ReadOnlySpan<byte> _createPkcs12 => "createPkcs12"u8;
 
     /// <summary>
-    /// createX509Cert
+    /// Creates an **X509Cert** instance. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<X509Cert> CreateX509CertAsync(EncodingBlob inStream)
     {
         return NodeApi.CallMethodAsync(Module, _createX509Cert, static h => new X509Cert(h), NapiArg.Of(inStream));
     }
 
     /// <summary>
-    /// createCertExtension
+    /// Creates a certificate extension object. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<CertExtension> CreateCertExtensionAsync(EncodingBlob inStream)
     {
         return NodeApi.CallMethodAsync(Module, _createCertExtension, static h => new CertExtension(h), NapiArg.Of(inStream));
     }
 
     /// <summary>
-    /// createX509Crl
+    /// Creates an **X509Crl** instance. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<X509Crl> CreateX509CrlAsync(EncodingBlob inStream)
     {
         return NodeApi.CallMethodAsync(Module, _createX509Crl, static h => new X509Crl(h), NapiArg.Of(inStream));
     }
 
     /// <summary>
-    /// createCertChainValidator
+    /// Creates a **CertChainValidator** object.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static CertChainValidator CreateCertChainValidator(string algorithm)
     {
         return NodeApi.CallMethod(Module, _createCertChainValidator, static h => new CertChainValidator(h), algorithm);
     }
 
     /// <summary>
-    /// createCertCRLCollection
+    /// Creates an object for a collection of X.509 certificates and CRLs.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static CertCRLCollection CreateCertCrlCollection(X509Cert[] certs, X509CRL[]? crls = null)
     {
         return NodeApi.CallMethod(Module, _createCertCRLCollection, static h => new CertCRLCollection(h), NapiArg.Of(certs), NapiArg.Of(crls));
     }
 
     /// <summary>
-    /// createX509CertChain
+    /// Creates an **X509CertChain** instance. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<X509CertChain> CreateX509CertChainAsync(EncodingBlob inStream)
     {
         return NodeApi.CallMethodAsync(Module, _createX509CertChain, static h => new X509CertChain(h), NapiArg.Of(inStream));
     }
 
     /// <summary>
-    /// createX509CertChain
+    /// Creates an X.509 certificate chain object based on the specified certificates. This API returns the result
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static X509CertChain CreateX509CertChain(X509Cert[] certs)
     {
         return NodeApi.CallMethod(Module, _createX509CertChain, static h => new X509CertChain(h), NapiArg.Of(certs));
     }
 
     /// <summary>
-    /// buildX509CertChain
+    /// Builds an X.509 certificate chain with a CertChainBuildParameters object. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<CertChainBuildResult> BuildX509CertChainAsync(IntPtr param)
     {
         return NodeApi.CallMethodAsync(Module, _buildX509CertChain, static h => new CertChainBuildResult(h), param);
     }
 
     /// <summary>
-    /// parsePkcs12
+    /// Parses P12.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static IntPtr ParsePkcs12(byte[] data, Pkcs12ParsingConfig config)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _parsePkcs12, NapiArg.Of(data), NapiArg.Of(config));
     }
 
     /// <summary>
-    /// parsePkcs12
+    /// Parses P12. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task<IntPtr> ParsePkcs12Async(byte[] data, string password)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _parsePkcs12, NapiArg.Of(data), password);
     }
 
     /// <summary>
-    /// createTrustAnchorsWithKeyStore
+    /// Creates a [TrustAnchor] object array by using the CA certificate parsed from a .p12
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<X509TrustAnchor[]> CreateTrustAnchorsWithKeyStoreAsync(byte[] keystore, string pwd)
     {
         return NodeApi.CallMethodAsync(Module, _createTrustAnchorsWithKeyStore, h => ValueConverter.ConvertArray(h, static e => new X509TrustAnchor(e)), NapiArg.Of(keystore), pwd);
     }
 
     /// <summary>
-    /// createX500DistinguishedName
+    /// Creates an **X500DistinguishedName** object with a name in the form of a string. This API uses a promise to return
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<X500DistinguishedName> CreateX500DistinguishedNameAsync(string nameStr)
     {
         return NodeApi.CallMethodAsync(Module, _createX500DistinguishedName, static h => new X500DistinguishedName(h), nameStr);
     }
 
     /// <summary>
-    /// createX500DistinguishedName
+    /// Creates an **X500DistinguishedName** object with a name in DER format. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<X500DistinguishedName> CreateX500DistinguishedNameAsync(byte[] nameDer)
     {
         return NodeApi.CallMethodAsync(Module, _createX500DistinguishedName, static h => new X500DistinguishedName(h), NapiArg.Of(nameDer));
     }
 
     /// <summary>
-    /// createCmsGenerator
+    /// Creates a **CmsGenerator** object.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static CmsGenerator CreateCmsGenerator(global::HarmonyOS.ArkUI.CmsContentType contentType)
     {
         return NodeApi.CallMethod(Module, _createCmsGenerator, static h => new CmsGenerator(h), (int)contentType);
     }
 
     /// <summary>
-    /// createCmsParser
+    /// Creates a **CmsParser** object.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static CmsParser CreateCmsParser()
     {
         return NodeApi.CallMethod(Module, _createCmsParser, static h => new CmsParser(h));
     }
 
     /// <summary>
-    /// generateCsr
+    /// Generates a CSR.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static string GenerateCsr(PrivateKeyInfo keyInfo, IntPtr config)
     {
         return NodeApi.CallMethod<string>(Module, _generateCsr, NapiArg.Of(keyInfo), config);
     }
 
     /// <summary>
-    /// createPkcs12Sync
+    /// Creates P12. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static byte[] CreatePkcs12Sync(IntPtr data, Pkcs12CreationConfig config)
     {
         return NodeApi.CallMethod(Module, _createPkcs12Sync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), data, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// createPkcs12
+    /// Creates P12. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task<byte[]> CreatePkcs12Async(IntPtr data, Pkcs12CreationConfig config)
     {
         return NodeApi.CallMethodAsync(Module, _createPkcs12, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), data, NapiArg.Of(config));

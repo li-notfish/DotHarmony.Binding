@@ -19,51 +19,8 @@ public static unsafe partial class BackgroundTaskManager
 {
     private const string ModuleName = "@ohos.backgroundTaskManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[backgroundTaskManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _cancelSuspendDelay => "cancelSuspendDelay"u8;
     private static ReadOnlySpan<byte> _getRemainingDelayTime => "getRemainingDelayTime"u8;
@@ -72,40 +29,45 @@ public static unsafe partial class BackgroundTaskManager
     private static ReadOnlySpan<byte> _stopBackgroundRunning => "stopBackgroundRunning"u8;
 
     /// <summary>
-    /// cancelSuspendDelay
+    /// Cancels the suspension delay.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void CancelSuspendDelay(double requestId)
     {
         NodeApi.CallMethodVoid(Module, _cancelSuspendDelay, requestId);
     }
 
     /// <summary>
-    /// getRemainingDelayTime
+    /// Obtains the remaining duration before the application is suspended. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> GetRemainingDelayTimeAsync(double requestId)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getRemainingDelayTime, requestId);
     }
 
     /// <summary>
-    /// requestSuspendDelay
+    /// Requests delayed suspension after the application switches to the background.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static DelaySuspendInfo RequestSuspendDelay(string reason, IntPtr callback)
     {
         return NodeApi.CallMethod(Module, _requestSuspendDelay, static h => new DelaySuspendInfo(h), reason, callback);
     }
 
     /// <summary>
-    /// startBackgroundRunning
+    /// Requests a continuous task from the system. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task StartBackgroundRunningAsync(IntPtr context, global::HarmonyOS.ArkUI.BackgroundMode bgMode, IntPtr wantAgent, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startBackgroundRunning, cancellationToken, context, (int)bgMode, wantAgent);
     }
 
     /// <summary>
-    /// stopBackgroundRunning
+    /// Requests to cancel a continuous task. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task StopBackgroundRunningAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopBackgroundRunning, cancellationToken, context);

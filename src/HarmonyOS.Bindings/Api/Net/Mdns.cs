@@ -17,51 +17,8 @@ public static unsafe partial class Mdns
 {
     private const string ModuleName = "@ohos.net.mdns";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[net.mdns] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _addLocalService => "addLocalService"u8;
     private static ReadOnlySpan<byte> _removeLocalService => "removeLocalService"u8;
@@ -69,32 +26,36 @@ public static unsafe partial class Mdns
     private static ReadOnlySpan<byte> _resolveLocalService => "resolveLocalService"u8;
 
     /// <summary>
-    /// addLocalService
+    /// Adds an MDNS service. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<IntPtr> AddLocalServiceAsync(IntPtr context, IntPtr serviceInfo)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _addLocalService, context, serviceInfo);
     }
 
     /// <summary>
-    /// removeLocalService
+    /// Removes an MDNS service. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<IntPtr> RemoveLocalServiceAsync(IntPtr context, IntPtr serviceInfo)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _removeLocalService, context, serviceInfo);
     }
 
     /// <summary>
-    /// createDiscoveryService
+    /// Creates a **DiscoveryService** object, which is used to discover MDNS services of the specified type.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static DiscoveryService CreateDiscoveryService(IntPtr context, string serviceType)
     {
         return NodeApi.CallMethod(Module, _createDiscoveryService, static h => new DiscoveryService(h), context, serviceType);
     }
 
     /// <summary>
-    /// resolveLocalService
+    /// Resolves an MDNS service. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<IntPtr> ResolveLocalServiceAsync(IntPtr context, IntPtr serviceInfo)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _resolveLocalService, context, serviceInfo);

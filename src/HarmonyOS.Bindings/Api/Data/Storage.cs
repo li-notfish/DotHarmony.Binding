@@ -18,51 +18,8 @@ public static unsafe partial class Storage
 {
     private const string ModuleName = "@ohos.data.storage";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[data.storage] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getStorageSync => "getStorageSync"u8;
     private static ReadOnlySpan<byte> _getStorage => "getStorage"u8;
@@ -74,61 +31,69 @@ public static unsafe partial class Storage
     private static ReadOnlySpan<byte> _MAX_VALUE_LENGTH => "MAX_VALUE_LENGTH"u8;
 
     /// <summary>
-    /// getStorageSync
+    /// Reads the specified file and loads its data to the **Storage** instance for data operations.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static StorageObject GetStorageSync(string path)
     {
         return NodeApi.CallMethod(Module, _getStorageSync, static h => new StorageObject(h), path);
     }
 
     /// <summary>
-    /// getStorage
+    /// Reads the specified file and loads its data to the **Storage** instance for data operations. This API uses an
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<StorageObject> GetStorageAsync(string path)
     {
         return NodeApi.CallMethodAsync(Module, _getStorage, static h => new StorageObject(h), path);
     }
 
     /// <summary>
-    /// deleteStorageSync
+    /// Deletes the singleton **Storage** instance of a file from the memory, and deletes the specified file, its backup
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static void DeleteStorageSync(string path)
     {
         NodeApi.CallMethodVoid(Module, _deleteStorageSync, path);
     }
 
     /// <summary>
-    /// deleteStorage
+    /// Deletes the singleton **Storage** instance of a file from the memory, and deletes the specified file, its backup
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task DeleteStorageAsync(string path, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteStorage, cancellationToken, path);
     }
 
     /// <summary>
-    /// removeStorageFromCacheSync
+    /// Removes the singleton **Storage** instance of a file from the cache. The removed instance cannot be used for data
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static void RemoveStorageFromCacheSync(string path)
     {
         NodeApi.CallMethodVoid(Module, _removeStorageFromCacheSync, path);
     }
 
     /// <summary>
-    /// removeStorageFromCache
+    /// Removes the singleton **Storage** instance of a file from the cache. The removed instance cannot be used for data
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task RemoveStorageFromCacheAsync(string path, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeStorageFromCache, cancellationToken, path);
     }
 
     /// <summary>
-    /// MAX_KEY_LENGTH
+    /// Indicates the maximum length of a key (80 characters).
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static IntPtr MaxKeyLength => NodeApi.GetProperty(Module, _MAX_KEY_LENGTH);
 
     /// <summary>
-    /// MAX_VALUE_LENGTH
+    /// Indicates the maximum length of a string (8192 characters).
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static IntPtr MaxValueLength => NodeApi.GetProperty(Module, _MAX_VALUE_LENGTH);
 
 }

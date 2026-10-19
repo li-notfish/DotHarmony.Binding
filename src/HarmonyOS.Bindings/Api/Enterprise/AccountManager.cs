@@ -19,51 +19,8 @@ public static unsafe partial class AccountManager
 {
     private const string ModuleName = "@ohos.enterprise.accountManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.accountManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _disallowOsAccountAddition => "disallowOsAccountAddition"u8;
     private static ReadOnlySpan<byte> _isOsAccountAdditionDisallowed => "isOsAccountAdditionDisallowed"u8;
@@ -75,64 +32,72 @@ public static unsafe partial class AccountManager
     private static ReadOnlySpan<byte> _activateOsAccount => "activateOsAccount"u8;
 
     /// <summary>
-    /// disallowOsAccountAddition
+    /// Users are not allowed to add accounts. After the API is successfully called, the system forbids the specified user
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void DisallowOsAccountAddition(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool disallow, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _disallowOsAccountAddition, NapiArg.Of(admin), disallow, NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// isOsAccountAdditionDisallowed
+    /// Queries whether a user is not allowed to add an account.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsOsAccountAdditionDisallowed(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double? accountId = null)
     {
         return NodeApi.CallMethod<bool>(Module, _isOsAccountAdditionDisallowed, NapiArg.Of(admin), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// addOsAccountAsync
+    /// Adds an account in the background. This API uses a promise to return the result. This API is applicable to
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<IntPtr> AddOsAccountAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string name, IntPtr type)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _addOsAccountAsync, NapiArg.Of(admin), name, type);
     }
 
     /// <summary>
-    /// setDomainAccountPolicy
+    /// Sets the domain account policy.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void SetDomainAccountPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr domainAccountInfo, DomainAccountPolicy policy)
     {
         NodeApi.CallMethodVoid(Module, _setDomainAccountPolicy, NapiArg.Of(admin), domainAccountInfo, NapiArg.Of(policy));
     }
 
     /// <summary>
-    /// getDomainAccountPolicy
+    /// Obtains the domain account policy. This API is applicable to enterprise management scenarios, such as querying the
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static DomainAccountPolicy GetDomainAccountPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr domainAccountInfo)
     {
         return NodeApi.CallMethod(Module, _getDomainAccountPolicy, static h => new DomainAccountPolicy(h), NapiArg.Of(admin), domainAccountInfo);
     }
 
     /// <summary>
-    /// createNormalOsAccount
+    /// Creates a normal system account. A maximum of two normal system accounts (
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr> CreateNormalOsAccountAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string name)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createNormalOsAccount, NapiArg.Of(admin), name);
     }
 
     /// <summary>
-    /// removeOsAccount
+    /// Removes a system account. Currently, this API is supported only on phones and tablets. It can remove normal system
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task RemoveOsAccountAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeOsAccount, cancellationToken, NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// activateOsAccount
+    /// Switches the system account. Currently, this API is supported only on phones and tablets, and can only switch
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task ActivateOsAccountAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _activateOsAccount, cancellationToken, NapiArg.Of(admin), accountId);

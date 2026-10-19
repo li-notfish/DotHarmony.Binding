@@ -18,75 +18,35 @@ public static unsafe partial class DragController
 {
     private const string ModuleName = "@ohos.arkui.dragController";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[arkui.dragController] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _executeDrag => "executeDrag"u8;
     private static ReadOnlySpan<byte> _createDragAction => "createDragAction"u8;
     private static ReadOnlySpan<byte> _getDragPreview => "getDragPreview"u8;
 
     /// <summary>
-    /// executeDrag
+    /// Initiates a drag action, with the object to be dragged and the drag information passed in. This API uses an
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<IntPtr> ExecuteDragAsync(IntPtr custom, IntPtr dragInfo)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDrag, custom, dragInfo);
     }
 
     /// <summary>
-    /// createDragAction
+    /// Initiates a drag action, with the object to be dragged and the drag information passed in. This API uses a promise
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static DragAction CreateDragAction(IntPtr customArray, IntPtr dragInfo)
     {
         return NodeApi.CallMethod(Module, _createDragAction, static h => new DragAction(h), customArray, dragInfo);
     }
 
     /// <summary>
-    /// getDragPreview
+    /// Obtains the **DragPreview** object, which represents the preview displayed during a drag operation.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static DragPreview GetDragPreview()
     {
         return NodeApi.CallMethod(Module, _getDragPreview, static h => new DragPreview(h));

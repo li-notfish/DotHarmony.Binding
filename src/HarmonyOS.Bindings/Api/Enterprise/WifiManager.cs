@@ -18,51 +18,8 @@ public static unsafe partial class WifiManager
 {
     private const string ModuleName = "@ohos.enterprise.wifiManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.wifiManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _isWifiActiveSync => "isWifiActiveSync"u8;
     private static ReadOnlySpan<byte> _setWifiProfileSync => "setWifiProfileSync"u8;
@@ -76,80 +33,90 @@ public static unsafe partial class WifiManager
     private static ReadOnlySpan<byte> _turnOffWifi => "turnOffWifi"u8;
 
     /// <summary>
-    /// isWifiActiveSync
+    /// Queries the Wi-Fi status of the current device.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsWifiActiveSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<bool>(Module, _isWifiActiveSync, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setWifiProfileSync
+    /// Configures Wi-Fi for the current device to connect to a specified network.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetWifiProfileSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, WifiProfile profile)
     {
         NodeApi.CallMethodVoid(Module, _setWifiProfileSync, NapiArg.Of(admin), NapiArg.Of(profile));
     }
 
     /// <summary>
-    /// addDisallowedWifiList
+    /// Adds disallowed Wi-Fi networks. The current device cannot connect to the disallowed Wi-Fi networks. This API is
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void AddDisallowedWifiList(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, WifiAccessInfo[] list)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedWifiList, NapiArg.Of(admin), NapiArg.Of(list));
     }
 
     /// <summary>
-    /// removeDisallowedWifiList
+    /// Removes disallowed Wi-Fi networks. If some Wi-Fi networks are removed from the disallowed list, the current device
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void RemoveDisallowedWifiList(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, WifiAccessInfo[] list)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedWifiList, NapiArg.Of(admin), NapiArg.Of(list));
     }
 
     /// <summary>
-    /// getDisallowedWifiList
+    /// Obtains disallowed Wi-Fi networks.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static WifiAccessInfo[] GetDisallowedWifiList(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getDisallowedWifiList, h => ValueConverter.ConvertArray(h, static e => new WifiAccessInfo(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addAllowedWifiList
+    /// Adds allowed Wi-Fi networks. The current device can only connect to the allowed Wi-Fi networks. This API is
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void AddAllowedWifiList(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, WifiAccessInfo[] list)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedWifiList, NapiArg.Of(admin), NapiArg.Of(list));
     }
 
     /// <summary>
-    /// removeAllowedWifiList
+    /// Removes Wi-Fi networks from the allowed list. If some Wi-Fi networks are removed from the allowed list, the current
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void RemoveAllowedWifiList(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, WifiAccessInfo[] list)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedWifiList, NapiArg.Of(admin), NapiArg.Of(list));
     }
 
     /// <summary>
-    /// getAllowedWifiList
+    /// Obtains Wi-Fi networks from the allowed list.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static WifiAccessInfo[] GetAllowedWifiList(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getAllowedWifiList, h => ValueConverter.ConvertArray(h, static e => new WifiAccessInfo(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// turnOnWifi
+    /// Enables Wi-Fi. This API is applicable to enterprise device remote management scenarios, such as administrators
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void TurnOnWifi(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool isForce)
     {
         NodeApi.CallMethodVoid(Module, _turnOnWifi, NapiArg.Of(admin), isForce);
     }
 
     /// <summary>
-    /// turnOffWifi
+    /// Disables Wi-Fi.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void TurnOffWifi(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         NodeApi.CallMethodVoid(Module, _turnOffWifi, NapiArg.Of(admin));

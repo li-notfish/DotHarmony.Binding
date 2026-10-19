@@ -18,51 +18,8 @@ public static unsafe partial class FeatureAbility
 {
     private const string ModuleName = "@ohos.ability.featureAbility";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[ability.featureAbility] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getWant => "getWant"u8;
     private static ReadOnlySpan<byte> _startAbility => "startAbility"u8;
@@ -77,88 +34,99 @@ public static unsafe partial class FeatureAbility
     private static ReadOnlySpan<byte> _getWindow => "getWindow"u8;
 
     /// <summary>
-    /// getWant
+    /// Obtains the Want corresponding to the ability to start. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<global::HarmonyOS.Bindings.Api.App.Ability.WantObject> GetWantAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getWant, static h => new global::HarmonyOS.Bindings.Api.App.Ability.WantObject(h));
     }
 
     /// <summary>
-    /// startAbility
+    /// Starts an ability. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<double> StartAbilityAsync(IntPtr parameter)
     {
         return NodeApi.CallMethodAsync<double>(Module, _startAbility, parameter);
     }
 
     /// <summary>
-    /// getContext
+    /// Obtains the application context.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static IntPtr GetContext()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getContext);
     }
 
     /// <summary>
-    /// startAbilityForResult
+    /// Starts an ability. This API uses an asynchronous callback to return the result. The following situations may be
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr> StartAbilityForResultAsync(IntPtr parameter)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _startAbilityForResult, parameter);
     }
 
     /// <summary>
-    /// terminateSelfWithResult
+    /// Terminates this ability. This API uses an asynchronous callback to return the result. If the ability is started by
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task TerminateSelfWithResultAsync(IntPtr parameter, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _terminateSelfWithResult, cancellationToken, parameter);
     }
 
     /// <summary>
-    /// terminateSelf
+    /// Terminates this ability. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task TerminateSelfAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _terminateSelf, cancellationToken);
     }
 
     /// <summary>
-    /// acquireDataAbilityHelper
+    /// Obtains a dataAbilityHelper object.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static IntPtr AcquireDataAbilityHelper(string uri)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _acquireDataAbilityHelper, uri);
     }
 
     /// <summary>
-    /// hasWindowFocus
+    /// Checks whether the main window of this ability has the focus. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> HasWindowFocusAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _hasWindowFocus);
     }
 
     /// <summary>
-    /// connectAbility
+    /// Connects this ability to a ServiceAbility.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double ConnectAbility(global::HarmonyOS.Bindings.Api.App.Ability.WantObject request, IntPtr options)
     {
         return NodeApi.CallMethod<double>(Module, _connectAbility, NapiArg.Of(request), options);
     }
 
     /// <summary>
-    /// disconnectAbility
+    /// Disconnects this ability from a specific ServiceAbility. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task DisconnectAbilityAsync(double connection, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _disconnectAbility, cancellationToken, connection);
     }
 
     /// <summary>
-    /// getWindow
+    /// Obtains the window corresponding to this ability. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr> GetWindowAsync()
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getWindow);

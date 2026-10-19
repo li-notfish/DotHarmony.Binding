@@ -19,51 +19,8 @@ public static unsafe partial class RemoteDevice
 {
     private const string ModuleName = "@ohos.nearlink.remoteDevice";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[nearlink.remoteDevice] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createRemoteDevice => "createRemoteDevice"u8;
     private static ReadOnlySpan<byte> _onPairingStateChange => "onPairingStateChange"u8;
@@ -74,56 +31,63 @@ public static unsafe partial class RemoteDevice
     private static ReadOnlySpan<byte> _offAcbStateChange => "offAcbStateChange"u8;
 
     /// <summary>
-    /// createRemoteDevice
+    /// Creates a remote device instance.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static RemoteDeviceObject CreateRemoteDevice(string address)
     {
         return NodeApi.CallMethod(Module, _createRemoteDevice, static h => new RemoteDeviceObject(h), address);
     }
 
     /// <summary>
-    /// onPairingStateChange
+    /// Subscribes to NearLink pairing state change events.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnPairingStateChange(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onPairingStateChange, callback);
     }
 
     /// <summary>
-    /// offPairingStateChange
+    /// Unsubscribes from NearLink pairing state change events.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffPairingStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offPairingStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// onConnectionStateChange
+    /// Subscribes to NearLink connection state change events.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnConnectionStateChange(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onConnectionStateChange, callback);
     }
 
     /// <summary>
-    /// offConnectionStateChange
+    /// Unsubscribes from NearLink connection state change events.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffConnectionStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offConnectionStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// onAcbStateChange
+    /// Subscribes to the NearLink ACB connection status change event.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnAcbStateChange(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onAcbStateChange, callback);
     }
 
     /// <summary>
-    /// offAcbStateChange
+    /// Unsubscribes from the NearLink ACB connection status change event.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffAcbStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offAcbStateChange, NapiArg.Of(callback));

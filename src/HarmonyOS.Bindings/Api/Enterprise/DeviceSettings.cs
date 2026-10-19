@@ -19,51 +19,8 @@ public static unsafe partial class DeviceSettings
 {
     private const string ModuleName = "@ohos.enterprise.deviceSettings";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.deviceSettings] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _setValue => "setValue"u8;
     private static ReadOnlySpan<byte> _getValue => "getValue"u8;
@@ -77,80 +34,90 @@ public static unsafe partial class DeviceSettings
     private static ReadOnlySpan<byte> _setSwitchStatus => "setSwitchStatus"u8;
 
     /// <summary>
-    /// setValue
+    /// Sets the device policy.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetValue(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string item, string value)
     {
         NodeApi.CallMethodVoid(Module, _setValue, NapiArg.Of(admin), item, value);
     }
 
     /// <summary>
-    /// getValue
+    /// Obtains a device setting policy.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string GetValue(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string item)
     {
         return NodeApi.CallMethod<string>(Module, _getValue, NapiArg.Of(admin), item);
     }
 
     /// <summary>
-    /// setHomeWallpaper
+    /// Sets the home screen wallpaper. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task SetHomeWallpaperAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double fd, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setHomeWallpaper, cancellationToken, NapiArg.Of(admin), fd);
     }
 
     /// <summary>
-    /// setUnlockWallpaper
+    /// Sets the lock screen wallpaper. This API uses a promise to return the result. Enterprise device administrator
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task SetUnlockWallpaperAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double fd, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setUnlockWallpaper, cancellationToken, NapiArg.Of(admin), fd);
     }
 
     /// <summary>
-    /// addHiddenSettingsMenu
+    /// Adds a setting item to the hidden setting item list of the current user. Then the setting item is hidden in the
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void AddHiddenSettingsMenu(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsMenu[] menusToHidden)
     {
         NodeApi.CallMethodVoid(Module, _addHiddenSettingsMenu, NapiArg.Of(admin), NapiArg.Of(menusToHidden));
     }
 
     /// <summary>
-    /// removeHiddenSettingsMenu
+    /// Removes a setting item from the hidden setting item list of the current user. Setting items in the hidden setting
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void RemoveHiddenSettingsMenu(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsMenu[] menusToHidden)
     {
         NodeApi.CallMethodVoid(Module, _removeHiddenSettingsMenu, NapiArg.Of(admin), NapiArg.Of(menusToHidden));
     }
 
     /// <summary>
-    /// getHiddenSettingsMenu
+    /// Obtains the hidden setting item list of the current user.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static global::HarmonyOS.ArkUI.SettingsMenu[] GetHiddenSettingsMenu(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getHiddenSettingsMenu, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.SettingsMenu>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setValueForAccount
+    /// Sets the device policy for a specified user. This API allows you to set a specific parameter for a given user, such
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void SetValueForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsItem item, double accountId, string value)
     {
         NodeApi.CallMethodVoid(Module, _setValueForAccount, NapiArg.Of(admin), (int)item, accountId, value);
     }
 
     /// <summary>
-    /// getValueForAccount
+    /// Obtains the device policy of a specified user. This API allows you to obtain a specific parameter of a given user,
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static string GetValueForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsItem item, double accountId)
     {
         return NodeApi.CallMethod<string>(Module, _getValueForAccount, NapiArg.Of(admin), (int)item, accountId);
     }
 
     /// <summary>
-    /// setSwitchStatus
+    /// Sets the state of a switch. This API can enable or disable NearLink, Bluetooth, Wi-Fi, and NFC. After the setting
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetSwitchStatus(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SwitchKey key, global::HarmonyOS.ArkUI.SwitchStatus status)
     {
         NodeApi.CallMethodVoid(Module, _setSwitchStatus, NapiArg.Of(admin), (int)key, (int)status);

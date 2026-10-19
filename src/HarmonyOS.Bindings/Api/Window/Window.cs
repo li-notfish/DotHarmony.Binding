@@ -20,51 +20,8 @@ public static unsafe partial class Window
 {
     private const string ModuleName = "@ohos.window";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[window] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createWindow => "createWindow"u8;
     private static ReadOnlySpan<byte> _create => "create"u8;
@@ -87,176 +44,198 @@ public static unsafe partial class Window
     private static ReadOnlySpan<byte> _getMainWindowSnapshot => "getMainWindowSnapshot"u8;
 
     /// <summary>
-    /// createWindow
+    /// Creates a child window or system window. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<WindowObject> CreateWindowAsync(IntPtr config)
     {
         return NodeApi.CallMethodAsync(Module, _createWindow, static h => new WindowObject(h), config);
     }
 
     /// <summary>
-    /// create
+    /// Creates a child window. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<WindowObject> CreateAsync(string id, global::HarmonyOS.ArkUI.WindowType type)
     {
         return NodeApi.CallMethodAsync(Module, _create, static h => new WindowObject(h), id, (int)type);
     }
 
     /// <summary>
-    /// create
+    /// Creates a system window. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<WindowObject> CreateAsync(IntPtr ctx, string id, global::HarmonyOS.ArkUI.WindowType type)
     {
         return NodeApi.CallMethodAsync(Module, _create, static h => new WindowObject(h), ctx, id, (int)type);
     }
 
     /// <summary>
-    /// find
+    /// Finds a window based on the ID. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<WindowObject> FindAsync(string id)
     {
         return NodeApi.CallMethodAsync(Module, _find, static h => new WindowObject(h), id);
     }
 
     /// <summary>
-    /// findWindow
+    /// Finds a window based on the name.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static WindowObject FindWindow(string name)
     {
         return NodeApi.CallMethod(Module, _findWindow, static h => new WindowObject(h), name);
     }
 
     /// <summary>
-    /// getTopWindow
+    /// Obtains the top window of the current application. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<WindowObject> GetTopWindowAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getTopWindow, static h => new WindowObject(h));
     }
 
     /// <summary>
-    /// getTopWindow
+    /// Obtains the top window of the current application. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<WindowObject> GetTopWindowAsync(IntPtr ctx)
     {
         return NodeApi.CallMethodAsync(Module, _getTopWindow, static h => new WindowObject(h), ctx);
     }
 
     /// <summary>
-    /// getLastWindow
+    /// Obtains the topmost layer child window of the current application. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<WindowObject> GetLastWindowAsync(IntPtr ctx)
     {
         return NodeApi.CallMethodAsync(Module, _getLastWindow, static h => new WindowObject(h), ctx);
     }
 
     /// <summary>
-    /// shiftAppWindowFocus
+    /// Shifts the window focus from the source window to the target window in the same application. The window focus can
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task ShiftAppWindowFocusAsync(double sourceWindowId, double targetWindowId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowFocus, cancellationToken, sourceWindowId, targetWindowId);
     }
 
     /// <summary>
-    /// shiftAppWindowPointerEvent
+    /// Transfers a mouse input event from one window to another within the same application. This API takes effect only
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task ShiftAppWindowPointerEventAsync(double sourceWindowId, double targetWindowId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowPointerEvent, cancellationToken, sourceWindowId, targetWindowId);
     }
 
     /// <summary>
-    /// shiftAppWindowTouchEvent
+    /// Transfers a touchscreen input event from one window to another within the same application. This API takes effect
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task ShiftAppWindowTouchEventAsync(double sourceWindowId, double targetWindowId, double fingerId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _shiftAppWindowTouchEvent, cancellationToken, sourceWindowId, targetWindowId, fingerId);
     }
 
     /// <summary>
-    /// getVisibleWindowInfo
+    /// Obtains information about visible main windows on the current screen. Visible main windows are main windows that
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<WindowWindowInfo[]> GetVisibleWindowInfoAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getVisibleWindowInfo, h => ValueConverter.ConvertArray(h, static e => new WindowWindowInfo(e)));
     }
 
     /// <summary>
-    /// getWindowsByCoordinate
+    /// Obtains visible windows at the specified coordinates within the current application, sorted by their current layer
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<WindowObject[]> GetWindowsByCoordinateAsync(double displayId, double? windowNumber = null, double? x = null, double? y = null)
     {
         return NodeApi.CallMethodAsync(Module, _getWindowsByCoordinate, h => ValueConverter.ConvertArray(h, static e => new WindowObject(e)), displayId, NapiArg.Of(windowNumber), NapiArg.Of(x), NapiArg.Of(y));
     }
 
     /// <summary>
-    /// getAllWindowLayoutInfo
+    /// Obtains the layout information array of all windows visible on a display. The layout information is arranged based
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task<WindowLayoutInfo[]> GetAllWindowLayoutInfoAsync(double displayId)
     {
         return NodeApi.CallMethodAsync(Module, _getAllWindowLayoutInfo, h => ValueConverter.ConvertArray(h, static e => new WindowLayoutInfo(e)), displayId);
     }
 
     /// <summary>
-    /// getAllWindowLayoutInfo
+    /// Obtains the array of window layout info visible on a specified screen.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<WindowLayoutInfo[]> GetAllWindowLayoutInfoAsync(double displayId, WindowInfoOptions? option = null)
     {
         return NodeApi.CallMethodAsync(Module, _getAllWindowLayoutInfo, h => ValueConverter.ConvertArray(h, static e => new WindowLayoutInfo(e)), displayId, NapiArg.Of(option));
     }
 
     /// <summary>
-    /// getGlobalWindowMode
+    /// Obtains the window mode of the window that is in the foreground lifecycle on the specified screen. This API uses a
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<double> GetGlobalWindowModeAsync(double? displayId = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getGlobalWindowMode, NapiArg.Of(displayId));
     }
 
     /// <summary>
-    /// onApplicationFocusStateChange
+    /// Register the callback for application process focus state changes.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnApplicationFocusStateChange(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onApplicationFocusStateChange, callback);
     }
 
     /// <summary>
-    /// offApplicationFocusStateChange
+    /// Unregister the callback for application process focus state changes.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffApplicationFocusStateChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offApplicationFocusStateChange, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// setStartWindowBackgroundColor
+    /// Sets the background color of the splash screen of the UIAbility based on the specified module name and ability name
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task SetStartWindowBackgroundColorAsync(string moduleName, string abilityName, IntPtr color, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setStartWindowBackgroundColor, cancellationToken, moduleName, abilityName, color);
     }
 
     /// <summary>
-    /// setWatermarkImageForAppWindows
+    /// Sets a watermark image for windows in the current application process. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task SetWatermarkImageForAppWindowsAsync(IntPtr pixelMap, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setWatermarkImageForAppWindows, cancellationToken, pixelMap);
     }
 
     /// <summary>
-    /// getAllMainWindowInfo
+    /// Obtains the information about all main windows. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task<MainWindowInfo[]> GetAllMainWindowInfoAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAllMainWindowInfo, h => ValueConverter.ConvertArray(h, static e => new MainWindowInfo(e)));
     }
 
     /// <summary>
-    /// getMainWindowSnapshot
+    /// Obtains the screenshots of one or more main windows specified by **windowId**. This API uses a promise to return
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task<IntPtr[]> GetMainWindowSnapshotAsync(double[] windowId, WindowSnapshotConfiguration config)
     {
         return NodeApi.CallMethodAsync(Module, _getMainWindowSnapshot, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(windowId), NapiArg.Of(config));

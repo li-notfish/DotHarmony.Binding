@@ -5,7 +5,6 @@
 // 枚举源头 native_gesture.h / ui_input_event.h。
 #nullable enable
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HarmonyOS.Bindings.NativeNode;
@@ -106,6 +105,16 @@ internal enum ArkUI_UIInputEventType
     DigitalCrown = 5,
 }
 
+/// <summary>修饰键位掩码（Ctrl/Shift/Alt/Fn，ui_input_event.h ~262 行）</summary>
+[Flags]
+public enum ArkUI_ModifierKeyName
+{
+    Ctrl = 1,
+    Shift = 2,
+    Alt = 4,
+    Fn = 8,
+}
+
 /// <summary>UI_TOUCH_EVENT_ACTION（ui_input_event.h ~121 行）</summary>
 internal enum UI_TouchEventAction
 {
@@ -191,6 +200,8 @@ internal unsafe struct ArkUI_NativeGestureAPI_1
 
 internal static unsafe partial class ArkUINativeApi
 {
+    /// <summary>Obtains the gesture event type.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial int OH_ArkUI_GestureEvent_GetActionType(ArkUI_GestureEvent* @event);
 
@@ -198,6 +209,8 @@ internal static unsafe partial class ArkUINativeApi
     [LibraryImport(ArkuiLib)]
     internal static partial IntPtr OH_ArkUI_GestureEvent_GetRawInputEvent(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the ArkUI component to which the gesture is bound.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial ArkUI_NodeHandle OH_ArkUI_GestureEvent_GetNode(ArkUI_GestureEvent* @event);
 
@@ -205,39 +218,63 @@ internal static unsafe partial class ArkUINativeApi
     [LibraryImport(ArkuiLib)]
     internal static partial int OH_ArkUI_NodeUtils_GetLayoutPositionInWindow(ArkUI_NodeHandle node, ArkUI_IntOffset* globalOffset);
 
+    /// <summary>Obtains the velocity of a pan gesture along the main axis.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PanGesture_GetVelocity(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the velocity of a pan gesture along the x-axis.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PanGesture_GetVelocityX(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the velocity of a pan gesture along the y-axis.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PanGesture_GetVelocityY(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the relative offset of a pan gesture along the x-axis.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PanGesture_GetOffsetX(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the relative offset of a pan gesture along the y-axis.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PanGesture_GetOffsetY(ArkUI_GestureEvent* @event);
 
+    /// <summary>Angle of the swipe gesture, that is, the angle between the instantaneous direction of finger sliding and the positive horizontal direction. The unit is deg. With the positive horizontal direction as the reference, when the sliding direction is on the clockwise side of the positive horizontal direction, the angle ranges from 0 to 180 degrees; when on the counterclockwise side, the angle ranges from 0 to –180 degrees.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_SwipeGesture_GetAngle(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the average velocity of all fingers used in the swipe gesture.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_SwipeGesture_GetVelocity(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the angle information of a rotation gesture.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_RotationGesture_GetAngle(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the scale ratio of a pinch gesture.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PinchGesture_GetScale(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the x-coordinate of the center of the pinch gesture, in vp, relative to the upper left corner of the current component.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PinchGesture_GetCenterX(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the y-coordinate of the center of the pinch gesture, in vp, relative to the upper left corner of the current component.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PinchGesture_GetCenterY(ArkUI_GestureEvent* @event);
 
+    /// <summary>Obtains the type of a UI input event. Before accessing an **ArkUI_UIInputEvent** pointer, use this API to determine the type of the input event. This API returns a value from the {@link ArkUI_UIInputEvent_Type} enum. It helps ensure compatibility with subsequent accessors. For example, if the event is a touch event, which is directional, you can use OH_ArkUI_UIInputEvent_GetXXX or OH_ArkUI_PointerEvent_GetXXX for access. Using OH_ArkUI_KeyEvent_GetXXX to access the event may produce undefined behavior. For unsupported event types, this API returns the default value **0**.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial int OH_ArkUI_UIInputEvent_GetType(ArkUI_UIInputEvent* @event);
 
@@ -245,12 +282,18 @@ internal static unsafe partial class ArkUINativeApi
     [LibraryImport(ArkuiLib)]
     internal static partial int OH_ArkUI_UIInputEvent_GetAction(ArkUI_UIInputEvent* @event);
 
+    /// <summary>Obtains the source type of a UI input event. The source represents the physical device, such as a touchscreen or mouse device, that generates the input event. It is defined by {@link UI_INPUT_EVENT_SOURCE_TYPE}. This is different from the input tool, which is the device used to interact with the source, for example, a finger or stylus. However, in certain cases, the input source and the input tool can be the same. For example, a mouse device acts as both the source and tool for click events. For key events, obtaining the source type is not supported, and in such cases, the API will return an **unknown** value.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial int OH_ArkUI_UIInputEvent_GetSourceType(ArkUI_UIInputEvent* @event);
 
+    /// <summary>Obtains the number of contact points from a pointer event (such as a touch, mouse, or axis event). Pointer events are typically events that carry position information, such as touch events, where the location of the event can be determined. Non-pointer events, such as key events, do not have position information and do not involve points, so this API always returns **0**. For touch events, this API returns the number of active touch points, for example, fingers on the screen. For mouse and axis events, this API always returns **1**, as they are single-pointer interactions.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial uint OH_ArkUI_PointerEvent_GetPointerCount(ArkUI_UIInputEvent* @event);
 
+    /// <summary>Obtains the unique ID of a contact point from a pointer event (such as a touch, mouse, or axis event). The ID distinguishes between multiple touch points from the same input device. The return value itself does not have any other meaning beyond identifying the touch point.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial int OH_ArkUI_PointerEvent_GetPointerId(ArkUI_UIInputEvent* @event, uint pointerIndex);
 
@@ -262,9 +305,13 @@ internal static unsafe partial class ArkUINativeApi
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PointerEvent_GetY(ArkUI_UIInputEvent* @event);
 
+    /// <summary>Obtains the x-coordinate of a specific contact point relative to the upper left corner of the current component from a pointer event (such as a touch, mouse, or axis event). For mouse and axis events, this API returns the default value of **0.0f** if the given index is greater than 0.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PointerEvent_GetXByIndex(ArkUI_UIInputEvent* @event, uint pointerIndex);
 
+    /// <summary>Obtains the y-coordinate of a specific contact point relative to the upper left corner of the current component from a pointer event (such as a touch, mouse, or axis event). For mouse and axis events, this API returns the default value of **0.0f** if the given index is greater than 0.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     internal static partial float OH_ArkUI_PointerEvent_GetYByIndex(ArkUI_UIInputEvent* @event, uint pointerIndex);
 

@@ -20,51 +20,8 @@ public static unsafe partial class Connection
 {
     private const string ModuleName = "@ohos.net.connection";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[net.connection] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createNetConnection => "createNetConnection"u8;
     private static ReadOnlySpan<byte> _getDefaultNet => "getDefaultNet"u8;
@@ -111,344 +68,387 @@ public static unsafe partial class Connection
     private static ReadOnlySpan<byte> _queryProbeResult => "queryProbeResult"u8;
 
     /// <summary>
-    /// createNetConnection
+    /// Creates a **NetConnection** object, which can be used to listen for the network status.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static NetConnection CreateNetConnection(NetSpecifier? netSpecifier = null, double? timeout = null)
     {
         return NodeApi.CallMethod(Module, _createNetConnection, static h => new NetConnection(h), NapiArg.Of(netSpecifier), NapiArg.Of(timeout));
     }
 
     /// <summary>
-    /// getDefaultNet
+    /// Obtains the network handle used by the system by default, including the network ID. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<NetHandle> GetDefaultNetAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getDefaultNet, static h => new NetHandle(h));
     }
 
     /// <summary>
-    /// getDefaultNetSync
+    /// Obtains the network handle used by the system by default, including the network ID. This API returns the result
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static NetHandle GetDefaultNetSync()
     {
         return NodeApi.CallMethod(Module, _getDefaultNetSync, static h => new NetHandle(h));
     }
 
     /// <summary>
-    /// getAllNets
+    /// Obtains the list of all connected networks. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<NetHandle[]> GetAllNetsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAllNets, h => ValueConverter.ConvertArray(h, static e => new NetHandle(e)));
     }
 
     /// <summary>
-    /// getAllNetsSync
+    /// Obtains the list of all connected networks. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static NetHandle[] GetAllNetsSync()
     {
         return NodeApi.CallMethod(Module, _getAllNetsSync, h => ValueConverter.ConvertArray(h, static e => new NetHandle(e)));
     }
 
     /// <summary>
-    /// getConnectionProperties
+    /// Obtains the connection information of the data network specified by **NetHandle**, including the NIC name, domain
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<IntPtr> GetConnectionPropertiesAsync(NetHandle netHandle)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getConnectionProperties, NapiArg.Of(netHandle));
     }
 
     /// <summary>
-    /// getConnectionPropertiesSync
+    /// Obtains the connection information of the data network specified by **NetHandle**, including the NIC name, domain
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static IntPtr GetConnectionPropertiesSync(NetHandle netHandle)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getConnectionPropertiesSync, NapiArg.Of(netHandle));
     }
 
     /// <summary>
-    /// getNetCapabilities
+    /// Obtains the network capability set of the data network specified by **NetHandle**, including the uplink and
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<NetCapabilities> GetNetCapabilitiesAsync(NetHandle netHandle)
     {
         return NodeApi.CallMethodAsync(Module, _getNetCapabilities, static h => new NetCapabilities(h), NapiArg.Of(netHandle));
     }
 
     /// <summary>
-    /// getNetCapabilitiesSync
+    /// Obtains the network capability information of the data network specified by **NetHandle**, including the uplink and
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static NetCapabilities GetNetCapabilitiesSync(NetHandle netHandle)
     {
         return NodeApi.CallMethod(Module, _getNetCapabilitiesSync, static h => new NetCapabilities(h), NapiArg.Of(netHandle));
     }
 
     /// <summary>
-    /// setNetExtAttribute
+    /// Sets extended attributes of the network specified by **netHandle** to indicate its security level. This API uses a
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task SetNetExtAttributeAsync(NetHandle netHandle, string netExtAttribute, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setNetExtAttribute, cancellationToken, NapiArg.Of(netHandle), netExtAttribute);
     }
 
     /// <summary>
-    /// setNetExtAttributeSync
+    /// Sets extended attributes of the network specified by **netHandle** to indicate its security level. This API returns
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetNetExtAttributeSync(NetHandle netHandle, string netExtAttribute)
     {
         NodeApi.CallMethodVoid(Module, _setNetExtAttributeSync, NapiArg.Of(netHandle), netExtAttribute);
     }
 
     /// <summary>
-    /// getNetExtAttribute
+    /// Obtains the extended attributes of the network specified by **netHandle** to determine its security level. This API
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<string> GetNetExtAttributeAsync(NetHandle netHandle)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getNetExtAttribute, NapiArg.Of(netHandle));
     }
 
     /// <summary>
-    /// getNetExtAttributeSync
+    /// Obtains the extended attributes of the network specified by **netHandle** to determine its security level. This API
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string GetNetExtAttributeSync(NetHandle netHandle)
     {
         return NodeApi.CallMethod<string>(Module, _getNetExtAttributeSync, NapiArg.Of(netHandle));
     }
 
     /// <summary>
-    /// isDefaultNetMetered
+    /// Checks whether the data traffic over the current default network is metered. For example, data traffic over Wi-Fi
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool> IsDefaultNetMeteredAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isDefaultNetMetered);
     }
 
     /// <summary>
-    /// isDefaultNetMeteredSync
+    /// Checks whether the data traffic over the current network is metered. For example, data traffic over Wi-Fi is not
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool IsDefaultNetMeteredSync()
     {
         return NodeApi.CallMethod<bool>(Module, _isDefaultNetMeteredSync);
     }
 
     /// <summary>
-    /// hasDefaultNet
+    /// Checks whether there is an available network. This API uses an asynchronous callback to return the result. If there
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<bool> HasDefaultNetAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _hasDefaultNet);
     }
 
     /// <summary>
-    /// hasDefaultNetSync
+    /// Checks whether there is an available network. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool HasDefaultNetSync()
     {
         return NodeApi.CallMethod<bool>(Module, _hasDefaultNetSync);
     }
 
     /// <summary>
-    /// reportNetConnected
+    /// Reports the network availability to the network management module. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task ReportNetConnectedAsync(NetHandle netHandle, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _reportNetConnected, cancellationToken, NapiArg.Of(netHandle));
     }
 
     /// <summary>
-    /// reportNetDisconnected
+    /// Reports the network unavailability to the network management module. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task ReportNetDisconnectedAsync(NetHandle netHandle, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _reportNetDisconnected, cancellationToken, NapiArg.Of(netHandle));
     }
 
     /// <summary>
-    /// getAddressesByName
+    /// Obtains all IP addresses of the default network by resolving the host name. This API uses an asynchronous callback
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<NetAddress[]> GetAddressesByNameAsync(string host)
     {
         return NodeApi.CallMethodAsync(Module, _getAddressesByName, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host);
     }
 
     /// <summary>
-    /// getAddressesByNameWithOptions
+    /// Performs the DNS resolution using the current default network based on the specified IP address type. This API uses
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<NetAddress[]> GetAddressesByNameWithOptionsAsync(string host, QueryOptions? option = null)
     {
         return NodeApi.CallMethodAsync(Module, _getAddressesByNameWithOptions, h => ValueConverter.ConvertArray(h, static e => new NetAddress(e)), host, NapiArg.Of(option));
     }
 
     /// <summary>
-    /// getAppNet
+    /// Obtains the network handle bound to an application. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<NetHandle> GetAppNetAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAppNet, static h => new NetHandle(h));
     }
 
     /// <summary>
-    /// getAppNetSync
+    /// Obtains the network information bound to an application. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static NetHandle GetAppNetSync()
     {
         return NodeApi.CallMethod(Module, _getAppNetSync, static h => new NetHandle(h));
     }
 
     /// <summary>
-    /// setAppNet
+    /// Binds an application to the network specified by **netHandle**, so that the application can access the external
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task SetAppNetAsync(NetHandle netHandle, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setAppNet, cancellationToken, NapiArg.Of(netHandle));
     }
 
     /// <summary>
-    /// getDefaultHttpProxy
+    /// Obtains the default HTTP proxy configuration of the network. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<HttpProxy> GetDefaultHttpProxyAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getDefaultHttpProxy, static h => new HttpProxy(h));
     }
 
     /// <summary>
-    /// setAppHttpProxy
+    /// Sets the application-level HTTP proxy configuration.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void SetAppHttpProxy(HttpProxy httpProxy)
     {
         NodeApi.CallMethodVoid(Module, _setAppHttpProxy, NapiArg.Of(httpProxy));
     }
 
     /// <summary>
-    /// refreshGlobalHttpProxy
+    /// Notifies the system that global proxy re-authentication is required.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<HttpProxy> RefreshGlobalHttpProxyAsync()
     {
         return NodeApi.CallMethodAsync(Module, _refreshGlobalHttpProxy, static h => new HttpProxy(h));
     }
 
     /// <summary>
-    /// setPacUrl
+    /// Sets the URL of the system-level Proxy Auto Config (PAC) script.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void SetPacUrl(string pacUrl)
     {
         NodeApi.CallMethodVoid(Module, _setPacUrl, pacUrl);
     }
 
     /// <summary>
-    /// getPacUrl
+    /// Obtains the URL of the system-level PAC script.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static string GetPacUrl()
     {
         return NodeApi.CallMethod<string>(Module, _getPacUrl);
     }
 
     /// <summary>
-    /// setPacFileUrl
+    /// Sets the URL of the Proxy Auto-Configuration Script (PAC) and enables the PAC proxy capability, for example, http:/
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetPacFileUrl(string pacFileUrl)
     {
         NodeApi.CallMethodVoid(Module, _setPacFileUrl, pacFileUrl);
     }
 
     /// <summary>
-    /// getPacFileUrl
+    /// Obtains the URL of the current PAC script.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string GetPacFileUrl()
     {
         return NodeApi.CallMethod<string>(Module, _getPacFileUrl);
     }
 
     /// <summary>
-    /// findProxyForUrl
+    /// Parses the specified URL proxy address based on the configured PAC script and returns the corresponding PAC proxy
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string FindProxyForUrl(string url)
     {
         return NodeApi.CallMethod<string>(Module, _findProxyForUrl, url);
     }
 
     /// <summary>
-    /// addCustomDnsRule
+    /// Adds custom DNS rules for the specified host of the current application. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task AddCustomDnsRuleAsync(string host, string[] ip, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _addCustomDnsRule, cancellationToken, host, NapiArg.Of(ip));
     }
 
     /// <summary>
-    /// removeCustomDnsRule
+    /// Removes the custom DNS rules of the specified host from the current application. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task RemoveCustomDnsRuleAsync(string host, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeCustomDnsRule, cancellationToken, host);
     }
 
     /// <summary>
-    /// clearCustomDnsRules
+    /// Removes all custom DNS rules of the current application. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task ClearCustomDnsRulesAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _clearCustomDnsRules, cancellationToken);
     }
 
     /// <summary>
-    /// getConnectOwnerUid
+    /// Queries the UID of the application that initiates a specified network connection. This API uses a promise to return
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<double> GetConnectOwnerUidAsync(global::HarmonyOS.ArkUI.NetConnectionProtocolType protocol, NetAddress local, NetAddress remote)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getConnectOwnerUid, (int)protocol, NapiArg.Of(local), NapiArg.Of(remote));
     }
 
     /// <summary>
-    /// getConnectOwnerUidSync
+    /// Queries the UID of the application that initiates a specified network connection. This API returns the result
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static double GetConnectOwnerUidSync(global::HarmonyOS.ArkUI.NetConnectionProtocolType protocol, NetAddress local, NetAddress remote)
     {
         return NodeApi.CallMethod<double>(Module, _getConnectOwnerUidSync, (int)protocol, NapiArg.Of(local), NapiArg.Of(remote));
     }
 
     /// <summary>
-    /// getIpNeighTable
+    /// Obtains information about entries in the IP neighbor table of the local device, including IPv4 and IPv6 entries.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<NetIpMacInfo[]> GetIPNeighTableAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getIpNeighTable, h => ValueConverter.ConvertArray(h, static e => new NetIpMacInfo(e)));
     }
 
     /// <summary>
-    /// getDnsAscii
+    /// Converts the host name from Unicode to ASCII and controls the conversion behavior through the optional conversion
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static string GetDnsAscii(string host, global::HarmonyOS.ArkUI.ConversionProcess? flag = null)
     {
         return NodeApi.CallMethod<string>(Module, _getDnsAscii, host, NapiArg.Of(flag));
     }
 
     /// <summary>
-    /// getDnsUnicode
+    /// Converts host names from ASCII to Unicode using the Punycode encoding mode and uses the optional conversionProcess
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static string GetDnsUnicode(string host, global::HarmonyOS.ArkUI.ConversionProcess? flag = null)
     {
         return NodeApi.CallMethod<string>(Module, _getDnsUnicode, host, NapiArg.Of(flag));
     }
 
     /// <summary>
-    /// getSystemNetPortStates
+    /// Obtains information about all TCP and UDP ports currently listened by the system, and the PID and UID of the
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<IntPtr> GetSystemNetPortStatesAsync()
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getSystemNetPortStates);
     }
 
     /// <summary>
-    /// queryTraceRoute
+    /// Queries the network route tracing information. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<TraceRouteInfo[]> QueryTraceRouteAsync(string destination, TraceRouteOptions? option = null)
     {
         return NodeApi.CallMethodAsync(Module, _queryTraceRoute, h => ValueConverter.ConvertArray(h, static e => new TraceRouteInfo(e)), destination, NapiArg.Of(option));
     }
 
     /// <summary>
-    /// queryProbeResult
+    /// Queries network probe results. If an exception (for example, network disconnection) occurs and the request fails to
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<ProbeResultInfo> QueryProbeResultAsync(string destination, double duration)
     {
         return NodeApi.CallMethodAsync(Module, _queryProbeResult, static h => new ProbeResultInfo(h), destination, duration);

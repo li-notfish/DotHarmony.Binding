@@ -19,51 +19,8 @@ public static unsafe partial class BackgroundProcessManager
 {
     private const string ModuleName = "@ohos.resourceschedule.backgroundProcessManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[resourceschedule.backgroundProcessManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _setProcessPriority => "setProcessPriority"u8;
     private static ReadOnlySpan<byte> _resetProcessPriority => "resetProcessPriority"u8;
@@ -72,40 +29,45 @@ public static unsafe partial class BackgroundProcessManager
     private static ReadOnlySpan<byte> _getPowerSaveMode => "getPowerSaveMode"u8;
 
     /// <summary>
-    /// setProcessPriority
+    /// Sets the child process priority. After a child process is suppressed, the CPU resources that can be obtained will
     /// </summary>
+    /// <remarks>@since 17</remarks>
     public static Task SetProcessPriorityAsync(double pid, global::HarmonyOS.ArkUI.ProcessPriority priority, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setProcessPriority, cancellationToken, pid, (int)priority);
     }
 
     /// <summary>
-    /// resetProcessPriority
+    /// Unsuppresses the child process. In this case, the child process follows the scheduling policy of the main
     /// </summary>
+    /// <remarks>@since 17</remarks>
     public static Task ResetProcessPriorityAsync(double pid, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _resetProcessPriority, cancellationToken, pid);
     }
 
     /// <summary>
-    /// setPowerSaveMode
+    /// Sets the power saving mode for a process. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task SetPowerSaveModeAsync(double pid, global::HarmonyOS.ArkUI.PowerSaveMode powerSaveMode, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setPowerSaveMode, cancellationToken, pid, (int)powerSaveMode);
     }
 
     /// <summary>
-    /// isPowerSaveMode
+    /// Queries whether the process is in power saving mode. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<bool> IsPowerSaveModeAsync(double pid)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isPowerSaveMode, pid);
     }
 
     /// <summary>
-    /// getPowerSaveMode
+    /// Obtains the power saving mode of a process. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<global::HarmonyOS.ArkUI.PowerSaveMode> GetPowerSaveModeAsync(double pid)
     {
         return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.PowerSaveMode>(Module, _getPowerSaveMode, pid);

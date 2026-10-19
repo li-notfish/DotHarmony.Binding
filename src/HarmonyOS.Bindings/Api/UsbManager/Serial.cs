@@ -17,51 +17,8 @@ public static unsafe partial class Serial
 {
     private const string ModuleName = "@ohos.usbManager.serial";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[usbManager.serial] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getPortList => "getPortList"u8;
     private static ReadOnlySpan<byte> _hasSerialRight => "hasSerialRight"u8;
@@ -77,96 +34,108 @@ public static unsafe partial class Serial
     private static ReadOnlySpan<byte> _writeSync => "writeSync"u8;
 
     /// <summary>
-    /// getPortList
+    /// Obtains the serial port device list, including the device name and port number.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static IntPtr GetPortList()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getPortList);
     }
 
     /// <summary>
-    /// hasSerialRight
+    /// Checks whether the application has the permission to access the serial port device. When an application is
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static bool HasSerialRight(double portId)
     {
         return NodeApi.CallMethod<bool>(Module, _hasSerialRight, portId);
     }
 
     /// <summary>
-    /// requestSerialRight
+    /// Requests the permission for the application to access the serial port device. After the application exits, the
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static Task<bool> RequestSerialRightAsync(double portId)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _requestSerialRight, portId);
     }
 
     /// <summary>
-    /// cancelSerialRight
+    /// Cancels the permission to access the serial port device when the application is running. This API is used to close
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void CancelSerialRight(double portId)
     {
         NodeApi.CallMethodVoid(Module, _cancelSerialRight, portId);
     }
 
     /// <summary>
-    /// open
+    /// Opens a serial port device.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void Open(double portId)
     {
         NodeApi.CallMethodVoid(Module, _open, portId);
     }
 
     /// <summary>
-    /// close
+    /// Closes the serial port device.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void Close(double portId)
     {
         NodeApi.CallMethodVoid(Module, _close, portId);
     }
 
     /// <summary>
-    /// getAttribute
+    /// Obtains the configuration parameters of a specified serial port.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static IntPtr GetAttribute(double portId)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getAttribute, portId);
     }
 
     /// <summary>
-    /// setAttribute
+    /// Sets the parameters of the serial port. If this method is not called, the default configuration parameters are used
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void SetAttribute(double portId, SerialAttribute attribute)
     {
         NodeApi.CallMethodVoid(Module, _setAttribute, portId, NapiArg.Of(attribute));
     }
 
     /// <summary>
-    /// read
+    /// Reads data from the serial port device asynchronously. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static Task<double> ReadAsync(double portId, byte[] buffer, double? timeout = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _read, portId, NapiArg.Of(buffer), NapiArg.Of(timeout));
     }
 
     /// <summary>
-    /// readSync
+    /// Reads data from the serial port device synchronously.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static double ReadSync(double portId, byte[] buffer, double? timeout = null)
     {
         return NodeApi.CallMethod<double>(Module, _readSync, portId, NapiArg.Of(buffer), NapiArg.Of(timeout));
     }
 
     /// <summary>
-    /// write
+    /// Writes data to the serial port device asynchronously. The length of data written each time cannot exceed 4 KB;
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static Task<double> WriteAsync(double portId, byte[] buffer, double? timeout = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _write, portId, NapiArg.Of(buffer), NapiArg.Of(timeout));
     }
 
     /// <summary>
-    /// writeSync
+    /// Writes data to the serial port device synchronously. The length of data written each time cannot exceed 4 KB;
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static double WriteSync(double portId, byte[] buffer, double? timeout = null)
     {
         return NodeApi.CallMethod<double>(Module, _writeSync, portId, NapiArg.Of(buffer), NapiArg.Of(timeout));

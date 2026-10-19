@@ -18,51 +18,8 @@ public static unsafe partial class Router
 {
     private const string ModuleName = "@ohos.router";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[router] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _push => "push"u8;
     private static ReadOnlySpan<byte> _pushUrl => "pushUrl"u8;
@@ -83,176 +40,198 @@ public static unsafe partial class Router
     private static ReadOnlySpan<byte> _replaceNamedRoute => "replaceNamedRoute"u8;
 
     /// <summary>
-    /// push
+    /// Navigates to a specified page in the application.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void Push(IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _push, options);
     }
 
     /// <summary>
-    /// pushUrl
+    /// Navigates to a specified page in the application.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task PushUrlAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, cancellationToken, options);
     }
 
     /// <summary>
-    /// pushUrl
+    /// Navigates to a specified page in the application.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task PushUrlAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushUrl, cancellationToken, options, (int)mode);
     }
 
     /// <summary>
-    /// replace
+    /// Replaces the current page with another one in the application and destroys the current page.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void Replace(IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _replace, options);
     }
 
     /// <summary>
-    /// replaceUrl
+    /// Replaces the current page with another one in the application and destroys the current page.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task ReplaceUrlAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, cancellationToken, options);
     }
 
     /// <summary>
-    /// replaceUrl
+    /// Replaces the current page with another one in the application and destroys the current page.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task ReplaceUrlAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceUrl, cancellationToken, options, (int)mode);
     }
 
     /// <summary>
-    /// back
+    /// Returns to the previous page or a specified page, which deletes all pages between the current page and the target
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void Back(IntPtr? options = null)
     {
         NodeApi.CallMethodVoid(Module, _back, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// back
+    /// Returns to the specified page, which deletes all pages between the current page and the target page.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void Back(double index, IntPtr? @params = null)
     {
         NodeApi.CallMethodVoid(Module, _back, index, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// clear
+    /// Clears all historical pages in the stack and retains only the current page at the top of the stack.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void Clear()
     {
         NodeApi.CallMethodVoid(Module, _clear);
     }
 
     /// <summary>
-    /// getLength
+    /// Obtains the number of pages in the current stack.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static string GetLength()
     {
         return NodeApi.CallMethod<string>(Module, _getLength);
     }
 
     /// <summary>
-    /// getState
+    /// Obtains state information about the page at the top of the navigation stack.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static IntPtr GetState()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getState);
     }
 
     /// <summary>
-    /// getStateByIndex
+    /// Obtains the status information about a page by its index.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr GetStateByIndex(double index)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getStateByIndex, index);
     }
 
     /// <summary>
-    /// getStateByUrl
+    /// Obtains the status information about a page by its URL.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr[] GetStateByUrl(string url)
     {
         return NodeApi.CallMethod(Module, _getStateByUrl, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), url);
     }
 
     /// <summary>
-    /// enableAlertBeforeBackPage
+    /// Enables the display of a confirm dialog box before returning to the previous page.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void EnableAlertBeforeBackPage(EnableAlertOptions options)
     {
         NodeApi.CallMethodVoid(Module, _enableAlertBeforeBackPage, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// showAlertBeforeBackPage
+    /// Enables the display of a confirm dialog box before returning to the previous page.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void ShowAlertBeforeBackPage(EnableAlertOptions options)
     {
         NodeApi.CallMethodVoid(Module, _showAlertBeforeBackPage, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// disableAlertBeforeBackPage
+    /// Disables the display of a confirm dialog box before returning to the previous page.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void DisableAlertBeforeBackPage()
     {
         NodeApi.CallMethodVoid(Module, _disableAlertBeforeBackPage);
     }
 
     /// <summary>
-    /// hideAlertBeforeBackPage
+    /// Disables the display of a confirm dialog box before returning to the previous page.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void HideAlertBeforeBackPage()
     {
         NodeApi.CallMethodVoid(Module, _hideAlertBeforeBackPage);
     }
 
     /// <summary>
-    /// getParams
+    /// Obtains the parameters passed from the page that initiates redirection to the current page.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static IntPtr GetParams()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getParams);
     }
 
     /// <summary>
-    /// pushNamedRoute
+    /// Navigates to a page using the named route. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task PushNamedRouteAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, cancellationToken, options);
     }
 
     /// <summary>
-    /// pushNamedRoute
+    /// Navigates to a page using the named route. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task PushNamedRouteAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _pushNamedRoute, cancellationToken, options, (int)mode);
     }
 
     /// <summary>
-    /// replaceNamedRoute
+    /// Replaces the current page with another one using the named route and destroys the current page.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task ReplaceNamedRouteAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, cancellationToken, options);
     }
 
     /// <summary>
-    /// replaceNamedRoute
+    /// Replaces the current page with another one using the named route and destroys the current page.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task ReplaceNamedRouteAsync(IntPtr options, global::HarmonyOS.ArkUI.RouterMode mode, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _replaceNamedRoute, cancellationToken, options, (int)mode);

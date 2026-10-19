@@ -17,51 +17,8 @@ public static unsafe partial class Eap
 {
     private const string ModuleName = "@ohos.net.eap";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[net.eap] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _regCustomEapHandler => "regCustomEapHandler"u8;
     private static ReadOnlySpan<byte> _unregCustomEapHandler => "unregCustomEapHandler"u8;
@@ -70,40 +27,45 @@ public static unsafe partial class Eap
     private static ReadOnlySpan<byte> _logOffEthEap => "logOffEthEap"u8;
 
     /// <summary>
-    /// regCustomEapHandler
+    /// Registers a custom handler of Extensible Authentication Protocol (EAP) packets for extensible authentication. This
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void RegCustomEapHandler(double netType, double eapCode, double eapType, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _regCustomEapHandler, netType, eapCode, eapType, callback);
     }
 
     /// <summary>
-    /// unregCustomEapHandler
+    /// Unregisters the custom handler of EAP packets for extensible authentication. This API returns the result
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void UnregCustomEapHandler(double netType, double eapCode, double eapType, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _unregCustomEapHandler, netType, eapCode, eapType, callback);
     }
 
     /// <summary>
-    /// replyCustomEapData
+    /// Notifies the system of the extensible authentication result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void ReplyCustomEapData(global::HarmonyOS.ArkUI.CustomResult result, EapData data)
     {
         NodeApi.CallMethodVoid(Module, _replyCustomEapData, (int)result, NapiArg.Of(data));
     }
 
     /// <summary>
-    /// startEthEap
+    /// Starts EAP authentication on an Ethernet NIC.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void StartEthEap(double netId, EthEapProfile profile)
     {
         NodeApi.CallMethodVoid(Module, _startEthEap, netId, NapiArg.Of(profile));
     }
 
     /// <summary>
-    /// logOffEthEap
+    /// Revokes the EAP-authenticated state of an Ethernet NIC.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void LogOffEthEap(double netId)
     {
         NodeApi.CallMethodVoid(Module, _logOffEthEap, netId);

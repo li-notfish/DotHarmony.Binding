@@ -17,51 +17,8 @@ public static unsafe partial class PromptAction
 {
     private const string ModuleName = "@ohos.promptAction";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[promptAction] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _showToast => "showToast"u8;
     private static ReadOnlySpan<byte> _openToast => "openToast"u8;
@@ -72,56 +29,63 @@ public static unsafe partial class PromptAction
     private static ReadOnlySpan<byte> _showActionMenu => "showActionMenu"u8;
 
     /// <summary>
-    /// showToast
+    /// Creates and displays a toast.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void ShowToast(IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _showToast, options);
     }
 
     /// <summary>
-    /// openToast
+    /// Shows a toast. This API uses a promise to return the toast ID.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<double> OpenToastAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsync<double>(Module, _openToast, options);
     }
 
     /// <summary>
-    /// closeToast
+    /// Closes the specified toast.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void CloseToast(double toastId)
     {
         NodeApi.CallMethodVoid(Module, _closeToast, toastId);
     }
 
     /// <summary>
-    /// showDialog
+    /// Creates and displays a dialog box. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<PromptActionShowDialogSuccessResponse> ShowDialogAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsync(Module, _showDialog, static h => new PromptActionShowDialogSuccessResponse(h), options);
     }
 
     /// <summary>
-    /// openCustomDialog
+    /// Opens a custom dialog box. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<double> OpenCustomDialogAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsync<double>(Module, _openCustomDialog, options);
     }
 
     /// <summary>
-    /// closeCustomDialog
+    /// Closes the specified custom dialog box.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void CloseCustomDialog(double dialogId)
     {
         NodeApi.CallMethodVoid(Module, _closeCustomDialog, dialogId);
     }
 
     /// <summary>
-    /// showActionMenu
+    /// Creates and displays an action menu. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<PromptActionActionMenuSuccessResponse> ShowActionMenuAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsync(Module, _showActionMenu, static h => new PromptActionActionMenuSuccessResponse(h), options);

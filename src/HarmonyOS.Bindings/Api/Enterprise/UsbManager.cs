@@ -18,51 +18,8 @@ public static unsafe partial class UsbManager
 {
     private const string ModuleName = "@ohos.enterprise.usbManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.usbManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _addAllowedUsbDevices => "addAllowedUsbDevices"u8;
     private static ReadOnlySpan<byte> _removeAllowedUsbDevices => "removeAllowedUsbDevices"u8;
@@ -77,88 +34,99 @@ public static unsafe partial class UsbManager
     private static ReadOnlySpan<byte> _getDisallowedPermissiveUsbDevices => "getDisallowedPermissiveUsbDevices"u8;
 
     /// <summary>
-    /// addAllowedUsbDevices
+    /// Adds allowed USB devices.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void AddAllowedUsbDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, UsbDeviceId[] usbDeviceIds)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDeviceIds));
     }
 
     /// <summary>
-    /// removeAllowedUsbDevices
+    /// Removes allowed USB devices.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void RemoveAllowedUsbDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, UsbDeviceId[] usbDeviceIds)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDeviceIds));
     }
 
     /// <summary>
-    /// getAllowedUsbDevices
+    /// Obtains allowed USB devices.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static UsbDeviceId[] GetAllowedUsbDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getAllowedUsbDevices, h => ValueConverter.ConvertArray(h, static e => new UsbDeviceId(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setUsbStorageDeviceAccessPolicy
+    /// Sets the USB storage device (baseClass = 0x08) access policy.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetUsbStorageDeviceAccessPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.UsbPolicy usbPolicy)
     {
         NodeApi.CallMethodVoid(Module, _setUsbStorageDeviceAccessPolicy, NapiArg.Of(admin), (int)usbPolicy);
     }
 
     /// <summary>
-    /// getUsbStorageDeviceAccessPolicy
+    /// Obtains the access policy of the USB storage device.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static global::HarmonyOS.ArkUI.UsbPolicy GetUsbStorageDeviceAccessPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.UsbPolicy>(Module, _getUsbStorageDeviceAccessPolicy, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addDisallowedUsbDevices
+    /// Adds disallowed USB device types.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void AddDisallowedUsbDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, UsbDeviceType[] usbDevices)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDevices));
     }
 
     /// <summary>
-    /// removeDisallowedUsbDevices
+    /// Removes the disallowed USB device types.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void RemoveDisallowedUsbDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, UsbDeviceType[] usbDevices)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDevices));
     }
 
     /// <summary>
-    /// getDisallowedUsbDevices
+    /// Obtains the disallowed USB device types.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static UsbDeviceType[] GetDisallowedUsbDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getDisallowedUsbDevices, h => ValueConverter.ConvertArray(h, static e => new UsbDeviceType(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addDisallowedPermissiveUsbDevices
+    /// Adds disallowed USB device types. Unlike the [addDisallowedUsbDevices]
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void AddDisallowedPermissiveUsbDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, PermissiveUsbDeviceType[] usbDevices)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedPermissiveUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDevices));
     }
 
     /// <summary>
-    /// removeDisallowedPermissiveUsbDevices
+    /// Removes the USB device types that have been disallowed via
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void RemoveDisallowedPermissiveUsbDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, PermissiveUsbDeviceType[] usbDevices)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedPermissiveUsbDevices, NapiArg.Of(admin), NapiArg.Of(usbDevices));
     }
 
     /// <summary>
-    /// getDisallowedPermissiveUsbDevices
+    /// Obtains the USB device types that have been disallowed via
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static PermissiveUsbDeviceType[] GetDisallowedPermissiveUsbDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getDisallowedPermissiveUsbDevices, h => ValueConverter.ConvertArray(h, static e => new PermissiveUsbDeviceType(e)), NapiArg.Of(admin));

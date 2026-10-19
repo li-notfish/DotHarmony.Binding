@@ -18,51 +18,8 @@ public static unsafe partial class Taskpool
 {
     private const string ModuleName = "@ohos.taskpool";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[taskpool] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _execute => "execute"u8;
     private static ReadOnlySpan<byte> _executeDelayed => "executeDelayed"u8;
@@ -74,152 +31,171 @@ public static unsafe partial class Taskpool
     private static ReadOnlySpan<byte> _getTask => "getTask"u8;
 
     /// <summary>
-    /// execute
+    /// Places a function to be executed in the internal queue of the task pool. The function is not executed immediately.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr> ExecuteAsync(IntPtr func, IntPtr[] args)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, func, NapiArg.Of(args));
     }
 
     /// <summary>
-    /// execute
+    /// Verifies the passed-in parameter types and return value type of a concurrent function, and places the function in
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static Task<IntPtr> ExecuteAsync(Task<IntPtr> func, IntPtr args)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, NapiArg.Of(func), args);
     }
 
     /// <summary>
-    /// execute
+    /// Places a task in the internal queue of the task pool. The task will not be executed immediately; instead, it waits
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr> ExecuteAsync(Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, NapiArg.Of(task), NapiArg.Of(priority));
     }
 
     /// <summary>
-    /// execute
+    /// Places the generic task in the internal queue of the task pool. The parameter type and return value type of the
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static Task<IntPtr> ExecuteAsync(IntPtr task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, NapiArg.Of(priority));
     }
 
     /// <summary>
-    /// execute
+    /// Places a task group in the internal queue of the task pool. The tasks in the task group are not executed
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(group), NapiArg.Of(priority));
     }
 
     /// <summary>
-    /// executeDelayed
+    /// Executes a task after a given delay. In this execution mode, you can set the task priority and call **cancel()** to
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<IntPtr> ExecuteDelayedAsync(double delayTime, Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDelayed, delayTime, NapiArg.Of(task), NapiArg.Of(priority));
     }
 
     /// <summary>
-    /// executeDelayed
+    /// Executes the generic task with a delay without verifying the parameter type and return value type of the task. This
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static Task<IntPtr> ExecuteDelayedAsync(double delayTime, IntPtr task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _executeDelayed, delayTime, task, NapiArg.Of(priority));
     }
 
     /// <summary>
-    /// executePeriodically
+    /// Executes a task periodically. In this execution mode, you can set the task priority and call **cancel()** to cancel
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void ExecutePeriodically(double period, Task task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         NodeApi.CallMethodVoid(Module, _executePeriodically, period, NapiArg.Of(task), NapiArg.Of(priority));
     }
 
     /// <summary>
-    /// executePeriodically
+    /// Executes a generic task periodically, without verifying the parameter type and return value type of the task.
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static void ExecutePeriodically(double period, IntPtr task, global::HarmonyOS.ArkUI.TaskpoolPriority? priority = null)
     {
         NodeApi.CallMethodVoid(Module, _executePeriodically, period, task, NapiArg.Of(priority));
     }
 
     /// <summary>
-    /// cancel
+    /// Cancels a task in the task pool. If the task is in the internal queue of the task pool, the task will not be
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Cancel(Task task)
     {
         NodeApi.CallMethodVoid(Module, _cancel, NapiArg.Of(task));
     }
 
     /// <summary>
-    /// cancel
+    /// Cancels a task group in the task pool. If a task group is canceled before all the tasks in it are finished,
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void Cancel(TaskGroup group)
     {
         NodeApi.CallMethodVoid(Module, _cancel, NapiArg.Of(group));
     }
 
     /// <summary>
-    /// cancel
+    /// Cancels a task in the task pool by task ID. If the task is in the internal queue of the task pool, the task will
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void Cancel(double taskId)
     {
         NodeApi.CallMethodVoid(Module, _cancel, taskId);
     }
 
     /// <summary>
-    /// getTaskPoolInfo
+    /// Obtains the thread information and task information of the task pool.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static TaskPoolInfo GetTaskPoolInfo()
     {
         return NodeApi.CallMethod(Module, _getTaskPoolInfo, static h => new TaskPoolInfo(h));
     }
 
     /// <summary>
-    /// terminateTask
+    /// Terminates a continuous task in the task pool. It is called after the continuous task is complete. After the task
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void TerminateTask(LongTask longTask)
     {
         NodeApi.CallMethodVoid(Module, _terminateTask, NapiArg.Of(longTask));
     }
 
     /// <summary>
-    /// isConcurrent
+    /// Checks whether a function is a concurrent function.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsConcurrent(IntPtr func)
     {
         return NodeApi.CallMethod<bool>(Module, _isConcurrent, func);
     }
 
     /// <summary>
-    /// getTask
+    /// Obtains the corresponding task instance by task ID, or by task ID and task name.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task GetTaskAsync(double taskId, string? taskName = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _getTask, cancellationToken, taskId, taskName);
     }
 
     /// <summary>
-    /// execute
+    /// Execute a concurrent task with Configs.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<IntPtr> ExecuteAsync(Task task, Configs configs)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, NapiArg.Of(task), NapiArg.Of(configs));
     }
 
     /// <summary>
-    /// execute
+    /// Execute a concurrent generics task with Configs.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<IntPtr> ExecuteAsync(IntPtr task, Configs configs)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _execute, task, NapiArg.Of(configs));
     }
 
     /// <summary>
-    /// execute
+    /// Execute a concurrent task group with Configs.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<IntPtr[]> ExecuteAsync(TaskGroup group, Configs configs)
     {
         return NodeApi.CallMethodAsync(Module, _execute, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(group), NapiArg.Of(configs));

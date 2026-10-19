@@ -19,51 +19,8 @@ public static unsafe partial class BundleManager
 {
     private const string ModuleName = "@ohos.bundle.bundleManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[bundle.bundleManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getBundleInfoForSelf => "getBundleInfoForSelf"u8;
     private static ReadOnlySpan<byte> _getBundleInfoForSelfSync => "getBundleInfoForSelfSync"u8;
@@ -89,192 +46,216 @@ public static unsafe partial class BundleManager
     private static ReadOnlySpan<byte> _getApplicationLabel => "getApplicationLabel"u8;
 
     /// <summary>
-    /// getBundleInfoForSelf
+    /// Obtains the bundle information of the current application based on the given bundle flags. This API uses a promise
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr> GetBundleInfoForSelfAsync(double bundleFlags)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getBundleInfoForSelf, bundleFlags);
     }
 
     /// <summary>
-    /// getBundleInfoForSelfSync
+    /// Obtains the bundle information of the current application based on the given bundle flags. This API returns the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static IntPtr GetBundleInfoForSelfSync(double bundleFlags)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getBundleInfoForSelfSync, bundleFlags);
     }
 
     /// <summary>
-    /// getBundleInfo
+    /// Obtains the bundle information based on the given bundle name and bundle flags. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<IntPtr> GetBundleInfoAsync(string bundleName, double bundleFlags)
     {
         return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _getBundleInfo, null, bundleName, bundleFlags);
     }
 
     /// <summary>
-    /// getBundleInfo
+    /// Obtains the [BundleInfo]/BundleInfo based on the given bundle name, bundle flags, and user
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<IntPtr> GetBundleInfoAsync(string bundleName, double bundleFlags, double userId)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getBundleInfo, bundleName, bundleFlags, userId);
     }
 
     /// <summary>
-    /// getAbilityInfo
+    /// Obtains the ability information based on the given resource identifier and ability flag. This API uses a promise to
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<IntPtr[]> GetAbilityInfoAsync(string uri, double abilityFlags)
     {
         return NodeApi.CallMethodAsync(Module, _getAbilityInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), uri, abilityFlags);
     }
 
     /// <summary>
-    /// getBundleNameByUid
+    /// Obtains the bundle name based on the given UID. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<string> GetBundleNameByUidAsync(double uid)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getBundleNameByUid, uid);
     }
 
     /// <summary>
-    /// getBundleNameByUidSync
+    /// Obtains the bundle name based on the given UID. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static string GetBundleNameByUidSync(double uid)
     {
         return NodeApi.CallMethod<string>(Module, _getBundleNameByUidSync, uid);
     }
 
     /// <summary>
-    /// cleanBundleCacheFilesForSelf
+    /// Clears the application cache. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task CleanBundleCacheFilesForSelfAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cleanBundleCacheFilesForSelf, cancellationToken);
     }
 
     /// <summary>
-    /// getLaunchWantForBundleSync
+    /// Obtains the Want used to launch the bundle based on the given bundle name and user ID. This API returns the result
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static global::HarmonyOS.Bindings.Api.App.Ability.WantObject GetLaunchWantForBundleSync(string bundleName, double? userId = null)
     {
         return NodeApi.CallMethod(Module, _getLaunchWantForBundleSync, static h => new global::HarmonyOS.Bindings.Api.App.Ability.WantObject(h), bundleName, NapiArg.Of(userId));
     }
 
     /// <summary>
-    /// getLaunchWant
+    /// Obtains the **Want** parameters of the
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static global::HarmonyOS.Bindings.Api.App.Ability.WantObject GetLaunchWant()
     {
         return NodeApi.CallMethod(Module, _getLaunchWant, static h => new global::HarmonyOS.Bindings.Api.App.Ability.WantObject(h));
     }
 
     /// <summary>
-    /// getProfileByAbility
+    /// Obtains the JSON string array of the current application's configuration file based on the given module name,
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<string[]> GetProfileByAbilityAsync(string moduleName, string abilityName, string metadataName)
     {
         return NodeApi.CallMethodAsync(Module, _getProfileByAbility, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), moduleName, abilityName, metadataName);
     }
 
     /// <summary>
-    /// getProfileByAbilitySync
+    /// Obtains the JSON string array of the current application's configuration file based on the given module name,
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string[] GetProfileByAbilitySync(string moduleName, string abilityName, string? metadataName = null)
     {
         return NodeApi.CallMethod(Module, _getProfileByAbilitySync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), moduleName, abilityName, metadataName);
     }
 
     /// <summary>
-    /// getProfileByExtensionAbility
+    /// Obtains the JSON string array of the current application's configuration file based on the given module name,
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<string[]> GetProfileByExtensionAbilityAsync(string moduleName, string extensionAbilityName, string metadataName)
     {
         return NodeApi.CallMethodAsync(Module, _getProfileByExtensionAbility, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), moduleName, extensionAbilityName, metadataName);
     }
 
     /// <summary>
-    /// getProfileByExtensionAbilitySync
+    /// Obtains the JSON string array of the current application's configuration file based on the given module name,
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string[] GetProfileByExtensionAbilitySync(string moduleName, string extensionAbilityName, string? metadataName = null)
     {
         return NodeApi.CallMethod(Module, _getProfileByExtensionAbilitySync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), moduleName, extensionAbilityName, metadataName);
     }
 
     /// <summary>
-    /// getBundleInfoSync
+    /// Obtains the bundle information based on the given bundle name, bundle flags, and user ID. This API returns the
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static IntPtr GetBundleInfoSync(string bundleName, double bundleFlags, double userId)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getBundleInfoSync, bundleName, bundleFlags, userId);
     }
 
     /// <summary>
-    /// getBundleInfoSync
+    /// Obtains the bundle information for the caller's user based on the given bundle name and bundle flags. This API
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static IntPtr GetBundleInfoSync(string bundleName, double bundleFlags)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getBundleInfoSync, bundleName, bundleFlags);
     }
 
     /// <summary>
-    /// getAlternateIcons
+    /// Queries the alternate icon information configured in the alternateIcons in the app.json5
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr[]> GetAlternateIconsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAlternateIcons, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// setAlternateIcon
+    /// Sets the alternate icon of the caller based on the given alternate icon name.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task SetAlternateIconAsync(string alternateIconName, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setAlternateIcon, cancellationToken, alternateIconName);
     }
 
     /// <summary>
-    /// canOpenLink
+    /// Checks whether the target application can be accessed based on the provided link. The scheme specified in the link
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool CanOpenLink(string link)
     {
         return NodeApi.CallMethod<bool>(Module, _canOpenLink, link);
     }
 
     /// <summary>
-    /// getSignatureInfo
+    /// Obtains the [signature information]/BundleInfo:SignatureInfo of an application based on the
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static IntPtr GetSignatureInfo(double uid)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getSignatureInfo, uid);
     }
 
     /// <summary>
-    /// getAppCloneIdentity
+    /// Obtains the bundle name and clone index of a cloned application based on the given UID. This API uses a promise to
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<IntPtr> GetAppCloneIdentityAsync(double uid)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getAppCloneIdentity, uid);
     }
 
     /// <summary>
-    /// getPluginBundlePathForSelf
+    /// Obtains the installation path of a specified plugin in the current
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static string GetPluginBundlePathForSelf(string pluginBundleName)
     {
         return NodeApi.CallMethod<string>(Module, _getPluginBundlePathForSelf, pluginBundleName);
     }
 
     /// <summary>
-    /// getInstalledBundleList
+    /// Obtains all the bundle information in the system based on the given bundle flags.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr[]> GetInstalledBundleListAsync(double bundleFlags)
     {
         return NodeApi.CallMethodAsync(Module, _getInstalledBundleList, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), bundleFlags);
     }
 
     /// <summary>
-    /// getApplicationLabel
+    /// Obtains the name of an application with the specified package name and clone index.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<string> GetApplicationLabelAsync(string bundleName, double appIndex)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getApplicationLabel, bundleName, appIndex);

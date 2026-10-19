@@ -19,51 +19,8 @@ public static unsafe partial class Wifi
 {
     private const string ModuleName = "@ohos.wifi";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[wifi] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _isWifiActive => "isWifiActive"u8;
     private static ReadOnlySpan<byte> _scan => "scan"u8;
@@ -89,176 +46,198 @@ public static unsafe partial class Wifi
     private static ReadOnlySpan<byte> _off => "off"u8;
 
     /// <summary>
-    /// isWifiActive
+    /// Queries the Wi-Fi status
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static bool IsWifiActive()
     {
         return NodeApi.CallMethod<bool>(Module, _isWifiActive);
     }
 
     /// <summary>
-    /// scan
+    /// Scans Wi-Fi hotspot.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static bool Scan()
     {
         return NodeApi.CallMethod<bool>(Module, _scan);
     }
 
     /// <summary>
-    /// getScanInfos
+    /// Obtains the hotspot information that scanned.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<WifiScanInfo[]> GetScanInfosAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getScanInfos, h => ValueConverter.ConvertArray(h, static e => new WifiScanInfo(e)));
     }
 
     /// <summary>
-    /// addUntrustedConfig
+    /// Adds a specified untrusted hotspot configuration.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> AddUntrustedConfigAsync(WifiDeviceConfig config)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _addUntrustedConfig, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// removeUntrustedConfig
+    /// Removes a specified untrusted hotspot configuration.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> RemoveUntrustedConfigAsync(WifiDeviceConfig config)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _removeUntrustedConfig, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// getSignalLevel
+    /// Calculates the Wi-Fi signal level based on the Wi-Fi RSSI and frequency band.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double GetSignalLevel(double rssi, double band)
     {
         return NodeApi.CallMethod<double>(Module, _getSignalLevel, rssi, band);
     }
 
     /// <summary>
-    /// getLinkedInfo
+    /// Obtains information about a Wi-Fi connection.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<WifiLinkedInfo> GetLinkedInfoAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getLinkedInfo, static h => new WifiLinkedInfo(h));
     }
 
     /// <summary>
-    /// isConnected
+    /// Checks whether a Wi-Fi connection has been set up.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool IsConnected()
     {
         return NodeApi.CallMethod<bool>(Module, _isConnected);
     }
 
     /// <summary>
-    /// isFeatureSupported
+    /// Checks whether this device supports a specified feature.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool IsFeatureSupported(double featureId)
     {
         return NodeApi.CallMethod<bool>(Module, _isFeatureSupported, featureId);
     }
 
     /// <summary>
-    /// getIpInfo
+    /// Obtains the IP information of a Wi-Fi connection.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static IpInfo GetIPInfo()
     {
         return NodeApi.CallMethod(Module, _getIpInfo, static h => new IpInfo(h));
     }
 
     /// <summary>
-    /// getCountryCode
+    /// Obtains the country code of this device.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string GetCountryCode()
     {
         return NodeApi.CallMethod<string>(Module, _getCountryCode);
     }
 
     /// <summary>
-    /// getP2pLinkedInfo
+    /// Obtains information about a P2P connection.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<WifiP2pLinkedInfo> GetP2pLinkedInfoAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getP2pLinkedInfo, static h => new WifiP2pLinkedInfo(h));
     }
 
     /// <summary>
-    /// getCurrentGroup
+    /// Obtains information about the current group.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<WifiP2pGroupInfo> GetCurrentGroupAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getCurrentGroup, static h => new WifiP2pGroupInfo(h));
     }
 
     /// <summary>
-    /// getP2pPeerDevices
+    /// Obtains the information about the found devices.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<WifiP2pDevice[]> GetP2pPeerDevicesAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getP2pPeerDevices, h => ValueConverter.ConvertArray(h, static e => new WifiP2pDevice(e)));
     }
 
     /// <summary>
-    /// createGroup
+    /// Creates a P2P group.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool CreateGroup(WifiP2PConfig config)
     {
         return NodeApi.CallMethod<bool>(Module, _createGroup, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// removeGroup
+    /// Removes a P2P group.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool RemoveGroup()
     {
         return NodeApi.CallMethod<bool>(Module, _removeGroup);
     }
 
     /// <summary>
-    /// p2pConnect
+    /// Initiates a P2P connection to a device with the specified configuration.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool P2pConnect(WifiP2PConfig config)
     {
         return NodeApi.CallMethod<bool>(Module, _p2pConnect, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// p2pCancelConnect
+    /// Canceling a P2P connection.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool P2pCancelConnect()
     {
         return NodeApi.CallMethod<bool>(Module, _p2pCancelConnect);
     }
 
     /// <summary>
-    /// startDiscoverDevices
+    /// Discover Wi-Fi P2P devices.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool StartDiscoverDevices()
     {
         return NodeApi.CallMethod<bool>(Module, _startDiscoverDevices);
     }
 
     /// <summary>
-    /// stopDiscoverDevices
+    /// Stops discovering Wi-Fi P2P devices.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool StopDiscoverDevices()
     {
         return NodeApi.CallMethod<bool>(Module, _stopDiscoverDevices);
     }
 
     /// <summary>
-    /// on
+    /// Subscribe Wi-Fi status change events.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribe Wi-Fi status change events.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);

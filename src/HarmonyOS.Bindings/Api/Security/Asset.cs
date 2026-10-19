@@ -18,51 +18,8 @@ public static unsafe partial class Asset
 {
     private const string ModuleName = "@ohos.security.asset";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[security.asset] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _add => "add"u8;
     private static ReadOnlySpan<byte> _batchAdd => "batchAdd"u8;
@@ -82,128 +39,144 @@ public static unsafe partial class Asset
     private static ReadOnlySpan<byte> _querySyncResult => "querySyncResult"u8;
 
     /// <summary>
-    /// add
+    /// Adds an asset. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task AddAsync(IntPtr attributes, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _add, cancellationToken, attributes);
     }
 
     /// <summary>
-    /// batchAdd
+    /// Adds assets in batches based on an attributes array.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<BatchResult> BatchAddAsync(IntPtr[] attributesArray)
     {
         return NodeApi.CallMethodAsync(Module, _batchAdd, static h => new BatchResult(h), NapiArg.Of(attributesArray));
     }
 
     /// <summary>
-    /// addSync
+    /// Adds an asset. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void AddSync(IntPtr attributes)
     {
         NodeApi.CallMethodVoid(Module, _addSync, attributes);
     }
 
     /// <summary>
-    /// remove
+    /// Removes one or more assets. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task RemoveAsync(IntPtr query, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _remove, cancellationToken, query);
     }
 
     /// <summary>
-    /// batchRemove
+    /// Removes assets in batches based on an alias list.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task BatchRemoveAsync(IntPtr[] assetsToBeRemoved, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _batchRemove, cancellationToken, NapiArg.Of(assetsToBeRemoved));
     }
 
     /// <summary>
-    /// removeSync
+    /// Removes one or more assets. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void RemoveSync(IntPtr query)
     {
         NodeApi.CallMethodVoid(Module, _removeSync, query);
     }
 
     /// <summary>
-    /// update
+    /// Updates an asset. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task UpdateAsync(IntPtr query, IntPtr attributesToUpdate, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _update, cancellationToken, query, attributesToUpdate);
     }
 
     /// <summary>
-    /// batchUpdate
+    /// Updates assets in batches based on an attributes array.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<BatchResult> BatchUpdateAsync(IntPtr[] sourceAttributes, IntPtr[] destAttributes)
     {
         return NodeApi.CallMethodAsync(Module, _batchUpdate, static h => new BatchResult(h), NapiArg.Of(sourceAttributes), NapiArg.Of(destAttributes));
     }
 
     /// <summary>
-    /// updateSync
+    /// Updates an asset. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void UpdateSync(IntPtr query, IntPtr attributesToUpdate)
     {
         NodeApi.CallMethodVoid(Module, _updateSync, query, attributesToUpdate);
     }
 
     /// <summary>
-    /// preQuery
+    /// Performs preprocessing for the asset query. This API is used when user authentication is required for the access to
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<byte[]> PreQueryAsync(IntPtr query)
     {
         return NodeApi.CallMethodAsync(Module, _preQuery, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), query);
     }
 
     /// <summary>
-    /// preQuerySync
+    /// Performs preprocessing for the asset query. This API is used when user authentication is required for the access to
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static byte[] PreQuerySync(IntPtr query)
     {
         return NodeApi.CallMethod(Module, _preQuerySync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), query);
     }
 
     /// <summary>
-    /// query
+    /// Queries one or more assets. If user authentication is required for the access to the asset,
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<IntPtr[]> QueryAsync(IntPtr query)
     {
         return NodeApi.CallMethodAsync(Module, _query, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), query);
     }
 
     /// <summary>
-    /// querySync
+    /// Queries one or more assets. If user authentication is required for the access to the asset, call
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr[] QuerySync(IntPtr query)
     {
         return NodeApi.CallMethod(Module, _querySync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), query);
     }
 
     /// <summary>
-    /// postQuery
+    /// Performs postprocessing for the asset query. This API is used when user authentication is required for the access
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task PostQueryAsync(IntPtr handle, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _postQuery, cancellationToken, handle);
     }
 
     /// <summary>
-    /// postQuerySync
+    /// Performs postprocessing for the asset query. This API is used when user authentication is required for the access
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void PostQuerySync(IntPtr handle)
     {
         NodeApi.CallMethodVoid(Module, _postQuerySync, handle);
     }
 
     /// <summary>
-    /// querySyncResult
+    /// Queries the result of the sync operation. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<AssetSyncResult> QuerySyncResultAsync(IntPtr query)
     {
         return NodeApi.CallMethodAsync(Module, _querySyncResult, static h => new AssetSyncResult(h), query);

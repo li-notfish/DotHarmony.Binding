@@ -19,51 +19,8 @@ public static unsafe partial class PartnerAgent
 {
     private const string ModuleName = "@ohos.FusionConnectivity.partnerAgent";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[FusionConnectivity.partnerAgent] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _isPartnerAgentSupported => "isPartnerAgentSupported"u8;
     private static ReadOnlySpan<byte> _bindDevice => "bindDevice"u8;
@@ -73,48 +30,54 @@ public static unsafe partial class PartnerAgent
     private static ReadOnlySpan<byte> _isDeviceControlEnabled => "isDeviceControlEnabled"u8;
 
     /// <summary>
-    /// isPartnerAgentSupported
+    /// Checks whether the current device supports the partner agent feature.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static bool IsPartnerAgentSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isPartnerAgentSupported);
     }
 
     /// <summary>
-    /// bindDevice
+    /// Bind the partner device.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task BindDeviceAsync(IntPtr deviceAddress, DeviceCapability deviceCapability, BusinessCapability businessCapability, string partnerAgentExtensionAbilityName, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _bindDevice, cancellationToken, deviceAddress, NapiArg.Of(deviceCapability), NapiArg.Of(businessCapability), partnerAgentExtensionAbilityName);
     }
 
     /// <summary>
-    /// unbindDevice
+    /// Unbinds a partner device.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task UnbindDeviceAsync(IntPtr deviceAddress, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _unbindDevice, cancellationToken, deviceAddress);
     }
 
     /// <summary>
-    /// isDeviceBound
+    /// Checks whether a device is bound to this application.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static bool IsDeviceBound(IntPtr deviceAddress)
     {
         return NodeApi.CallMethod<bool>(Module, _isDeviceBound, deviceAddress);
     }
 
     /// <summary>
-    /// getBoundDevices
+    /// Gets the list of addresses of the bound partner device for this application.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static IntPtr[] GetBoundDevices()
     {
         return NodeApi.CallMethod(Module, _getBoundDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// isDeviceControlEnabled
+    /// Checks whether device control is enabled.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static bool IsDeviceControlEnabled(IntPtr deviceAddress)
     {
         return NodeApi.CallMethod<bool>(Module, _isDeviceControlEnabled, deviceAddress);

@@ -19,51 +19,8 @@ public static unsafe partial class Huks
 {
     private const string ModuleName = "@ohos.security.huks";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[security.huks] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _generateKey => "generateKey"u8;
     private static ReadOnlySpan<byte> _generateKeyItem => "generateKeyItem"u8;
@@ -98,264 +55,297 @@ public static unsafe partial class Huks
     private static ReadOnlySpan<byte> _decapsulate => "decapsulate"u8;
 
     /// <summary>
-    /// generateKey
+    /// Generates a key. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<HuksResult> GenerateKeyAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _generateKey, static h => new HuksResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// generateKeyItem
+    /// Generates a key. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task GenerateKeyItemAsync(string keyAlias, HuksOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _generateKeyItem, cancellationToken, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// deleteKey
+    /// Deletes a key. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<HuksResult> DeleteKeyAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _deleteKey, static h => new HuksResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// deleteKeyItem
+    /// Deletes a key. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task DeleteKeyItemAsync(string keyAlias, HuksOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteKeyItem, cancellationToken, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// importKey
+    /// Imports a key in plaintext. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<HuksResult> ImportKeyAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _importKey, static h => new HuksResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// importKeyItem
+    /// Imports a key in plaintext. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task ImportKeyItemAsync(string keyAlias, HuksOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _importKeyItem, cancellationToken, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// importWrappedKeyItem
+    /// Imports keys in secure mode. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task ImportWrappedKeyItemAsync(string keyAlias, string wrappingKeyAlias, HuksOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _importWrappedKeyItem, cancellationToken, keyAlias, wrappingKeyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// exportKey
+    /// Exports a key. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<HuksResult> ExportKeyAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _exportKey, static h => new HuksResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// exportKeyItem
+    /// Exports a key. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<HuksReturnResult> ExportKeyItemAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _exportKeyItem, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// getKeyProperties
+    /// Obtains key properties. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<HuksResult> GetKeyPropertiesAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _getKeyProperties, static h => new HuksResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// getKeyItemProperties
+    /// Obtains key properties. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<HuksReturnResult> GetKeyItemPropertiesAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _getKeyItemProperties, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// isKeyExist
+    /// Checks whether a key exists. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<bool> IsKeyExistAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isKeyExist, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// isKeyItemExist
+    /// Checks whether a key exists. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool> IsKeyItemExistAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isKeyItemExist, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// hasKeyItem
+    /// Checks whether a key exists. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<bool> HasKeyItemAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _hasKeyItem, keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// init
+    /// Initializes a session for a key operation. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<HuksHandle> InitAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _init, static h => new HuksHandle(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// initSession
+    /// Initializes a session for a key operation. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<HuksSessionHandle> InitSessionAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _initSession, static h => new HuksSessionHandle(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// update
+    /// Updates the key operation data by segment. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<HuksResult> UpdateAsync(double handle, byte[] token, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _update, static h => new HuksResult(h), handle, NapiArg.Of(token), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// updateSession
+    /// Updates the key operation. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<HuksReturnResult> UpdateSessionAsync(double handle, HuksOptions options)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _updateSession, static h => new HuksReturnResult(h), handle, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// updateSession
+    /// Updates the key operation by segment. The **updateSession** operation is used for user identity authentication and
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<HuksReturnResult> UpdateSessionAsync(double handle, HuksOptions options, byte[] token)
     {
         return NodeApi.CallMethodAsync(Module, _updateSession, static h => new HuksReturnResult(h), handle, NapiArg.Of(options), NapiArg.Of(token));
     }
 
     /// <summary>
-    /// finish
+    /// Finishes the key operation. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<HuksResult> FinishAsync(double handle, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _finish, static h => new HuksResult(h), handle, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// finishSession
+    /// Finishes the key operation. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<HuksReturnResult> FinishSessionAsync(double handle, HuksOptions options)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _finishSession, static h => new HuksReturnResult(h), handle, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// finishSession
+    /// Finishes the key operation by segment. The **finishSession** operation is used for user identity authentication and
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<HuksReturnResult> FinishSessionAsync(double handle, HuksOptions options, byte[] token)
     {
         return NodeApi.CallMethodAsync(Module, _finishSession, static h => new HuksReturnResult(h), handle, NapiArg.Of(options), NapiArg.Of(token));
     }
 
     /// <summary>
-    /// abort
+    /// Aborts a key operation. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<HuksResult> AbortAsync(double handle, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _abort, static h => new HuksResult(h), handle, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// abortSession
+    /// Aborts a key operation. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task AbortSessionAsync(double handle, HuksOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _abortSession, cancellationToken, handle, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// attestKeyItem
+    /// Attests a key. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<HuksReturnResult> AttestKeyItemAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _attestKeyItem, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// anonAttestKeyItem
+    /// Attests an anonymous key. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<HuksReturnResult> AnonAttestKeyItemAsync(string keyAlias, HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _anonAttestKeyItem, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// anonAttestKeyItemOffline
+    /// Obtains an anonymous key certificate in offline mode. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<HuksReturnResult> AnonAttestKeyItemOfflineAsync(string keyAlias, HuksParam[] @params)
     {
         return NodeApi.CallMethodAsync(Module, _anonAttestKeyItemOffline, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// getSdkVersion
+    /// Obtains the SDK version of the current system.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static string GetSdkVersion(HuksOptions options)
     {
         return NodeApi.CallMethod<string>(Module, _getSdkVersion, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// listAliases
+    /// Lists key aliases. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<HuksListAliasesReturnResult> ListAliasesAsync(HuksOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _listAliases, static h => new HuksListAliasesReturnResult(h), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// wrapKeyItem
+    /// Wraps a key. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<HuksReturnResult> WrapKeyItemAsync(string keyAlias, HuksOptions @params)
     {
         return NodeApi.CallMethodAsync(Module, _wrapKeyItem, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// unwrapKeyItem
+    /// Unwraps a key. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<HuksReturnResult> UnwrapKeyItemAsync(string keyAlias, HuksOptions @params, byte[] wrappedKey)
     {
         return NodeApi.CallMethodAsync(Module, _unwrapKeyItem, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(@params), NapiArg.Of(wrappedKey));
     }
 
     /// <summary>
-    /// encapsulate
+    /// Post-Quantum Cryptography key encapsulation operation, supporting key management by HUKS
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<HuksReturnResult> EncapsulateAsync(string keyAlias, HuksParam[] @params, string? sharedKeyAlias = null, HuksParam[]? sharedKeyParams = null)
     {
         return NodeApi.CallMethodAsync(Module, _encapsulate, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(@params), sharedKeyAlias, NapiArg.Of(sharedKeyParams));
     }
 
     /// <summary>
-    /// decapsulate
+    /// Decapsulates a post-quantum cryptography key. This operation can be managed by HUKS
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<HuksReturnResult> DecapsulateAsync(string keyAlias, HuksParam[] @params, byte[] encapData, string? sharedKeyAlias = null, HuksParam[]? sharedKeyParams = null)
     {
         return NodeApi.CallMethodAsync(Module, _decapsulate, static h => new HuksReturnResult(h), keyAlias, NapiArg.Of(@params), NapiArg.Of(encapData), sharedKeyAlias, NapiArg.Of(sharedKeyParams));

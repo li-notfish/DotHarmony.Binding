@@ -19,51 +19,8 @@ public static unsafe partial class Zlib
 {
     private const string ModuleName = "@ohos.zlib";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[zlib] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _zipFile => "zipFile"u8;
     private static ReadOnlySpan<byte> _unzipFile => "unzipFile"u8;
@@ -79,104 +36,117 @@ public static unsafe partial class Zlib
     private static ReadOnlySpan<byte> _createGZipSync => "createGZipSync"u8;
 
     /// <summary>
-    /// zipFile
+    /// Zips a file. The execution result is returned after the compression is complete. This API uses a promise to return
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task ZipFileAsync(string inFile, string outFile, ZlibOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _zipFile, cancellationToken, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// unzipFile
+    /// Unzips a file. The execution result is returned after the decompression is complete. This API uses a promise to
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task UnzipFileAsync(string inFile, string outFile, ZlibOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _unzipFile, cancellationToken, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// compressFile
+    /// Compresses a file. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task CompressFileAsync(string inFile, string outFile, ZlibOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _compressFile, cancellationToken, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// compressFiles
+    /// Compresses multiple specified files. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task CompressFilesAsync(string[] inFiles, string outFile, ZlibOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _compressFiles, cancellationToken, NapiArg.Of(inFiles), outFile, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// decompressFile
+    /// Decompresses a file. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task DecompressFileAsync(string inFile, string outFile, ZlibOptions options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _decompressFile, cancellationToken, inFile, outFile, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// decompressFile
+    /// Decompresses a file. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task DecompressFileAsync(string inFile, string outFile, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _decompressFile, cancellationToken, inFile, outFile);
     }
 
     /// <summary>
-    /// getOriginalSize
+    /// Obtains the original size of a compressed file. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<double> GetOriginalSizeAsync(string compressedFile)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getOriginalSize, compressedFile);
     }
 
     /// <summary>
-    /// createChecksum
+    /// Creates this checksum object. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<Checksum> CreateChecksumAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createChecksum, static h => new Checksum(h));
     }
 
     /// <summary>
-    /// createChecksumSync
+    /// Creates this checksum object. A checksum instance is returned upon a success.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Checksum CreateChecksumSync()
     {
         return NodeApi.CallMethod(Module, _createChecksumSync, static h => new Checksum(h));
     }
 
     /// <summary>
-    /// createZip
+    /// Creates this **Zip** instance. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<Zip> CreateZipAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createZip, static h => new Zip(h));
     }
 
     /// <summary>
-    /// createZipSync
+    /// Creates this **Zip** instance. A **Zip** instance is returned upon a success.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Zip CreateZipSync()
     {
         return NodeApi.CallMethod(Module, _createZipSync, static h => new Zip(h));
     }
 
     /// <summary>
-    /// createGZip
+    /// Creates this **GZip** object. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<GZip> CreateGZipAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createGZip, static h => new GZip(h));
     }
 
     /// <summary>
-    /// createGZipSync
+    /// Creates this **GZip** object. A **GZip** instance is returned upon a success.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static GZip CreateGZipSync()
     {
         return NodeApi.CallMethod(Module, _createGZipSync, static h => new GZip(h));

@@ -19,51 +19,8 @@ public static unsafe partial class Socket
 {
     private const string ModuleName = "@ohos.bluetooth.socket";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[bluetooth.socket] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _sppListen => "sppListen"u8;
     private static ReadOnlySpan<byte> _getL2capPsm => "getL2capPsm"u8;
@@ -82,120 +39,135 @@ public static unsafe partial class Socket
     private static ReadOnlySpan<byte> _sppReadAsync => "sppReadAsync"u8;
 
     /// <summary>
-    /// sppListen
+    /// Creates a Bluetooth server listening socket.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> SppListenAsync(string name, SppOptions options)
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _sppListen, null, name, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// getL2capPsm
+    /// Get l2cap socket psm.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static double GetL2capPsm(double serverSocket)
     {
         return NodeApi.CallMethod<double>(Module, _getL2capPsm, serverSocket);
     }
 
     /// <summary>
-    /// sppAccept
+    /// Waits for a remote device to connect.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> SppAcceptAsync(double serverSocket)
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _sppAccept, null, serverSocket);
     }
 
     /// <summary>
-    /// sppConnect
+    /// Connects to a remote device over the socket.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> SppConnectAsync(string deviceId, SppOptions options)
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _sppConnect, null, deviceId, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// getDeviceId
+    /// Obtain the device id in the client socket.
     /// </summary>
+    /// <remarks>@since 17</remarks>
     public static string GetDeviceId(double clientSocket)
     {
         return NodeApi.CallMethod<string>(Module, _getDeviceId, clientSocket);
     }
 
     /// <summary>
-    /// getMaxReceiveDataSize
+    /// Obtain the maximum data size that can be received through this socket channel.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static double GetMaxReceiveDataSize(double clientSocket)
     {
         return NodeApi.CallMethod<double>(Module, _getMaxReceiveDataSize, clientSocket);
     }
 
     /// <summary>
-    /// getMaxTransmitDataSize
+    /// Obtain the maximum data size that can be transmitted through this socket channel.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static double GetMaxTransmitDataSize(double clientSocket)
     {
         return NodeApi.CallMethod<double>(Module, _getMaxTransmitDataSize, clientSocket);
     }
 
     /// <summary>
-    /// isConnected
+    /// Check whether the current socket connection has been established.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static bool IsConnected(double clientSocket)
     {
         return NodeApi.CallMethod<bool>(Module, _isConnected, clientSocket);
     }
 
     /// <summary>
-    /// sppCloseServerSocket
+    /// Disables an spp server socket and releases related resources.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void SppCloseServerSocket(double socket)
     {
         NodeApi.CallMethodVoid(Module, _sppCloseServerSocket, socket);
     }
 
     /// <summary>
-    /// sppCloseClientSocket
+    /// Disables an spp client socket and releases related resources.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void SppCloseClientSocket(double socket)
     {
         NodeApi.CallMethodVoid(Module, _sppCloseClientSocket, socket);
     }
 
     /// <summary>
-    /// sppWrite
+    /// Write data through the socket.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void SppWrite(double clientSocket, byte[] data)
     {
         NodeApi.CallMethodVoid(Module, _sppWrite, clientSocket, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>
-    /// on
+    /// Subscribe the event reported when data is read from the socket.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void On(string type, double clientSocket, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, clientSocket, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribe the event reported when data is read from the socket.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void Off(string type, double clientSocket, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, clientSocket, callback);
     }
 
     /// <summary>
-    /// sppWriteAsync
+    /// Asynchronous interface for writing data to the socket.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task SppWriteAsync(double clientSocket, byte[] data, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _sppWriteAsync, cancellationToken, clientSocket, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>
-    /// sppReadAsync
+    /// Asynchronous interface for reading data from the socket.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<byte[]> SppReadAsync(double clientSocket)
     {
         return NodeApi.CallMethodAsync(Module, _sppReadAsync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), clientSocket);

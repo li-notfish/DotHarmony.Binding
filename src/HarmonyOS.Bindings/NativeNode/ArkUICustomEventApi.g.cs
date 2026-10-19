@@ -4,41 +4,54 @@
 // ArkUI_LayoutConstraint 访问器与 ArkUI_DrawContext 访问器（native_node.h / native_type.h）。
 #nullable enable
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HarmonyOS.Bindings.NativeNode;
 
-#pragma warning disable CS8500
-
 internal static unsafe partial class ArkUINativeApi
 {
+    /// <summary>Obtains the event type through a custom component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeCustomEvent_GetEventType(ArkUI_NodeCustomEvent* @event);
 
+    /// <summary>Obtains the ID of a custom component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeCustomEvent_GetEventTargetId(ArkUI_NodeCustomEvent* @event);
 
+    /// <summary>Obtains custom event parameters through a custom component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeCustomEvent_GetUserData(ArkUI_NodeCustomEvent* @event);
 
+    /// <summary>Obtains the drawing context through a custom component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeCustomEvent_GetDrawContextInDraw(ArkUI_NodeCustomEvent* @event);
 
+    /// <summary>Obtains the size constraint for measurement through a custom component event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial ArkUI_LayoutConstraint* OH_ArkUI_NodeCustomEvent_GetLayoutConstraintInMeasure(ArkUI_NodeCustomEvent* @event);
 
+    /// <summary>Obtains the maximum width for a size constraint, in px.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_LayoutConstraint_GetMaxWidth(ArkUI_LayoutConstraint* constraint);
 
+    /// <summary>Obtains the maximum height for a size constraint, in px.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_LayoutConstraint_GetMaxHeight(ArkUI_LayoutConstraint* constraint);
 
+    /// <summary>Obtains the pointer to a canvas for drawing, which can be converted into the &lt;b&gt;OH_Drawing_Canvas&lt;/b&gt; pointer in the &lt;b&gt;Drawing&lt;/b&gt; module.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_DrawContext_GetCanvas(IntPtr context);
 
+    /// <summary>Obtains the size of a drawing area.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial ArkUI_IntSize OH_ArkUI_DrawContext_GetSize(IntPtr context);
 }
-
-#pragma warning restore CS8500

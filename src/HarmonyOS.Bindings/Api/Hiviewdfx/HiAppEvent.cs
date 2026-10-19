@@ -18,51 +18,8 @@ public static unsafe partial class HiAppEvent
 {
     private const string ModuleName = "@ohos.hiviewdfx.hiAppEvent";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[hiviewdfx.hiAppEvent] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _OS => "OS"u8;
     private static ReadOnlySpan<byte> _USER_LOGIN => "USER_LOGIN"u8;
@@ -102,225 +59,261 @@ public static unsafe partial class HiAppEvent
     private static ReadOnlySpan<byte> _configEventPolicy => "configEventPolicy"u8;
 
     /// <summary>
-    /// OS
+    /// System domain.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static string Os => NativeValue.ToString(NodeApi.GetProperty(Module, _OS)) ?? string.Empty;
 
     /// <summary>
-    /// USER_LOGIN
+    /// User login event. This is a reserved application event name constant.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static string UserLogin => NativeValue.ToString(NodeApi.GetProperty(Module, _USER_LOGIN)) ?? string.Empty;
 
     /// <summary>
-    /// USER_LOGOUT
+    /// User logout event. This is a reserved application event name constant.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static string UserLogout => NativeValue.ToString(NodeApi.GetProperty(Module, _USER_LOGOUT)) ?? string.Empty;
 
     /// <summary>
-    /// DISTRIBUTED_SERVICE_START
+    /// Distributed service startup event. This is a reserved application event name constant.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static string DistributedServiceStart => NativeValue.ToString(NodeApi.GetProperty(Module, _DISTRIBUTED_SERVICE_START)) ?? string.Empty;
 
     /// <summary>
-    /// APP_CRASH
+    /// Application crash event. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static string AppCrash => NativeValue.ToString(NodeApi.GetProperty(Module, _APP_CRASH)) ?? string.Empty;
 
     /// <summary>
-    /// APP_FREEZE
+    /// Application freeze event. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static string AppFreeze => NativeValue.ToString(NodeApi.GetProperty(Module, _APP_FREEZE)) ?? string.Empty;
 
     /// <summary>
-    /// APP_LAUNCH
+    /// Event indicating the application launch duration. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string AppLaunch => NativeValue.ToString(NodeApi.GetProperty(Module, _APP_LAUNCH)) ?? string.Empty;
 
     /// <summary>
-    /// SCROLL_JANK
+    /// Event indicating frame loss during swiping. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string ScrollJank => NativeValue.ToString(NodeApi.GetProperty(Module, _SCROLL_JANK)) ?? string.Empty;
 
     /// <summary>
-    /// CPU_USAGE_HIGH
+    /// Event indicating a high CPU usage. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string CpuUsageHigh => NativeValue.ToString(NodeApi.GetProperty(Module, _CPU_USAGE_HIGH)) ?? string.Empty;
 
     /// <summary>
-    /// BATTERY_USAGE
+    /// Event indicating battery usage statistics. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string BatteryUsage => NativeValue.ToString(NodeApi.GetProperty(Module, _BATTERY_USAGE)) ?? string.Empty;
 
     /// <summary>
-    /// RESOURCE_OVERLIMIT
+    /// Application resource leak event. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string ResourceOverlimit => NativeValue.ToString(NodeApi.GetProperty(Module, _RESOURCE_OVERLIMIT)) ?? string.Empty;
 
     /// <summary>
-    /// ADDRESS_SANITIZER
+    /// Application address sanitizer event. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string AddressSanitizer => NativeValue.ToString(NodeApi.GetProperty(Module, _ADDRESS_SANITIZER)) ?? string.Empty;
 
     /// <summary>
-    /// MAIN_THREAD_JANK
+    /// Main thread jank event. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string MainThreadJank => NativeValue.ToString(NodeApi.GetProperty(Module, _MAIN_THREAD_JANK)) ?? string.Empty;
 
     /// <summary>
-    /// APP_KILLED
+    /// Application killed event. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string AppKilled => NativeValue.ToString(NodeApi.GetProperty(Module, _APP_KILLED)) ?? string.Empty;
 
     /// <summary>
-    /// APP_HICOLLIE
+    /// Application task execution timeout event. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static string AppHicollie => NativeValue.ToString(NodeApi.GetProperty(Module, _APP_HICOLLIE)) ?? string.Empty;
 
     /// <summary>
-    /// AUDIO_JANK_FRAME
+    /// Audio jank event. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static string AudioJankFrame => NativeValue.ToString(NodeApi.GetProperty(Module, _AUDIO_JANK_FRAME)) ?? string.Empty;
 
     /// <summary>
-    /// SCROLL_ARKWEB_FLING_JANK
+    /// ArkWeb fling jank event. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static string ScrollArkwebFlingJank => NativeValue.ToString(NodeApi.GetProperty(Module, _SCROLL_ARKWEB_FLING_JANK)) ?? string.Empty;
 
     /// <summary>
-    /// appFreezeWarning
+    /// Application freeze warning event. This is a system event name constant.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static string AppFreezeWarning => NativeValue.ToString(NodeApi.GetProperty(Module, _appFreezeWarning)) ?? string.Empty;
 
     /// <summary>
-    /// USER_ID
+    /// Custom user ID.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static string UserId => NativeValue.ToString(NodeApi.GetProperty(Module, _USER_ID)) ?? string.Empty;
 
     /// <summary>
-    /// DISTRIBUTED_SERVICE_NAME
+    /// Distributed service name.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static string DistributedServiceName => NativeValue.ToString(NodeApi.GetProperty(Module, _DISTRIBUTED_SERVICE_NAME)) ?? string.Empty;
 
     /// <summary>
-    /// DISTRIBUTED_SERVICE_INSTANCE_ID
+    /// Distributed service instance ID.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static string DistributedServiceInstanceId => NativeValue.ToString(NodeApi.GetProperty(Module, _DISTRIBUTED_SERVICE_INSTANCE_ID)) ?? string.Empty;
 
     /// <summary>
-    /// configure
+    /// Configures the application event logging function, such as setting the logging switch and directory storage quota.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Configure(ConfigOption config)
     {
         NodeApi.CallMethodVoid(Module, _configure, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// write
+    /// Writes events of the **AppEventInfo** type. This API uses a promise to return the result. The event object written
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task WriteAsync(IntPtr info, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _write, cancellationToken, info);
     }
 
     /// <summary>
-    /// setEventParam
+    /// Sets custom event parameters. This API uses a promise to return the result. During the same lifecycle, system
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task SetEventParamAsync(IntPtr @params, string domain, string? name = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setEventParam, cancellationToken, @params, domain, name);
     }
 
     /// <summary>
-    /// setEventConfig
+    /// Sets event configuration. This method uses a promise to return the result. In the same lifecycle, you can set event
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task SetEventConfigAsync(string name, IntPtr config, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setEventConfig, cancellationToken, name, config);
     }
 
     /// <summary>
-    /// addWatcher
+    /// Adds an event watcher. You can use the callback of the event watcher to subscribe to events.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static AppEventPackageHolder AddWatcher(IntPtr watcher)
     {
         return NodeApi.CallMethod(Module, _addWatcher, static h => new AppEventPackageHolder(h), watcher);
     }
 
     /// <summary>
-    /// removeWatcher
+    /// Removes an event watcher.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void RemoveWatcher(IntPtr watcher)
     {
         NodeApi.CallMethodVoid(Module, _removeWatcher, watcher);
     }
 
     /// <summary>
-    /// clearData
+    /// Clears local logging data of the application.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void ClearData()
     {
         NodeApi.CallMethodVoid(Module, _clearData);
     }
 
     /// <summary>
-    /// setUserId
+    /// Sets a user ID, which is used for association when a [Processor] is configured.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void SetUserId(string name, string value)
     {
         NodeApi.CallMethodVoid(Module, _setUserId, name, value);
     }
 
     /// <summary>
-    /// getUserId
+    /// Obtains the value set through **setUserId**.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static string GetUserId(string name)
     {
         return NodeApi.CallMethod<string>(Module, _getUserId, name);
     }
 
     /// <summary>
-    /// setUserProperty
+    /// Sets a user property, which is used for association when a [Processor] is configured.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void SetUserProperty(string name, string value)
     {
         NodeApi.CallMethodVoid(Module, _setUserProperty, name, value);
     }
 
     /// <summary>
-    /// getUserProperty
+    /// Obtains the value set through **setUserProperty**.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static string GetUserProperty(string name)
     {
         return NodeApi.CallMethod<string>(Module, _getUserProperty, name);
     }
 
     /// <summary>
-    /// addProcessor
+    /// Adds the configuration information of the data processor, such as the event name received by it.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static double AddProcessor(IntPtr processor)
     {
         return NodeApi.CallMethod<double>(Module, _addProcessor, processor);
     }
 
     /// <summary>
-    /// addProcessorFromConfig
+    /// Adds the configuration information of the data processor. The configuration file contains information such as the
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<double> AddProcessorFromConfigAsync(string processorName, string? configName = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _addProcessorFromConfig, processorName, configName);
     }
 
     /// <summary>
-    /// removeProcessor
+    /// Removes the data processor of a reported event.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void RemoveProcessor(double id)
     {
         NodeApi.CallMethodVoid(Module, _removeProcessor, id);
     }
 
     /// <summary>
-    /// configEventPolicy
+    /// Sets a system event configuration policy. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task ConfigEventPolicyAsync(EventPolicy policy, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _configEventPolicy, cancellationToken, NapiArg.Of(policy));
