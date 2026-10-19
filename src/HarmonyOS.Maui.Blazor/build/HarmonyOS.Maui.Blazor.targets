@@ -8,30 +8,51 @@
           Condition="'$(HarmonyEnableBlazor)' == 'true' AND '$(HarmonyGenerateHost)' == 'true'"
           DependsOnTargets="HarmonyStageWebHost"
           BeforeTargets="HarmonyStageResources;HarmonyBuildHap;HarmonyDeploy">
+    <PropertyGroup>
+      <!-- 优先发布产物 wwwroot：其中已合并 _content（RCL 静态资产）与 _framework 运行时脚本；
+           发布产物缺失时退回源码 wwwroot（仅应用自身资产）。 -->
+      <_HarmonyBlazorPublishWwwroot>$(MSBuildProjectDirectory)\obj\harmony\publish\$(RuntimeIdentifier)\wwwroot</_HarmonyBlazorPublishWwwroot>
+      <_HarmonyBlazorSourceWwwroot>$(MSBuildProjectDirectory)\wwwroot</_HarmonyBlazorSourceWwwroot>
+      <_HarmonyBlazorWwwroot Condition="Exists('$(_HarmonyBlazorPublishWwwroot)')">$(_HarmonyBlazorPublishWwwroot)</_HarmonyBlazorWwwroot>
+      <_HarmonyBlazorWwwroot Condition="'$(_HarmonyBlazorWwwroot)' == ''">$(_HarmonyBlazorSourceWwwroot)</_HarmonyBlazorWwwroot>
+      <_HarmonyBlazorRawRoot>$(_HarmonyEffectiveHostDir)\entry\src\main\resources\rawfile\wwwroot</_HarmonyBlazorRawRoot>
+    </PropertyGroup>
+
+    <!-- 1) wwwroot 全量（含应用 + RCL _content + _framework/*.js） -->
     <ItemGroup>
-      <_HarmonyBlazorWebAsset Include="$(MSBuildProjectDirectory)\wwwroot\**\*.*" />
+      <_HarmonyBlazorWebAsset Include="$(_HarmonyBlazorWwwroot)\**\*.*" />
     </ItemGroup>
     <Copy Condition="'@(_HarmonyBlazorWebAsset)' != ''"
           SourceFiles="@(_HarmonyBlazorWebAsset)"
-          DestinationFiles="@(_HarmonyBlazorWebAsset->'$(_HarmonyEffectiveHostDir)\entry\src\main\resources\rawfile\wwwroot\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(_HarmonyBlazorWebAsset->'$(_HarmonyBlazorRawRoot)\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true" />
+
+    <!-- 2) 发布产物里没有应用 wwwroot 的兜底（例如自定义 publish 配置） -->
+    <ItemGroup>
+      <_HarmonyBlazorSourceWebAsset Include="$(_HarmonyBlazorSourceWwwroot)\**\*.*" />
+    </ItemGroup>
+    <Copy Condition="'$(MSBuildProjectDirectory)\wwwroot' != '$(_HarmonyBlazorWwwroot)' AND '@(_HarmonyBlazorSourceWebAsset)' != ''"
+          SourceFiles="@(_HarmonyBlazorSourceWebAsset)"
+          DestinationFiles="@(_HarmonyBlazorSourceWebAsset->'$(_HarmonyBlazorRawRoot)\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+
     <PropertyGroup>
       <_HarmonyBlazorWebViewJs Condition="Exists('$(MSBuildThisFileDirectory)blazor.webview.js')">$(MSBuildThisFileDirectory)blazor.webview.js</_HarmonyBlazorWebViewJs>
-      <_HarmonyBlazorWebViewJs Condition="'$(_HarmonyBlazorWebViewJs)' == '' AND Exists('$(MSBuildProjectDirectory)\obj\harmony\publish\$(RuntimeIdentifier)\wwwroot\_framework\blazor.webview.js')">$(MSBuildProjectDirectory)\obj\harmony\publish\$(RuntimeIdentifier)\wwwroot\_framework\blazor.webview.js</_HarmonyBlazorWebViewJs>
+      <_HarmonyBlazorWebViewJs Condition="'$(_HarmonyBlazorWebViewJs)' == '' AND Exists('$(_HarmonyBlazorPublishWwwroot)\_framework\blazor.webview.js')">$(_HarmonyBlazorPublishWwwroot)\_framework\blazor.webview.js</_HarmonyBlazorWebViewJs>
       <_HarmonyBlazorWebViewJs Condition="'$(_HarmonyBlazorWebViewJs)' == ''">$(NuGetPackageRoot)\microsoft.aspnetcore.components.webview\$(HarmonyAspNetCoreComponentsWebViewVersion)\staticwebassets\blazor.webview.js</_HarmonyBlazorWebViewJs>
       <_HarmonyBlazorModulesJson Condition="Exists('$(MSBuildThisFileDirectory)blazor.modules.json')">$(MSBuildThisFileDirectory)blazor.modules.json</_HarmonyBlazorModulesJson>
-      <_HarmonyBlazorModulesJson Condition="'$(_HarmonyBlazorModulesJson)' == '' AND Exists('$(MSBuildProjectDirectory)\obj\harmony\publish\$(RuntimeIdentifier)\wwwroot\_framework\blazor.modules.json')">$(MSBuildProjectDirectory)\obj\harmony\publish\$(RuntimeIdentifier)\wwwroot\_framework\blazor.modules.json</_HarmonyBlazorModulesJson>
+      <_HarmonyBlazorModulesJson Condition="'$(_HarmonyBlazorModulesJson)' == '' AND Exists('$(_HarmonyBlazorPublishWwwroot)\_framework\blazor.modules.json')">$(_HarmonyBlazorPublishWwwroot)\_framework\blazor.modules.json</_HarmonyBlazorModulesJson>
       <_HarmonyBlazorModulesJson Condition="'$(_HarmonyBlazorModulesJson)' == ''">$(NuGetPackageRoot)\microsoft.aspnetcore.components.webview\$(HarmonyAspNetCoreComponentsWebViewVersion)\staticwebassets\blazor.modules.json</_HarmonyBlazorModulesJson>
     </PropertyGroup>
     <Error Condition="!Exists('$(_HarmonyBlazorWebViewJs)')"
-           Text="blazor.webview.js not found. Expected beside HarmonyOS.Maui.Blazor.targets, under obj\harmony\publish\$(RuntimeIdentifier)\wwwroot\_framework\, or in NuGetPackageRoot microsoft.aspnetcore.components.webview\$(HarmonyAspNetCoreComponentsWebViewVersion)\staticwebassets\ (set HarmonyAspNetCoreComponentsWebViewVersion when consuming outside this repo)." />
+           Text="blazor.webview.js not found. Expected beside HarmonyOS.Maui.Blazor.targets, under $(_HarmonyBlazorPublishWwwroot)\_framework\, or in NuGetPackageRoot microsoft.aspnetcore.components.webview\$(HarmonyAspNetCoreComponentsWebViewVersion)\staticwebassets\ (set HarmonyAspNetCoreComponentsWebViewVersion when consuming outside this repo)." />
     <Error Condition="!Exists('$(_HarmonyBlazorModulesJson)')"
            Text="blazor.modules.json not found at '$(_HarmonyBlazorModulesJson)'." />
     <Copy SourceFiles="$(_HarmonyBlazorWebViewJs)"
-          DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\src\main\resources\rawfile\wwwroot\_framework\blazor.webview.js"
+          DestinationFiles="$(_HarmonyBlazorRawRoot)\_framework\blazor.webview.js"
           SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(_HarmonyBlazorModulesJson)"
-          DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\src\main\resources\rawfile\wwwroot\_framework\blazor.modules.json"
+          DestinationFiles="$(_HarmonyBlazorRawRoot)\_framework\blazor.modules.json"
           SkipUnchangedFiles="true" />
   </Target>
 </Project>
