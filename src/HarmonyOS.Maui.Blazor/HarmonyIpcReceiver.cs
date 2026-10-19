@@ -91,7 +91,8 @@ internal static class HarmonyIpcReceiver
         switch (messageType)
         {
             case "AttachPage":
-                if (arguments.GetArrayLength() < 2)
+                // 官方线协议：["AttachPage", baseUrl, startUrl] → 数组长度 3
+                if (arguments.GetArrayLength() < 3)
                     throw new InvalidOperationException("AttachPage requires baseUrl and startUrl.");
                 await InvokeAttachToPageAsync(manager, arguments[1].GetString() ?? string.Empty, arguments[2].GetString() ?? string.Empty);
                 return;
