@@ -241,6 +241,11 @@ internal static unsafe partial class ArkUINativeApi
     /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial float OH_ArkUI_DragEvent_GetTouchPointYToWindow(void* @event);
+
+    /// <summary>Obtains a &lt;b&gt;FrameNode&lt;/b&gt; object on the ArkTS side and maps it to an &lt;b&gt;ArkUI_NodeHandle&lt;/b&gt; object on the native side.</summary>
+    /// <remarks>@since 12</remarks>
+    [LibraryImport(ArkuiLib)]
+    private static partial int OH_ArkUI_GetNodeHandleFromNapiValue(IntPtr env, IntPtr frameNode, out IntPtr handle);
 }
 
 #pragma warning restore CS8500

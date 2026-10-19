@@ -286,6 +286,20 @@ internal static unsafe partial class ArkUINativeApi
     [LibraryImport(ArkuiLib)]
     private static partial float OH_ArkUI_DragEvent_GetTouchPointYToWindow(void* @event);
 
+    private static partial int OH_ArkUI_GetNodeHandleFromNapiValue(IntPtr env, IntPtr frameNode, out IntPtr handle);
+
+    /// <summary>
+    /// 将 ArkTS 侧 FrameNode（如 BuilderNode.getFrameNode()）转换为 ArkUI 节点句柄，
+    /// 使其可作为子节点挂入 NDK 侧构建的节点树。env 必须已通过 NapiEnv.Initialize 注入。
+    /// </summary>
+    internal static ArkUI_NodeHandle GetNodeHandleFromNapiValue(IntPtr env, IntPtr frameNode)
+    {
+        var status = OH_ArkUI_GetNodeHandleFromNapiValue(env, frameNode, out var handle);
+        if (status != 0)
+            throw new InvalidOperationException($"OH_ArkUI_GetNodeHandleFromNapiValue failed: {status}");
+        return handle;
+    }
+
     internal static IntPtr GetDragEvent(ArkUI_NodeEvent* @event)
         => OH_ArkUI_NodeEvent_GetDragEvent(@event);
 

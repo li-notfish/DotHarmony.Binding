@@ -182,6 +182,7 @@ code_targets:
       - OH_ArkUI_DragEvent_GetUdmfData
       - OH_ArkUI_DragEvent_GetTouchPointXToWindow
       - OH_ArkUI_DragEvent_GetTouchPointYToWindow
+      - OH_ArkUI_GetNodeHandleFromNapiValue
     container: { class: ArkUINativeApi, lib_const: ArkuiLib, visibility: private }
     per_type:
       ArkUI_NumberValue:
@@ -227,6 +228,8 @@ code_targets:
     per_fn:
       OH_ArkUI_GetNodeContentFromNapiValue:
         params: { content: "out IntPtr content", value: "IntPtr napiValue" }
+      OH_ArkUI_GetNodeHandleFromNapiValue:
+        params: { handle: "out IntPtr handle", frameNode: "IntPtr frameNode" }
       OH_ArkUI_NodeEvent_GetEventType: { ret: int }
       OH_ArkUI_NodeEvent_GetNodeHandle: { ret: IntPtr }
       OH_ArkUI_NodeEvent_GetInputEvent: { ret: IntPtr }
