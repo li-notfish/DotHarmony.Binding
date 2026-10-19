@@ -8,6 +8,7 @@
     <Project Path="samples/dotnet/ControlsSampleApp/ControlsSampleApp.csproj" />
     <Project Path="samples/dotnet/BlazorHybridApp/BlazorHybridApp.csproj" />
     <Project Path="samples/dotnet/WeatherTwentyOne/WeatherTwentyOne.csproj" />
+    <Project Path="samples/dotnet/PerfApp/PerfApp.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/HarmonyOS.Interop/HarmonyOS.Interop.csproj" />
