@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ApiDemo.HardwarePage"
+             Title="Hardware / Permissions"
+             BackgroundColor="LightGray">
+    <ScrollView>
+        <StackLayout Spacing="10" Padding="12">
+            <Label Text="真实设备/系统 API 流程（非加载探针）"
+                   HorizontalTextAlignment="Center"
+                   BackgroundColor="White" Padding="8" />
+            <Button Text="HTTP GET (@ohos.net.http)" Clicked="OnHttpClicked" />
+            <Button Text="File round-trip (FileSystem + System.IO)" Clicked="OnFileClicked" />
+            <Button Text="Request location permission" Clicked="OnPermissionClicked" />
+            <Button Text="Geolocation current" Clicked="OnLocationClicked" />
+            <Button Text="Pick photo (MediaPicker)" Clicked="OnPickPhotoClicked" />
+            <Button Text="Capture photo (MediaPicker)" Clicked="OnCapturePhotoClicked" />
+            <Label x:Name="ResultLabel"
+                   Text="idle"
+                   HorizontalTextAlignment="Center"
+                   BackgroundColor="White" Padding="8" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
