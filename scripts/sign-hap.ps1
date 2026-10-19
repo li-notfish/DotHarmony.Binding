@@ -13,11 +13,24 @@ $ErrorActionPreference = "Stop"
 
 $keystorePassword = $env:HarmonySigningKeystorePassword
 $certPassword = $env:HarmonySigningCertPassword
+# 可选：从文件读取口令，避免把明文放进父进程环境变量。注意 hap-sign-tool 只接受
+# 命令行 argv（不支持 stdin），子进程命令行仍可见；此处只减少泄露面，不能彻底隐藏。
+function Read-SecretFile([string]$Path, [string]$Label) {
+    if ([string]::IsNullOrEmpty($Path)) { return $null }
+    if (-not (Test-Path -LiteralPath $Path)) { throw "$Label 文件不存在：$Path" }
+    return (Get-Content -LiteralPath $Path -Raw).Trim()
+}
+if ([string]::IsNullOrEmpty($keystorePassword)) {
+    $keystorePassword = Read-SecretFile $env:HarmonySigningKeystorePasswordFile "Keystore 口令"
+}
+if ([string]::IsNullOrEmpty($certPassword)) {
+    $certPassword = Read-SecretFile $env:HarmonySigningCertPasswordFile "证书口令"
+}
 foreach ($item in @(
         @{ Name = "HarmonySigningKeystorePassword"; Value = $keystorePassword },
         @{ Name = "HarmonySigningCertPassword"; Value = $certPassword })) {
     if ([string]::IsNullOrEmpty($item.Value)) {
-        throw "缺少环境变量 $($item.Name)"
+        throw "缺少环境变量 $($item.Name)（或其对应的 *_FILE）"
     }
 }
 
