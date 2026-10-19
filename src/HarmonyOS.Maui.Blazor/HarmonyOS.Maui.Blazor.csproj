@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <None Include="build\HarmonyOS.Maui.Blazor.targets" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.Blazor.targets" />
+    <None Include="build\HarmonyOS.Maui.Blazor.rd.xml" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.Blazor.rd.xml" />
     <None Include="$(PkgMicrosoft_AspNetCore_Components_WebView)\staticwebassets\blazor.webview.js"
           Pack="true" PackagePath="buildTransitive\blazor.webview.js" />
     <None Include="$(PkgMicrosoft_AspNetCore_Components_WebView)\staticwebassets\blazor.modules.json"

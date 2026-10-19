@@ -14,6 +14,19 @@
     </Assembly>
     <Assembly Name="Microsoft.JSInterop">
       <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TaskResultGetter`1[[System.Threading.Tasks.VoidTaskResult,System.Private.CoreLib]]" Dynamic="Required All"/>
+      <!-- JS → .NET 返回值通道：TaskGenericsUtil 用 Activator 构造 TcsResultSetter<T> 再调 SetResultCore；
+           NativeAOT 下这些泛型实例化必须显式保留，否则 EndInvokeJS 抛
+           "'...TcsResultSetter`1[System.Int32]' is missing native code or metadata"。
+           覆盖 JSRuntime.InvokeAsync 常用返回类型（样例 JsInterop 页用 int/string）。 -->
+      <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TcsResultSetter`1[[System.Int32,System.Private.CoreLib]]" Dynamic="Required All"/>
+      <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TcsResultSetter`1[[System.Int64,System.Private.CoreLib]]" Dynamic="Required All"/>
+      <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TcsResultSetter`1[[System.Boolean,System.Private.CoreLib]]" Dynamic="Required All"/>
+      <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TcsResultSetter`1[[System.Double,System.Private.CoreLib]]" Dynamic="Required All"/>
+      <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TcsResultSetter`1[[System.Single,System.Private.CoreLib]]" Dynamic="Required All"/>
+      <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TcsResultSetter`1[[System.String,System.Private.CoreLib]]" Dynamic="Required All"/>
+      <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TcsResultSetter`1[[System.Object,System.Private.CoreLib]]" Dynamic="Required All"/>
+      <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TcsResultSetter`1[[System.Threading.Tasks.VoidTaskResult,System.Private.CoreLib]]" Dynamic="Required All"/>
+      <Type Name="Microsoft.JSInterop.Infrastructure.TaskGenericsUtil+TcsResultSetter`1[[System.Text.Json.JsonElement,System.Text.Json]]" Dynamic="Required All"/>
     </Assembly>
   </Application>
 </Directives>

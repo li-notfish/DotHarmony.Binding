@@ -4,6 +4,12 @@
     <HarmonyEnableWeb Condition="'$(HarmonyEnableWeb)' == ''">true</HarmonyEnableWeb>
   </PropertyGroup>
 
+  <!-- 包内置 NativeAOT 根：JSInterop 返回值泛型实例（NativeAOT 反射构造 TcsResultSetter<T>）。
+       追加到 RdXmlFile，与应用自带 roots 共存且不覆盖。 -->
+  <ItemGroup Condition="'$(HarmonyEnableBlazor)' == 'true'">
+    <RdXmlFile Include="$(MSBuildThisFileDirectory)HarmonyOS.Maui.Blazor.rd.xml" />
+  </ItemGroup>
+
   <Target Name="HarmonyStageBlazorWebAssets"
           Condition="'$(HarmonyEnableBlazor)' == 'true' AND '$(HarmonyGenerateHost)' == 'true'"
           DependsOnTargets="HarmonyStageWebHost"
