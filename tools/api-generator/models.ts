@@ -30,6 +30,8 @@ export interface MethodInfo {
     returnType: string;
     parameters: ParameterInfo[];
     isChained: boolean;              // 是否返回this用于链式调用
+    /** SDK .d.ts 的 JSDoc 原文（@brief/@since 等，用于生成 XML 文档） */
+    doc?: string;
     /** 服务模块：inline AsyncCallback 检测到的原始结果类型（ApiGenerator 负责映射为 Task<T>） */
     asyncResultType?: string;
     /** 服务模块：on/off/once 函数的事件元数据（ApiGenerator 生成类型化 On/Off/Once 与 .NET event） */
@@ -141,6 +143,7 @@ export interface PropertyInfo {
     optional: boolean;                // 是否可选
     readonly: boolean;                // 是否只读
     description?: string;             // 描述
+    doc?: string;                     // SDK .d.ts 的 JSDoc 原文
     defaultValue?: string;            // 默认值
 }
 

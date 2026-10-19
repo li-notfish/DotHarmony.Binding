@@ -4,6 +4,9 @@
  * 注意：UI 组件的生成走 nativeCodeGenerator.ts（ArkUI C API 路线）；
  * 本文件服务于架构决策中的「非 UI 的 @ohos.* 服务走 napi」路线
  * （传感器/定位/文件等系统能力调用），产物输出至 src/HarmonyOS.Bindings/Api/。
+ *
+ * @legacy 产品路径是 nativeCodeGenerator（`--native`）+ apiGenerator（`--sdk --all`）。
+ * 本生成器仍被 Tests/PerfApp 的旧组件包装路线使用，属于过渡期兼容层；新组件不要走这里。
  * 2026-09 清理时移除了过期产物，重出前需先修复 Void 泛型与 using 缺失问题。
  */
 import { ComponentInfo, MethodInfo, ParameterInfo, ConstructorOverload, EventInfo, DelegateInfo, InheritanceInfo, ImportInfo, ParseResult, InterfaceInfo } from './models';
