@@ -7,9 +7,13 @@ using HarmonyOS.Interop;
 
 namespace HarmonyOS.Maui.Web;
 
-public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface
+public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface, IDisposable
 {
     public event Action? ProxyReady;
+
+    public event Action<string>? PageEnded;
+
+    public event Func<string, bool>? NavigationStarting;
 
     public bool IsProxyReady { get; private set; }
 
@@ -94,5 +98,33 @@ public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface
     {
         IsProxyReady = true;
         ProxyReady?.Invoke();
+    }
+
+    internal void RaisePageEnded(string? url)
+    {
+        PageEnded?.Invoke(url ?? string.Empty);
+    }
+
+    /// <summary>返回 true 表示拦截导航（不加载）。</summary>
+    internal bool RaiseNavigationStarting(string? url)
+    {
+        if (string.IsNullOrEmpty(url))
+            return false;
+
+        var handlers = NavigationStarting;
+        if (handlers is null)
+            return false;
+        foreach (var handler in handlers.GetInvocationList())
+        {
+            if (handler is Func<string, bool> func && func(url))
+                return true;
+        }
+        return false;
+    }
+
+    public void Dispose()
+    {
+        if (_messageHandle.IsAllocated)
+            _messageHandle.Free();
     }
 }

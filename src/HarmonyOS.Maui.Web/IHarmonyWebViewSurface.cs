@@ -1,9 +1,15 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HarmonyOS.Maui.Web;
 
+/// <summary>
+/// 平台 WebView surface 抽象。实现方为 ArkWeb（ArkTS Web 组件 + NDK 通道）。
+/// 生命周期信号只描述「ArkWeb 侧事实」：PageEnded（主框架加载完成）、NavigationStarting（导航拦截）、
+/// ProxyReady（proxy 注册窗口）。Blazor 启动门控一律以 PageEnded + __bwv 握手为准。
+/// </summary>
 public interface IHarmonyWebViewSurface
 {
     /// <summary>ArkWeb JS proxy 注册窗口信号（NDK valid 回调）。实测语义是"现在可以注册 proxy"，
@@ -12,6 +18,12 @@ public interface IHarmonyWebViewSurface
 
     /// <summary>proxy valid 回调是否已发生过。仅诊断/重放用途，同上不用于启动门控。</summary>
     bool IsProxyReady { get; }
+
+    /// <summary>主框架页面加载完成（Web 组件 onPageEnd）。Blazor 启动的确定性信号源。</summary>
+    event Action<string>? PageEnded;
+
+    /// <summary>导航请求开始（Web 组件 onLoadIntercept）；返回 true 表示拦截该请求。</summary>
+    event Func<string, bool>? NavigationStarting;
 
     Task InitializeAsync();
     Task LoadUrlAsync(string url);
@@ -26,4 +38,8 @@ public interface IHarmonyWebViewSurface
 
 public sealed record HarmonyWebRequest(string Url, string Method);
 
-public sealed record HarmonyWebResponse(int StatusCode, string ContentType, byte[] Body);
+public sealed record HarmonyWebResponse(int StatusCode, string ContentType, byte[] Body)
+{
+    /// <summary>响应头（可为 null：仅 Content-Type 走 ContentType 字段）。</summary>
+    public IDictionary<string, string>? Headers { get; init; }
+}

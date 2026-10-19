@@ -24,6 +24,10 @@ typedef int (*harmony_buildui_t)(void* env, void* nodeContentValue);
 typedef int (*harmony_poppage_t)(void* env);
 typedef int (*harmony_themechanged_t)(void* env, int colorMode);
 typedef int (*harmony_web_init_t)(void* env, void* webViewValue);
+typedef int (*harmony_web_init_tagged_t)(void* env, void* webViewValue, void* tagValue);
+typedef int (*harmony_web_shutdown_t)(void* env, const char* webTag);
+typedef int (*harmony_web_page_ended_t)(void* env, void* urlValue, void* tagValue);
+typedef int (*harmony_web_should_intercept_t)(void* env, void* urlValue, void* tagValue);
 typedef int (*harmony_web_receive_t)(void* env, void* messageValue);
 typedef int (*harmony_web_proxy_ready_t)(void* env);
 typedef int (*harmony_web_intercept_native_t)(void* env, int requestId, const char* url);
@@ -45,6 +49,10 @@ static harmony_web_init_t g_webInit = NULL;
 static harmony_web_receive_t g_webReceive = NULL;
 static harmony_web_proxy_ready_t g_webProxyReady = NULL;
 static harmony_web_intercept_native_t g_webInterceptNative = NULL;
+static harmony_web_init_tagged_t g_webInitTagged = NULL;
+static harmony_web_shutdown_t g_webShutdown = NULL;
+static harmony_web_page_ended_t g_webPageEnded = NULL;
+static harmony_web_should_intercept_t g_webShouldIntercept = NULL;
 static bool g_webSymbolsResolved = false;
 
 static void resolve_web_symbols(void)
@@ -56,6 +64,10 @@ static void resolve_web_symbols(void)
     g_webReceive = (harmony_web_receive_t)dlsym(g_app, "HarmonyWebReceiveMessage");
     g_webProxyReady = (harmony_web_proxy_ready_t)dlsym(g_app, "HarmonyWebProxyReady");
     g_webInterceptNative = (harmony_web_intercept_native_t)dlsym(g_app, "HarmonyWebInterceptNative");
+    g_webInitTagged = (harmony_web_init_tagged_t)dlsym(g_app, "HarmonyWebInitTagged");
+    g_webShutdown = (harmony_web_shutdown_t)dlsym(g_app, "HarmonyWebShutdown");
+    g_webPageEnded = (harmony_web_page_ended_t)dlsym(g_app, "HarmonyWebPageEnded");
+    g_webShouldIntercept = (harmony_web_should_intercept_t)dlsym(g_app, "HarmonyWebShouldInterceptNavigation");
 }
 
 // NDK ArkWeb proxy-valid → JS 线程跳板：
@@ -430,13 +442,15 @@ static napi_value PassWebView(napi_env env, napi_callback_info info)
 {
     if (!ensure_runtime(env)) return NULL;
 
-    size_t argc = 1;
-    napi_value argv[1];
+    size_t argc = 2;
+    napi_value argv[2];
     napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
     if (argc < 1) {
         loge("passWebView", "missing WebviewController argument");
         return NULL;
     }
+    // 可选第二参数：webTag（多实例时区分 surface；缺省回落到默认 tag）
+    napi_value webTagValue = argc >= 2 ? argv[1] : NULL;
 
     resolve_web_symbols();
     if (!g_webInit) {
@@ -472,7 +486,9 @@ static napi_value PassWebView(napi_env env, napi_callback_info info)
         }
     }
 
-    int r = g_webInit((void*)env, (void*)argv[0]);
+    int r = g_webInitTagged
+        ? g_webInitTagged((void*)env, (void*)argv[0], (void*)webTagValue)
+        : g_webInit((void*)env, (void*)argv[0]);
     if (r == 0) {
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG,
                      ".NET WebView bridge initialized");
@@ -480,6 +496,62 @@ static napi_value PassWebView(napi_env env, napi_callback_info info)
         OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG,
                      "HarmonyWebInit failed: %{public}d", r);
     }
+    return NULL;
+}
+
+static napi_value NotifyWebPageEnded(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 2;
+    napi_value argv[2] = {NULL, NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    resolve_web_symbols();
+    if (!g_webPageEnded) return NULL;
+
+    int r = g_webPageEnded((void*)env,
+                           argc >= 1 ? (void*)argv[0] : NULL,
+                           argc >= 2 ? (void*)argv[1] : NULL);
+    if (r != 0) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG,
+                     "HarmonyWebPageEnded failed: %{public}d", r);
+    }
+    return NULL;
+}
+
+static napi_value ShouldInterceptNavigation(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 2;
+    napi_value argv[2] = {NULL, NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    resolve_web_symbols();
+
+    napi_value result;
+    if (!g_webShouldIntercept) {
+        napi_get_boolean(env, false, &result);
+        return result;
+    }
+
+    int r = g_webShouldIntercept((void*)env,
+                                 argc >= 1 ? (void*)argv[0] : NULL,
+                                 argc >= 2 ? (void*)argv[1] : NULL);
+    napi_get_boolean(env, r == 1, &result);
+    return result;
+}
+
+static napi_value ShutdownWebView(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 1;
+    napi_value argv[1] = {NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    resolve_web_symbols();
+    if (!g_webShutdown) return NULL;
+
+    g_webShutdown((void*)env, argc >= 1 ? (void*)argv[0] : NULL);
     return NULL;
 }
 
@@ -572,6 +644,9 @@ static napi_value ModuleInit(napi_env env, napi_value exports)
         {"passNodeContent", NULL, PassNodeContent, NULL, NULL, NULL, napi_default, NULL},
         {"passWebView", NULL, PassWebView, NULL, NULL, NULL, napi_default, NULL},
         {"receiveWebViewMessage", NULL, ReceiveWebViewMessage, NULL, NULL, NULL, napi_default, NULL},
+        {"notifyWebPageEnded", NULL, NotifyWebPageEnded, NULL, NULL, NULL, napi_default, NULL},
+        {"shouldInterceptNavigation", NULL, ShouldInterceptNavigation, NULL, NULL, NULL, napi_default, NULL},
+        {"shutdownWebView", NULL, ShutdownWebView, NULL, NULL, NULL, napi_default, NULL},
         {"initEngine", NULL, InitEngine, NULL, NULL, NULL, napi_default, NULL},
         {"notifyThemeChanged", NULL, NotifyThemeChanged, NULL, NULL, NULL, napi_default, NULL},
         {"notifyLifecycleChanged", NULL, NotifyLifecycleChanged, NULL, NULL, NULL, napi_default, NULL},

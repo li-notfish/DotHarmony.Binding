@@ -9,6 +9,22 @@ internal static class NativeWebExports
     private static int HarmonyWebInit(nint env, nint webViewValue)
         => HarmonyWebRuntime.InitializeCore(env, webViewValue);
 
+    [UnmanagedCallersOnly(EntryPoint = "HarmonyWebInitTagged")]
+    private static int HarmonyWebInitTagged(nint env, nint webViewValue, nint tagValue)
+        => HarmonyWebRuntime.InitializeCore(env, webViewValue, global::HarmonyOS.Interop.NodeApi.ToString(tagValue));
+
+    [UnmanagedCallersOnly(EntryPoint = "HarmonyWebShutdown")]
+    private static int HarmonyWebShutdown(nint env, nint tagValue)
+        => HarmonyWebRuntime.ShutdownCore(env, global::HarmonyOS.Interop.NodeApi.ToString(tagValue));
+
+    [UnmanagedCallersOnly(EntryPoint = "HarmonyWebPageEnded")]
+    private static int HarmonyWebPageEnded(nint env, nint urlValue, nint tagValue)
+        => HarmonyWebRuntime.NotifyPageEndedCore(env, urlValue, global::HarmonyOS.Interop.NodeApi.ToString(tagValue));
+
+    [UnmanagedCallersOnly(EntryPoint = "HarmonyWebShouldInterceptNavigation")]
+    private static int HarmonyWebShouldInterceptNavigation(nint env, nint urlValue, nint tagValue)
+        => HarmonyWebRuntime.ShouldInterceptNavigationCore(env, urlValue, global::HarmonyOS.Interop.NodeApi.ToString(tagValue));
+
     [UnmanagedCallersOnly(EntryPoint = "HarmonyWebInterceptRequest")]
     private static nint HarmonyWebInterceptRequest(nint env, nint urlValue, nint createResponseValue)
         => HarmonyWebRuntime.InterceptRequestCore(env, urlValue, createResponseValue);
