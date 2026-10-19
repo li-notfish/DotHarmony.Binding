@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using HarmonyOS.Bindings.NativeNode;
+using HarmonyOS.Interop;
 using HarmonyOS.Maui.Handlers;
 using HarmonyOS.Maui.Hosting;
 using HarmonyOS.Maui.Web;
@@ -24,7 +25,21 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
 
     public HarmonyBlazorWebViewHandler() : base(Mapper) { }
 
-    protected override ArkStack CreatePlatformView() => new();
+    protected override ArkStack CreatePlatformView()
+    {
+        var container = new ArkStack();
+        // 容器尺寸由 MAUI 布局驱动；Web 是外部 BuilderNode 节点，不会自动跟随，
+        // 需在容器尺寸变化时显式同步（模式同 HarmonyContentViewHandler.OnSizeChange）。
+        container.SizeChange += OnContainerSizeChange;
+        return container;
+    }
+
+    private void OnContainerSizeChange(ArkUINodeEvent e)
+    {
+        if (e.SizeChangeWidth <= 0 || e.SizeChangeHeight <= 0)
+            return;
+        _surface?.SetPlatformNodeSize(e.SizeChangeWidth, e.SizeChangeHeight);
+    }
 
     protected override void DisconnectHandler(ArkStack platformView)
     {
@@ -32,8 +47,10 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
         {
             _surface.PageEnded -= OnPageEnded;
             _surface.NavigationStarting -= OnNavigationStarting;
+            _surface.DetachPlatformNode();
             _surface = null;
         }
+
         if (_manager is not null)
         {
             var manager = _manager;
@@ -93,6 +110,11 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
         // __bwv 握手作为自确认；不再依赖 500ms 固定延迟。
         _surface.PageEnded += OnPageEnded;
         _surface.NavigationStarting += OnNavigationStarting;
+
+        // 把 BuilderNode 的 Web 节点挂进 handler 的平台容器，使 Web 参与 MAUI 布局
+        // （替代宿主页全屏覆盖）。宿主未提供节点时保持全屏模式，行为与之前一致。
+        if (PlatformView is ArkUINodeBase container && _surface.TryAttachPlatformNode(container.Handle))
+            HiLog.Info("HarmonyWeb", "[blazor-handler] web node attached to MAUI layout container");
 
         _manager.Navigate(VirtualView.StartPath);
 

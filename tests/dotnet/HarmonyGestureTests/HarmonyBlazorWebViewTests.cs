@@ -142,6 +142,23 @@ public sealed class HarmonyBlazorWebViewTests
     }
 
     [Fact]
+    public void Surface_ExposesEmbeddedNodeContract()
+    {
+        // 内嵌模式的契约面：宿主用 BuilderNode 承载 Web 时，surface 必须能接受外部节点。
+        // 具体挂载行为依赖 ArkUI 运行时不进入单测（见设备验证记录），这里锁定 API 形状，
+        // 防止后续重构把内嵌能力从接口上抹掉。
+        var surfaceType = typeof(HarmonyOS.Maui.Web.IHarmonyWebViewSurface);
+
+        Assert.NotNull(surfaceType.GetMethod(nameof(HarmonyOS.Maui.Web.IHarmonyWebViewSurface.TryAttachPlatformNode)));
+        Assert.NotNull(surfaceType.GetMethod(nameof(HarmonyOS.Maui.Web.IHarmonyWebViewSurface.DetachPlatformNode)));
+        Assert.NotNull(surfaceType.GetMethod(nameof(HarmonyOS.Maui.Web.IHarmonyWebViewSurface.SetPlatformNodeSize)));
+
+        var attach = surfaceType.GetMethod(nameof(HarmonyOS.Maui.Web.IHarmonyWebViewSurface.TryAttachPlatformNode))!;
+        Assert.Equal(typeof(bool), attach.ReturnType);
+        Assert.Single(attach.GetParameters());
+    }
+
+    [Fact]
     public void MimeMap_ResolvesCommonWebAssets()
     {
         Assert.Equal("text/html", HarmonyBlazorMimeMap.Resolve("index.html"));
