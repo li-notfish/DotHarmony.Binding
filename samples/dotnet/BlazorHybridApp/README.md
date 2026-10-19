@@ -1,7 +1,7 @@
 # BlazorHybridApp（实验）
 
 Blazor Hybrid 在 HarmonyOS 上的最小验证：Router 起始路由、首次渲染、
-WebView 原生点击触发的 Blazor 事件分发。
+WebView 原生点击触发的 Blazor 事件分发，以及 IJSRuntime 双向互操作。
 
 ## 运行
 
@@ -9,9 +9,19 @@ WebView 原生点击触发的 Blazor 事件分发。
 dotnet build samples/dotnet/BlazorHybridApp -t:HarmonyRun
 ```
 
+## 覆盖的能力
+
+- **启动时序**：宿主 `Web onPageEnd` → `native.notifyWebPageEnded` → `Blazor.start()`，
+  `__bwv` 握手自确认（不再使用固定延迟）。
+- **API 面**（对齐官方 `BlazorWebView`）：BindableProperty 的 `HostPage`/`StartPath`、
+  `RootComponents`、`AddRootComponentAsync`/`RemoveRootComponentAsync`、
+  `UrlLoading` + `UrlLoadingStrategy`、`BlazorWebViewInitializing`/`Initialized`。
+- **JS Interop**：`JsInterop.razor` 演示 .NET → JS（`IJSRuntime.InvokeAsync`）与
+  JS → .NET（`DotNetObjectReference` + `[JSInvokable]`）双向调用。
+
 ## 说明
 
-- 使用 `HarmonyOS.Maui.Blazor` + NDK ArkWeb scheme handler；一个应用仅支持一个 WebView 宿主。
-- 页面目前只有 Counter/About，**没有 `IJSRuntime` 互操作示例**；不要把它当作完整
-  Blazor 接入指南。架构要点见根 [README.md](../../../README.md) 的“已知限制”。
+- 使用 `HarmonyOS.Maui.Blazor` + NDK ArkWeb scheme handler。
+- 宿主目前为单个 Web 组件（固定 webTag `harmony-web`）；.NET 侧 surface 已按 webTag 注册
+  （`HarmonyWebRuntime.GetSurface`），多实例能力待宿主提供多 Web 组件后启用。
 - 属于实验功能，稳定 API 以 MAUI/Controls 示例为准。
