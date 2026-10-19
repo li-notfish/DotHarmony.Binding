@@ -1,6 +1,6 @@
 # Performance baseline
 
-This baseline records three metrics for the NativeAOT HarmonyOS host:
+This baseline records six metrics for the NativeAOT HarmonyOS host:
 
 - `libapp.so` size for `arm64-v8a` and `x86_64`
 - HAP package size

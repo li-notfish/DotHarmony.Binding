@@ -1,5 +1,8 @@
 # Handler 覆盖矩阵（HandlerAudit 生成，勿手改）
 
+> 重新生成：`dotnet run --project tools/HandlerAudit`（覆盖本文件）。
+> 最近生成时间以本文件的 git 修改记录为准。
+
 | Handler | 控件 | 已映射 | 基座覆盖 | 基线豁免 | 缺口 |
 |---|---|---|---|---|---|
 | HarmonyNavigationPageHandler | NavigationPage | 2 | 20 | 23 | 0 |
