@@ -269,11 +269,18 @@ tests/                       jest（解析器/生成器 79 用例）
   arm64 云真机需要上述 NativeAOT NUMA 探测补丁，当前由工具链自动完成。
 - **Blazor Hybrid（实验）**：`samples/dotnet/BlazorHybridApp` 已在模拟器跑通 Router 起始路由、
   首次渲染和 WebView 原生点击触发的 Blazor 事件分发；outgoing IPC 的 AOT 兼容性由 source generator 与显式 converter 兜底。
+  API 面已对齐官方 `Microsoft.AspNetCore.Components.WebView.Maui.BlazorWebView`：`HostPage`/`StartPath`
+  均为 BindableProperty，`RootComponents`（XAML ContentProperty）、`AddRootComponentAsync`/`RemoveRootComponentAsync`、
+  `UrlLoading` 事件 + `HarmonyUrlLoadingStrategy`（`OpenExternally`/`OpenInWebView`/`CancelLoad`，外链默认交系统浏览器）、
+  `BlazorWebViewInitializing`/`BlazorWebViewInitialized`、`WebResourceRequested`（scheme 层接管请求）。
   架构要点：`https://localhost/` 拦截已切换 NDK `OH_ArkWeb_SetSchemeHandler`（webTag `harmony-web` 寻址，
   IO 线程决策 → TSFN 投递 env 线程处理 → `HarmonyHostWebRespond` 回写），ArkTS 侧仅剩 `external` 消息桥
-  （JS 函数闭包参数无法经 NDK proxy 回调承载）；`Blazor.start()` 启动采用实测 500ms 起步 + `__bwv` IPC
-  回执自确认重试——NDK `SetJavaScriptProxyValidCallback` 实测是"proxy 注册窗口"而非渲染就绪信号，
-  不用于启动门控（基建已挂，留作未来 NDK proxy 注册的触发点）。
+  （JS 函数闭包参数无法经 NDK proxy 回调承载）。启动时序已改为**确定性**：宿主 `Web onPageEnd`
+  → `native.notifyWebPageEnded` → .NET `Blazor.start()`，`__bwv` 握手（`AttachPage` 为首条）作自确认，
+  不再依赖固定延迟；NDK `SetJavaScriptProxyValidCallback` 实测是"proxy 注册窗口"而非渲染就绪信号，不用于启动门控。
+  静态资产按官方分层：publish 产物 `wwwroot`（含 RCL `_content/{库}/` 与 `_framework/`）整体 stage 进 rawfile；
+  多实例 surface 按 webTag 注册（`HarmonyWebRuntime.GetSurface(tag)`）。样例新增 JS Interop 页（IJSRuntime 双向 +
+  `[JSInvokable]` 回调）。未对齐：`InputFile` 的 JS→.NET 大块字节流、BlazorWebView 与原生控件的同页混排（内嵌 WebView 节点）。
 - **手势注入**：Metro Hub 场景此前现象为"注入/触摸滑动点击均无响应"，今已确认为 ContentPresenter 空槽命中测试黑洞所致（非模拟器注入限制），随 ContentPresenter/ContentView 宿主修复一并解决（`verify-zindex-probe.ps1` 的 `uitest uiInput click` 逐步走查在模拟器实测可用）；剩余限制：Pinch 多点触控注入通道，真机验收仍以实际触摸为准
 - **napi handle scope**：模块加载路径已显式 open/close；逐次调用仍依赖宿主线程已有 scope，统一 RAII 封装待补
 - **跨模块类型导入**：`Want` / `NetAddress` 等已生成为强类型包装并在跨模块签名中复用；仅未映射的复杂 options bag 仍退化为 `IntPtr`（生成后可在 `artifacts/generator/api-intptr-report.json` 查看清单）
