@@ -3,6 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using HarmonyOS.Bindings.Api.Web;
+using HarmonyOS.Bindings.NativeNode;
 using HarmonyOS.Interop;
 
 namespace HarmonyOS.Maui.Web;
@@ -19,6 +20,8 @@ public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface, IDisposab
 
     private readonly WebviewController _controller;
     private GCHandle _messageHandle;
+    private IntPtr _platformNode;      // BuilderNode.getFrameNode() 映射得到的 ArkUI_NodeHandle
+    private IntPtr _attachedParent;    // 当前挂载的父节点（0 表示未挂载）
     private Action<string>? _messageHandler;
     private Func<HarmonyWebRequest, HarmonyWebResponse>? _responseFactory;
 
@@ -68,6 +71,82 @@ public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface, IDisposab
     {
         ArgumentNullException.ThrowIfNull(handler);
         _messageHandler = handler;
+    }
+
+    /// <summary>
+    /// 宿主把 BuilderNode(Web) 的 FrameNode 映射成节点句柄后交给 surface，
+    /// 供 <see cref="TryAttachPlatformNode"/> 在 handler 连接时挂进 MAUI 布局。
+    /// </summary>
+    internal void SetPlatformNode(IntPtr nodeHandle) => _platformNode = nodeHandle;
+
+    public bool TryAttachPlatformNode(IntPtr parentHandle)
+    {
+        if (_platformNode == IntPtr.Zero || parentHandle == IntPtr.Zero)
+            return false;
+        if (_attachedParent != IntPtr.Zero)
+            return _attachedParent == parentHandle;
+
+        try
+        {
+            var status = ArkUINativeApi.AddChild(parentHandle, _platformNode);
+            if (status != 0)
+            {
+                HiLog.Error("HarmonyWeb", $"[node] AddChild failed: {status}");
+                return false;
+            }
+            _attachedParent = parentHandle;
+            HiLog.Info("HarmonyWeb", $"[node] web node 0x{_platformNode:X} attached to 0x{parentHandle:X}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            HiLog.Error("HarmonyWeb", $"[node] attach failed: {ex.GetType().Name}: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>把 MAUI 布局算出的尺寸写到 Web 节点上（NODE_WIDTH/HEIGHT，vp）。</summary>
+    public unsafe void SetPlatformNodeSize(float widthVp, float heightVp)
+    {
+        if (_platformNode == IntPtr.Zero || widthVp <= 0 || heightVp <= 0)
+            return;
+        try
+        {
+            // 外部节点（BuilderNode 产出）没有 ArkUINodeBase 包装，直接用属性写入。
+            var width = stackalloc ArkUI_NumberValue[1];
+            width[0] = ArkUIValue.F(widthVp);
+            var wItem = new ArkUI_AttributeItem { value = width, size = 1 };
+            ArkUINativeApi.SetAttribute(_platformNode, ArkUI_NodeAttributeType.NODE_WIDTH, &wItem);
+
+            var height = stackalloc ArkUI_NumberValue[1];
+            height[0] = ArkUIValue.F(heightVp);
+            var hItem = new ArkUI_AttributeItem { value = height, size = 1 };
+            ArkUINativeApi.SetAttribute(_platformNode, ArkUI_NodeAttributeType.NODE_HEIGHT, &hItem);
+        }
+        catch (Exception ex)
+        {
+            HiLog.Warn("HarmonyWeb", $"[node] size sync failed: {ex.GetType().Name}: {ex.Message}");
+        }
+    }
+
+    public void DetachPlatformNode()
+    {
+        if (_attachedParent == IntPtr.Zero || _platformNode == IntPtr.Zero)
+            return;
+        try
+        {
+            var status = ArkUINativeApi.RemoveChild(_attachedParent, _platformNode);
+            if (status != 0)
+                HiLog.Warn("HarmonyWeb", $"[node] RemoveChild failed: {status}");
+        }
+        catch (Exception ex)
+        {
+            HiLog.Warn("HarmonyWeb", $"[node] detach failed: {ex.GetType().Name}: {ex.Message}");
+        }
+        finally
+        {
+            _attachedParent = IntPtr.Zero;
+        }
     }
 
     public void SetSchemeHandler(string scheme, Func<HarmonyWebRequest, HarmonyWebResponse> handler)

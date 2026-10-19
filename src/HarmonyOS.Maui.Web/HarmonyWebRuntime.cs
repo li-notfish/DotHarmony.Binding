@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using HarmonyOS.Bindings.Hosting;
+using HarmonyOS.Bindings.NativeNode;
 using HarmonyOS.Interop;
 
 namespace HarmonyOS.Maui.Web;
@@ -73,6 +74,38 @@ public static class HarmonyWebRuntime
         {
             HiLog.Error("HarmonyWeb", $"InitializeCore: {ex.GetType().Name}: {ex.Message}");
             return -1;
+        }
+    }
+
+    /// <summary>
+    /// 内嵌模式初始化：宿主用 BuilderNode 把 Web 包成节点后传入 FrameNode，
+    /// surface 保存对应节点句柄，供 handler 挂进 MAUI 布局容器。
+    /// </summary>
+    public static int InitializeWithNodeCore(IntPtr env, IntPtr webViewValue, string? webTag, IntPtr frameNodeValue)
+    {
+        var result = InitializeCore(env, webViewValue, webTag);
+        if (result != 0)
+            return result;
+
+        try
+        {
+            if (frameNodeValue == IntPtr.Zero)
+                return result;
+
+            var tag = string.IsNullOrEmpty(webTag) ? DefaultTag : webTag;
+            var surface = GetSurface(tag) as HarmonyArkWebViewSurface;
+            if (surface is null)
+                return result;
+
+            var node = ArkUINativeApi.GetNodeHandleFromNapiValue(env, frameNodeValue);
+            surface.SetPlatformNode(node);
+            HiLog.Info("HarmonyWeb", $"[node] surface '{tag}' bound to web node 0x{node:X} (embedded mode)");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            HiLog.Error("HarmonyWeb", $"InitializeWithNodeCore: {ex.GetType().Name}: {ex.Message}");
+            return -4;
         }
     }
 

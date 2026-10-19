@@ -31,6 +31,17 @@ internal static class NativeExports
     private static int HarmonyWebInitTagged(nint env, nint webViewValue, nint tagValue)
         => HarmonyWebRuntime.InitializeCore(env, webViewValue, global::HarmonyOS.Interop.NodeApi.ToString(tagValue));
 
+    // 内嵌模式：webTag + BuilderNode 的 FrameNode（napi_value，由 C 侧原样转发）
+    [UnmanagedCallersOnly(EntryPoint = "HarmonyWebInitWithNode")]
+    private static int HarmonyWebInitWithNode(nint env, nint webViewValue, nint tagValue, nint frameNodeValue)
+        => HarmonyWebRuntime.InitializeWithNodeCore(
+            env,
+            webViewValue,
+            global::HarmonyOS.Interop.NodeApi.ToString(tagValue),
+            // FrameNode 需要 napi_value 原样传入；ToString 对对象返回 null，这里用零表示"无节点"，
+            // 真正的节点映射在 InitializeWithNodeCore 内完成（需要 napi_value 而非字符串）。
+            frameNodeValue);
+
     [UnmanagedCallersOnly(EntryPoint = "HarmonyWebShutdown")]
     private static int HarmonyWebShutdown(nint env, nint tagValue)
         => HarmonyWebRuntime.ShutdownCore(env, global::HarmonyOS.Interop.NodeApi.ToString(tagValue));

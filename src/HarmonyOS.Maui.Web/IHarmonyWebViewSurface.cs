@@ -25,6 +25,19 @@ public interface IHarmonyWebViewSurface
     /// <summary>导航请求开始（Web 组件 onLoadIntercept）；返回 true 表示拦截该请求。</summary>
     event Func<string, bool>? NavigationStarting;
 
+    /// <summary>
+    /// 把 BuilderNode 产出的 Web 节点挂进 .NET 侧的容器节点（parent），使 Web 参与 MAUI 布局，
+    /// 而不是以全屏覆盖方式存在于宿主页。parent/child 均为 ArkUI_NodeHandle。
+    /// 返回 true 表示挂载成功；surface 未由 BuilderNode 承载时返回 false（回退全屏模式）。
+    /// </summary>
+    bool TryAttachPlatformNode(IntPtr parentHandle);
+
+    /// <summary>从容器节点摘除 Web 节点（handler 断连时调用）。</summary>
+    void DetachPlatformNode();
+
+    /// <summary>把 MAUI 布局算出的容器尺寸同步给 Web 节点（vp）。</summary>
+    void SetPlatformNodeSize(float widthVp, float heightVp);
+
     Task InitializeAsync();
     Task LoadUrlAsync(string url);
     Task LoadDataAsync(string html, string baseUrl);

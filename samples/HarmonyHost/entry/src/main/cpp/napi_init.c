@@ -25,6 +25,7 @@ typedef int (*harmony_poppage_t)(void* env);
 typedef int (*harmony_themechanged_t)(void* env, int colorMode);
 typedef int (*harmony_web_init_t)(void* env, void* webViewValue);
 typedef int (*harmony_web_init_tagged_t)(void* env, void* webViewValue, void* tagValue);
+typedef int (*harmony_web_init_node_t)(void* env, void* webViewValue, void* tagValue, void* frameNodeValue);
 typedef int (*harmony_web_shutdown_t)(void* env, const char* webTag);
 typedef int (*harmony_web_page_ended_t)(void* env, void* urlValue, void* tagValue);
 typedef int (*harmony_web_should_intercept_t)(void* env, void* urlValue, void* tagValue);
@@ -50,6 +51,7 @@ static harmony_web_receive_t g_webReceive = NULL;
 static harmony_web_proxy_ready_t g_webProxyReady = NULL;
 static harmony_web_intercept_native_t g_webInterceptNative = NULL;
 static harmony_web_init_tagged_t g_webInitTagged = NULL;
+static harmony_web_init_node_t g_webInitNode = NULL;
 static harmony_web_shutdown_t g_webShutdown = NULL;
 static harmony_web_page_ended_t g_webPageEnded = NULL;
 static harmony_web_should_intercept_t g_webShouldIntercept = NULL;
@@ -65,6 +67,7 @@ static void resolve_web_symbols(void)
     g_webProxyReady = (harmony_web_proxy_ready_t)dlsym(g_app, "HarmonyWebProxyReady");
     g_webInterceptNative = (harmony_web_intercept_native_t)dlsym(g_app, "HarmonyWebInterceptNative");
     g_webInitTagged = (harmony_web_init_tagged_t)dlsym(g_app, "HarmonyWebInitTagged");
+    g_webInitNode = (harmony_web_init_node_t)dlsym(g_app, "HarmonyWebInitWithNode");
     g_webShutdown = (harmony_web_shutdown_t)dlsym(g_app, "HarmonyWebShutdown");
     g_webPageEnded = (harmony_web_page_ended_t)dlsym(g_app, "HarmonyWebPageEnded");
     g_webShouldIntercept = (harmony_web_should_intercept_t)dlsym(g_app, "HarmonyWebShouldInterceptNavigation");
@@ -442,15 +445,16 @@ static napi_value PassWebView(napi_env env, napi_callback_info info)
 {
     if (!ensure_runtime(env)) return NULL;
 
-    size_t argc = 2;
-    napi_value argv[2];
+    size_t argc = 3;
+    napi_value argv[3] = {NULL, NULL, NULL};
     napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
     if (argc < 1) {
         loge("passWebView", "missing WebviewController argument");
         return NULL;
     }
-    // 可选第二参数：webTag（多实例时区分 surface；缺省回落到默认 tag）
+    // 可选第二参数：webTag（多实例区分 surface）；可选第三参数：BuilderNode 的 FrameNode（内嵌模式）
     napi_value webTagValue = argc >= 2 ? argv[1] : NULL;
+    napi_value frameNodeValue = argc >= 3 ? argv[2] : NULL;
 
     resolve_web_symbols();
     if (!g_webInit) {
@@ -486,9 +490,14 @@ static napi_value PassWebView(napi_env env, napi_callback_info info)
         }
     }
 
-    int r = g_webInitTagged
-        ? g_webInitTagged((void*)env, (void*)argv[0], (void*)webTagValue)
-        : g_webInit((void*)env, (void*)argv[0]);
+    int r;
+    if (g_webInitNode && frameNodeValue) {
+        r = g_webInitNode((void*)env, (void*)argv[0], (void*)webTagValue, (void*)frameNodeValue);
+    } else if (g_webInitTagged) {
+        r = g_webInitTagged((void*)env, (void*)argv[0], (void*)webTagValue);
+    } else {
+        r = g_webInit((void*)env, (void*)argv[0]);
+    }
     if (r == 0) {
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG,
                      ".NET WebView bridge initialized");

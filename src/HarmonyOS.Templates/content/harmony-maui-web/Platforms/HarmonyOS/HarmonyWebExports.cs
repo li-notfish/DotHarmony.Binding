@@ -13,6 +13,14 @@ internal static class NativeWebExports
     private static int HarmonyWebInitTagged(nint env, nint webViewValue, nint tagValue)
         => HarmonyWebRuntime.InitializeCore(env, webViewValue, global::HarmonyOS.Interop.NodeApi.ToString(tagValue));
 
+    [UnmanagedCallersOnly(EntryPoint = "HarmonyWebInitWithNode")]
+    private static int HarmonyWebInitWithNode(nint env, nint webViewValue, nint tagValue, nint frameNodeValue)
+        => HarmonyWebRuntime.InitializeWithNodeCore(
+            env,
+            webViewValue,
+            global::HarmonyOS.Interop.NodeApi.ToString(tagValue),
+            frameNodeValue);
+
     [UnmanagedCallersOnly(EntryPoint = "HarmonyWebShutdown")]
     private static int HarmonyWebShutdown(nint env, nint tagValue)
         => HarmonyWebRuntime.ShutdownCore(env, global::HarmonyOS.Interop.NodeApi.ToString(tagValue));
