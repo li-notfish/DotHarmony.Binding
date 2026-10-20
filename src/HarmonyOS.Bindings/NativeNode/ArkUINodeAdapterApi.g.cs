@@ -3,7 +3,6 @@
 // ArkUINativeApi NodeAdapter 扩展镜像：List/Swiper/WaterFlow 虚拟化 adapter（native_node.h API 12+）。
 #nullable enable
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HarmonyOS.Bindings.NativeNode;
@@ -15,48 +14,78 @@ public struct ArkUI_NodeAdapterEvent { }
 
 internal static unsafe partial class ArkUINativeApi
 {
+    /// <summary>Creates a component adapter.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeAdapter_Create();
 
+    /// <summary>Destroys a component adapter.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial void OH_ArkUI_NodeAdapter_Dispose(IntPtr handle);
 
+    /// <summary>Sets the total number of elements in the specified adapter.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeAdapter_SetTotalNodeCount(IntPtr handle, uint size);
 
+    /// <summary>Registers an event callback for the adapter.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeAdapter_RegisterEventReceiver(IntPtr handle, IntPtr userData, delegate* unmanaged<ArkUI_NodeAdapterEvent*, void> receiver);
 
+    /// <summary>Deregisters an event callback for the adapter.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial void OH_ArkUI_NodeAdapter_UnregisterEventReceiver(IntPtr handle);
 
+    /// <summary>Instructs the specified adapter to reload all elements.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeAdapter_ReloadAllItems(IntPtr handle);
 
+    /// <summary>Instructs the specified adapter to reload certain elements.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeAdapter_ReloadItem(IntPtr handle, uint startPosition, uint itemCount);
 
+    /// <summary>Instructs the specified adapter to remove certain elements.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeAdapter_RemoveItem(IntPtr handle, uint startPosition, uint itemCount);
 
+    /// <summary>Instructs the specified adapter to insert certain elements.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeAdapter_InsertItem(IntPtr handle, uint startPosition, uint itemCount);
 
+    /// <summary>Sets the component to be added to the specified adapter.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeAdapterEvent_SetItem(ArkUI_NodeAdapterEvent* @event, IntPtr node);
 
+    /// <summary>Sets the component ID to be generated.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeAdapterEvent_SetNodeId(ArkUI_NodeAdapterEvent* @event, int id);
 
+    /// <summary>Obtains the event type.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial int OH_ArkUI_NodeAdapterEvent_GetType(ArkUI_NodeAdapterEvent* @event);
 
+    /// <summary>Obtains the element to be removed for the event to be destroyed.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeAdapterEvent_GetRemovedNode(ArkUI_NodeAdapterEvent* @event);
 
+    /// <summary>Obtains the index of the element to be operated for the specified adapter event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial uint OH_ArkUI_NodeAdapterEvent_GetItemIndex(ArkUI_NodeAdapterEvent* @event);
 
+    /// <summary>Obtains the custom data passed in during registration of the specified event.</summary>
+    /// <remarks>@since 12</remarks>
     [LibraryImport(ArkuiLib)]
     private static partial IntPtr OH_ArkUI_NodeAdapterEvent_GetUserData(ArkUI_NodeAdapterEvent* @event);
 }

@@ -179,7 +179,8 @@ export class AstParser {
                             name: decl.name.text,
                             returnType: mappedType,
                             parameters: [],
-                            isChained: true // 标记为属性（单参数链式路径在生成器里产 property getter）
+                            isChained: true, // 标记为属性（单参数链式路径在生成器里产 property getter）
+                            doc: this.docOf(child)
                         };
                         component.methods.push(method);
                     }
@@ -489,7 +490,8 @@ export class AstParser {
             name: methodName,
             returnType: isServiceModule ? returnType : TypeMapper.mapType(returnType),
             parameters: [],
-            isChained: returnType === component.attributeName
+            isChained: returnType === component.attributeName,
+            doc: this.docOf(node)
         };
 
         if (isServiceModule && EVENT_FUNCTION_NAMES.has(methodName)) {
@@ -829,6 +831,26 @@ export class AstParser {
         }
     }
 
+    /** 提取 SDK .d.ts 的 JSDoc 原文（brief + @tag 注释），供生成 XML 文档。 */
+    private docOf(node: ts.Node): string {
+        const docs = (node as unknown as { jsDoc?: ts.JSDoc[] }).jsDoc;
+        if (!docs || docs.length === 0) return '';
+        const parts: string[] = [];
+        for (const doc of docs) {
+            const comment = typeof doc.comment === 'string'
+                ? doc.comment
+                : Array.isArray(doc.comment)
+                    ? doc.comment.map(c => c.text ?? '').join('')
+                    : '';
+            if (comment.trim()) parts.push(comment.trim());
+            for (const tag of doc.tags ?? []) {
+                const tagComment = typeof tag.comment === 'string' ? tag.comment.trim() : '';
+                parts.push(`@${tag.tagName.text}${tagComment ? ' ' + tagComment : ''}`);
+            }
+        }
+        return parts.join('\n');
+    }
+
     private getTypeName(typeNode: ts.TypeNode | undefined): string {
         if (!typeNode) {
             return 'void';
@@ -1074,7 +1096,8 @@ export class AstParser {
                     name: member.name.getText(),
                     type: this.getTypeName(member.type),
                     optional: !!member.questionToken,
-                    readonly: !!member.modifiers?.some(m => m.kind === ts.SyntaxKind.ReadonlyKeyword)
+                    readonly: !!member.modifiers?.some(m => m.kind === ts.SyntaxKind.ReadonlyKeyword),
+                    doc: this.docOf(member)
                 };
                 properties.push(prop);
             } else if (ts.isMethodSignature(member)) {
@@ -1088,7 +1111,8 @@ export class AstParser {
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     })),
-                    isChained: false
+                    isChained: false,
+                    doc: this.docOf(member)
                 };
                 if (raw && EVENT_FUNCTION_NAMES.has(method.name)) {
                     method.eventMeta = extractEventMeta(member);
@@ -1105,7 +1129,8 @@ export class AstParser {
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     })),
-                    isChained: false
+                    isChained: false,
+                    doc: this.docOf(member)
                 };
                 methods.push(method);
             }
@@ -1151,7 +1176,8 @@ export class AstParser {
                     name: member.name?.getText() || '',
                     type: this.getTypeName(member.type),
                     optional: !!member.questionToken,
-                    readonly: !!(member.modifiers && member.modifiers.some(m => !ts.isDecorator(m) && m.kind === ts.SyntaxKind.ReadonlyKeyword))
+                    readonly: !!(member.modifiers && member.modifiers.some(m => !ts.isDecorator(m) && m.kind === ts.SyntaxKind.ReadonlyKeyword)),
+                    doc: this.docOf(member)
                 };
                 properties.push(prop);
             } else if (ts.isMethodDeclaration(member)) {
@@ -1165,7 +1191,8 @@ export class AstParser {
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     })),
-                    isChained: false
+                    isChained: false,
+                    doc: this.docOf(member)
                 };
                 if (raw && EVENT_FUNCTION_NAMES.has(method.name)) {
                     method.eventMeta = extractEventMeta(member);
@@ -1206,7 +1233,8 @@ export class AstParser {
                     name: member.name.getText(),
                     type: this.getTypeName(member.type),
                     optional: !!member.questionToken,
-                    readonly: !!member.modifiers?.some(m => m.kind === ts.SyntaxKind.ReadonlyKeyword)
+                    readonly: !!member.modifiers?.some(m => m.kind === ts.SyntaxKind.ReadonlyKeyword),
+                    doc: this.docOf(member)
                 });
             }
         });
@@ -1230,7 +1258,8 @@ export class AstParser {
                         optional: !!p.questionToken,
                         defaultValue: p.initializer ? p.initializer.getText() : undefined
                     })),
-                    isChained: false
+                    isChained: false,
+                    doc: this.docOf(member)
                 };
                 methods.push(method);
             } else if (ts.isPropertyDeclaration(member)) {

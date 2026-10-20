@@ -41,7 +41,7 @@ describe('HarmonyOS sample NativeAOT exports', () => {
       const attributeCount = (nativeExports.match(/\[UnmanagedCallersOnly\(/g) ?? []).length;
       const methodCount = (
         nativeExports.match(
-          /\b(?:private|internal|public)\s+static\s+[A-Za-z_][\w.<>,\[\]?]*\s+[A-Za-z_]\w*\s*\(/g,
+          /\b(?:private|internal|public)\s+static\s+(?:unsafe\s+)?[A-Za-z_][\w.<>,\[\]?]*\s+[A-Za-z_]\w*\s*\(/g,
         ) ?? []
       ).length;
       expect(attributeCount).toBeGreaterThan(0);

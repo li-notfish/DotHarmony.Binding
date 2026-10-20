@@ -17,6 +17,8 @@
                 Clicked="OnAsyncDemoClicked" />
         <Button Text="TSFN test (worker → JS thread)"
                 Clicked="OnTsfnTestClicked" />
+        <Button Text="Hardware / Permissions (HTTP/File/Camera)"
+                Clicked="OnHardwareClicked" />
         <Label x:Name="TsfnLabel"
                Text="TSFN: not run"
                HorizontalTextAlignment="Center"

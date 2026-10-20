@@ -18,57 +18,15 @@ public static unsafe partial class Webview
 {
     private const string ModuleName = "@ohos.web.webview";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[web.webview] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _once => "once"u8;
 
     /// <summary>
-    /// once
+    /// Registers a one-time callback for web events of the specified type. Currently, only **webInited** is supported.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Once(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _once, type, callback);
@@ -408,6 +366,18 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void LoadData(string data, string mimeType, string encoding, string? baseUrl = null, string? historyUrl = null)
     {
+        if (baseUrl is null && historyUrl is null)
+        {
+            CallMethodVoid(_loadData, data, mimeType, encoding);
+            return;
+        }
+
+        if (historyUrl is null)
+        {
+            CallMethodVoid(_loadData, data, mimeType, encoding, baseUrl);
+            return;
+        }
+
         CallMethodVoid(_loadData, data, mimeType, encoding, baseUrl, historyUrl);
     }
 
@@ -416,6 +386,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void LoadUrl(string url, WebHeader[]? headers = null)
     {
+        if (headers is null)
+        {
+            CallMethodVoid(_loadUrl, url);
+            return;
+        }
+
         CallMethodVoid(_loadUrl, url, NapiArg.Of(headers));
     }
 
@@ -520,6 +496,11 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public WebMessagePort[] CreateWebMessagePorts(bool? isExtentionType = null)
     {
+        if (isExtentionType is null)
+        {
+            return CallMethod(_createWebMessagePorts, h => ValueConverter.ConvertArray(h, static e => new WebMessagePort(e)));
+        }
+
         return CallMethod(_createWebMessagePorts, h => ValueConverter.ConvertArray(h, static e => new WebMessagePort(e)), NapiArg.Of(isExtentionType));
     }
 
@@ -544,6 +525,18 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void RegisterJavaScriptProxy(IntPtr jsObject, string name, string[] methodList, string[]? asyncMethodList = null, string? permission = null)
     {
+        if (asyncMethodList is null && permission is null)
+        {
+            CallMethodVoid(_registerJavaScriptProxy, jsObject, name, NapiArg.Of(methodList));
+            return;
+        }
+
+        if (permission is null)
+        {
+            CallMethodVoid(_registerJavaScriptProxy, jsObject, name, NapiArg.Of(methodList), NapiArg.Of(asyncMethodList));
+            return;
+        }
+
         CallMethodVoid(_registerJavaScriptProxy, jsObject, name, NapiArg.Of(methodList), NapiArg.Of(asyncMethodList), permission);
     }
 
@@ -704,6 +697,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void ScrollTo(double x, double y, double? duration = null)
     {
+        if (duration is null)
+        {
+            CallMethodVoid(_scrollTo, x, y);
+            return;
+        }
+
         CallMethodVoid(_scrollTo, x, y, NapiArg.Of(duration));
     }
 
@@ -712,6 +711,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void ScrollBy(double deltaX, double deltaY, double? duration = null)
     {
+        if (duration is null)
+        {
+            CallMethodVoid(_scrollBy, deltaX, deltaY);
+            return;
+        }
+
         CallMethodVoid(_scrollBy, deltaX, deltaY, NapiArg.Of(duration));
     }
 
@@ -776,6 +781,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PrefetchPage(string url, WebHeader[]? additionalHeaders = null)
     {
+        if (additionalHeaders is null)
+        {
+            CallMethodVoid(_prefetchPage, url);
+            return;
+        }
+
         CallMethodVoid(_prefetchPage, url, NapiArg.Of(additionalHeaders));
     }
 
@@ -784,6 +795,18 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PrefetchPage(string url, WebHeader[]? additionalHeaders = null, PrefetchOptions? prefetchOptions = null)
     {
+        if (additionalHeaders is null && prefetchOptions is null)
+        {
+            CallMethodVoid(_prefetchPage, url);
+            return;
+        }
+
+        if (prefetchOptions is null)
+        {
+            CallMethodVoid(_prefetchPage, url, NapiArg.Of(additionalHeaders));
+            return;
+        }
+
         CallMethodVoid(_prefetchPage, url, NapiArg.Of(additionalHeaders), NapiArg.Of(prefetchOptions));
     }
 
@@ -872,6 +895,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void SetScrollable(bool enable, global::HarmonyOS.ArkUI.ScrollType? type = null)
     {
+        if (type is null)
+        {
+            CallMethodVoid(_setScrollable, enable);
+            return;
+        }
+
         CallMethodVoid(_setScrollable, enable, NapiArg.Of(type));
     }
 
@@ -1096,6 +1125,24 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void PrefetchResource(WebviewRequestInfo request, WebHeader[]? additionalHeaders = null, string? cacheKey = null, double? cacheValidTime = null)
     {
+        if (additionalHeaders is null && cacheKey is null && cacheValidTime is null)
+        {
+            CallMethodVoid(_prefetchResource, NapiArg.Of(request));
+            return;
+        }
+
+        if (cacheKey is null && cacheValidTime is null)
+        {
+            CallMethodVoid(_prefetchResource, NapiArg.Of(request), NapiArg.Of(additionalHeaders));
+            return;
+        }
+
+        if (cacheValidTime is null)
+        {
+            CallMethodVoid(_prefetchResource, NapiArg.Of(request), NapiArg.Of(additionalHeaders), cacheKey);
+            return;
+        }
+
         CallMethodVoid(_prefetchResource, NapiArg.Of(request), NapiArg.Of(additionalHeaders), cacheKey, NapiArg.Of(cacheValidTime));
     }
 
@@ -1416,6 +1463,12 @@ public sealed partial class WebviewController : JsObject
     /// </summary>
     public void ClearBlanklessLoadingCache(string[]? keys = null)
     {
+        if (keys is null)
+        {
+            CallMethodVoid(_clearBlanklessLoadingCache);
+            return;
+        }
+
         CallMethodVoid(_clearBlanklessLoadingCache, NapiArg.Of(keys));
     }
 
@@ -2245,7 +2298,10 @@ public sealed partial class WebSchemeHandler : JsObject
     /// </summary>
     public void OnRequestStart(System.Func<WebSchemeHandlerRequest, WebResourceHandler, bool> callback)
     {
-        CallMethodVoid(_onRequestStart, NapiArg.Of(callback));
+        var (callbackJsFunc, _) = NodeApi.CreateValueCallbackFunction(
+            (Func<ReadOnlySpan<IntPtr>, object?>)(args => callback(new WebSchemeHandlerRequest(args[0]), new WebResourceHandler(args[1]))));
+
+        CallMethodVoid(_onRequestStart, callbackJsFunc);
     }
 
     /// <summary>

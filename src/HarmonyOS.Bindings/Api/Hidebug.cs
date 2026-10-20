@@ -18,51 +18,8 @@ public static unsafe partial class Hidebug
 {
     private const string ModuleName = "@ohos.hidebug";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[hidebug] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getNativeHeapSize => "getNativeHeapSize"u8;
     private static ReadOnlySpan<byte> _getNativeHeapAllocatedSize => "getNativeHeapAllocatedSize"u8;
@@ -139,512 +96,588 @@ public static unsafe partial class Hidebug
     private static ReadOnlySpan<byte> _getRssInfo => "getRssInfo"u8;
 
     /// <summary>
-    /// getNativeHeapSize
+    /// Obtains the total number of bytes occupied by the total space (**uordblks** + **fordblks**, which are obtained from
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static JsBigInt GetNativeHeapSize()
     {
         return NodeApi.CallMethod<JsBigInt>(Module, _getNativeHeapSize);
     }
 
     /// <summary>
-    /// getNativeHeapAllocatedSize
+    /// Obtains the total number of bytes occupied by the total allocated space (**uordblks**, which is obtained from
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static JsBigInt GetNativeHeapAllocatedSize()
     {
         return NodeApi.CallMethod<JsBigInt>(Module, _getNativeHeapAllocatedSize);
     }
 
     /// <summary>
-    /// getNativeHeapFreeSize
+    /// Obtains the total number of bytes occupied by the total free space (**fordblks**, which is obtained from
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static JsBigInt GetNativeHeapFreeSize()
     {
         return NodeApi.CallMethod<JsBigInt>(Module, _getNativeHeapFreeSize);
     }
 
     /// <summary>
-    /// getVss
+    /// Obtains the virtual set size used by the application process. This API is implemented by multiplying the value of
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static JsBigInt GetVss()
     {
         return NodeApi.CallMethod<JsBigInt>(Module, _getVss);
     }
 
     /// <summary>
-    /// getPss
+    /// Obtains the size of the physical memory actually used by the application process. This API is implemented by
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static JsBigInt GetPss()
     {
         return NodeApi.CallMethod<JsBigInt>(Module, _getPss);
     }
 
     /// <summary>
-    /// getSharedDirty
+    /// Obtains the size of the shared dirty memory of a process. This API is implemented by reading the value of
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static JsBigInt GetSharedDirty()
     {
         return NodeApi.CallMethod<JsBigInt>(Module, _getSharedDirty);
     }
 
     /// <summary>
-    /// getPrivateDirty
+    /// Obtains the size of the private dirty memory of a process. This API is implemented by reading the value of
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static JsBigInt GetPrivateDirty()
     {
         return NodeApi.CallMethod<JsBigInt>(Module, _getPrivateDirty);
     }
 
     /// <summary>
-    /// getCpuUsage
+    /// Obtains the CPU usage of a process.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double GetCpuUsage()
     {
         return NodeApi.CallMethod<double>(Module, _getCpuUsage);
     }
 
     /// <summary>
-    /// startProfiling
+    /// Starts the VM profiling method. **startProfiling(filename: string)** and **stopProfiling()** are called in pairs.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void StartProfiling(string filename)
     {
         NodeApi.CallMethodVoid(Module, _startProfiling, filename);
     }
 
     /// <summary>
-    /// stopProfiling
+    /// Stops the VM profiling method. **stopProfiling()** and **startProfiling(filename: string)** are called in pairs.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void StopProfiling()
     {
         NodeApi.CallMethodVoid(Module, _stopProfiling);
     }
 
     /// <summary>
-    /// dumpHeapData
+    /// Exports the VM heap data and generates a filename.heapsnapshot file.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void DumpHeapData(string filename)
     {
         NodeApi.CallMethodVoid(Module, _dumpHeapData, filename);
     }
 
     /// <summary>
-    /// startJsCpuProfiling
+    /// Starts the VM profiling method. **startJsCpuProfiling(filename: string)** and **stopJsCpuProfiling()** are called
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void StartJsCpuProfiling(string filename)
     {
         NodeApi.CallMethodVoid(Module, _startJsCpuProfiling, filename);
     }
 
     /// <summary>
-    /// stopJsCpuProfiling
+    /// Stops the VM profiling method. **stopJsCpuProfiling()** and **startJsCpuProfiling(filename: string)** are called in
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void StopJsCpuProfiling()
     {
         NodeApi.CallMethodVoid(Module, _stopJsCpuProfiling);
     }
 
     /// <summary>
-    /// dumpJsHeapData
+    /// Dumps VM heap data.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void DumpJsHeapData(string filename)
     {
         NodeApi.CallMethodVoid(Module, _dumpJsHeapData, filename);
     }
 
     /// <summary>
-    /// dumpJsHeapData
+    /// Exports the heap data.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void DumpJsHeapData(string filename, bool needClean)
     {
         NodeApi.CallMethodVoid(Module, _dumpJsHeapData, filename, needClean);
     }
 
     /// <summary>
-    /// getServiceDump
+    /// Obtains system service information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void GetServiceDump(double serviceid, double fd, string[] args)
     {
         NodeApi.CallMethodVoid(Module, _getServiceDump, serviceid, fd, NapiArg.Of(args));
     }
 
     /// <summary>
-    /// getSystemCpuUsage
+    /// Obtains the CPU usage of the system.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double GetSystemCpuUsage()
     {
         return NodeApi.CallMethod<double>(Module, _getSystemCpuUsage);
     }
 
     /// <summary>
-    /// getAppThreadCpuUsage
+    /// Obtains the CPU usage of application threads.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static ThreadCpuUsage[] GetAppThreadCpuUsage()
     {
         return NodeApi.CallMethod(Module, _getAppThreadCpuUsage, h => ValueConverter.ConvertArray(h, static e => new ThreadCpuUsage(e)));
     }
 
     /// <summary>
-    /// getSystemMemInfo
+    /// Obtains system memory information. This API is implemented by reading data from the **\/proc/meminfo** node.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr GetSystemMemInfo()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getSystemMemInfo);
     }
 
     /// <summary>
-    /// getAppNativeMemInfo
+    /// Obtains the memory information of the application process. This API is implemented by reading data from the
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr GetAppNativeMemInfo()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getAppNativeMemInfo);
     }
 
     /// <summary>
-    /// getAppMemoryLimit
+    /// Obtains the memory limit of an application process.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr GetAppMemoryLimit()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getAppMemoryLimit);
     }
 
     /// <summary>
-    /// getAppVMMemoryInfo
+    /// Obtains VM memory information.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr GetAppVmMemoryInfo()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getAppVMMemoryInfo);
     }
 
     /// <summary>
-    /// getAppVMObjectUsedSize
+    /// Obtains the VM memory size occupied by ArkTS objects.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static JsBigInt GetAppVmObjectUsedSize()
     {
         return NodeApi.CallMethod<JsBigInt>(Module, _getAppVMObjectUsedSize);
     }
 
     /// <summary>
-    /// getAppNativeMemInfoAsync
+    /// Obtains the memory information of application processes by reading the data of the **\/proc/{pid}/smaps_rollup** and
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<IntPtr> GetAppNativeMemInfoAsync()
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getAppNativeMemInfoAsync);
     }
 
     /// <summary>
-    /// getAppNativeMemInfoWithCache
+    /// Obtains the memory information of the application process. This API uses the cache mechanism and has higher
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static IntPtr GetAppNativeMemInfoWithCache(bool? forceRefresh = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getAppNativeMemInfoWithCache, NapiArg.Of(forceRefresh));
     }
 
     /// <summary>
-    /// ABILITY_MANAGER
+    /// Capability management. The corresponding HiTrace command is **tagName:ability**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double AbilityManager => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ABILITY_MANAGER));
 
     /// <summary>
-    /// ARKUI
+    /// ArkUI development framework. The corresponding HiTrace command is **tagName:ace**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Arkui => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ARKUI));
 
     /// <summary>
-    /// ARK
+    /// JSVM VM. The corresponding HiTrace command is **tagName:ark**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Ark => NativeValue.ToDouble(NodeApi.GetProperty(Module, _ARK));
 
     /// <summary>
-    /// BLUETOOTH
+    /// Bluetooth. The corresponding HiTrace command is **tagName:bluetooth**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Bluetooth => NativeValue.ToDouble(NodeApi.GetProperty(Module, _BLUETOOTH));
 
     /// <summary>
-    /// COMMON_LIBRARY
+    /// Common library subsystem. The corresponding HiTrace command is **tagName:commonlibrary**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double CommonLibrary => NativeValue.ToDouble(NodeApi.GetProperty(Module, _COMMON_LIBRARY));
 
     /// <summary>
-    /// DISTRIBUTED_HARDWARE_DEVICE_MANAGER
+    /// Distributed hardware device management. The corresponding HiTrace command is **tagName:devicemanager**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double DistributedHardwareDeviceManager => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DISTRIBUTED_HARDWARE_DEVICE_MANAGER));
 
     /// <summary>
-    /// DISTRIBUTED_AUDIO
+    /// Distributed audio. The corresponding HiTrace command is **tagName:daudio**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double DistributedAudio => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DISTRIBUTED_AUDIO));
 
     /// <summary>
-    /// DISTRIBUTED_CAMERA
+    /// Distributed camera. The corresponding HiTrace command is **tagName:dcamera**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double DistributedCamera => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DISTRIBUTED_CAMERA));
 
     /// <summary>
-    /// DISTRIBUTED_DATA
+    /// Distributed data management. The corresponding HiTrace command is **tagName:distributeddatamgr**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double DistributedData => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DISTRIBUTED_DATA));
 
     /// <summary>
-    /// DISTRIBUTED_HARDWARE_FRAMEWORK
+    /// Distributed hardware framework. The corresponding HiTrace command is **tagName:dhfwk**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double DistributedHardwareFramework => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DISTRIBUTED_HARDWARE_FRAMEWORK));
 
     /// <summary>
-    /// DISTRIBUTED_INPUT
+    /// Distributed input. The corresponding HiTrace command is **tagName:dinput**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double DistributedInput => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DISTRIBUTED_INPUT));
 
     /// <summary>
-    /// DISTRIBUTED_SCREEN
+    /// Distributed screen. The corresponding HiTrace command is **tagName:dscreen**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double DistributedScreen => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DISTRIBUTED_SCREEN));
 
     /// <summary>
-    /// DISTRIBUTED_SCHEDULER
+    /// Distributed scheduler. The corresponding HiTrace command is **tagName:dsched**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double DistributedScheduler => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DISTRIBUTED_SCHEDULER));
 
     /// <summary>
-    /// FFRT
+    /// FFRT task. The corresponding HiTrace command is **tagName:ffrt**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Ffrt => NativeValue.ToDouble(NodeApi.GetProperty(Module, _FFRT));
 
     /// <summary>
-    /// FILE_MANAGEMENT
+    /// File management system. The corresponding HiTrace command is **tagName:filemanagement**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double FileManagement => NativeValue.ToDouble(NodeApi.GetProperty(Module, _FILE_MANAGEMENT));
 
     /// <summary>
-    /// GLOBAL_RESOURCE_MANAGER
+    /// Global resource management. The corresponding HiTrace command is **tagName:gresource**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double GlobalResourceManager => NativeValue.ToDouble(NodeApi.GetProperty(Module, _GLOBAL_RESOURCE_MANAGER));
 
     /// <summary>
-    /// GRAPHICS
+    /// Graphics module. The corresponding HiTrace command is **tagName:graphic**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Graphics => NativeValue.ToDouble(NodeApi.GetProperty(Module, _GRAPHICS));
 
     /// <summary>
-    /// HDF
+    /// HDF subsystem. The corresponding HiTrace command is **tagName:hdf**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Hdf => NativeValue.ToDouble(NodeApi.GetProperty(Module, _HDF));
 
     /// <summary>
-    /// MISC
+    /// MISC module. The corresponding HiTrace command is **tagName:misc**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Misc => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MISC));
 
     /// <summary>
-    /// MULTIMODAL_INPUT
+    /// Multi-modal input module. The corresponding HiTrace command is **tagName:multimodalinput**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double MultimodalInput => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MULTIMODAL_INPUT));
 
     /// <summary>
-    /// NET
+    /// Network. The corresponding HiTrace command is **tagName:net**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Net => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NET));
 
     /// <summary>
-    /// NOTIFICATION
+    /// Notification module. The corresponding HiTrace command is **tagName:notification**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Notification => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NOTIFICATION));
 
     /// <summary>
-    /// NWEB
+    /// Nweb. The corresponding HiTrace command is **tagName:nweb**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Nweb => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NWEB));
 
     /// <summary>
-    /// OHOS
+    /// OHOS. The corresponding HiTrace command is **tagName:ohos**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Ohos => NativeValue.ToDouble(NodeApi.GetProperty(Module, _OHOS));
 
     /// <summary>
-    /// POWER_MANAGER
+    /// Power management. The corresponding HiTrace command is **tagName:power**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double PowerManager => NativeValue.ToDouble(NodeApi.GetProperty(Module, _POWER_MANAGER));
 
     /// <summary>
-    /// RPC
+    /// RPC. The corresponding HiTrace command is **tagName:rpc**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Rpc => NativeValue.ToDouble(NodeApi.GetProperty(Module, _RPC));
 
     /// <summary>
-    /// SAMGR
+    /// System capability management. The corresponding HiTrace command is **tagName:samgr**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Samgr => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SAMGR));
 
     /// <summary>
-    /// WINDOW_MANAGER
+    /// Window management. The corresponding HiTrace command is **tagName:window**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double WindowManager => NativeValue.ToDouble(NodeApi.GetProperty(Module, _WINDOW_MANAGER));
 
     /// <summary>
-    /// AUDIO
+    /// Audio module. The corresponding HiTrace command is **tagName:zaudio**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Audio => NativeValue.ToDouble(NodeApi.GetProperty(Module, _AUDIO));
 
     /// <summary>
-    /// CAMERA
+    /// Camera module. The corresponding HiTrace command is **tagName:zcamera**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Camera => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CAMERA));
 
     /// <summary>
-    /// IMAGE
+    /// Image module. The corresponding HiTrace command is **tagName:zimage**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Image => NativeValue.ToDouble(NodeApi.GetProperty(Module, _IMAGE));
 
     /// <summary>
-    /// MEDIA
+    /// Media module. The corresponding HiTrace command is **tagName:zmedia**.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double Media => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MEDIA));
 
     /// <summary>
-    /// startAppTraceCapture
+    /// Starts automatic trace collection in a specified scope. This API is a supplement to the HiTrace module. The performance consumption during trace collection increases with the
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string StartAppTraceCapture(double[] tags, global::HarmonyOS.ArkUI.TraceFlag flag, double limitSize)
     {
         return NodeApi.CallMethod<string>(Module, _startAppTraceCapture, NapiArg.Of(tags), (int)flag, limitSize);
     }
 
     /// <summary>
-    /// stopAppTraceCapture
+    /// Stops application trace collection. Use [startAppTraceCapture()] to start
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void StopAppTraceCapture()
     {
         NodeApi.CallMethodVoid(Module, _stopAppTraceCapture);
     }
 
     /// <summary>
-    /// requestTrace
+    /// Requests trace collection with the specified configuration.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<string> RequestTraceAsync(RequestTraceConfig config)
     {
         return NodeApi.CallMethodAsync<string>(Module, _requestTrace, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// getVMRuntimeStats
+    /// Obtains the system GC statistics.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr GetVmRuntimeStats()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getVMRuntimeStats);
     }
 
     /// <summary>
-    /// getVMRuntimeStat
+    /// Obtains the specified system GC statistics based on parameters.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double GetVmRuntimeStat(string item)
     {
         return NodeApi.CallMethod<double>(Module, _getVMRuntimeStat, item);
     }
 
     /// <summary>
-    /// setAppResourceLimit
+    /// Sets the number of FDs, number of threads, JS memory, or native memory limit of the application.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetAppResourceLimit(string type, double value, bool enableDebugLog)
     {
         NodeApi.CallMethodVoid(Module, _setAppResourceLimit, type, value, enableDebugLog);
     }
 
     /// <summary>
-    /// isDebugState
+    /// Obtains the debugging state of an application process.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsDebugState()
     {
         return NodeApi.CallMethod<bool>(Module, _isDebugState);
     }
 
     /// <summary>
-    /// getGraphicsMemory
+    /// Obtains the total GPU memory size (**gl** + **graph**) of the application. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<double> GetGraphicsMemoryAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getGraphicsMemory);
     }
 
     /// <summary>
-    /// getGraphicsMemorySync
+    /// Obtains the total GPU memory size (GL + graph) of an application in synchronous mode.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static double GetGraphicsMemorySync()
     {
         return NodeApi.CallMethod<double>(Module, _getGraphicsMemorySync);
     }
 
     /// <summary>
-    /// getGraphicsMemorySummary
+    /// Obtains the size of the GPU memory summary. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task<GraphicsMemorySummary> GetGraphicsMemorySummaryAsync(double? interval = null)
     {
         return NodeApi.CallMethodAsync(Module, _getGraphicsMemorySummary, static h => new GraphicsMemorySummary(h), NapiArg.Of(interval));
     }
 
     /// <summary>
-    /// setJsRawHeapTrimLevel
+    /// Sets the raw heap snapshot trimming level for the current process.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetJsRawHeapTrimLevel(global::HarmonyOS.ArkUI.JsRawHeapTrimLevel level)
     {
         NodeApi.CallMethodVoid(Module, _setJsRawHeapTrimLevel, (int)level);
     }
 
     /// <summary>
-    /// dumpJsRawHeapData
+    /// Dumps the original heap snapshot of the VM for the current thread and generates a .rawheap file. This API uses a
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<string> DumpJsRawHeapDataAsync(bool? needGC = null)
     {
         return NodeApi.CallMethodAsync<string>(Module, _dumpJsRawHeapData, NapiArg.Of(needGC));
     }
 
     /// <summary>
-    /// dumpJsRawHeapData
+    /// Dumps the original heap snapshot of the VM for the current thread. The API uses a promise to return the path of the
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<string> DumpJsRawHeapDataAsync(bool needGC, bool needClean)
     {
         return NodeApi.CallMethodAsync<string>(Module, _dumpJsRawHeapData, needGC, needClean);
     }
 
     /// <summary>
-    /// dumpJsRawHeapData
+    /// Dump the raw heap snapshot of the JavaScript Virtual Machine for the current thread.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<string[]> DumpJsRawHeapDataAsync(bool needGC, bool needClean, bool processDump)
     {
         return NodeApi.CallMethodAsync(Module, _dumpJsRawHeapData, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), needGC, needClean, processDump);
     }
 
     /// <summary>
-    /// enableGwpAsanGrayscale
+    /// Enable the GWP-ASAN grayscale of your application.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void EnableGwpAsanGrayscale(GwpAsanOptions? options = null, double? duration = null)
     {
         NodeApi.CallMethodVoid(Module, _enableGwpAsanGrayscale, NapiArg.Of(options), NapiArg.Of(duration));
     }
 
     /// <summary>
-    /// disableGwpAsanGrayscale
+    /// Disables GWP-ASan. This API is used to cancel the custom configuration and restore the default parameter
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void DisableGwpAsanGrayscale()
     {
         NodeApi.CallMethodVoid(Module, _disableGwpAsanGrayscale);
     }
 
     /// <summary>
-    /// getGwpAsanGrayscaleState
+    /// Obtain the remaining days of GWP-ASan grayscale for your application.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static double GetGwpAsanGrayscaleState()
     {
         return NodeApi.CallMethod<double>(Module, _getGwpAsanGrayscaleState);
     }
 
     /// <summary>
-    /// setProcDumpInSharedOOM
+    /// Changes the dump heap snapshot from the thread-level to the process-level.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void SetProcDumpInSharedOom(bool enable)
     {
         NodeApi.CallMethodVoid(Module, _setProcDumpInSharedOOM, enable);
     }
 
     /// <summary>
-    /// getRssInfo
+    /// Obtains the physical memory information of application process. This API is implemented by reading data from the
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static IntPtr GetRssInfo()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getRssInfo);

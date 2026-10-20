@@ -1,0 +1,15 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <HarmonyEnableWeb Condition="'$(HarmonyEnableWeb)' == ''">true</HarmonyEnableWeb>
+  </PropertyGroup>
+
+  <Target Name="HarmonyStageWebHost"
+          Condition="'$(HarmonyEnableWeb)' == 'true' AND '$(HarmonyGenerateHost)' == 'true'"
+          DependsOnTargets="HarmonyStageHost"
+          BeforeTargets="HarmonyStageResources;HarmonyBuildHap;HarmonyDeploy">
+    <!-- The shared host core stages first; this overlay replaces only its Index page. -->
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\host\Index.ets"
+          DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\src\main\ets\pages\Index.ets"
+          SkipUnchangedFiles="true" />
+  </Target>
+</Project>

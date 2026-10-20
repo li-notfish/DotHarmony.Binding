@@ -18,51 +18,8 @@ public static unsafe partial class NetworkSecurity
 {
     private const string ModuleName = "@ohos.net.networkSecurity";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[net.networkSecurity] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _certVerification => "certVerification"u8;
     private static ReadOnlySpan<byte> _certVerificationSync => "certVerificationSync"u8;
@@ -71,40 +28,45 @@ public static unsafe partial class NetworkSecurity
     private static ReadOnlySpan<byte> _isCleartextPermittedByHostName => "isCleartextPermittedByHostName"u8;
 
     /// <summary>
-    /// certVerification
+    /// Verifies the certificate passed by the application using the preset CA certificate and the CA certificate installed
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<double> CertVerificationAsync(NetworkSecurityCertBlob cert, NetworkSecurityCertBlob? caCert = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _certVerification, NapiArg.Of(cert), NapiArg.Of(caCert));
     }
 
     /// <summary>
-    /// certVerificationSync
+    /// Verifies the certificate passed by the application using the preset CA certificate and the CA certificate installed
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static double CertVerificationSync(NetworkSecurityCertBlob cert, NetworkSecurityCertBlob? caCert = null)
     {
         return NodeApi.CallMethod<double>(Module, _certVerificationSync, NapiArg.Of(cert), NapiArg.Of(caCert));
     }
 
     /// <summary>
-    /// verifyCertChain
+    /// Verifies the server certificate chain and returns a sorted chain.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<NetworkSecurityCertBlob[]> VerifyCertChainAsync(NetworkSecurityCertBlob[] cert, NetworkSecurityCertBlob? caCert = null, string? hostname = null)
     {
         return NodeApi.CallMethodAsync(Module, _verifyCertChain, h => ValueConverter.ConvertArray(h, static e => new NetworkSecurityCertBlob(e)), NapiArg.Of(cert), NapiArg.Of(caCert), hostname);
     }
 
     /// <summary>
-    /// isCleartextPermitted
+    /// Checks whether plaintext HTTP access is allowed from the preset **network_config.json** file of the application. By
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static bool IsCleartextPermitted()
     {
         return NodeApi.CallMethod<bool>(Module, _isCleartextPermitted);
     }
 
     /// <summary>
-    /// isCleartextPermittedByHostName
+    /// Checks whether host name–based plaintext HTTP access is allowed from the preset **network_config.json** file of the
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static bool IsCleartextPermittedByHostName(string hostName)
     {
         return NodeApi.CallMethod<bool>(Module, _isCleartextPermittedByHostName, hostName);

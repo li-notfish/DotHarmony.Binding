@@ -1,0 +1,94 @@
+@page "/interop"
+
+<h1>JS Interop</h1>
+
+<p>本页验证 Blazor Hybrid 的 IJSRuntime 双向互操作：
+.NET → JS（<code>JavaScript.InvokeAsync</code>）与 JS → .NET（<code>[JSInvokable]</code> 回调）。</p>
+
+<button @onclick="CallJsAddAsync">调用 JS 函数 add(1, 2)</button>
+<button @onclick="ReadNavigatorAsync">读取 navigator.userAgent</button>
+<button @onclick="SubscribeKeyboardAsync">订阅键盘事件（JS 回调进 .NET）</button>
+
+<p class="result">
+    <a href="https://www.example.com/" target="_blank">外部链接（应交给系统浏览器，WebView 不离开 app origin）</a>
+</p>
+
+<p class="result">结果：<strong>@_result</strong></p>
+<p class="result">最后按键：<strong>@_lastKey</strong></p>
+
+@code {
+    [Inject] private IJSRuntime JavaScript { get; set; } = default!;
+
+    private string _result = "（尚未调用）";
+    private string _lastKey = "（无）";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        try
+        {
+            // 内联定义演示函数（Hybrid 下无需额外 wwwroot JS 文件）
+            await JavaScript.InvokeVoidAsync("eval", """
+                window.hybridDemo = window.hybridDemo || {
+                    add: (a, b) => a + b,
+                    onKey: (dotnetRef) => {
+                        if (window.hybridDemo._bound) return;
+                        window.hybridDemo._bound = true;
+                        document.addEventListener('keydown', e =>
+                            dotnetRef.invokeMethodAsync('OnKeyDown', e.key));
+                    }
+                };
+                """);
+            _result = "JS 演示函数已注入";
+        }
+        catch (Exception ex)
+        {
+            _result = $"JS 注入失败: {ex.GetType().Name}: {ex.Message}";
+        }
+    }
+
+    private async Task CallJsAddAsync()
+    {
+        try
+        {
+            var sum = await JavaScript.InvokeAsync<int>("hybridDemo.add", 1, 2);
+            _result = $"hybridDemo.add(1,2) = {sum}";
+        }
+        catch (Exception ex)
+        {
+            _result = $"调用失败: {ex.GetType().Name}: {ex.Message}";
+        }
+    }
+
+    private async Task ReadNavigatorAsync()
+    {
+        try
+        {
+            var ua = await JavaScript.InvokeAsync<string>("eval", "navigator.userAgent");
+            _result = $"UA = {ua}";
+        }
+        catch (Exception ex)
+        {
+            _result = $"调用失败: {ex.GetType().Name}: {ex.Message}";
+        }
+    }
+
+    private async Task SubscribeKeyboardAsync()
+    {
+        try
+        {
+            var objRef = DotNetObjectReference.Create(this);
+            await JavaScript.InvokeVoidAsync("hybridDemo.onKey", objRef);
+            _result = "已订阅 keydown（按任意键触发 JS → .NET 回调）";
+        }
+        catch (Exception ex)
+        {
+            _result = $"订阅失败: {ex.GetType().Name}: {ex.Message}";
+        }
+    }
+
+    [JSInvokable]
+    public void OnKeyDown(string key) => _lastKey = key;
+}

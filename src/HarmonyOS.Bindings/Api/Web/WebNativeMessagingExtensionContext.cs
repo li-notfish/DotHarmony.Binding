@@ -18,51 +18,8 @@ public static unsafe partial class WebNativeMessagingExtensionContext
 {
     private const string ModuleName = "@ohos.web.WebNativeMessagingExtensionContext";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[web.WebNativeMessagingExtensionContext] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _startAbility => "startAbility"u8;
     private static ReadOnlySpan<byte> _startAbilityForResult => "startAbilityForResult"u8;
@@ -119,6 +76,11 @@ public sealed partial class WebNativeMessagingExtensionContextObject : JsObject
     /// </summary>
     public Task StartAbilityAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, global::HarmonyOS.Bindings.Api.App.Ability.StartOptionsObject? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_startAbility, cancellationToken, NapiArg.Of(want));
+        }
+
         return CallMethodAsyncVoid(_startAbility, cancellationToken, NapiArg.Of(want), NapiArg.Of(options));
     }
 
@@ -127,6 +89,11 @@ public sealed partial class WebNativeMessagingExtensionContextObject : JsObject
     /// </summary>
     public Task<IntPtr> StartAbilityForResultAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want, global::HarmonyOS.Bindings.Api.App.Ability.StartOptionsObject? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<IntPtr>(_startAbilityForResult, NapiArg.Of(want));
+        }
+
         return CallMethodAsync<IntPtr>(_startAbilityForResult, NapiArg.Of(want), NapiArg.Of(options));
     }
 

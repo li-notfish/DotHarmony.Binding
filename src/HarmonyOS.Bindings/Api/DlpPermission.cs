@@ -19,51 +19,8 @@ public static unsafe partial class DlpPermission
 {
     private const string ModuleName = "@ohos.dlpPermission";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[dlpPermission] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _isDLPFile => "isDLPFile"u8;
     private static ReadOnlySpan<byte> _getDLPPermissionInfo => "getDLPPermissionInfo"u8;
@@ -92,208 +49,234 @@ public static unsafe partial class DlpPermission
     private static ReadOnlySpan<byte> _getControlledAppLists => "getControlledAppLists"u8;
 
     /// <summary>
-    /// isDLPFile
+    /// Checks whether a file is a DLP file based on the FD. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<bool> IsDlpFileAsync(double fd)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isDLPFile, fd);
     }
 
     /// <summary>
-    /// getDLPPermissionInfo
+    /// Queries the permission information of the current DLP sandbox, including permissions on the file and operations
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<DLPPermissionInfo> GetDlpPermissionInfoAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getDLPPermissionInfo, static h => new DLPPermissionInfo(h));
     }
 
     /// <summary>
-    /// getOriginalFileName
+    /// Obtains the original name of a DLP file. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string GetOriginalFileName(string fileName)
     {
         return NodeApi.CallMethod<string>(Module, _getOriginalFileName, fileName);
     }
 
     /// <summary>
-    /// getDLPSuffix
+    /// Obtains the DLP file name extension. After the API is called successfully, the DLP file name extension (for
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string GetDlpSuffix()
     {
         return NodeApi.CallMethod<string>(Module, _getDLPSuffix);
     }
 
     /// <summary>
-    /// on
+    /// Subscribes to a DLP file open event. After this API is successfully called, a callback notification is sent to
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void On(string type, IntPtr listener)
     {
         NodeApi.CallMethodVoid(Module, _on, type, listener);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from the DLP file open event. This API can be called only in non-DLP sandbox applications. After the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void Off(string type, IntPtr listener)
     {
         NodeApi.CallMethodVoid(Module, _off, type, listener);
     }
 
     /// <summary>
-    /// isInSandbox
+    /// Checks whether this application is running in a DLP sandbox environment. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<bool> IsInSandboxAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isInSandbox);
     }
 
     /// <summary>
-    /// getDLPSupportedFileTypes
+    /// Obtains the file name extension types that support DLP. After the API is successfully called, the list of
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<string[]> GetDlpSupportedFileTypesAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getDLPSupportedFileTypes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// setRetentionState
+    /// Sets the retention state for sandbox applications. By default, when a DLP file is opened, the system
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task SetRetentionStateAsync(string[] docUris, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setRetentionState, cancellationToken, NapiArg.Of(docUris));
     }
 
     /// <summary>
-    /// cancelRetentionState
+    /// Cancels the sandbox retention state, that is, allows the sandbox application to be automatically uninstalled when
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task CancelRetentionStateAsync(string[] docUris, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cancelRetentionState, cancellationToken, NapiArg.Of(docUris));
     }
 
     /// <summary>
-    /// getRetentionSandboxList
+    /// Obtains the sandbox applications in the retention state of an application. This API can be called only in non-DLP
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<RetentionSandboxInfo[]> GetRetentionSandboxListAsync(string? bundleName = null)
     {
         return NodeApi.CallMethodAsync(Module, _getRetentionSandboxList, h => ValueConverter.ConvertArray(h, static e => new RetentionSandboxInfo(e)), bundleName);
     }
 
     /// <summary>
-    /// getRetentionSandboxList
+    /// Obtains the sandbox applications in the retention state of an application. This API uses an asynchronous callback
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<RetentionSandboxInfo[]> GetRetentionSandboxListAsync()
     {
         return NodeApi.CallMethodAsyncCallback(Module, _getRetentionSandboxList, h => ValueConverter.ConvertArray(h, static e => new RetentionSandboxInfo(e)));
     }
 
     /// <summary>
-    /// getDLPFileAccessRecords
+    /// Obtains the list of DLP files that are accessed recently. After the API is successfully called, the file access
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<AccessedDLPFileInfo[]> GetDlpFileAccessRecordsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getDLPFileAccessRecords, h => ValueConverter.ConvertArray(h, static e => new AccessedDLPFileInfo(e)));
     }
 
     /// <summary>
-    /// startDLPManagerForResult
+    /// Starts the DLP manager application on the current
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<IntPtr> StartDlpManagerForResultAsync(IntPtr context, global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _startDLPManagerForResult, context, NapiArg.Of(want));
     }
 
     /// <summary>
-    /// setSandboxAppConfig
+    /// Sets the configuration information of the sandbox application. The configuration information is in JSON string
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task SetSandboxAppConfigAsync(string configInfo, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setSandboxAppConfig, cancellationToken, configInfo);
     }
 
     /// <summary>
-    /// cleanSandboxAppConfig
+    /// Clears the sandbox application configuration. After the API is successfully called, the sandbox application
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task CleanSandboxAppConfigAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cleanSandboxAppConfig, cancellationToken);
     }
 
     /// <summary>
-    /// getSandboxAppConfig
+    /// Obtains sandbox application configuration. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<string> GetSandboxAppConfigAsync()
     {
         return NodeApi.CallMethodAsync<string>(Module, _getSandboxAppConfig);
     }
 
     /// <summary>
-    /// isDLPFeatureProvided
+    /// Checks whether the current system provides the encryption protection feature. This API is available only for
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<bool> IsDlpFeatureProvidedAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isDLPFeatureProvided);
     }
 
     /// <summary>
-    /// generateDlpFileForEnterprise
+    /// Encrypts a plaintext file to generate a DLP file for an enterprise account. This API can be called only by
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task GenerateDlpFileForEnterpriseAsync(double plaintextFd, double dlpFd, IntPtr property, CustomProperty customProperty, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _generateDlpFileForEnterprise, cancellationToken, plaintextFd, dlpFd, property, NapiArg.Of(customProperty));
     }
 
     /// <summary>
-    /// queryDlpPolicy
+    /// Parses the file header in a DLP file to obtain the DLP plaintext policy. The returned JSON string of the DLP
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task<string> QueryDlpPolicyAsync(double dlpFd)
     {
         return NodeApi.CallMethodAsync<string>(Module, _queryDlpPolicy, dlpFd);
     }
 
     /// <summary>
-    /// decryptDlpFile
+    /// Decrypts a DLP file to generate a plaintext file. This API can be called only by enterprise accounts. This API
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task DecryptDlpFileAsync(double dlpFd, double plaintextFd, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _decryptDlpFile, cancellationToken, dlpFd, plaintextFd);
     }
 
     /// <summary>
-    /// setEnterprisePolicy
+    /// Sets the protection policy for enterprise applications. After the API is successfully called, the DLP protection
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static void SetEnterprisePolicy(EnterprisePolicy policy)
     {
         NodeApi.CallMethodVoid(Module, _setEnterprisePolicy, NapiArg.Of(policy));
     }
 
     /// <summary>
-    /// queryOpenedEnterpriseDlpFiles
+    /// Queries the URIs of enterprise DLP files that have been opened and meet the specified options. This API uses a
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<string[]> QueryOpenedEnterpriseDlpFilesAsync(DlpFileQueryOptions? options = null)
     {
         return NodeApi.CallMethodAsync(Module, _queryOpenedEnterpriseDlpFiles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// closeOpenedEnterpriseDlpFiles
+    /// Closes all opened enterprise DLP files that meet the specified options. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task CloseOpenedEnterpriseDlpFilesAsync(DlpFileQueryOptions? options = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _closeOpenedEnterpriseDlpFiles, cancellationToken, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// setControlledAppLists
+    /// Set the list of applications that are subject to enterprise DLP control.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task SetControlledAppListsAsync(string[] appLists, double? userId = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setControlledAppLists, cancellationToken, NapiArg.Of(appLists), NapiArg.Of(userId));
     }
 
     /// <summary>
-    /// getControlledAppLists
+    /// Obtain the list of applications that are subject to enterprise DLP control for the current user.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<string[]> GetControlledAppListsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getControlledAppLists, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));

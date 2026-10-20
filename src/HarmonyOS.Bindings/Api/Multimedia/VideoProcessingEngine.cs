@@ -18,75 +18,35 @@ public static unsafe partial class VideoProcessingEngine
 {
     private const string ModuleName = "@ohos.multimedia.videoProcessingEngine";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[multimedia.videoProcessingEngine] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _initializeEnvironment => "initializeEnvironment"u8;
     private static ReadOnlySpan<byte> _deinitializeEnvironment => "deinitializeEnvironment"u8;
     private static ReadOnlySpan<byte> _create => "create"u8;
 
     /// <summary>
-    /// initializeEnvironment
+    /// Initialize global environment for image processing.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task InitializeEnvironmentAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _initializeEnvironment, cancellationToken);
     }
 
     /// <summary>
-    /// deinitializeEnvironment
+    /// Deinitialize global environment for image processing.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task DeinitializeEnvironmentAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deinitializeEnvironment, cancellationToken);
     }
 
     /// <summary>
-    /// create
+    /// Create an image processing instance.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static ImageProcessor Create()
     {
         return NodeApi.CallMethod(Module, _create, static h => new ImageProcessor(h));
@@ -108,6 +68,11 @@ public sealed partial class ImageProcessor : JsObject
     /// </summary>
     public Task<IntPtr> EnhanceDetailAsync(IntPtr sourceImage, double width, double height, global::HarmonyOS.ArkUI.MultimediaVideoProcessingEngineQualityLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethodAsync<IntPtr>(_enhanceDetail, sourceImage, width, height);
+        }
+
         return CallMethodAsync<IntPtr>(_enhanceDetail, sourceImage, width, height, NapiArg.Of(level));
     }
 
@@ -116,6 +81,11 @@ public sealed partial class ImageProcessor : JsObject
     /// </summary>
     public IntPtr EnhanceDetailSync(IntPtr sourceImage, double width, double height, global::HarmonyOS.ArkUI.MultimediaVideoProcessingEngineQualityLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethod<IntPtr>(_enhanceDetailSync, sourceImage, width, height);
+        }
+
         return CallMethod<IntPtr>(_enhanceDetailSync, sourceImage, width, height, NapiArg.Of(level));
     }
 
@@ -124,6 +94,11 @@ public sealed partial class ImageProcessor : JsObject
     /// </summary>
     public Task<IntPtr> EnhanceDetailAsync(IntPtr sourceImage, double scale, global::HarmonyOS.ArkUI.MultimediaVideoProcessingEngineQualityLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethodAsync<IntPtr>(_enhanceDetail, sourceImage, scale);
+        }
+
         return CallMethodAsync<IntPtr>(_enhanceDetail, sourceImage, scale, NapiArg.Of(level));
     }
 
@@ -132,6 +107,11 @@ public sealed partial class ImageProcessor : JsObject
     /// </summary>
     public IntPtr EnhanceDetailSync(IntPtr sourceImage, double scale, global::HarmonyOS.ArkUI.MultimediaVideoProcessingEngineQualityLevel? level = null)
     {
+        if (level is null)
+        {
+            return CallMethod<IntPtr>(_enhanceDetailSync, sourceImage, scale);
+        }
+
         return CallMethod<IntPtr>(_enhanceDetailSync, sourceImage, scale, NapiArg.Of(level));
     }
 

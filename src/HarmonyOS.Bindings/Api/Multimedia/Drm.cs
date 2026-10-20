@@ -19,51 +19,8 @@ public static unsafe partial class Drm
 {
     private const string ModuleName = "@ohos.multimedia.drm";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[multimedia.drm] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getMediaKeySystemUuid => "getMediaKeySystemUuid"u8;
     private static ReadOnlySpan<byte> _getMediaKeySystems => "getMediaKeySystems"u8;
@@ -71,48 +28,54 @@ public static unsafe partial class Drm
     private static ReadOnlySpan<byte> _isMediaKeySystemSupported => "isMediaKeySystemSupported"u8;
 
     /// <summary>
-    /// getMediaKeySystemUuid
+    /// Obtains the UUID of the DRM content protection system supported by the specified DRM solution.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string GetMediaKeySystemUuid(string name)
     {
         return NodeApi.CallMethod<string>(Module, _getMediaKeySystemUuid, name);
     }
 
     /// <summary>
-    /// getMediaKeySystems
+    /// Obtains the list of plugins supported by the device.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static MediaKeySystemDescription[] GetMediaKeySystems()
     {
         return NodeApi.CallMethod(Module, _getMediaKeySystems, h => ValueConverter.ConvertArray(h, static e => new MediaKeySystemDescription(e)));
     }
 
     /// <summary>
-    /// createMediaKeySystem
+    /// Creates a MediaKeySystem instance.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static MediaKeySystem CreateMediaKeySystem(string name)
     {
         return NodeApi.CallMethod(Module, _createMediaKeySystem, static h => new MediaKeySystem(h), name);
     }
 
     /// <summary>
-    /// isMediaKeySystemSupported
+    /// Checks whether the device supports the combination of the DRM solution, MIME type, and content protection level.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static bool IsMediaKeySystemSupported(string name, string mimeType, global::HarmonyOS.ArkUI.ContentProtectionLevel level)
     {
         return NodeApi.CallMethod<bool>(Module, _isMediaKeySystemSupported, name, mimeType, (int)level);
     }
 
     /// <summary>
-    /// isMediaKeySystemSupported
+    /// Checks whether the device supports the combination of the DRM solution and MIME type.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static bool IsMediaKeySystemSupported(string name, string mimeType)
     {
         return NodeApi.CallMethod<bool>(Module, _isMediaKeySystemSupported, name, mimeType);
     }
 
     /// <summary>
-    /// isMediaKeySystemSupported
+    /// Checks whether the device supports the specified DRM solution.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static bool IsMediaKeySystemSupported(string name)
     {
         return NodeApi.CallMethod<bool>(Module, _isMediaKeySystemSupported, name);
@@ -434,6 +397,11 @@ public sealed partial class MediaKeySession : JsObject
     /// </summary>
     public Task<MediaKeyRequest> GenerateMediaKeyRequestAsync(string mimeType, byte[] initData, double mediaKeyType, OptionsData[]? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync(_generateMediaKeyRequest, static h => new MediaKeyRequest(h), mimeType, NapiArg.Of(initData), mediaKeyType);
+        }
+
         return CallMethodAsync(_generateMediaKeyRequest, static h => new MediaKeyRequest(h), mimeType, NapiArg.Of(initData), mediaKeyType, NapiArg.Of(options));
     }
 

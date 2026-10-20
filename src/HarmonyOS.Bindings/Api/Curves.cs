@@ -16,51 +16,8 @@ public static unsafe partial class Curves
 {
     private const string ModuleName = "@ohos.curves";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[curves] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _initCurve => "initCurve"u8;
     private static ReadOnlySpan<byte> _init => "init"u8;
@@ -76,96 +33,108 @@ public static unsafe partial class Curves
     private static ReadOnlySpan<byte> _interpolatingSpring => "interpolatingSpring"u8;
 
     /// <summary>
-    /// initCurve
+    /// Implements initialization for the interpolation curve, which is used to create an interpolation curve based on the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ICurve InitCurve(global::HarmonyOS.ArkUI.Curve? curve = null)
     {
         return NodeApi.CallMethod(Module, _initCurve, static h => new ICurve(h), NapiArg.Of(curve));
     }
 
     /// <summary>
-    /// init
+    /// Implements initialization for the interpolation curve, which is used to create an interpolation curve based on the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string Init(global::HarmonyOS.ArkUI.Curve? curve = null)
     {
         return NodeApi.CallMethod<string>(Module, _init, NapiArg.Of(curve));
     }
 
     /// <summary>
-    /// stepsCurve
+    /// Creates a step curve.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ICurve StepsCurve(double count, bool end)
     {
         return NodeApi.CallMethod(Module, _stepsCurve, static h => new ICurve(h), count, end);
     }
 
     /// <summary>
-    /// customCurve
+    /// Creates a custom curve.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static ICurve CustomCurve(System.Func<double, double> interpolate)
     {
         return NodeApi.CallMethod(Module, _customCurve, static h => new ICurve(h), NapiArg.Of(interpolate));
     }
 
     /// <summary>
-    /// steps
+    /// Creates a step curve.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string Steps(double count, bool end)
     {
         return NodeApi.CallMethod<string>(Module, _steps, count, end);
     }
 
     /// <summary>
-    /// cubicBezierCurve
+    /// Creates a cubic Bezier curve, with x-coordinates automatically normalized between 0 and 1.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ICurve CubicBezierCurve(double x1, double y1, double x2, double y2)
     {
         return NodeApi.CallMethod(Module, _cubicBezierCurve, static h => new ICurve(h), x1, y1, x2, y2);
     }
 
     /// <summary>
-    /// cubicBezier
+    /// Creates a cubic Bézier curve. The curve values must be between 0 and 1.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string CubicBezier(double x1, double y1, double x2, double y2)
     {
         return NodeApi.CallMethod<string>(Module, _cubicBezier, x1, y1, x2, y2);
     }
 
     /// <summary>
-    /// springCurve
+    /// Creates a spring curve. The curve shape is subject to the spring parameters, and the animation duration is subject
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ICurve SpringCurve(double velocity, double mass, double stiffness, double damping)
     {
         return NodeApi.CallMethod(Module, _springCurve, static h => new ICurve(h), velocity, mass, stiffness, damping);
     }
 
     /// <summary>
-    /// spring
+    /// Constructs a spring curve object.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string Spring(double velocity, double mass, double stiffness, double damping)
     {
         return NodeApi.CallMethod<string>(Module, _spring, velocity, mass, stiffness, damping);
     }
 
     /// <summary>
-    /// springMotion
+    /// Creates a spring animation curve. If multiple spring animations are applied to the same attribute of an object,
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ICurve SpringMotion(double? response = null, double? dampingFraction = null, double? overlapDuration = null)
     {
         return NodeApi.CallMethod(Module, _springMotion, static h => new ICurve(h), NapiArg.Of(response), NapiArg.Of(dampingFraction), NapiArg.Of(overlapDuration));
     }
 
     /// <summary>
-    /// responsiveSpringMotion
+    /// Creates a responsive spring animation curve. It is a special case of [springMotion],
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ICurve ResponsiveSpringMotion(double? response = null, double? dampingFraction = null, double? overlapDuration = null)
     {
         return NodeApi.CallMethod(Module, _responsiveSpringMotion, static h => new ICurve(h), NapiArg.Of(response), NapiArg.Of(dampingFraction), NapiArg.Of(overlapDuration));
     }
 
     /// <summary>
-    /// interpolatingSpring
+    /// Creates an interpolating spring curve animated from 0 to 1. The actual animation value is calculated based on the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static ICurve InterpolatingSpring(double velocity, double mass, double stiffness, double damping)
     {
         return NodeApi.CallMethod(Module, _interpolatingSpring, static h => new ICurve(h), velocity, mass, stiffness, damping);

@@ -19,6 +19,29 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install generator dependencies
+        shell: bash
+        run: |
+          npm ci
+          python -m pip install -r tools/arkui-bindgen/requirements.txt
+
+      - name: Generator unit tests (jest)
+        shell: bash
+        run: npm test -- --coverage=false
+
+      - name: arkui-bindgen unit tests (pytest)
+        shell: bash
+        run: python -m pytest tools/arkui-bindgen/tests -q
+
       - name: Build minimal arm64 NativeAOT sample
         shell: pwsh
         run: |
@@ -41,6 +64,14 @@ jobs:
           ./scripts/patch-openharmony-nativeaot.ps1 `
             -Path artifacts/harmony-arm64/app.so `
             -CheckOnly
+
+      - name: Script smoke tests (deploy)
+        shell: bash
+        run: bash scripts/tests/test-deploy.sh
+
+      - name: Stage-host unit test
+        shell: pwsh
+        run: pwsh -NoProfile -File scripts/tests/test-stage-host.ps1
 
       - name: Check generated permissions
         shell: pwsh

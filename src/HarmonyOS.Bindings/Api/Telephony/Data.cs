@@ -19,51 +19,8 @@ public static unsafe partial class Data
 {
     private const string ModuleName = "@ohos.telephony.data";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[telephony.data] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getDefaultCellularDataSlotId => "getDefaultCellularDataSlotId"u8;
     private static ReadOnlySpan<byte> _getDefaultCellularDataSlotIdSync => "getDefaultCellularDataSlotIdSync"u8;
@@ -81,112 +38,126 @@ public static unsafe partial class Data
     private static ReadOnlySpan<byte> _showSystemApnSettings => "showSystemApnSettings"u8;
 
     /// <summary>
-    /// getDefaultCellularDataSlotId
+    /// Obtains the default slot of the SIM card used for mobile data. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> GetDefaultCellularDataSlotIdAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getDefaultCellularDataSlotId);
     }
 
     /// <summary>
-    /// getDefaultCellularDataSlotIdSync
+    /// Obtains the default SIM card used for mobile data synchronously.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double GetDefaultCellularDataSlotIdSync()
     {
         return NodeApi.CallMethod<double>(Module, _getDefaultCellularDataSlotIdSync);
     }
 
     /// <summary>
-    /// getCellularDataFlowType
+    /// Obtains the data flow type of the cellular network (corresponding to the uplink and downlink arrows next to the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<global::HarmonyOS.ArkUI.DataFlowType> GetCellularDataFlowTypeAsync()
     {
         return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.DataFlowType>(Module, _getCellularDataFlowType);
     }
 
     /// <summary>
-    /// getCellularDataState
+    /// Obtains the cellular data connection status. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<global::HarmonyOS.ArkUI.DataConnectState> GetCellularDataStateAsync()
     {
         return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.DataConnectState>(Module, _getCellularDataState);
     }
 
     /// <summary>
-    /// isCellularDataEnabled
+    /// Checks whether the cellular data service is enabled. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsCellularDataEnabledAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isCellularDataEnabled);
     }
 
     /// <summary>
-    /// isCellularDataEnabledSync
+    /// Checks whether the cellular data service is enabled. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsCellularDataEnabledSync()
     {
         return NodeApi.CallMethod<bool>(Module, _isCellularDataEnabledSync);
     }
 
     /// <summary>
-    /// isCellularDataRoamingEnabled
+    /// Checks whether roaming is enabled for the cellular data service. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsCellularDataRoamingEnabledAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isCellularDataRoamingEnabled, slotId);
     }
 
     /// <summary>
-    /// isCellularDataRoamingEnabledSync
+    /// Checks whether roaming is enabled for the cellular data service. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsCellularDataRoamingEnabledSync(double slotId)
     {
         return NodeApi.CallMethod<bool>(Module, _isCellularDataRoamingEnabledSync, slotId);
     }
 
     /// <summary>
-    /// getDefaultCellularDataSimId
+    /// Obtains the default ID of the SIM card used for mobile data.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static double GetDefaultCellularDataSimId()
     {
         return NodeApi.CallMethod<double>(Module, _getDefaultCellularDataSimId);
     }
 
     /// <summary>
-    /// queryAllApns
+    /// Obtains the access point name (APN) of the default SIM card used for mobile data. This API returns the result
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static Task<ApnInfo[]> QueryAllApnsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _queryAllApns, h => ValueConverter.ConvertArray(h, static e => new ApnInfo(e)));
     }
 
     /// <summary>
-    /// getActiveApnName
+    /// Obtains the access point name (APN) of the default SIM card used for mobile data. This API returns the result
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<string> GetActiveApnNameAsync()
     {
         return NodeApi.CallMethodAsync<string>(Module, _getActiveApnName);
     }
 
     /// <summary>
-    /// queryApnIds
+    /// Obtains the APN ID corresponding to the specified **ApnInfo**. This API returns the result asynchronously.
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static Task<double[]> QueryApnIdsAsync(ApnInfo apnInfo)
     {
         return NodeApi.CallMethodAsync(Module, _queryApnIds, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(apnInfo));
     }
 
     /// <summary>
-    /// setPreferredApn
+    /// Sets the APN corresponding to the specified **apnId** as the preferred APN. This API returns the result
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static Task<bool> SetPreferredApnAsync(double apnId)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _setPreferredApn, apnId);
     }
 
     /// <summary>
-    /// showSystemApnSettings
+    /// Open the system APN selection menu, which is presented in a semi-modal form and can
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task ShowSystemApnSettingsAsync(IntPtr context, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _showSystemApnSettings, cancellationToken, context);

@@ -20,51 +20,8 @@ public static unsafe partial class Fs
 {
     private const string ModuleName = "@ohos.file.fs";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[file.fs] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _READ_ONLY => "READ_ONLY"u8;
     private static ReadOnlySpan<byte> _WRITE_ONLY => "WRITE_ONLY"u8;
@@ -148,58 +105,69 @@ public static unsafe partial class Fs
     private static ReadOnlySpan<byte> _getxattrSync => "getxattrSync"u8;
 
     /// <summary>
-    /// READ_ONLY
+    /// Open the file in read-only mode.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ReadOnly => NativeValue.ToDouble(NodeApi.GetProperty(Module, _READ_ONLY));
 
     /// <summary>
-    /// WRITE_ONLY
+    /// Open the file in write-only mode.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double WriteOnly => NativeValue.ToDouble(NodeApi.GetProperty(Module, _WRITE_ONLY));
 
     /// <summary>
-    /// READ_WRITE
+    /// Open the file in read/write mode.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ReadWrite => NativeValue.ToDouble(NodeApi.GetProperty(Module, _READ_WRITE));
 
     /// <summary>
-    /// CREATE
+    /// Create a file if the specified file does not exist.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double Create => NativeValue.ToDouble(NodeApi.GetProperty(Module, _CREATE));
 
     /// <summary>
-    /// TRUNC
+    /// If the file exists and is opened in write-only or read/write mode, truncate the file
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double Trunc => NativeValue.ToDouble(NodeApi.GetProperty(Module, _TRUNC));
 
     /// <summary>
-    /// APPEND
+    /// Open the file in append mode. New data will be written to the end of the file.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double Append => NativeValue.ToDouble(NodeApi.GetProperty(Module, _APPEND));
 
     /// <summary>
-    /// NONBLOCK
+    /// If **path** points to a named pipe (FIFO), block special file, or character special
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double Nonblock => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NONBLOCK));
 
     /// <summary>
-    /// DIR
+    /// If **path** does not point to a directory, throw an exception.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double Dir => NativeValue.ToDouble(NodeApi.GetProperty(Module, _DIR));
 
     /// <summary>
-    /// NOFOLLOW
+    /// If **path** points to a symbolic link, throw an exception.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double Nofollow => NativeValue.ToDouble(NodeApi.GetProperty(Module, _NOFOLLOW));
 
     /// <summary>
-    /// SYNC
+    /// Open the file in synchronous I/O mode.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double Sync => NativeValue.ToDouble(NodeApi.GetProperty(Module, _SYNC));
 
     /// <summary>
-    /// UNCACHE
+    /// UNCACHE IO.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static double Uncache => NativeValue.ToDouble(NodeApi.GetProperty(Module, _UNCACHE));
 
     /// <summary>
@@ -977,6 +945,11 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public Task<double> WriteAsync(byte[] buffer, WriteOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<double>(_write, NapiArg.Of(buffer));
+        }
+
         return CallMethodAsync<double>(_write, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
@@ -993,6 +966,11 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public double WriteSync(byte[] buffer, WriteOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<double>(_writeSync, NapiArg.Of(buffer));
+        }
+
         return CallMethod<double>(_writeSync, NapiArg.Of(buffer), NapiArg.Of(options));
     }
 
@@ -1001,6 +979,11 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public Task<double> ReadAsync(byte[] buffer, ReadOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethodAsync<double>(_read, NapiArg.OfArrayBuffer(buffer));
+        }
+
         return CallMethodAsync<double>(_read, NapiArg.OfArrayBuffer(buffer), NapiArg.Of(options));
     }
 
@@ -1017,6 +1000,11 @@ public sealed partial class RandomAccessFile : JsObject
     /// </summary>
     public double ReadSync(byte[] buffer, ReadOptions? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod<double>(_readSync, NapiArg.OfArrayBuffer(buffer));
+        }
+
         return CallMethod<double>(_readSync, NapiArg.OfArrayBuffer(buffer), NapiArg.Of(options));
     }
 
@@ -1184,6 +1172,11 @@ public sealed partial class FsFile : JsObject
     /// </summary>
     public Task LockAsync(bool? exclusive = null, CancellationToken cancellationToken = default)
     {
+        if (exclusive is null)
+        {
+            return CallMethodAsyncVoid(_lock, cancellationToken);
+        }
+
         return CallMethodAsyncVoid(_lock, cancellationToken, NapiArg.Of(exclusive));
     }
 
@@ -1200,6 +1193,12 @@ public sealed partial class FsFile : JsObject
     /// </summary>
     public void TryLock(bool? exclusive = null)
     {
+        if (exclusive is null)
+        {
+            CallMethodVoid(_tryLock);
+            return;
+        }
+
         CallMethodVoid(_tryLock, NapiArg.Of(exclusive));
     }
 
@@ -1370,6 +1369,11 @@ public sealed partial class ReadStream : JsObject
     /// </summary>
     public double Seek(double offset, global::HarmonyOS.ArkUI.WhenceType? whence = null)
     {
+        if (whence is null)
+        {
+            return CallMethod<double>(_seek, offset);
+        }
+
         return CallMethod<double>(_seek, offset, NapiArg.Of(whence));
     }
 
@@ -1414,6 +1418,11 @@ public sealed partial class WriteStream : JsObject
     /// </summary>
     public double Seek(double offset, global::HarmonyOS.ArkUI.WhenceType? whence = null)
     {
+        if (whence is null)
+        {
+            return CallMethod<double>(_seek, offset);
+        }
+
         return CallMethod<double>(_seek, offset, NapiArg.Of(whence));
     }
 

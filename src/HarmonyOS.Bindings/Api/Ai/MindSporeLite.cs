@@ -18,51 +18,8 @@ public static unsafe partial class MindSporeLite
 {
     private const string ModuleName = "@ohos.ai.mindSporeLite";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[ai.mindSporeLite] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _loadModelFromFile => "loadModelFromFile"u8;
     private static ReadOnlySpan<byte> _loadModelFromBuffer => "loadModelFromBuffer"u8;
@@ -73,104 +30,117 @@ public static unsafe partial class MindSporeLite
     private static ReadOnlySpan<byte> _getAllNNRTDeviceDescriptions => "getAllNNRTDeviceDescriptions"u8;
 
     /// <summary>
-    /// loadModelFromFile
+    /// Create a Model instance from file path
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<Model> LoadModelFromFileAsync(string model, IntPtr? context = null)
     {
         return NodeApi.CallMethodAsync(Module, _loadModelFromFile, static h => new Model(h), model, NapiArg.Of(context));
     }
 
     /// <summary>
-    /// loadModelFromFile
+    /// Create a Model instance from file path.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void LoadModelFromFile(string model, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _loadModelFromFile, model, callback);
     }
 
     /// <summary>
-    /// loadModelFromFile
+    /// Create a Model instance from file path.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void LoadModelFromFile(string model, IntPtr context, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _loadModelFromFile, model, context, callback);
     }
 
     /// <summary>
-    /// loadModelFromBuffer
+    /// Create a Model instance from buffer
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<Model> LoadModelFromBufferAsync(byte[] model, IntPtr? context = null)
     {
         return NodeApi.CallMethodAsync(Module, _loadModelFromBuffer, static h => new Model(h), NapiArg.OfArrayBuffer(model), NapiArg.Of(context));
     }
 
     /// <summary>
-    /// loadModelFromBuffer
+    /// Create a Model instance from buffer
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void LoadModelFromBuffer(byte[] model, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _loadModelFromBuffer, NapiArg.OfArrayBuffer(model), callback);
     }
 
     /// <summary>
-    /// loadModelFromBuffer
+    /// Create a Model instance from buffer
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void LoadModelFromBuffer(byte[] model, IntPtr context, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _loadModelFromBuffer, NapiArg.OfArrayBuffer(model), context, callback);
     }
 
     /// <summary>
-    /// loadModelFromFd
+    /// Creates a Model instance file description
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<Model> LoadModelFromFdAsync(double model, IntPtr? context = null)
     {
         return NodeApi.CallMethodAsync(Module, _loadModelFromFd, static h => new Model(h), model, NapiArg.Of(context));
     }
 
     /// <summary>
-    /// loadModelFromFd
+    /// Create a Model instance from file description
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void LoadModelFromFd(double model, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _loadModelFromFd, model, callback);
     }
 
     /// <summary>
-    /// loadModelFromFd
+    /// Create a Model instance from file description
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void LoadModelFromFd(double model, IntPtr context, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _loadModelFromFd, model, context, callback);
     }
 
     /// <summary>
-    /// loadTrainModelFromFile
+    /// Load train model from file
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<Model> LoadTrainModelFromFileAsync(string model, TrainCfg? trainCfg = null, IntPtr? context = null)
     {
         return NodeApi.CallMethodAsync(Module, _loadTrainModelFromFile, static h => new Model(h), model, NapiArg.Of(trainCfg), NapiArg.Of(context));
     }
 
     /// <summary>
-    /// loadTrainModelFromBuffer
+    /// Load train model from buffer
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<Model> LoadTrainModelFromBufferAsync(byte[] model, TrainCfg? trainCfg = null, IntPtr? context = null)
     {
         return NodeApi.CallMethodAsync(Module, _loadTrainModelFromBuffer, static h => new Model(h), NapiArg.OfArrayBuffer(model), NapiArg.Of(trainCfg), NapiArg.Of(context));
     }
 
     /// <summary>
-    /// loadTrainModelFromFd
+    /// Load train model from file description
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<Model> LoadTrainModelFromFdAsync(double model, TrainCfg? trainCfg = null, IntPtr? context = null)
     {
         return NodeApi.CallMethodAsync(Module, _loadTrainModelFromFd, static h => new Model(h), model, NapiArg.Of(trainCfg), NapiArg.Of(context));
     }
 
     /// <summary>
-    /// getAllNNRTDeviceDescriptions
+    /// Obtain the all device descriptions in NNRT.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static NNRTDeviceDescription[] GetAllNnrtDeviceDescriptions()
     {
         return NodeApi.CallMethod(Module, _getAllNNRTDeviceDescriptions, h => ValueConverter.ConvertArray(h, static e => new NNRTDeviceDescription(e)));
@@ -275,6 +245,21 @@ public sealed partial class Model : JsObject
     /// </summary>
     public bool ExportModel(string modelFile, global::HarmonyOS.ArkUI.QuantizationType? quantizationType = null, bool? exportInferenceOnly = null, string[]? outputTensorName = null)
     {
+        if (quantizationType is null && exportInferenceOnly is null && outputTensorName is null)
+        {
+            return CallMethod<bool>(_exportModel, modelFile);
+        }
+
+        if (exportInferenceOnly is null && outputTensorName is null)
+        {
+            return CallMethod<bool>(_exportModel, modelFile, NapiArg.Of(quantizationType));
+        }
+
+        if (outputTensorName is null)
+        {
+            return CallMethod<bool>(_exportModel, modelFile, NapiArg.Of(quantizationType), NapiArg.Of(exportInferenceOnly));
+        }
+
         return CallMethod<bool>(_exportModel, modelFile, NapiArg.Of(quantizationType), NapiArg.Of(exportInferenceOnly), NapiArg.Of(outputTensorName));
     }
 
@@ -283,6 +268,21 @@ public sealed partial class Model : JsObject
     /// </summary>
     public bool ExportWeightsCollaborateWithMicro(string weightFile, bool? isInference = null, bool? enableFp16 = null, string[]? changeableWeightsName = null)
     {
+        if (isInference is null && enableFp16 is null && changeableWeightsName is null)
+        {
+            return CallMethod<bool>(_exportWeightsCollaborateWithMicro, weightFile);
+        }
+
+        if (enableFp16 is null && changeableWeightsName is null)
+        {
+            return CallMethod<bool>(_exportWeightsCollaborateWithMicro, weightFile, NapiArg.Of(isInference));
+        }
+
+        if (changeableWeightsName is null)
+        {
+            return CallMethod<bool>(_exportWeightsCollaborateWithMicro, weightFile, NapiArg.Of(isInference), NapiArg.Of(enableFp16));
+        }
+
         return CallMethod<bool>(_exportWeightsCollaborateWithMicro, weightFile, NapiArg.Of(isInference), NapiArg.Of(enableFp16), NapiArg.Of(changeableWeightsName));
     }
 

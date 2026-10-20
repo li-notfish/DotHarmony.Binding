@@ -17,51 +17,8 @@ public static unsafe partial class Stream
 {
     private const string ModuleName = "@ohos.util.stream";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[util.stream] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
 }
 
@@ -92,6 +49,21 @@ public sealed partial class Writable : JsObject
     /// </summary>
     public bool Write(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
+        if (chunk is null && encoding is null && callback is null)
+        {
+            return CallMethod<bool>(_write);
+        }
+
+        if (encoding is null && callback is null)
+        {
+            return CallMethod<bool>(_write, chunk);
+        }
+
+        if (callback is null)
+        {
+            return CallMethod<bool>(_write, chunk, encoding);
+        }
+
         return CallMethod<bool>(_write, chunk, encoding, NapiArg.Of(callback));
     }
 
@@ -100,6 +72,21 @@ public sealed partial class Writable : JsObject
     /// </summary>
     public Writable End(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
+        if (chunk is null && encoding is null && callback is null)
+        {
+            return CallMethod(_end, static h => new Writable(h));
+        }
+
+        if (encoding is null && callback is null)
+        {
+            return CallMethod(_end, static h => new Writable(h), chunk);
+        }
+
+        if (callback is null)
+        {
+            return CallMethod(_end, static h => new Writable(h), chunk, encoding);
+        }
+
         return CallMethod(_end, static h => new Writable(h), chunk, encoding, NapiArg.Of(callback));
     }
 
@@ -108,6 +95,11 @@ public sealed partial class Writable : JsObject
     /// </summary>
     public bool SetDefaultEncoding(string? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod<bool>(_setDefaultEncoding);
+        }
+
         return CallMethod<bool>(_setDefaultEncoding, encoding);
     }
 
@@ -229,6 +221,11 @@ public sealed partial class Readable : JsObject
     /// </summary>
     public string Read(double? size = null)
     {
+        if (size is null)
+        {
+            return CallMethod<string>(_read);
+        }
+
         return CallMethod<string>(_read, NapiArg.Of(size));
     }
 
@@ -253,6 +250,11 @@ public sealed partial class Readable : JsObject
     /// </summary>
     public bool SetEncoding(string? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod<bool>(_setEncoding);
+        }
+
         return CallMethod<bool>(_setEncoding, encoding);
     }
 
@@ -269,6 +271,11 @@ public sealed partial class Readable : JsObject
     /// </summary>
     public Writable Pipe(Writable destination, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod(_pipe, static h => new Writable(h), NapiArg.Of(destination));
+        }
+
         return CallMethod(_pipe, static h => new Writable(h), NapiArg.Of(destination), NapiArg.Of(options));
     }
 
@@ -277,6 +284,11 @@ public sealed partial class Readable : JsObject
     /// </summary>
     public Readable Unpipe(Writable? destination = null)
     {
+        if (destination is null)
+        {
+            return CallMethod(_unpipe, static h => new Readable(h));
+        }
+
         return CallMethod(_unpipe, static h => new Readable(h), NapiArg.Of(destination));
     }
 
@@ -317,6 +329,11 @@ public sealed partial class Readable : JsObject
     /// </summary>
     public bool Push(byte[] chunk, string? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod<bool>(_push, NapiArg.Of(chunk));
+        }
+
         return CallMethod<bool>(_push, NapiArg.Of(chunk), encoding);
     }
 
@@ -386,6 +403,11 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public string Read(double? size = null)
     {
+        if (size is null)
+        {
+            return CallMethod<string>(_read);
+        }
+
         return CallMethod<string>(_read, NapiArg.Of(size));
     }
 
@@ -410,6 +432,11 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public bool SetEncoding(string? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod<bool>(_setEncoding);
+        }
+
         return CallMethod<bool>(_setEncoding, encoding);
     }
 
@@ -426,6 +453,11 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public Writable Pipe(Writable destination, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod(_pipe, static h => new Writable(h), NapiArg.Of(destination));
+        }
+
         return CallMethod(_pipe, static h => new Writable(h), NapiArg.Of(destination), NapiArg.Of(options));
     }
 
@@ -434,6 +466,11 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public Readable Unpipe(Writable? destination = null)
     {
+        if (destination is null)
+        {
+            return CallMethod(_unpipe, static h => new Readable(h));
+        }
+
         return CallMethod(_unpipe, static h => new Readable(h), NapiArg.Of(destination));
     }
 
@@ -474,6 +511,11 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public bool Push(byte[] chunk, string? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod<bool>(_push, NapiArg.Of(chunk));
+        }
+
         return CallMethod<bool>(_push, NapiArg.Of(chunk), encoding);
     }
 
@@ -482,6 +524,21 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public bool Write(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
+        if (chunk is null && encoding is null && callback is null)
+        {
+            return CallMethod<bool>(_write);
+        }
+
+        if (encoding is null && callback is null)
+        {
+            return CallMethod<bool>(_write, chunk);
+        }
+
+        if (callback is null)
+        {
+            return CallMethod<bool>(_write, chunk, encoding);
+        }
+
         return CallMethod<bool>(_write, chunk, encoding, NapiArg.Of(callback));
     }
 
@@ -490,6 +547,21 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public Writable End(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
+        if (chunk is null && encoding is null && callback is null)
+        {
+            return CallMethod(_end, static h => new Writable(h));
+        }
+
+        if (encoding is null && callback is null)
+        {
+            return CallMethod(_end, static h => new Writable(h), chunk);
+        }
+
+        if (callback is null)
+        {
+            return CallMethod(_end, static h => new Writable(h), chunk, encoding);
+        }
+
         return CallMethod(_end, static h => new Writable(h), chunk, encoding, NapiArg.Of(callback));
     }
 
@@ -498,6 +570,11 @@ public sealed partial class Duplex : JsObject
     /// </summary>
     public bool SetDefaultEncoding(string? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod<bool>(_setDefaultEncoding);
+        }
+
         return CallMethod<bool>(_setDefaultEncoding, encoding);
     }
 
@@ -601,6 +678,11 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public string Read(double? size = null)
     {
+        if (size is null)
+        {
+            return CallMethod<string>(_read);
+        }
+
         return CallMethod<string>(_read, NapiArg.Of(size));
     }
 
@@ -625,6 +707,11 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public bool SetEncoding(string? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod<bool>(_setEncoding);
+        }
+
         return CallMethod<bool>(_setEncoding, encoding);
     }
 
@@ -641,6 +728,11 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public Writable Pipe(Writable destination, IntPtr? options = null)
     {
+        if (options is null)
+        {
+            return CallMethod(_pipe, static h => new Writable(h), NapiArg.Of(destination));
+        }
+
         return CallMethod(_pipe, static h => new Writable(h), NapiArg.Of(destination), NapiArg.Of(options));
     }
 
@@ -649,6 +741,11 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public Readable Unpipe(Writable? destination = null)
     {
+        if (destination is null)
+        {
+            return CallMethod(_unpipe, static h => new Readable(h));
+        }
+
         return CallMethod(_unpipe, static h => new Readable(h), NapiArg.Of(destination));
     }
 
@@ -689,6 +786,11 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public bool Push(byte[] chunk, string? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod<bool>(_push, NapiArg.Of(chunk));
+        }
+
         return CallMethod<bool>(_push, NapiArg.Of(chunk), encoding);
     }
 
@@ -697,6 +799,21 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public bool Write(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
+        if (chunk is null && encoding is null && callback is null)
+        {
+            return CallMethod<bool>(_write);
+        }
+
+        if (encoding is null && callback is null)
+        {
+            return CallMethod<bool>(_write, chunk);
+        }
+
+        if (callback is null)
+        {
+            return CallMethod<bool>(_write, chunk, encoding);
+        }
+
         return CallMethod<bool>(_write, chunk, encoding, NapiArg.Of(callback));
     }
 
@@ -705,6 +822,21 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public Writable End(string? chunk = null, string? encoding = null, IntPtr? callback = null)
     {
+        if (chunk is null && encoding is null && callback is null)
+        {
+            return CallMethod(_end, static h => new Writable(h));
+        }
+
+        if (encoding is null && callback is null)
+        {
+            return CallMethod(_end, static h => new Writable(h), chunk);
+        }
+
+        if (callback is null)
+        {
+            return CallMethod(_end, static h => new Writable(h), chunk, encoding);
+        }
+
         return CallMethod(_end, static h => new Writable(h), chunk, encoding, NapiArg.Of(callback));
     }
 
@@ -713,6 +845,11 @@ public sealed partial class Transform : JsObject
     /// </summary>
     public bool SetDefaultEncoding(string? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod<bool>(_setDefaultEncoding);
+        }
+
         return CallMethod<bool>(_setDefaultEncoding, encoding);
     }
 

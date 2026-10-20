@@ -16,51 +16,8 @@ public static unsafe partial class HiTraceChain
 {
     private const string ModuleName = "@ohos.hiTraceChain";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[hiTraceChain] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _begin => "begin"u8;
     private static ReadOnlySpan<byte> _end => "end"u8;
@@ -74,80 +31,90 @@ public static unsafe partial class HiTraceChain
     private static ReadOnlySpan<byte> _enableFlag => "enableFlag"u8;
 
     /// <summary>
-    /// begin
+    /// Starts call chain trace. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static IntPtr Begin(string name, double? flags = null)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _begin, name, NapiArg.Of(flags));
     }
 
     /// <summary>
-    /// end
+    /// Stops call chain trace. This API works in synchronous manner.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void End(IntPtr id)
     {
         NodeApi.CallMethodVoid(Module, _end, id);
     }
 
     /// <summary>
-    /// getId
+    /// Obtains the trace ID. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static IntPtr GetId()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getId);
     }
 
     /// <summary>
-    /// setId
+    /// Sets a trace ID. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void SetId(IntPtr id)
     {
         NodeApi.CallMethodVoid(Module, _setId, id);
     }
 
     /// <summary>
-    /// clearId
+    /// Clears the trace ID. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void ClearId()
     {
         NodeApi.CallMethodVoid(Module, _clearId);
     }
 
     /// <summary>
-    /// createSpan
+    /// Creates a trace span. This API works in synchronous manner.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static IntPtr CreateSpan()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _createSpan);
     }
 
     /// <summary>
-    /// tracepoint
+    /// Adds a trace point for the [@ohos.hiTraceMeter (Performance Tracing)]@ohos.hiTraceMeter:hiTraceMeter
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void Tracepoint(global::HarmonyOS.ArkUI.HiTraceCommunicationMode mode, global::HarmonyOS.ArkUI.HiTraceTracepointType type, IntPtr id, string? msg = null)
     {
         NodeApi.CallMethodVoid(Module, _tracepoint, (int)mode, (int)type, id, msg);
     }
 
     /// <summary>
-    /// isValid
+    /// Checks whether a **HiTraceId** instance is valid. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool IsValid(IntPtr id)
     {
         return NodeApi.CallMethod<bool>(Module, _isValid, id);
     }
 
     /// <summary>
-    /// isFlagEnabled
+    /// Checks whether the trace flag is enabled for **HiTraceId**. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool IsFlagEnabled(IntPtr id, global::HarmonyOS.ArkUI.HiTraceFlag flag)
     {
         return NodeApi.CallMethod<bool>(Module, _isFlagEnabled, id, (int)flag);
     }
 
     /// <summary>
-    /// enableFlag
+    /// Enables the trace flag specified in HiTraceId. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void EnableFlag(IntPtr id, global::HarmonyOS.ArkUI.HiTraceFlag flag)
     {
         NodeApi.CallMethodVoid(Module, _enableFlag, id, (int)flag);

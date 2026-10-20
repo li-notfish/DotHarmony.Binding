@@ -52,6 +52,8 @@
   <ItemGroup>
     <!-- Handler 层手势池化复用需要读取 internal 配置（ArkTapGesture.TapCount 等） -->
     <InternalsVisibleTo Include="HarmonyOS.Maui" />
+    <InternalsVisibleTo Include="HarmonyOS.Maui.Web" />
+    <InternalsVisibleTo Include="HarmonyOS.Maui.Blazor" />
     <!-- 引擎实验层测试需要 internal ctor（RecordingSink 注入）与 DispatchEvent -->
     <InternalsVisibleTo Include="HarmonyEngineTests" />
     <!-- Handler/事件核心回归需要 internal 多播事件聚合器 -->

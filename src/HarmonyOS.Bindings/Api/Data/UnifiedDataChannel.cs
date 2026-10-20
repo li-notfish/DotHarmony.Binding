@@ -20,51 +20,8 @@ public static unsafe partial class UnifiedDataChannel
 {
     private const string ModuleName = "@ohos.data.unifiedDataChannel";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[data.unifiedDataChannel] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _insertData => "insertData"u8;
     private static ReadOnlySpan<byte> _updateData => "updateData"u8;
@@ -75,56 +32,63 @@ public static unsafe partial class UnifiedDataChannel
     private static ReadOnlySpan<byte> _convertRecordsToEntries => "convertRecordsToEntries"u8;
 
     /// <summary>
-    /// insertData
+    /// Inserts data to the UDMF public data channel. This API uses an asynchronous callback to return the unique
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<string> InsertDataAsync(UnifiedDataChannelOptions options, UnifiedData data)
     {
         return NodeApi.CallMethodAsync<string>(Module, _insertData, NapiArg.Of(options), NapiArg.Of(data));
     }
 
     /// <summary>
-    /// updateData
+    /// Updates the data in the UDMF public data channel. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task UpdateDataAsync(UnifiedDataChannelOptions options, UnifiedData data, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updateData, cancellationToken, NapiArg.Of(options), NapiArg.Of(data));
     }
 
     /// <summary>
-    /// queryData
+    /// Queries data in the UDMF public data channel. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<UnifiedData[]> QueryDataAsync(UnifiedDataChannelOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _queryData, h => ValueConverter.ConvertArray(h, static e => new UnifiedData(e)), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// deleteData
+    /// Deletes data from the UDMF public data channel. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<UnifiedData[]> DeleteDataAsync(UnifiedDataChannelOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _deleteData, h => ValueConverter.ConvertArray(h, static e => new UnifiedData(e)), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// setAppShareOptions
+    /// Sets the [ShareOptions] for the application data. Currently, only the drag-
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void SetAppShareOptions(global::HarmonyOS.ArkUI.Intention intention, global::HarmonyOS.ArkUI.ShareOptions shareOptions)
     {
         NodeApi.CallMethodVoid(Module, _setAppShareOptions, (int)intention, (int)shareOptions);
     }
 
     /// <summary>
-    /// removeAppShareOptions
+    /// Removes the data control information set by [setAppShareOptions].
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void RemoveAppShareOptions(global::HarmonyOS.ArkUI.Intention intention)
     {
         NodeApi.CallMethodVoid(Module, _removeAppShareOptions, (int)intention);
     }
 
     /// <summary>
-    /// convertRecordsToEntries
+    /// Converts the provided data into a multi-style data structure, which is useful when the original data uses multiple
     /// </summary>
+    /// <remarks>@since 17</remarks>
     public static void ConvertRecordsToEntries(UnifiedData data)
     {
         NodeApi.CallMethodVoid(Module, _convertRecordsToEntries, NapiArg.Of(data));

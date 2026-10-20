@@ -1,5 +1,7 @@
 # 控件默认值审计（MAUI ↔ ArkUI 差异映射）
 
+> 受众：维护者；这是审计记录，不是接入指南。用户文档见 [GETTING_STARTED.md](../GETTING_STARTED.md)。
+
 > 生成依据：DevEco Studio SDK `component/*.d.ts` 的 `Default value` 标注 + Handler 源码逐一比对。
 > 分类说明：
 > - **A 类**：ArkUI 已有合理默认，Handler 不覆写（颜色 `null` 不设、FontSize `<=0` 不设）

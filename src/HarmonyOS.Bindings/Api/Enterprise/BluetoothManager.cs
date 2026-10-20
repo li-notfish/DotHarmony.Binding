@@ -17,51 +17,8 @@ public static unsafe partial class BluetoothManager
 {
     private const string ModuleName = "@ohos.enterprise.bluetoothManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.bluetoothManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getBluetoothInfo => "getBluetoothInfo"u8;
     private static ReadOnlySpan<byte> _addAllowedBluetoothDevices => "addAllowedBluetoothDevices"u8;
@@ -77,120 +34,135 @@ public static unsafe partial class BluetoothManager
     private static ReadOnlySpan<byte> _getDisallowedBluetoothProtocols => "getDisallowedBluetoothProtocols"u8;
 
     /// <summary>
-    /// getBluetoothInfo
+    /// Obtains device Bluetooth information.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static IntPtr GetBluetoothInfo(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getBluetoothInfo, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addAllowedBluetoothDevices
+    /// Adds Bluetooth devices to the trustlist. After adding devices to this list, the current device will only be allowed
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void AddAllowedBluetoothDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] deviceIds)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedBluetoothDevices, NapiArg.Of(admin), NapiArg.Of(deviceIds));
     }
 
     /// <summary>
-    /// removeAllowedBluetoothDevices
+    /// Removes allowed Bluetooth devices.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void RemoveAllowedBluetoothDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] deviceIds)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedBluetoothDevices, NapiArg.Of(admin), NapiArg.Of(deviceIds));
     }
 
     /// <summary>
-    /// getAllowedBluetoothDevices
+    /// Obtains allowed Bluetooth devices.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string[] GetAllowedBluetoothDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getAllowedBluetoothDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// turnOnBluetooth
+    /// Enables Bluetooth. After Bluetooth is enabled, the user can manually disable it.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void TurnOnBluetooth(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         NodeApi.CallMethodVoid(Module, _turnOnBluetooth, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// turnOffBluetooth
+    /// Disables Bluetooth. After Bluetooth is disabled, the user can manually enable it.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void TurnOffBluetooth(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         NodeApi.CallMethodVoid(Module, _turnOffBluetooth, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addDisallowedBluetoothDevices
+    /// Adds Bluetooth devices to the blocklist. The current device cannot connect to the disallowed Bluetooth devices.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void AddDisallowedBluetoothDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] deviceIds)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothDevices, NapiArg.Of(admin), NapiArg.Of(deviceIds));
     }
 
     /// <summary>
-    /// removeDisallowedBluetoothDevices
+    /// Removes disallowed Bluetooth devices. If some Bluetooth devices are removed from the disallowed list, the current
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void RemoveDisallowedBluetoothDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] deviceIds)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothDevices, NapiArg.Of(admin), NapiArg.Of(deviceIds));
     }
 
     /// <summary>
-    /// getDisallowedBluetoothDevices
+    /// Obtains disallowed Bluetooth devices.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string[] GetDisallowedBluetoothDevices(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getDisallowedBluetoothDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addDisallowedBluetoothProtocols
+    /// Adds disallowed Bluetooth protocols. Specified users cannot use the disallowed Bluetooth protocols to send files to
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void AddDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, global::HarmonyOS.ArkUI.Protocol[] protocols)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols));
     }
 
     /// <summary>
-    /// removeDisallowedBluetoothProtocols
+    /// Removes disallowed Bluetooth protocols. After removing some protocols, the user is still restricted by the
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void RemoveDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, global::HarmonyOS.ArkUI.Protocol[] protocols)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols));
     }
 
     /// <summary>
-    /// getDisallowedBluetoothProtocols
+    /// Obtains the disallowed Bluetooth protocols of a specified user.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static global::HarmonyOS.ArkUI.Protocol[] GetDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getDisallowedBluetoothProtocols, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Protocol>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// addDisallowedBluetoothProtocols
+    /// Adds disallowed Bluetooth protocols. After the setting, specified users cannot use the disallowed Bluetooth
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void AddDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, global::HarmonyOS.ArkUI.Protocol[] protocols, global::HarmonyOS.ArkUI.TransferPolicy policy)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols), (int)policy);
     }
 
     /// <summary>
-    /// removeDisallowedBluetoothProtocols
+    /// Removes Bluetooth protocols from the blocklist. After the setting, specified users are no longer restricted by the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void RemoveDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, global::HarmonyOS.ArkUI.Protocol[] protocols, global::HarmonyOS.ArkUI.TransferPolicy policy)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedBluetoothProtocols, NapiArg.Of(admin), accountId, NapiArg.Of(protocols), (int)policy);
     }
 
     /// <summary>
-    /// getDisallowedBluetoothProtocols
+    /// Obtains the list of disallowed Bluetooth protocols for a specified user under a specified transfer policy.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static global::HarmonyOS.ArkUI.Protocol[] GetDisallowedBluetoothProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, global::HarmonyOS.ArkUI.TransferPolicy policy)
     {
         return NodeApi.CallMethod(Module, _getDisallowedBluetoothProtocols, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.Protocol>(e)), NapiArg.Of(admin), accountId, (int)policy);

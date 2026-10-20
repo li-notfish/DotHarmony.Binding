@@ -18,51 +18,8 @@ public static unsafe partial class Statistics
 {
     private const string ModuleName = "@ohos.net.statistics";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[net.statistics] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getIfaceRxBytes => "getIfaceRxBytes"u8;
     private static ReadOnlySpan<byte> _getIfaceTxBytes => "getIfaceTxBytes"u8;
@@ -77,88 +34,99 @@ public static unsafe partial class Statistics
     private static ReadOnlySpan<byte> _getSelfTrafficStats => "getSelfTrafficStats"u8;
 
     /// <summary>
-    /// getIfaceRxBytes
+    /// Obtains the total downlink traffic of the specified NIC from the last startup to the time when this API is called (
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> GetIfaceRxBytesAsync(string nic)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getIfaceRxBytes, nic);
     }
 
     /// <summary>
-    /// getIfaceTxBytes
+    /// Obtains the total uplink traffic (in bytes) of the specified NIC from the last startup to the time when this API is
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> GetIfaceTxBytesAsync(string nic)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getIfaceTxBytes, nic);
     }
 
     /// <summary>
-    /// getCellularRxBytes
+    /// Obtains the total downlink traffic (in bytes) of the NIC corresponding to the currently connected cellular network
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> GetCellularRxBytesAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getCellularRxBytes);
     }
 
     /// <summary>
-    /// getCellularTxBytes
+    /// Obtains the total uplink traffic (in bytes) of the NIC corresponding to the currently connected cellular network
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> GetCellularTxBytesAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getCellularTxBytes);
     }
 
     /// <summary>
-    /// getAllRxBytes
+    /// Obtains the total downlink traffic (in bytes) of all NICs from the last startup to the time when this API is
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> GetAllRxBytesAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getAllRxBytes);
     }
 
     /// <summary>
-    /// getAllTxBytes
+    /// Obtains the total uplink traffic of all NICs (in bytes) from the last startup to the time when this API is called.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> GetAllTxBytesAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getAllTxBytes);
     }
 
     /// <summary>
-    /// getUidRxBytes
+    /// Obtains the total downlink traffic (in bytes) of the specified application from the last startup to the time when
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> GetUidRxBytesAsync(double uid)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getUidRxBytes, uid);
     }
 
     /// <summary>
-    /// getUidTxBytes
+    /// Obtains the total uplink traffic (in bytes) of the specified application from the last startup to the time when
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> GetUidTxBytesAsync(double uid)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getUidTxBytes, uid);
     }
 
     /// <summary>
-    /// getSockfdRxBytes
+    /// Obtains the downlink traffic (in bytes) of the specified socket. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<double> GetSockfdRxBytesAsync(double sockfd)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getSockfdRxBytes, sockfd);
     }
 
     /// <summary>
-    /// getSockfdTxBytes
+    /// Obtains the uplink traffic of the specified socket (in bytes). This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<double> GetSockfdTxBytesAsync(double sockfd)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getSockfdTxBytes, sockfd);
     }
 
     /// <summary>
-    /// getSelfTrafficStats
+    /// Obtains the traffic statistics of the specified application on the specified network within the specified period.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<NetStatsInfo> GetSelfTrafficStatsAsync(IntPtr networkInfo)
     {
         return NodeApi.CallMethodAsync(Module, _getSelfTrafficStats, static h => new NetStatsInfo(h), networkInfo);

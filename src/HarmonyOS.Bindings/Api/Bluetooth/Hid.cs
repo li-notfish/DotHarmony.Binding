@@ -18,66 +18,25 @@ public static unsafe partial class Hid
 {
     private const string ModuleName = "@ohos.bluetooth.hid";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[bluetooth.hid] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createHidHostProfile => "createHidHostProfile"u8;
     private static ReadOnlySpan<byte> _createHidDeviceProfile => "createHidDeviceProfile"u8;
 
     /// <summary>
-    /// createHidHostProfile
+    /// create the instance of hid profile.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static HidHostProfile CreateHidHostProfile()
     {
         return NodeApi.CallMethod(Module, _createHidHostProfile, static h => new HidHostProfile(h));
     }
 
     /// <summary>
-    /// createHidDeviceProfile
+    /// Creates the instance of HID device profile.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static HidDeviceProfile CreateHidDeviceProfile()
     {
         return NodeApi.CallMethod(Module, _createHidDeviceProfile, static h => new HidDeviceProfile(h));
@@ -187,6 +146,12 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffGetReport(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offGetReport);
+            return;
+        }
+
         CallMethodVoid(_offGetReport, NapiArg.Of(callback));
     }
 
@@ -203,6 +168,12 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffSetReport(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSetReport);
+            return;
+        }
+
         CallMethodVoid(_offSetReport, NapiArg.Of(callback));
     }
 
@@ -219,6 +190,12 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffInterruptDataReceived(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offInterruptDataReceived);
+            return;
+        }
+
         CallMethodVoid(_offInterruptDataReceived, NapiArg.Of(callback));
     }
 
@@ -235,6 +212,12 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffSetProtocol(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSetProtocol);
+            return;
+        }
+
         CallMethodVoid(_offSetProtocol, NapiArg.Of(callback));
     }
 
@@ -251,6 +234,12 @@ public sealed partial class HidDeviceProfile : JsObject
     /// </summary>
     public void OffVirtualCableUnplug(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offVirtualCableUnplug);
+            return;
+        }
+
         CallMethodVoid(_offVirtualCableUnplug, NapiArg.Of(callback));
     }
 

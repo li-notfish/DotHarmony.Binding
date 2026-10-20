@@ -20,51 +20,8 @@ public static unsafe partial class Media
 {
     private const string ModuleName = "@ohos.multimedia.media";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[multimedia.media] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createAVPlayer => "createAVPlayer"u8;
     private static ReadOnlySpan<byte> _createAVRecorder => "createAVRecorder"u8;
@@ -85,136 +42,153 @@ public static unsafe partial class Media
     private static ReadOnlySpan<byte> _createAVDownloaderManager => "createAVDownloaderManager"u8;
 
     /// <summary>
-    /// createAVPlayer
+    /// Creates an AVPlayer instance. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<AVPlayer> CreateAVPlayerAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createAVPlayer, static h => new AVPlayer(h));
     }
 
     /// <summary>
-    /// createAVRecorder
+    /// Creates an AVRecorder instance. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<AVRecorder> CreateAVRecorderAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createAVRecorder, static h => new AVRecorder(h));
     }
 
     /// <summary>
-    /// createAudioPlayer
+    /// Creates an AudioPlayer instance in synchronous mode.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static AudioPlayer CreateAudioPlayer()
     {
         return NodeApi.CallMethod(Module, _createAudioPlayer, static h => new AudioPlayer(h));
     }
 
     /// <summary>
-    /// createAudioRecorder
+    /// Creates an AudioRecorder instance to control audio recording. Only one AudioRecorder instance can be created per
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static AudioRecorder CreateAudioRecorder()
     {
         return NodeApi.CallMethod(Module, _createAudioRecorder, static h => new AudioRecorder(h));
     }
 
     /// <summary>
-    /// createMediaSourceWithFd
+    /// Creates a media source from file descriptor.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static MediaSource CreateMediaSourceWithFd(AVFileDescriptor fdSrc)
     {
         return NodeApi.CallMethod(Module, _createMediaSourceWithFd, static h => new MediaSource(h), NapiArg.Of(fdSrc));
     }
 
     /// <summary>
-    /// createMediaSourceWithDataSource
+    /// Creates a media source from a custom data source.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static MediaSource CreateMediaSourceWithDataSource(IntPtr dataSrc)
     {
         return NodeApi.CallMethod(Module, _createMediaSourceWithDataSource, static h => new MediaSource(h), dataSrc);
     }
 
     /// <summary>
-    /// createMediaSourceWithUrl
+    /// Creates a media source for streaming media to be pre-downloaded.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static MediaSource CreateMediaSourceWithUrl(string url, IntPtr? headers = null)
     {
         return NodeApi.CallMethod(Module, _createMediaSourceWithUrl, static h => new MediaSource(h), url, NapiArg.Of(headers));
     }
 
     /// <summary>
-    /// createMediaSourceWithStreamData
+    /// Creates a multi-bitrate media source for streaming media. Currently, only the HTTP-FLV multi-bitrate media source
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static MediaSource CreateMediaSourceWithStreamData(MediaStream[] streams)
     {
         return NodeApi.CallMethod(Module, _createMediaSourceWithStreamData, static h => new MediaSource(h), NapiArg.Of(streams));
     }
 
     /// <summary>
-    /// createAVAdsController
+    /// Create an ad playback controller associated with the player instance.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<AVAdsController> CreateAVAdsControllerAsync(AVPlayer player)
     {
         return NodeApi.CallMethodAsync(Module, _createAVAdsController, static h => new AVAdsController(h), NapiArg.Of(player));
     }
 
     /// <summary>
-    /// createVideoPlayer
+    /// Creates a **VideoPlayer** instance. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<VideoPlayer> CreateVideoPlayerAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createVideoPlayer, static h => new VideoPlayer(h));
     }
 
     /// <summary>
-    /// createSoundPool
+    /// Creates a SoundPool instance. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<IntPtr> CreateSoundPoolAsync(double maxStreams, IntPtr audioRenderInfo)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createSoundPool, maxStreams, audioRenderInfo);
     }
 
     /// <summary>
-    /// createAVScreenCaptureRecorder
+    /// Creates an AVScreenCaptureRecorder instance. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<AVScreenCaptureRecorder> CreateAVScreenCaptureRecorderAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createAVScreenCaptureRecorder, static h => new AVScreenCaptureRecorder(h));
     }
 
     /// <summary>
-    /// createAVTranscoder
+    /// Creates an AVTranscoder instance. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<AVTranscoder> CreateAVTranscoderAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createAVTranscoder, static h => new AVTranscoder(h));
     }
 
     /// <summary>
-    /// createAVMetadataExtractor
+    /// Creates an AVMetadataExtractor instance. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<AVMetadataExtractor> CreateAVMetadataExtractorAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createAVMetadataExtractor, static h => new AVMetadataExtractor(h));
     }
 
     /// <summary>
-    /// createAVImageGenerator
+    /// Creates an AVImageGenerator instance. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<AVImageGenerator> CreateAVImageGeneratorAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createAVImageGenerator, static h => new AVImageGenerator(h));
     }
 
     /// <summary>
-    /// createMediaSourceWithDirectory
+    /// Create a MediaSource object from the given directory.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<MediaSource> CreateMediaSourceWithDirectoryAsync(string path)
     {
         return NodeApi.CallMethodAsync(Module, _createMediaSourceWithDirectory, static h => new MediaSource(h), path);
     }
 
     /// <summary>
-    /// createAVDownloaderManager
+    /// Creating a Streaming Resource Download Task Manager
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<AVDownloaderManager> CreateAVDownloaderManagerAsync()
     {
         return NodeApi.CallMethodAsync(Module, _createAVDownloaderManager, static h => new AVDownloaderManager(h));
@@ -432,6 +406,12 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void Seek(double timeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null)
     {
+        if (mode is null)
+        {
+            CallMethodVoid(_seek, timeMs);
+            return;
+        }
+
         CallMethodVoid(_seek, timeMs, NapiArg.Of(mode));
     }
 
@@ -464,6 +444,11 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SelectTrackAsync(double index, global::HarmonyOS.ArkUI.SwitchMode? mode = null, CancellationToken cancellationToken = default)
     {
+        if (mode is null)
+        {
+            return CallMethodAsyncVoid(_selectTrack, cancellationToken, index);
+        }
+
         return CallMethodAsyncVoid(_selectTrack, cancellationToken, index, NapiArg.Of(mode));
     }
 
@@ -488,6 +473,11 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SetMediaSourceAsync(MediaSource src, PlaybackStrategy? strategy = null, CancellationToken cancellationToken = default)
     {
+        if (strategy is null)
+        {
+            return CallMethodAsyncVoid(_setMediaSource, cancellationToken, NapiArg.Of(src));
+        }
+
         return CallMethodAsyncVoid(_setMediaSource, cancellationToken, NapiArg.Of(src), NapiArg.Of(strategy));
     }
 
@@ -512,6 +502,16 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task AddSubtitleFromFdAsync(double fd, double? offset = null, double? length = null, CancellationToken cancellationToken = default)
     {
+        if (offset is null && length is null)
+        {
+            return CallMethodAsyncVoid(_addSubtitleFromFd, cancellationToken, fd);
+        }
+
+        if (length is null)
+        {
+            return CallMethodAsyncVoid(_addSubtitleFromFd, cancellationToken, fd, NapiArg.Of(offset));
+        }
+
         return CallMethodAsyncVoid(_addSubtitleFromFd, cancellationToken, fd, NapiArg.Of(offset), NapiArg.Of(length));
     }
 
@@ -592,6 +592,11 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task SetPlaybackRangeAsync(double startTimeMs, double endTimeMs, global::HarmonyOS.ArkUI.SeekMode? mode = null, CancellationToken cancellationToken = default)
     {
+        if (mode is null)
+        {
+            return CallMethodAsyncVoid(_setPlaybackRange, cancellationToken, startTimeMs, endTimeMs);
+        }
+
         return CallMethodAsyncVoid(_setPlaybackRange, cancellationToken, startTimeMs, endTimeMs, NapiArg.Of(mode));
     }
 
@@ -664,6 +669,11 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public Task<string> AddPlaybackMediaSourceAsync(MediaSource src, string? id = null)
     {
+        if (id is null)
+        {
+            return CallMethodAsync<string>(_addPlaybackMediaSource, NapiArg.Of(src));
+        }
+
         return CallMethodAsync<string>(_addPlaybackMediaSource, NapiArg.Of(src), id);
     }
 
@@ -792,6 +802,12 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void OffMetricsEvent(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offMetricsEvent);
+            return;
+        }
+
         CallMethodVoid(_offMetricsEvent, NapiArg.Of(callback));
     }
 
@@ -808,6 +824,12 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void OffPlaybackContentChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPlaybackContentChanged);
+            return;
+        }
+
         CallMethodVoid(_offPlaybackContentChanged, NapiArg.Of(callback));
     }
 
@@ -824,6 +846,12 @@ public sealed partial class AVPlayer : JsObject
     /// </summary>
     public void OffTimedMetaData(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offTimedMetaData);
+            return;
+        }
+
         CallMethodVoid(_offTimedMetaData, NapiArg.Of(callback));
     }
 
@@ -2439,6 +2467,12 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsEventListenerLoadingError(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offAdsEventListenerLoadingError);
+            return;
+        }
+
         CallMethodVoid(_offAdsEventListenerLoadingError, NapiArg.Of(callback));
     }
 
@@ -2447,6 +2481,12 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsListenerAdsStarted(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offAdsListenerAdsStarted);
+            return;
+        }
+
         CallMethodVoid(_offAdsListenerAdsStarted, NapiArg.Of(callback));
     }
 
@@ -2455,6 +2495,12 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsListenerAdsSkipped(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offAdsListenerAdsSkipped);
+            return;
+        }
+
         CallMethodVoid(_offAdsListenerAdsSkipped, NapiArg.Of(callback));
     }
 
@@ -2463,6 +2509,12 @@ public sealed partial class AVAdsController : JsObject
     /// </summary>
     public void OffAdsListenerAdsCompleted(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offAdsListenerAdsCompleted);
+            return;
+        }
+
         CallMethodVoid(_offAdsListenerAdsCompleted, NapiArg.Of(callback));
     }
 
@@ -3250,6 +3302,12 @@ public sealed partial class AVMetadataExtractor : JsObject
     /// </summary>
     public void SetUrlSource(string url, IntPtr? headers = null)
     {
+        if (headers is null)
+        {
+            CallMethodVoid(_setUrlSource, url);
+            return;
+        }
+
         CallMethodVoid(_setUrlSource, url, NapiArg.Of(headers));
     }
 
@@ -3332,6 +3390,11 @@ public sealed partial class AVImageGenerator : JsObject
     /// </summary>
     public Task<IntPtr> FetchScaledFrameByTimeAsync(double timeUs, global::HarmonyOS.ArkUI.AVImageQueryOptions queryMode, OutputSize? outputSize = null)
     {
+        if (outputSize is null)
+        {
+            return CallMethodAsync<IntPtr>(_fetchScaledFrameByTime, timeUs, (int)queryMode);
+        }
+
         return CallMethodAsync<IntPtr>(_fetchScaledFrameByTime, timeUs, (int)queryMode, NapiArg.Of(outputSize));
     }
 
@@ -3396,6 +3459,12 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void RemoveDownloadTask(string? taskId = null)
     {
+        if (taskId is null)
+        {
+            CallMethodVoid(_removeDownloadTask);
+            return;
+        }
+
         CallMethodVoid(_removeDownloadTask, taskId);
     }
 
@@ -3404,6 +3473,12 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void PauseDownloadTask(string? taskId = null)
     {
+        if (taskId is null)
+        {
+            CallMethodVoid(_pauseDownloadTask);
+            return;
+        }
+
         CallMethodVoid(_pauseDownloadTask, taskId);
     }
 
@@ -3412,6 +3487,12 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void ResumeDownloadTask(string? taskId = null)
     {
+        if (taskId is null)
+        {
+            CallMethodVoid(_resumeDownloadTask);
+            return;
+        }
+
         CallMethodVoid(_resumeDownloadTask, taskId);
     }
 
@@ -3468,6 +3549,12 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void OffStatusChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offStatusChange);
+            return;
+        }
+
         CallMethodVoid(_offStatusChange, NapiArg.Of(callback));
     }
 
@@ -3476,6 +3563,12 @@ public sealed partial class AVDownloaderManager : JsObject
     /// </summary>
     public void OffProgressChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offProgressChange);
+            return;
+        }
+
         CallMethodVoid(_offProgressChange, NapiArg.Of(callback));
     }
 

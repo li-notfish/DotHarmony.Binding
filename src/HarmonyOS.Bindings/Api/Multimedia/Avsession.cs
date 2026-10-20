@@ -19,51 +19,8 @@ public static unsafe partial class Avsession
 {
     private const string ModuleName = "@ohos.multimedia.avsession";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[multimedia.avsession] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createAVSession => "createAVSession"u8;
     private static ReadOnlySpan<byte> _getAVSession => "getAVSession"u8;
@@ -78,88 +35,99 @@ public static unsafe partial class Avsession
     private static ReadOnlySpan<byte> _offTopSessionChange => "offTopSessionChange"u8;
 
     /// <summary>
-    /// createAVSession
+    /// Create an AVSession instance. An ability can only create one AVSession
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<AVSession> CreateAVSessionAsync(IntPtr context, string tag, IntPtr type)
     {
         return NodeApi.CallMethodAsync(Module, _createAVSession, static h => new AVSession(h), context, tag, type);
     }
 
     /// <summary>
-    /// getAVSession
+    /// Get an AVSession instance if already created.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<AVSession> GetAVSessionAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsync(Module, _getAVSession, static h => new AVSession(h), context);
     }
 
     /// <summary>
-    /// getAllSessionDescriptors
+    /// Get all avsession descriptors which can be shown on system entrance.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<IntPtr[]> GetAllSessionDescriptorsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAllSessionDescriptors, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// createController
+    /// Create an avsession controller
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<AVSessionController> CreateControllerAsync(string sessionId)
     {
         return NodeApi.CallMethodAsync(Module, _createController, static h => new AVSessionController(h), sessionId);
     }
 
     /// <summary>
-    /// isDesktopLyricSupported
+    /// Whether desktop lyric feature is supported.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<bool> IsDesktopLyricSupportedAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isDesktopLyricSupported);
     }
 
     /// <summary>
-    /// onSessionCreate
+    /// Register session create callback
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnSessionCreate(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onSessionCreate, callback);
     }
 
     /// <summary>
-    /// onSessionDestroy
+    /// Register session destroy callback
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnSessionDestroy(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onSessionDestroy, callback);
     }
 
     /// <summary>
-    /// onTopSessionChange
+    /// Register top session changed callback
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnTopSessionChange(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onTopSessionChange, callback);
     }
 
     /// <summary>
-    /// offSessionCreate
+    /// Unregister session create callback
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OffSessionCreate(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offSessionCreate, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// offSessionDestroy
+    /// Unregister session destroy callback
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OffSessionDestroy(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offSessionDestroy, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// offTopSessionChange
+    /// Unregister top session changed callback
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OffTopSessionChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offTopSessionChange, NapiArg.Of(callback));
@@ -361,6 +329,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffDesktopLyricVisibilityChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDesktopLyricVisibilityChanged);
+            return;
+        }
+
         CallMethodVoid(_offDesktopLyricVisibilityChanged, NapiArg.Of(callback));
     }
 
@@ -393,6 +367,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffDesktopLyricStateChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDesktopLyricStateChanged);
+            return;
+        }
+
         CallMethodVoid(_offDesktopLyricStateChanged, NapiArg.Of(callback));
     }
 
@@ -513,6 +493,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffPlay(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPlay);
+            return;
+        }
+
         CallMethodVoid(_offPlay, NapiArg.Of(callback));
     }
 
@@ -521,6 +507,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffPlayNext(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPlayNext);
+            return;
+        }
+
         CallMethodVoid(_offPlayNext, NapiArg.Of(callback));
     }
 
@@ -529,6 +521,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffPlayPrevious(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPlayPrevious);
+            return;
+        }
+
         CallMethodVoid(_offPlayPrevious, NapiArg.Of(callback));
     }
 
@@ -537,6 +535,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffFastForward(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offFastForward);
+            return;
+        }
+
         CallMethodVoid(_offFastForward, NapiArg.Of(callback));
     }
 
@@ -545,6 +549,12 @@ public sealed partial class AVSession : JsObject
     /// </summary>
     public void OffRewind(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offRewind);
+            return;
+        }
+
         CallMethodVoid(_offRewind, NapiArg.Of(callback));
     }
 
@@ -1379,6 +1389,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffDesktopLyricEnabled(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDesktopLyricEnabled);
+            return;
+        }
+
         CallMethodVoid(_offDesktopLyricEnabled, NapiArg.Of(callback));
     }
 
@@ -1411,6 +1427,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffDesktopLyricVisibilityChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDesktopLyricVisibilityChanged);
+            return;
+        }
+
         CallMethodVoid(_offDesktopLyricVisibilityChanged, NapiArg.Of(callback));
     }
 
@@ -1443,6 +1465,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffDesktopLyricStateChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDesktopLyricStateChanged);
+            return;
+        }
+
         CallMethodVoid(_offDesktopLyricStateChanged, NapiArg.Of(callback));
     }
 
@@ -1467,6 +1495,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffMediaCenterControlTypeChanged(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offMediaCenterControlTypeChanged);
+            return;
+        }
+
         CallMethodVoid(_offMediaCenterControlTypeChanged, NapiArg.Of(callback));
     }
 
@@ -1515,6 +1549,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffSupportedPlaySpeedsChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSupportedPlaySpeedsChange);
+            return;
+        }
+
         CallMethodVoid(_offSupportedPlaySpeedsChange, NapiArg.Of(callback));
     }
 
@@ -1531,6 +1571,12 @@ public sealed partial class AVSessionController : JsObject
     /// </summary>
     public void OffSupportedLoopModesChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSupportedLoopModesChange);
+            return;
+        }
+
         CallMethodVoid(_offSupportedLoopModesChange, NapiArg.Of(callback));
     }
 
@@ -1919,6 +1965,11 @@ public sealed partial class AVCastPickerHelper : JsObject
     /// </summary>
     public Task SelectAsync(IntPtr? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_select, cancellationToken);
+        }
+
         return CallMethodAsyncVoid(_select, cancellationToken, NapiArg.Of(options));
     }
 

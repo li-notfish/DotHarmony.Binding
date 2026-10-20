@@ -7,7 +7,7 @@
 
 - UI 通道：ArkUI NDK C API（`ArkUI_NativeNodeAPI_1`）→ `ArkUINodeBase` 稳定句柄
 - 服务通道：napi（`napi_load_module("=@ohos.xxx")`）→ `@ohos.*` 全量模块端到端
-- MAUI Handler 包：28 个具体 Handler（30 个工厂分派形态，含 Shell 第一版）+ 六类手势识别器（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）+ XAML（SourceGen 编译期，NativeAOT 零反射）；
+- MAUI Handler 包：58 个具体 Handler（60 个工厂分派形态，含 Shell/Flyout/TabbedPage）+ 六类手势识别器（Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop）+ XAML（SourceGen 编译期，NativeAOT 零反射）；
   代码风格与 dotnet/maui 官方 handler 模式一致；漏斗纪律（Handler 层禁直连原生 API）由 `FunnelDisciplineTests` 机械强制
 - 工具链：`HarmonyStageHost`（宿主工程按应用自动生成）→ `PublishAotClang`（Windows 本地 NativeAOT 双架构）
   → `build-hap.cmd`（hvigor）→ `deploy-hap`（hdc）；`dotnet build -t:HarmonyRun` 一键直达
@@ -70,13 +70,13 @@ Span>1 的 Auto 轨道未做专项实测（按需立项）。
   （`Window.Parent = Application`）；模态 `PushModalAsync/PopModalAsync` 经 `RootNavigationAdapter` 承接，
   系统返回键优先关闭模态
 
-**Shell 结论**：第一版已支持（TabBar 条目切换、绝对/相对路由与 `..` 返回、注册路由推送、
-query parameters、section 栈 PushAsync、模态转发、生命周期透传）。未覆盖：Flyout 菜单视觉、
-Shell 主题色（当前静态兜底）；TabbedPage 为后续候选。
+**Shell 结论**：已支持 TabBar、Flyout 面板/菜单项/遮罩/动画、绝对/相对路由与 `..` 返回、
+注册路由推送、query parameters、section 栈 PushAsync、模态转发、生命周期透传、Shell 主题色；
+`FlyoutBehavior.Locked` 为并排布局。`TabbedPage` Handler 已落地。
 
 ### 1.4 控件 Handler
 
-28 个具体 Handler / 30 个工厂分派形态（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout、
+58 个具体 Handler / 60 个工厂分派形态（Button/Label/ContentPage/StackLayout/Grid/AbsoluteLayout、
 Entry/Editor/Switch/CheckBox/RadioButton/Slider/ProgressBar/Image/ScrollView/Frame/Border(BoxView)/
 RefreshView/Picker/DatePicker/TimePicker、CollectionView/CarouselView、Shape/GraphicsView 自绘、
 ContentView/ContentPresenter、Shell 第一版）。新控件适配指南见
@@ -206,22 +206,28 @@ Flashlight、Map/FilePicker/Screenshot；传感器族与 Geolocation/MediaPicker
 - **单项目体验**：`dotnet build -t:HarmonyStageHost / -t:HarmonyRun`（宿主按应用自动生成，
   内容戳增量）
 
-### 待办
+### 已完成（原待办项）
 
 - **CI**：最小 PR 门禁已落地（最小 NativeAOT 样例构建、arm64 `app.so` 的
-  `get_mempolicy` 短路补丁校验）；`arkui_bindgen check` 因依赖本机 OpenHarmony SDK
-  保持本地门禁；全量单测与 HAP 全链冒烟暂不阻塞合入
+  `get_mempolicy` 短路补丁校验、权限报告、HandlerAudit）；`arkui_bindgen check` 因依赖本机
+  OpenHarmony SDK 保持本地门禁；全量单测与 HAP 全链冒烟暂不阻塞合入
 - **性能基线**：`scripts/perf/collect-baseline.ps1` 与 `docs/PERF_BASELINE.md` 已落地，
-  覆盖 libapp.so/HAP 体积、冷启动、TSFN 吞吐，持续记录不告警
+  覆盖 libapp.so/HAP 体积、冷启动、运行时初始化、首帧、TSFN 吞吐，持续记录不告警
 - **权限自动推导**：Roslyn source generator 扫描应用侧 MAUI/Essentials 调用，自动生成
   `module.json5` 的 `requestPermissions`；显式 `HarmonyPermission` 仍可补充尚未映射的权限
-  - v1.1 已开始：新增 `HarmonyPermissionReport` 与 `HMP001` 未映射权限诊断
-  - v1.2 已开始：新增 `HarmonyPermissionCheck`，CI 上传 `permissions.report.md`
+  - v1.1 已完成：`HarmonyPermissionReport` 与 `HMP001` 未映射权限诊断
+  - v1.2 已完成：`HarmonyPermissionCheck`，CI 上传 `permissions.report.md`
   - v2 已完成：映射表外置为 `permission-mapping.json`，扩展常用 Essentials 权限，
     支持 `usedScene`、显式 `When` 覆盖与 ProjectReference 聚合；`HMP002`–`HMP004`
     覆盖已知 API 缺映射、显式权限未使用、映射歧义三类诊断，并通过本地 NuGet 包消费者验收
   - v3 已完成：支持 `harmony-permissions.custom.json` 自定义映射、XAML 事件来源定位、
     `HMP005`/`HMP006` 冲突与格式诊断；包消费者验收覆盖 XAML + 自定义映射 + ProjectReference
+
+### 仍待办
+
+- 真机矩阵扩展与性能调参；hover/mouse ButtonsMask、Pinch 多点触控注入通道
+- 减少 `IntPtr` 降级：按 `artifacts/generator/api-intptr-report.json` 逐项补 TypeMapper 映射
+- 逐次调用级 napi handle scope 的 RAII 封装
 - **平台 TFM 第一步（已完成）**：`net10.0-harmonyos` 落地——Interop/Bindings 双目标
   （`net10.0;net10.0-harmonyos`），`HARMONYOS` 常量改为 TFM 驱动（harmonyos TFM 由 SDK 按
   TargetPlatformIdentifier 自动定义；桌面 net10.0 目标在库级 props 过渡性全量定义，
@@ -238,6 +244,86 @@ Flashlight、Map/FilePicker/Screenshot；传感器族与 Geolocation/MediaPicker
 - **远期**：真 workload 化（前置：`HARMONYOS` 桌面全量定义摘除（桌面桩体化，生成器 per-TFM
   包裹逐目标开启）、KnownFrameworkReference/RuntimePack 注册与 RID 图策略、
   workload manifest 广告链；需真实多 RID 需求支撑）
+
+---
+
+## M4 —— Blazor 内嵌布局（已完成）
+
+官方 `BlazorWebView` 是普通 `Microsoft.Maui.Controls.View`，可放进任意页面参与布局。此前鸿蒙侧
+Web 只能以宿主页全屏覆盖存在，与原生控件无法同页共存。M4 打通了节点化路径。
+
+### 实现链
+
+1. 宿主 `Index.ets` 用 `BuilderNode` 包装 `Web`，`getFrameNode()` 得到 FrameNode
+2. `OH_ArkUI_GetNodeHandleFromNapiValue`（本次新增绑定，`arkui-bindgen` 登记 + 快照同步）
+   把 FrameNode 映射为 `ArkUI_NodeHandle`
+3. `HarmonyWebInitWithNode` 导出携带 webTag + 节点句柄，`HarmonyWebRuntime.InitializeWithNodeCore`
+   交给 surface（`SetPlatformNode`）
+4. handler `ConnectHandler` 时 `TryAttachPlatformNode(container.Handle)` 把节点挂进 MAUI 平台容器
+5. 容器 `NODE_ON_SIZE_CHANGE` → `SetPlatformNodeSize` 把 MAUI 布局尺寸写回 Web 节点（NODE_WIDTH/HEIGHT）
+
+### 实测结论（x86_64 模拟器）
+
+- `Grid` 中 Web 占 star 行、原生 `Button` 占 Auto 行，bounds 各自正确（`Web [0,137][1320,2636]` /
+  `Text [381,2664][940,2730]`）
+- 两者**各自独立响应点击**：Blazor 内部 `Increment` 生效，原生按钮 `Clicked` 触发
+- 链路日志：`embedded web node=ok` → `surface bound to web node 0x…` → `attached to MAUI layout
+  container` → `Blazor started, __bwv handshake confirmed`
+
+### 平台约束（实测沉淀）
+
+- `WebviewController` 必须先与 `Web` 组件完成关联才能调 API（否则 `registerJavaScriptProxy` 抛
+  "must be associated with a Web component"）。用 `onControllerAttached` 精确驱动，不要用延时。
+- `BuilderNode.build()` 最多接受 3 个参数（builder / arg / options），多参数须打包成单个对象类型。
+- ArkTS 严格模式禁止隐式 `any`；`typeof` 结果不能直接参与类型推断，需显式标注。
+- 新增 NDK 函数必须追加到 `semantics.yaml` 的 `functions` **列表末尾**，插在中间会让后续所有
+  P/Invoke 顺序错位（快照逐签名比对会报一大片）。
+- `arkui_bindgen check` 在 `core.autocrlf=true` 的工作区会因 CRLF/LF 差异误报全文件漂移，
+  属环境问题；用归一化比对确认生成物本身一致。
+
+### M4 后续：多实例与 InputFile（已完成）
+
+- **多实例**：surface 表本就按 webTag 键控，补齐了宿主侧闭环——`Index.ets` 用 `WebSlot` 管理
+  每个 tag 的 controller/bridge/BuilderNode；`registerWebViewFactory` 让 .NET 能反向请求创建；
+  `HarmonyHostWebCreateView` 经 TSFN 投递到 env 线程（直接 `napi_call_function` 会崩）。
+  scheme handler 改为每 tag 一个实例，tag 经 `OH_ArkWebSchemeHandler_SetUserData` 绑定，
+  回调据此路由；IPC 消息与 `HarmonyWebInterceptNative` 均带 tag。
+- **踩坑记录**：`HarmonyWebInterceptNative` 的 tag 参数是普通 C 字符串（不是 napi_value），
+  误用 `NodeApi.ToString` 会 SIGABRT；handler 首次挂载可能早于节点绑定，需监听
+  `PlatformNodeBound` 重试。
+- **InputFile**：经核实**无需实现**。官方 JS 的 `getJSDataStreamChunk` 是标准 JSInterop，
+  分块走既有 `ReceiveByteArrayFromJS`；实测 250 KB PDF 上传成功且字节完整。
+  此前"SDK 无 ArrayFileStore 协议需自行分块"的判断是错的。
+
+### M4 后续：官方 API 形状对齐（已完成）
+
+补齐官方 `BlazorWebView` 的公开形状，使组件库与既有代码按接口/基类编程即可移植：
+
+- `IHarmonyBlazorWebView`：对齐官方 `IBlazorWebView`（HostPage / StartPath / RootComponents /
+  JSComponents / CreateFileProvider / UrlLoading / BlazorWebViewInitializing / Initialized）。
+  控件的事件与方法同名，接口用显式实现避免冲突。
+- 继承 `Microsoft.Maui.Controls.WebView`：获得 `Navigating`/`Navigated`（由宿主 `onPageBegin`/
+  `onPageEnd` 驱动）、`CanGoBack`/`CanGoForward`/`GoBack`/`GoForward`（走 ArkWeb `accessBackward`/
+  `backward` 原生历史，替换原先不可靠的 `history.back()` 脚本）。handler 注册按具体类型优先，
+  继承链解析不会误路由到 `HarmonyWebViewHandler`。
+- `TryDispatchAsync`：经 Blazor `Dispatcher` + scoped `IServiceProvider` 分发；未初始化时返回 false
+  而非抛错（官方语义）。
+- `StaticContentCacheControlProvider`：本地静态内容返回 `Cache-Control`，默认仍 `no-store`。
+- `BlazorWebViewInitializing` 扩充引擎级可配项（ZoomAccess / DomStorageAccess / FileAccess /
+  AllowMixedContent）。
+
+**平台面**：
+
+- **热重载：NativeAOT 架构下不可用**。Hot Reload 依赖 MetadataUpdate 替换 IL，NativeAOT 产物是机器码，
+  与该机制无关。此前记为"rawfile 无文件监视"是误判——即使有文件监视也无法实现。**已从待办移除。**
+- **流式静态资源：已完成**。`HarmonyWebResponse.ContentStream` + 宿主 `HarmonyHostWebRespondBegin/
+  Write/Finish` 三阶段；manager 对 >256 KB 的资源走流式，小文件保持一次性缓冲。
+- **开发者工具：已完成**。`BlazorWebViewInitializing.WebDebuggingAccess` → ArkWeb
+  `setWebDebuggingAccess`，仅开发期开启。
+
+**其余未完成**：`CanGoBack`/`CanGoForward` 已回写（经只读 BindableProperty 的内部 key）；
+多实例首帧时序已修（根组件注册改为 await 后再导航，`AttachPage` 以管理器声明的 `StartPath` 为准，
+且须解析为 baseUrl 内的绝对地址——`Uri.TryCreate("/x", Absolute)` 会误判成 `file:///x`）。
 
 ---
 

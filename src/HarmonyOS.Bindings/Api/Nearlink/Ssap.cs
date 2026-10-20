@@ -19,66 +19,25 @@ public static unsafe partial class Ssap
 {
     private const string ModuleName = "@ohos.nearlink.ssap";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[nearlink.ssap] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createClient => "createClient"u8;
     private static ReadOnlySpan<byte> _createServer => "createServer"u8;
 
     /// <summary>
-    /// createClient
+    /// Creates a SSAP client instance.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Client CreateClient(string address)
     {
         return NodeApi.CallMethod(Module, _createClient, static h => new Client(h), address);
     }
 
     /// <summary>
-    /// createServer
+    /// Creates a SSAP server instance.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static SsapServer CreateServer()
     {
         return NodeApi.CallMethod(Module, _createServer, static h => new SsapServer(h));
@@ -184,6 +143,12 @@ public sealed partial class Client : JsObject
     /// </summary>
     public void OffPropertyChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPropertyChange);
+            return;
+        }
+
         CallMethodVoid(_offPropertyChange, NapiArg.Of(callback));
     }
 
@@ -200,6 +165,12 @@ public sealed partial class Client : JsObject
     /// </summary>
     public void OffConnectionStateChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offConnectionStateChange);
+            return;
+        }
+
         CallMethodVoid(_offConnectionStateChange, NapiArg.Of(callback));
     }
 
@@ -216,6 +187,12 @@ public sealed partial class Client : JsObject
     /// </summary>
     public void OffMtuChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offMtuChange);
+            return;
+        }
+
         CallMethodVoid(_offMtuChange, NapiArg.Of(callback));
     }
 
@@ -294,6 +271,12 @@ public sealed partial class SsapServer : JsObject
     /// </summary>
     public void OffConnectionStateChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offConnectionStateChange);
+            return;
+        }
+
         CallMethodVoid(_offConnectionStateChange, NapiArg.Of(callback));
     }
 
@@ -310,6 +293,12 @@ public sealed partial class SsapServer : JsObject
     /// </summary>
     public void OffPropertyRead(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPropertyRead);
+            return;
+        }
+
         CallMethodVoid(_offPropertyRead, NapiArg.Of(callback));
     }
 
@@ -326,6 +315,12 @@ public sealed partial class SsapServer : JsObject
     /// </summary>
     public void OffPropertyWrite(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPropertyWrite);
+            return;
+        }
+
         CallMethodVoid(_offPropertyWrite, NapiArg.Of(callback));
     }
 
@@ -342,6 +337,12 @@ public sealed partial class SsapServer : JsObject
     /// </summary>
     public void OffMtuChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offMtuChange);
+            return;
+        }
+
         CallMethodVoid(_offMtuChange, NapiArg.Of(callback));
     }
 

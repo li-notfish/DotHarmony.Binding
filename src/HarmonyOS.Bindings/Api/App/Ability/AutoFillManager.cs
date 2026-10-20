@@ -16,74 +16,34 @@ public static unsafe partial class AutoFillManager
 {
     private const string ModuleName = "@ohos.app.ability.autoFillManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[app.ability.autoFillManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _requestAutoSave => "requestAutoSave"u8;
     private static ReadOnlySpan<byte> _requestAutoFill => "requestAutoFill"u8;
 
     /// <summary>
-    /// requestAutoSave
+    /// Requests to automatically save the widget data. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void RequestAutoSave(global::HarmonyOS.Bindings.Api.Arkui.UIContextObject context, AutoSaveCallback? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _requestAutoSave, NapiArg.Of(context), NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// requestAutoSave
+    /// Trigger an auto save request.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void RequestAutoSave(global::HarmonyOS.Bindings.Api.Arkui.UIContextObject context, IntPtr request, AutoSaveCallback? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _requestAutoSave, NapiArg.Of(context), request, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// requestAutoFill
+    /// Trigger an auto fill request.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void RequestAutoFill(global::HarmonyOS.Bindings.Api.Arkui.UIContextObject context, IntPtr request, IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _requestAutoFill, NapiArg.Of(context), request, NapiArg.Of(callback));

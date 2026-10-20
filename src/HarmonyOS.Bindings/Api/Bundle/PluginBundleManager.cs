@@ -19,75 +19,35 @@ public static unsafe partial class PluginBundleManager
 {
     private const string ModuleName = "@ohos.bundle.pluginBundleManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[bundle.pluginBundleManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _installLocalPlugin => "installLocalPlugin"u8;
     private static ReadOnlySpan<byte> _uninstallLocalPlugin => "uninstallLocalPlugin"u8;
     private static ReadOnlySpan<byte> _getAllLocalPluginInfoForSelf => "getAllLocalPluginInfoForSelf"u8;
 
     /// <summary>
-    /// installLocalPlugin
+    /// Install the plugin for self application.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task InstallLocalPluginAsync(string[] pluginFilePaths, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _installLocalPlugin, cancellationToken, NapiArg.Of(pluginFilePaths));
     }
 
     /// <summary>
-    /// uninstallLocalPlugin
+    /// Uninstall the plugin for self application.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task UninstallLocalPluginAsync(string pluginBundleName, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _uninstallLocalPlugin, cancellationToken, pluginBundleName);
     }
 
     /// <summary>
-    /// getAllLocalPluginInfoForSelf
+    /// Obtains information about all local plugins installed on the current application.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr[]> GetAllLocalPluginInfoForSelfAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAllLocalPluginInfoForSelf, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));

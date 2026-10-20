@@ -16,63 +16,22 @@ public static unsafe partial class Worker
 {
     private const string ModuleName = "@ohos.worker";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[worker] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _parentPort => "parentPort"u8;
     private static ReadOnlySpan<byte> _workerPort => "workerPort"u8;
 
     /// <summary>
-    /// parentPort
+    /// The object used by the worker thread to communicate with the host thread.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static DedicatedWorkerGlobalScope ParentPort => new DedicatedWorkerGlobalScope(NodeApi.GetProperty(Module, _parentPort));
 
     /// <summary>
-    /// workerPort
+    /// The object used by the worker thread to communicate with the host thread.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static ThreadWorkerGlobalScope WorkerPort => new ThreadWorkerGlobalScope(NodeApi.GetProperty(Module, _workerPort));
 
 }
@@ -141,6 +100,12 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// </summary>
     public void RemoveEventListener(string type, EventListener? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_removeEventListener, type);
+            return;
+        }
+
         CallMethodVoid(_removeEventListener, type, NapiArg.Of(callback));
     }
 
@@ -173,6 +138,12 @@ public sealed partial class DedicatedWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessage(IntPtr messageObject, PostMessageOptions? options = null)
     {
+        if (options is null)
+        {
+            CallMethodVoid(_postMessage, messageObject);
+            return;
+        }
+
         CallMethodVoid(_postMessage, messageObject, NapiArg.Of(options));
     }
 
@@ -253,6 +224,12 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void RemoveEventListener(string type, WorkerEventListener? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_removeEventListener, type);
+            return;
+        }
+
         CallMethodVoid(_removeEventListener, type, NapiArg.Of(callback));
     }
 
@@ -285,6 +262,12 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessage(IntPtr messageObject, PostMessageOptions? options = null)
     {
+        if (options is null)
+        {
+            CallMethodVoid(_postMessage, messageObject);
+            return;
+        }
+
         CallMethodVoid(_postMessage, messageObject, NapiArg.Of(options));
     }
 
@@ -293,6 +276,12 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessageWithSharedSendable(IntPtr message, byte[][]? transfer = null)
     {
+        if (transfer is null)
+        {
+            CallMethodVoid(_postMessageWithSharedSendable, message);
+            return;
+        }
+
         CallMethodVoid(_postMessageWithSharedSendable, message, NapiArg.Of(transfer));
     }
 
@@ -309,6 +298,12 @@ public sealed partial class ThreadWorkerGlobalScope : JsObject
     /// </summary>
     public void PostMessageAtFront(IntPtr message, global::HarmonyOS.ArkUI.WorkerPriority priority, byte[][]? transfer = null)
     {
+        if (transfer is null)
+        {
+            CallMethodVoid(_postMessageAtFront, message, (int)priority);
+            return;
+        }
+
         CallMethodVoid(_postMessageAtFront, message, (int)priority, NapiArg.Of(transfer));
     }
 
@@ -381,6 +376,12 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void PostMessage(IntPtr message, PostMessageOptions? options = null)
     {
+        if (options is null)
+        {
+            CallMethodVoid(_postMessage, message);
+            return;
+        }
+
         CallMethodVoid(_postMessage, message, NapiArg.Of(options));
     }
 
@@ -389,6 +390,12 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void PostMessageWithSharedSendable(IntPtr message, byte[][]? transfer = null)
     {
+        if (transfer is null)
+        {
+            CallMethodVoid(_postMessageWithSharedSendable, message);
+            return;
+        }
+
         CallMethodVoid(_postMessageWithSharedSendable, message, NapiArg.Of(transfer));
     }
 
@@ -413,6 +420,12 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void Off(string type, WorkerEventListener? listener = null)
     {
+        if (listener is null)
+        {
+            CallMethodVoid(_off, type);
+            return;
+        }
+
         CallMethodVoid(_off, type, NapiArg.Of(listener));
     }
 
@@ -445,6 +458,12 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void RemoveEventListener(string type, WorkerEventListener? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_removeEventListener, type);
+            return;
+        }
+
         CallMethodVoid(_removeEventListener, type, NapiArg.Of(callback));
     }
 
@@ -469,6 +488,12 @@ public sealed partial class ThreadWorker : JsObject
     /// </summary>
     public void UnregisterGlobalCallObject(string? instanceName = null)
     {
+        if (instanceName is null)
+        {
+            CallMethodVoid(_unregisterGlobalCallObject);
+            return;
+        }
+
         CallMethodVoid(_unregisterGlobalCallObject, instanceName);
     }
 
@@ -566,6 +591,12 @@ public sealed partial class WorkerObject : JsObject
     /// </summary>
     public void PostMessage(IntPtr message, PostMessageOptions? options = null)
     {
+        if (options is null)
+        {
+            CallMethodVoid(_postMessage, message);
+            return;
+        }
+
         CallMethodVoid(_postMessage, message, NapiArg.Of(options));
     }
 
@@ -590,6 +621,12 @@ public sealed partial class WorkerObject : JsObject
     /// </summary>
     public void Off(string type, EventListener? listener = null)
     {
+        if (listener is null)
+        {
+            CallMethodVoid(_off, type);
+            return;
+        }
+
         CallMethodVoid(_off, type, NapiArg.Of(listener));
     }
 

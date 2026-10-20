@@ -19,51 +19,8 @@ public static unsafe partial class SelectionManager
 {
     private const string ModuleName = "@ohos.selectionInput.selectionManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[selectionInput.selectionManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _off => "off"u8;
@@ -72,40 +29,45 @@ public static unsafe partial class SelectionManager
     private static ReadOnlySpan<byte> _destroyPanel => "destroyPanel"u8;
 
     /// <summary>
-    /// on
+    /// Subscribes to the word selection completion event. This API is used together with
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from the word selection completion event. This API is used together with
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// getSelectionContent
+    /// Obtains the content of the selected text. This API uses a promise to return the result. This API must be called in
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<string> GetSelectionContentAsync()
     {
         return NodeApi.CallMethodAsync<string>(Module, _getSelectionContent);
     }
 
     /// <summary>
-    /// createPanel
+    /// Creates a word selection panel, which is used to display the service-related operation UI or text processing
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<SelectionManagerPanel> CreatePanelAsync(IntPtr ctx, global::HarmonyOS.Bindings.Api.SelectionInput.SelectionPanelPanelInfo info)
     {
         return NodeApi.CallMethodAsync(Module, _createPanel, static h => new SelectionManagerPanel(h), ctx, NapiArg.Of(info));
     }
 
     /// <summary>
-    /// destroyPanel
+    /// Destroys the word selection panel. This API is used together with [createPanel]
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task DestroyPanelAsync(SelectionManagerPanel panel, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _destroyPanel, cancellationToken, NapiArg.Of(panel));

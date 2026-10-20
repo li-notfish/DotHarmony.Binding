@@ -20,51 +20,8 @@ public static unsafe partial class Display
 {
     private const string ModuleName = "@ohos.display";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[display] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getDefaultDisplay => "getDefaultDisplay"u8;
     private static ReadOnlySpan<byte> _getDefaultDisplaySync => "getDefaultDisplaySync"u8;
@@ -90,184 +47,207 @@ public static unsafe partial class Display
     private static ReadOnlySpan<byte> _getBrightnessInfo => "getBrightnessInfo"u8;
 
     /// <summary>
-    /// getDefaultDisplay
+    /// Obtains the default Display object. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<DisplayObject> GetDefaultDisplayAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getDefaultDisplay, static h => new DisplayObject(h));
     }
 
     /// <summary>
-    /// getDefaultDisplaySync
+    /// Obtains the **Display** object of the screen where the application is located. If multiple abilities of an
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static DisplayObject GetDefaultDisplaySync()
     {
         return NodeApi.CallMethod(Module, _getDefaultDisplaySync, static h => new DisplayObject(h));
     }
 
     /// <summary>
-    /// getPrimaryDisplaySync
+    /// Obtains the information about the primary display. For devices other than 2-in-1 devices, the Display object
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static DisplayObject GetPrimaryDisplaySync()
     {
         return NodeApi.CallMethod(Module, _getPrimaryDisplaySync, static h => new DisplayObject(h));
     }
 
     /// <summary>
-    /// getDisplayByIdSync
+    /// Obtains a Display object based on the display ID.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static DisplayObject GetDisplayByIdSync(double displayId)
     {
         return NodeApi.CallMethod(Module, _getDisplayByIdSync, static h => new DisplayObject(h), displayId);
     }
 
     /// <summary>
-    /// getAllDisplay
+    /// Obtains all Display objects. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<DisplayObject[]> GetAllDisplayAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAllDisplay, h => ValueConverter.ConvertArray(h, static e => new DisplayObject(e)));
     }
 
     /// <summary>
-    /// getAllDisplays
+    /// Obtains all Display objects. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<DisplayObject[]> GetAllDisplaysAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAllDisplays, h => ValueConverter.ConvertArray(h, static e => new DisplayObject(e)));
     }
 
     /// <summary>
-    /// getAllDisplayPhysicalResolution
+    /// Obtains all the display modes supported by the current device, along with the physical screen resolutions for each
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<DisplayPhysicalResolution[]> GetAllDisplayPhysicalResolutionAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAllDisplayPhysicalResolution, h => ValueConverter.ConvertArray(h, static e => new DisplayPhysicalResolution(e)));
     }
 
     /// <summary>
-    /// on
+    /// Subscribes to display changes.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// onChangeWithAttribute
+    /// Subscribes to changes of specified attributes of a display.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void OnChangeWithAttribute(string[] displayAttributeOption, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onChangeWithAttribute, NapiArg.Of(displayAttributeOption), callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from display changes.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// isFoldable
+    /// Checks whether this device is foldable.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool IsFoldable()
     {
         return NodeApi.CallMethod<bool>(Module, _isFoldable);
     }
 
     /// <summary>
-    /// getFoldStatus
+    /// Obtains the fold status of this foldable device.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static global::HarmonyOS.ArkUI.FoldStatus GetFoldStatus()
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.FoldStatus>(Module, _getFoldStatus);
     }
 
     /// <summary>
-    /// isCaptured
+    /// Checks whether the device's screen content is being captured.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsCaptured()
     {
         return NodeApi.CallMethod<bool>(Module, _isCaptured);
     }
 
     /// <summary>
-    /// isCaptured
+    /// Check whether the device is captured, projected, or recorded by any app in the bundle name list.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsCaptured(string[] bundleNameList)
     {
         return NodeApi.CallMethod<bool>(Module, _isCaptured, NapiArg.Of(bundleNameList));
     }
 
     /// <summary>
-    /// getFoldDisplayMode
+    /// Obtains the display mode of this foldable device.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static global::HarmonyOS.ArkUI.FoldDisplayMode GetFoldDisplayMode()
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.FoldDisplayMode>(Module, _getFoldDisplayMode);
     }
 
     /// <summary>
-    /// getCurrentFoldCreaseRegion
+    /// Obtains the crease region of the foldable device in the current display mode.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static IntPtr GetCurrentFoldCreaseRegion()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getCurrentFoldCreaseRegion);
     }
 
     /// <summary>
-    /// createVirtualScreen
+    /// Creates a virtual screen. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static Task<double> CreateVirtualScreenAsync(VirtualScreenConfig config)
     {
         return NodeApi.CallMethodAsync<double>(Module, _createVirtualScreen, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// destroyVirtualScreen
+    /// Destroys a virtual screen. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static Task DestroyVirtualScreenAsync(double screenId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _destroyVirtualScreen, cancellationToken, screenId);
     }
 
     /// <summary>
-    /// setVirtualScreenSurface
+    /// Sets a surface for a virtual screen. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static Task SetVirtualScreenSurfaceAsync(double screenId, string surfaceId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setVirtualScreenSurface, cancellationToken, screenId, surfaceId);
     }
 
     /// <summary>
-    /// makeUnique
+    /// Sets the screen to independent display mode. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static Task MakeUniqueAsync(double screenId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _makeUnique, cancellationToken, screenId);
     }
 
     /// <summary>
-    /// convertRelativeToGlobalCoordinate
+    /// Converts relative coordinates (based on the top-left corner of the screen) into global coordinates (based on the
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Position ConvertRelativeToGlobalCoordinate(RelativePosition relativePosition)
     {
         return NodeApi.CallMethod(Module, _convertRelativeToGlobalCoordinate, static h => new Position(h), NapiArg.Of(relativePosition));
     }
 
     /// <summary>
-    /// convertGlobalToRelativeCoordinate
+    /// Converts global coordinates (based on the top-left corner of the primary screen) into relative coordinates (based
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static RelativePosition ConvertGlobalToRelativeCoordinate(Position position, double? displayId = null)
     {
         return NodeApi.CallMethod(Module, _convertGlobalToRelativeCoordinate, static h => new RelativePosition(h), NapiArg.Of(position), NapiArg.Of(displayId));
     }
 
     /// <summary>
-    /// getBrightnessInfo
+    /// Obtains the screen brightness information of a display. If the screen does not support HDR, the
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static BrightnessInfo GetBrightnessInfo(double displayId)
     {
         return NodeApi.CallMethod(Module, _getBrightnessInfo, static h => new BrightnessInfo(h), displayId);

@@ -1,7 +1,7 @@
 #!/bin/bash
 # 一键部署：重装 HAP → 启动 → 抓取 HarmonyHost 日志。
 # SDK/hdc 定位由 scripts/lib/sdk.sh 统一处理。
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -16,10 +16,38 @@ if [ "$#" -gt 1 ]; then
     exit 2
 fi
 
-# bundle 名：HOST_DIR 为暂存宿主时由 stage-host 写入 app.json5，这里同步读取；默认共享模板
-if [ -n "$HOST_DIR" ] && [ -f "$HOST_DIR/AppScope/app.json5" ]; then
-    BUNDLE=$(sed -n 's/.*"bundleName"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$HOST_DIR/AppScope/app.json5" | head -1)
+# 宿主目录：HOST_DIR 覆盖；未设置时只在“恰好一个已暂存宿主”时自动采用，
+# 绝不回退共享模板（AGENTS.md：samples/HarmonyHost 不是可部署宿主）。
+HOST_DIR="${HOST_DIR:-}"
+if [ -z "$HOST_DIR" ]; then
+    STAGED_COUNT=0
+    FIRST_STAGED=""
+    for candidate in "$PROJECT_ROOT"/samples/dotnet/*/obj/harmony/host; do
+        [ -f "$candidate/AppScope/app.json5" ] || continue
+        STAGED_COUNT=$((STAGED_COUNT + 1))
+        FIRST_STAGED="$candidate"
+    done
+    if [ "$STAGED_COUNT" -eq 1 ]; then
+        HOST_DIR="$FIRST_STAGED"
+        echo "HOST_DIR 未设置；使用唯一暂存宿主: $HOST_DIR"
+    elif [ "$STAGED_COUNT" -gt 1 ]; then
+        echo "错误: 未设置 HOST_DIR，且检测到多个暂存宿主。请显式指定一个：" >&2
+        for candidate in "$PROJECT_ROOT"/samples/dotnet/*/obj/harmony/host; do
+            [ -f "$candidate/AppScope/app.json5" ] && printf '  %s\n' "$candidate" >&2
+        done
+        exit 1
+    else
+        echo "错误: 未找到暂存宿主。请先运行 dotnet build <工程> -t:HarmonyRun 或 -t:HarmonyStageHost。" >&2
+        exit 1
+    fi
 fi
+if [ ! -f "$HOST_DIR/AppScope/app.json5" ]; then
+    echo "错误: 宿主目录无效（缺少 AppScope/app.json5）: $HOST_DIR" >&2
+    exit 1
+fi
+
+# bundle 名：由 stage-host 写入 app.json5，这里同步读取
+BUNDLE=$(sed -n 's/.*"bundleName"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$HOST_DIR/AppScope/app.json5" | head -1)
 BUNDLE="${BUNDLE:-com.arktsbinding.harmonyhost}"
 ABILITY=EntryAbility
 MODULE=entry
@@ -48,15 +76,22 @@ if [ "$PREFLIGHT_ONLY" -eq 1 ]; then
     exit 0
 fi
 
-# ---- 定位 HAP ----
-# HAP 路径：HOST_DIR 覆盖（targets 生成的按应用暂存宿主），默认共享模板；优先安装签名产物
-OUTPUT_DIR="${HOST_DIR:-${PROJECT_ROOT}/samples/HarmonyHost}/entry/build/default/outputs/default"
-HAP="${OUTPUT_DIR}/${MODULE}-default-signed.hap"
-if [ ! -f "$HAP" ]; then
-    HAP="${OUTPUT_DIR}/${MODULE}-default-unsigned.hap"
-fi
-if [ ! -f "$HAP" ]; then
-    echo "错误: 找不到 HAP：$HAP（请先运行 scripts/build-hap.cmd）" >&2
+# ---- 定位 HAP：签名产物必须不旧于 unsigned ----
+OUTPUT_DIR="$HOST_DIR/entry/build/default/outputs/default"
+SIGNED_HAP="$OUTPUT_DIR/${MODULE}-default-signed.hap"
+UNSIGNED_HAP="$OUTPUT_DIR/${MODULE}-default-unsigned.hap"
+HAP=""
+if [ -f "$SIGNED_HAP" ]; then
+    if [ -f "$UNSIGNED_HAP" ] && [ "$SIGNED_HAP" -ot "$UNSIGNED_HAP" ]; then
+        echo "警告: signed HAP 旧于 unsigned（签名未随本次构建重跑）；改为安装 unsigned。" >&2
+        HAP="$UNSIGNED_HAP"
+    else
+        HAP="$SIGNED_HAP"
+    fi
+elif [ -f "$UNSIGNED_HAP" ]; then
+    HAP="$UNSIGNED_HAP"
+else
+    echo "错误: 找不到 HAP：$OUTPUT_DIR（请先运行 scripts/build-hap.cmd，或用 -t:HarmonyRun）" >&2
     exit 1
 fi
 echo "HAP: $HAP"
@@ -69,8 +104,9 @@ hdc_t shell hilog -r >/dev/null 2>&1 || true
 echo "=== 3. 安装 HAP ==="
 # 先停掉旧实例：install -r 与运行中实例存在时序竞争（新实例可能启动即被销毁）
 hdc_t shell "aa force-stop $BUNDLE" >/dev/null 2>&1 || true
-if ! hdc_t install -r "$HAP_WIN" | grep -q "install bundle successfully"; then
-    echo "错误: 安装失败" >&2
+INSTALL_OUT="$(hdc_t install -r "$HAP_WIN" 2>&1 || true)"
+if ! grep -q "install bundle successfully" <<< "$INSTALL_OUT"; then
+    echo "错误: 安装失败：$INSTALL_OUT" >&2
     exit 1
 fi
 
@@ -79,14 +115,20 @@ START_OUTPUT="$(hdc_t shell "aa start -a $ABILITY -b $BUNDLE -m $MODULE -W" 2>&1
 
 echo "=== 5. 等待启动就绪 ==="
 TIMEOUT_SECONDS="${HARMONY_STARTUP_TIMEOUT_SECONDS:-20}"
-case "$TIMEOUT_SECONDS" in
-    ''|*[!0-9]*)
-        echo "错误: HARMONY_STARTUP_TIMEOUT_SECONDS 必须是非负整数：$TIMEOUT_SECONDS" >&2
-        exit 2
-        ;;
-esac
-now_ms() { date +%s%3N; }
-DEADLINE=$(( $(now_ms) + TIMEOUT_SECONDS * 1000 ))
+if ! awk -v t="$TIMEOUT_SECONDS" 'BEGIN{exit !(t ~ /^[0-9]+(\.[0-9]+)?$/)}'; then
+    echo "错误: HARMONY_STARTUP_TIMEOUT_SECONDS 必须是非负数：$TIMEOUT_SECONDS" >&2
+    exit 2
+fi
+now_ms() {
+    if [ -n "${EPOCHREALTIME:-}" ]; then
+        local digits="${EPOCHREALTIME//[!0-9]/}"
+        echo "${digits:0:13}"
+    else
+        python3 -c 'import time; print(int(time.time() * 1000))'
+    fi
+}
+TIMEOUT_MS=$(awk -v t="$TIMEOUT_SECONDS" 'BEGIN{printf "%d", t * 1000}')
+DEADLINE=$(( $(now_ms) + TIMEOUT_MS ))
 READY=0
 RECENT_LOG=""
 while :; do

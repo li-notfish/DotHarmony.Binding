@@ -19,51 +19,8 @@ public static unsafe partial class Sim
 {
     private const string ModuleName = "@ohos.telephony.sim";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[telephony.sim] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _isSimActive => "isSimActive"u8;
     private static ReadOnlySpan<byte> _isSimActiveSync => "isSimActiveSync"u8;
@@ -93,208 +50,234 @@ public static unsafe partial class Sim
     private static ReadOnlySpan<byte> _getSimLabelSync => "getSimLabelSync"u8;
 
     /// <summary>
-    /// isSimActive
+    /// Checks whether the SIM card in a specified slot is activated.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsSimActiveAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isSimActive, slotId);
     }
 
     /// <summary>
-    /// isSimActiveSync
+    /// Checks whether the SIM card in a specified slot is activated.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool IsSimActiveSync(double slotId)
     {
         return NodeApi.CallMethod<bool>(Module, _isSimActiveSync, slotId);
     }
 
     /// <summary>
-    /// getDefaultVoiceSlotId
+    /// Obtains the default card slot for the voice service.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> GetDefaultVoiceSlotIdAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getDefaultVoiceSlotId);
     }
 
     /// <summary>
-    /// hasOperatorPrivileges
+    /// Checks whether your application (the caller) has been granted the operator permissions.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> HasOperatorPrivilegesAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _hasOperatorPrivileges, slotId);
     }
 
     /// <summary>
-    /// getISOCountryCodeForSim
+    /// Obtains the ISO country code of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<string> GetIsoCountryCodeForSimAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getISOCountryCodeForSim, slotId);
     }
 
     /// <summary>
-    /// getISOCountryCodeForSimSync
+    /// Obtains the ISO country code of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string GetIsoCountryCodeForSimSync(double slotId)
     {
         return NodeApi.CallMethod<string>(Module, _getISOCountryCodeForSimSync, slotId);
     }
 
     /// <summary>
-    /// getSimOperatorNumeric
+    /// Obtains the home PLMN number of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<string> GetSimOperatorNumericAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getSimOperatorNumeric, slotId);
     }
 
     /// <summary>
-    /// getSimOperatorNumericSync
+    /// Obtains the home PLMN number of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string GetSimOperatorNumericSync(double slotId)
     {
         return NodeApi.CallMethod<string>(Module, _getSimOperatorNumericSync, slotId);
     }
 
     /// <summary>
-    /// getSimSpn
+    /// Obtains the service provider name (SPN) of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<string> GetSimSpnAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getSimSpn, slotId);
     }
 
     /// <summary>
-    /// getSimSpnSync
+    /// Obtains the service provider name (SPN) of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string GetSimSpnSync(double slotId)
     {
         return NodeApi.CallMethod<string>(Module, _getSimSpnSync, slotId);
     }
 
     /// <summary>
-    /// getSimState
+    /// Obtains the state of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<global::HarmonyOS.ArkUI.SimState> GetSimStateAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.SimState>(Module, _getSimState, slotId);
     }
 
     /// <summary>
-    /// getSimStateSync
+    /// Obtains the state of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static global::HarmonyOS.ArkUI.SimState GetSimStateSync(double slotId)
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.SimState>(Module, _getSimStateSync, slotId);
     }
 
     /// <summary>
-    /// getCardType
+    /// Obtains the type of the SIM card installed in a specified slot.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<global::HarmonyOS.ArkUI.TelephonySimCardType> GetCardTypeAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.TelephonySimCardType>(Module, _getCardType, slotId);
     }
 
     /// <summary>
-    /// getCardTypeSync
+    /// Obtains the type of the SIM card inserted in a specified slot.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static global::HarmonyOS.ArkUI.TelephonySimCardType GetCardTypeSync(double slotId)
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.TelephonySimCardType>(Module, _getCardTypeSync, slotId);
     }
 
     /// <summary>
-    /// getMaxSimCount
+    /// Obtains the maximum number of SIM cards that can be used simultaneously on the device,
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double GetMaxSimCount()
     {
         return NodeApi.CallMethod<double>(Module, _getMaxSimCount);
     }
 
     /// <summary>
-    /// hasSimCard
+    /// Checks whether a SIM card is inserted in a specified slot.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> HasSimCardAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _hasSimCard, slotId);
     }
 
     /// <summary>
-    /// hasSimCardSync
+    /// Checks whether a SIM card is inserted in a specified slot.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool HasSimCardSync(double slotId)
     {
         return NodeApi.CallMethod<bool>(Module, _hasSimCardSync, slotId);
     }
 
     /// <summary>
-    /// getSimAccountInfo
+    /// Get account information of SIM card.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<IccAccountInfo> GetSimAccountInfoAsync(double slotId)
     {
         return NodeApi.CallMethodAsync(Module, _getSimAccountInfo, static h => new IccAccountInfo(h), slotId);
     }
 
     /// <summary>
-    /// getActiveSimAccountInfoList
+    /// Get the list of active SIM card account information.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<IccAccountInfo[]> GetActiveSimAccountInfoListAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getActiveSimAccountInfoList, h => ValueConverter.ConvertArray(h, static e => new IccAccountInfo(e)));
     }
 
     /// <summary>
-    /// getOpKey
+    /// Obtains the operator key of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<string> GetOpKeyAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getOpKey, slotId);
     }
 
     /// <summary>
-    /// getOpKeySync
+    /// Obtains the operator key of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string GetOpKeySync(double slotId)
     {
         return NodeApi.CallMethod<string>(Module, _getOpKeySync, slotId);
     }
 
     /// <summary>
-    /// getOpName
+    /// Obtains the operator name of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<string> GetOpNameAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getOpName, slotId);
     }
 
     /// <summary>
-    /// getOpNameSync
+    /// Obtains the operator name of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string GetOpNameSync(double slotId)
     {
         return NodeApi.CallMethod<string>(Module, _getOpNameSync, slotId);
     }
 
     /// <summary>
-    /// getDefaultVoiceSimId
+    /// Obtains the default SIM ID for the voice service.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> GetDefaultVoiceSimIdAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getDefaultVoiceSimId);
     }
 
     /// <summary>
-    /// getSimLabel
+    /// Obtains the SIM card label.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<SimLabel> GetSimLabelAsync(double slotId)
     {
         return NodeApi.CallMethodAsync(Module, _getSimLabel, static h => new SimLabel(h), slotId);
     }
 
     /// <summary>
-    /// getSimLabelSync
+    /// Obtains the SIM card label synchronously.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static SimLabel GetSimLabelSync(double slotId)
     {
         return NodeApi.CallMethod(Module, _getSimLabelSync, static h => new SimLabel(h), slotId);

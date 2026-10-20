@@ -10,20 +10,32 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent $scriptDir
 . (Join-Path $scriptDir "lib\sdk.ps1")
 
-# 宿主目录：HOST_DIR 覆盖（targets 生成的按应用暂存宿主），默认共享模板
-$hostDir = if ($env:HOST_DIR) { $env:HOST_DIR } else { Join-Path $projectRoot "samples\HarmonyHost" }
-if (-not $env:HOST_DIR) {
-    $staged = Get-ChildItem (Join-Path $projectRoot "samples\dotnet") -Directory -ErrorAction SilentlyContinue |
+# 宿主目录：HOST_DIR 覆盖（targets 生成的按应用暂存宿主）。
+# 未设置时只在“恰好一个已暂存宿主”时自动采用；绝不回退共享模板（AGENTS.md）。
+$hostDir = $env:HOST_DIR
+if (-not $hostDir) {
+    $staged = @(Get-ChildItem (Join-Path $projectRoot "samples\dotnet") -Directory -ErrorAction SilentlyContinue |
         ForEach-Object { Join-Path $_.FullName "obj\harmony\host" } |
-        Where-Object { Test-Path (Join-Path $_ "entry\build\default\outputs\default") }
-    if ($staged) {
-        Write-Warning "未设置 HOST_DIR，将使用共享模板宿主（可能是旧 HAP）。检测到按应用暂存宿主："
-        $staged | ForEach-Object { Write-Warning "  $_  （使用时：`$env:HOST_DIR='...'）" }
+        Where-Object { Test-Path (Join-Path $_ "AppScope\app.json5") })
+    if ($staged.Count -eq 1) {
+        $hostDir = $staged[0]
+        Write-Host "HOST_DIR not set; using the only staged host: $hostDir"
+    } elseif ($staged.Count -gt 1) {
+        Write-Error ("未设置 HOST_DIR，且检测到多个暂存宿主。请显式指定一个：`n  " +
+            ($staged -join "`n  "))
+        exit 1
+    } else {
+        Write-Error "未找到暂存宿主。请先运行 dotnet build <工程> -t:HarmonyRun 或 -t:HarmonyStageHost。"
+        exit 1
     }
 }
-# bundle 名：HOST_DIR 为暂存宿主时读其 app.json5；默认共享模板
+if (-not (Test-Path (Join-Path $hostDir "AppScope/app.json5"))) {
+    Write-Error "宿主目录无效（缺少 AppScope/app.json5）：$hostDir"
+    exit 1
+}
+# bundle 名：从暂存宿主的 app.json5 读取
 $BUNDLE = "com.arktsbinding.harmonyhost"
-if ($hostDir -and (Test-Path (Join-Path $hostDir "AppScope/app.json5"))) {
+if (Test-Path (Join-Path $hostDir "AppScope/app.json5")) {
     $m = Select-String -Path (Join-Path $hostDir "AppScope/app.json5") -Pattern '"bundleName"\s*:\s*"([^"]*)"'
     if ($m) { $BUNDLE = $m.Matches[0].Groups[1].Value }
 }
@@ -60,14 +72,24 @@ if ($PreflightOnly) {
     exit 0
 }
 
-# ---- 定位 HAP：优先安装签名产物 ----
+# ---- 定位 HAP：优先安装签名产物，但签名产物必须不旧于 unsigned ----
 $outputDir = Join-Path $hostDir "entry\build\default\outputs\default"
-$HAP = Join-Path $outputDir "$MODULE-default-signed.hap"
-if (-not (Test-Path $HAP)) {
-    $HAP = Join-Path $outputDir "$MODULE-default-unsigned.hap"
+$signedHap = Join-Path $outputDir "$MODULE-default-signed.hap"
+$unsignedHap = Join-Path $outputDir "$MODULE-default-unsigned.hap"
+$HAP = $null
+if (Test-Path $signedHap) {
+    if ((Test-Path $unsignedHap) -and
+        ((Get-Item $signedHap).LastWriteTimeUtc -lt (Get-Item $unsignedHap).LastWriteTimeUtc)) {
+        Write-Warning "signed HAP 旧于 unsigned（签名未随本次构建重跑）；改为安装 unsigned。"
+        $HAP = $unsignedHap
+    } else {
+        $HAP = $signedHap
+    }
+} elseif (Test-Path $unsignedHap) {
+    $HAP = $unsignedHap
 }
-if (-not (Test-Path $HAP)) {
-    Write-Error "找不到 HAP：$HAP（请先运行 scripts\build-hap.cmd）"
+if (-not $HAP) {
+    Write-Error "找不到 HAP：$outputDir（请先运行 scripts\build-hap.cmd，或用 -t:HarmonyRun）"
     exit 1
 }
 Write-Host "HAP: $HAP"

@@ -27,6 +27,11 @@ public partial class MainPage : ContentPage
         HarmonyOS.Interop.TsfnExperiment.Run(s => TsfnLabel.Text = s);
     }
 
+    private void OnHardwareClicked(object? sender, EventArgs e)
+    {
+        Navigation.PushAsync(new HardwarePage()).FireAndForgetNavigation();
+    }
+
     private void OnAsyncDemoClicked(object? sender, EventArgs e)
     {
         Navigation.PushAsync(new AsyncDemoPage()).FireAndForgetNavigation();

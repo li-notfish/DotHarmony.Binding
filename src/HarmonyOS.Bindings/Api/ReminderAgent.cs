@@ -19,51 +19,8 @@ public static unsafe partial class ReminderAgent
 {
     private const string ModuleName = "@ohos.reminderAgent";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[reminderAgent] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _publishReminder => "publishReminder"u8;
     private static ReadOnlySpan<byte> _cancelReminder => "cancelReminder"u8;
@@ -73,48 +30,54 @@ public static unsafe partial class ReminderAgent
     private static ReadOnlySpan<byte> _removeNotificationSlot => "removeNotificationSlot"u8;
 
     /// <summary>
-    /// publishReminder
+    /// Publishes a reminder through the reminder agent. This API uses an asynchronous callback to return the result. It
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> PublishReminderAsync(IntPtr reminderReq)
     {
         return NodeApi.CallMethodAsync<double>(Module, _publishReminder, reminderReq);
     }
 
     /// <summary>
-    /// cancelReminder
+    /// Cancels the reminder with the specified ID. This API uses an asynchronous callback to return the cancellation
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task CancelReminderAsync(double reminderId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cancelReminder, cancellationToken, reminderId);
     }
 
     /// <summary>
-    /// getValidReminders
+    /// Obtains all valid (not yet expired) reminders set by the current application. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<IntPtr[]> GetValidRemindersAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getValidReminders, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// cancelAllReminders
+    /// Cancels all reminders set by the current application. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task CancelAllRemindersAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cancelAllReminders, cancellationToken);
     }
 
     /// <summary>
-    /// addNotificationSlot
+    /// Adds a notification slot. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task AddNotificationSlotAsync(IntPtr slot, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _addNotificationSlot, cancellationToken, slot);
     }
 
     /// <summary>
-    /// removeNotificationSlot
+    /// Removes a notification slot of a specified type. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task RemoveNotificationSlotAsync(IntPtr slotType, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeNotificationSlot, cancellationToken, slotType);

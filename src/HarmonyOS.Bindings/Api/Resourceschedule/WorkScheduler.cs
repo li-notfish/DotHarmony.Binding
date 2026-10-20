@@ -19,51 +19,8 @@ public static unsafe partial class WorkScheduler
 {
     private const string ModuleName = "@ohos.resourceschedule.workScheduler";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[resourceschedule.workScheduler] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _startWork => "startWork"u8;
     private static ReadOnlySpan<byte> _stopWork => "stopWork"u8;
@@ -73,48 +30,54 @@ public static unsafe partial class WorkScheduler
     private static ReadOnlySpan<byte> _isLastWorkTimeOut => "isLastWorkTimeOut"u8;
 
     /// <summary>
-    /// startWork
+    /// Requests a deferred task. Upon successful request, the deferred task is added to the execution queue and will be
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void StartWork(WorkInfo work)
     {
         NodeApi.CallMethodVoid(Module, _startWork, NapiArg.Of(work));
     }
 
     /// <summary>
-    /// stopWork
+    /// Stops a deferred task.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void StopWork(WorkInfo work, bool? needCancel = null)
     {
         NodeApi.CallMethodVoid(Module, _stopWork, NapiArg.Of(work), NapiArg.Of(needCancel));
     }
 
     /// <summary>
-    /// getWorkStatus
+    /// Obtains the information a deferred task. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<WorkInfo> GetWorkStatusAsync(double workId)
     {
         return NodeApi.CallMethodAsync(Module, _getWorkStatus, static h => new WorkInfo(h), workId);
     }
 
     /// <summary>
-    /// obtainAllWorks
+    /// Obtains all the deferred tasks. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task ObtainAllWorksAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _obtainAllWorks, cancellationToken);
     }
 
     /// <summary>
-    /// stopAndClearWorks
+    /// Stops and clears all the deferred tasks.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void StopAndClearWorks()
     {
         NodeApi.CallMethodVoid(Module, _stopAndClearWorks);
     }
 
     /// <summary>
-    /// isLastWorkTimeOut
+    /// Checks whether the last execution of a task timed out. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task IsLastWorkTimeOutAsync(double workId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _isLastWorkTimeOut, cancellationToken, workId);

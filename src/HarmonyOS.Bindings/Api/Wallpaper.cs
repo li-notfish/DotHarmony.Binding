@@ -19,51 +19,8 @@ public static unsafe partial class Wallpaper
 {
     private const string ModuleName = "@ohos.wallpaper";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[wallpaper] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getColors => "getColors"u8;
     private static ReadOnlySpan<byte> _getId => "getId"u8;
@@ -78,88 +35,99 @@ public static unsafe partial class Wallpaper
     private static ReadOnlySpan<byte> _off => "off"u8;
 
     /// <summary>
-    /// getColors
+    /// Obtains the wallpaper colors for the wallpaper of the specified type. Returns rgbaColor type of array callback function.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<RgbaColor[]> GetColorsAsync(global::HarmonyOS.ArkUI.WallpaperType wallpaperType)
     {
         return NodeApi.CallMethodAsync(Module, _getColors, h => ValueConverter.ConvertArray(h, static e => new RgbaColor(e)), (int)wallpaperType);
     }
 
     /// <summary>
-    /// getId
+    /// Obtains the ID of the wallpaper of the specified type. Returns an integer greater than or equal to {@code 0} representing the wallpaper ID.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> GetIdAsync(global::HarmonyOS.ArkUI.WallpaperType wallpaperType)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getId, (int)wallpaperType);
     }
 
     /// <summary>
-    /// getFile
+    /// Obtains a file of the wallpaper of the specified type. Returns the file descriptor.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double> GetFileAsync(global::HarmonyOS.ArkUI.WallpaperType wallpaperType)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getFile, (int)wallpaperType);
     }
 
     /// <summary>
-    /// getMinHeight
+    /// Obtains the minimum height of the wallpaper. in pixels. returns 0 if no wallpaper has been set.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> GetMinHeightAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getMinHeight);
     }
 
     /// <summary>
-    /// getMinWidth
+    /// Obtains the minimum width of the wallpaper. in pixels. returns 0 if no wallpaper has been set.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> GetMinWidthAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getMinWidth);
     }
 
     /// <summary>
-    /// isChangePermitted
+    /// Checks whether to allow the application to change the wallpaper for the current user.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsChangePermittedAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isChangePermitted);
     }
 
     /// <summary>
-    /// isOperationAllowed
+    /// Checks whether a user is allowed to set wallpapers.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsOperationAllowedAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isOperationAllowed);
     }
 
     /// <summary>
-    /// reset
+    /// Removes a wallpaper of the specified type and restores the default one.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task ResetAsync(global::HarmonyOS.ArkUI.WallpaperType wallpaperType, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _reset, cancellationToken, (int)wallpaperType);
     }
 
     /// <summary>
-    /// setWallpaper
+    /// Sets a wallpaper of the specified type based on the uri path from a JPEG or PNG file or the pixel map of a PNG file.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task SetWallpaperAsync(string source, global::HarmonyOS.ArkUI.WallpaperType wallpaperType, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setWallpaper, cancellationToken, source, (int)wallpaperType);
     }
 
     /// <summary>
-    /// on
+    /// Registers a listener for wallpaper color changes to receive notifications about the changes.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unregisters a listener for wallpaper color changes.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);

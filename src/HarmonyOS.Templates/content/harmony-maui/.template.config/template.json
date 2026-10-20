@@ -27,6 +27,13 @@
       "defaultValue": "1.0.5",
       "replaces": "HarmonyPublishAotClangVersion",
       "description": "Version of the PublishAotClang package to reference."
+    },
+    "bundleId": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "",
+      "replaces": "HarmonyBundleIdValue",
+      "description": "App bundleName (e.g. com.example.myapp). Empty derives com.arktsbinding.<project-name-lower> from build targets."
     }
   }
 }

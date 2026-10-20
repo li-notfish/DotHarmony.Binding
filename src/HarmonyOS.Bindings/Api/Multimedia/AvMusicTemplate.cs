@@ -19,57 +19,15 @@ public static unsafe partial class AvMusicTemplate
 {
     private const string ModuleName = "@ohos.multimedia.avMusicTemplate";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[multimedia.avMusicTemplate] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createAVMusicTemplate => "createAVMusicTemplate"u8;
 
     /// <summary>
-    /// createAVMusicTemplate
+    /// Create an AVMusicTemplate instance.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static AVMusicTemplate CreateAVMusicTemplate(global::HarmonyOS.ArkUI.AVMusicTemplateType accessType)
     {
         return NodeApi.CallMethod(Module, _createAVMusicTemplate, static h => new AVMusicTemplate(h), (int)accessType);
@@ -178,6 +136,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryMainTabs(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryMainTabs);
+            return;
+        }
+
         CallMethodVoid(_offQueryMainTabs, NapiArg.Of(callback));
     }
 
@@ -194,6 +158,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryMediaTabContent(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryMediaTabContent);
+            return;
+        }
+
         CallMethodVoid(_offQueryMediaTabContent, NapiArg.Of(callback));
     }
 
@@ -210,6 +180,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryMediaEntity(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryMediaEntity);
+            return;
+        }
+
         CallMethodVoid(_offQueryMediaEntity, NapiArg.Of(callback));
     }
 
@@ -226,6 +202,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryCompilation(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryCompilation);
+            return;
+        }
+
         CallMethodVoid(_offQueryCompilation, NapiArg.Of(callback));
     }
 
@@ -242,6 +224,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryPlaylist(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryPlaylist);
+            return;
+        }
+
         CallMethodVoid(_offQueryPlaylist, NapiArg.Of(callback));
     }
 
@@ -258,6 +246,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryCurrentSingle(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryCurrentSingle);
+            return;
+        }
+
         CallMethodVoid(_offQueryCurrentSingle, NapiArg.Of(callback));
     }
 
@@ -274,6 +268,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryCompilationByKeyword(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryCompilationByKeyword);
+            return;
+        }
+
         CallMethodVoid(_offQueryCompilationByKeyword, NapiArg.Of(callback));
     }
 
@@ -290,6 +290,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryMediaEntityByKeyword(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryMediaEntityByKeyword);
+            return;
+        }
+
         CallMethodVoid(_offQueryMediaEntityByKeyword, NapiArg.Of(callback));
     }
 
@@ -306,6 +312,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryRecommendMediaEntityList(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryRecommendMediaEntityList);
+            return;
+        }
+
         CallMethodVoid(_offQueryRecommendMediaEntityList, NapiArg.Of(callback));
     }
 
@@ -322,6 +334,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryHotWords(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryHotWords);
+            return;
+        }
+
         CallMethodVoid(_offQueryHotWords, NapiArg.Of(callback));
     }
 
@@ -338,6 +356,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQuerySearchHistory(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQuerySearchHistory);
+            return;
+        }
+
         CallMethodVoid(_offQuerySearchHistory, NapiArg.Of(callback));
     }
 
@@ -354,6 +378,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffClearSearchHistory(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offClearSearchHistory);
+            return;
+        }
+
         CallMethodVoid(_offClearSearchHistory, NapiArg.Of(callback));
     }
 
@@ -370,6 +400,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffLogin(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offLogin);
+            return;
+        }
+
         CallMethodVoid(_offLogin, NapiArg.Of(callback));
     }
 
@@ -386,6 +422,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffRequestDialogInfo(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offRequestDialogInfo);
+            return;
+        }
+
         CallMethodVoid(_offRequestDialogInfo, NapiArg.Of(callback));
     }
 
@@ -402,6 +444,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffHandleMemberPurchase(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offHandleMemberPurchase);
+            return;
+        }
+
         CallMethodVoid(_offHandleMemberPurchase, NapiArg.Of(callback));
     }
 
@@ -418,6 +466,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryMemberPurchase(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryMemberPurchase);
+            return;
+        }
+
         CallMethodVoid(_offQueryMemberPurchase, NapiArg.Of(callback));
     }
 
@@ -434,6 +488,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffQueryCustomContent(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offQueryCustomContent);
+            return;
+        }
+
         CallMethodVoid(_offQueryCustomContent, NapiArg.Of(callback));
     }
 
@@ -450,6 +510,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffDownloadMediaEntity(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offDownloadMediaEntity);
+            return;
+        }
+
         CallMethodVoid(_offDownloadMediaEntity, NapiArg.Of(callback));
     }
 
@@ -466,6 +532,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffSettingsChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offSettingsChange);
+            return;
+        }
+
         CallMethodVoid(_offSettingsChange, NapiArg.Of(callback));
     }
 
@@ -482,6 +554,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffProblemAndAdvice(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offProblemAndAdvice);
+            return;
+        }
+
         CallMethodVoid(_offProblemAndAdvice, NapiArg.Of(callback));
     }
 
@@ -498,6 +576,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffPlayForSearch(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPlayForSearch);
+            return;
+        }
+
         CallMethodVoid(_offPlayForSearch, NapiArg.Of(callback));
     }
 
@@ -514,6 +598,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffExecuteAction(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offExecuteAction);
+            return;
+        }
+
         CallMethodVoid(_offExecuteAction, NapiArg.Of(callback));
     }
 
@@ -530,6 +620,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffPlayMediaEntity(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offPlayMediaEntity);
+            return;
+        }
+
         CallMethodVoid(_offPlayMediaEntity, NapiArg.Of(callback));
     }
 
@@ -546,6 +642,12 @@ public sealed partial class AVMusicTemplate : JsObject
     /// </summary>
     public void OffFavoriteMediaEntity(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offFavoriteMediaEntity);
+            return;
+        }
+
         CallMethodVoid(_offFavoriteMediaEntity, NapiArg.Of(callback));
     }
 

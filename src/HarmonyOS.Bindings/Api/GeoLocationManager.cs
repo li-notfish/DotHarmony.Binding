@@ -20,51 +20,8 @@ public static unsafe partial class GeoLocationManager
 {
     private const string ModuleName = "@ohos.geoLocationManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[geoLocationManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _onLocationChange => "onLocationChange"u8;
@@ -102,312 +59,351 @@ public static unsafe partial class GeoLocationManager
     private static ReadOnlySpan<byte> _getPostProcessingTrack => "getPostProcessingTrack"u8;
 
     /// <summary>
-    /// on
+    /// Subscribe location changed.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void On(string type, LocationRequest request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), callback);
     }
 
     /// <summary>
-    /// onLocationChange
+    /// Subscribe location changed.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnLocationChange(LocationRequest request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onLocationChange, NapiArg.Of(request), callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribe location changed.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// offLocationChange
+    /// Unsubscribe location changed.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffLocationChange(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offLocationChange, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// on
+    /// Subscribe continuous location error changed.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// on
+    /// Subscribe to cache GNSS locations update messages.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void On(string type, CachedGnssLocationsRequest request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), callback);
     }
 
     /// <summary>
-    /// on
+    /// Add a geofence and subscribe geofence status changed.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void On(string type, GeofenceRequest request, IntPtr want)
     {
         NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), want);
     }
 
     /// <summary>
-    /// off
+    /// Remove a geofence and unsubscribe geofence status changed.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Off(string type, GeofenceRequest request, IntPtr want)
     {
         NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(request), want);
     }
 
     /// <summary>
-    /// getCurrentLocation
+    /// Obtain current location.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr> GetCurrentLocationAsync(CurrentLocationRequest request)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getCurrentLocation, NapiArg.Of(request));
     }
 
     /// <summary>
-    /// getCurrentLocation
+    /// Obtain current location.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr> GetCurrentLocationAsync()
     {
         return NodeApi.CallMethodAsyncCallback<IntPtr>(Module, _getCurrentLocation, null);
     }
 
     /// <summary>
-    /// getLastLocation
+    /// Obtain last known location.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetLastLocation()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getLastLocation);
     }
 
     /// <summary>
-    /// isLocationEnabled
+    /// Obtain current location switch status.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool IsLocationEnabled()
     {
         return NodeApi.CallMethod<bool>(Module, _isLocationEnabled);
     }
 
     /// <summary>
-    /// getAddressesFromLocation
+    /// Obtain address info from location.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<GeoAddress[]> GetAddressesFromLocationAsync(ReverseGeoCodeRequest request)
     {
         return NodeApi.CallMethodAsync(Module, _getAddressesFromLocation, h => ValueConverter.ConvertArray(h, static e => new GeoAddress(e)), NapiArg.Of(request));
     }
 
     /// <summary>
-    /// getAddressesFromLocationName
+    /// Obtain latitude and longitude info from location address.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<GeoAddress[]> GetAddressesFromLocationNameAsync(GeoCodeRequest request)
     {
         return NodeApi.CallMethodAsync(Module, _getAddressesFromLocationName, h => ValueConverter.ConvertArray(h, static e => new GeoAddress(e)), NapiArg.Of(request));
     }
 
     /// <summary>
-    /// isGeocoderAvailable
+    /// Obtain geocoding service status.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool IsGeocoderAvailable()
     {
         return NodeApi.CallMethod<bool>(Module, _isGeocoderAvailable);
     }
 
     /// <summary>
-    /// getCachedGnssLocationsSize
+    /// Obtain the number of cached GNSS locations reported at a time.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetCachedGnssLocationsSizeAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getCachedGnssLocationsSize);
     }
 
     /// <summary>
-    /// flushCachedGnssLocations
+    /// All prepared GNSS locations are returned to the application through the callback function,
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task FlushCachedGnssLocationsAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _flushCachedGnssLocations, cancellationToken);
     }
 
     /// <summary>
-    /// sendCommand
+    /// Send extended commands to location subsystem.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task SendCommandAsync(LocationCommand command, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _sendCommand, cancellationToken, NapiArg.Of(command));
     }
 
     /// <summary>
-    /// getCountryCode
+    /// Obtain the current country code.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<CountryCode> GetCountryCodeAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getCountryCode, static h => new CountryCode(h));
     }
 
     /// <summary>
-    /// addGnssGeofence
+    /// Add a geofence.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<double> AddGnssGeofenceAsync(IntPtr fenceRequest)
     {
         return NodeApi.CallMethodAsync<double>(Module, _addGnssGeofence, fenceRequest);
     }
 
     /// <summary>
-    /// removeGnssGeofence
+    /// Remove a geofence.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task RemoveGnssGeofenceAsync(double geofenceId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeGnssGeofence, cancellationToken, geofenceId);
     }
 
     /// <summary>
-    /// getActiveGeoFences
+    /// Get all active fences.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<JsMap<double, Geofence>> GetActiveGeoFencesAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getActiveGeoFences, h => new JsMap<double, Geofence>(h, static v => new Geofence(v)));
     }
 
     /// <summary>
-    /// getGeofenceSupportedCoordTypes
+    /// Obtains the coordinate system types supported by geofence.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static global::HarmonyOS.ArkUI.CoordinateSystemType[] GetGeofenceSupportedCoordTypes()
     {
         return NodeApi.CallMethod(Module, _getGeofenceSupportedCoordTypes, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.CoordinateSystemType>(e)));
     }
 
     /// <summary>
-    /// getCurrentWifiBssidForLocating
+    /// Obtains the BSSID of the connected Wi-Fi hotspot.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static string GetCurrentWifiBssidForLocating()
     {
         return NodeApi.CallMethod<string>(Module, _getCurrentWifiBssidForLocating);
     }
 
     /// <summary>
-    /// getDistanceBetweenLocations
+    /// Obtains the distance between two locations.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static double GetDistanceBetweenLocations(IntPtr location1, IntPtr location2)
     {
         return NodeApi.CallMethod<double>(Module, _getDistanceBetweenLocations, location1, location2);
     }
 
     /// <summary>
-    /// isPoiServiceSupported
+    /// Check whether the POI service is supported.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsPoiServiceSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isPoiServiceSupported);
     }
 
     /// <summary>
-    /// getPoiInfo
+    /// Obtaining POI Information.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<IntPtr> GetPoiInfoAsync()
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getPoiInfo);
     }
 
     /// <summary>
-    /// addBeaconFence
+    /// Add a beacon fence.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<double> AddBeaconFenceAsync(IntPtr fenceRequest)
     {
         return NodeApi.CallMethodAsync<double>(Module, _addBeaconFence, fenceRequest);
     }
 
     /// <summary>
-    /// removeBeaconFence
+    /// Remove a beacon fence.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task RemoveBeaconFenceAsync(BeaconFence? beaconFence = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeBeaconFence, cancellationToken, NapiArg.Of(beaconFence));
     }
 
     /// <summary>
-    /// isBeaconFenceSupported
+    /// Check whether the BeaconFence service is supported.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsBeaconFenceSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isBeaconFenceSupported);
     }
 
     /// <summary>
-    /// isWlanBssidMatched
+    /// Check whether the WLAN scan results match the WLAN BSSID list.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task<bool> IsWlanBssidMatchedAsync(string[] wlanBssidArray, double rssiThreshold, bool needStartScan)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isWlanBssidMatched, NapiArg.Of(wlanBssidArray), rssiThreshold, needStartScan);
     }
 
     /// <summary>
-    /// isGnssServiceSupported
+    /// Check whether the GNSS service is supported.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsGnssServiceSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isGnssServiceSupported);
     }
 
     /// <summary>
-    /// isGnssFenceServiceSupported
+    /// Check whether the GNSS fence service is supported.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsGnssFenceServiceSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isGnssFenceServiceSupported);
     }
 
     /// <summary>
-    /// isCachedGnssServiceSupported
+    /// Check whether the cached GNSS service is supported.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsCachedGnssServiceSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isCachedGnssServiceSupported);
     }
 
     /// <summary>
-    /// findMatchingWlan
+    /// Check whether the WLAN scan results match the WLAN BSSID list,
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<MatchingWlanInfo[]> FindMatchingWlanAsync(string[] wlanBssidArray, double rssiThreshold, bool needStartScan)
     {
         return NodeApi.CallMethodAsync(Module, _findMatchingWlan, h => ValueConverter.ConvertArray(h, static e => new MatchingWlanInfo(e)), NapiArg.Of(wlanBssidArray), rssiThreshold, needStartScan);
     }
 
     /// <summary>
-    /// getCurrentDistrict
+    /// Obtains the information about the district where the current device is located.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<DistrictInfo> GetCurrentDistrictAsync(DistrictRequestParams? @params = null)
     {
         return NodeApi.CallMethodAsync(Module, _getCurrentDistrict, static h => new DistrictInfo(h), NapiArg.Of(@params));
     }
 
     /// <summary>
-    /// startBluetoothSearch
+    /// Starts Bluetooth scanning and matches the device ID list in the input parameter
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void StartBluetoothSearch(BluetoothSearchRequestParams request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _startBluetoothSearch, NapiArg.Of(request), callback);
     }
 
     /// <summary>
-    /// stopBluetoothSearch
+    /// Stop Bluetooth scanning and searching.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void StopBluetoothSearch(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _stopBluetoothSearch, NapiArg.Of(callback));
     }
 
     /// <summary>
-    /// getPostProcessingTrack
+    /// Obtain post-processing trajectory information under specific sport mode. Only
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr[]> GetPostProcessingTrackAsync(global::HarmonyOS.ArkUI.SportsType sportsType)
     {
         return NodeApi.CallMethodAsync(Module, _getPostProcessingTrack, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), (int)sportsType);

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlsSampleApp.MorePage"
+             Title="More"
+             BackgroundColor="#F8FAFC">
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="CS-MORE-MARK" FontSize="11" TextColor="#9CA3AF" />
+            <Label Text="Root-page demos" FontAttributes="Bold" FontSize="18" TextColor="#111827" />
+            <Label Text="FlyoutPage / Shell 不能嵌套在 TabbedPage 里，这里替换根页打开；页面内都有返回按钮。"
+                   FontSize="12" TextColor="#4B5563" />
+            <Button Text="Open FlyoutPage demo" Clicked="OnFlyoutClicked"
+                    BackgroundColor="#2563EB" TextColor="#FFFFFF" CornerRadius="6" HeightRequest="44" />
+            <Button Text="Open Shell demo" Clicked="OnShellClicked"
+                    BackgroundColor="#1E3A8A" TextColor="#FFFFFF" CornerRadius="6" HeightRequest="44" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

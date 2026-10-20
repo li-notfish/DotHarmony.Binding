@@ -17,51 +17,8 @@ public static unsafe partial class BatteryInfo
 {
     private const string ModuleName = "@ohos.batteryInfo";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[batteryInfo] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _batterySOC => "batterySOC"u8;
     private static ReadOnlySpan<byte> _chargingStatus => "chargingStatus"u8;
@@ -75,53 +32,63 @@ public static unsafe partial class BatteryInfo
     private static ReadOnlySpan<byte> _nowCurrent => "nowCurrent"u8;
 
     /// <summary>
-    /// batterySOC
+    /// Battery state of charge (SoC) of the device, in unit of percentage, which ranges from 0 to 100.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double BatterySoc => NativeValue.ToDouble(NodeApi.GetProperty(Module, _batterySOC));
 
     /// <summary>
-    /// chargingStatus
+    /// Battery charging state of the current device.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static global::HarmonyOS.ArkUI.BatteryChargeState ChargingStatus => (global::HarmonyOS.ArkUI.BatteryChargeState)NativeValue.ToInt(NodeApi.GetProperty(Module, _chargingStatus));
 
     /// <summary>
-    /// healthStatus
+    /// Battery health status of the device.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static global::HarmonyOS.ArkUI.BatteryHealthState HealthStatus => (global::HarmonyOS.ArkUI.BatteryHealthState)NativeValue.ToInt(NodeApi.GetProperty(Module, _healthStatus));
 
     /// <summary>
-    /// pluggedType
+    /// Charger type of the device.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static global::HarmonyOS.ArkUI.BatteryPluggedType PluggedType => (global::HarmonyOS.ArkUI.BatteryPluggedType)NativeValue.ToInt(NodeApi.GetProperty(Module, _pluggedType));
 
     /// <summary>
-    /// voltage
+    /// Battery voltage of the device, in unit of microvolt.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double Voltage => NativeValue.ToDouble(NodeApi.GetProperty(Module, _voltage));
 
     /// <summary>
-    /// technology
+    /// Battery technology of the device.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string Technology => NativeValue.ToString(NodeApi.GetProperty(Module, _technology)) ?? string.Empty;
 
     /// <summary>
-    /// batteryTemperature
+    /// Battery temperature of the device, in unit of 0.1°C.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double BatteryTemperature => NativeValue.ToDouble(NodeApi.GetProperty(Module, _batteryTemperature));
 
     /// <summary>
-    /// isBatteryPresent
+    /// Whether the battery is supported or present. The value **true** means that the battery is supported or present;
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool IsBatteryPresent => NativeValue.ToBool(NodeApi.GetProperty(Module, _isBatteryPresent));
 
     /// <summary>
-    /// batteryCapacityLevel
+    /// Battery level of the device.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static global::HarmonyOS.ArkUI.BatteryCapacityLevel BatteryCapacityLevel => (global::HarmonyOS.ArkUI.BatteryCapacityLevel)NativeValue.ToInt(NodeApi.GetProperty(Module, _batteryCapacityLevel));
 
     /// <summary>
-    /// nowCurrent
+    /// Battery current of the device, in unit of mA.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static double NowCurrent => NativeValue.ToDouble(NodeApi.GetProperty(Module, _nowCurrent));
 
 }

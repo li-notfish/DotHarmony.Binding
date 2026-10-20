@@ -19,57 +19,15 @@ public static unsafe partial class CalendarManager
 {
     private const string ModuleName = "@ohos.calendarManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[calendarManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getCalendarManager => "getCalendarManager"u8;
 
     /// <summary>
-    /// getCalendarManager
+    /// Obtains a CalendarManager object based on the context.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static CalendarManagerObject GetCalendarManager(IntPtr context)
     {
         return NodeApi.CallMethod(Module, _getCalendarManager, static h => new CalendarManagerObject(h), context);
@@ -110,6 +68,11 @@ public sealed partial class CalendarManagerObject : JsObject
     /// </summary>
     public Task<Calendar> GetCalendarAsync(CalendarAccount? calendarAccount = null)
     {
+        if (calendarAccount is null)
+        {
+            return CallMethodAsync(_getCalendar, static h => new Calendar(h));
+        }
+
         return CallMethodAsync(_getCalendar, static h => new Calendar(h), NapiArg.Of(calendarAccount));
     }
 
@@ -208,6 +171,16 @@ public sealed partial class Calendar : JsObject
     /// </summary>
     public Task<IntPtr[]> GetEventsAsync(EventFilter? eventFilter = null, object[]? eventKey = null)
     {
+        if (eventFilter is null && eventKey is null)
+        {
+            return CallMethodAsync(_getEvents, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
+        }
+
+        if (eventKey is null)
+        {
+            return CallMethodAsync(_getEvents, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(eventFilter));
+        }
+
         return CallMethodAsync(_getEvents, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(eventFilter), NapiArg.Of(eventKey));
     }
 
@@ -248,6 +221,16 @@ public sealed partial class Calendar : JsObject
     /// </summary>
     public Task<IntPtr[]> QueryEventInstancesAsync(double start, double end, double[]? ids = null, object[]? eventKey = null)
     {
+        if (ids is null && eventKey is null)
+        {
+            return CallMethodAsync(_queryEventInstances, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), start, end);
+        }
+
+        if (eventKey is null)
+        {
+            return CallMethodAsync(_queryEventInstances, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), start, end, NapiArg.Of(ids));
+        }
+
         return CallMethodAsync(_queryEventInstances, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), start, end, NapiArg.Of(ids), NapiArg.Of(eventKey));
     }
 

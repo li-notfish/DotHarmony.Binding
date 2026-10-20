@@ -19,51 +19,8 @@ public static unsafe partial class Access
 {
     private const string ModuleName = "@ohos.bluetooth.access";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[bluetooth.access] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _enableBluetooth => "enableBluetooth"u8;
     private static ReadOnlySpan<byte> _disableBluetooth => "disableBluetooth"u8;
@@ -80,104 +37,117 @@ public static unsafe partial class Access
     private static ReadOnlySpan<byte> _convertUuid => "convertUuid"u8;
 
     /// <summary>
-    /// enableBluetooth
+    /// Enables Bluetooth on a device.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void EnableBluetooth()
     {
         NodeApi.CallMethodVoid(Module, _enableBluetooth);
     }
 
     /// <summary>
-    /// disableBluetooth
+    /// Disables Bluetooth on a device.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void DisableBluetooth()
     {
         NodeApi.CallMethodVoid(Module, _disableBluetooth);
     }
 
     /// <summary>
-    /// enableBluetoothAsync
+    /// Asynchronous interface for enables Bluetooth on a device.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task EnableBluetoothAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _enableBluetoothAsync, cancellationToken);
     }
 
     /// <summary>
-    /// disableBluetoothAsync
+    /// Asynchronous interface for disables Bluetooth on a device.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task DisableBluetoothAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _disableBluetoothAsync, cancellationToken);
     }
 
     /// <summary>
-    /// getState
+    /// Obtains the Bluetooth status of a device.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static global::HarmonyOS.ArkUI.BluetoothState GetState()
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothState>(Module, _getState);
     }
 
     /// <summary>
-    /// isBluetoothSupported
+    /// Check whether Bluetooth is available.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsBluetoothSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isBluetoothSupported);
     }
 
     /// <summary>
-    /// on
+    /// Subscribe the event reported when the Bluetooth state changes.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribe the event reported when the Bluetooth state changes.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// addPersistentDeviceId
+    /// Add a persistent random device address. Once the randomized address is successfully added,
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static Task AddPersistentDeviceIdAsync(string deviceId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _addPersistentDeviceId, cancellationToken, deviceId);
     }
 
     /// <summary>
-    /// deletePersistentDeviceId
+    /// Delete a persistent random device address.
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static Task DeletePersistentDeviceIdAsync(string deviceId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deletePersistentDeviceId, cancellationToken, deviceId);
     }
 
     /// <summary>
-    /// getPersistentDeviceIds
+    /// Obtains the persistent randomized device address of the application.
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static string[] GetPersistentDeviceIds()
     {
         return NodeApi.CallMethod(Module, _getPersistentDeviceIds, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// isValidRandomDeviceId
+    /// Determine whether the randomized device address application can still be used.
     /// </summary>
+    /// <remarks>@since 16</remarks>
     public static bool IsValidRandomDeviceId(string deviceId)
     {
         return NodeApi.CallMethod<bool>(Module, _isValidRandomDeviceId, deviceId);
     }
 
     /// <summary>
-    /// convertUuid
+    /// Convert 2-byte and 4-byte UUID strings to the 16-byte UUID string standard used in Bluetooth.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static string ConvertUuid(string uuid)
     {
         return NodeApi.CallMethod<string>(Module, _convertUuid, uuid);

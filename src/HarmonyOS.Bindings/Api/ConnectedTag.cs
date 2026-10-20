@@ -19,51 +19,8 @@ public static unsafe partial class ConnectedTag
 {
     private const string ModuleName = "@ohos.connectedTag";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[connectedTag] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _init => "init"u8;
     private static ReadOnlySpan<byte> _initialize => "initialize"u8;
@@ -77,80 +34,90 @@ public static unsafe partial class ConnectedTag
     private static ReadOnlySpan<byte> _off => "off"u8;
 
     /// <summary>
-    /// init
+    /// Initializes Connected Tag.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool Init()
     {
         return NodeApi.CallMethod<bool>(Module, _init);
     }
 
     /// <summary>
-    /// initialize
+    /// Initializes the connected NFC tag.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Initialize()
     {
         NodeApi.CallMethodVoid(Module, _initialize);
     }
 
     /// <summary>
-    /// uninit
+    /// UnInitializes Connected Tag.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool Uninit()
     {
         return NodeApi.CallMethod<bool>(Module, _uninit);
     }
 
     /// <summary>
-    /// uninitialize
+    /// Uninitializes the connected NFC tag.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Uninitialize()
     {
         NodeApi.CallMethodVoid(Module, _uninitialize);
     }
 
     /// <summary>
-    /// readNdefTag
+    /// Reads the NDEF Data.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<string> ReadNdefTagAsync()
     {
         return NodeApi.CallMethodAsync<string>(Module, _readNdefTag);
     }
 
     /// <summary>
-    /// read
+    /// Reads the NDEF data from the connected NFC tag.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double[]> ReadAsync()
     {
         return NodeApi.CallMethodAsync(Module, _read, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)));
     }
 
     /// <summary>
-    /// writeNdefTag
+    /// Writes the NDEF Data.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task WriteNdefTagAsync(string data, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _writeNdefTag, cancellationToken, data);
     }
 
     /// <summary>
-    /// write
+    /// Writes the NDEF data to the connected NFC tag.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task WriteAsync(double[] data, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _write, cancellationToken, NapiArg.Of(data));
     }
 
     /// <summary>
-    /// on
+    /// Subscribes NFC RF status change events.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes NFC RF status change events.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);

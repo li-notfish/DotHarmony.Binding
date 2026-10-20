@@ -41,10 +41,20 @@
 
     <HarmonyGenerateHost Condition="'$(HarmonyGenerateHost)' == ''">true</HarmonyGenerateHost>
     <HarmonyHostDir Condition="'$(HarmonyHostDir)' == ''">$(MSBuildProjectDirectory)\obj\harmony\host</HarmonyHostDir>
+    <!-- 宿主目标 API 版本：留空由 stage-host 从本机 SDK 探测；交叉编译到未安装的 SDK
+         版本时显式设置（也接受同名环境变量）。 -->
+    <HarmonyCompatibleSdkVersion Condition="'$(HarmonyCompatibleSdkVersion)' == ''">$(HARMONY_COMPATIBLE_SDK_VERSION)</HarmonyCompatibleSdkVersion>
+    <HarmonyRuntimeOS Condition="'$(HarmonyRuntimeOS)' == ''">$(HARMONY_RUNTIME_OS)</HarmonyRuntimeOS>
     <HarmonyBundleId Condition="'$(HarmonyBundleId)' == ''">com.arktsbinding.$([System.Text.RegularExpressions.Regex]::Replace('$(MSBuildProjectName)', '[^a-zA-Z0-9]', '').ToLower())</HarmonyBundleId>
     <HarmonyAppTitle Condition="'$(HarmonyAppTitle)' == ''">$(MSBuildProjectName)</HarmonyAppTitle>
     <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' == 'true'">$(HarmonyHostDir)</_HarmonyEffectiveHostDir>
     <_HarmonyEffectiveHostDir Condition="'$(HarmonyGenerateHost)' != 'true'">$(HarmonyHostRoot)</_HarmonyEffectiveHostDir>
+
+    <_HarmonySdkVersionArg Condition="'$(HarmonyCompatibleSdkVersion)' != ''">-SdkVersion "$(HarmonyCompatibleSdkVersion)"</_HarmonySdkVersionArg>
+    <_HarmonyRuntimeOSArg Condition="'$(HarmonyRuntimeOS)' != ''">-RuntimeOS "$(HarmonyRuntimeOS)"</_HarmonyRuntimeOSArg>
+
+    <HarmonySigningKeystorePasswordFile Condition="'$(HarmonySigningKeystorePasswordFile)' == ''">$(HARMONY_SIGNING_KEYSTORE_PASSWORD_FILE)</HarmonySigningKeystorePasswordFile>
+    <HarmonySigningCertPasswordFile Condition="'$(HarmonySigningCertPasswordFile)' == ''">$(HARMONY_SIGNING_CERT_PASSWORD_FILE)</HarmonySigningCertPasswordFile>
 
     <_HarmonySigningKeystoreArg Condition="'$(HarmonySigningKeystore)' != ''">-SigningKeystore "$(HarmonySigningKeystore)"</_HarmonySigningKeystoreArg>
     <_HarmonySigningAliasArg Condition="'$(HarmonySigningCertAlias)' != ''">-SigningCertAlias "$(HarmonySigningCertAlias)"</_HarmonySigningAliasArg>
@@ -132,8 +142,8 @@
           Condition="'$(HarmonyGenerateHost)' == 'true'"
           DependsOnTargets="HarmonyGeneratePermissions">
     <Message Importance="high" Text="=== staging host for $(HarmonyDemoApp): bundle=$(HarmonyBundleId) -> $(HarmonyHostDir)" />
-    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)stage-host.ps1" -Template "$(HarmonyHostRoot)" -Destination "$(HarmonyHostDir)" -BundleId "$(HarmonyBundleId)" -AppTitle "$(HarmonyAppTitle)" -PermissionsJson "$(HarmonyPermissionsJson)" $(_HarmonySigningKeystoreArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)'
-          EnvironmentVariables="HarmonySigningKeystorePassword=$(HarmonySigningKeystorePassword);HarmonySigningCertPassword=$(HarmonySigningCertPassword)"
+    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)stage-host.ps1" -Template "$(HarmonyHostRoot)" -Destination "$(HarmonyHostDir)" -BundleId "$(HarmonyBundleId)" -AppTitle "$(HarmonyAppTitle)" -PermissionsJson "$(HarmonyPermissionsJson)" $(_HarmonySdkVersionArg) $(_HarmonyRuntimeOSArg) $(_HarmonySigningKeystoreArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)'
+          EnvironmentVariables="HarmonySigningKeystorePassword=$(HarmonySigningKeystorePassword);HarmonySigningCertPassword=$(HarmonySigningCertPassword);HarmonySigningKeystorePasswordFile=$(HarmonySigningKeystorePasswordFile);HarmonySigningCertPasswordFile=$(HarmonySigningCertPasswordFile)"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
@@ -172,7 +182,7 @@
           WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Exec Condition="'$(HarmonySigningKeystore)' != ''"
           Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)sign-hap.ps1" -HostDir "$(_HarmonyEffectiveHostDir)" $(_HarmonySigningKeystoreArg) $(_HarmonySigningAliasArg) $(_HarmonySigningCertPathArg) $(_HarmonySigningProfileArg)'
-          EnvironmentVariables="HarmonySigningKeystorePassword=$(HarmonySigningKeystorePassword);HarmonySigningCertPassword=$(HarmonySigningCertPassword)"
+          EnvironmentVariables="HarmonySigningKeystorePassword=$(HarmonySigningKeystorePassword);HarmonySigningCertPassword=$(HarmonySigningCertPassword);HarmonySigningKeystorePasswordFile=$(HarmonySigningKeystorePasswordFile);HarmonySigningCertPasswordFile=$(HarmonySigningCertPasswordFile)"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 

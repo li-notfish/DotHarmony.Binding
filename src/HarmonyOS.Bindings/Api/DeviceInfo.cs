@@ -17,51 +17,8 @@ public static unsafe partial class DeviceInfo
 {
     private const string ModuleName = "@ohos.deviceInfo";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[deviceInfo] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _deviceType => "deviceType"u8;
     private static ReadOnlySpan<byte> _manufacture => "manufacture"u8;
@@ -110,231 +67,276 @@ public static unsafe partial class DeviceInfo
     private static ReadOnlySpan<byte> _deviceColor => "deviceColor"u8;
 
     /// <summary>
-    /// deviceType
+    /// Device type. For details, see [deviceTypes tag](docroot://quick-start/module-configuration-file.md#devicetypes).
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string DeviceType => NativeValue.ToString(NodeApi.GetProperty(Module, _deviceType)) ?? string.Empty;
 
     /// <summary>
-    /// manufacture
+    /// Device manufacturer.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string Manufacture => NativeValue.ToString(NodeApi.GetProperty(Module, _manufacture)) ?? string.Empty;
 
     /// <summary>
-    /// brand
+    /// Device brand.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string Brand => NativeValue.ToString(NodeApi.GetProperty(Module, _brand)) ?? string.Empty;
 
     /// <summary>
-    /// marketName
+    /// Marketing name.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string MarketName => NativeValue.ToString(NodeApi.GetProperty(Module, _marketName)) ?? string.Empty;
 
     /// <summary>
-    /// productSeries
+    /// Product series.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string ProductSeries => NativeValue.ToString(NodeApi.GetProperty(Module, _productSeries)) ?? string.Empty;
 
     /// <summary>
-    /// productModel
+    /// Product model.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string ProductModel => NativeValue.ToString(NodeApi.GetProperty(Module, _productModel)) ?? string.Empty;
 
     /// <summary>
-    /// productModelAlias
+    /// Product model alias.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static string ProductModelAlias => NativeValue.ToString(NodeApi.GetProperty(Module, _productModelAlias)) ?? string.Empty;
 
     /// <summary>
-    /// softwareModel
+    /// Software model.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string SoftwareModel => NativeValue.ToString(NodeApi.GetProperty(Module, _softwareModel)) ?? string.Empty;
 
     /// <summary>
-    /// hardwareModel
+    /// Hardware model.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string HardwareModel => NativeValue.ToString(NodeApi.GetProperty(Module, _hardwareModel)) ?? string.Empty;
 
     /// <summary>
-    /// hardwareProfile
+    /// Hardware profile.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string HardwareProfile => NativeValue.ToString(NodeApi.GetProperty(Module, _hardwareProfile)) ?? string.Empty;
 
     /// <summary>
-    /// serial
+    /// Device serial number (SN).
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string Serial => NativeValue.ToString(NodeApi.GetProperty(Module, _serial)) ?? string.Empty;
 
     /// <summary>
-    /// bootloaderVersion
+    /// Bootloader version.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string BootloaderVersion => NativeValue.ToString(NodeApi.GetProperty(Module, _bootloaderVersion)) ?? string.Empty;
 
     /// <summary>
-    /// abiList
+    /// Application binary interface (Abi) list.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string AbiList => NativeValue.ToString(NodeApi.GetProperty(Module, _abiList)) ?? string.Empty;
 
     /// <summary>
-    /// securityPatchTag
+    /// Security patch tag.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string SecurityPatchTag => NativeValue.ToString(NodeApi.GetProperty(Module, _securityPatchTag)) ?? string.Empty;
 
     /// <summary>
-    /// displayVersion
+    /// Product version.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string DisplayVersion => NativeValue.ToString(NodeApi.GetProperty(Module, _displayVersion)) ?? string.Empty;
 
     /// <summary>
-    /// incrementalVersion
+    /// Incremental version.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string IncrementalVersion => NativeValue.ToString(NodeApi.GetProperty(Module, _incrementalVersion)) ?? string.Empty;
 
     /// <summary>
-    /// osReleaseType
+    /// OS release type. The options are as follows:
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string OsReleaseType => NativeValue.ToString(NodeApi.GetProperty(Module, _osReleaseType)) ?? string.Empty;
 
     /// <summary>
-    /// osFullName
+    /// System version. The version number is in the format of **OpenHarmony-x.x.x.x**, where **x** is a digit.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string OsFullName => NativeValue.ToString(NodeApi.GetProperty(Module, _osFullName)) ?? string.Empty;
 
     /// <summary>
-    /// majorVersion
+    /// Major version number, which increments with the main version. The value is the first digit in **osFullName**. You
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double MajorVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _majorVersion));
 
     /// <summary>
-    /// seniorVersion
+    /// Senior version number, which increments with architecture and feature updates. The value is the second digit in
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double SeniorVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _seniorVersion));
 
     /// <summary>
-    /// featureVersion
+    /// Feature version number. The value is the third digit in **osFullName**. You are advised to use
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double FeatureVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _featureVersion));
 
     /// <summary>
-    /// buildVersion
+    /// Build version number. The value is the fourth digit in **osFullName**. You are advised to use
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double BuildVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _buildVersion));
 
     /// <summary>
-    /// sdkApiVersion
+    /// SDK API version.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double SdkApiVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _sdkApiVersion));
 
     /// <summary>
-    /// sdkMinorApiVersion
+    /// Obtains the SDK Minor API version.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static double SdkMinorApiVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _sdkMinorApiVersion));
 
     /// <summary>
-    /// sdkPatchApiVersion
+    /// Obtains the SDK Patch API version.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static double SdkPatchApiVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _sdkPatchApiVersion));
 
     /// <summary>
-    /// firstApiVersion
+    /// First API version.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static double FirstApiVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _firstApiVersion));
 
     /// <summary>
-    /// versionId
+    /// Version ID. It consists of the following fields: **deviceType**, **manufacture**, **brand**, **productSeries**,
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string VersionId => NativeValue.ToString(NodeApi.GetProperty(Module, _versionId)) ?? string.Empty;
 
     /// <summary>
-    /// buildType
+    /// Build type.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string BuildType => NativeValue.ToString(NodeApi.GetProperty(Module, _buildType)) ?? string.Empty;
 
     /// <summary>
-    /// buildUser
+    /// Build user.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string BuildUser => NativeValue.ToString(NodeApi.GetProperty(Module, _buildUser)) ?? string.Empty;
 
     /// <summary>
-    /// buildHost
+    /// Build host.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string BuildHost => NativeValue.ToString(NodeApi.GetProperty(Module, _buildHost)) ?? string.Empty;
 
     /// <summary>
-    /// buildTime
+    /// Build time.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string BuildTime => NativeValue.ToString(NodeApi.GetProperty(Module, _buildTime)) ?? string.Empty;
 
     /// <summary>
-    /// buildRootHash
+    /// Build root hash.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static string BuildRootHash => NativeValue.ToString(NodeApi.GetProperty(Module, _buildRootHash)) ?? string.Empty;
 
     /// <summary>
-    /// udid
+    /// Device UDID.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string Udid => NativeValue.ToString(NodeApi.GetProperty(Module, _udid)) ?? string.Empty;
 
     /// <summary>
-    /// distributionOSName
+    /// Distribution OS name.&lt;!--Del--&gt; It is defined by the issuer.&lt;!--DelEnd--&gt;
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string DistributionOsName => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSName)) ?? string.Empty;
 
     /// <summary>
-    /// distributionOSVersion
+    /// Distribution OS version.&lt;!--Del--&gt; It is defined by the issuer.&lt;!--DelEnd--&gt;&lt;!--RP11--&gt;&lt;!--RP11End--&gt;
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string DistributionOsVersion => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSVersion)) ?? string.Empty;
 
     /// <summary>
-    /// distributionOSApiVersion
+    /// Distribution OS API version.&lt;!--Del--&gt; It is defined by the issuer.&lt;!--DelEnd--&gt;
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static double DistributionOsApiVersion => NativeValue.ToDouble(NodeApi.GetProperty(Module, _distributionOSApiVersion));
 
     /// <summary>
-    /// distributionOSApiName
+    /// Distribution OS API name.&lt;!--Del--&gt; It is defined by the issuer.&lt;!--DelEnd--&gt;
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static string DistributionOsApiName => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSApiName)) ?? string.Empty;
 
     /// <summary>
-    /// distributionOSReleaseType
+    /// Distribution OS release type.&lt;!--Del--&gt; It is defined by the issuer.&lt;!--DelEnd--&gt;
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string DistributionOsReleaseType => NativeValue.ToString(NodeApi.GetProperty(Module, _distributionOSReleaseType)) ?? string.Empty;
 
     /// <summary>
-    /// ODID
+    /// Open device identifier.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string Odid => NativeValue.ToString(NodeApi.GetProperty(Module, _ODID)) ?? string.Empty;
 
     /// <summary>
-    /// diskSN
+    /// Disk SN.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static string DiskSN => NativeValue.ToString(NodeApi.GetProperty(Module, _diskSN)) ?? string.Empty;
 
     /// <summary>
-    /// performanceClass
+    /// Device capability level.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static global::HarmonyOS.ArkUI.PerformanceClassLevel PerformanceClass => (global::HarmonyOS.ArkUI.PerformanceClassLevel)NativeValue.ToInt(NodeApi.GetProperty(Module, _performanceClass));
 
     /// <summary>
-    /// chipType
+    /// Obtains the device CPU chipType by a string.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static string ChipType => NativeValue.ToString(NodeApi.GetProperty(Module, _chipType)) ?? string.Empty;
 
     /// <summary>
-    /// bootCount
+    /// Obtains boot count since the device starts running
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static double BootCount => NativeValue.ToDouble(NodeApi.GetProperty(Module, _bootCount));
 
     /// <summary>
-    /// apiAvailable
+    /// Checks whether a specified API version is available on the current device.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool ApiAvailable(string version)
     {
         return NodeApi.CallMethod<bool>(Module, _apiAvailable, version);
     }
 
     /// <summary>
-    /// deviceColor
+    /// Obtain the device color represented by a string. If it cannot be obtained, return an empty string
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static string DeviceColor => NativeValue.ToString(NodeApi.GetProperty(Module, _deviceColor)) ?? string.Empty;
 
 }

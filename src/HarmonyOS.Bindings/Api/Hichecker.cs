@@ -16,51 +16,8 @@ public static unsafe partial class Hichecker
 {
     private const string ModuleName = "@ohos.hichecker";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[hichecker] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _addRule => "addRule"u8;
     private static ReadOnlySpan<byte> _removeRule => "removeRule"u8;
@@ -71,56 +28,63 @@ public static unsafe partial class Hichecker
     private static ReadOnlySpan<byte> _containsCheckRule => "containsCheckRule"u8;
 
     /// <summary>
-    /// addRule
+    /// Adds one or more rules. HiChecker detects unexpected operations or gives feedback based on the added rules.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void AddRule(JsBigInt rule)
     {
         NodeApi.CallMethodVoid(Module, _addRule, NapiArg.Of(rule));
     }
 
     /// <summary>
-    /// removeRule
+    /// Removes one or more rules. The removed rules will become ineffective.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void RemoveRule(JsBigInt rule)
     {
         NodeApi.CallMethodVoid(Module, _removeRule, NapiArg.Of(rule));
     }
 
     /// <summary>
-    /// getRule
+    /// Obtains a collection of thread, process, and alarm rules that have been added.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static JsBigInt GetRule()
     {
         return NodeApi.CallMethod<JsBigInt>(Module, _getRule);
     }
 
     /// <summary>
-    /// contains
+    /// Checks whether the specified rule exists in the collection of added rules. If the rule is of the thread level, this
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool Contains(JsBigInt rule)
     {
         return NodeApi.CallMethod<bool>(Module, _contains, NapiArg.Of(rule));
     }
 
     /// <summary>
-    /// addCheckRule
+    /// Adds one or more check rules. HiChecker detects unexpected operations or gives feedback based on the added rules.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void AddCheckRule(JsBigInt rule)
     {
         NodeApi.CallMethodVoid(Module, _addCheckRule, NapiArg.Of(rule));
     }
 
     /// <summary>
-    /// removeCheckRule
+    /// Removes one or more rules. The removed rules will become ineffective.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void RemoveCheckRule(JsBigInt rule)
     {
         NodeApi.CallMethodVoid(Module, _removeCheckRule, NapiArg.Of(rule));
     }
 
     /// <summary>
-    /// containsCheckRule
+    /// Checks whether the specified rule exists in the collection of added rules. If the rule is of the thread level, this
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool ContainsCheckRule(JsBigInt rule)
     {
         return NodeApi.CallMethod<bool>(Module, _containsCheckRule, NapiArg.Of(rule));

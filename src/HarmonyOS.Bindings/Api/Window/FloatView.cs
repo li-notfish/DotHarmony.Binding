@@ -19,51 +19,8 @@ public static unsafe partial class FloatView
 {
     private const string ModuleName = "@ohos.window.floatView";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[window.floatView] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _isFloatViewEnabled => "isFloatViewEnabled"u8;
     private static ReadOnlySpan<byte> _create => "create"u8;
@@ -72,40 +29,45 @@ public static unsafe partial class FloatView
     private static ReadOnlySpan<byte> _getFloatViewLimits => "getFloatViewLimits"u8;
 
     /// <summary>
-    /// isFloatViewEnabled
+    /// Checks whether the device supports the float view.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsFloatViewEnabled()
     {
         return NodeApi.CallMethod<bool>(Module, _isFloatViewEnabled);
     }
 
     /// <summary>
-    /// create
+    /// Creates a float view controller. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<FloatViewController> CreateAsync(IntPtr config)
     {
         return NodeApi.CallMethodAsync(Module, _create, static h => new FloatViewController(h), config);
     }
 
     /// <summary>
-    /// bind
+    /// Binds the float view and floating ball. You need to create the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task BindAsync(FloatViewController floatViewController, IntPtr floatingBallController, IntPtr floatingBallParams, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _bind, cancellationToken, NapiArg.Of(floatViewController), floatingBallController, floatingBallParams);
     }
 
     /// <summary>
-    /// unbind
+    /// Unbinds the float view and floating ball. The unbinding can be performed only after both the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task UnbindAsync(FloatViewController floatViewController, IntPtr floatingBallController, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _unbind, cancellationToken, NapiArg.Of(floatViewController), floatingBallController);
     }
 
     /// <summary>
-    /// getFloatViewLimits
+    /// Obtains the limits of the float view based on the passed template type. The unit is px.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static IntPtr GetFloatViewLimits(global::HarmonyOS.ArkUI.FloatViewTemplateType templateType)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getFloatViewLimits, (int)templateType);
@@ -140,6 +102,11 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public Task SetUiContextAsync(string path, IntPtr? storage = null, CancellationToken cancellationToken = default)
     {
+        if (storage is null)
+        {
+            return CallMethodAsyncVoid(_setUIContext, cancellationToken, path);
+        }
+
         return CallMethodAsyncVoid(_setUIContext, cancellationToken, path, NapiArg.Of(storage));
     }
 
@@ -148,6 +115,11 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public Task SetUiContextByNameAsync(string name, IntPtr? storage = null, CancellationToken cancellationToken = default)
     {
+        if (storage is null)
+        {
+            return CallMethodAsyncVoid(_setUIContextByName, cancellationToken, name);
+        }
+
         return CallMethodAsyncVoid(_setUIContextByName, cancellationToken, name, NapiArg.Of(storage));
     }
 
@@ -196,6 +168,11 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public Task RestoreMainWindowAsync(IntPtr? wantParameters = null, CancellationToken cancellationToken = default)
     {
+        if (wantParameters is null)
+        {
+            return CallMethodAsyncVoid(_restoreMainWindow, cancellationToken);
+        }
+
         return CallMethodAsyncVoid(_restoreMainWindow, cancellationToken, NapiArg.Of(wantParameters));
     }
 
@@ -220,6 +197,12 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public void OffStateChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offStateChange);
+            return;
+        }
+
         CallMethodVoid(_offStateChange, NapiArg.Of(callback));
     }
 
@@ -236,6 +219,12 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public void OffRectChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offRectChange);
+            return;
+        }
+
         CallMethodVoid(_offRectChange, NapiArg.Of(callback));
     }
 
@@ -252,6 +241,12 @@ public sealed partial class FloatViewController : JsObject
     /// </summary>
     public void OffLimitsChange(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offLimitsChange);
+            return;
+        }
+
         CallMethodVoid(_offLimitsChange, NapiArg.Of(callback));
     }
 

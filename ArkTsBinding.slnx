@@ -6,13 +6,17 @@
     <Project Path="samples/dotnet/EngineLab/EngineLab.csproj" />
     <Project Path="samples/dotnet/EssentialsApp/EssentialsApp.csproj" />
     <Project Path="samples/dotnet/ControlsSampleApp/ControlsSampleApp.csproj" />
+    <Project Path="samples/dotnet/BlazorHybridApp/BlazorHybridApp.csproj" />
     <Project Path="samples/dotnet/WeatherTwentyOne/WeatherTwentyOne.csproj" />
+    <Project Path="samples/dotnet/PerfApp/PerfApp.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/HarmonyOS.Interop/HarmonyOS.Interop.csproj" />
     <Project Path="src/HarmonyOS.Bindings/HarmonyOS.Bindings.csproj" />
     <Project Path="src/HarmonyOS.Essentials/HarmonyOS.Essentials.csproj" />
     <Project Path="src/HarmonyOS.Maui/HarmonyOS.Maui.csproj" />
+    <Project Path="src/HarmonyOS.Maui.Web/HarmonyOS.Maui.Web.csproj" />
+    <Project Path="src/HarmonyOS.Maui.Blazor/HarmonyOS.Maui.Blazor.csproj" />
     <Project Path="src/HarmonyOS.Maui.Permissions/HarmonyOS.Maui.Permissions.csproj" />
     <Project Path="src/HarmonyOS.Maui.Permissions.Abstractions/HarmonyOS.Maui.Permissions.Abstractions.csproj" />
     <Project Path="src/HarmonyOS.Templates/HarmonyOS.Templates.csproj" />

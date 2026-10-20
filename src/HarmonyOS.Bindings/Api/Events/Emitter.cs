@@ -16,51 +16,8 @@ public static unsafe partial class Emitter
 {
     private const string ModuleName = "@ohos.events.emitter";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[events.emitter] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _once => "once"u8;
@@ -69,96 +26,108 @@ public static unsafe partial class Emitter
     private static ReadOnlySpan<byte> _getListenerCount => "getListenerCount"u8;
 
     /// <summary>
-    /// on
+    /// Subscribes to an event in persistent manner and executes a callback after the event is received.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void On(InnerEvent @event, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, NapiArg.Of(@event), callback);
     }
 
     /// <summary>
-    /// on
+    /// Subscribes to an event in persistent manner and executes a callback after the event is received.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void On(string eventId, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, eventId, callback);
     }
 
     /// <summary>
-    /// once
+    /// Subscribes to an event in one-shot manner and unsubscribes from it after the event callback is executed.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Once(InnerEvent @event, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _once, NapiArg.Of(@event), callback);
     }
 
     /// <summary>
-    /// once
+    /// Subscribes to an event in one-shot manner and unsubscribes from it after the event callback is executed.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void Once(string eventId, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _once, eventId, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from all events with the specified event ID.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Off(double eventId)
     {
         NodeApi.CallMethodVoid(Module, _off, eventId);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from all events with the specified event ID.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void Off(string eventId)
     {
         NodeApi.CallMethodVoid(Module, _off, eventId);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from an event with the specified event ID and processed by the specified callback. This API takes
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void Off(double eventId, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, eventId, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from an event with the specified event ID and processed by the specified callback. This API takes
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void Off(string eventId, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, eventId, callback);
     }
 
     /// <summary>
-    /// emit
+    /// Emits a specified event.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Emit(InnerEvent @event, IntPtr? data = null)
     {
         NodeApi.CallMethodVoid(Module, _emit, NapiArg.Of(@event), NapiArg.Of(data));
     }
 
     /// <summary>
-    /// emit
+    /// Emits a specified event.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void Emit(string eventId, IntPtr? data = null)
     {
         NodeApi.CallMethodVoid(Module, _emit, eventId, NapiArg.Of(data));
     }
 
     /// <summary>
-    /// emit
+    /// Emits an event of a specified priority.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void Emit(string eventId, EmitterOptions options, IntPtr? data = null)
     {
         NodeApi.CallMethodVoid(Module, _emit, eventId, NapiArg.Of(options), NapiArg.Of(data));
     }
 
     /// <summary>
-    /// getListenerCount
+    /// Obtains the number of subscriptions to a specified event.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static double GetListenerCount(double eventId)
     {
         return NodeApi.CallMethod<double>(Module, _getListenerCount, eventId);
@@ -294,6 +263,12 @@ public sealed partial class EmitterObject : JsObject
     /// </summary>
     public void Emit(string eventId, IntPtr? data = null)
     {
+        if (data is null)
+        {
+            CallMethodVoid(_emit, eventId);
+            return;
+        }
+
         CallMethodVoid(_emit, eventId, NapiArg.Of(data));
     }
 
@@ -302,6 +277,12 @@ public sealed partial class EmitterObject : JsObject
     /// </summary>
     public void Emit(string eventId, EmitterOptions options, IntPtr? data = null)
     {
+        if (data is null)
+        {
+            CallMethodVoid(_emit, eventId, NapiArg.Of(options));
+            return;
+        }
+
         CallMethodVoid(_emit, eventId, NapiArg.Of(options), NapiArg.Of(data));
     }
 

@@ -11,6 +11,8 @@ param(
     [Parameter(Mandatory = $true)][string]$BundleId,
     [Parameter(Mandatory = $true)][string]$AppTitle,
     [string]$PermissionsJson = "",
+    [string]$SdkVersion = "",
+    [string]$RuntimeOS = "",
     [string]$SigningKeystore = "",
     [string]$SigningKeystorePassword = "",
     [string]$SigningCertAlias = "",
@@ -19,6 +21,7 @@ param(
     [string]$SigningProfile = ""
 )
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "lib\sdk.ps1")
 
 if ([string]::IsNullOrEmpty($SigningKeystorePassword)) {
     $SigningKeystorePassword = $env:HarmonySigningKeystorePassword
@@ -50,9 +53,77 @@ if ($signingEnabled) {
     }
 }
 
+# 宿主模板的 build-profile 里 compatibleSdkVersion/targetSdkVersion/runtimeOS 是
+# 模板自带的占位值；staging 必须按探测到的 SDK 重写，否则 SDK 升级后仍按旧 API 打包。
+$sdkRoot = $null
+$sdkProbeError = $null
+try { $sdkRoot = Find-HarmonySdkRoot } catch { $sdkProbeError = $_.Exception.Message }
+
+if ([string]::IsNullOrEmpty($SdkVersion)) { $SdkVersion = $env:HARMONY_COMPATIBLE_SDK_VERSION }
+if ([string]::IsNullOrEmpty($SdkVersion)) {
+    if (-not $sdkRoot) {
+        throw "无法探测 HarmonyOS SDK 版本：$sdkProbeError。请设置 OHOS_SDK_BASE/DEVECO_SDK_HOME，或显式传 -SdkVersion / HARMONY_COMPATIBLE_SDK_VERSION。"
+    }
+    $SdkVersion = Get-HarmonySdkVersion $sdkRoot
+}
+if ($SdkVersion -notmatch '^\d+(?:\.\d+){0,3}(?:[-(][0-9A-Za-z._-]+)?$') {
+    throw "SDK 版本格式非法：'$SdkVersion'（示例：26.0.0 / 12 / 5.0.0(12)）"
+}
+
+if ([string]::IsNullOrEmpty($RuntimeOS)) {
+    $RuntimeOS = if ($sdkRoot) { Get-HarmonySdkRuntimeOS $sdkRoot } else { "HarmonyOS" }
+}
+if ($RuntimeOS -notin @("HarmonyOS", "OpenHarmony")) {
+    throw "runtimeOS 只能是 HarmonyOS 或 OpenHarmony：'$RuntimeOS'"
+}
+
+function Set-JsonStringField([string]$Text, [string]$Field, [string]$Value, [string]$Description) {
+    $pattern = '("' + [regex]::Escape($Field) + '"\s*:\s*)(?:"[^"]*"|[0-9]+)'
+    $rx = [regex]::new($pattern)
+    if (-not $rx.IsMatch($Text)) {
+        throw "宿主模板结构无法识别：$Description 缺少 $Field 字段"
+    }
+    $escaped = $Value.Replace('$', '$$')
+    return $rx.Replace($Text, '${1}"' + $escaped + '"', 1)
+}
+
+function Update-ModulePermissions([string]$Path, $Permissions) {
+    if (-not (Test-Path -LiteralPath $Path)) {
+        throw "宿主模板结构无法识别：缺少 $Path"
+    }
+    try {
+        $doc = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        throw "无法结构化解析 $Path（模板若引入 JSON5 注释需先调整 staging 实现）：$($_.Exception.Message)"
+    }
+    if (-not $doc.module) { throw "宿主模板结构无法识别：$Path 缺少 module 对象" }
+    $doc.module | Add-Member -NotePropertyName requestPermissions -NotePropertyValue @($Permissions) -Force
+    $doc | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $Path -Encoding utf8
+}
+
+function Update-EntryStrings([string]$Path, [string]$AppTitle, $PermissionStrings) {
+    if (-not (Test-Path -LiteralPath $Path)) {
+        throw "宿主模板结构无法识别：缺少入口字符串资源 $Path"
+    }
+    try {
+        $doc = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        throw "无法结构化解析 $Path：$($_.Exception.Message)"
+    }
+    $kept = @($doc.string | Where-Object { $_.name -notlike 'permission_*' })
+    $label = $kept | Where-Object { $_.name -eq 'EntryAbility_label' } | Select-Object -First 1
+    if ($label) {
+        $label.value = $AppTitle
+    } else {
+        $kept += [pscustomobject]@{ name = 'EntryAbility_label'; value = $AppTitle }
+    }
+    $doc.string = @($kept) + @($PermissionStrings)
+    $doc | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $Path -Encoding utf8
+}
+
 $buildStamp = Join-Path $Destination ".stage-stamp"
 # 修改 staging 行为时递增该版本，让已有暂存宿主自动重建。
-$stageVersion = "4"
+$stageVersion = "5"
 
 function Get-TemplateContentHash([string]$Root) {
     $sha = [System.Security.Cryptography.SHA256]::Create()
@@ -99,7 +170,7 @@ if ($PermissionsJson -and (Test-Path -LiteralPath $PermissionsJson)) {
             [System.IO.File]::ReadAllBytes($PermissionsJson)))
     $permissionsStamp = "permissions:$permissionsHash"
 }
-$stampContent = "$stageVersion|template:$templateHash|$BundleId|$AppTitle|$permissionsStamp|$signingStamp"
+$stampContent = "$stageVersion|template:$templateHash|$BundleId|$AppTitle|sdk:$SdkVersion|runtime:$RuntimeOS|$permissionsStamp|$signingStamp"
 $upToDate = (Test-Path $buildStamp) -and
     ((Get-Content $buildStamp -Raw).Trim() -eq $stampContent.Trim())
 if ($upToDate) {
@@ -169,8 +240,8 @@ if (Test-Path $abilityString) {
     throw "宿主模板结构无法识别：缺少入口 Ability 标签资源文件"
 }
 
-# 4) 清空模板继承的 signingConfigs。签名由 hap-sign-tool 处理，避免 hvigor
-#    对 storePassword/keyPassword 明文字段的 32 字符校验限制。
+# 4) 清空模板继承的 signingConfigs（签名由 hap-sign-tool 处理，绕开 hvigor 的
+#    32 字符口令校验），并按探测到的 SDK 重写目标 API 版本与 runtimeOS。
 $buildProfile = Join-Path $Destination "build-profile.json5"
 $profileText = Get-Content $buildProfile -Raw
 $signingPattern = [regex]'"signingConfigs"\s*:\s*\[[\s\S]*?\]\s*,\s*"products"'
@@ -181,7 +252,17 @@ $profileText = $signingPattern.Replace($profileText, "`"signingConfigs`": [],`r`
 if ($profileText -notmatch '"signingConfigs"\s*:\s*\[\s*\]\s*,\s*"products"') {
     throw "宿主暂存校验失败：signingConfigs 未清空"
 }
+$profileText = Set-JsonStringField $profileText "compatibleSdkVersion" $SdkVersion "build-profile.json5"
+$profileText = Set-JsonStringField $profileText "targetSdkVersion" $SdkVersion "build-profile.json5"
+$profileText = Set-JsonStringField $profileText "runtimeOS" $RuntimeOS "build-profile.json5"
+if ($profileText -notmatch ('"compatibleSdkVersion"\s*:\s*"' + [regex]::Escape($SdkVersion) + '"')) {
+    throw "宿主暂存校验失败：compatibleSdkVersion 未更新为 $SdkVersion"
+}
+if ($profileText -notmatch ('"runtimeOS"\s*:\s*"' + [regex]::Escape($RuntimeOS) + '"')) {
+    throw "宿主暂存校验失败：runtimeOS 未更新为 $RuntimeOS"
+}
 Set-Content $buildProfile $profileText
+Write-Host "=== host SDK target: $SdkVersion ($RuntimeOS)"
 
 # 5) 根据应用代码推导出的权限生成 module.json5 与权限说明资源。
 $permissions = @()
@@ -213,60 +294,11 @@ foreach ($permission in $permissions) {
     }
 }
 
-$moduleJson = [ordered]@{
-    module = [ordered]@{
-        requestPermissions = $requestPermissions
-        name = "entry"
-        type = "entry"
-        description = "`$string:module_desc"
-        mainElement = "EntryAbility"
-        deviceTypes = @("phone", "tablet", "2in1")
-        deliveryWithInstall = $true
-        installationFree = $false
-        pages = "`$profile:main_pages"
-        abilities = @(
-            [ordered]@{
-                name = "EntryAbility"
-                srcEntry = "./ets/entryability/EntryAbility.ets"
-                description = "`$string:ability_desc"
-                icon = "`$media:icon"
-                label = "`$string:EntryAbility_label"
-                startWindowIcon = "`$media:icon"
-                startWindowBackground = "`$color:start_window_background"
-                exported = $true
-                skills = @(
-                    [ordered]@{
-                        entities = @("entity.system.home")
-                        actions = @("action.system.home")
-                    }
-                )
-            }
-        )
-    }
-}
-
 $moduleJsonPath = Join-Path $Destination "entry\src\main\module.json5"
-$moduleJson | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $moduleJsonPath
-
-$entryStringJson = [ordered]@{
-    string = @(
-        [ordered]@{
-            name = "module_desc"
-            value = "HarmonyOS host module"
-        },
-        [ordered]@{
-            name = "EntryAbility_label"
-            value = $AppTitle
-        },
-        [ordered]@{
-            name = "ability_desc"
-            value = "HarmonyOS host ability"
-        }
-    ) + $permissionStrings
-}
+Update-ModulePermissions $moduleJsonPath $requestPermissions
 
 $entryStringJsonPath = Join-Path $Destination "entry\src\main\resources\base\element\string.json"
-$entryStringJson | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $entryStringJsonPath
+Update-EntryStrings $entryStringJsonPath $AppTitle $permissionStrings
 
 Set-Content $buildStamp $stampContent
 Write-Host "=== host staged OK"

@@ -19,51 +19,8 @@ public static unsafe partial class Pasteboard
 {
     private const string ModuleName = "@ohos.pasteboard";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[pasteboard] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _MAX_RECORD_NUM => "MAX_RECORD_NUM"u8;
     private static ReadOnlySpan<byte> _MIMETYPE_TEXT_HTML => "MIMETYPE_TEXT_HTML"u8;
@@ -84,126 +41,144 @@ public static unsafe partial class Pasteboard
     private static ReadOnlySpan<byte> _getSystemPasteboard => "getSystemPasteboard"u8;
 
     /// <summary>
-    /// MAX_RECORD_NUM
+    /// Maximum number of records in a **PasteData** object. In versions earlier than API version 10, the value is 512,
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double MaxRecordNum => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_RECORD_NUM));
 
     /// <summary>
-    /// MIMETYPE_TEXT_HTML
+    /// MIME type of the HTML content.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string MimeTypeTextHtml => NativeValue.ToString(NodeApi.GetProperty(Module, _MIMETYPE_TEXT_HTML)) ?? string.Empty;
 
     /// <summary>
-    /// MIMETYPE_TEXT_WANT
+    /// MIME type of the Want content.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string MimeTypeTextWant => NativeValue.ToString(NodeApi.GetProperty(Module, _MIMETYPE_TEXT_WANT)) ?? string.Empty;
 
     /// <summary>
-    /// MIMETYPE_TEXT_PLAIN
+    /// MIME type of the plain text content.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string MimeTypeTextPlain => NativeValue.ToString(NodeApi.GetProperty(Module, _MIMETYPE_TEXT_PLAIN)) ?? string.Empty;
 
     /// <summary>
-    /// MIMETYPE_TEXT_URI
+    /// MIME type of the URI content.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string MimeTypeTextUri => NativeValue.ToString(NodeApi.GetProperty(Module, _MIMETYPE_TEXT_URI)) ?? string.Empty;
 
     /// <summary>
-    /// MIMETYPE_PIXELMAP
+    /// MIME type of the PixelMap content.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static string MimeTypePixelmap => NativeValue.ToString(NodeApi.GetProperty(Module, _MIMETYPE_PIXELMAP)) ?? string.Empty;
 
     /// <summary>
-    /// createHtmlData
+    /// Creates a **PasteData** object of the HTML type.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static PasteData CreateHtmlData(string htmlText)
     {
         return NodeApi.CallMethod(Module, _createHtmlData, static h => new PasteData(h), htmlText);
     }
 
     /// <summary>
-    /// createWantData
+    /// Creates a **PasteData** object of the Want type.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static PasteData CreateWantData(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
     {
         return NodeApi.CallMethod(Module, _createWantData, static h => new PasteData(h), NapiArg.Of(want));
     }
 
     /// <summary>
-    /// createPlainTextData
+    /// Creates a **PasteData** object of the plain text type.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static PasteData CreatePlainTextData(string text)
     {
         return NodeApi.CallMethod(Module, _createPlainTextData, static h => new PasteData(h), text);
     }
 
     /// <summary>
-    /// createUriData
+    /// Creates a **PasteData** object of the URI type.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static PasteData CreateUriData(string uri)
     {
         return NodeApi.CallMethod(Module, _createUriData, static h => new PasteData(h), uri);
     }
 
     /// <summary>
-    /// createData
+    /// Creates a **PasteData** object of the specified type.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static PasteData CreateData(string mimeType, global::HarmonyOS.ArkUI.ValueType value)
     {
         return NodeApi.CallMethod(Module, _createData, static h => new PasteData(h), mimeType, (int)value);
     }
 
     /// <summary>
-    /// createData
+    /// Creates a **PasteData** object that contains multiple types of data.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static PasteData CreateData(IntPtr data)
     {
         return NodeApi.CallMethod(Module, _createData, static h => new PasteData(h), data);
     }
 
     /// <summary>
-    /// createHtmlTextRecord
+    /// Creates a **PasteDataRecord** object of the HTML text type.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static PasteDataRecord CreateHtmlTextRecord(string htmlText)
     {
         return NodeApi.CallMethod(Module, _createHtmlTextRecord, static h => new PasteDataRecord(h), htmlText);
     }
 
     /// <summary>
-    /// createWantRecord
+    /// Creates a **PasteDataRecord** object of the Want type.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static PasteDataRecord CreateWantRecord(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
     {
         return NodeApi.CallMethod(Module, _createWantRecord, static h => new PasteDataRecord(h), NapiArg.Of(want));
     }
 
     /// <summary>
-    /// createPlainTextRecord
+    /// Creates a **PasteDataRecord** object of the plain text type.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static PasteDataRecord CreatePlainTextRecord(string text)
     {
         return NodeApi.CallMethod(Module, _createPlainTextRecord, static h => new PasteDataRecord(h), text);
     }
 
     /// <summary>
-    /// createUriRecord
+    /// Creates a **PasteDataRecord** object of the URI type.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static PasteDataRecord CreateUriRecord(string uri)
     {
         return NodeApi.CallMethod(Module, _createUriRecord, static h => new PasteDataRecord(h), uri);
     }
 
     /// <summary>
-    /// createRecord
+    /// Creates a **PasteDataRecord** object of the specified type.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static PasteDataRecord CreateRecord(string mimeType, global::HarmonyOS.ArkUI.ValueType value)
     {
         return NodeApi.CallMethod(Module, _createRecord, static h => new PasteDataRecord(h), mimeType, (int)value);
     }
 
     /// <summary>
-    /// getSystemPasteboard
+    /// Obtains **SystemPasteboard** object.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static SystemPasteboard GetSystemPasteboard()
     {
         return NodeApi.CallMethod(Module, _getSystemPasteboard, static h => new SystemPasteboard(h));
@@ -624,6 +599,12 @@ public sealed partial class SystemPasteboard : JsObject
     /// </summary>
     public void OffRemoteUpdate(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offRemoteUpdate);
+            return;
+        }
+
         CallMethodVoid(_offRemoteUpdate, NapiArg.Of(callback));
     }
 

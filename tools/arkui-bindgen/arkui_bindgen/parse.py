@@ -161,7 +161,9 @@ def parse_header(header: Path, include_roots: list[Path], src_name: str = "") ->
                 is_union = decl.kind == _K.UNION_DECL
                 key = node.spelling
                 model.structs.setdefault(
-                    key, StructModel(name=key, fields=fields, is_union=is_union, header=src_name or header.name)
+                    key, StructModel(name=key, fields=fields, is_union=is_union,
+                                     header=src_name or header.name,
+                                     doc=node.raw_comment or decl.raw_comment or "")
                 )
             elif can.kind == _T.RECORD and not decl.is_definition():
                 # typedef struct X X; —— 不透明类型
@@ -183,6 +185,7 @@ def parse_header(header: Path, include_roots: list[Path], src_name: str = "") ->
                     ret=norm_type(node.result_type),
                     args=args,
                     header=src_name or header.name,
+                    doc=node.raw_comment or "",
                 ),
             )
 

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- 目标：linux-musl-arm64 NativeAOT 共享库 → libs/arm64-v8a/libapp.so（API 绑定 demo） -->
-    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <TargetFramework>$(HarmonyOSPlatformTargetFramework)</TargetFramework>
     <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
@@ -35,6 +35,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\HarmonyOS.Bindings\HarmonyOS.Bindings.csproj" />
     <ProjectReference Include="..\..\..\src\HarmonyOS.Maui\HarmonyOS.Maui.csproj" />
+    <!-- 硬件/权限流程用 Essentials 的跨平台门面（MediaPicker/Permissions/Geolocation/FileSystem） -->
+    <ProjectReference Include="..\..\..\src\HarmonyOS.Essentials\HarmonyOS.Essentials.csproj" />
   </ItemGroup>
 
   <!-- MAUI 风格平台编排：dotnet build -t:HarmonyRun（libapp.so → HAP → 部署） -->

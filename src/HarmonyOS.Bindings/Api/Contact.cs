@@ -20,51 +20,8 @@ public static unsafe partial class Contact
 {
     private const string ModuleName = "@ohos.contact";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[contact] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _addContact => "addContact"u8;
     private static ReadOnlySpan<byte> _selectContact => "selectContact"u8;
@@ -91,560 +48,630 @@ public static unsafe partial class Contact
     private static ReadOnlySpan<byte> _importContactsViaUI => "importContactsViaUI"u8;
 
     /// <summary>
-    /// addContact
+    /// Adds a contact. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> AddContactAsync(ContactObject contact)
     {
         return NodeApi.CallMethodAsync<double>(Module, _addContact, NapiArg.Of(contact));
     }
 
     /// <summary>
-    /// addContact
+    /// Adds a contact. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> AddContactAsync(IntPtr context, ContactObject contact)
     {
         return NodeApi.CallMethodAsync<double>(Module, _addContact, context, NapiArg.Of(contact));
     }
 
     /// <summary>
-    /// selectContact
+    /// Selects a contact. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> SelectContactAsync()
     {
         return NodeApi.CallMethodAsync(Module, _selectContact, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)));
     }
 
     /// <summary>
-    /// selectContacts
+    /// Selects a contact. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> SelectContactsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _selectContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)));
     }
 
     /// <summary>
-    /// selectContacts
+    /// Selects a contact. (Filter criteria can be transferred during contact selection.) This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> SelectContactsAsync(ContactSelectionOptions options)
     {
         return NodeApi.CallMethodAsync(Module, _selectContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// deleteContact
+    /// Deletes a contact. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task DeleteContactAsync(string key, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteContact, cancellationToken, key);
     }
 
     /// <summary>
-    /// deleteContact
+    /// Deletes a contact. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task DeleteContactAsync(IntPtr context, string key, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteContact, cancellationToken, context, key);
     }
 
     /// <summary>
-    /// queryContact
+    /// Queries a contact based on the specified key. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject> QueryContactAsync(string key)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), key);
     }
 
     /// <summary>
-    /// queryContact
+    /// Queries a contact based on the specified key. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject> QueryContactAsync(IntPtr context, string key)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), context, key);
     }
 
     /// <summary>
-    /// queryContact
+    /// Queries a contact based on the specified key and holder. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject> QueryContactAsync(string key, Holder holder)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), key, NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryContact
+    /// Queries a contact based on the specified key and holder. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject> QueryContactAsync(IntPtr context, string key, Holder holder)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), context, key, NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryContact
+    /// Queries a contact based on the specified key and attributes. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject> QueryContactAsync(string key, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), key, NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContact
+    /// Queries a contact based on the specified key and attributes. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject> QueryContactAsync(IntPtr context, string key, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContact, static h => new ContactObject(h), context, key, NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContact
+    /// Queries a contact based on the specified key, holder, and attributes. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject> QueryContactAsync(string key, Holder holder, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsync(Module, _queryContact, static h => new ContactObject(h), key, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContact
+    /// Queries a contact based on the specified key, holder, and attributes. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject> QueryContactAsync(IntPtr context, string key, Holder holder, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsync(Module, _queryContact, static h => new ContactObject(h), context, key, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContacts
+    /// Queries all contacts. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsAsync()
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)));
     }
 
     /// <summary>
-    /// queryContacts
+    /// Queries all contacts. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context);
     }
 
     /// <summary>
-    /// queryContacts
+    /// Queries all contacts based on the specified holder. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsAsync(Holder holder)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryContacts
+    /// Queries all contacts based on the specified holder. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsAsync(IntPtr context, Holder holder)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryContacts
+    /// Queries all contacts based on the specified attributes. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsAsync(ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContacts
+    /// Queries all contacts based on the specified attributes. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsAsync(IntPtr context, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContacts
+    /// Queries all contacts based on the specified holder and attributes. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsAsync(Holder holder, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsync(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContacts
+    /// Queries all contacts based on the specified holder and attributes. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsAsync(IntPtr context, Holder holder, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsync(Module, _queryContacts, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContactsByEmail
+    /// Queries a contact based on the specified email. This API uses an asynchronous callback to return the result. The
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(string email)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), email);
     }
 
     /// <summary>
-    /// queryContactsByEmail
+    /// Queries a contact based on the specified email. This API uses an asynchronous callback to return the result. The
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(IntPtr context, string email)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, email);
     }
 
     /// <summary>
-    /// queryContactsByEmail
+    /// Queries a contact based on the specified email and holder. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(string email, Holder holder)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), email, NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryContactsByEmail
+    /// Queries a contact based on the specified email and holder. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(IntPtr context, string email, Holder holder)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, email, NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryContactsByEmail
+    /// Queries a contact based on the specified email and attributes. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(string email, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), email, NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContactsByEmail
+    /// Queries a contact based on the specified email and attributes. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(IntPtr context, string email, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, email, NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContactsByEmail
+    /// Queries a contact based on the specified email, holder, and attributes. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(string email, Holder holder, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsync(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), email, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContactsByEmail
+    /// Queries a contact based on the specified email, holder, and attributes. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsByEmailAsync(IntPtr context, string email, Holder holder, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsync(Module, _queryContactsByEmail, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, email, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContactsByPhoneNumber
+    /// Queries a contact based on the specified phone number. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(string phoneNumber)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), phoneNumber);
     }
 
     /// <summary>
-    /// queryContactsByPhoneNumber
+    /// Queries a contact based on the specified phone number. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(IntPtr context, string phoneNumber)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, phoneNumber);
     }
 
     /// <summary>
-    /// queryContactsByPhoneNumber
+    /// Queries a contact based on the specified phone number and holder. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(string phoneNumber, Holder holder)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), phoneNumber, NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryContactsByPhoneNumber
+    /// Queries a contact based on the specified phone number and holder. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(IntPtr context, string phoneNumber, Holder holder)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, phoneNumber, NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryContactsByPhoneNumber
+    /// Queries a contact based on the specified phone number and attributes. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(string phoneNumber, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), phoneNumber, NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContactsByPhoneNumber
+    /// Queries a contact based on the specified phone number and attributes. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(IntPtr context, string phoneNumber, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, phoneNumber, NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContactsByPhoneNumber
+    /// Queries a contact based on the specified phone number, holder, and attributes. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(string phoneNumber, Holder holder, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsync(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), phoneNumber, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryContactsByPhoneNumber
+    /// Queries a contact based on the specified phone number, holder, and attributes. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject[]> QueryContactsByPhoneNumberAsync(IntPtr context, string phoneNumber, Holder holder, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsync(Module, _queryContactsByPhoneNumber, h => ValueConverter.ConvertArray(h, static e => new ContactObject(e)), context, phoneNumber, NapiArg.Of(holder), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryGroups
+    /// Queries all groups of a contact. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<Group[]> QueryGroupsAsync()
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryGroups, h => ValueConverter.ConvertArray(h, static e => new Group(e)));
     }
 
     /// <summary>
-    /// queryGroups
+    /// Queries all groups of a contact. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<Group[]> QueryGroupsAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryGroups, h => ValueConverter.ConvertArray(h, static e => new Group(e)), context);
     }
 
     /// <summary>
-    /// queryGroups
+    /// Queries all groups of a contact based on the specified holder. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<Group[]> QueryGroupsAsync(Holder holder)
     {
         return NodeApi.CallMethodAsync(Module, _queryGroups, h => ValueConverter.ConvertArray(h, static e => new Group(e)), NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryGroups
+    /// Queries all groups of a contact based on the specified holder. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<Group[]> QueryGroupsAsync(IntPtr context, Holder holder)
     {
         return NodeApi.CallMethodAsync(Module, _queryGroups, h => ValueConverter.ConvertArray(h, static e => new Group(e)), context, NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryHolders
+    /// Queries all applications that have created contacts. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<Holder[]> QueryHoldersAsync()
     {
         return NodeApi.CallMethodAsync(Module, _queryHolders, h => ValueConverter.ConvertArray(h, static e => new Holder(e)));
     }
 
     /// <summary>
-    /// queryHolders
+    /// Queries all applications that have created contacts. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<Holder[]> QueryHoldersAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsync(Module, _queryHolders, h => ValueConverter.ConvertArray(h, static e => new Holder(e)), context);
     }
 
     /// <summary>
-    /// queryKey
+    /// Queries the key of a contact based on the specified contact ID. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<string> QueryKeyAsync(double id)
     {
         return NodeApi.CallMethodAsyncCallback<string>(Module, _queryKey, null, id);
     }
 
     /// <summary>
-    /// queryKey
+    /// Queries the key of a contact based on the specified contact ID. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<string> QueryKeyAsync(IntPtr context, double id)
     {
         return NodeApi.CallMethodAsyncCallback<string>(Module, _queryKey, null, context, id);
     }
 
     /// <summary>
-    /// queryKey
+    /// Queries the key of a contact based on the specified contact ID and holder. This API uses an asynchronous callback
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<string> QueryKeyAsync(double id, Holder holder)
     {
         return NodeApi.CallMethodAsync<string>(Module, _queryKey, id, NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryKey
+    /// Queries the key of a contact based on the specified contact ID and holder. This API uses an asynchronous callback
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<string> QueryKeyAsync(IntPtr context, double id, Holder holder)
     {
         return NodeApi.CallMethodAsync<string>(Module, _queryKey, context, id, NapiArg.Of(holder));
     }
 
     /// <summary>
-    /// queryMyCard
+    /// Queries my card. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject> QueryMyCardAsync()
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryMyCard, static h => new ContactObject(h));
     }
 
     /// <summary>
-    /// queryMyCard
+    /// Queries my card. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject> QueryMyCardAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _queryMyCard, static h => new ContactObject(h), context);
     }
 
     /// <summary>
-    /// queryMyCard
+    /// Queries my card. (The contact attribute list can be imported.) This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<ContactObject> QueryMyCardAsync(ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsync(Module, _queryMyCard, static h => new ContactObject(h), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// queryMyCard
+    /// Queries my card. (The contact attribute list can be imported.) This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<ContactObject> QueryMyCardAsync(IntPtr context, ContactAttributes attrs)
     {
         return NodeApi.CallMethodAsync(Module, _queryMyCard, static h => new ContactObject(h), context, NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// updateContact
+    /// Updates a contact. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task UpdateContactAsync(ContactObject contact, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _updateContact, cancellationToken, NapiArg.Of(contact));
     }
 
     /// <summary>
-    /// updateContact
+    /// Updates a contact. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task UpdateContactAsync(IntPtr context, ContactObject contact, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _updateContact, cancellationToken, context, NapiArg.Of(contact));
     }
 
     /// <summary>
-    /// updateContact
+    /// Updates a contact. (The contact attribute list can be imported.) This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task UpdateContactAsync(ContactObject contact, ContactAttributes attrs, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updateContact, cancellationToken, NapiArg.Of(contact), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// updateContact
+    /// Updates a contact. (The contact attribute list can be imported.) This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task UpdateContactAsync(IntPtr context, ContactObject contact, ContactAttributes attrs, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updateContact, cancellationToken, context, NapiArg.Of(contact), NapiArg.Of(attrs));
     }
 
     /// <summary>
-    /// isLocalContact
+    /// Checks whether the ID of this contact is in the local address book. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsLocalContactAsync(double id)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isLocalContact, id);
     }
 
     /// <summary>
-    /// isLocalContact
+    /// Checks whether the ID of this contact is in the local address book. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<bool> IsLocalContactAsync(IntPtr context, double id)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isLocalContact, context, id);
     }
 
     /// <summary>
-    /// isMyCard
+    /// Checks whether a contact is included in my card. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsMyCardAsync(double id)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isMyCard, id);
     }
 
     /// <summary>
-    /// isMyCard
+    /// Checks whether a contact is included in my card. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<bool> IsMyCardAsync(IntPtr context, double id)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isMyCard, context, id);
     }
 
     /// <summary>
-    /// saveToExistingContactViaUI
+    /// Saves the information to an existing contact through UI interaction.. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task<double> SaveToExistingContactViaUiAsync(IntPtr context, ContactObject contact)
     {
         return NodeApi.CallMethodAsync<double>(Module, _saveToExistingContactViaUI, context, NapiArg.Of(contact));
     }
 
     /// <summary>
-    /// addContactViaUI
+    /// Creates a contact through UI interaction. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task<double> AddContactViaUiAsync(IntPtr context, ContactObject contact)
     {
         return NodeApi.CallMethodAsync<double>(Module, _addContactViaUI, context, NapiArg.Of(contact));
     }
 
     /// <summary>
-    /// queryContactsCount
+    /// Queries the number of all contacts. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<double> QueryContactsCountAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsync<double>(Module, _queryContactsCount, context);
     }
 
     /// <summary>
-    /// addContacts
+    /// Adds contacts in batches. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task<double[]> AddContactsAsync(IntPtr context, ContactObject[] contacts)
     {
         return NodeApi.CallMethodAsync(Module, _addContacts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, NapiArg.Of(contacts));
     }
 
     /// <summary>
-    /// hasMatchedCallLog
+    /// Checks whether there are call records that meet the specified conditions. By default, call records within the last
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<bool> HasMatchedCallLogAsync(IntPtr context, string phoneNumber, double minDuration)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _hasMatchedCallLog, context, phoneNumber, minDuration);
     }
 
     /// <summary>
-    /// hasMatchedCallLog
+    /// Checks whether there are call records that meet the specified conditions. This API applies only to carrier calls.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<bool> HasMatchedCallLogAsync(IntPtr context, string phoneNumber, double minDuration, double withinTime)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _hasMatchedCallLog, context, phoneNumber, minDuration, withinTime);
     }
 
     /// <summary>
-    /// syncContacts
+    /// Sync multiple contacts in batches into contacts database.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<double[]> SyncContactsAsync(IntPtr context, global::HarmonyOS.ArkUI.ContactSyncMode mode, ContactSyncProgress progress, ContactObject[] contacts)
     {
         return NodeApi.CallMethodAsync(Module, _syncContacts, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, (int)mode, NapiArg.Of(progress), NapiArg.Of(contacts));
     }
 
     /// <summary>
-    /// queryContactSyncInfo
+    /// Queries information about ongoing contact synchronization for the calling application.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<ContactSyncInfo[]> QueryContactSyncInfoAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsync(Module, _queryContactSyncInfo, h => ValueConverter.ConvertArray(h, static e => new ContactSyncInfo(e)), context);
     }
 
     /// <summary>
-    /// importContactsViaUI
+    /// Imports multiple contacts through UI interaction.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<double[]> ImportContactsViaUiAsync(IntPtr context, ContactObject[] contacts)
     {
         return NodeApi.CallMethodAsync(Module, _importContactsViaUI, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), context, NapiArg.Of(contacts));

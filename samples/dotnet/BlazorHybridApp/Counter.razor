@@ -1,0 +1,13 @@
+@page "/counter"
+
+<p>Current count: @currentCount</p>
+
+<button @onclick="IncrementCount">Increment</button>
+
+@code {
+    private int currentCount;
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

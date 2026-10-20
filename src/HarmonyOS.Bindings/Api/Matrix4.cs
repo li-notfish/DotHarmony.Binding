@@ -16,51 +16,8 @@ public static unsafe partial class Matrix4
 {
     private const string ModuleName = "@ohos.matrix4";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[matrix4] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _init => "init"u8;
     private static ReadOnlySpan<byte> _identity => "identity"u8;
@@ -73,72 +30,81 @@ public static unsafe partial class Matrix4
     private static ReadOnlySpan<byte> _transformPoint => "transformPoint"u8;
 
     /// <summary>
-    /// init
+    /// Matrix constructor, which is used to create a 4 x 4 matrix with the input parameters. Column-major order is used.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Matrix4Transit Init(IntPtr options)
     {
         return NodeApi.CallMethod(Module, _init, static h => new Matrix4Transit(h), options);
     }
 
     /// <summary>
-    /// identity
+    /// Constructs an identity matrix.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Matrix4Transit Identity()
     {
         return NodeApi.CallMethod(Module, _identity, static h => new Matrix4Transit(h));
     }
 
     /// <summary>
-    /// copy
+    /// Copies this matrix object.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Matrix4Transit Copy()
     {
         return NodeApi.CallMethod(Module, _copy, static h => new Matrix4Transit(h));
     }
 
     /// <summary>
-    /// invert
+    /// Inverts this matrix object.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Matrix4Transit Invert()
     {
         return NodeApi.CallMethod(Module, _invert, static h => new Matrix4Transit(h));
     }
 
     /// <summary>
-    /// combine
+    /// Combines the effects of two matrices to generate a new matrix object.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Matrix4Transit Combine(Matrix4Transit options)
     {
         return NodeApi.CallMethod(Module, _combine, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// translate
+    /// Translates this matrix object along the x, y, and z axes.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Matrix4Transit Translate(TranslateOption options)
     {
         return NodeApi.CallMethod(Module, _translate, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// scale
+    /// Scales this matrix object along the x, y, and z axes.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Matrix4Transit Scale(ScaleOption options)
     {
         return NodeApi.CallMethod(Module, _scale, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// rotate
+    /// Rotates this matrix object along the x, y, and z axes.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Matrix4Transit Rotate(RotateOption options)
     {
         return NodeApi.CallMethod(Module, _rotate, static h => new Matrix4Transit(h), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// transformPoint
+    /// Applies the current transformation effect to a coordinate point.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static IntPtr TransformPoint(IntPtr options)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _transformPoint, options);

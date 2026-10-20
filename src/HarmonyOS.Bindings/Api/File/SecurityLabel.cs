@@ -18,51 +18,8 @@ public static unsafe partial class SecurityLabel
 {
     private const string ModuleName = "@ohos.file.securityLabel";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[file.securityLabel] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _setSecurityLabel => "setSecurityLabel"u8;
     private static ReadOnlySpan<byte> _setSecurityLabelSync => "setSecurityLabelSync"u8;
@@ -70,32 +27,36 @@ public static unsafe partial class SecurityLabel
     private static ReadOnlySpan<byte> _getSecurityLabelSync => "getSecurityLabelSync"u8;
 
     /// <summary>
-    /// setSecurityLabel
+    /// Sets the data security level for a file or directory. The level can only be adjusted from low to high, or set to
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task SetSecurityLabelAsync(string path, IntPtr type, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setSecurityLabel, cancellationToken, path, type);
     }
 
     /// <summary>
-    /// setSecurityLabelSync
+    /// Sets the data security level for a file or directory in synchronous mode. The level can only be adjusted from low
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void SetSecurityLabelSync(string path, IntPtr type)
     {
         NodeApi.CallMethodVoid(Module, _setSecurityLabelSync, path, type);
     }
 
     /// <summary>
-    /// getSecurityLabel
+    /// Obtains the data security level of a file or directory. If no data security level has been set, **s3** is returned
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<string> GetSecurityLabelAsync(string path)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getSecurityLabel, path);
     }
 
     /// <summary>
-    /// getSecurityLabelSync
+    /// Obtains the data security level of a file or directory in synchronous mode. If no data security level has been set,
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static string GetSecurityLabelSync(string path)
     {
         return NodeApi.CallMethod<string>(Module, _getSecurityLabelSync, path);

@@ -16,51 +16,8 @@ public static unsafe partial class Fastbuffer
 {
     private const string ModuleName = "@ohos.fastbuffer";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[fastbuffer] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _alloc => "alloc"u8;
     private static ReadOnlySpan<byte> _allocUninitializedFromPool => "allocUninitializedFromPool"u8;
@@ -74,104 +31,117 @@ public static unsafe partial class Fastbuffer
     private static ReadOnlySpan<byte> _transcode => "transcode"u8;
 
     /// <summary>
-    /// alloc
+    /// Allocates a new FastBuffer for a fixed size bytes. If fill is undefined, the FastBuffer will be zero-filled.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer Alloc(double size, string? fill = null, IntPtr? encoding = null)
     {
         return NodeApi.CallMethod(Module, _alloc, static h => new FastBuffer(h), size, fill, NapiArg.Of(encoding));
     }
 
     /// <summary>
-    /// allocUninitializedFromPool
+    /// Allocates a new FastBuffer for a fixed size bytes. The FastBuffer will not be initially filled.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer AllocUninitializedFromPool(double size)
     {
         return NodeApi.CallMethod(Module, _allocUninitializedFromPool, static h => new FastBuffer(h), size);
     }
 
     /// <summary>
-    /// allocUninitialized
+    /// Allocates a new un-pooled FastBuffer for a fixed size bytes. The FastBuffer will not be initially filled.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer AllocUninitialized(double size)
     {
         return NodeApi.CallMethod(Module, _allocUninitialized, static h => new FastBuffer(h), size);
     }
 
     /// <summary>
-    /// byteLength
+    /// Returns the byte length of a string when encoded using `encoding`.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static double ByteLength(string value, IntPtr? encoding = null)
     {
         return NodeApi.CallMethod<double>(Module, _byteLength, value, NapiArg.Of(encoding));
     }
 
     /// <summary>
-    /// concat
+    /// Returns a new `FastBuffer` which is the result of concatenating all the `FastBuffer`instances in the `list` together.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer Concat(FastBuffer[] list, double? totalLength = null)
     {
         return NodeApi.CallMethod(Module, _concat, static h => new FastBuffer(h), NapiArg.Of(list), NapiArg.Of(totalLength));
     }
 
     /// <summary>
-    /// from
+    /// Allocates a new FastBuffer using an array of bytes in the range 0 – 255. Array entries outside that range will be truncated to fit into it.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer From(double[] array)
     {
         return NodeApi.CallMethod(Module, _from, static h => new FastBuffer(h), NapiArg.Of(array));
     }
 
     /// <summary>
-    /// from
+    /// This creates a view of the ArrayBuffer without copying the underlying memory.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer From(byte[] arrayBuffer, double? byteOffset = null, double? length = null)
     {
         return NodeApi.CallMethod(Module, _from, static h => new FastBuffer(h), NapiArg.Of(arrayBuffer), NapiArg.Of(byteOffset), NapiArg.Of(length));
     }
 
     /// <summary>
-    /// from
+    /// Copies the passed buffer data onto a new FastBuffer instance.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer From(FastBuffer buffer)
     {
         return NodeApi.CallMethod(Module, _from, static h => new FastBuffer(h), NapiArg.Of(buffer));
     }
 
     /// <summary>
-    /// from
+    /// Creates a new FastBuffer containing string. The encoding parameter identifies the character encoding
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer From(string value, IntPtr? encoding = null)
     {
         return NodeApi.CallMethod(Module, _from, static h => new FastBuffer(h), value, NapiArg.Of(encoding));
     }
 
     /// <summary>
-    /// isBuffer
+    /// Returns true if obj is a FastBuffer, false otherwise
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsBuffer(IntPtr obj)
     {
         return NodeApi.CallMethod<bool>(Module, _isBuffer, obj);
     }
 
     /// <summary>
-    /// isEncoding
+    /// Returns true if encoding is the name of a supported character encoding, or false otherwise.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsEncoding(string encoding)
     {
         return NodeApi.CallMethod<bool>(Module, _isEncoding, encoding);
     }
 
     /// <summary>
-    /// compare
+    /// Compares buf1 to buf2
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static IntPtr Compare(FastBuffer buf1, FastBuffer buf2)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _compare, NapiArg.Of(buf1), NapiArg.Of(buf2));
     }
 
     /// <summary>
-    /// transcode
+    /// Re-encodes the given FastBuffer or Uint8Array instance from one character encoding to another.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static FastBuffer Transcode(FastBuffer source, string fromEnc, string toEnc)
     {
         return NodeApi.CallMethod(Module, _transcode, static h => new FastBuffer(h), NapiArg.Of(source), fromEnc, toEnc);
@@ -270,6 +240,21 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public FastBuffer Fill(string value, double? offset = null, double? end = null, IntPtr? encoding = null)
     {
+        if (offset is null && end is null && encoding is null)
+        {
+            return CallMethod(_fill, static h => new FastBuffer(h), value);
+        }
+
+        if (end is null && encoding is null)
+        {
+            return CallMethod(_fill, static h => new FastBuffer(h), value, NapiArg.Of(offset));
+        }
+
+        if (encoding is null)
+        {
+            return CallMethod(_fill, static h => new FastBuffer(h), value, NapiArg.Of(offset), NapiArg.Of(end));
+        }
+
         return CallMethod(_fill, static h => new FastBuffer(h), value, NapiArg.Of(offset), NapiArg.Of(end), NapiArg.Of(encoding));
     }
 
@@ -278,6 +263,26 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public IntPtr Compare(FastBuffer target, double? targetStart = null, double? targetEnd = null, double? sourceStart = null, double? sourceEnd = null)
     {
+        if (targetStart is null && targetEnd is null && sourceStart is null && sourceEnd is null)
+        {
+            return CallMethod<IntPtr>(_compare, NapiArg.Of(target));
+        }
+
+        if (targetEnd is null && sourceStart is null && sourceEnd is null)
+        {
+            return CallMethod<IntPtr>(_compare, NapiArg.Of(target), NapiArg.Of(targetStart));
+        }
+
+        if (sourceStart is null && sourceEnd is null)
+        {
+            return CallMethod<IntPtr>(_compare, NapiArg.Of(target), NapiArg.Of(targetStart), NapiArg.Of(targetEnd));
+        }
+
+        if (sourceEnd is null)
+        {
+            return CallMethod<IntPtr>(_compare, NapiArg.Of(target), NapiArg.Of(targetStart), NapiArg.Of(targetEnd), NapiArg.Of(sourceStart));
+        }
+
         return CallMethod<IntPtr>(_compare, NapiArg.Of(target), NapiArg.Of(targetStart), NapiArg.Of(targetEnd), NapiArg.Of(sourceStart), NapiArg.Of(sourceEnd));
     }
 
@@ -286,6 +291,21 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double Copy(FastBuffer target, double? targetStart = null, double? sourceStart = null, double? sourceEnd = null)
     {
+        if (targetStart is null && sourceStart is null && sourceEnd is null)
+        {
+            return CallMethod<double>(_copy, NapiArg.Of(target));
+        }
+
+        if (sourceStart is null && sourceEnd is null)
+        {
+            return CallMethod<double>(_copy, NapiArg.Of(target), NapiArg.Of(targetStart));
+        }
+
+        if (sourceEnd is null)
+        {
+            return CallMethod<double>(_copy, NapiArg.Of(target), NapiArg.Of(targetStart), NapiArg.Of(sourceStart));
+        }
+
         return CallMethod<double>(_copy, NapiArg.Of(target), NapiArg.Of(targetStart), NapiArg.Of(sourceStart), NapiArg.Of(sourceEnd));
     }
 
@@ -302,6 +322,16 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public bool Includes(string value, double? byteOffset = null, IntPtr? encoding = null)
     {
+        if (byteOffset is null && encoding is null)
+        {
+            return CallMethod<bool>(_includes, value);
+        }
+
+        if (encoding is null)
+        {
+            return CallMethod<bool>(_includes, value, NapiArg.Of(byteOffset));
+        }
+
         return CallMethod<bool>(_includes, value, NapiArg.Of(byteOffset), NapiArg.Of(encoding));
     }
 
@@ -310,6 +340,16 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double IndexOf(string value, double? byteOffset = null, IntPtr? encoding = null)
     {
+        if (byteOffset is null && encoding is null)
+        {
+            return CallMethod<double>(_indexOf, value);
+        }
+
+        if (encoding is null)
+        {
+            return CallMethod<double>(_indexOf, value, NapiArg.Of(byteOffset));
+        }
+
         return CallMethod<double>(_indexOf, value, NapiArg.Of(byteOffset), NapiArg.Of(encoding));
     }
 
@@ -342,6 +382,16 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double LastIndexOf(string value, double? byteOffset = null, IntPtr? encoding = null)
     {
+        if (byteOffset is null && encoding is null)
+        {
+            return CallMethod<double>(_lastIndexOf, value);
+        }
+
+        if (encoding is null)
+        {
+            return CallMethod<double>(_lastIndexOf, value, NapiArg.Of(byteOffset));
+        }
+
         return CallMethod<double>(_lastIndexOf, value, NapiArg.Of(byteOffset), NapiArg.Of(encoding));
     }
 
@@ -350,6 +400,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public JsBigInt ReadBigInt64Be(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<JsBigInt>(_readBigInt64BE);
+        }
+
         return CallMethod<JsBigInt>(_readBigInt64BE, NapiArg.Of(offset));
     }
 
@@ -358,6 +413,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public JsBigInt ReadBigInt64Le(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<JsBigInt>(_readBigInt64LE);
+        }
+
         return CallMethod<JsBigInt>(_readBigInt64LE, NapiArg.Of(offset));
     }
 
@@ -366,6 +426,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public JsBigInt ReadBigUInt64Be(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<JsBigInt>(_readBigUInt64BE);
+        }
+
         return CallMethod<JsBigInt>(_readBigUInt64BE, NapiArg.Of(offset));
     }
 
@@ -374,6 +439,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public JsBigInt ReadBigUInt64Le(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<JsBigInt>(_readBigUInt64LE);
+        }
+
         return CallMethod<JsBigInt>(_readBigUInt64LE, NapiArg.Of(offset));
     }
 
@@ -382,6 +452,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadDoubleBe(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readDoubleBE);
+        }
+
         return CallMethod<double>(_readDoubleBE, NapiArg.Of(offset));
     }
 
@@ -390,6 +465,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadDoubleLe(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readDoubleLE);
+        }
+
         return CallMethod<double>(_readDoubleLE, NapiArg.Of(offset));
     }
 
@@ -398,6 +478,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadFloatBe(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readFloatBE);
+        }
+
         return CallMethod<double>(_readFloatBE, NapiArg.Of(offset));
     }
 
@@ -406,6 +491,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadFloatLe(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readFloatLE);
+        }
+
         return CallMethod<double>(_readFloatLE, NapiArg.Of(offset));
     }
 
@@ -414,6 +504,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadInt8(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readInt8);
+        }
+
         return CallMethod<double>(_readInt8, NapiArg.Of(offset));
     }
 
@@ -422,6 +517,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadInt16Be(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readInt16BE);
+        }
+
         return CallMethod<double>(_readInt16BE, NapiArg.Of(offset));
     }
 
@@ -430,6 +530,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadInt16Le(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readInt16LE);
+        }
+
         return CallMethod<double>(_readInt16LE, NapiArg.Of(offset));
     }
 
@@ -438,6 +543,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadInt32Be(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readInt32BE);
+        }
+
         return CallMethod<double>(_readInt32BE, NapiArg.Of(offset));
     }
 
@@ -446,6 +556,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadInt32Le(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readInt32LE);
+        }
+
         return CallMethod<double>(_readInt32LE, NapiArg.Of(offset));
     }
 
@@ -470,6 +585,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadUInt8(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readUInt8);
+        }
+
         return CallMethod<double>(_readUInt8, NapiArg.Of(offset));
     }
 
@@ -478,6 +598,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadUInt16Be(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readUInt16BE);
+        }
+
         return CallMethod<double>(_readUInt16BE, NapiArg.Of(offset));
     }
 
@@ -486,6 +611,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadUInt16Le(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readUInt16LE);
+        }
+
         return CallMethod<double>(_readUInt16LE, NapiArg.Of(offset));
     }
 
@@ -494,6 +624,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadUInt32Be(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readUInt32BE);
+        }
+
         return CallMethod<double>(_readUInt32BE, NapiArg.Of(offset));
     }
 
@@ -502,6 +637,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double ReadUInt32Le(double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_readUInt32LE);
+        }
+
         return CallMethod<double>(_readUInt32LE, NapiArg.Of(offset));
     }
 
@@ -526,6 +666,16 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public FastBuffer Subarray(double? start = null, double? end = null)
     {
+        if (start is null && end is null)
+        {
+            return CallMethod(_subarray, static h => new FastBuffer(h));
+        }
+
+        if (end is null)
+        {
+            return CallMethod(_subarray, static h => new FastBuffer(h), NapiArg.Of(start));
+        }
+
         return CallMethod(_subarray, static h => new FastBuffer(h), NapiArg.Of(start), NapiArg.Of(end));
     }
 
@@ -566,6 +716,21 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public string ToString(string? encoding = null, double? start = null, double? end = null)
     {
+        if (encoding is null && start is null && end is null)
+        {
+            return CallMethod<string>(_toString);
+        }
+
+        if (start is null && end is null)
+        {
+            return CallMethod<string>(_toString, encoding);
+        }
+
+        if (end is null)
+        {
+            return CallMethod<string>(_toString, encoding, NapiArg.Of(start));
+        }
+
         return CallMethod<string>(_toString, encoding, NapiArg.Of(start), NapiArg.Of(end));
     }
 
@@ -574,6 +739,21 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double Write(string str, double? offset = null, double? length = null, string? encoding = null)
     {
+        if (offset is null && length is null && encoding is null)
+        {
+            return CallMethod<double>(_write, str);
+        }
+
+        if (length is null && encoding is null)
+        {
+            return CallMethod<double>(_write, str, NapiArg.Of(offset));
+        }
+
+        if (encoding is null)
+        {
+            return CallMethod<double>(_write, str, NapiArg.Of(offset), NapiArg.Of(length));
+        }
+
         return CallMethod<double>(_write, str, NapiArg.Of(offset), NapiArg.Of(length), encoding);
     }
 
@@ -582,6 +762,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteBigInt64Be(JsBigInt value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeBigInt64BE, NapiArg.Of(value));
+        }
+
         return CallMethod<double>(_writeBigInt64BE, NapiArg.Of(value), NapiArg.Of(offset));
     }
 
@@ -590,6 +775,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteBigInt64Le(JsBigInt value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeBigInt64LE, NapiArg.Of(value));
+        }
+
         return CallMethod<double>(_writeBigInt64LE, NapiArg.Of(value), NapiArg.Of(offset));
     }
 
@@ -598,6 +788,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteBigUInt64Be(JsBigInt value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeBigUInt64BE, NapiArg.Of(value));
+        }
+
         return CallMethod<double>(_writeBigUInt64BE, NapiArg.Of(value), NapiArg.Of(offset));
     }
 
@@ -606,6 +801,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteBigUInt64Le(JsBigInt value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeBigUInt64LE, NapiArg.Of(value));
+        }
+
         return CallMethod<double>(_writeBigUInt64LE, NapiArg.Of(value), NapiArg.Of(offset));
     }
 
@@ -614,6 +814,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteDoubleBe(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeDoubleBE, value);
+        }
+
         return CallMethod<double>(_writeDoubleBE, value, NapiArg.Of(offset));
     }
 
@@ -622,6 +827,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteDoubleLe(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeDoubleLE, value);
+        }
+
         return CallMethod<double>(_writeDoubleLE, value, NapiArg.Of(offset));
     }
 
@@ -630,6 +840,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteFloatBe(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeFloatBE, value);
+        }
+
         return CallMethod<double>(_writeFloatBE, value, NapiArg.Of(offset));
     }
 
@@ -638,6 +853,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteFloatLe(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeFloatLE, value);
+        }
+
         return CallMethod<double>(_writeFloatLE, value, NapiArg.Of(offset));
     }
 
@@ -646,6 +866,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteInt8(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeInt8, value);
+        }
+
         return CallMethod<double>(_writeInt8, value, NapiArg.Of(offset));
     }
 
@@ -654,6 +879,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteInt16Be(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeInt16BE, value);
+        }
+
         return CallMethod<double>(_writeInt16BE, value, NapiArg.Of(offset));
     }
 
@@ -662,6 +892,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteInt16Le(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeInt16LE, value);
+        }
+
         return CallMethod<double>(_writeInt16LE, value, NapiArg.Of(offset));
     }
 
@@ -670,6 +905,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteInt32Be(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeInt32BE, value);
+        }
+
         return CallMethod<double>(_writeInt32BE, value, NapiArg.Of(offset));
     }
 
@@ -678,6 +918,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteInt32Le(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeInt32LE, value);
+        }
+
         return CallMethod<double>(_writeInt32LE, value, NapiArg.Of(offset));
     }
 
@@ -702,6 +947,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteUInt8(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeUInt8, value);
+        }
+
         return CallMethod<double>(_writeUInt8, value, NapiArg.Of(offset));
     }
 
@@ -710,6 +960,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteUInt16Be(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeUInt16BE, value);
+        }
+
         return CallMethod<double>(_writeUInt16BE, value, NapiArg.Of(offset));
     }
 
@@ -718,6 +973,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteUInt16Le(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeUInt16LE, value);
+        }
+
         return CallMethod<double>(_writeUInt16LE, value, NapiArg.Of(offset));
     }
 
@@ -726,6 +986,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteUInt32Be(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeUInt32BE, value);
+        }
+
         return CallMethod<double>(_writeUInt32BE, value, NapiArg.Of(offset));
     }
 
@@ -734,6 +999,11 @@ public sealed partial class FastBuffer : JsObject
     /// </summary>
     public double WriteUInt32Le(double value, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<double>(_writeUInt32LE, value);
+        }
+
         return CallMethod<double>(_writeUInt32LE, value, NapiArg.Of(offset));
     }
 

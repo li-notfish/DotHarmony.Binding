@@ -20,51 +20,8 @@ public static unsafe partial class SystemManager
 {
     private const string ModuleName = "@ohos.enterprise.systemManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.systemManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _setNTPServer => "setNTPServer"u8;
     private static ReadOnlySpan<byte> _getNTPServer => "getNTPServer"u8;
@@ -93,200 +50,225 @@ public static unsafe partial class SystemManager
     private static ReadOnlySpan<byte> _isOtaUpdateNonceEnable => "isOtaUpdateNonceEnable"u8;
 
     /// <summary>
-    /// setNTPServer
+    /// Sets the Network Time Protocol (NTP) time server. After successful configuration, the system will use the specified
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetNtpServer(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string server)
     {
         NodeApi.CallMethodVoid(Module, _setNTPServer, NapiArg.Of(admin), server);
     }
 
     /// <summary>
-    /// getNTPServer
+    /// Obtains the NTP server information. This API is applicable to scenarios where you need to query the current NTP
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string GetNtpServer(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<string>(Module, _getNTPServer, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setOtaUpdatePolicy
+    /// Sets the update policy. After the setting is successful, the system performs OTA updates based on the specified
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetOtaUpdatePolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, OtaUpdatePolicy policy)
     {
         NodeApi.CallMethodVoid(Module, _setOtaUpdatePolicy, NapiArg.Of(admin), NapiArg.Of(policy));
     }
 
     /// <summary>
-    /// getOtaUpdatePolicy
+    /// Checks the update policy. This API is applicable to scenarios where you need to obtain the current OTA update
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static OtaUpdatePolicy GetOtaUpdatePolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getOtaUpdatePolicy, static h => new OtaUpdatePolicy(h), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// notifyUpdatePackages
+    /// Notifies the system of the update packages. In intranet updates, call this API to notify the system of the update
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task NotifyUpdatePackagesAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr packageInfo, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _notifyUpdatePackages, cancellationToken, NapiArg.Of(admin), packageInfo);
     }
 
     /// <summary>
-    /// getUpdateResult
+    /// Obtains the system update result. This API uses a promise to return the result. This API is applicable to scenarios
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<UpdateResult> GetUpdateResultAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string version)
     {
         return NodeApi.CallMethodAsync(Module, _getUpdateResult, static h => new UpdateResult(h), NapiArg.Of(admin), version);
     }
 
     /// <summary>
-    /// getUpdateAuthData
+    /// Obtains the authentication data for system update verification. This API uses a promise to return the result. This
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static Task<string> GetUpdateAuthDataAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getUpdateAuthData, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setAutoUnlockAfterReboot
+    /// Sets automatic unlocking upon device reboot. This setting takes effect only on devices without a screen lock
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetAutoUnlockAfterReboot(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool isAllowed)
     {
         NodeApi.CallMethodVoid(Module, _setAutoUnlockAfterReboot, NapiArg.Of(admin), isAllowed);
     }
 
     /// <summary>
-    /// getAutoUnlockAfterReboot
+    /// Checks whether the device is automatically unlocked upon reboot.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool GetAutoUnlockAfterReboot(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<bool>(Module, _getAutoUnlockAfterReboot, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addDisallowedNearLinkProtocols
+    /// Adds a list of NearLink protocols that are not allowed to be used for a specified user. NearLink Kit provides a low
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void AddDisallowedNearLinkProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.NearLinkProtocol[] protocols, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedNearLinkProtocols, NapiArg.Of(admin), NapiArg.Of(protocols), accountId);
     }
 
     /// <summary>
-    /// removeDisallowedNearLinkProtocols
+    /// Removes the list of disallowed NearLink protocols for a specified user. After successful removal, the specified
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void RemoveDisallowedNearLinkProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.NearLinkProtocol[] protocols, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedNearLinkProtocols, NapiArg.Of(admin), NapiArg.Of(protocols), accountId);
     }
 
     /// <summary>
-    /// getDisallowedNearLinkProtocols
+    /// Obtains the list of disallowed NearLink protocols for a specified user. This API is applicable to scenarios where
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static global::HarmonyOS.ArkUI.NearLinkProtocol[] GetDisallowedNearLinkProtocols(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getDisallowedNearLinkProtocols, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<global::HarmonyOS.ArkUI.NearLinkProtocol>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// setInstallLocalEnterpriseAppEnabled
+    /// Sets whether local installation of enterprise applications is supported. When local installation is enabled, users
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetInstallLocalEnterpriseAppEnabled(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool isEnable)
     {
         NodeApi.CallMethodVoid(Module, _setInstallLocalEnterpriseAppEnabled, NapiArg.Of(admin), isEnable);
     }
 
     /// <summary>
-    /// getInstallLocalEnterpriseAppEnabled
+    /// Checks whether local installation of enterprise applications is supported. This API is applicable to scenarios
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool GetInstallLocalEnterpriseAppEnabled(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<bool>(Module, _getInstallLocalEnterpriseAppEnabled, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addKeyEventPolicies
+    /// Adds a key event handling policy. When the system triggers a key event, if the event matches the delivered key
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void AddKeyEventPolicies(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, KeyEventPolicy[] keyPolicies)
     {
         NodeApi.CallMethodVoid(Module, _addKeyEventPolicies, NapiArg.Of(admin), NapiArg.Of(keyPolicies));
     }
 
     /// <summary>
-    /// removeKeyEventPolicies
+    /// Removes a key event handling policy. After the deletion is successful, the system restores the default handling
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void RemoveKeyEventPolicies(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.KeyCode[] keyCodes)
     {
         NodeApi.CallMethodVoid(Module, _removeKeyEventPolicies, NapiArg.Of(admin), NapiArg.Of(keyCodes));
     }
 
     /// <summary>
-    /// getKeyEventPolicies
+    /// Obtains the key event handling policy.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static KeyEventPolicy[] GetKeyEventPolicies(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getKeyEventPolicies, h => ValueConverter.ConvertArray(h, static e => new KeyEventPolicy(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setActivationLockDisabled
+    /// Enables or disables the device activation lock. After the device activation lock is disabled, the Find Device
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task SetActivationLockDisabledAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool isDisabled, string? credential = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setActivationLockDisabled, cancellationToken, NapiArg.Of(admin), isDisabled, credential);
     }
 
     /// <summary>
-    /// isActivationLockDisabled
+    /// Checks whether the device activation lock is disabled. This API is applicable to scenarios where you need to verify
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static Task<bool> IsActivationLockDisabledAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isActivationLockDisabled, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// startCollectLog
+    /// Starts to collect the fault logs of the [FaultType]@ohos.faultLogger:FaultLogger.FaultType type that have
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task StartCollectLogAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startCollectLog, cancellationToken, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// finishLogCollected
+    /// Deletes the device logs collected by the current MDM app under the current user.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void FinishLogCollected(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         NodeApi.CallMethodVoid(Module, _finishLogCollected, NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setInstallLocalEnterpriseAppEnabledForAccount
+    /// Sets whether local installation of enterprise applications is supported for a specified user. After the policy of
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void SetInstallLocalEnterpriseAppEnabledForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool isEnable, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _setInstallLocalEnterpriseAppEnabledForAccount, NapiArg.Of(admin), isEnable, accountId);
     }
 
     /// <summary>
-    /// getInstallLocalEnterpriseAppEnabledForAccount
+    /// Checks whether local installation of enterprise applications is supported for a specified user. This API is
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static bool GetInstallLocalEnterpriseAppEnabledForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod<bool>(Module, _getInstallLocalEnterpriseAppEnabledForAccount, NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// setOtaUpdateNonceEnable
+    /// Sets whether to enable nonce for OTA update (nonce is enabled by default). When nonce is enabled, the system
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetOtaUpdateNonceEnable(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, bool isEnable)
     {
         NodeApi.CallMethodVoid(Module, _setOtaUpdateNonceEnable, NapiArg.Of(admin), isEnable);
     }
 
     /// <summary>
-    /// isOtaUpdateNonceEnable
+    /// Checks whether nonce is enabled for OTA update. This API is applicable to scenarios where you need to verify the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsOtaUpdateNonceEnable(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod<bool>(Module, _isOtaUpdateNonceEnable, NapiArg.Of(admin));

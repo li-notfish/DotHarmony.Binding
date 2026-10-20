@@ -1,3 +1,7 @@
+> **状态：已归档的历史设计稿（2026-09）。**
+> 本文描述的“影子包 + Source Generator + libdotnet_core.so”路线已被 **ArkUI NDK C API**
+> 路线取代；现行架构与接入方式见 [README.md](../../README.md) 与 [GETTING_STARTED.md](../../GETTING_STARTED.md)。
+> 保留本文仅用于追溯早期决策，请勿按本文实现。
 这是一份为你量身定制的 **.NET (NativeAOT) 与 ArkTS (鸿蒙) 高性能 SDK 自动化绑定架构方案** 总结指南。
 本指南采用业内最硬核的 **“一阶段影子包欺骗、二阶段源生成器真身、三阶段 AOT 物理缝合”** 战略，完美对齐鸿蒙平台禁止 JIT 的铁律。
 # 🛠️ .NET 绑定 ArkTS (Node-API) 架构设计白皮书

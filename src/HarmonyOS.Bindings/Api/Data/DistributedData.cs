@@ -20,51 +20,8 @@ public static unsafe partial class DistributedData
 {
     private const string ModuleName = "@ohos.data.distributedData";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[data.distributedData] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _MAX_KEY_LENGTH => "MAX_KEY_LENGTH"u8;
     private static ReadOnlySpan<byte> _MAX_VALUE_LENGTH => "MAX_VALUE_LENGTH"u8;
@@ -75,38 +32,45 @@ public static unsafe partial class DistributedData
     private static ReadOnlySpan<byte> _createKVManager => "createKVManager"u8;
 
     /// <summary>
-    /// MAX_KEY_LENGTH
+    /// max key length.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double MaxKeyLength => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_KEY_LENGTH));
 
     /// <summary>
-    /// MAX_VALUE_LENGTH
+    /// max value length.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double MaxValueLength => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_VALUE_LENGTH));
 
     /// <summary>
-    /// MAX_KEY_LENGTH_DEVICE
+    /// max device coordinate key length.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double MaxKeyLengthDevice => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_KEY_LENGTH_DEVICE));
 
     /// <summary>
-    /// MAX_STORE_ID_LENGTH
+    /// max store id length.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double MaxStoreIdLength => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_STORE_ID_LENGTH));
 
     /// <summary>
-    /// MAX_QUERY_LENGTH
+    /// max query length.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double MaxQueryLength => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_QUERY_LENGTH));
 
     /// <summary>
-    /// MAX_BATCH_SIZE
+    /// max batch operation size.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static double MaxBatchSize => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_BATCH_SIZE));
 
     /// <summary>
-    /// createKVManager
+    /// Creates a **KVManager** instance to manage KV stores. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<KVManager> CreateKvManagerAsync(KVManagerConfig config)
     {
         return NodeApi.CallMethodAsync(Module, _createKVManager, static h => new KVManager(h), NapiArg.Of(config));

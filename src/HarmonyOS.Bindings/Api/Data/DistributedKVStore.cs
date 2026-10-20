@@ -19,57 +19,15 @@ public static unsafe partial class DistributedKVStore
 {
     private const string ModuleName = "@ohos.data.distributedKVStore";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[data.distributedKVStore] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createKVManager => "createKVManager"u8;
 
     /// <summary>
-    /// createKVManager
+    /// Creates a **KVManager** instance for KV store management.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static DistributedKVStoreKVManager CreateKvManager(IntPtr config)
     {
         return NodeApi.CallMethod(Module, _createKVManager, static h => new DistributedKVStoreKVManager(h), config);
@@ -111,6 +69,11 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// </summary>
     public Task CloseKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null, CancellationToken cancellationToken = default)
     {
+        if (kvConfig is null)
+        {
+            return CallMethodAsyncVoid(_closeKVStore, cancellationToken, appId, storeId);
+        }
+
         return CallMethodAsyncVoid(_closeKVStore, cancellationToken, appId, storeId, NapiArg.Of(kvConfig));
     }
 
@@ -127,6 +90,11 @@ public sealed partial class DistributedKVStoreKVManager : JsObject
     /// </summary>
     public Task DeleteKvStoreAsync(string appId, string storeId, DistributedKVStoreOptions? kvConfig = null, CancellationToken cancellationToken = default)
     {
+        if (kvConfig is null)
+        {
+            return CallMethodAsyncVoid(_deleteKVStore, cancellationToken, appId, storeId);
+        }
+
         return CallMethodAsyncVoid(_deleteKVStore, cancellationToken, appId, storeId, NapiArg.Of(kvConfig));
     }
 

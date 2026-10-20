@@ -18,83 +18,44 @@ public static unsafe partial class ResourceManager
 {
     private const string ModuleName = "@ohos.resourceManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[resourceManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getResourceManager => "getResourceManager"u8;
     private static ReadOnlySpan<byte> _getSystemResourceManager => "getSystemResourceManager"u8;
     private static ReadOnlySpan<byte> _getSysResourceManager => "getSysResourceManager"u8;
 
     /// <summary>
-    /// getResourceManager
+    /// Obtains the **ResourceManager** object of the current application. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<ResourceManagerObject> GetResourceManagerAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getResourceManager, static h => new ResourceManagerObject(h));
     }
 
     /// <summary>
-    /// getResourceManager
+    /// Obtains the **ResourceManager** object of the specified application. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<ResourceManagerObject> GetResourceManagerAsync(string bundleName)
     {
         return NodeApi.CallMethodAsync(Module, _getResourceManager, static h => new ResourceManagerObject(h), bundleName);
     }
 
     /// <summary>
-    /// getSystemResourceManager
+    /// Obtains a system resource management object for accessing preset system resources.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static ResourceManagerObject GetSystemResourceManager()
     {
         return NodeApi.CallMethod(Module, _getSystemResourceManager, static h => new ResourceManagerObject(h));
     }
 
     /// <summary>
-    /// getSysResourceManager
+    /// Obtains a system resource management object for accessing preset system resources.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static ResourceManagerObject GetSysResourceManager()
     {
         return NodeApi.CallMethod(Module, _getSysResourceManager, static h => new ResourceManagerObject(h));
@@ -811,6 +772,16 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject GetDrawableDescriptor(double resId, double? density = null, double? type = null)
     {
+        if (density is null && type is null)
+        {
+            return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resId);
+        }
+
+        if (type is null)
+        {
+            return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resId, NapiArg.Of(density));
+        }
+
         return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resId, NapiArg.Of(density), NapiArg.Of(type));
     }
 
@@ -819,6 +790,16 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject GetDrawableDescriptorByName(string resName, double? density = null, double? type = null)
     {
+        if (density is null && type is null)
+        {
+            return CallMethod(_getDrawableDescriptorByName, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resName);
+        }
+
+        if (type is null)
+        {
+            return CallMethod(_getDrawableDescriptorByName, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resName, NapiArg.Of(density));
+        }
+
         return CallMethod(_getDrawableDescriptorByName, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resName, NapiArg.Of(density), NapiArg.Of(type));
     }
 
@@ -827,6 +808,16 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject GetDrawableDescriptor(IntPtr resource, double? density = null, double? type = null)
     {
+        if (density is null && type is null)
+        {
+            return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resource);
+        }
+
+        if (type is null)
+        {
+            return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resource, NapiArg.Of(density));
+        }
+
         return CallMethod(_getDrawableDescriptor, static h => new global::HarmonyOS.Bindings.Api.Arkui.DrawableDescriptorObject(h), resource, NapiArg.Of(density), NapiArg.Of(type));
     }
 
@@ -971,6 +962,11 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public byte[] GetMediaContentSync(double resId, double? density = null)
     {
+        if (density is null)
+        {
+            return CallMethod(_getMediaContentSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resId);
+        }
+
         return CallMethod(_getMediaContentSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resId, NapiArg.Of(density));
     }
 
@@ -979,6 +975,11 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public byte[] GetMediaContentSync(IntPtr resource, double? density = null)
     {
+        if (density is null)
+        {
+            return CallMethod(_getMediaContentSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resource);
+        }
+
         return CallMethod(_getMediaContentSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resource, NapiArg.Of(density));
     }
 
@@ -987,6 +988,11 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public string GetMediaContentBase64Sync(double resId, double? density = null)
     {
+        if (density is null)
+        {
+            return CallMethod<string>(_getMediaContentBase64Sync, resId);
+        }
+
         return CallMethod<string>(_getMediaContentBase64Sync, resId, NapiArg.Of(density));
     }
 
@@ -995,6 +1001,11 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public string GetMediaContentBase64Sync(IntPtr resource, double? density = null)
     {
+        if (density is null)
+        {
+            return CallMethod<string>(_getMediaContentBase64Sync, resource);
+        }
+
         return CallMethod<string>(_getMediaContentBase64Sync, resource, NapiArg.Of(density));
     }
 
@@ -1043,6 +1054,11 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public byte[] GetMediaByNameSync(string resName, double? density = null)
     {
+        if (density is null)
+        {
+            return CallMethod(_getMediaByNameSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resName);
+        }
+
         return CallMethod(_getMediaByNameSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), resName, NapiArg.Of(density));
     }
 
@@ -1051,6 +1067,11 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public string GetMediaBase64ByNameSync(string resName, double? density = null)
     {
+        if (density is null)
+        {
+            return CallMethod<string>(_getMediaBase64ByNameSync, resName);
+        }
+
         return CallMethod<string>(_getMediaBase64ByNameSync, resName, NapiArg.Of(density));
     }
 
@@ -1083,6 +1104,11 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public string[] GetLocales(bool? includeSystem = null)
     {
+        if (includeSystem is null)
+        {
+            return CallMethod(_getLocales, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
+        }
+
         return CallMethod(_getLocales, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(includeSystem));
     }
 
@@ -1123,6 +1149,11 @@ public sealed partial class ResourceManagerObject : JsObject
     /// </summary>
     public ResourceManagerObject GetOverrideResourceManager(ResourceManagerConfiguration? configuration = null)
     {
+        if (configuration is null)
+        {
+            return CallMethod(_getOverrideResourceManager, static h => new ResourceManagerObject(h));
+        }
+
         return CallMethod(_getOverrideResourceManager, static h => new ResourceManagerObject(h), NapiArg.Of(configuration));
     }
 

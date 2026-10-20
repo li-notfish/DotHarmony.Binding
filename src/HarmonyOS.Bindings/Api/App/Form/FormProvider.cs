@@ -18,51 +18,8 @@ public static unsafe partial class FormProvider
 {
     private const string ModuleName = "@ohos.app.form.formProvider";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[app.form.formProvider] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _setFormNextRefreshTime => "setFormNextRefreshTime"u8;
     private static ReadOnlySpan<byte> _updateForm => "updateForm"u8;
@@ -81,128 +38,144 @@ public static unsafe partial class FormProvider
     private static ReadOnlySpan<byte> _closeFormEditAbility => "closeFormEditAbility"u8;
 
     /// <summary>
-    /// setFormNextRefreshTime
+    /// Sets the next refresh time for a widget. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task SetFormNextRefreshTimeAsync(string formId, double minute, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _setFormNextRefreshTime, cancellationToken, formId, minute);
     }
 
     /// <summary>
-    /// updateForm
+    /// Updates a widget. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task UpdateFormAsync(string formId, IntPtr formBindingData, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updateForm, cancellationToken, formId, formBindingData);
     }
 
     /// <summary>
-    /// getFormsInfo
+    /// Obtains the application's widget information that meets a filter criterion on the device. This API uses an
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr[]> GetFormsInfoAsync(IntPtr filter)
     {
         return NodeApi.CallMethodAsync(Module, _getFormsInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), filter);
     }
 
     /// <summary>
-    /// getFormsInfo
+    /// Obtains the application's widget information on the device. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr[]> GetFormsInfoAsync()
     {
         return NodeApi.CallMethodAsyncCallback(Module, _getFormsInfo, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// getPublishedFormInfoById
+    /// Obtains the information of the widget that has been added to the home screen on the device. This API uses a promise
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<IntPtr> GetPublishedFormInfoByIdAsync(string formId)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getPublishedFormInfoById, formId);
     }
 
     /// <summary>
-    /// getPublishedFormInfos
+    /// Obtains the information of all widgets that have been added to the home screen on the device. This API uses a
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<IntPtr[]> GetPublishedFormInfosAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getPublishedFormInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// getPublishedRunningFormInfoById
+    /// Obtains the information of a specified widget that has been added to the home screen. This API uses a promise to
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<IntPtr> GetPublishedRunningFormInfoByIdAsync(string formId)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getPublishedRunningFormInfoById, formId);
     }
 
     /// <summary>
-    /// getPublishedRunningFormInfos
+    /// Obtains information about all widgets that have been added to the home screen. This API uses a promise to return
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<IntPtr[]> GetPublishedRunningFormInfosAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getPublishedRunningFormInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// openFormManager
+    /// Opens the Widget Manager page of the current application.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void OpenFormManager(global::HarmonyOS.Bindings.Api.App.Ability.WantObject want)
     {
         NodeApi.CallMethodVoid(Module, _openFormManager, NapiArg.Of(want));
     }
 
     /// <summary>
-    /// openFormEditAbility
+    /// Opens the widget editing page.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void OpenFormEditAbility(string abilityName, string formId, bool? isMainPage = null)
     {
         NodeApi.CallMethodVoid(Module, _openFormEditAbility, abilityName, formId, NapiArg.Of(isMainPage));
     }
 
     /// <summary>
-    /// requestOverflow
+    /// Requests an animation. This API takes effect only for
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task RequestOverflowAsync(string formId, IntPtr overflowInfo, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _requestOverflow, cancellationToken, formId, overflowInfo);
     }
 
     /// <summary>
-    /// cancelOverflow
+    /// Cancels an animation. This API takes effect only for
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task CancelOverflowAsync(string formId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cancelOverflow, cancellationToken, formId);
     }
 
     /// <summary>
-    /// getFormRect
+    /// Obtains the position and dimension of a widget. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task<IntPtr> GetFormRectAsync(string formId)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getFormRect, formId);
     }
 
     /// <summary>
-    /// reloadForms
+    /// Reloads widgets. For widgets with the same **moduleName**, **abilityName**, and **formName** of the current
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<double> ReloadFormsAsync(IntPtr context, string moduleName, string abilityName, string formName)
     {
         return NodeApi.CallMethodAsync<double>(Module, _reloadForms, context, moduleName, abilityName, formName);
     }
 
     /// <summary>
-    /// reloadAllForms
+    /// Reloads all widgets. Invoked in the main process of the application, this API notifies the FormExtension process to
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<double> ReloadAllFormsAsync(IntPtr context)
     {
         return NodeApi.CallMethodAsync<double>(Module, _reloadAllForms, context);
     }
 
     /// <summary>
-    /// closeFormEditAbility
+    /// Closes the widget editing page.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void CloseFormEditAbility(bool? isMainPage = null)
     {
         NodeApi.CallMethodVoid(Module, _closeFormEditAbility, NapiArg.Of(isMainPage));

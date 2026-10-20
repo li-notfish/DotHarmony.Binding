@@ -19,51 +19,8 @@ public static unsafe partial class Sms
 {
     private const string ModuleName = "@ohos.telephony.sms";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[telephony.sms] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createMessage => "createMessage"u8;
     private static ReadOnlySpan<byte> _sendMessage => "sendMessage"u8;
@@ -73,48 +30,54 @@ public static unsafe partial class Sms
     private static ReadOnlySpan<byte> _getDefaultSmsSimId => "getDefaultSmsSimId"u8;
 
     /// <summary>
-    /// createMessage
+    /// Creates an SMS instance based on the protocol data unit (PDU) and specified SMS protocol. This API uses an
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<ShortMessage> CreateMessageAsync(double[] pdu, string specification)
     {
         return NodeApi.CallMethodAsync(Module, _createMessage, static h => new ShortMessage(h), NapiArg.Of(pdu), specification);
     }
 
     /// <summary>
-    /// sendMessage
+    /// Sends an SMS message.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static void SendMessage(IntPtr options)
     {
         NodeApi.CallMethodVoid(Module, _sendMessage, options);
     }
 
     /// <summary>
-    /// sendShortMessage
+    /// Sends an SMS message. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task SendShortMessageAsync(IntPtr options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _sendShortMessage, cancellationToken, options);
     }
 
     /// <summary>
-    /// getDefaultSmsSlotId
+    /// Obtains the default slot ID of the SIM card used to send SMS messages. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> GetDefaultSmsSlotIdAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getDefaultSmsSlotId);
     }
 
     /// <summary>
-    /// hasSmsCapability
+    /// Checks whether the current device can send and receive SMS messages. This API works in synchronous mode.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool HasSmsCapability()
     {
         return NodeApi.CallMethod<bool>(Module, _hasSmsCapability);
     }
 
     /// <summary>
-    /// getDefaultSmsSimId
+    /// Obtains the default ID of the SIM card used to send SMS messages. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<double> GetDefaultSmsSimIdAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getDefaultSmsSimId);

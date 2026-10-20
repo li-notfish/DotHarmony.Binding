@@ -18,51 +18,8 @@ public static unsafe partial class Bluetooth
 {
     private const string ModuleName = "@ohos.bluetooth";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[bluetooth] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getState => "getState"u8;
     private static ReadOnlySpan<byte> _getBtConnectionState => "getBtConnectionState"u8;
@@ -96,256 +53,288 @@ public static unsafe partial class Bluetooth
     private static ReadOnlySpan<byte> _stopBLEScan => "stopBLEScan"u8;
 
     /// <summary>
-    /// getState
+    /// Obtains the Bluetooth status of a device.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static global::HarmonyOS.ArkUI.BluetoothBluetoothBluetoothState GetState()
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothBluetoothBluetoothState>(Module, _getState);
     }
 
     /// <summary>
-    /// getBtConnectionState
+    /// Get the local device connection state to any profile of any remote device.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static global::HarmonyOS.ArkUI.BluetoothBluetoothProfileConnectionState GetBtConnectionState()
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothBluetoothProfileConnectionState>(Module, _getBtConnectionState);
     }
 
     /// <summary>
-    /// pairDevice
+    /// Starts pairing with a remote Bluetooth device.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool PairDevice(string deviceId)
     {
         return NodeApi.CallMethod<bool>(Module, _pairDevice, deviceId);
     }
 
     /// <summary>
-    /// getRemoteDeviceName
+    /// Obtains the name of a peer Bluetooth device.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static string GetRemoteDeviceName(string deviceId)
     {
         return NodeApi.CallMethod<string>(Module, _getRemoteDeviceName, deviceId);
     }
 
     /// <summary>
-    /// getRemoteDeviceClass
+    /// Obtains the class of a peer Bluetooth device.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static BluetoothDeviceClass GetRemoteDeviceClass(string deviceId)
     {
         return NodeApi.CallMethod(Module, _getRemoteDeviceClass, static h => new BluetoothDeviceClass(h), deviceId);
     }
 
     /// <summary>
-    /// enableBluetooth
+    /// Enables Bluetooth on a device.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool EnableBluetooth()
     {
         return NodeApi.CallMethod<bool>(Module, _enableBluetooth);
     }
 
     /// <summary>
-    /// disableBluetooth
+    /// Disables Bluetooth on a device.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool DisableBluetooth()
     {
         return NodeApi.CallMethod<bool>(Module, _disableBluetooth);
     }
 
     /// <summary>
-    /// getLocalName
+    /// Obtains the Bluetooth local name of a device.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static string GetLocalName()
     {
         return NodeApi.CallMethod<string>(Module, _getLocalName);
     }
 
     /// <summary>
-    /// getPairedDevices
+    /// Obtains the list of Bluetooth devices that have been paired with the current device.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static string[] GetPairedDevices()
     {
         return NodeApi.CallMethod(Module, _getPairedDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// getProfileConnState
+    /// Obtains the connection state of profile.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static global::HarmonyOS.ArkUI.BluetoothBluetoothProfileConnectionState GetProfileConnState(global::HarmonyOS.ArkUI.BluetoothBluetoothProfileId profileId)
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothBluetoothProfileConnectionState>(Module, _getProfileConnState, (int)profileId);
     }
 
     /// <summary>
-    /// setDevicePairingConfirmation
+    /// Sets the confirmation of pairing with a certain device.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool SetDevicePairingConfirmation(string device, bool accept)
     {
         return NodeApi.CallMethod<bool>(Module, _setDevicePairingConfirmation, device, accept);
     }
 
     /// <summary>
-    /// setLocalName
+    /// Sets the Bluetooth friendly name of a device.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool SetLocalName(string name)
     {
         return NodeApi.CallMethod<bool>(Module, _setLocalName, name);
     }
 
     /// <summary>
-    /// setBluetoothScanMode
+    /// Sets the Bluetooth scan mode for a device.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool SetBluetoothScanMode(global::HarmonyOS.ArkUI.BluetoothBluetoothScanMode mode, double duration)
     {
         return NodeApi.CallMethod<bool>(Module, _setBluetoothScanMode, (int)mode, duration);
     }
 
     /// <summary>
-    /// getBluetoothScanMode
+    /// Obtains the Bluetooth scanning mode of a device.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static global::HarmonyOS.ArkUI.BluetoothBluetoothScanMode GetBluetoothScanMode()
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.BluetoothBluetoothScanMode>(Module, _getBluetoothScanMode);
     }
 
     /// <summary>
-    /// startBluetoothDiscovery
+    /// Starts scanning Bluetooth devices.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool StartBluetoothDiscovery()
     {
         return NodeApi.CallMethod<bool>(Module, _startBluetoothDiscovery);
     }
 
     /// <summary>
-    /// stopBluetoothDiscovery
+    /// Stops Bluetooth device scanning.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool StopBluetoothDiscovery()
     {
         return NodeApi.CallMethod<bool>(Module, _stopBluetoothDiscovery);
     }
 
     /// <summary>
-    /// on
+    /// Subscribe the event reported when a remote Bluetooth device is discovered.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribe the event reported when a remote Bluetooth device is discovered.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// sppListen
+    /// Creates a Bluetooth server listening socket.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double> SppListenAsync(string name, SppOption option)
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _sppListen, null, name, NapiArg.Of(option));
     }
 
     /// <summary>
-    /// sppAccept
+    /// Waits for a remote device to connect.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double> SppAcceptAsync(double serverSocket)
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _sppAccept, null, serverSocket);
     }
 
     /// <summary>
-    /// sppConnect
+    /// Connects to a remote device over the socket.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double> SppConnectAsync(string device, SppOption option)
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _sppConnect, null, device, NapiArg.Of(option));
     }
 
     /// <summary>
-    /// sppCloseServerSocket
+    /// Disables an spp server socket and releases related resources.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void SppCloseServerSocket(double socket)
     {
         NodeApi.CallMethodVoid(Module, _sppCloseServerSocket, socket);
     }
 
     /// <summary>
-    /// sppCloseClientSocket
+    /// Disables an spp client socket and releases related resources.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void SppCloseClientSocket(double socket)
     {
         NodeApi.CallMethodVoid(Module, _sppCloseClientSocket, socket);
     }
 
     /// <summary>
-    /// sppWrite
+    /// Write data through the socket.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool SppWrite(double clientSocket, byte[] data)
     {
         return NodeApi.CallMethod<bool>(Module, _sppWrite, clientSocket, NapiArg.OfArrayBuffer(data));
     }
 
     /// <summary>
-    /// on
+    /// Subscribe the event reported when data is read from the socket.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void On(string type, double clientSocket, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, clientSocket, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribe the event reported when data is read from the socket.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void Off(string type, double clientSocket, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, clientSocket, callback);
     }
 
     /// <summary>
-    /// getProfile
+    /// Obtains the instance of profile.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static BluetoothA2dpSourceProfile GetProfile(global::HarmonyOS.ArkUI.BluetoothBluetoothProfileId profileId)
     {
         return NodeApi.CallMethod(Module, _getProfile, static h => new BluetoothA2dpSourceProfile(h), (int)profileId);
     }
 
     /// <summary>
-    /// createGattServer
+    /// create a JavaScript Gatt server instance.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static BluetoothGattServer CreateGattServer()
     {
         return NodeApi.CallMethod(Module, _createGattServer, static h => new BluetoothGattServer(h));
     }
 
     /// <summary>
-    /// createGattClientDevice
+    /// create a JavaScript Gatt client device instance.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static BluetoothGattClientDevice CreateGattClientDevice(string deviceId)
     {
         return NodeApi.CallMethod(Module, _createGattClientDevice, static h => new BluetoothGattClientDevice(h), deviceId);
     }
 
     /// <summary>
-    /// getConnectedBLEDevices
+    /// Obtains the list of devices in the connected status.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static string[] GetConnectedBleDevices()
     {
         return NodeApi.CallMethod(Module, _getConnectedBLEDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// startBLEScan
+    /// Starts scanning for specified BLE devices with filters.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void StartBleScan(BluetoothScanFilter[] filters, BluetoothScanOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _startBLEScan, NapiArg.Of(filters), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// stopBLEScan
+    /// Stops BLE scanning.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void StopBleScan()
     {
         NodeApi.CallMethodVoid(Module, _stopBLEScan);
@@ -764,6 +753,12 @@ public sealed partial class BluetoothGattServer : JsObject
     /// </summary>
     public void StartAdvertising(BluetoothAdvertiseSetting setting, IntPtr advData, IntPtr? advResponse = null)
     {
+        if (advResponse is null)
+        {
+            CallMethodVoid(_startAdvertising, NapiArg.Of(setting), advData);
+            return;
+        }
+
         CallMethodVoid(_startAdvertising, NapiArg.Of(setting), advData, NapiArg.Of(advResponse));
     }
 

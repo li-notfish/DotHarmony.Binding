@@ -19,51 +19,8 @@ public static unsafe partial class ContinuationManager
 {
     private const string ModuleName = "@ohos.continuation.continuationManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[continuation.continuationManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _off => "off"u8;
@@ -77,128 +34,144 @@ public static unsafe partial class ContinuationManager
     private static ReadOnlySpan<byte> _startContinuationDeviceManager => "startContinuationDeviceManager"u8;
 
     /// <summary>
-    /// on
+    /// Subscribes to device connection events. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void On(string type, double token, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, token, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from device connection events.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Off(string type, double token)
     {
         NodeApi.CallMethodVoid(Module, _off, type, token);
     }
 
     /// <summary>
-    /// on
+    /// Subscribes to device connection events. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from device connection events. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// register
+    /// Registers the continuation management service and obtains a token. This API does not involve any filter parameters
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double> RegisterAsync()
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _register, null);
     }
 
     /// <summary>
-    /// register
+    /// Registers the continuation management service and obtains a token. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double> RegisterAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsync<double>(Module, _register, options);
     }
 
     /// <summary>
-    /// unregister
+    /// Unregisters the continuation management service. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task UnregisterAsync(double token, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _unregister, cancellationToken, token);
     }
 
     /// <summary>
-    /// updateConnectStatus
+    /// Instructs the device selection module to update the device connection state. This API uses an asynchronous callback
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task UpdateConnectStatusAsync(double token, string deviceId, global::HarmonyOS.ArkUI.DeviceConnectState status, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updateConnectStatus, cancellationToken, token, deviceId, (int)status);
     }
 
     /// <summary>
-    /// startDeviceManager
+    /// Starts the device selection module to show the list of available devices on the network. This API does not involve
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task StartDeviceManagerAsync(double token, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _startDeviceManager, cancellationToken, token);
     }
 
     /// <summary>
-    /// startDeviceManager
+    /// Starts the device selection module to show the list of available devices on the network. This API uses an
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task StartDeviceManagerAsync(double token, IntPtr options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startDeviceManager, cancellationToken, token, options);
     }
 
     /// <summary>
-    /// registerContinuation
+    /// Registers the continuation management service and obtains a token. This API does not involve any filter parameters
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> RegisterContinuationAsync()
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _registerContinuation, null);
     }
 
     /// <summary>
-    /// registerContinuation
+    /// Registers the continuation management service and obtains a token. This API uses an asynchronous callback to return
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> RegisterContinuationAsync(IntPtr options)
     {
         return NodeApi.CallMethodAsync<double>(Module, _registerContinuation, options);
     }
 
     /// <summary>
-    /// unregisterContinuation
+    /// Unregisters the continuation management service. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task UnregisterContinuationAsync(double token, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _unregisterContinuation, cancellationToken, token);
     }
 
     /// <summary>
-    /// updateContinuationState
+    /// Instructs the device selection module to update the device connection state. This API uses an asynchronous callback
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task UpdateContinuationStateAsync(double token, string deviceId, global::HarmonyOS.ArkUI.DeviceConnectState status, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updateContinuationState, cancellationToken, token, deviceId, (int)status);
     }
 
     /// <summary>
-    /// startContinuationDeviceManager
+    /// Starts the device selection module to show the list of available devices on the network. This API does not involve
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task StartContinuationDeviceManagerAsync(double token, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncCallbackVoid(Module, _startContinuationDeviceManager, cancellationToken, token);
     }
 
     /// <summary>
-    /// startContinuationDeviceManager
+    /// Starts the device selection module to show the list of available devices on the network. This API uses an
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task StartContinuationDeviceManagerAsync(double token, IntPtr options, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startContinuationDeviceManager, cancellationToken, token, options);

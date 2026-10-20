@@ -12,9 +12,16 @@ The data is static and intentionally local, so the sample runs without network a
 
 ## Build and run
 
+Run from this sample directory (the `.csproj` is the current folder):
+
 ```powershell
 dotnet build -t:HarmonyRun
 ```
+
+Prerequisites (PowerShell 7+, DevEco SDK, a connected emulator/device) and first-run
+troubleshooting are documented in [GETTING_STARTED.md](../../../GETTING_STARTED.md).
+Do not deploy `samples/HarmonyHost` directly: `-t:HarmonyRun` stages a per-app host into
+`obj/harmony/host` automatically.
 
 If you want to restore only:
 

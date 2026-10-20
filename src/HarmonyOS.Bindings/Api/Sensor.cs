@@ -19,51 +19,8 @@ public static unsafe partial class Sensor
 {
     private const string ModuleName = "@ohos.sensor";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[sensor] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _once => "once"u8;
@@ -92,240 +49,270 @@ public static unsafe partial class Sensor
     private static ReadOnlySpan<byte> _getOrientation => "getOrientation"u8;
 
     /// <summary>
-    /// on
+    /// Subscribes to data of the acceleration sensor.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void On(IntPtr type, IntPtr callback, SensorOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback, NapiArg.Of(options));
     }
 
     /// <summary>
-    /// once
+    /// Obtains data of the acceleration sensor once.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Once(IntPtr type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _once, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from data of the acceleration sensor.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Off(IntPtr type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribes from data of the acceleration sensor.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void Off(IntPtr type, SensorInfoParam sensorInfoParam, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(sensorInfoParam), callback);
     }
 
     /// <summary>
-    /// getSingleSensor
+    /// Obtains information about the sensor of a specific type. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<SensorObject> GetSingleSensorAsync(global::HarmonyOS.ArkUI.SensorId type)
     {
         return NodeApi.CallMethodAsync(Module, _getSingleSensor, static h => new SensorObject(h), (int)type);
     }
 
     /// <summary>
-    /// getSingleSensorSync
+    /// Obtains information about the sensor of a specific type. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static SensorObject GetSingleSensorSync(global::HarmonyOS.ArkUI.SensorId type)
     {
         return NodeApi.CallMethod(Module, _getSingleSensorSync, static h => new SensorObject(h), (int)type);
     }
 
     /// <summary>
-    /// getSingleSensorByDeviceSync
+    /// Obtains information about the sensor of a specific type.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static SensorObject[] GetSingleSensorByDeviceSync(global::HarmonyOS.ArkUI.SensorId type, double? deviceId = null)
     {
         return NodeApi.CallMethod(Module, _getSingleSensorByDeviceSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)), (int)type, NapiArg.Of(deviceId));
     }
 
     /// <summary>
-    /// getSensorList
+    /// Obtains information about all sensors on the device. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<SensorObject[]> GetSensorListAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getSensorList, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)));
     }
 
     /// <summary>
-    /// getSensorListSync
+    /// Obtains information about all sensors on the device. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static SensorObject[] GetSensorListSync()
     {
         return NodeApi.CallMethod(Module, _getSensorListSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)));
     }
 
     /// <summary>
-    /// getSensorListByDeviceSync
+    /// Obtains the information about all sensors on the device.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static SensorObject[] GetSensorListByDeviceSync(double? deviceId = null)
     {
         return NodeApi.CallMethod(Module, _getSensorListByDeviceSync, h => ValueConverter.ConvertArray(h, static e => new SensorObject(e)), NapiArg.Of(deviceId));
     }
 
     /// <summary>
-    /// getGeomagneticField
+    /// Obtains the geomagnetic field of a geographic location. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<GeomagneticResponse> GetGeomagneticFieldAsync(LocationOptions locationOptions, double timeMillis)
     {
         return NodeApi.CallMethodAsync(Module, _getGeomagneticField, static h => new GeomagneticResponse(h), NapiArg.Of(locationOptions), timeMillis);
     }
 
     /// <summary>
-    /// getGeomagneticInfo
+    /// Obtains the geomagnetic field of a geographic location at a certain time. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<GeomagneticResponse> GetGeomagneticInfoAsync(LocationOptions locationOptions, double timeMillis)
     {
         return NodeApi.CallMethodAsync(Module, _getGeomagneticInfo, static h => new GeomagneticResponse(h), NapiArg.Of(locationOptions), timeMillis);
     }
 
     /// <summary>
-    /// getAltitude
+    /// Obtains the altitude at which the device is located based on the sea-level atmospheric pressure and the current
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double> GetAltitudeAsync(double seaPressure, double currentPressure)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getAltitude, seaPressure, currentPressure);
     }
 
     /// <summary>
-    /// getDeviceAltitude
+    /// Obtains the altitude based on the atmospheric pressure. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetDeviceAltitudeAsync(double seaPressure, double currentPressure)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getDeviceAltitude, seaPressure, currentPressure);
     }
 
     /// <summary>
-    /// getGeomagneticDip
+    /// Obtains the magnetic dip based on the inclination matrix. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double> GetGeomagneticDipAsync(double[] inclinationMatrix)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getGeomagneticDip, NapiArg.Of(inclinationMatrix));
     }
 
     /// <summary>
-    /// getInclination
+    /// Obtains the magnetic dip based on the inclination matrix. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetInclinationAsync(double[] inclinationMatrix)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getInclination, NapiArg.Of(inclinationMatrix));
     }
 
     /// <summary>
-    /// getAngleModify
+    /// Obtains the angle change between two rotation matrices. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double[]> GetAngleModifyAsync(double[] currentRotationMatrix, double[] preRotationMatrix)
     {
         return NodeApi.CallMethodAsync(Module, _getAngleModify, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(currentRotationMatrix), NapiArg.Of(preRotationMatrix));
     }
 
     /// <summary>
-    /// getAngleVariation
+    /// Obtains the angle change between two rotation matrices. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double[]> GetAngleVariationAsync(double[] currentRotationMatrix, double[] preRotationMatrix)
     {
         return NodeApi.CallMethodAsync(Module, _getAngleVariation, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(currentRotationMatrix), NapiArg.Of(preRotationMatrix));
     }
 
     /// <summary>
-    /// createRotationMatrix
+    /// Converts a rotation vector into a rotation matrix. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double[]> CreateRotationMatrixAsync(double[] rotationVector)
     {
         return NodeApi.CallMethodAsync(Module, _createRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationVector));
     }
 
     /// <summary>
-    /// getRotationMatrix
+    /// Obtains the rotation matrix from a rotation vector. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double[]> GetRotationMatrixAsync(double[] rotationVector)
     {
         return NodeApi.CallMethodAsync(Module, _getRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationVector));
     }
 
     /// <summary>
-    /// transformCoordinateSystem
+    /// Rotates a rotation vector so that it can represent the coordinate system in different ways. This API uses an
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double[]> TransformCoordinateSystemAsync(double[] inRotationVector, CoordinatesOptions coordinates)
     {
         return NodeApi.CallMethodAsync(Module, _transformCoordinateSystem, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(inRotationVector), NapiArg.Of(coordinates));
     }
 
     /// <summary>
-    /// transformRotationMatrix
+    /// Transforms a rotation vector based on the coordinate system. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double[]> TransformRotationMatrixAsync(double[] inRotationVector, CoordinatesOptions coordinates)
     {
         return NodeApi.CallMethodAsync(Module, _transformRotationMatrix, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(inRotationVector), NapiArg.Of(coordinates));
     }
 
     /// <summary>
-    /// createQuaternion
+    /// Converts a rotation vector into a quaternion. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double[]> CreateQuaternionAsync(double[] rotationVector)
     {
         return NodeApi.CallMethodAsync(Module, _createQuaternion, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationVector));
     }
 
     /// <summary>
-    /// getQuaternion
+    /// Obtains the quaternion from a rotation vector. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double[]> GetQuaternionAsync(double[] rotationVector)
     {
         return NodeApi.CallMethodAsync(Module, _getQuaternion, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationVector));
     }
 
     /// <summary>
-    /// getDirection
+    /// Obtains the device direction based on the rotation matrix. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double[]> GetDirectionAsync(double[] rotationMatrix)
     {
         return NodeApi.CallMethodAsync(Module, _getDirection, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationMatrix));
     }
 
     /// <summary>
-    /// getOrientation
+    /// Obtains the device direction based on the rotation matrix. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double[]> GetOrientationAsync(double[] rotationMatrix)
     {
         return NodeApi.CallMethodAsync(Module, _getOrientation, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), NapiArg.Of(rotationMatrix));
     }
 
     /// <summary>
-    /// createRotationMatrix
+    /// Obtains the rotation matrix based on a gravity vector and geomagnetic vector. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<RotationMatrixResponse> CreateRotationMatrixAsync(double[] gravity, double[] geomagnetic)
     {
         return NodeApi.CallMethodAsync(Module, _createRotationMatrix, static h => new RotationMatrixResponse(h), NapiArg.Of(gravity), NapiArg.Of(geomagnetic));
     }
 
     /// <summary>
-    /// getRotationMatrix
+    /// Obtains the rotation matrix based on a gravity vector and geomagnetic vector. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<RotationMatrixResponse> GetRotationMatrixAsync(double[] gravity, double[] geomagnetic)
     {
         return NodeApi.CallMethodAsync(Module, _getRotationMatrix, static h => new RotationMatrixResponse(h), NapiArg.Of(gravity), NapiArg.Of(geomagnetic));
     }
 
     /// <summary>
-    /// on
+    /// Enables listening for sensor status changes. This API asynchronously returns the result through a callback.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Disables listening for sensor status changes.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);

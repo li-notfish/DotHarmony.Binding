@@ -20,51 +20,8 @@ public static unsafe partial class InputMethod
 {
     private const string ModuleName = "@ohos.inputMethod";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[inputMethod] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _MAX_TYPE_NUM => "MAX_TYPE_NUM"u8;
     private static ReadOnlySpan<byte> _getInputMethodSetting => "getInputMethodSetting"u8;
@@ -83,117 +40,132 @@ public static unsafe partial class InputMethod
     private static ReadOnlySpan<byte> _offAttachmentDidFail => "offAttachmentDidFail"u8;
 
     /// <summary>
-    /// MAX_TYPE_NUM
+    /// Keyboard max number. Max value is 128.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static double MaxTypeNum => NativeValue.ToDouble(NodeApi.GetProperty(Module, _MAX_TYPE_NUM));
 
     /// <summary>
-    /// getInputMethodSetting
+    /// Input method setting
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static InputMethodSetting GetInputMethodSetting()
     {
         return NodeApi.CallMethod(Module, _getInputMethodSetting, static h => new InputMethodSetting(h));
     }
 
     /// <summary>
-    /// getInputMethodController
+    /// Input method controller
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static InputMethodController GetInputMethodController()
     {
         return NodeApi.CallMethod(Module, _getInputMethodController, static h => new InputMethodController(h));
     }
 
     /// <summary>
-    /// getSetting
+    /// Input method setting
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static InputMethodSetting GetSetting()
     {
         return NodeApi.CallMethod(Module, _getSetting, static h => new InputMethodSetting(h));
     }
 
     /// <summary>
-    /// getController
+    /// Input method controller
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static InputMethodController GetController()
     {
         return NodeApi.CallMethod(Module, _getController, static h => new InputMethodController(h));
     }
 
     /// <summary>
-    /// getDefaultInputMethod
+    /// Get default input method
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static IntPtr GetDefaultInputMethod()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getDefaultInputMethod);
     }
 
     /// <summary>
-    /// getSystemInputMethodConfigAbility
+    /// Get system input method config ability
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static IntPtr GetSystemInputMethodConfigAbility()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getSystemInputMethodConfigAbility);
     }
 
     /// <summary>
-    /// switchInputMethod
+    /// Switch input method. The caller must be the current inputmethod.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool> SwitchInputMethodAsync(IntPtr target)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _switchInputMethod, target);
     }
 
     /// <summary>
-    /// getCurrentInputMethod
+    /// Get current input method
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr GetCurrentInputMethod()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getCurrentInputMethod);
     }
 
     /// <summary>
-    /// switchCurrentInputMethodSubtype
+    /// Switch current input method subtype. The caller must be the current inputmethod.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool> SwitchCurrentInputMethodSubtypeAsync(global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject target)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _switchCurrentInputMethodSubtype, NapiArg.Of(target));
     }
 
     /// <summary>
-    /// getCurrentInputMethodSubtype
+    /// Get the current input method subtype
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject GetCurrentInputMethodSubtype()
     {
         return NodeApi.CallMethod(Module, _getCurrentInputMethodSubtype, static h => new global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject(h));
     }
 
     /// <summary>
-    /// switchCurrentInputMethodAndSubtype
+    /// Switch input method and subtype. The caller must be the current inputmethod.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool> SwitchCurrentInputMethodAndSubtypeAsync(IntPtr inputMethodProperty, global::HarmonyOS.Bindings.Api.InputMethodSubtypeObject inputMethodSubtype)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _switchCurrentInputMethodAndSubtype, inputMethodProperty, NapiArg.Of(inputMethodSubtype));
     }
 
     /// <summary>
-    /// setSimpleKeyboardEnabled
+    /// Set simple keyboard mode.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetSimpleKeyboardEnabled(bool enable)
     {
         NodeApi.CallMethodVoid(Module, _setSimpleKeyboardEnabled, enable);
     }
 
     /// <summary>
-    /// onAttachmentDidFail
+    /// Subscribe the attachment failure event.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static void OnAttachmentDidFail(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onAttachmentDidFail, callback);
     }
 
     /// <summary>
-    /// offAttachmentDidFail
+    /// Unsubscribe the attachment failure event.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static void OffAttachmentDidFail(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offAttachmentDidFail, NapiArg.Of(callback));
@@ -409,6 +381,11 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task AttachWithUiContextAsync(global::HarmonyOS.Bindings.Api.Arkui.UIContextObject uiContext, TextConfig textConfig, AttachOptions? attachOptions = null, CancellationToken cancellationToken = default)
     {
+        if (attachOptions is null)
+        {
+            return CallMethodAsyncVoid(_attachWithUIContext, cancellationToken, NapiArg.Of(uiContext), NapiArg.Of(textConfig));
+        }
+
         return CallMethodAsyncVoid(_attachWithUIContext, cancellationToken, NapiArg.Of(uiContext), NapiArg.Of(textConfig), NapiArg.Of(attachOptions));
     }
 
@@ -521,6 +498,11 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public Task SendMessageAsync(string msgId, byte[]? msgParam = null, CancellationToken cancellationToken = default)
     {
+        if (msgParam is null)
+        {
+            return CallMethodAsyncVoid(_sendMessage, cancellationToken, msgId);
+        }
+
         return CallMethodAsyncVoid(_sendMessage, cancellationToken, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 
@@ -529,6 +511,12 @@ public sealed partial class InputMethodController : JsObject
     /// </summary>
     public void RecvMessage(MessageHandler? msgHandler = null)
     {
+        if (msgHandler is null)
+        {
+            CallMethodVoid(_recvMessage);
+            return;
+        }
+
         CallMethodVoid(_recvMessage, NapiArg.Of(msgHandler));
     }
 
@@ -1046,6 +1034,12 @@ public sealed partial class MessageHandler : JsObject
     /// </summary>
     public void OnMessage(string msgId, byte[]? msgParam = null)
     {
+        if (msgParam is null)
+        {
+            CallMethodVoid(_onMessage, msgId);
+            return;
+        }
+
         CallMethodVoid(_onMessage, msgId, NapiArg.OfArrayBuffer(msgParam));
     }
 

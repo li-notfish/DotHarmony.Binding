@@ -19,51 +19,8 @@ public static unsafe partial class AppManager
 {
     private const string ModuleName = "@ohos.app.ability.appManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[app.ability.appManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _off => "off"u8;
@@ -75,80 +32,90 @@ public static unsafe partial class AppManager
     private static ReadOnlySpan<byte> _isAppRunning => "isAppRunning"u8;
 
     /// <summary>
-    /// on
+    /// Registers an observer to listen for lifecycle changes of all applications.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static double On(string type, IntPtr observer)
     {
         return NodeApi.CallMethod<double>(Module, _on, type, observer);
     }
 
     /// <summary>
-    /// on
+    /// Registers an observer to listen for lifecycle changes of the specified application.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static double On(string type, IntPtr observer, string[] bundleNameList)
     {
         return NodeApi.CallMethod<double>(Module, _on, type, observer, NapiArg.Of(bundleNameList));
     }
 
     /// <summary>
-    /// off
+    /// Unregisters the observer used to listen for application state changes. This API uses an asynchronous callback to
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void Off(string type, double observerId, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, observerId, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unregisters the observer used to listen for application state changes. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task OffAsync(string type, double observerId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _off, cancellationToken, type, observerId);
     }
 
     /// <summary>
-    /// isRunningInStabilityTest
+    /// Checks whether the system is undergoing a stability test. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool> IsRunningInStabilityTestAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isRunningInStabilityTest);
     }
 
     /// <summary>
-    /// killProcessesByBundleName
+    /// Kills a process by bundle name. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task KillProcessesByBundleNameAsync(string bundleName, bool clearPageStack, double? appIndex = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _killProcessesByBundleName, cancellationToken, bundleName, clearPageStack, NapiArg.Of(appIndex));
     }
 
     /// <summary>
-    /// isRamConstrainedDevice
+    /// Checks whether the current device is a RAM-constrained device (a device with severely limited memory resources).
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool> IsRamConstrainedDeviceAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isRamConstrainedDevice);
     }
 
     /// <summary>
-    /// getAppMemorySize
+    /// Obtains the maximum memory (RAM allocation) available to the current application. This API uses a promise to return
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetAppMemorySizeAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getAppMemorySize);
     }
 
     /// <summary>
-    /// getRunningProcessInformation
+    /// Obtains information about the running processes of the current application. This API uses a promise to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr[]> GetRunningProcessInformationAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getRunningProcessInformation, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// isAppRunning
+    /// Checks whether the application with the specified bundle name and application clone index is running across all
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<bool> IsAppRunningAsync(string bundleName, double? appCloneIndex = null)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isAppRunning, bundleName, NapiArg.Of(appCloneIndex));

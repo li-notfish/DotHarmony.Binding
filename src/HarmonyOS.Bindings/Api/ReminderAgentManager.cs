@@ -19,51 +19,8 @@ public static unsafe partial class ReminderAgentManager
 {
     private const string ModuleName = "@ohos.reminderAgentManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[reminderAgentManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _publishReminder => "publishReminder"u8;
     private static ReadOnlySpan<byte> _cancelReminder => "cancelReminder"u8;
@@ -81,112 +38,126 @@ public static unsafe partial class ReminderAgentManager
     private static ReadOnlySpan<byte> _unsubscribeReminderState => "unsubscribeReminderState"u8;
 
     /// <summary>
-    /// publishReminder
+    /// Publishes a reminder. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> PublishReminderAsync(IntPtr reminderReq)
     {
         return NodeApi.CallMethodAsync<double>(Module, _publishReminder, reminderReq);
     }
 
     /// <summary>
-    /// cancelReminder
+    /// Cancels a reminder published. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task CancelReminderAsync(double reminderId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cancelReminder, cancellationToken, reminderId);
     }
 
     /// <summary>
-    /// cancelReminderOnDisplay
+    /// Cancels the notification card displayed in the notification center with the agent reminder data retained. For
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task CancelReminderOnDisplayAsync(double reminderId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cancelReminderOnDisplay, cancellationToken, reminderId);
     }
 
     /// <summary>
-    /// getValidReminders
+    /// Obtains all [valid (not yet expired) reminders](docroot://task-management/agent-powered-reminder.md#constraints)
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr[]> GetValidRemindersAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getValidReminders, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// cancelAllReminders
+    /// Cancels all reminders set by the current application. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task CancelAllRemindersAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _cancelAllReminders, cancellationToken);
     }
 
     /// <summary>
-    /// updateReminder
+    /// Updates the agent-powered reminder with the specified ID. This API uses a promise to return the result. Only
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task UpdateReminderAsync(double reminderId, IntPtr reminderReq, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _updateReminder, cancellationToken, reminderId, reminderReq);
     }
 
     /// <summary>
-    /// addNotificationSlot
+    /// Adds a notification slot. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task AddNotificationSlotAsync(IntPtr slot, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _addNotificationSlot, cancellationToken, slot);
     }
 
     /// <summary>
-    /// removeNotificationSlot
+    /// Removes a specified notification slot. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task RemoveNotificationSlotAsync(IntPtr slotType, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeNotificationSlot, cancellationToken, slotType);
     }
 
     /// <summary>
-    /// addExcludeDate
+    /// Adds a non-reminder date for a recurring calendar reminder with a specific ID. For example, configure a daily
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task AddExcludeDateAsync(double reminderId, IntPtr date, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _addExcludeDate, cancellationToken, reminderId, date);
     }
 
     /// <summary>
-    /// deleteExcludeDates
+    /// Deletes all non-reminder dates for a recurring calendar reminder with a specific ID. This API uses a promise to
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task DeleteExcludeDatesAsync(double reminderId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _deleteExcludeDates, cancellationToken, reminderId);
     }
 
     /// <summary>
-    /// getExcludeDates
+    /// Obtains all non-reminder dates for a recurring calendar reminder with a specific ID. This API uses a promise to
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<IntPtr[]> GetExcludeDatesAsync(double reminderId)
     {
         return NodeApi.CallMethodAsync(Module, _getExcludeDates, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), reminderId);
     }
 
     /// <summary>
-    /// getAllValidReminders
+    /// Obtains all [valid (not yet expired) reminders](docroot://task-management/agent-powered-reminder.md#constraints)
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<IntPtr[]> GetAllValidRemindersAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAllValidReminders, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// subscribeReminderState
+    /// Subscribes to agent-powered reminder state changes. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task SubscribeReminderStateAsync(IntPtr callback, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _subscribeReminderState, cancellationToken, callback);
     }
 
     /// <summary>
-    /// unsubscribeReminderState
+    /// Unsubscribes from agent-powered reminder state changes. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static Task UnsubscribeReminderStateAsync(IntPtr? callback = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _unsubscribeReminderState, cancellationToken, NapiArg.Of(callback));

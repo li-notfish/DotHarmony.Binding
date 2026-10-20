@@ -18,51 +18,8 @@ public static unsafe partial class SkillManager
 {
     private const string ModuleName = "@ohos.bundle.skillManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[bundle.skillManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getSkillInfoForSelf => "getSkillInfoForSelf"u8;
     private static ReadOnlySpan<byte> _getSkillInfosForSelf => "getSkillInfosForSelf"u8;
@@ -71,40 +28,45 @@ public static unsafe partial class SkillManager
     private static ReadOnlySpan<byte> _getAllSkillInfos => "getAllSkillInfos"u8;
 
     /// <summary>
-    /// getSkillInfoForSelf
+    /// Obtains SkillInfo of the calling application based on moduleName and skillName.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr> GetSkillInfoForSelfAsync(string moduleName, string skillName, double flags)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getSkillInfoForSelf, moduleName, skillName, flags);
     }
 
     /// <summary>
-    /// getSkillInfosForSelf
+    /// Obtains all SkillInfo objects of the calling application.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr[]> GetSkillInfosForSelfAsync(double flags)
     {
         return NodeApi.CallMethodAsync(Module, _getSkillInfosForSelf, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), flags);
     }
 
     /// <summary>
-    /// getSkillInfo
+    /// Obtains SkillInfo of a specified application based on bundleName, moduleName and skillName.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr> GetSkillInfoAsync(string bundleName, string moduleName, string skillName, double flags, double? userId = null)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getSkillInfo, bundleName, moduleName, skillName, flags, NapiArg.Of(userId));
     }
 
     /// <summary>
-    /// getSkillInfos
+    /// Obtains all SkillInfo of a specified application based on bundleName.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr[]> GetSkillInfosAsync(string bundleName, double flags, double? userId = null)
     {
         return NodeApi.CallMethodAsync(Module, _getSkillInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), bundleName, flags, NapiArg.Of(userId));
     }
 
     /// <summary>
-    /// getAllSkillInfos
+    /// Obtains all SkillInfo objects installed on the device.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr[]> GetAllSkillInfosAsync(double flags, double? userId = null)
     {
         return NodeApi.CallMethodAsync(Module, _getAllSkillInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), flags, NapiArg.Of(userId));

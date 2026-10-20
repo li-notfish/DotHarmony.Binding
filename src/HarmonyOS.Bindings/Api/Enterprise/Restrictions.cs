@@ -17,51 +17,8 @@ public static unsafe partial class Restrictions
 {
     private const string ModuleName = "@ohos.enterprise.restrictions";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.restrictions] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _setDisallowedPolicy => "setDisallowedPolicy"u8;
     private static ReadOnlySpan<byte> _getDisallowedPolicy => "getDisallowedPolicy"u8;
@@ -76,152 +33,171 @@ public static unsafe partial class Restrictions
     private static ReadOnlySpan<byte> _getUserRestrictedForAccount => "getUserRestrictedForAccount"u8;
 
     /// <summary>
-    /// setDisallowedPolicy
+    /// Disallows a feature.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void SetDisallowedPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string feature, bool disallow)
     {
         NodeApi.CallMethodVoid(Module, _setDisallowedPolicy, NapiArg.Of(admin), feature, disallow);
     }
 
     /// <summary>
-    /// getDisallowedPolicy
+    /// Queries whether a feature is disabled.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool GetDisallowedPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string feature)
     {
         return NodeApi.CallMethod<bool>(Module, _getDisallowedPolicy, NapiArg.Of(admin), feature);
     }
 
     /// <summary>
-    /// setDisallowedPolicyForAccount
+    /// Disallows a feature for a specified user.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void SetDisallowedPolicyForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string feature, bool disallow, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _setDisallowedPolicyForAccount, NapiArg.Of(admin), feature, disallow, accountId);
     }
 
     /// <summary>
-    /// getDisallowedPolicyForAccount
+    /// Obtains the status of a feature for a specified user.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static bool GetDisallowedPolicyForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string feature, double accountId)
     {
         return NodeApi.CallMethod<bool>(Module, _getDisallowedPolicyForAccount, NapiArg.Of(admin), feature, accountId);
     }
 
     /// <summary>
-    /// addDisallowedListForAccount
+    /// Adds a list of applications that are not allowed to use a feature for a specified user.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void AddDisallowedListForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string feature, string[] list, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedListForAccount, NapiArg.Of(admin), feature, NapiArg.Of(list), accountId);
     }
 
     /// <summary>
-    /// removeDisallowedListForAccount
+    /// Removes the list of applications that are not allowed to use a feature for a specified user.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void RemoveDisallowedListForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string feature, string[] list, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedListForAccount, NapiArg.Of(admin), feature, NapiArg.Of(list), accountId);
     }
 
     /// <summary>
-    /// getDisallowedListForAccount
+    /// Obtains the list of applications that are not allowed to use a feature for a specified user.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static string[] GetDisallowedListForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string feature, double accountId)
     {
         return NodeApi.CallMethod(Module, _getDisallowedListForAccount, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), feature, accountId);
     }
 
     /// <summary>
-    /// setUserRestriction
+    /// Sets restrictions on user behaviors.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetUserRestriction(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string settingsItem, bool restricted)
     {
         NodeApi.CallMethodVoid(Module, _setUserRestriction, NapiArg.Of(admin), settingsItem, restricted);
     }
 
     /// <summary>
-    /// getUserRestricted
+    /// Obtains the disabled status of a setting item.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool GetUserRestricted(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string settingsItem)
     {
         return NodeApi.CallMethod<bool>(Module, _getUserRestricted, NapiArg.Of(admin), settingsItem);
     }
 
     /// <summary>
-    /// setUserRestrictionForAccount
+    /// Sets restrictions on specified user behaviors.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void SetUserRestrictionForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string settingsItem, double accountId, bool restricted)
     {
         NodeApi.CallMethodVoid(Module, _setUserRestrictionForAccount, NapiArg.Of(admin), settingsItem, accountId, restricted);
     }
 
     /// <summary>
-    /// getUserRestrictedForAccount
+    /// Obtains the disabled status of a setting item for a specified user.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static bool GetUserRestrictedForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string settingsItem, double accountId)
     {
         return NodeApi.CallMethod<bool>(Module, _getUserRestrictedForAccount, NapiArg.Of(admin), settingsItem, accountId);
     }
 
     /// <summary>
-    /// setDisallowedPolicy
+    /// Enables or disables a specified device feature. Once disabled, the feature cannot be used.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void SetDisallowedPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.FeatureForDevice feature, bool disallow)
     {
         NodeApi.CallMethodVoid(Module, _setDisallowedPolicy, NapiArg.Of(admin), (int)feature, disallow);
     }
 
     /// <summary>
-    /// getDisallowedPolicy
+    /// Queries whether a specified device feature is disabled.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static bool GetDisallowedPolicy(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.FeatureForDevice feature)
     {
         return NodeApi.CallMethod<bool>(Module, _getDisallowedPolicy, NapiArg.Of(admin), (int)feature);
     }
 
     /// <summary>
-    /// setDisallowedPolicyForAccount
+    /// Disallows a feature for a specified user.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetDisallowedPolicyForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.FeatureForAccount feature, bool disallow, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _setDisallowedPolicyForAccount, NapiArg.Of(admin), (int)feature, disallow, accountId);
     }
 
     /// <summary>
-    /// getDisallowedPolicyForAccount
+    /// Obtains the status of a feature for a specified user.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool GetDisallowedPolicyForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.FeatureForAccount feature, double accountId)
     {
         return NodeApi.CallMethod<bool>(Module, _getDisallowedPolicyForAccount, NapiArg.Of(admin), (int)feature, accountId);
     }
 
     /// <summary>
-    /// setUserRestriction
+    /// Restricts users from modifying specified device setting items.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetUserRestriction(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsForDevice settingsItem, bool restricted)
     {
         NodeApi.CallMethodVoid(Module, _setUserRestriction, NapiArg.Of(admin), (int)settingsItem, restricted);
     }
 
     /// <summary>
-    /// getUserRestricted
+    /// Obtains the disabled status of the specified device setting item.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool GetUserRestricted(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsForDevice settingsItem)
     {
         return NodeApi.CallMethod<bool>(Module, _getUserRestricted, NapiArg.Of(admin), (int)settingsItem);
     }
 
     /// <summary>
-    /// setUserRestrictionForAccount
+    /// Restricts a specified user from modifying specified setting items.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void SetUserRestrictionForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsForAccount settingsItem, double accountId, bool restricted)
     {
         NodeApi.CallMethodVoid(Module, _setUserRestrictionForAccount, NapiArg.Of(admin), (int)settingsItem, accountId, restricted);
     }
 
     /// <summary>
-    /// getUserRestrictedForAccount
+    /// Obtains the disabled status of a setting item for a specified user.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool GetUserRestrictedForAccount(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.SettingsForAccount settingsItem, double accountId)
     {
         return NodeApi.CallMethod<bool>(Module, _getUserRestrictedForAccount, NapiArg.Of(admin), (int)settingsItem, accountId);

@@ -64,6 +64,8 @@ interface EmitMember {
     retType: string;
     /** 映射后的参数（方法） */
     params: ParameterInfo[];
+    /** SDK .d.ts 的 JSDoc（brief/@since），用于生成有信息量的 XML 文档 */
+    doc?: string;
     /** 仅 callback 形式（无 Promise 重载）：调用时经 CallbackTaskBridge 创建回调传入 */
     useCallbackBridge?: boolean;
 }
@@ -416,7 +418,7 @@ export class ApiGenerator {
                 const sigKey = `${pascal}()`;
                 if (generatedSignatures.has(sigKey)) continue;
                 generatedSignatures.add(sigKey);
-                members.push({ rawName: method.name, pascalName: pascal, isProperty: true, retType, params: [] });
+                members.push({ rawName: method.name, pascalName: pascal, isProperty: true, retType, params: [], doc: method.doc });
                 continue;
             }
 
@@ -474,6 +476,7 @@ export class ApiGenerator {
                 isProperty: false,
                 retType,
                 params: mappedParams,
+                doc: method.doc,
                 useCallbackBridge: useCallbackBridge || undefined
             });
         }
@@ -765,13 +768,9 @@ export class ApiGenerator {
         lines.push('{');
         lines.push(`    private const string ModuleName = "${moduleInfo.module}";`);
         lines.push('');
-        lines.push('    private static NapiReference? _moduleRef;');
-        lines.push('    private static bool _loadAttempted;');
-        lines.push('');
         lines.push('    /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>');
-        lines.push('    internal static IntPtr Module');
-
-        this.emitModuleLoader(lines, moduleInfo);
+        lines.push('    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);');
+        lines.push('');
 
         // UTF8 名称常量
         const u8Names = new Set<string>();
@@ -799,55 +798,21 @@ export class ApiGenerator {
         void component;
     }
 
-    private emitModuleLoader(lines: string[], moduleInfo: { module: string; className: string; local: string }): void {
-        lines.push('    {');
-        lines.push('        get');
-        lines.push('        {');
-        lines.push('            if (_moduleRef != null) return _moduleRef.Value;');
-        lines.push('            if (_loadAttempted)');
-        lines.push('                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");');
-        lines.push('            _loadAttempted = true;');
-        lines.push('');
-        lines.push('            var env = NapiEnv.Current;');
-        lines.push('            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();');
-        lines.push('            try');
-        lines.push('            {');
-        lines.push('                foreach (var name in new[] { "=" + ModuleName, ModuleName })');
-        lines.push('                {');
-        lines.push('                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);');
-        lines.push('                    fixed (byte* p = utf8)');
-        lines.push('                    {');
-        lines.push('                        var status = NativeNodeApi.napi_load_module(env, p, out var module);');
-        lines.push('                        if (status == napi_status.napi_ok && module != IntPtr.Zero)');
-        lines.push('                        {');
-        lines.push('                            _moduleRef = new NapiReference(module);');
-        lines.push('                            break;');
-        lines.push('                        }');
-        lines.push('                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);');
-        lines.push('                    }');
-        lines.push('                }');
-        lines.push('            }');
-        lines.push('            finally');
-        lines.push('            {');
-        lines.push('                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();');
-        lines.push('            }');
-        lines.push('');
-        lines.push('            if (_moduleRef == null)');
-        lines.push('                throw new InvalidOperationException(');
-        lines.push('                    $"failed to load {ModuleName} via napi_load_module (tried with and without \'=\' prefix)");');
-        lines.push('');
-        lines.push(`            HiLog.Info("HarmonyHost", $"[${moduleInfo.local}] module loaded via napi_load_module");`);
-        lines.push('            return _moduleRef.Value;');
-        lines.push('        }');
-        lines.push('    }');
-        lines.push('');
+    /** 生成成员 XML 文档：优先 SDK JSDoc 的 brief，缺失时回退成员名；@since 单独作为 remarks。 */
+    private emitMemberSummary(lines: string[], m: EmitMember): void {
+        const doc = m.doc ?? '';
+        const brief = (doc.split('\n').map(l => l.trim()).find(l => l && !l.startsWith('@')) ?? '')
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const since = doc.match(/@since\s+([0-9][0-9A-Za-z._-]*)/)?.[1];
+        lines.push('    /// <summary>');
+        lines.push(`    /// ${brief || m.rawName}`);
+        lines.push('    /// </summary>');
+        if (brief && since) lines.push(`    /// <remarks>@since ${since}</remarks>`);
     }
 
     private emitStaticProperty(lines: string[], m: EmitMember): void {
         const { type, expr } = this.getterExpr(m.retType, `Module`, `_${m.rawName}`);
-        lines.push('    /// <summary>');
-        lines.push(`    /// ${m.rawName}`);
-        lines.push('    /// </summary>');
+        this.emitMemberSummary(lines, m);
         lines.push(`    public static ${type} ${m.pascalName} => ${expr};`);
         lines.push('');
     }
@@ -860,9 +825,7 @@ export class ApiGenerator {
             ? (paramStr ? `${paramStr}, CancellationToken cancellationToken = default` : 'CancellationToken cancellationToken = default')
             : paramStr;
 
-        lines.push('    /// <summary>');
-        lines.push(`    /// ${m.rawName}`);
-        lines.push('    /// </summary>');
+        this.emitMemberSummary(lines, m);
         lines.push(`    public static ${m.retType} ${m.pascalName}(${asyncParamStr})`);
         lines.push('    {');
         const expr = this.callExpr(m.retType, 'Module', `_${m.rawName}`, callArgs, false, !!m.useCallbackBridge);
@@ -964,8 +927,7 @@ export class ApiGenerator {
             const pascal = withAsyncSuffix(toPascalCase(m.name), retType);
             if (pascal === spec.csharpName) continue;
             const paramStr = mappedParams.map(p => this.formatParameter(p)).join(', ');
-            const paramNames = mappedParams.map(p => this.wrapArg(p, TypeMapper.escapeCSharpKeyword(p.name))).join(', ');
-            const callArgs = paramNames ? `, ${paramNames}` : '';
+            const mappedArgs = mappedParams.map(p => this.wrapArg(p, TypeMapper.escapeCSharpKeyword(p.name)));
 
             const sigKey = `${pascal}(${mappedParams.map(p => p.type).join(',')})`;
             if (generatedSigs.has(sigKey)) continue;
@@ -979,8 +941,59 @@ export class ApiGenerator {
                 : paramStr;
             lines.push(`    public ${retType} ${pascal}(${asyncParamStr})`);
             lines.push('    {');
-            const expr = this.callExpr(retType, 'this.Handle', `_${m.name}`, callArgs, true, useCallbackBridge);
-            lines.push(retType === 'void' ? `        ${expr};` : `        return ${expr};`);
+            // System.Func<...> 回调参数（带返回值的 JS 回调，如 WebSchemeHandler.onRequestStart）：
+            // 必须经 CreateValueCallbackFunction 桥接返回值（常规 NapiArg.Of 封送无返回通道）；
+            // 适配 lambda 透传回调返回值，GCHandle 生命周期由 NodeApi finalizer 管理。
+            const preLines: string[] = [];
+            for (let k = 0; k < mappedParams.length; k++) {
+                const p = mappedParams[k];
+                if (p.optional) continue;
+                const funcMatch = /^System\.Func<(.+)>$/.exec(p.type);
+                if (!funcMatch) continue;
+                const argTypes = TypeMapper.splitTypeArguments(funcMatch[1])
+                    .map(t => t.trim()).slice(0, -1);
+                const name = TypeMapper.escapeCSharpKeyword(p.name);
+                const invoke = argTypes.length === 0
+                    ? `args => ${name}()`
+                    : `args => ${name}(${argTypes.map((t, i) => this.convertArgExpr(t, `args[${i}]`)).join(', ')})`;
+                preLines.push(`        var (${name}JsFunc, _) = NodeApi.CreateValueCallbackFunction(`);
+                preLines.push(`            (Func<ReadOnlySpan<IntPtr>, object?>)(${invoke}));`);
+                mappedArgs[k] = `${name}JsFunc`;
+            }
+            if (preLines.length > 0) lines.push(...preLines, '');
+
+            // 尾部连续可选参数：为 null 时省略实参——可选 TS 参数语义是"缺省=undefined"，
+            // 直接封送 null 会被 ArkAPI 当作显式 null（如 RegisterJavaScriptProxy 的 permission）
+            const trailing = (() => {
+                let n = 0;
+                for (let k = mappedParams.length - 1; k >= 0 && mappedParams[k].optional; k--) n++;
+                return n;
+            })();
+            const emitCall = (argCount: number) => {
+                const args = mappedArgs.slice(0, argCount).join(', ');
+                const callArgsK = args ? `, ${args}` : '';
+                const expr = this.callExpr(retType, 'this.Handle', `_${m.name}`, callArgsK, true, useCallbackBridge);
+                lines.push(retType === 'void' ? `        ${expr};` : `        return ${expr};`);
+            };
+            for (let drop = trailing; drop >= 1; drop--) {
+                const kept = mappedParams.length - drop;
+                const nulls = mappedParams.slice(kept)
+                    .map(p => `${TypeMapper.escapeCSharpKeyword(p.name)} is null`);
+                lines.push(`        if (${nulls.join(' && ')})`);
+                lines.push('        {');
+                {
+                    const args = mappedArgs.slice(0, kept).join(', ');
+                    const callArgsK = args ? `, ${args}` : '';
+                    const exprK = this.callExpr(retType, 'this.Handle', `_${m.name}`, callArgsK, true, useCallbackBridge);
+                    lines.push(retType === 'void'
+                        ? `            ${exprK};`
+                        : `            return ${exprK};`);
+                    if (retType === 'void') lines.push('            return;');
+                }
+                lines.push('        }');
+                lines.push('');
+            }
+            emitCall(mappedParams.length);
             lines.push('    }');
             lines.push('');
         }

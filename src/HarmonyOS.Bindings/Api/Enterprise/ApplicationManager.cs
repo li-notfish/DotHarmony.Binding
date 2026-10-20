@@ -18,51 +18,8 @@ public static unsafe partial class ApplicationManager
 {
     private const string ModuleName = "@ohos.enterprise.applicationManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[enterprise.applicationManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _addDisallowedRunningBundlesSync => "addDisallowedRunningBundlesSync"u8;
     private static ReadOnlySpan<byte> _removeDisallowedRunningBundlesSync => "removeDisallowedRunningBundlesSync"u8;
@@ -108,368 +65,414 @@ public static unsafe partial class ApplicationManager
     private static ReadOnlySpan<byte> _getApplicationWindowStates => "getApplicationWindowStates"u8;
 
     /// <summary>
-    /// addDisallowedRunningBundlesSync
+    /// Adds applications to the application running blocklist. Applications added to the blocklist are not allowed to run
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void AddDisallowedRunningBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _addDisallowedRunningBundlesSync, NapiArg.Of(admin), NapiArg.Of(appIds), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// removeDisallowedRunningBundlesSync
+    /// Removes applications from the application running blocklist of the current or specified user. After an application
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void RemoveDisallowedRunningBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIds, double? accountId = null)
     {
         NodeApi.CallMethodVoid(Module, _removeDisallowedRunningBundlesSync, NapiArg.Of(admin), NapiArg.Of(appIds), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// getDisallowedRunningBundlesSync
+    /// Obtains applications that are not allowed to run by the current user or specified user.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static string[] GetDisallowedRunningBundlesSync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double? accountId = null)
     {
         return NodeApi.CallMethod(Module, _getDisallowedRunningBundlesSync, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), NapiArg.Of(accountId));
     }
 
     /// <summary>
-    /// addAllowedRunningBundles
+    /// Adds applications to the application running trustlist. Only applications in the trustlist are allowed to run under
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static void AddAllowedRunningBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIdentifiers, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedRunningBundles, NapiArg.Of(admin), NapiArg.Of(appIdentifiers), accountId);
     }
 
     /// <summary>
-    /// removeAllowedRunningBundles
+    /// Removes applications from the application running trustlist of the specified user. After an application is removed,
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static void RemoveAllowedRunningBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIdentifiers, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedRunningBundles, NapiArg.Of(admin), NapiArg.Of(appIdentifiers), accountId);
     }
 
     /// <summary>
-    /// getAllowedRunningBundles
+    /// Obtains the list of applications allowed to run by a specified user.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static string[] GetAllowedRunningBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getAllowedRunningBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// addAutoStartApps
+    /// Adds the auto-start applications for the current user. Applications added to the auto-start list via this API
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void AddAutoStartApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.Bindings.Api.App.Ability.WantObject[] autoStartApps)
     {
         NodeApi.CallMethodVoid(Module, _addAutoStartApps, NapiArg.Of(admin), NapiArg.Of(autoStartApps));
     }
 
     /// <summary>
-    /// addAutoStartApps
+    /// Adds a list of applications that automatically start upon device startup for a specified user, and sets whether to
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void AddAutoStartApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.Bindings.Api.App.Ability.WantObject[] autoStartApps, double accountId, bool disallowModify)
     {
         NodeApi.CallMethodVoid(Module, _addAutoStartApps, NapiArg.Of(admin), NapiArg.Of(autoStartApps), accountId, disallowModify);
     }
 
     /// <summary>
-    /// isModifyAutoStartAppsDisallowed
+    /// Checks whether a specified user is prohibited from canceling application auto-start.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsModifyAutoStartAppsDisallowed(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.Bindings.Api.App.Ability.WantObject autoStartApp, double accountId)
     {
         return NodeApi.CallMethod<bool>(Module, _isModifyAutoStartAppsDisallowed, NapiArg.Of(admin), NapiArg.Of(autoStartApp), accountId);
     }
 
     /// <summary>
-    /// removeAutoStartApps
+    /// Removes the auto-start applications for the current user. After the deletion, the applications will no longer
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void RemoveAutoStartApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.Bindings.Api.App.Ability.WantObject[] autoStartApps)
     {
         NodeApi.CallMethodVoid(Module, _removeAutoStartApps, NapiArg.Of(admin), NapiArg.Of(autoStartApps));
     }
 
     /// <summary>
-    /// removeAutoStartApps
+    /// Removes the specified application from the auto-start application list of a specified user.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void RemoveAutoStartApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.Bindings.Api.App.Ability.WantObject[] autoStartApps, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeAutoStartApps, NapiArg.Of(admin), NapiArg.Of(autoStartApps), accountId);
     }
 
     /// <summary>
-    /// getAutoStartApps
+    /// Checks the auto-start applications for the current user.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static global::HarmonyOS.Bindings.Api.App.Ability.WantObject[] GetAutoStartApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getAutoStartApps, h => ValueConverter.ConvertArray(h, static e => new global::HarmonyOS.Bindings.Api.App.Ability.WantObject(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// getAutoStartApps
+    /// Checks the auto-start applications for the specified user.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static global::HarmonyOS.Bindings.Api.App.Ability.WantObject[] GetAutoStartApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getAutoStartApps, h => ValueConverter.ConvertArray(h, static e => new global::HarmonyOS.Bindings.Api.App.Ability.WantObject(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// addKeepAliveApps
+    /// Adds applications to the keep-alive list; once added, the application processes will be kept alive automatically.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void AddKeepAliveApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] bundleNames, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addKeepAliveApps, NapiArg.Of(admin), NapiArg.Of(bundleNames), accountId);
     }
 
     /// <summary>
-    /// addKeepAliveApps
+    /// Adds applications to the keep-alive list; once added, the application processes will be kept alive automatically.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void AddKeepAliveApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] bundleNames, double accountId, bool disallowModify)
     {
         NodeApi.CallMethodVoid(Module, _addKeepAliveApps, NapiArg.Of(admin), NapiArg.Of(bundleNames), accountId, disallowModify);
     }
 
     /// <summary>
-    /// isModifyKeepAliveAppsDisallowed
+    /// Checks whether the application is forbidden to cancel the keep-alive status.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsModifyKeepAliveAppsDisallowed(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId, string bundleName)
     {
         return NodeApi.CallMethod<bool>(Module, _isModifyKeepAliveAppsDisallowed, NapiArg.Of(admin), accountId, bundleName);
     }
 
     /// <summary>
-    /// removeKeepAliveApps
+    /// Removes a specified application from the keep-alive list.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void RemoveKeepAliveApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] bundleNames, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeKeepAliveApps, NapiArg.Of(admin), NapiArg.Of(bundleNames), accountId);
     }
 
     /// <summary>
-    /// getKeepAliveApps
+    /// Obtains the bundle name of the keep-alive application.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static string[] GetKeepAliveApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getKeepAliveApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// setAllowedKioskApps
+    /// Sets applications allowed to run in kiosk mode.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetAllowedKioskApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIdentifiers)
     {
         NodeApi.CallMethodVoid(Module, _setAllowedKioskApps, NapiArg.Of(admin), NapiArg.Of(appIdentifiers));
     }
 
     /// <summary>
-    /// getAllowedKioskApps
+    /// Obtains the applications allowed to run in kiosk mode.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static string[] GetAllowedKioskApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getAllowedKioskApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// isAppKioskAllowed
+    /// Checks whether an application is allowed to run in kiosk mode.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool IsAppKioskAllowed(string appIdentifier)
     {
         return NodeApi.CallMethod<bool>(Module, _isAppKioskAllowed, appIdentifier);
     }
 
     /// <summary>
-    /// setKioskFeatures
+    /// Sets the features of the kiosk mode. You can use this API to control whether the notification center and control
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void SetKioskFeatures(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.KioskFeature[] features)
     {
         NodeApi.CallMethodVoid(Module, _setKioskFeatures, NapiArg.Of(admin), NapiArg.Of(features));
     }
 
     /// <summary>
-    /// clearUpApplicationData
+    /// Clears all application data.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void ClearUpApplicationData(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double appIndex, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _clearUpApplicationData, NapiArg.Of(admin), bundleName, appIndex, accountId);
     }
 
     /// <summary>
-    /// addUserNonStopApps
+    /// Adds applications to the non-stoppable application list for a specified user. This policy only applies to installed
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static void AddUserNonStopApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr[] applicationInstances)
     {
         NodeApi.CallMethodVoid(Module, _addUserNonStopApps, NapiArg.Of(admin), NapiArg.Of(applicationInstances));
     }
 
     /// <summary>
-    /// removeUserNonStopApps
+    /// Removes the non-stoppable application list for a specified user. After the removal, the user can stop the
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static void RemoveUserNonStopApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr[] applicationInstances)
     {
         NodeApi.CallMethodVoid(Module, _removeUserNonStopApps, NapiArg.Of(admin), NapiArg.Of(applicationInstances));
     }
 
     /// <summary>
-    /// getUserNonStopApps
+    /// Obtains the non-stoppable application list of all users on the current device.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static IntPtr[] GetUserNonStopApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getUserNonStopApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addFreezeExemptedApps
+    /// Adds applications to the background freeze-exempt application list for a specified user. This policy applies only
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static void AddFreezeExemptedApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr[] applicationInstances)
     {
         NodeApi.CallMethodVoid(Module, _addFreezeExemptedApps, NapiArg.Of(admin), NapiArg.Of(applicationInstances));
     }
 
     /// <summary>
-    /// removeFreezeExemptedApps
+    /// Removes the background freeze-exempt application list for a specified user. After the removal, the applications can
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static void RemoveFreezeExemptedApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, IntPtr[] applicationInstances)
     {
         NodeApi.CallMethodVoid(Module, _removeFreezeExemptedApps, NapiArg.Of(admin), NapiArg.Of(applicationInstances));
     }
 
     /// <summary>
-    /// getFreezeExemptedApps
+    /// Obtains the background freeze-exempt application list of all users on the current device.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static IntPtr[] GetFreezeExemptedApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getFreezeExemptedApps, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// setAbilityDisabled
+    /// Sets whether to disable the Ability component of a specified application (system application or third-party
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static void SetAbilityDisabled(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double accountId, string abilityName, bool isDisabled)
     {
         NodeApi.CallMethodVoid(Module, _setAbilityDisabled, NapiArg.Of(admin), bundleName, accountId, abilityName, isDisabled);
     }
 
     /// <summary>
-    /// isAbilityDisabled
+    /// Checks whether the Ability component of a specified application (system application or third-party application) is
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static bool IsAbilityDisabled(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double accountId, string abilityName)
     {
         return NodeApi.CallMethod<bool>(Module, _isAbilityDisabled, NapiArg.Of(admin), bundleName, accountId, abilityName);
     }
 
     /// <summary>
-    /// addDockApp
+    /// Adds an application to the bottom shortcut bar of a PC/2-in-1 device based on the location index. Then users can
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void AddDockApp(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, string abilityName, double? index = null)
     {
         NodeApi.CallMethodVoid(Module, _addDockApp, NapiArg.Of(admin), bundleName, abilityName, NapiArg.Of(index));
     }
 
     /// <summary>
-    /// removeDockApp
+    /// Removes an application from the shortcut bar.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static void RemoveDockApp(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, string abilityName)
     {
         NodeApi.CallMethodVoid(Module, _removeDockApp, NapiArg.Of(admin), bundleName, abilityName);
     }
 
     /// <summary>
-    /// getDockApps
+    /// Obtains the list of applications in the shortcut bar currently.
     /// </summary>
+    /// <remarks>@since 24</remarks>
     public static DockInfo[] GetDockApps(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getDockApps, h => ValueConverter.ConvertArray(h, static e => new DockInfo(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// addAllowedDistributeAbilityConnBundles
+    /// Adds the cross-device application trustlist for a specific distributed service for a specified user. Applications
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void AddAllowedDistributeAbilityConnBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.EnterpriseApplicationManagerServiceType serviceType, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedDistributeAbilityConnBundles, NapiArg.Of(admin), NapiArg.Of(appIdentifiers), (int)serviceType, accountId);
     }
 
     /// <summary>
-    /// removeAllowedDistributeAbilityConnBundles
+    /// Removes the cross-device application trustlist for a specific distributed service for a specified user. After the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void RemoveAllowedDistributeAbilityConnBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] appIdentifiers, global::HarmonyOS.ArkUI.EnterpriseApplicationManagerServiceType serviceType, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedDistributeAbilityConnBundles, NapiArg.Of(admin), NapiArg.Of(appIdentifiers), (int)serviceType, accountId);
     }
 
     /// <summary>
-    /// getAllowedDistributeAbilityConnBundles
+    /// Obtains the cross-device application trustlist for a specific distributed service under a specified user.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static string[] GetAllowedDistributeAbilityConnBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, global::HarmonyOS.ArkUI.EnterpriseApplicationManagerServiceType serviceType, double accountId)
     {
         return NodeApi.CallMethod(Module, _getAllowedDistributeAbilityConnBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), (int)serviceType, accountId);
     }
 
     /// <summary>
-    /// addAllowedNotificationBundles
+    /// Adds applications to the notification trustlist. After the notification trustlist is set, applications not in the
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void AddAllowedNotificationBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] bundleNames, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _addAllowedNotificationBundles, NapiArg.Of(admin), NapiArg.Of(bundleNames), accountId);
     }
 
     /// <summary>
-    /// removeAllowedNotificationBundles
+    /// Removes applications from the notification trustlist.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void RemoveAllowedNotificationBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] bundleNames, double accountId)
     {
         NodeApi.CallMethodVoid(Module, _removeAllowedNotificationBundles, NapiArg.Of(admin), NapiArg.Of(bundleNames), accountId);
     }
 
     /// <summary>
-    /// getAllowedNotificationBundles
+    /// Obtains the list of applications that are allowed to send notifications.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static string[] GetAllowedNotificationBundles(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double accountId)
     {
         return NodeApi.CallMethod(Module, _getAllowedNotificationBundles, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin), accountId);
     }
 
     /// <summary>
-    /// addHideLauncherIcon
+    /// Adds applications to the home screen icon hide list.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void AddHideLauncherIcon(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] bundleNames)
     {
         NodeApi.CallMethodVoid(Module, _addHideLauncherIcon, NapiArg.Of(admin), NapiArg.Of(bundleNames));
     }
 
     /// <summary>
-    /// removeHideLauncherIcon
+    /// Removes applications from the home screen icon hide list.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void RemoveHideLauncherIcon(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string[] bundleNames)
     {
         NodeApi.CallMethodVoid(Module, _removeHideLauncherIcon, NapiArg.Of(admin), NapiArg.Of(bundleNames));
     }
 
     /// <summary>
-    /// getHideLauncherIcon
+    /// Queries the list of applications whose home screen icons are hidden for the current user.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static string[] GetHideLauncherIcon(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin)
     {
         return NodeApi.CallMethod(Module, _getHideLauncherIcon, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), NapiArg.Of(admin));
     }
 
     /// <summary>
-    /// queryTrafficStats
+    /// Queries the data usage of a specified application within a specified period for the current user. This API uses a
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<IntPtr> QueryTrafficStatsAsync(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double appIndex, double accountId, IntPtr networkInfo)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _queryTrafficStats, NapiArg.Of(admin), bundleName, appIndex, accountId, networkInfo);
     }
 
     /// <summary>
-    /// queryBundleStatsInfos
+    /// Queries the accumulated foreground runtime statistics of applications under a specified user account within a given
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static BundleStatsInfo[] QueryBundleStatsInfos(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, double startTime, double endTime, double accountId)
     {
         return NodeApi.CallMethod(Module, _queryBundleStatsInfos, h => ValueConverter.ConvertArray(h, static e => new BundleStatsInfo(e)), NapiArg.Of(admin), startTime, endTime, accountId);
     }
 
     /// <summary>
-    /// getApplicationWindowStates
+    /// Queries the window state information list of the specified application. It can retrieve information such as whether
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static WindowStateInfo[] GetApplicationWindowStates(global::HarmonyOS.Bindings.Api.App.Ability.WantObject admin, string bundleName, double appIndex)
     {
         return NodeApi.CallMethod(Module, _getApplicationWindowStates, h => ValueConverter.ConvertArray(h, static e => new WindowStateInfo(e)), NapiArg.Of(admin), bundleName, appIndex);

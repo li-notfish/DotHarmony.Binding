@@ -19,51 +19,8 @@ public static unsafe partial class AbilityConnectionManager
 {
     private const string ModuleName = "@ohos.distributedsched.abilityConnectionManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[distributedsched.abilityConnectionManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _off => "off"u8;
@@ -78,88 +35,99 @@ public static unsafe partial class AbilityConnectionManager
     private static ReadOnlySpan<byte> _sendData => "sendData"u8;
 
     /// <summary>
-    /// on
+    /// Enables listening for **connect** events. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void On(string type, double sessionId, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, sessionId, callback);
     }
 
     /// <summary>
-    /// off
+    /// Disables listening for **connect** events.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void Off(string type, double sessionId, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, sessionId, callback);
     }
 
     /// <summary>
-    /// createAbilityConnectionSession
+    /// Creates a collaboration session between applications.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static double CreateAbilityConnectionSession(string serviceName, IntPtr context, PeerInfo peerInfo, IntPtr connectOptions)
     {
         return NodeApi.CallMethod<double>(Module, _createAbilityConnectionSession, serviceName, context, NapiArg.Of(peerInfo), connectOptions);
     }
 
     /// <summary>
-    /// destroyAbilityConnectionSession
+    /// Destroys a collaboration session between applications.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void DestroyAbilityConnectionSession(double sessionId)
     {
         NodeApi.CallMethodVoid(Module, _destroyAbilityConnectionSession, sessionId);
     }
 
     /// <summary>
-    /// getPeerInfoById
+    /// Obtains information about the peer application in the specified session.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static PeerInfo GetPeerInfoById(double sessionId)
     {
         return NodeApi.CallMethod(Module, _getPeerInfoById, static h => new PeerInfo(h), sessionId);
     }
 
     /// <summary>
-    /// connect
+    /// Sets up a UIAbility connection after a collaboration session is created and the session ID is obtained. This API
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<ConnectResult> ConnectAsync(double sessionId)
     {
         return NodeApi.CallMethodAsync(Module, _connect, static h => new ConnectResult(h), sessionId);
     }
 
     /// <summary>
-    /// disconnect
+    /// Disconnects the UIAbility connection to end the collaboration session.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void Disconnect(double sessionId)
     {
         NodeApi.CallMethodVoid(Module, _disconnect, sessionId);
     }
 
     /// <summary>
-    /// acceptConnect
+    /// Accepts the UIAbility connection after a collaboration session is set up and the session ID is obtained.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task AcceptConnectAsync(double sessionId, string token, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _acceptConnect, cancellationToken, sessionId, token);
     }
 
     /// <summary>
-    /// reject
+    /// Rejects a connection request in a cross-device collaboration session. After a connection request sent from the peer
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void Reject(string token, string reason)
     {
         NodeApi.CallMethodVoid(Module, _reject, token, reason);
     }
 
     /// <summary>
-    /// sendMessage
+    /// Sends text messages after a collaboration session is set up.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task SendMessageAsync(double sessionId, string msg, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _sendMessage, cancellationToken, sessionId, msg);
     }
 
     /// <summary>
-    /// sendData
+    /// Sends [ArrayBuffer](docroot://arkts-utils/arraybuffer-object.md) byte streams from one device to another after a
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task SendDataAsync(double sessionId, byte[] data, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _sendData, cancellationToken, sessionId, NapiArg.OfArrayBuffer(data));

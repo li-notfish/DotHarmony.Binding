@@ -18,51 +18,8 @@ public static unsafe partial class AppManager
 {
     private const string ModuleName = "@ohos.application.appManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[application.appManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _isRunningInStabilityTest => "isRunningInStabilityTest"u8;
     private static ReadOnlySpan<byte> _getProcessRunningInfos => "getProcessRunningInfos"u8;
@@ -70,32 +27,36 @@ public static unsafe partial class AppManager
     private static ReadOnlySpan<byte> _getAppMemorySize => "getAppMemorySize"u8;
 
     /// <summary>
-    /// isRunningInStabilityTest
+    /// Checks whether the system is undergoing a stability test. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<bool> IsRunningInStabilityTestAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isRunningInStabilityTest);
     }
 
     /// <summary>
-    /// getProcessRunningInfos
+    /// Obtains information about the running processes. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<IntPtr[]> GetProcessRunningInfosAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getProcessRunningInfos, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// isRamConstrainedDevice
+    /// Checks whether the current device is a RAM-constrained device (a device with severely limited memory resources).
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsRamConstrainedDeviceAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isRamConstrainedDevice);
     }
 
     /// <summary>
-    /// getAppMemorySize
+    /// Obtains the maximum memory (RAM allocation) available to the current application. This API uses a promise to return
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> GetAppMemorySizeAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getAppMemorySize);

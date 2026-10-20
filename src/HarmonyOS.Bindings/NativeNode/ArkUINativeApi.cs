@@ -159,6 +159,18 @@ internal static unsafe partial class ArkUINativeApi
     /// 将 ArkTS 侧传来的 NodeContent napi_value 转换为 NodeContent 句柄。
     /// env 必须已通过 NapiEnv.Initialize 注入。
     /// </summary>
+    /// <summary>
+    /// 将 ArkTS 侧 FrameNode（如 BuilderNode.getFrameNode()）转换为 ArkUI 节点句柄，
+    /// 使其可作为子节点挂入 NDK 侧构建的节点树。env 必须已通过 NapiEnv.Initialize 注入。
+    /// </summary>
+    internal static ArkUI_NodeHandle GetNodeHandleFromNapiValue(IntPtr env, IntPtr frameNode)
+    {
+        var status = OH_ArkUI_GetNodeHandleFromNapiValue(env, frameNode, out var handle);
+        if (status != 0)
+            throw new InvalidOperationException($"OH_ArkUI_GetNodeHandleFromNapiValue failed: {status}");
+        return handle;
+    }
+
     internal static IntPtr GetNodeContentFromNapiValue(IntPtr env, IntPtr napiValue)
     {
         var status = OH_ArkUI_GetNodeContentFromNapiValue(env, napiValue, out var content);

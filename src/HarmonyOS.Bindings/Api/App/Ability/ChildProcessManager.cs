@@ -17,51 +17,8 @@ public static unsafe partial class ChildProcessManager
 {
     private const string ModuleName = "@ohos.app.ability.childProcessManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[app.ability.childProcessManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _startChildProcess => "startChildProcess"u8;
     private static ReadOnlySpan<byte> _startArkChildProcess => "startArkChildProcess"u8;
@@ -70,40 +27,45 @@ public static unsafe partial class ChildProcessManager
     private static ReadOnlySpan<byte> _isNativeChildProcessSupported => "isNativeChildProcessSupported"u8;
 
     /// <summary>
-    /// startChildProcess
+    /// Starts an [ArkTS child process](docroot://application-models/ability-terminology.md#arkts-child-process). This API
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<double> StartChildProcessAsync(string srcEntry, global::HarmonyOS.ArkUI.StartMode startMode)
     {
         return NodeApi.CallMethodAsync<double>(Module, _startChildProcess, srcEntry, (int)startMode);
     }
 
     /// <summary>
-    /// startArkChildProcess
+    /// Starts an [ArkTS child process](docroot://application-models/ability-terminology.md#arkts-child-process). This API
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<double> StartArkChildProcessAsync(string srcEntry, global::HarmonyOS.Bindings.Api.App.Ability.ChildProcessArgsObject args, global::HarmonyOS.Bindings.Api.App.Ability.ChildProcessOptionsObject? options = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _startArkChildProcess, srcEntry, NapiArg.Of(args), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// startNativeChildProcess
+    /// Starts a [native child process](docroot://application-models/ability-terminology.md#native-child-process). This API
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static Task<double> StartNativeChildProcessAsync(string entryPoint, global::HarmonyOS.Bindings.Api.App.Ability.ChildProcessArgsObject args, global::HarmonyOS.Bindings.Api.App.Ability.ChildProcessOptionsObject? options = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _startNativeChildProcess, entryPoint, NapiArg.Of(args), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// isArkChildProcessSupported
+    /// Checks whether the caller is allowed to create ark child processes on this device.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsArkChildProcessSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isArkChildProcessSupported);
     }
 
     /// <summary>
-    /// isNativeChildProcessSupported
+    /// Checks whether the caller is allowed to create native child processes on this device.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsNativeChildProcessSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isNativeChildProcessSupported);

@@ -352,6 +352,16 @@ internal static partial class NativeNodeApi
         napi_env env,
         out napi_value result);
 
+    // napi_finalize 回调签名：void (*)(napi_env env, void* data, void* finalize_hint)
+    [LibraryImport(NApiLib)]
+    internal static unsafe partial napi_status napi_add_finalizer(
+        napi_env env,
+        napi_value js_object,
+        IntPtr finalize_data,
+        delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr, void> finalize_cb,
+        IntPtr finalize_hint,
+        IntPtr* result);
+
     [LibraryImport(NApiLib)]
     internal static partial napi_status napi_typeof(
         napi_env env,

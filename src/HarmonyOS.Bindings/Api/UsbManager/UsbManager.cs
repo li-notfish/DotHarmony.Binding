@@ -17,51 +17,8 @@ public static unsafe partial class UsbManager
 {
     private const string ModuleName = "@ohos.usbManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[usbManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getDevices => "getDevices"u8;
     private static ReadOnlySpan<byte> _connectDevice => "connectDevice"u8;
@@ -89,192 +46,216 @@ public static unsafe partial class UsbManager
     private static ReadOnlySpan<byte> _usbCancelTransfer => "usbCancelTransfer"u8;
 
     /// <summary>
-    /// getDevices
+    /// Obtains the list of USB devices connected to the host.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr[] GetDevices()
     {
         return NodeApi.CallMethod(Module, _getDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// connectDevice
+    /// Connects to the USB device based on the device information returned by **getDevices()**. If the USB service is
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static IntPtr ConnectDevice(IntPtr device)
     {
         return NodeApi.CallMethod<IntPtr>(Module, _connectDevice, device);
     }
 
     /// <summary>
-    /// hasRight
+    /// Checks whether the application has the permission to access the device.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool HasRight(string deviceName)
     {
         return NodeApi.CallMethod<bool>(Module, _hasRight, deviceName);
     }
 
     /// <summary>
-    /// requestRight
+    /// Requests the temporary device access permission for the application. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<bool> RequestRightAsync(string deviceName)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _requestRight, deviceName);
     }
 
     /// <summary>
-    /// removeRight
+    /// Removes the device access permission for the application. System applications are granted the device access
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool RemoveRight(string deviceName)
     {
         return NodeApi.CallMethod<bool>(Module, _removeRight, deviceName);
     }
 
     /// <summary>
-    /// claimInterface
+    /// Claims a USB device interface.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ClaimInterface(UsbManagerUSBDevicePipe pipe, IntPtr iface, bool? force = null)
     {
         return NodeApi.CallMethod<double>(Module, _claimInterface, NapiArg.Of(pipe), iface, NapiArg.Of(force));
     }
 
     /// <summary>
-    /// releaseInterface
+    /// Releases the claimed communication interface.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ReleaseInterface(UsbManagerUSBDevicePipe pipe, IntPtr iface)
     {
         return NodeApi.CallMethod<double>(Module, _releaseInterface, NapiArg.Of(pipe), iface);
     }
 
     /// <summary>
-    /// setConfiguration
+    /// Sets the device configuration.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double SetConfiguration(UsbManagerUSBDevicePipe pipe, USBConfiguration config)
     {
         return NodeApi.CallMethod<double>(Module, _setConfiguration, NapiArg.Of(pipe), NapiArg.Of(config));
     }
 
     /// <summary>
-    /// setInterface
+    /// Sets a USB interface.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double SetInterface(UsbManagerUSBDevicePipe pipe, IntPtr iface)
     {
         return NodeApi.CallMethod<double>(Module, _setInterface, NapiArg.Of(pipe), iface);
     }
 
     /// <summary>
-    /// getRawDescriptor
+    /// Obtains a raw USB descriptor. If the USB service is abnormal, **undefined** may be returned. Check whether the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static byte[] GetRawDescriptor(UsbManagerUSBDevicePipe pipe)
     {
         return NodeApi.CallMethod(Module, _getRawDescriptor, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<byte>(e)), NapiArg.Of(pipe));
     }
 
     /// <summary>
-    /// getFileDescriptor
+    /// Obtains a file descriptor.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double GetFileDescriptor(UsbManagerUSBDevicePipe pipe)
     {
         return NodeApi.CallMethod<double>(Module, _getFileDescriptor, NapiArg.Of(pipe));
     }
 
     /// <summary>
-    /// controlTransfer
+    /// Performs control transfer. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> ControlTransferAsync(UsbManagerUSBDevicePipe pipe, UsbManagerUSBControlParams controlparam, double? timeout = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _controlTransfer, NapiArg.Of(pipe), NapiArg.Of(controlparam), NapiArg.Of(timeout));
     }
 
     /// <summary>
-    /// usbControlTransfer
+    /// Performs control transfer. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<double> UsbControlTransferAsync(UsbManagerUSBDevicePipe pipe, USBDeviceRequestParams requestparam, double? timeout = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _usbControlTransfer, NapiArg.Of(pipe), NapiArg.Of(requestparam), NapiArg.Of(timeout));
     }
 
     /// <summary>
-    /// bulkTransfer
+    /// Performs bulk transfer. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> BulkTransferAsync(UsbManagerUSBDevicePipe pipe, UsbManagerUSBEndpoint endpoint, byte[] buffer, double? timeout = null)
     {
         return NodeApi.CallMethodAsync<double>(Module, _bulkTransfer, NapiArg.Of(pipe), NapiArg.Of(endpoint), NapiArg.Of(buffer), NapiArg.Of(timeout));
     }
 
     /// <summary>
-    /// resetUsbDevice
+    /// Resets a USB peripheral.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static bool ResetUsbDevice(UsbManagerUSBDevicePipe pipe)
     {
         return NodeApi.CallMethod<bool>(Module, _resetUsbDevice, NapiArg.Of(pipe));
     }
 
     /// <summary>
-    /// closePipe
+    /// Closes a USB device pipe.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double ClosePipe(UsbManagerUSBDevicePipe pipe)
     {
         return NodeApi.CallMethod<double>(Module, _closePipe, NapiArg.Of(pipe));
     }
 
     /// <summary>
-    /// hasAccessoryRight
+    /// Checks whether the application has the permission to access the USB accessory.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static bool HasAccessoryRight(USBAccessory accessory)
     {
         return NodeApi.CallMethod<bool>(Module, _hasAccessoryRight, NapiArg.Of(accessory));
     }
 
     /// <summary>
-    /// requestAccessoryRight
+    /// Requests the permission to access a USB accessory for a specified application. This API uses a promise to return
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static Task<bool> RequestAccessoryRightAsync(USBAccessory accessory)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _requestAccessoryRight, NapiArg.Of(accessory));
     }
 
     /// <summary>
-    /// cancelAccessoryRight
+    /// Cancels the permission of the current application to access USB accessories.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void CancelAccessoryRight(USBAccessory accessory)
     {
         NodeApi.CallMethodVoid(Module, _cancelAccessoryRight, NapiArg.Of(accessory));
     }
 
     /// <summary>
-    /// getAccessoryList
+    /// Obtains the list of USB accessories connected to the host.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static IntPtr[] GetAccessoryList()
     {
         return NodeApi.CallMethod(Module, _getAccessoryList, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<IntPtr>(e)));
     }
 
     /// <summary>
-    /// openAccessory
+    /// Obtains the accessory handle and opens the accessory file descriptor. Then, the host can communicate with the
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static USBAccessoryHandle OpenAccessory(USBAccessory accessory)
     {
         return NodeApi.CallMethod(Module, _openAccessory, static h => new USBAccessoryHandle(h), NapiArg.Of(accessory));
     }
 
     /// <summary>
-    /// closeAccessory
+    /// Closes the accessory file descriptor.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static void CloseAccessory(USBAccessoryHandle accessoryHandle)
     {
         NodeApi.CallMethodVoid(Module, _closeAccessory, NapiArg.Of(accessoryHandle));
     }
 
     /// <summary>
-    /// usbSubmitTransfer
+    /// Requests a USB data transfer.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void UsbSubmitTransfer(IntPtr transfer)
     {
         NodeApi.CallMethodVoid(Module, _usbSubmitTransfer, transfer);
     }
 
     /// <summary>
-    /// usbCancelTransfer
+    /// Cancels an asynchronous USB data transfer request.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void UsbCancelTransfer(IntPtr transfer)
     {
         NodeApi.CallMethodVoid(Module, _usbCancelTransfer, transfer);

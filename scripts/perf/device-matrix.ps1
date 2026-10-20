@@ -20,7 +20,9 @@ $hdc = Find-HarmonyHdc
 
 Write-Host "hdc: $hdc"
 
-$deviceTargets = & $hdc list targets | Where-Object { $_ -match '\S' }
+$deviceTargets = & $hdc list targets |
+    ForEach-Object { "$_".Trim() } |
+    Where-Object { $_ -and $_ -ne "[Empty]" }
 if (-not $deviceTargets) {
     throw "No connected HarmonyOS device or emulator was found."
 }
@@ -37,7 +39,8 @@ foreach ($target in $deviceTargets) {
 
     Write-Host "`n=== Collecting baseline for: $target ($deviceType) ==="
 
-    $baselinePath = Join-Path $projectRoot "scripts/perf/baseline-$target.json"
+    $safeTarget = $target -replace '[^A-Za-z0-9._-]', '_'
+    $baselinePath = Join-Path $projectRoot "scripts/perf/baseline-$safeTarget.json"
     $collectArgs = @(
         "-File", (Join-Path $scriptDir "collect-baseline.ps1"),
         "-Project", $Project,
@@ -106,4 +109,5 @@ Write-Host "`nDevice matrix written: $resolvedOutputPath"
 $failed = $deviceResults | Where-Object { $_.status -eq "failed" }
 if ($failed) {
     Write-Warning "$($failed.Count) device(s) failed baseline collection."
+    exit 1
 }

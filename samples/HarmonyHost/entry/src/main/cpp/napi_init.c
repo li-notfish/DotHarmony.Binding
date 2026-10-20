@@ -4,9 +4,15 @@
 //   2. dlopen libapp.so 并转发 HarmonyInit / HarmonyBuildUI
 //   3. 作为 napi 模块被 ArkTS 页面 import
 #include "napi/native_api.h"
+#include <web/native_interface_arkweb.h>
+#include <web/arkweb_scheme_handler.h>
 #include <dlfcn.h>
 #include <hilog/log.h>
+#include <pthread.h>
+#include <stdatomic.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #undef LOG_DOMAIN
 #undef LOG_TAG
@@ -17,8 +23,356 @@ typedef int (*harmony_init_t)(void* env);
 typedef int (*harmony_buildui_t)(void* env, void* nodeContentValue);
 typedef int (*harmony_poppage_t)(void* env);
 typedef int (*harmony_themechanged_t)(void* env, int colorMode);
+typedef int (*harmony_web_init_t)(void* env, void* webViewValue);
+typedef int (*harmony_web_init_tagged_t)(void* env, void* webViewValue, void* tagValue);
+typedef int (*harmony_web_init_node_t)(void* env, void* webViewValue, void* tagValue, void* frameNodeValue);
+typedef void (*harmony_web_factory_t)(void* env, const char* webTag);
+typedef int (*harmony_web_shutdown_t)(void* env, const char* webTag);
+typedef int (*harmony_web_page_ended_t)(void* env, void* urlValue, void* tagValue);
+typedef int (*harmony_web_page_started_t)(void* env, void* urlValue, void* tagValue);
+typedef int (*harmony_web_should_intercept_t)(void* env, void* urlValue, void* tagValue);
+typedef int (*harmony_web_receive_t)(void* env, void* messageValue, void* tagValue);
+typedef int (*harmony_web_proxy_ready_t)(void* env);
+typedef int (*harmony_web_intercept_native_t)(void* env, int requestId, const char* url, const char* webTag);
+typedef int (*harmony_engine_init_t)(void* env, void* bridgeValue);
+
+// ArkTS 引擎实验通道（EngineLab）：dlsym 惰性解析，非引擎应用无导出时短路
+static harmony_engine_init_t g_engineInit = NULL;
+static bool g_engineResolved = false;
+
+// Web 组件的固定 webTag：ArkTS 侧 WebviewController('harmony-web') 与 NDK ArkWeb API 按 tag 寻址同一组件
+#define HARMONY_WEB_TAG "harmony-web"
+// Blazor/MAUI Web 的虚拟源（与 C# 侧 HarmonyBlazorWebViewManager.AppOrigin 约定一致）
+#define HARMONY_WEB_ORIGIN "https://localhost/"
 
 static void* g_app = NULL;
+
+// Web 通道导出符号缓存：dlsym 仅在首次调用时解析（surface 可选，无导出时保持 NULL 并短路）
+static harmony_web_init_t g_webInit = NULL;
+static harmony_web_receive_t g_webReceive = NULL;
+static harmony_web_proxy_ready_t g_webProxyReady = NULL;
+static harmony_web_intercept_native_t g_webInterceptNative = NULL;
+static harmony_web_init_tagged_t g_webInitTagged = NULL;
+static harmony_web_init_node_t g_webInitNode = NULL;
+// ArkTS 侧注册的 slot 工厂（.NET 请求新实例时回调）：
+// 保存为 napi_ref，供 .NET 侧经 napi_call_function 反向调用。
+static napi_ref g_webFactoryRef = NULL;
+static napi_env g_webFactoryEnv = NULL;
+// factory 调用必须回到 env 线程：.NET 侧可能从任意线程触发，直接 napi_call_function 会崩。
+static napi_threadsafe_function g_webFactoryTsfn = NULL;
+
+static void OnWebFactoryDeliverJs(napi_env env, napi_value jsCb, void* ctx, void* data)
+{
+    (void)jsCb; (void)ctx;
+    char* tag = (char*)data;
+    if (tag == NULL) return;
+    if (g_webFactoryRef != NULL && env != NULL) {
+        napi_value factory = NULL;
+        if (napi_get_reference_value(env, g_webFactoryRef, &factory) == napi_ok && factory != NULL) {
+            napi_value arg = NULL;
+            napi_create_string_utf8(env, tag, NAPI_AUTO_LENGTH, &arg);
+            napi_value result = NULL;
+            napi_status st = napi_call_function(env, NULL, factory, 1, &arg, &result);
+            if (st != napi_ok) {
+                OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG,
+                             "create view '%{public}s': call failed (%{public}d)", tag, (int)st);
+            } else {
+                OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG, "created web view for tag '%{public}s'", tag);
+            }
+        }
+    }
+    free(tag);
+}
+static harmony_web_shutdown_t g_webShutdown = NULL;
+static harmony_web_page_ended_t g_webPageEnded = NULL;
+static harmony_web_page_started_t g_webPageStarted = NULL;
+static harmony_web_should_intercept_t g_webShouldIntercept = NULL;
+static bool g_webSymbolsResolved = false;
+
+static void resolve_web_symbols(void)
+{
+    if (g_webSymbolsResolved) return;
+    g_webSymbolsResolved = true;
+    if (!g_app) return;
+    g_webInit = (harmony_web_init_t)dlsym(g_app, "HarmonyWebInit");
+    g_webReceive = (harmony_web_receive_t)dlsym(g_app, "HarmonyWebReceiveMessage");
+    g_webProxyReady = (harmony_web_proxy_ready_t)dlsym(g_app, "HarmonyWebProxyReady");
+    g_webInterceptNative = (harmony_web_intercept_native_t)dlsym(g_app, "HarmonyWebInterceptNative");
+    g_webInitTagged = (harmony_web_init_tagged_t)dlsym(g_app, "HarmonyWebInitTagged");
+    g_webInitNode = (harmony_web_init_node_t)dlsym(g_app, "HarmonyWebInitWithNode");
+    g_webShutdown = (harmony_web_shutdown_t)dlsym(g_app, "HarmonyWebShutdown");
+    g_webPageEnded = (harmony_web_page_ended_t)dlsym(g_app, "HarmonyWebPageEnded");
+    g_webPageStarted = (harmony_web_page_started_t)dlsym(g_app, "HarmonyWebPageStarted");
+    g_webShouldIntercept = (harmony_web_should_intercept_t)dlsym(g_app, "HarmonyWebShouldInterceptNavigation");
+}
+
+// NDK ArkWeb proxy-valid → JS 线程跳板：
+// OnValidCallback 在 ArkWeb 自己的线程触发（无 napi_env），经 TSFN 投递回 env 线程后再进 .NET。
+static napi_threadsafe_function g_webReadyTsfn = NULL;
+
+static void OnWebProxyReadyJs(napi_env env, napi_value jsCb, void* ctx, void* data)
+{
+    (void)jsCb; (void)ctx; (void)data;
+    if (!g_webProxyReady) return;
+    int r = g_webProxyReady((void*)env);
+    if (r == 0) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG,
+                     "web JS proxy reported valid, .NET notified");
+    } else {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG,
+                     "HarmonyWebProxyReady failed: %{public}d", r);
+    }
+}
+
+static void OnWebProxyValid(const char* name)
+{
+    (void)name;
+    if (g_webReadyTsfn) {
+        napi_call_threadsafe_function(g_webReadyTsfn, NULL, napi_tsfn_nonblocking);
+    }
+}
+
+// ---- NDK scheme 拦截（通道化第二步）：替换 ArkTS onInterceptRequest 的同步 napi 往返 ----
+// 线程模型：OnRequestStart 在 ArkWeb IO 线程（禁碰 napi）→ 按 location 前缀同步决策
+// → TSFN 投递到 JS env 线程执行 C# 处理器（内部需要 NAPI 读 rawfile）→ C# 回调
+// HarmonyHostWebRespond（任意线程）完成 DidReceive* 序列。句柄生命周期在 OnRequestStop 统一回收。
+typedef struct WebInterceptEntry {
+    int id;
+    atomic_bool completed;
+    ArkWeb_ResourceRequest* request;
+    const ArkWeb_ResourceHandler* handler;
+    struct WebInterceptEntry* next;
+} WebInterceptEntry;
+
+typedef struct WebInterceptPayload {
+    int id;
+    char webTag[128];
+    char* url;
+} WebInterceptPayload;
+
+static napi_threadsafe_function g_webInterceptTsfn = NULL;
+static ArkWeb_SchemeHandler* g_schemeHandler = NULL;
+// 多实例：每个 webTag 一个独立的 SchemeHandler 实例，tag 字符串存进 handler 的 userData。
+// （ArkWeb 的 scheme handler 回调不携带 tag，只能靠 per-tag handler 区分。）
+#define HARMONY_MAX_WEB_TAGS 8
+static char g_schemeTags[HARMONY_MAX_WEB_TAGS][128];
+static ArkWeb_SchemeHandler* g_schemeHandlers[HARMONY_MAX_WEB_TAGS];
+static int g_schemeTagCount = 0;
+static atomic_int g_interceptSeq = 1;
+static pthread_mutex_t g_interceptLock = PTHREAD_MUTEX_INITIALIZER;
+static WebInterceptEntry* g_interceptList = NULL;
+
+static WebInterceptEntry* intercept_find_locked(int id)
+{
+    for (WebInterceptEntry* e = g_interceptList; e; e = e->next) {
+        if (e->id == id) return e;
+    }
+    return NULL;
+}
+
+static void intercept_destroy_entry(WebInterceptEntry* e)
+{
+    if (e->request) OH_ArkWebResourceRequest_Destroy(e->request);
+    if (e->handler) OH_ArkWebResourceHandler_Destroy(e->handler);
+    free(e);
+}
+
+static void intercept_remove_locked(int id)
+{
+    WebInterceptEntry** pp = &g_interceptList;
+    while (*pp) {
+        if ((*pp)->id == id) {
+            WebInterceptEntry* victim = *pp;
+            *pp = victim->next;
+            intercept_destroy_entry(victim);
+            return;
+        }
+        pp = &(*pp)->next;
+    }
+}
+
+static void OnInterceptDeliverJs(napi_env env, napi_value jsCb, void* ctx, void* data)
+{
+    (void)jsCb; (void)ctx;
+    WebInterceptPayload* payload = (WebInterceptPayload*)data;
+    if (!payload) return;
+    if (g_webInterceptNative) {
+        g_webInterceptNative((void*)env, payload->id, payload->url, payload->webTag);
+    }
+    free(payload->url);
+    free(payload);
+}
+
+static void OnSchemeRequestStart(const ArkWeb_SchemeHandler* schemeHandler,
+                                 ArkWeb_ResourceRequest* resourceRequest,
+                                 const ArkWeb_ResourceHandler* resourceHandler,
+                                 bool* intercept)
+{
+    // handler 的 userData 是注册时绑定的 webTag（多实例路由依据）
+    const char* handlerTag = schemeHandler
+        ? (const char*)OH_ArkWebSchemeHandler_GetUserData((ArkWeb_SchemeHandler*)schemeHandler)
+        : NULL;
+    char* url = NULL;
+    OH_ArkWebResourceRequest_GetUrl(resourceRequest, &url);
+    bool hit = url != NULL && g_webInterceptNative != NULL
+               && strncmp(url, HARMONY_WEB_ORIGIN, strlen(HARMONY_WEB_ORIGIN)) == 0;
+    *intercept = hit;
+    if (!hit) {
+        if (url) OH_ArkWeb_ReleaseString(url);
+        return;
+    }
+
+    WebInterceptEntry* entry = (WebInterceptEntry*)calloc(1, sizeof(WebInterceptEntry));
+    entry->id = atomic_fetch_add(&g_interceptSeq, 1);
+    atomic_store(&entry->completed, false);
+    entry->request = resourceRequest;
+    entry->handler = resourceHandler;
+    pthread_mutex_lock(&g_interceptLock);
+    entry->next = g_interceptList;
+    g_interceptList = entry;
+    pthread_mutex_unlock(&g_interceptLock);
+
+    WebInterceptPayload* payload = (WebInterceptPayload*)malloc(sizeof(WebInterceptPayload));
+    payload->id = entry->id;
+    if (handlerTag != NULL) {
+        strncpy(payload->webTag, handlerTag, sizeof(payload->webTag) - 1);
+        payload->webTag[sizeof(payload->webTag) - 1] = 0;
+    } else {
+        payload->webTag[0] = 0;
+    }
+    payload->url = url;  // 所有权移交 js_cb（释放用 free——ReleaseString 的缓冲就是 malloc 族）
+    if (g_webInterceptTsfn) {
+        napi_call_threadsafe_function(g_webInterceptTsfn, payload, napi_tsfn_nonblocking);
+    } else {
+        free(payload->url);
+        free(payload);
+        pthread_mutex_lock(&g_interceptLock);
+        WebInterceptEntry* e = intercept_find_locked(entry->id);
+        if (e) {
+            OH_ArkWebResourceHandler_DidFailWithError(e->handler, ARKWEB_ERR_FAILED);
+            atomic_store(&e->completed, true);
+        }
+        pthread_mutex_unlock(&g_interceptLock);
+    }
+}
+
+static void OnSchemeRequestStop(const ArkWeb_SchemeHandler* schemeHandler,
+                                const ArkWeb_ResourceRequest* resourceRequest)
+{
+    (void)schemeHandler;
+    pthread_mutex_lock(&g_interceptLock);
+    WebInterceptEntry** pp = &g_interceptList;
+    while (*pp) {
+        if ((*pp)->request == resourceRequest) {
+            WebInterceptEntry* victim = *pp;
+            *pp = victim->next;
+            intercept_destroy_entry(victim);
+            break;
+        }
+        pp = &(*pp)->next;
+    }
+    pthread_mutex_unlock(&g_interceptLock);
+}
+
+// C# → libentry 回写通道（Maui.Web 经 NativeLibrary.TryGetExport 寻址；任意线程可调用）
+__attribute__((visibility("default")))
+void HarmonyHostWebRespond(int requestId, int status, const char* statusText,
+                           const char* mime, const uint8_t* data, int64_t len)
+{
+    pthread_mutex_lock(&g_interceptLock);
+    WebInterceptEntry* e = intercept_find_locked(requestId);
+    if (e && !atomic_load(&e->completed)) {
+        atomic_store(&e->completed, true);
+        pthread_mutex_unlock(&g_interceptLock);
+
+        ArkWeb_Response* resp = NULL;
+        OH_ArkWeb_CreateResponse(&resp);
+        OH_ArkWebResponse_SetStatus(resp, status);
+        OH_ArkWebResponse_SetStatusText(resp, statusText ? statusText : "OK");
+        OH_ArkWebResponse_SetMimeType(resp, mime ? mime : "text/plain");
+        OH_ArkWebResponse_SetCharset(resp, "utf-8");
+        // 与原 ArkTS 拦截回包保持一致：Blazor 静态资产加载要求 CORS ping 放行
+        OH_ArkWebResponse_SetHeaderByName(resp, "Access-Control-Allow-Origin", "null", true);
+        OH_ArkWebResponse_SetHeaderByName(resp, "Access-Control-Allow-Credentials", "true", true);
+        OH_ArkWebResourceHandler_DidReceiveResponse(e->handler, resp);
+        OH_ArkWeb_DestroyResponse(resp);
+        if (data && len > 0) {
+            OH_ArkWebResourceHandler_DidReceiveData(e->handler, data, len);
+        }
+        OH_ArkWebResourceHandler_DidFinish(e->handler);
+    } else {
+        pthread_mutex_unlock(&g_interceptLock);
+    }
+}
+
+// ---- 流式响应：Begin（响应头）→ 多次 Write（数据块）→ Finish ----
+// 与一次性 HarmonyHostWebRespond 共用条目生命周期；completed 只在 Finish/Fail 置位，
+// 保证 Write 阶段仍能查到 handler。
+
+__attribute__((visibility("default")))
+void HarmonyHostWebRespondBegin(int requestId, int status, const char* statusText, const char* mime)
+{
+    pthread_mutex_lock(&g_interceptLock);
+    WebInterceptEntry* e = intercept_find_locked(requestId);
+    if (e && !atomic_load(&e->completed)) {
+        pthread_mutex_unlock(&g_interceptLock);
+
+        ArkWeb_Response* resp = NULL;
+        OH_ArkWeb_CreateResponse(&resp);
+        OH_ArkWebResponse_SetStatus(resp, status);
+        OH_ArkWebResponse_SetStatusText(resp, statusText ? statusText : "OK");
+        OH_ArkWebResponse_SetMimeType(resp, mime ? mime : "application/octet-stream");
+        OH_ArkWebResponse_SetCharset(resp, "utf-8");
+        OH_ArkWebResponse_SetHeaderByName(resp, "Access-Control-Allow-Origin", "null", true);
+        OH_ArkWebResponse_SetHeaderByName(resp, "Access-Control-Allow-Credentials", "true", true);
+        OH_ArkWebResourceHandler_DidReceiveResponse(e->handler, resp);
+        OH_ArkWeb_DestroyResponse(resp);
+    } else {
+        pthread_mutex_unlock(&g_interceptLock);
+    }
+}
+
+__attribute__((visibility("default")))
+void HarmonyHostWebRespondWrite(int requestId, const uint8_t* data, int64_t len)
+{
+    if (data == NULL || len <= 0) return;
+    pthread_mutex_lock(&g_interceptLock);
+    WebInterceptEntry* e = intercept_find_locked(requestId);
+    if (e && !atomic_load(&e->completed)) {
+        pthread_mutex_unlock(&g_interceptLock);
+        OH_ArkWebResourceHandler_DidReceiveData(e->handler, data, len);
+    } else {
+        pthread_mutex_unlock(&g_interceptLock);
+    }
+}
+
+__attribute__((visibility("default")))
+void HarmonyHostWebRespondFinish(int requestId)
+{
+    pthread_mutex_lock(&g_interceptLock);
+    WebInterceptEntry* e = intercept_find_locked(requestId);
+    if (e && !atomic_load(&e->completed)) {
+        atomic_store(&e->completed, true);
+        pthread_mutex_unlock(&g_interceptLock);
+        OH_ArkWebResourceHandler_DidFinish(e->handler);
+    } else {
+        pthread_mutex_unlock(&g_interceptLock);
+    }
+}
+
+__attribute__((visibility("default")))
+void HarmonyHostWebRespondFail(int requestId)
+{
+    pthread_mutex_lock(&g_interceptLock);
+    WebInterceptEntry* e = intercept_find_locked(requestId);
+    if (e && !atomic_load(&e->completed)) {
+        atomic_store(&e->completed, true);
+        pthread_mutex_unlock(&g_interceptLock);
+        OH_ArkWebResourceHandler_DidFailWithError(e->handler, ARKWEB_ERR_FAILED);
+    } else {
+        pthread_mutex_unlock(&g_interceptLock);
+    }
+}
 
 // 主题回调注册表：.NET 库代码（HarmonyOS.Maui）在初始化时经 libentry 导出符号
 // 主动注册函数指针——ILC 只导出入口程序集的 [UnmanagedCallersOnly]，库内方法无法
@@ -112,6 +466,17 @@ static napi_value InitDotnet(napi_env env, napi_callback_info info)
 {
     (void)info;
     ensure_runtime(env);
+    // 探针：尽可能早地（Web 组件 build 之前）挂 proxy-valid 回调，
+    // 验证它是"错过时刻后不再补发"还是"仅 NDK 注册路径触发"。
+    if (g_webReadyTsfn == NULL) {
+        napi_value resourceName;
+        napi_create_string_utf8(env, "web-proxy-ready", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_threadsafe_function(env, NULL, NULL, resourceName, 1,
+                                        1, NULL, NULL, NULL, OnWebProxyReadyJs, &g_webReadyTsfn);
+    }
+    OH_NativeArkWeb_SetJavaScriptProxyValidCallback(HARMONY_WEB_TAG, OnWebProxyValid);
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG,
+                 "web proxy-valid callback armed at initDotnet");
     return NULL;
 }
 
@@ -144,6 +509,280 @@ static napi_value PassNodeContent(napi_env env, napi_callback_info info)
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG, ".NET UI built successfully");
     } else {
         OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG, "HarmonyBuildUI failed: %{public}d", r);
+    }
+    return NULL;
+}
+
+// ArkTS 引擎通道（共享 shim 内置，EngineLab 场景）：桥对象交给 libapp.so 的 HarmonyEngineInit 导出；
+// 引擎 ETS 经 Host overlay 注入，C 通道自此不再需要 overlay 自持副本。
+static napi_value InitEngine(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 1;
+    napi_value argv[1];
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    if (argc < 1) {
+        loge("initEngine", "missing engine bridge argument");
+        return NULL;
+    }
+
+    if (!g_engineResolved) {
+        g_engineResolved = true;
+        g_engineInit = (harmony_engine_init_t)dlsym(g_app, "HarmonyEngineInit");
+    }
+    if (!g_engineInit) {
+        loge("initEngine", "HarmonyEngineInit export not found in libapp.so");
+        return NULL;
+    }
+
+    int r = g_engineInit((void*)env, (void*)argv[0]);
+    if (r == 0) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG, "ArkTS engine bridge attached");
+    } else {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG, "HarmonyEngineInit failed: %{public}d", r);
+    }
+    return NULL;
+}
+
+static napi_value PassWebView(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 3;
+    napi_value argv[3] = {NULL, NULL, NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    if (argc < 1) {
+        loge("passWebView", "missing WebviewController argument");
+        return NULL;
+    }
+    // 可选第二参数：webTag（多实例区分 surface）；可选第三参数：BuilderNode 的 FrameNode（内嵌模式）
+    napi_value webTagValue = argc >= 2 ? argv[1] : NULL;
+    napi_value frameNodeValue = argc >= 3 ? argv[2] : NULL;
+
+    resolve_web_symbols();
+    if (!g_webInit) {
+        loge("passWebView", "HarmonyWebInit export not found in libapp.so");
+        return NULL;
+    }
+
+    // 就绪信号优先通道：ArkWeb proxy 生效时经 TSFN 通知 .NET（.NET 侧保留 500ms 兜底延迟）
+    // 回调必须在 Web 组件加载前挂载——实测 passWebView（onAppear 时刻）已错过首个 valid 时刻，
+    // 提前挂载由 InitDotnet 完成，此处不再重复。
+    if (g_webReadyTsfn == NULL) {
+        napi_value resourceName;
+        napi_create_string_utf8(env, "web-proxy-ready", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_threadsafe_function(env, NULL, NULL, resourceName, 1,
+                                        1, NULL, NULL, NULL, OnWebProxyReadyJs, &g_webReadyTsfn);
+    }
+    // NDK scheme 拦截：TSFN 专用通道 + https 处理器（browser context 已在 Web onAppear 时创建）
+    if (g_webInterceptTsfn == NULL) {
+        napi_value resourceName;
+        napi_create_string_utf8(env, "web-intercept", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_threadsafe_function(env, NULL, NULL, resourceName, 0,
+                                        1, NULL, NULL, NULL, OnInterceptDeliverJs, &g_webInterceptTsfn);
+    }
+    // scheme handler 按 webTag 逐个注册：每个 tag 一个独立 handler 实例，
+    // tag 字符串经 OH_ArkWebSchemeHandler_SetUserData 绑定，回调据此路由到对应 surface。
+    char tagBuf[128] = {0};
+    const char* schemeTag = HARMONY_WEB_TAG;
+    if (argc >= 2 && argv[1] != NULL) {
+        size_t tagLen = 0;
+        if (napi_get_value_string_utf8(env, argv[1], tagBuf, sizeof(tagBuf), &tagLen) == napi_ok && tagLen > 0) {
+            schemeTag = tagBuf;
+        }
+    }
+
+    bool tagRegistered = false;
+    for (int i = 0; i < g_schemeTagCount; i++) {
+        if (strcmp(schemeTag, g_schemeTags[i]) == 0) { tagRegistered = true; break; }
+    }
+    if (!tagRegistered && g_schemeTagCount < HARMONY_MAX_WEB_TAGS) {
+        ArkWeb_SchemeHandler* handler = NULL;
+        OH_ArkWeb_CreateSchemeHandler(&handler);
+        if (handler != NULL) {
+            OH_ArkWebSchemeHandler_SetOnRequestStart(handler, OnSchemeRequestStart);
+            OH_ArkWebSchemeHandler_SetOnRequestStop(handler, OnSchemeRequestStop);
+            // userData 指向持久化 tag 字符串（g_schemeTags 槽位），生命周期与注册表一致
+            strncpy(g_schemeTags[g_schemeTagCount], schemeTag, sizeof(g_schemeTags[0]) - 1);
+            OH_ArkWebSchemeHandler_SetUserData(handler, g_schemeTags[g_schemeTagCount]);
+            if (OH_ArkWeb_SetSchemeHandler("https", schemeTag, handler)) {
+                g_schemeHandlers[g_schemeTagCount] = handler;
+                g_schemeTagCount++;
+                OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG,
+                             "NDK scheme handler registered for https://%s", schemeTag);
+            } else {
+                loge("passWebView", "OH_ArkWeb_SetSchemeHandler failed");
+            }
+        }
+    }
+
+    int r;
+    if (g_webInitNode && frameNodeValue) {
+        r = g_webInitNode((void*)env, (void*)argv[0], (void*)webTagValue, (void*)frameNodeValue);
+    } else if (g_webInitTagged) {
+        r = g_webInitTagged((void*)env, (void*)argv[0], (void*)webTagValue);
+    } else {
+        r = g_webInit((void*)env, (void*)argv[0]);
+    }
+    if (r == 0) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG,
+                     ".NET WebView bridge initialized");
+    } else {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG,
+                     "HarmonyWebInit failed: %{public}d", r);
+    }
+    return NULL;
+}
+
+static napi_value NotifyWebPageEnded(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 2;
+    napi_value argv[2] = {NULL, NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    resolve_web_symbols();
+    if (!g_webPageEnded) return NULL;
+
+    int r = g_webPageEnded((void*)env,
+                           argc >= 1 ? (void*)argv[0] : NULL,
+                           argc >= 2 ? (void*)argv[1] : NULL);
+    if (r != 0) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG,
+                     "HarmonyWebPageEnded failed: %{public}d", r);
+    }
+    return NULL;
+}
+
+static napi_value NotifyWebPageStarted(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 2;
+    napi_value argv[2] = {NULL, NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    resolve_web_symbols();
+    if (!g_webPageStarted) return NULL;
+
+    g_webPageStarted((void*)env,
+                     argc >= 1 ? (void*)argv[0] : NULL,
+                     argc >= 2 ? (void*)argv[1] : NULL);
+    return NULL;
+}
+
+static napi_value ShouldInterceptNavigation(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 2;
+    napi_value argv[2] = {NULL, NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    resolve_web_symbols();
+
+    napi_value result;
+    if (!g_webShouldIntercept) {
+        napi_get_boolean(env, false, &result);
+        return result;
+    }
+
+    int r = g_webShouldIntercept((void*)env,
+                                 argc >= 1 ? (void*)argv[0] : NULL,
+                                 argc >= 2 ? (void*)argv[1] : NULL);
+    napi_get_boolean(env, r == 1, &result);
+    return result;
+}
+
+static napi_value ShutdownWebView(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 1;
+    napi_value argv[1] = {NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    resolve_web_symbols();
+    if (!g_webShutdown) return NULL;
+
+    g_webShutdown((void*)env, argc >= 1 ? (void*)argv[0] : NULL);
+    return NULL;
+}
+
+// .NET 请求创建新 Web 实例：调用 ArkTS 侧注册的 factory(tag)。
+// 由 C# 经 HarmonyHostWebCreateView 导出进入（dlsym）。
+// .NET → ArkTS slot 工厂调用（导出给 libapp.so 的 HarmonyHostWebCreateView）。
+// 必须在 env 线程执行；这里直接假定调用发生在 env 线程（C# 侧经 TSFN/主线程投递）。
+static int g_webFactoryTagCounter = 0;
+
+EXTERN_C_START
+int HarmonyHostWebCreateView(const char* webTag)
+{
+    if (g_webFactoryTsfn == NULL) {
+        OH_LOG_Print(LOG_APP, LOG_WARN, LOG_DOMAIN, LOG_TAG,
+                     "create view '%{public}s': no factory registered", webTag ? webTag : "(null)");
+        return -1;
+    }
+
+    char* tagCopy = (char*)malloc(128);
+    if (tagCopy == NULL) return -2;
+    strncpy(tagCopy, webTag ? webTag : "", 127);
+    tagCopy[127] = 0;
+
+    napi_status st = napi_call_threadsafe_function(g_webFactoryTsfn, tagCopy, napi_tsfn_nonblocking);
+    if (st != napi_ok) {
+        free(tagCopy);
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG,
+                     "create view '%{public}s': tsfn call failed (%{public}d)", webTag, (int)st);
+        return -3;
+    }
+    return 0;
+}
+EXTERN_C_END
+
+static napi_value RegisterWebViewFactory(napi_env env, napi_callback_info info)
+{
+    size_t argc = 1;
+    napi_value argv[1] = {NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    if (argc < 1 || argv[0] == NULL) {
+        loge("registerWebViewFactory", "missing callback");
+        return NULL;
+    }
+    if (g_webFactoryRef != NULL) {
+        napi_delete_reference(env, g_webFactoryRef);
+        g_webFactoryRef = NULL;
+    }
+    napi_create_reference(env, argv[0], 1, &g_webFactoryRef);
+    g_webFactoryEnv = env;
+    if (g_webFactoryTsfn == NULL) {
+        napi_value resourceName;
+        napi_create_string_utf8(env, "web-factory", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_threadsafe_function(env, NULL, NULL, resourceName, 4,
+                                        1, NULL, NULL, NULL, OnWebFactoryDeliverJs, &g_webFactoryTsfn);
+    }
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG, "web view factory registered");
+    return NULL;
+}
+
+static napi_value ReceiveWebViewMessage(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 2;
+    napi_value argv[2] = {NULL, NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    if (argc < 1) {
+        loge("receiveWebViewMessage", "missing message");
+        return NULL;
+    }
+
+    resolve_web_symbols();
+    if (!g_webReceive) {
+        loge("receiveWebViewMessage", "HarmonyWebReceiveMessage export not found in libapp.so");
+        return NULL;
+    }
+
+    if (g_webReceive((void*)env, (void*)argv[0], argc >= 2 ? (void*)argv[1] : NULL) != 0) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, LOG_TAG, "HarmonyWebReceiveMessage failed");
     }
     return NULL;
 }
@@ -211,6 +850,14 @@ static napi_value ModuleInit(napi_env env, napi_value exports)
         {"initDotnet", NULL, InitDotnet, NULL, NULL, NULL, napi_default, NULL},
         {"popPage", NULL, PopPage, NULL, NULL, NULL, napi_default, NULL},
         {"passNodeContent", NULL, PassNodeContent, NULL, NULL, NULL, napi_default, NULL},
+        {"passWebView", NULL, PassWebView, NULL, NULL, NULL, napi_default, NULL},
+        {"receiveWebViewMessage", NULL, ReceiveWebViewMessage, NULL, NULL, NULL, napi_default, NULL},
+        {"notifyWebPageEnded", NULL, NotifyWebPageEnded, NULL, NULL, NULL, napi_default, NULL},
+        {"notifyWebPageStarted", NULL, NotifyWebPageStarted, NULL, NULL, NULL, napi_default, NULL},
+        {"shouldInterceptNavigation", NULL, ShouldInterceptNavigation, NULL, NULL, NULL, napi_default, NULL},
+        {"shutdownWebView", NULL, ShutdownWebView, NULL, NULL, NULL, napi_default, NULL},
+        {"registerWebViewFactory", NULL, RegisterWebViewFactory, NULL, NULL, NULL, napi_default, NULL},
+        {"initEngine", NULL, InitEngine, NULL, NULL, NULL, napi_default, NULL},
         {"notifyThemeChanged", NULL, NotifyThemeChanged, NULL, NULL, NULL, napi_default, NULL},
         {"notifyLifecycleChanged", NULL, NotifyLifecycleChanged, NULL, NULL, NULL, napi_default, NULL},
     };

@@ -18,51 +18,8 @@ public static unsafe partial class Geolocation
 {
     private const string ModuleName = "@ohos.geolocation";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[geolocation] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _on => "on"u8;
     private static ReadOnlySpan<byte> _off => "off"u8;
@@ -78,136 +35,153 @@ public static unsafe partial class Geolocation
     private static ReadOnlySpan<byte> _sendCommand => "sendCommand"u8;
 
     /// <summary>
-    /// on
+    /// Subscribe location changed
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void On(string type, GeolocationLocationRequest request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribe location changed
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// on
+    /// Subscribe location switch changed
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// on
+    /// Subscribe to cache GNSS locations update messages
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void On(string type, GeolocationCachedGnssLocationsRequest request, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), callback);
     }
 
     /// <summary>
-    /// on
+    /// Add a geofence and subscribe geo fence status changed
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void On(string type, GeolocationGeofenceRequest request, IntPtr want)
     {
         NodeApi.CallMethodVoid(Module, _on, type, NapiArg.Of(request), want);
     }
 
     /// <summary>
-    /// off
+    /// Remove a geofence and unsubscribe geo fence status changed
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static void Off(string type, GeolocationGeofenceRequest request, IntPtr want)
     {
         NodeApi.CallMethodVoid(Module, _off, type, NapiArg.Of(request), want);
     }
 
     /// <summary>
-    /// getCurrentLocation
+    /// Obtain current location
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<GeolocationLocation> GetCurrentLocationAsync(GeolocationCurrentLocationRequest request)
     {
         return NodeApi.CallMethodAsync(Module, _getCurrentLocation, static h => new GeolocationLocation(h), NapiArg.Of(request));
     }
 
     /// <summary>
-    /// getCurrentLocation
+    /// Obtain current location
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<GeolocationLocation> GetCurrentLocationAsync()
     {
         return NodeApi.CallMethodAsyncCallback(Module, _getCurrentLocation, static h => new GeolocationLocation(h));
     }
 
     /// <summary>
-    /// getLastLocation
+    /// Obtain last known location
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<GeolocationLocation> GetLastLocationAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getLastLocation, static h => new GeolocationLocation(h));
     }
 
     /// <summary>
-    /// isLocationEnabled
+    /// Obtain current location switch status
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsLocationEnabledAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isLocationEnabled);
     }
 
     /// <summary>
-    /// requestEnableLocation
+    /// Request enable location
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> RequestEnableLocationAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _requestEnableLocation);
     }
 
     /// <summary>
-    /// getAddressesFromLocation
+    /// Obtain address info from location
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<GeolocationGeoAddress[]> GetAddressesFromLocationAsync(GeolocationReverseGeoCodeRequest request)
     {
         return NodeApi.CallMethodAsync(Module, _getAddressesFromLocation, h => ValueConverter.ConvertArray(h, static e => new GeolocationGeoAddress(e)), NapiArg.Of(request));
     }
 
     /// <summary>
-    /// getAddressesFromLocationName
+    /// Obtain latitude and longitude info from location address
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<GeolocationGeoAddress[]> GetAddressesFromLocationNameAsync(GeolocationGeoCodeRequest request)
     {
         return NodeApi.CallMethodAsync(Module, _getAddressesFromLocationName, h => ValueConverter.ConvertArray(h, static e => new GeolocationGeoAddress(e)), NapiArg.Of(request));
     }
 
     /// <summary>
-    /// isGeoServiceAvailable
+    /// Obtain geocode service status
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsGeoServiceAvailableAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isGeoServiceAvailable);
     }
 
     /// <summary>
-    /// getCachedGnssLocationsSize
+    /// Obtain the number of cached GNSS locations reported at a time
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<double> GetCachedGnssLocationsSizeAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getCachedGnssLocationsSize);
     }
 
     /// <summary>
-    /// flushCachedGnssLocations
+    /// All prepared GNSS locations are returned to the application through the callback function,
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<bool> FlushCachedGnssLocationsAsync()
     {
         return NodeApi.CallMethodAsync<bool>(Module, _flushCachedGnssLocations);
     }
 
     /// <summary>
-    /// sendCommand
+    /// Send extended commands to location subsystem.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task<bool> SendCommandAsync(GeolocationLocationCommand command)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _sendCommand, NapiArg.Of(command));

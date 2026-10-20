@@ -20,51 +20,8 @@ public static unsafe partial class Ble
 {
     private const string ModuleName = "@ohos.bluetooth.ble";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[bluetooth.ble] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createGattServer => "createGattServer"u8;
     private static ReadOnlySpan<byte> _createGattClientDevice => "createGattClientDevice"u8;
@@ -80,128 +37,144 @@ public static unsafe partial class Ble
     private static ReadOnlySpan<byte> _off => "off"u8;
 
     /// <summary>
-    /// createGattServer
+    /// create a Gatt server instance.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static GattServer CreateGattServer()
     {
         return NodeApi.CallMethod(Module, _createGattServer, static h => new GattServer(h));
     }
 
     /// <summary>
-    /// createGattClientDevice
+    /// create a Gatt client device instance.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static GattClientDevice CreateGattClientDevice(string deviceId)
     {
         return NodeApi.CallMethod(Module, _createGattClientDevice, static h => new GattClientDevice(h), deviceId);
     }
 
     /// <summary>
-    /// createGattClientDevice
+    /// create a Gatt client device instance with custom setting.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static GattClientDevice CreateGattClientDevice(string deviceId, IntPtr setting)
     {
         return NodeApi.CallMethod(Module, _createGattClientDevice, static h => new GattClientDevice(h), deviceId, setting);
     }
 
     /// <summary>
-    /// createBleScanner
+    /// Create a ble scanner instance. Each ble scanner instance can be independently started or stopped.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static BleScanner CreateBleScanner()
     {
         return NodeApi.CallMethod(Module, _createBleScanner, static h => new BleScanner(h));
     }
 
     /// <summary>
-    /// getConnectedBLEDevices
+    /// Obtains the list of devices in the connected status.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string[] GetConnectedBleDevices()
     {
         return NodeApi.CallMethod(Module, _getConnectedBLEDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// getConnectedBLEDevices
+    /// Obtains the list of devices in the connected status.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static string[] GetConnectedBleDevices(global::HarmonyOS.ArkUI.BleProfile profile)
     {
         return NodeApi.CallMethod(Module, _getConnectedBLEDevices, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), (int)profile);
     }
 
     /// <summary>
-    /// startBLEScan
+    /// Starts scanning for specified BLE devices with filters.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void StartBleScan(IntPtr[] filters, ScanOptions? options = null)
     {
         NodeApi.CallMethodVoid(Module, _startBLEScan, NapiArg.Of(filters), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// stopBLEScan
+    /// Stops BLE scanning.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void StopBleScan()
     {
         NodeApi.CallMethodVoid(Module, _stopBLEScan);
     }
 
     /// <summary>
-    /// startAdvertising
+    /// Starts BLE advertising.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void StartAdvertising(AdvertiseSetting setting, IntPtr advData, IntPtr? advResponse = null)
     {
         NodeApi.CallMethodVoid(Module, _startAdvertising, NapiArg.Of(setting), advData, NapiArg.Of(advResponse));
     }
 
     /// <summary>
-    /// stopAdvertising
+    /// Stops BLE advertising.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static void StopAdvertising()
     {
         NodeApi.CallMethodVoid(Module, _stopAdvertising);
     }
 
     /// <summary>
-    /// startAdvertising
+    /// Starts BLE advertising.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<double> StartAdvertisingAsync(IntPtr advertisingParams)
     {
         return NodeApi.CallMethodAsync<double>(Module, _startAdvertising, advertisingParams);
     }
 
     /// <summary>
-    /// enableAdvertising
+    /// Enable the advertising with a specific ID temporarily.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task EnableAdvertisingAsync(AdvertisingEnableParams advertisingEnableParams, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _enableAdvertising, cancellationToken, NapiArg.Of(advertisingEnableParams));
     }
 
     /// <summary>
-    /// disableAdvertising
+    /// Disable the advertising with a specific ID temporarily.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task DisableAdvertisingAsync(AdvertisingDisableParams advertisingDisableParams, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _disableAdvertising, cancellationToken, NapiArg.Of(advertisingDisableParams));
     }
 
     /// <summary>
-    /// stopAdvertising
+    /// Stops BLE advertising.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task StopAdvertisingAsync(double advertisingId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopAdvertising, cancellationToken, advertisingId);
     }
 
     /// <summary>
-    /// on
+    /// Subscribing to advertising state change event.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribe from advertising state change event.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
@@ -366,6 +339,12 @@ public sealed partial class GattServer : JsObject
     /// </summary>
     public void Connect(string deviceId, bool? autoConnect = null)
     {
+        if (autoConnect is null)
+        {
+            CallMethodVoid(_connect, deviceId);
+            return;
+        }
+
         CallMethodVoid(_connect, deviceId, NapiArg.Of(autoConnect));
     }
 
@@ -446,6 +425,12 @@ public sealed partial class GattServer : JsObject
     /// </summary>
     public void OffBlePhyUpdate(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offBlePhyUpdate);
+            return;
+        }
+
         CallMethodVoid(_offBlePhyUpdate, NapiArg.Of(callback));
     }
 
@@ -873,6 +858,12 @@ public sealed partial class GattClientDevice : JsObject
     /// </summary>
     public void OffBlePhyUpdate(IntPtr? callback = null)
     {
+        if (callback is null)
+        {
+            CallMethodVoid(_offBlePhyUpdate);
+            return;
+        }
+
         CallMethodVoid(_offBlePhyUpdate, NapiArg.Of(callback));
     }
 
@@ -1026,6 +1017,11 @@ public sealed partial class BleScanner : JsObject
     /// </summary>
     public Task StartScanAsync(IntPtr[] filters, ScanOptions? options = null, CancellationToken cancellationToken = default)
     {
+        if (options is null)
+        {
+            return CallMethodAsyncVoid(_startScan, cancellationToken, NapiArg.Of(filters));
+        }
+
         return CallMethodAsyncVoid(_startScan, cancellationToken, NapiArg.Of(filters), NapiArg.Of(options));
     }
 

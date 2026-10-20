@@ -20,51 +20,8 @@ public static unsafe partial class CertManager
 {
     private const string ModuleName = "@ohos.security.certManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[security.certManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _installPrivateCertificate => "installPrivateCertificate"u8;
     private static ReadOnlySpan<byte> _uninstallPrivateCertificate => "uninstallPrivateCertificate"u8;
@@ -87,176 +44,198 @@ public static unsafe partial class CertManager
     private static ReadOnlySpan<byte> _importUkeyCertificate => "importUkeyCertificate"u8;
 
     /// <summary>
-    /// installPrivateCertificate
+    /// Installs a private credential. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<CMResult> InstallPrivateCertificateAsync(byte[] keystore, string keystorePwd, string certAlias)
     {
         return NodeApi.CallMethodAsync(Module, _installPrivateCertificate, static h => new CMResult(h), NapiArg.Of(keystore), keystorePwd, certAlias);
     }
 
     /// <summary>
-    /// uninstallPrivateCertificate
+    /// Uninstalls a private credential. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task UninstallPrivateCertificateAsync(string keyUri, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _uninstallPrivateCertificate, cancellationToken, keyUri);
     }
 
     /// <summary>
-    /// getPrivateCertificate
+    /// Obtains detailed information about a private credential. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<CMResult> GetPrivateCertificateAsync(string keyUri)
     {
         return NodeApi.CallMethodAsync(Module, _getPrivateCertificate, static h => new CMResult(h), keyUri);
     }
 
     /// <summary>
-    /// init
+    /// Indicates the initialization of signature and signature verification using credentials. This is the first step in
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<CMHandle> InitAsync(string authUri, CMSignatureSpec spec)
     {
         return NodeApi.CallMethodAsync(Module, _init, static h => new CMHandle(h), authUri, NapiArg.Of(spec));
     }
 
     /// <summary>
-    /// update
+    /// Updates the data for the signing or signature verification operation.  It needs to be invoked after the init
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task UpdateAsync(byte[] handle, byte[] data, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _update, cancellationToken, NapiArg.Of(handle), NapiArg.Of(data));
     }
 
     /// <summary>
-    /// finish
+    /// Finishes the signing operation. This is the last step in the signature process. The init and update interfaces need
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<CMResult> FinishAsync(byte[] handle)
     {
         return NodeApi.CallMethodAsyncCallback(Module, _finish, static h => new CMResult(h), NapiArg.Of(handle));
     }
 
     /// <summary>
-    /// finish
+    /// Finishes the signature verification operation. This is the last step in the signature verification process. The
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task<CMResult> FinishAsync(byte[] handle, byte[] signature)
     {
         return NodeApi.CallMethodAsync(Module, _finish, static h => new CMResult(h), NapiArg.Of(handle), NapiArg.Of(signature));
     }
 
     /// <summary>
-    /// abort
+    /// Aborts the signing or signature verification operation. This method is mutually exclusive with the finish method.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static Task AbortAsync(byte[] handle, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _abort, cancellationToken, NapiArg.Of(handle));
     }
 
     /// <summary>
-    /// getPublicCertificate
+    /// Obtains detailed information about a public credential. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<CMResult> GetPublicCertificateAsync(string keyUri)
     {
         return NodeApi.CallMethodAsync(Module, _getPublicCertificate, static h => new CMResult(h), keyUri);
     }
 
     /// <summary>
-    /// isAuthorizedApp
+    /// Checks whether this application is authorized by the specified user credential. This API uses a promise to return
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<bool> IsAuthorizedAppAsync(string keyUri)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isAuthorizedApp, keyUri);
     }
 
     /// <summary>
-    /// getAllUserTrustedCertificates
+    /// Obtains all user trusted root CA certificates of the device. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<CMResult> GetAllUserTrustedCertificatesAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getAllUserTrustedCertificates, static h => new CMResult(h));
     }
 
     /// <summary>
-    /// getUserTrustedCertificate
+    /// Obtains the detailed information about a user root CA certificate. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<CMResult> GetUserTrustedCertificateAsync(string certUri)
     {
         return NodeApi.CallMethodAsync(Module, _getUserTrustedCertificate, static h => new CMResult(h), certUri);
     }
 
     /// <summary>
-    /// getPrivateCertificates
+    /// Obtains the credentials for installing the application. This API uses a promise to return the result
     /// </summary>
+    /// <remarks>@since 13</remarks>
     public static Task<CMResult> GetPrivateCertificatesAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getPrivateCertificates, static h => new CMResult(h));
     }
 
     /// <summary>
-    /// getCertificateStorePath
+    /// Obtains the certificate storage path.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static string GetCertificateStorePath(CertStoreProperty property)
     {
         return NodeApi.CallMethod<string>(Module, _getCertificateStorePath, NapiArg.Of(property));
     }
 
     /// <summary>
-    /// installUserTrustedCertificateSync
+    /// Installs a user CA certificate.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static CMResult InstallUserTrustedCertificateSync(byte[] cert, global::HarmonyOS.ArkUI.CertScope certScope)
     {
         return NodeApi.CallMethod(Module, _installUserTrustedCertificateSync, static h => new CMResult(h), NapiArg.Of(cert), (int)certScope);
     }
 
     /// <summary>
-    /// installPrivateCertificate
+    /// Installs a private credential and specifies its storage level. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<CMResult> InstallPrivateCertificateAsync(byte[] keystore, string keystorePwd, string certAlias, global::HarmonyOS.ArkUI.AuthStorageLevel level)
     {
         return NodeApi.CallMethodAsync(Module, _installPrivateCertificate, static h => new CMResult(h), NapiArg.Of(keystore), keystorePwd, certAlias, (int)level);
     }
 
     /// <summary>
-    /// getAllUserTrustedCertificates
+    /// Obtains the user root CA certificates based on the certificate scope. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static Task<CMResult> GetAllUserTrustedCertificatesAsync(global::HarmonyOS.ArkUI.CertScope scope)
     {
         return NodeApi.CallMethodAsync(Module, _getAllUserTrustedCertificates, static h => new CMResult(h), (int)scope);
     }
 
     /// <summary>
-    /// uninstallUserTrustedCertificateSync
+    /// Uninstalls a user CA certificate.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static void UninstallUserTrustedCertificateSync(string certUri)
     {
         NodeApi.CallMethodVoid(Module, _uninstallUserTrustedCertificateSync, certUri);
     }
 
     /// <summary>
-    /// getUkeyCertificate
+    /// Obtains the details of a USB Key credential. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static Task<CMResult> GetUkeyCertificateAsync(string keyUri, UkeyInfo ukeyInfo)
     {
         return NodeApi.CallMethodAsync(Module, _getUkeyCertificate, static h => new CMResult(h), keyUri, NapiArg.Of(ukeyInfo));
     }
 
     /// <summary>
-    /// installUserTrustedCertificate
+    /// Install the user CA certificate. Use Promise asynchronous callback.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<CMResult> InstallUserTrustedCertificateAsync(CertManagerCertBlob certificate)
     {
         return NodeApi.CallMethodAsync(Module, _installUserTrustedCertificate, static h => new CMResult(h), NapiArg.Of(certificate));
     }
 
     /// <summary>
-    /// getUkeyCertificateList
+    /// Obtains the list of USB Key credential . This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task<CMResult> GetUkeyCertificateListAsync(string ukeyProvider, UkeyInfo ukeyInfo)
     {
         return NodeApi.CallMethodAsync(Module, _getUkeyCertificateList, static h => new CMResult(h), ukeyProvider, NapiArg.Of(ukeyInfo));
     }
 
     /// <summary>
-    /// importUkeyCertificate
+    /// Import the certificate to the USB Key.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task ImportUkeyCertificateAsync(string keyUri, byte[] cert, UkeyInfo ukeyInfo, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _importUkeyCertificate, cancellationToken, keyUri, NapiArg.Of(cert), NapiArg.Of(ukeyInfo));

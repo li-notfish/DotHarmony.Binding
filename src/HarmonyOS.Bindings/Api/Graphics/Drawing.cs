@@ -16,51 +16,8 @@ public static unsafe partial class Drawing
 {
     private const string ModuleName = "@ohos.graphics.drawing";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[graphics.drawing] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
 }
 
@@ -128,6 +85,11 @@ public sealed partial class PathIterator : JsObject
     /// </summary>
     public global::HarmonyOS.ArkUI.PathIteratorVerb Next(IntPtr[] points, double? offset = null)
     {
+        if (offset is null)
+        {
+            return CallMethod<global::HarmonyOS.ArkUI.PathIteratorVerb>(_next, NapiArg.Of(points));
+        }
+
         return CallMethod<global::HarmonyOS.ArkUI.PathIteratorVerb>(_next, NapiArg.Of(points), NapiArg.Of(offset));
     }
 
@@ -339,6 +301,12 @@ public sealed partial class Path : JsObject
     /// </summary>
     public void AddCircle(double x, double y, double radius, global::HarmonyOS.ArkUI.PathDirection? pathDirection = null)
     {
+        if (pathDirection is null)
+        {
+            CallMethodVoid(_addCircle, x, y, radius);
+            return;
+        }
+
         CallMethodVoid(_addCircle, x, y, radius, NapiArg.Of(pathDirection));
     }
 
@@ -347,6 +315,12 @@ public sealed partial class Path : JsObject
     /// </summary>
     public void AddOval(IntPtr rect, double start, global::HarmonyOS.ArkUI.PathDirection? pathDirection = null)
     {
+        if (pathDirection is null)
+        {
+            CallMethodVoid(_addOval, rect, start);
+            return;
+        }
+
         CallMethodVoid(_addOval, rect, start, NapiArg.Of(pathDirection));
     }
 
@@ -355,6 +329,12 @@ public sealed partial class Path : JsObject
     /// </summary>
     public void AddRect(IntPtr rect, global::HarmonyOS.ArkUI.PathDirection? pathDirection = null)
     {
+        if (pathDirection is null)
+        {
+            CallMethodVoid(_addRect, rect);
+            return;
+        }
+
         CallMethodVoid(_addRect, rect, NapiArg.Of(pathDirection));
     }
 
@@ -363,6 +343,12 @@ public sealed partial class Path : JsObject
     /// </summary>
     public void AddRoundRect(RoundRect roundRect, global::HarmonyOS.ArkUI.PathDirection? pathDirection = null)
     {
+        if (pathDirection is null)
+        {
+            CallMethodVoid(_addRoundRect, NapiArg.Of(roundRect));
+            return;
+        }
+
         CallMethodVoid(_addRoundRect, NapiArg.Of(roundRect), NapiArg.Of(pathDirection));
     }
 
@@ -371,6 +357,12 @@ public sealed partial class Path : JsObject
     /// </summary>
     public void AddPath(Path path, Matrix? matrix = null)
     {
+        if (matrix is null)
+        {
+            CallMethodVoid(_addPath, NapiArg.Of(path));
+            return;
+        }
+
         CallMethodVoid(_addPath, NapiArg.Of(path), NapiArg.Of(matrix));
     }
 
@@ -767,6 +759,12 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void DrawImage(IntPtr pixelmap, double left, double top, SamplingOptions? samplingOptions = null)
     {
+        if (samplingOptions is null)
+        {
+            CallMethodVoid(_drawImage, pixelmap, left, top);
+            return;
+        }
+
         CallMethodVoid(_drawImage, pixelmap, left, top, NapiArg.Of(samplingOptions));
     }
 
@@ -791,6 +789,12 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void DrawImageRect(IntPtr pixelmap, IntPtr dstRect, SamplingOptions? samplingOptions = null)
     {
+        if (samplingOptions is null)
+        {
+            CallMethodVoid(_drawImageRect, pixelmap, dstRect);
+            return;
+        }
+
         CallMethodVoid(_drawImageRect, pixelmap, dstRect, NapiArg.Of(samplingOptions));
     }
 
@@ -799,6 +803,18 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void DrawImageRectWithSrc(IntPtr pixelmap, IntPtr srcRect, IntPtr dstRect, SamplingOptions? samplingOptions = null, global::HarmonyOS.ArkUI.SrcRectConstraint? constraint = null)
     {
+        if (samplingOptions is null && constraint is null)
+        {
+            CallMethodVoid(_drawImageRectWithSrc, pixelmap, srcRect, dstRect);
+            return;
+        }
+
+        if (constraint is null)
+        {
+            CallMethodVoid(_drawImageRectWithSrc, pixelmap, srcRect, dstRect, NapiArg.Of(samplingOptions));
+            return;
+        }
+
         CallMethodVoid(_drawImageRectWithSrc, pixelmap, srcRect, dstRect, NapiArg.Of(samplingOptions), NapiArg.Of(constraint));
     }
 
@@ -807,6 +823,12 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void DrawColor(IntPtr color, global::HarmonyOS.ArkUI.BlendMode? blendMode = null)
     {
+        if (blendMode is null)
+        {
+            CallMethodVoid(_drawColor, color);
+            return;
+        }
+
         CallMethodVoid(_drawColor, color, NapiArg.Of(blendMode));
     }
 
@@ -815,6 +837,12 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void DrawColor(double alpha, double red, double green, double blue, global::HarmonyOS.ArkUI.BlendMode? blendMode = null)
     {
+        if (blendMode is null)
+        {
+            CallMethodVoid(_drawColor, alpha, red, green, blue);
+            return;
+        }
+
         CallMethodVoid(_drawColor, alpha, red, green, blue, NapiArg.Of(blendMode));
     }
 
@@ -823,6 +851,12 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void DrawColor(double color, global::HarmonyOS.ArkUI.BlendMode? blendMode = null)
     {
+        if (blendMode is null)
+        {
+            CallMethodVoid(_drawColor, color);
+            return;
+        }
+
         CallMethodVoid(_drawColor, color, NapiArg.Of(blendMode));
     }
 
@@ -863,6 +897,12 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void DrawPoints(IntPtr[] points, global::HarmonyOS.ArkUI.PointMode? mode = null)
     {
+        if (mode is null)
+        {
+            CallMethodVoid(_drawPoints, NapiArg.Of(points));
+            return;
+        }
+
         CallMethodVoid(_drawPoints, NapiArg.Of(points), NapiArg.Of(mode));
     }
 
@@ -983,6 +1023,16 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public double SaveLayer(IntPtr? rect = null, Brush? brush = null)
     {
+        if (rect is null && brush is null)
+        {
+            return CallMethod<double>(_saveLayer);
+        }
+
+        if (brush is null)
+        {
+            return CallMethod<double>(_saveLayer, NapiArg.Of(rect));
+        }
+
         return CallMethod<double>(_saveLayer, NapiArg.Of(rect), NapiArg.Of(brush));
     }
 
@@ -1095,6 +1145,18 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void ClipPath(Path path, global::HarmonyOS.ArkUI.ClipOp? clipOp = null, bool? doAntiAlias = null)
     {
+        if (clipOp is null && doAntiAlias is null)
+        {
+            CallMethodVoid(_clipPath, NapiArg.Of(path));
+            return;
+        }
+
+        if (doAntiAlias is null)
+        {
+            CallMethodVoid(_clipPath, NapiArg.Of(path), NapiArg.Of(clipOp));
+            return;
+        }
+
         CallMethodVoid(_clipPath, NapiArg.Of(path), NapiArg.Of(clipOp), NapiArg.Of(doAntiAlias));
     }
 
@@ -1103,6 +1165,18 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void ClipRect(IntPtr rect, global::HarmonyOS.ArkUI.ClipOp? clipOp = null, bool? doAntiAlias = null)
     {
+        if (clipOp is null && doAntiAlias is null)
+        {
+            CallMethodVoid(_clipRect, rect);
+            return;
+        }
+
+        if (doAntiAlias is null)
+        {
+            CallMethodVoid(_clipRect, rect, NapiArg.Of(clipOp));
+            return;
+        }
+
         CallMethodVoid(_clipRect, rect, NapiArg.Of(clipOp), NapiArg.Of(doAntiAlias));
     }
 
@@ -1119,6 +1193,12 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void ClipRegion(Region region, global::HarmonyOS.ArkUI.ClipOp? clipOp = null)
     {
+        if (clipOp is null)
+        {
+            CallMethodVoid(_clipRegion, NapiArg.Of(region));
+            return;
+        }
+
         CallMethodVoid(_clipRegion, NapiArg.Of(region), NapiArg.Of(clipOp));
     }
 
@@ -1127,6 +1207,18 @@ public sealed partial class Canvas : JsObject
     /// </summary>
     public void ClipRoundRect(RoundRect roundRect, global::HarmonyOS.ArkUI.ClipOp? clipOp = null, bool? doAntiAlias = null)
     {
+        if (clipOp is null && doAntiAlias is null)
+        {
+            CallMethodVoid(_clipRoundRect, NapiArg.Of(roundRect));
+            return;
+        }
+
+        if (doAntiAlias is null)
+        {
+            CallMethodVoid(_clipRoundRect, NapiArg.Of(roundRect), NapiArg.Of(clipOp));
+            return;
+        }
+
         CallMethodVoid(_clipRoundRect, NapiArg.Of(roundRect), NapiArg.Of(clipOp), NapiArg.Of(doAntiAlias));
     }
 
@@ -2155,6 +2247,21 @@ public sealed partial class Lattice : JsObject
     /// </summary>
     public Lattice CreateImageLattice(double[] xDivs, double[] yDivs, double fXCount, double fYCount, IntPtr? fBounds = null, global::HarmonyOS.ArkUI.RectType[]? fRectTypes = null, IntPtr[]? fColors = null)
     {
+        if (fBounds is null && fRectTypes is null && fColors is null)
+        {
+            return CallMethod(_createImageLattice, static h => new Lattice(h), NapiArg.Of(xDivs), NapiArg.Of(yDivs), fXCount, fYCount);
+        }
+
+        if (fRectTypes is null && fColors is null)
+        {
+            return CallMethod(_createImageLattice, static h => new Lattice(h), NapiArg.Of(xDivs), NapiArg.Of(yDivs), fXCount, fYCount, NapiArg.Of(fBounds));
+        }
+
+        if (fColors is null)
+        {
+            return CallMethod(_createImageLattice, static h => new Lattice(h), NapiArg.Of(xDivs), NapiArg.Of(yDivs), fXCount, fYCount, NapiArg.Of(fBounds), NapiArg.Of(fRectTypes));
+        }
+
         return CallMethod(_createImageLattice, static h => new Lattice(h), NapiArg.Of(xDivs), NapiArg.Of(yDivs), fXCount, fYCount, NapiArg.Of(fBounds), NapiArg.Of(fRectTypes), NapiArg.Of(fColors));
     }
 
@@ -2163,6 +2270,21 @@ public sealed partial class Lattice : JsObject
     /// </summary>
     public Lattice CreateImageLattice(double[] xDivs, double[] yDivs, double fXCount, double fYCount, IntPtr? fBounds = null, global::HarmonyOS.ArkUI.RectType[]? fRectTypes = null, double[]? fColors = null)
     {
+        if (fBounds is null && fRectTypes is null && fColors is null)
+        {
+            return CallMethod(_createImageLattice, static h => new Lattice(h), NapiArg.Of(xDivs), NapiArg.Of(yDivs), fXCount, fYCount);
+        }
+
+        if (fRectTypes is null && fColors is null)
+        {
+            return CallMethod(_createImageLattice, static h => new Lattice(h), NapiArg.Of(xDivs), NapiArg.Of(yDivs), fXCount, fYCount, NapiArg.Of(fBounds));
+        }
+
+        if (fColors is null)
+        {
+            return CallMethod(_createImageLattice, static h => new Lattice(h), NapiArg.Of(xDivs), NapiArg.Of(yDivs), fXCount, fYCount, NapiArg.Of(fBounds), NapiArg.Of(fRectTypes));
+        }
+
         return CallMethod(_createImageLattice, static h => new Lattice(h), NapiArg.Of(xDivs), NapiArg.Of(yDivs), fXCount, fYCount, NapiArg.Of(fBounds), NapiArg.Of(fRectTypes), NapiArg.Of(fColors));
     }
 
@@ -2401,6 +2523,11 @@ public sealed partial class DrawingFont : JsObject
     /// </summary>
     public double[] TextToGlyphs(string text, double? glyphCount = null)
     {
+        if (glyphCount is null)
+        {
+            return CallMethod(_textToGlyphs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), text);
+        }
+
         return CallMethod(_textToGlyphs, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<double>(e)), text, NapiArg.Of(glyphCount));
     }
 
@@ -2548,6 +2675,11 @@ public sealed partial class TextBlob : JsObject
     /// </summary>
     public TextBlob MakeFromString(string text, DrawingFont font, global::HarmonyOS.ArkUI.TextEncoding? encoding = null)
     {
+        if (encoding is null)
+        {
+            return CallMethod(_makeFromString, static h => new TextBlob(h), text, NapiArg.Of(font));
+        }
+
         return CallMethod(_makeFromString, static h => new TextBlob(h), text, NapiArg.Of(font), NapiArg.Of(encoding));
     }
 
@@ -2564,6 +2696,11 @@ public sealed partial class TextBlob : JsObject
     /// </summary>
     public TextBlob MakeFromRunBuffer(TextBlobRunBuffer[] pos, DrawingFont font, IntPtr? bounds = null)
     {
+        if (bounds is null)
+        {
+            return CallMethod(_makeFromRunBuffer, static h => new TextBlob(h), NapiArg.Of(pos), NapiArg.Of(font));
+        }
+
         return CallMethod(_makeFromRunBuffer, static h => new TextBlob(h), NapiArg.Of(pos), NapiArg.Of(font), NapiArg.Of(bounds));
     }
 
@@ -2612,6 +2749,16 @@ public sealed partial class ShaderEffect : JsObject
     /// </summary>
     public ShaderEffect CreateLinearGradient(IntPtr startPt, IntPtr endPt, double[] colors, global::HarmonyOS.ArkUI.GraphicsDrawingTileMode mode, double[]? pos = null, Matrix? matrix = null)
     {
+        if (pos is null && matrix is null)
+        {
+            return CallMethod(_createLinearGradient, static h => new ShaderEffect(h), startPt, endPt, NapiArg.Of(colors), (int)mode);
+        }
+
+        if (matrix is null)
+        {
+            return CallMethod(_createLinearGradient, static h => new ShaderEffect(h), startPt, endPt, NapiArg.Of(colors), (int)mode, NapiArg.Of(pos));
+        }
+
         return CallMethod(_createLinearGradient, static h => new ShaderEffect(h), startPt, endPt, NapiArg.Of(colors), (int)mode, NapiArg.Of(pos), NapiArg.Of(matrix));
     }
 
@@ -2620,6 +2767,16 @@ public sealed partial class ShaderEffect : JsObject
     /// </summary>
     public ShaderEffect CreateRadialGradient(IntPtr centerPt, double radius, double[] colors, global::HarmonyOS.ArkUI.GraphicsDrawingTileMode mode, double[]? pos = null, Matrix? matrix = null)
     {
+        if (pos is null && matrix is null)
+        {
+            return CallMethod(_createRadialGradient, static h => new ShaderEffect(h), centerPt, radius, NapiArg.Of(colors), (int)mode);
+        }
+
+        if (matrix is null)
+        {
+            return CallMethod(_createRadialGradient, static h => new ShaderEffect(h), centerPt, radius, NapiArg.Of(colors), (int)mode, NapiArg.Of(pos));
+        }
+
         return CallMethod(_createRadialGradient, static h => new ShaderEffect(h), centerPt, radius, NapiArg.Of(colors), (int)mode, NapiArg.Of(pos), NapiArg.Of(matrix));
     }
 
@@ -2628,6 +2785,16 @@ public sealed partial class ShaderEffect : JsObject
     /// </summary>
     public ShaderEffect CreateSweepGradient(IntPtr centerPt, double[] colors, global::HarmonyOS.ArkUI.GraphicsDrawingTileMode mode, double startAngle, double endAngle, double[]? pos = null, Matrix? matrix = null)
     {
+        if (pos is null && matrix is null)
+        {
+            return CallMethod(_createSweepGradient, static h => new ShaderEffect(h), centerPt, NapiArg.Of(colors), (int)mode, startAngle, endAngle);
+        }
+
+        if (matrix is null)
+        {
+            return CallMethod(_createSweepGradient, static h => new ShaderEffect(h), centerPt, NapiArg.Of(colors), (int)mode, startAngle, endAngle, NapiArg.Of(pos));
+        }
+
         return CallMethod(_createSweepGradient, static h => new ShaderEffect(h), centerPt, NapiArg.Of(colors), (int)mode, startAngle, endAngle, NapiArg.Of(pos), NapiArg.Of(matrix));
     }
 
@@ -2636,6 +2803,16 @@ public sealed partial class ShaderEffect : JsObject
     /// </summary>
     public ShaderEffect CreateConicalGradient(IntPtr startPt, double startRadius, IntPtr endPt, double endRadius, double[] colors, global::HarmonyOS.ArkUI.GraphicsDrawingTileMode mode, double[]? pos = null, Matrix? matrix = null)
     {
+        if (pos is null && matrix is null)
+        {
+            return CallMethod(_createConicalGradient, static h => new ShaderEffect(h), startPt, startRadius, endPt, endRadius, NapiArg.Of(colors), (int)mode);
+        }
+
+        if (matrix is null)
+        {
+            return CallMethod(_createConicalGradient, static h => new ShaderEffect(h), startPt, startRadius, endPt, endRadius, NapiArg.Of(colors), (int)mode, NapiArg.Of(pos));
+        }
+
         return CallMethod(_createConicalGradient, static h => new ShaderEffect(h), startPt, startRadius, endPt, endRadius, NapiArg.Of(colors), (int)mode, NapiArg.Of(pos), NapiArg.Of(matrix));
     }
 
@@ -2644,6 +2821,11 @@ public sealed partial class ShaderEffect : JsObject
     /// </summary>
     public ShaderEffect CreateImageShader(IntPtr pixelmap, global::HarmonyOS.ArkUI.GraphicsDrawingTileMode tileX, global::HarmonyOS.ArkUI.GraphicsDrawingTileMode tileY, SamplingOptions samplingOptions, Matrix? matrix = null)
     {
+        if (matrix is null)
+        {
+            return CallMethod(_createImageShader, static h => new ShaderEffect(h), pixelmap, (int)tileX, (int)tileY, NapiArg.Of(samplingOptions));
+        }
+
         return CallMethod(_createImageShader, static h => new ShaderEffect(h), pixelmap, (int)tileX, (int)tileY, NapiArg.Of(samplingOptions), NapiArg.Of(matrix));
     }
 
@@ -2756,6 +2938,11 @@ public sealed partial class ImageFilter : JsObject
     /// </summary>
     public ImageFilter CreateBlurImageFilter(double sigmaX, double sigmaY, global::HarmonyOS.ArkUI.GraphicsDrawingTileMode tileMode, ImageFilter? imageFilter = null)
     {
+        if (imageFilter is null)
+        {
+            return CallMethod(_createBlurImageFilter, static h => new ImageFilter(h), sigmaX, sigmaY, (int)tileMode);
+        }
+
         return CallMethod(_createBlurImageFilter, static h => new ImageFilter(h), sigmaX, sigmaY, (int)tileMode, NapiArg.Of(imageFilter));
     }
 
@@ -2764,6 +2951,11 @@ public sealed partial class ImageFilter : JsObject
     /// </summary>
     public ImageFilter CreateFromColorFilter(ColorFilter colorFilter, ImageFilter? imageFilter = null)
     {
+        if (imageFilter is null)
+        {
+            return CallMethod(_createFromColorFilter, static h => new ImageFilter(h), NapiArg.Of(colorFilter));
+        }
+
         return CallMethod(_createFromColorFilter, static h => new ImageFilter(h), NapiArg.Of(colorFilter), NapiArg.Of(imageFilter));
     }
 
@@ -2772,6 +2964,11 @@ public sealed partial class ImageFilter : JsObject
     /// </summary>
     public ImageFilter CreateOffsetImageFilter(double dx, double dy, ImageFilter? input = null)
     {
+        if (input is null)
+        {
+            return CallMethod(_createOffsetImageFilter, static h => new ImageFilter(h), dx, dy);
+        }
+
         return CallMethod(_createOffsetImageFilter, static h => new ImageFilter(h), dx, dy, NapiArg.Of(input));
     }
 
@@ -2780,6 +2977,16 @@ public sealed partial class ImageFilter : JsObject
     /// </summary>
     public ImageFilter CreateFromImage(IntPtr pixelmap, IntPtr? srcRect = null, IntPtr? dstRect = null)
     {
+        if (srcRect is null && dstRect is null)
+        {
+            return CallMethod(_createFromImage, static h => new ImageFilter(h), pixelmap);
+        }
+
+        if (dstRect is null)
+        {
+            return CallMethod(_createFromImage, static h => new ImageFilter(h), pixelmap, NapiArg.Of(srcRect));
+        }
+
         return CallMethod(_createFromImage, static h => new ImageFilter(h), pixelmap, NapiArg.Of(srcRect), NapiArg.Of(dstRect));
     }
 
@@ -2861,6 +3068,11 @@ public sealed partial class PathEffect : JsObject
     /// </summary>
     public PathEffect CreateDiscretePathEffect(double segLength, double dev, double? seedAssist = null)
     {
+        if (seedAssist is null)
+        {
+            return CallMethod(_createDiscretePathEffect, static h => new PathEffect(h), segLength, dev);
+        }
+
         return CallMethod(_createDiscretePathEffect, static h => new PathEffect(h), segLength, dev, NapiArg.Of(seedAssist));
     }
 

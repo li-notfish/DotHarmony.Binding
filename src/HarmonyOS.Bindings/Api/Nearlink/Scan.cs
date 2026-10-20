@@ -19,51 +19,8 @@ public static unsafe partial class Scan
 {
     private const string ModuleName = "@ohos.nearlink.scan";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[nearlink.scan] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _startScan => "startScan"u8;
     private static ReadOnlySpan<byte> _stopScan => "stopScan"u8;
@@ -71,32 +28,36 @@ public static unsafe partial class Scan
     private static ReadOnlySpan<byte> _offDeviceFound => "offDeviceFound"u8;
 
     /// <summary>
-    /// startScan
+    /// Starts scanning for specified NearLink devices with filters.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task StartScanAsync(ScanFilters[] filters, ScanScanOptions? options = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startScan, cancellationToken, NapiArg.Of(filters), NapiArg.Of(options));
     }
 
     /// <summary>
-    /// stopScan
+    /// Stops scanning.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task StopScanAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopScan, cancellationToken);
     }
 
     /// <summary>
-    /// onDeviceFound
+    /// Subscribes to NearLink scan results.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OnDeviceFound(IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _onDeviceFound, callback);
     }
 
     /// <summary>
-    /// offDeviceFound
+    /// Unsubscribes from NearLink scan results.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void OffDeviceFound(IntPtr? callback = null)
     {
         NodeApi.CallMethodVoid(Module, _offDeviceFound, NapiArg.Of(callback));

@@ -19,51 +19,8 @@ public static unsafe partial class Radio
 {
     private const string ModuleName = "@ohos.telephony.radio";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[telephony.radio] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getRadioTech => "getRadioTech"u8;
     private static ReadOnlySpan<byte> _getRadioTechSync => "getRadioTechSync"u8;
@@ -80,128 +37,144 @@ public static unsafe partial class Radio
     private static ReadOnlySpan<byte> _getOperatorNameSync => "getOperatorNameSync"u8;
 
     /// <summary>
-    /// getRadioTech
+    /// Obtains radio access technology (RAT) of the registered network. The system
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<NetworkRadioTech> GetRadioTechAsync(double slotId)
     {
         return NodeApi.CallMethodAsync(Module, _getRadioTech, static h => new NetworkRadioTech(h), slotId);
     }
 
     /// <summary>
-    /// getRadioTechSync
+    /// Obtains radio access technology (RAT) of the registered network.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static NetworkRadioTech GetRadioTechSync(double slotId)
     {
         return NodeApi.CallMethod(Module, _getRadioTechSync, static h => new NetworkRadioTech(h), slotId);
     }
 
     /// <summary>
-    /// getNetworkState
+    /// Obtains the network state of the registered network.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<NetworkState> GetNetworkStateAsync(double slotId)
     {
         return NodeApi.CallMethodAsync(Module, _getNetworkState, static h => new NetworkState(h), slotId);
     }
 
     /// <summary>
-    /// getNetworkState
+    /// Obtains the network state of the registered network.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<NetworkState> GetNetworkStateAsync()
     {
         return NodeApi.CallMethodAsyncCallback(Module, _getNetworkState, static h => new NetworkState(h));
     }
 
     /// <summary>
-    /// getNetworkSelectionMode
+    /// Obtains the network search mode of the SIM card in a specified slot.
     /// </summary>
+    /// <remarks>@since 6</remarks>
     public static Task<global::HarmonyOS.ArkUI.NetworkSelectionMode> GetNetworkSelectionModeAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<global::HarmonyOS.ArkUI.NetworkSelectionMode>(Module, _getNetworkSelectionMode, slotId);
     }
 
     /// <summary>
-    /// getISOCountryCodeForNetwork
+    /// Obtains the ISO-defined country code of the country where the registered network is deployed.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<string> GetIsoCountryCodeForNetworkAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getISOCountryCodeForNetwork, slotId);
     }
 
     /// <summary>
-    /// getISOCountryCodeForNetworkSync
+    /// Obtains the ISO-defined country code of the country where the registered network is deployed.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string GetIsoCountryCodeForNetworkSync(double slotId)
     {
         return NodeApi.CallMethod<string>(Module, _getISOCountryCodeForNetworkSync, slotId);
     }
 
     /// <summary>
-    /// getPrimarySlotId
+    /// Obtains the index number of the card slot where the primary card is located if multiple SIM cards are inserted.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<double> GetPrimarySlotIdAsync()
     {
         return NodeApi.CallMethodAsync<double>(Module, _getPrimarySlotId);
     }
 
     /// <summary>
-    /// getSignalInformation
+    /// Obtains the list of signal strength information of the registered network corresponding to a specified SIM card.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<SignalInformation[]> GetSignalInformationAsync(double slotId)
     {
         return NodeApi.CallMethodAsync(Module, _getSignalInformation, h => ValueConverter.ConvertArray(h, static e => new SignalInformation(e)), slotId);
     }
 
     /// <summary>
-    /// getSignalInformationSync
+    /// Obtains the list of signal strength information of the registered network corresponding to a specified SIM card.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static SignalInformation[] GetSignalInformationSync(double slotId)
     {
         return NodeApi.CallMethod(Module, _getSignalInformationSync, h => ValueConverter.ConvertArray(h, static e => new SignalInformation(e)), slotId);
     }
 
     /// <summary>
-    /// isNrSupported
+    /// Checks whether the device supports 5G New Radio (NR).
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool IsNrSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isNrSupported);
     }
 
     /// <summary>
-    /// isNrSupported
+    /// Checks whether the device supports 5G New Radio (NR) by according card slot.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static bool IsNrSupported(double slotId)
     {
         return NodeApi.CallMethod<bool>(Module, _isNrSupported, slotId);
     }
 
     /// <summary>
-    /// isRadioOn
+    /// Checks whether the radio service is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsRadioOnAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isRadioOn, slotId);
     }
 
     /// <summary>
-    /// isRadioOn
+    /// Checks whether the radio service is enabled.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<bool> IsRadioOnAsync()
     {
         return NodeApi.CallMethodAsyncCallback<bool>(Module, _isRadioOn, null);
     }
 
     /// <summary>
-    /// getOperatorName
+    /// Get the operator name of the specified SIM card slot.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static Task<string> GetOperatorNameAsync(double slotId)
     {
         return NodeApi.CallMethodAsync<string>(Module, _getOperatorName, slotId);
     }
 
     /// <summary>
-    /// getOperatorNameSync
+    /// Get the operator name of the specified SIM card slot.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string GetOperatorNameSync(double slotId)
     {
         return NodeApi.CallMethod<string>(Module, _getOperatorNameSync, slotId);

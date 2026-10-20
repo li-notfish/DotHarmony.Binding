@@ -19,51 +19,8 @@ public static unsafe partial class Vibrator
 {
     private const string ModuleName = "@ohos.vibrator";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[vibrator] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _vibrate => "vibrate"u8;
     private static ReadOnlySpan<byte> _startVibration => "startVibration"u8;
@@ -79,120 +36,135 @@ public static unsafe partial class Vibrator
     private static ReadOnlySpan<byte> _off => "off"u8;
 
     /// <summary>
-    /// vibrate
+    /// Triggers vibration based on a specified duration. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task VibrateAsync(double duration, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _vibrate, cancellationToken, duration);
     }
 
     /// <summary>
-    /// vibrate
+    /// Triggers vibration based on a specified effect. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task VibrateAsync(global::HarmonyOS.ArkUI.EffectId effectId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _vibrate, cancellationToken, (int)effectId);
     }
 
     /// <summary>
-    /// startVibration
+    /// Starts vibration based on a specified effect and attribute. This API uses an asynchronous callback to return the
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task StartVibrationAsync(IntPtr effect, IntPtr attribute, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _startVibration, cancellationToken, effect, attribute);
     }
 
     /// <summary>
-    /// stopVibration
+    /// Stops vibration in the specified mode. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task StopVibrationAsync(global::HarmonyOS.ArkUI.VibratorStopMode stopMode, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, cancellationToken, (int)stopMode);
     }
 
     /// <summary>
-    /// stopVibration
+    /// Stops vibration in all modes. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task StopVibrationAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, cancellationToken);
     }
 
     /// <summary>
-    /// stopVibrationSync
+    /// Stops any form of motor vibration.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static void StopVibrationSync()
     {
         NodeApi.CallMethodVoid(Module, _stopVibrationSync);
     }
 
     /// <summary>
-    /// stopVibration
+    /// Stops vibration based on the specified vibrator parameters. If no parameters are passed, this API stops all
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static Task StopVibrationAsync(VibratorInfoParam? param = null, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stopVibration, cancellationToken, NapiArg.Of(param));
     }
 
     /// <summary>
-    /// isSupportEffect
+    /// Checks whether an effect ID is supported. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Task<bool> IsSupportEffectAsync(string effectId)
     {
         return NodeApi.CallMethodAsync<bool>(Module, _isSupportEffect, effectId);
     }
 
     /// <summary>
-    /// isSupportEffectSync
+    /// Checks whether the preset vibration effect is supported.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsSupportEffectSync(string effectId)
     {
         return NodeApi.CallMethod<bool>(Module, _isSupportEffectSync, effectId);
     }
 
     /// <summary>
-    /// getEffectInfoSync
+    /// Obtains the preset vibration effect based on the device ID and vibrator ID to determine whether the preset
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static EffectInfo GetEffectInfoSync(string effectId, VibratorInfoParam? param = null)
     {
         return NodeApi.CallMethod(Module, _getEffectInfoSync, static h => new EffectInfo(h), effectId, NapiArg.Of(param));
     }
 
     /// <summary>
-    /// stop
+    /// Stops vibration in the specified mode. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 8</remarks>
     public static Task StopAsync(global::HarmonyOS.ArkUI.VibratorStopMode stopMode, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _stop, cancellationToken, (int)stopMode);
     }
 
     /// <summary>
-    /// isHdHapticSupported
+    /// Checks whether HD vibration is supported.
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static bool IsHDHapticSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isHdHapticSupported);
     }
 
     /// <summary>
-    /// getVibratorInfoSync
+    /// Queries the vibrator list of one or all devices.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static VibratorInfo[] GetVibratorInfoSync(VibratorInfoParam? param = null)
     {
         return NodeApi.CallMethod(Module, _getVibratorInfoSync, h => ValueConverter.ConvertArray(h, static e => new VibratorInfo(e)), NapiArg.Of(param));
     }
 
     /// <summary>
-    /// on
+    /// Enables listening for vibrator status changes.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Disables listening for vibrator status changes.
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);

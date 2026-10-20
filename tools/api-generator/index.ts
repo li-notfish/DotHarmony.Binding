@@ -1080,10 +1080,66 @@ export async function processFullSDK(sdkArg?: string, allModules: boolean = fals
     // 写灰度策略到 csproj
     writeGrayscaleCompileRemove(boundModules);
 
+    // 类型降级可见化：未映射的复杂类型会退回 IntPtr，SDK 升级后必须能一眼看到
+    writeIntPtrReport(apiOutputDir, generationMetadata.sdkVersion);
+
     console.log(`\n  Generated: ${apiSuccess}, Skipped: ${apiSkipped}`);
     console.log(`  Permissions: ${allPermissions.size} unique → module.json5`);
     console.log('');
     console.log('=== SDK Processing Complete ===');
+}
+
+interface IntPtrEntry {
+    file: string;
+    line: number;
+    member: string;
+    kind: 'parameter' | 'return' | 'field';
+}
+
+/**
+ * 扫描生成的 Api/*.cs，列出仍以 IntPtr 承载的公开成员。
+ * 这些位置是 TypeMapper 的降级点（options bag、callback、未映射类型），
+ * 报告写入 artifacts/generator/api-intptr-report.json 供 SDK 升级回归比对。
+ */
+function writeIntPtrReport(apiDir: string, sdkVersion: string): void {
+    const entries: IntPtrEntry[] = [];
+    const visit = (dir: string): void => {
+        for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
+            const full = path.join(dir, item.name);
+            if (item.isDirectory()) { visit(full); continue; }
+            if (!item.name.endsWith('.cs') || item.name.endsWith('.custom.cs')) continue;
+            const lines = fs.readFileSync(full, 'utf8').split(/\r?\n/);
+            for (let i = 0; i < lines.length; i++) {
+                const text = lines[i].trim();
+                if (!text.startsWith('public ') || !/\bIntPtr\b/.test(text)) continue;
+                if (/^public\s+\w+\(IntPtr handle\)/.test(text)) continue; // 句柄构造器是合法用法
+                const paren = text.match(/\((.*)\)/);
+                const kind: IntPtrEntry['kind'] = paren && /\bIntPtr\b/.test(paren[1])
+                    ? 'parameter'
+                    : !paren && text.endsWith(';') ? 'field' : 'return';
+                entries.push({
+                    file: path.relative(apiDir, full).replace(/\\/g, '/'),
+                    line: i + 1,
+                    member: text,
+                    kind,
+                });
+            }
+        }
+    };
+    if (!fs.existsSync(apiDir)) return;
+    visit(apiDir);
+
+    const outDir = path.join(__dirname, '../../artifacts/generator');
+    fs.mkdirSync(outDir, { recursive: true });
+    const outPath = path.join(outDir, 'api-intptr-report.json');
+    fs.writeFileSync(outPath, JSON.stringify({
+        generatedAt: new Date().toISOString(),
+        sdkVersion,
+        count: entries.length,
+        note: 'IntPtr 表示 TypeMapper 未映射的复杂类型（options bag/callback/未知类型）；优先补映射而不是吞掉。',
+        entries,
+    }, null, 2));
+    console.log(`  IntPtr fallbacks: ${entries.length} public member(s) -> ${outPath}`);
 }
 
 /**

@@ -16,51 +16,8 @@ public static unsafe partial class Hilog
 {
     private const string ModuleName = "@ohos.hilog";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[hilog] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _debug => "debug"u8;
     private static ReadOnlySpan<byte> _info => "info"u8;
@@ -79,120 +36,135 @@ public static unsafe partial class Hilog
     private static ReadOnlySpan<byte> _getLogFile => "getLogFile"u8;
 
     /// <summary>
-    /// debug
+    /// Prints DEBUG logs.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Debug(double domain, string tag, string format, object[] args)
     {
         NodeApi.CallMethodVoid(Module, _debug, domain, tag, format, NapiArg.Of(args));
     }
 
     /// <summary>
-    /// info
+    /// Prints INFO logs.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Info(double domain, string tag, string format, object[] args)
     {
         NodeApi.CallMethodVoid(Module, _info, domain, tag, format, NapiArg.Of(args));
     }
 
     /// <summary>
-    /// warn
+    /// Prints WARN logs.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Warn(double domain, string tag, string format, object[] args)
     {
         NodeApi.CallMethodVoid(Module, _warn, domain, tag, format, NapiArg.Of(args));
     }
 
     /// <summary>
-    /// error
+    /// Prints ERROR logs.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Error(double domain, string tag, string format, object[] args)
     {
         NodeApi.CallMethodVoid(Module, _error, domain, tag, format, NapiArg.Of(args));
     }
 
     /// <summary>
-    /// fatal
+    /// Prints FATAL logs.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static void Fatal(double domain, string tag, string format, object[] args)
     {
         NodeApi.CallMethodVoid(Module, _fatal, domain, tag, format, NapiArg.Of(args));
     }
 
     /// <summary>
-    /// isLoggable
+    /// Checks whether logs are printable based on the specified service domain, log tag, and log level.
     /// </summary>
+    /// <remarks>@since 7</remarks>
     public static bool IsLoggable(double domain, string tag, global::HarmonyOS.ArkUI.LogLevel level)
     {
         return NodeApi.CallMethod<bool>(Module, _isLoggable, domain, tag, (int)level);
     }
 
     /// <summary>
-    /// setMinLogLevel
+    /// Sets the minimum log level.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void SetMinLogLevel(global::HarmonyOS.ArkUI.LogLevel level)
     {
         NodeApi.CallMethodVoid(Module, _setMinLogLevel, (int)level);
     }
 
     /// <summary>
-    /// setLogLevel
+    /// Sets the minimum log level of the current application process.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static void SetLogLevel(global::HarmonyOS.ArkUI.LogLevel level, global::HarmonyOS.ArkUI.PreferStrategy prefer)
     {
         NodeApi.CallMethodVoid(Module, _setLogLevel, (int)level, (int)prefer);
     }
 
     /// <summary>
-    /// setOutputType
+    /// Sets the output type of hilog.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static global::HarmonyOS.ArkUI.OutputType SetOutputType(global::HarmonyOS.ArkUI.OutputType type)
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.OutputType>(Module, _setOutputType, (int)type);
     }
 
     /// <summary>
-    /// setOutputTypeByDomainID
+    /// Sets the output type for hilog for the domainID list.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static global::HarmonyOS.ArkUI.OutputType SetOutputTypeByDomainId(global::HarmonyOS.ArkUI.OutputType type, double[] domainIDs, bool isExclude)
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.OutputType>(Module, _setOutputTypeByDomainID, (int)type, NapiArg.Of(domainIDs), isExclude);
     }
 
     /// <summary>
-    /// getOutputType
+    /// Returns the current output type of hilog.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static global::HarmonyOS.ArkUI.OutputType GetOutputType()
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.OutputType>(Module, _getOutputType);
     }
 
     /// <summary>
-    /// getOutputDir
+    /// Returns the directory path of hilog logs in the sandbox.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static string GetOutputDir()
     {
         return NodeApi.CallMethod<string>(Module, _getOutputDir);
     }
 
     /// <summary>
-    /// clean
+    /// Delete all hilog logs in the sandbox.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void Clean()
     {
         NodeApi.CallMethodVoid(Module, _clean);
     }
 
     /// <summary>
-    /// flush
+    /// Flush hilog logs in the sandbox.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static void Flush()
     {
         NodeApi.CallMethodVoid(Module, _flush);
     }
 
     /// <summary>
-    /// getLogFile
+    /// Returns the list of hilog log file paths in the sandbox for the specified recent time period.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static string[] GetLogFile(double latestSeconds)
     {
         return NodeApi.CallMethod(Module, _getLogFile, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)), latestSeconds);

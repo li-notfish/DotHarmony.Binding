@@ -18,51 +18,8 @@ public static unsafe partial class Application
 {
     private const string ModuleName = "@ohos.app.ability.application";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[app.ability.application] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _createModuleContext => "createModuleContext"u8;
     private static ReadOnlySpan<byte> _createPluginModuleContext => "createPluginModuleContext"u8;
@@ -74,64 +31,72 @@ public static unsafe partial class Application
     private static ReadOnlySpan<byte> _getAppPreloadType => "getAppPreloadType"u8;
 
     /// <summary>
-    /// createModuleContext
+    /// Creates the context for a module. The
     /// </summary>
+    /// <remarks>@since 12</remarks>
     public static Task<IntPtr> CreateModuleContextAsync(IntPtr context, string moduleName)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createModuleContext, context, moduleName);
     }
 
     /// <summary>
-    /// createPluginModuleContext
+    /// Creates the context of a plugin under the current application based on the context, plugin bundle name, and plugin
     /// </summary>
+    /// <remarks>@since 19</remarks>
     public static Task<IntPtr> CreatePluginModuleContextAsync(IntPtr context, string pluginBundleName, string pluginModuleName)
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _createPluginModuleContext, context, pluginBundleName, pluginModuleName);
     }
 
     /// <summary>
-    /// getApplicationContext
+    /// Obtains the application context. This API provides context access independent of the base class **Context**.
     /// </summary>
+    /// <remarks>@since 14</remarks>
     public static IntPtr GetApplicationContext()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getApplicationContext);
     }
 
     /// <summary>
-    /// getApplicationContextInstance
+    /// Obtains the application context. This API provides context access independent of the base class **Context**.
     /// </summary>
+    /// <remarks>@since 23</remarks>
     public static IntPtr GetApplicationContextInstance()
     {
         return NodeApi.CallMethod<IntPtr>(Module, _getApplicationContextInstance);
     }
 
     /// <summary>
-    /// promoteCurrentToCandidateMasterProcess
+    /// Adds the current process into the
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task PromoteCurrentToCandidateMasterProcessAsync(bool insertToHead, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _promoteCurrentToCandidateMasterProcess, cancellationToken, insertToHead);
     }
 
     /// <summary>
-    /// demoteCurrentFromCandidateMasterProcess
+    /// Removes the current process from the candidate master process list. This API uses a promise to return the result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task DemoteCurrentFromCandidateMasterProcessAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _demoteCurrentFromCandidateMasterProcess, cancellationToken);
     }
 
     /// <summary>
-    /// exitMasterProcessRole
+    /// Relinquishes the [master-process](docroot://application-models/ability-terminology.md#master-process) role from the
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static Task ExitMasterProcessRoleAsync(CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _exitMasterProcessRole, cancellationToken);
     }
 
     /// <summary>
-    /// getAppPreloadType
+    /// Obtains the preloading type of the current application process.
     /// </summary>
+    /// <remarks>@since 22</remarks>
     public static global::HarmonyOS.ArkUI.AppPreloadType GetAppPreloadType()
     {
         return NodeApi.CallMethod<global::HarmonyOS.ArkUI.AppPreloadType>(Module, _getAppPreloadType);

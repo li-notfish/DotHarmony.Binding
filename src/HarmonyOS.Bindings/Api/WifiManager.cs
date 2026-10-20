@@ -20,51 +20,8 @@ public static unsafe partial class WifiManager
 {
     private const string ModuleName = "@ohos.wifiManager";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[wifiManager] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _enableWifi => "enableWifi"u8;
     private static ReadOnlySpan<byte> _disableWifi => "disableWifi"u8;
@@ -112,360 +69,405 @@ public static unsafe partial class WifiManager
     private static ReadOnlySpan<byte> _isWlanSupported => "isWlanSupported"u8;
 
     /// <summary>
-    /// enableWifi
+    /// Enable Wi-Fi.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void EnableWifi()
     {
         NodeApi.CallMethodVoid(Module, _enableWifi);
     }
 
     /// <summary>
-    /// disableWifi
+    /// Disable Wi-Fi.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static void DisableWifi()
     {
         NodeApi.CallMethodVoid(Module, _disableWifi);
     }
 
     /// <summary>
-    /// isWifiActive
+    /// Query the Wi-Fi status
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool IsWifiActive()
     {
         return NodeApi.CallMethod<bool>(Module, _isWifiActive);
     }
 
     /// <summary>
-    /// scan
+    /// Scan Wi-Fi hotspot.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Scan()
     {
         NodeApi.CallMethodVoid(Module, _scan);
     }
 
     /// <summary>
-    /// startScan
+    /// Scan Wi-Fi hotspot.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static void StartScan()
     {
         NodeApi.CallMethodVoid(Module, _startScan);
     }
 
     /// <summary>
-    /// getScanResults
+    /// Obtain the scanned sta list.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<WifiManagerWifiScanInfo[]> GetScanResultsAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getScanResults, h => ValueConverter.ConvertArray(h, static e => new WifiManagerWifiScanInfo(e)));
     }
 
     /// <summary>
-    /// getScanResultsSync
+    /// Obtain the scanned sta list.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static WifiManagerWifiScanInfo[] GetScanResultsSync()
     {
         return NodeApi.CallMethod(Module, _getScanResultsSync, h => ValueConverter.ConvertArray(h, static e => new WifiManagerWifiScanInfo(e)));
     }
 
     /// <summary>
-    /// getScanInfoList
+    /// Obtain the scanned station list. If does't have the permission of ohos.permission.GET_WIFI_PEERS_MAC, return random bssid.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static WifiManagerWifiScanInfo[] GetScanInfoList()
     {
         return NodeApi.CallMethod(Module, _getScanInfoList, h => ValueConverter.ConvertArray(h, static e => new WifiManagerWifiScanInfo(e)));
     }
 
     /// <summary>
-    /// addDeviceConfig
+    /// Add Wi-Fi connection configuration to the device. The configuration will be updated when the configuration is added.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static Task<double> AddDeviceConfigAsync(WifiManagerWifiDeviceConfig config)
     {
         return NodeApi.CallMethodAsync<double>(Module, _addDeviceConfig, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// addCandidateConfig
+    /// Add a specified candidate hotspot configuration and returns the networkId.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> AddCandidateConfigAsync(WifiManagerWifiDeviceConfig config)
     {
         return NodeApi.CallMethodAsync<double>(Module, _addCandidateConfig, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// removeCandidateConfig
+    /// Remove a specified candidate hotspot configuration, only the configuration which is added by ourself is allowed
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task RemoveCandidateConfigAsync(double networkId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _removeCandidateConfig, cancellationToken, networkId);
     }
 
     /// <summary>
-    /// getCandidateConfigs
+    /// Obtain the list of all existed candidate Wi-Fi configurations which added by ourself.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static WifiManagerWifiDeviceConfig[] GetCandidateConfigs()
     {
         return NodeApi.CallMethod(Module, _getCandidateConfigs, h => ValueConverter.ConvertArray(h, static e => new WifiManagerWifiDeviceConfig(e)));
     }
 
     /// <summary>
-    /// connectToCandidateConfig
+    /// Connect to a specified candidate hotspot by networkId, only the configuration which is added by ourself
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void ConnectToCandidateConfig(double networkId)
     {
         NodeApi.CallMethodVoid(Module, _connectToCandidateConfig, networkId);
     }
 
     /// <summary>
-    /// connectToCandidateConfig
+    /// Connect to the specified candidate hotspot using connect settings.
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static Task ConnectToCandidateConfigAsync(ConnectSettings settings, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _connectToCandidateConfig, cancellationToken, NapiArg.Of(settings));
     }
 
     /// <summary>
-    /// connectToCandidateConfigWithUserAction
+    /// Connect to a specified candidate hotspot by networkId, and wait for user respond result.
     /// </summary>
+    /// <remarks>@since 20</remarks>
     public static Task ConnectToCandidateConfigWithUserActionAsync(double networkId, CancellationToken cancellationToken = default)
     {
         return NodeApi.CallMethodAsyncVoid(Module, _connectToCandidateConfigWithUserAction, cancellationToken, networkId);
     }
 
     /// <summary>
-    /// connectToNetwork
+    /// Connect to Wi-Fi hotspot by networkId.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void ConnectToNetwork(double networkId)
     {
         NodeApi.CallMethodVoid(Module, _connectToNetwork, networkId);
     }
 
     /// <summary>
-    /// disconnect
+    /// Disconnect connection between sta and Wi-Fi hotspot.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void Disconnect()
     {
         NodeApi.CallMethodVoid(Module, _disconnect);
     }
 
     /// <summary>
-    /// getSignalLevel
+    /// Calculate the Wi-Fi signal level based on the Wi-Fi RSSI and frequency band.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static double GetSignalLevel(double rssi, double band)
     {
         return NodeApi.CallMethod<double>(Module, _getSignalLevel, rssi, band);
     }
 
     /// <summary>
-    /// getLinkedInfo
+    /// Obtain connection information about the Wi-Fi connection. If does't have the permission of ohos.permission.GET_WIFI_PEERS_MAC, return random bssid.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<WifiManagerWifiLinkedInfo> GetLinkedInfoAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getLinkedInfo, static h => new WifiManagerWifiLinkedInfo(h));
     }
 
     /// <summary>
-    /// getMultiLinkedInfo
+    /// Obtain multiple Wi-Fi connection information when Wi-Fi linked in MLO(Muti-Link Operation) state.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static WifiManagerWifiLinkedInfo[] GetMultiLinkedInfo()
     {
         return NodeApi.CallMethod(Module, _getMultiLinkedInfo, h => ValueConverter.ConvertArray(h, static e => new WifiManagerWifiLinkedInfo(e)));
     }
 
     /// <summary>
-    /// getLinkedInfoSync
+    /// Obtain connection information about the Wi-Fi connection.this apireturns the result syncchronously.
     /// </summary>
+    /// <remarks>@since 18</remarks>
     public static WifiManagerWifiLinkedInfo GetLinkedInfoSync()
     {
         return NodeApi.CallMethod(Module, _getLinkedInfoSync, static h => new WifiManagerWifiLinkedInfo(h));
     }
 
     /// <summary>
-    /// isConnected
+    /// Check whether the Wi-Fi connection has been set up.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool IsConnected()
     {
         return NodeApi.CallMethod<bool>(Module, _isConnected);
     }
 
     /// <summary>
-    /// isFeatureSupported
+    /// Check whether the device supports a specified feature.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static bool IsFeatureSupported(double featureId)
     {
         return NodeApi.CallMethod<bool>(Module, _isFeatureSupported, featureId);
     }
 
     /// <summary>
-    /// getDeviceMacAddress
+    /// Obtain the MAC address of a Wi-Fi device. Wi-Fi must be enabled.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static string[] GetDeviceMacAddress()
     {
         return NodeApi.CallMethod(Module, _getDeviceMacAddress, h => ValueConverter.ConvertArray(h, static e => ValueConverter.Convert<string>(e)));
     }
 
     /// <summary>
-    /// getIpInfo
+    /// Obtain the IPv4 information of the Wi-Fi connection.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static WifiManagerIpInfo GetIPInfo()
     {
         return NodeApi.CallMethod(Module, _getIpInfo, static h => new WifiManagerIpInfo(h));
     }
 
     /// <summary>
-    /// getIpv6Info
+    /// Obtain the IPv6 information of the Wi-Fi connection.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static Ipv6Info GetIpv6Info()
     {
         return NodeApi.CallMethod(Module, _getIpv6Info, static h => new Ipv6Info(h));
     }
 
     /// <summary>
-    /// getCountryCode
+    /// Obtain the country code of the device.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static string GetCountryCode()
     {
         return NodeApi.CallMethod<string>(Module, _getCountryCode);
     }
 
     /// <summary>
-    /// getDeviceConfigs
+    /// Obtain the list of all existed Wi-Fi configurations.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static WifiManagerWifiDeviceConfig[] GetDeviceConfigs()
     {
         return NodeApi.CallMethod(Module, _getDeviceConfigs, h => ValueConverter.ConvertArray(h, static e => new WifiManagerWifiDeviceConfig(e)));
     }
 
     /// <summary>
-    /// removeDevice
+    /// Remove a Wi-Fi DeviceConfig with networkId.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static void RemoveDevice(double id)
     {
         NodeApi.CallMethodVoid(Module, _removeDevice, id);
     }
 
     /// <summary>
-    /// isBandTypeSupported
+    /// Check whether the current device supports the specified band.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static bool IsBandTypeSupported(global::HarmonyOS.ArkUI.WifiBandType bandType)
     {
         return NodeApi.CallMethod<bool>(Module, _isBandTypeSupported, (int)bandType);
     }
 
     /// <summary>
-    /// isMeteredHotspot
+    /// Whether the hotspot is metered hotspot or not.
     /// </summary>
+    /// <remarks>@since 11</remarks>
     public static bool IsMeteredHotspot()
     {
         return NodeApi.CallMethod<bool>(Module, _isMeteredHotspot);
     }
 
     /// <summary>
-    /// isHotspotActive
+    /// Check whether Wi-Fi hotspot is active on a device.
     /// </summary>
+    /// <remarks>@since 15</remarks>
     public static bool IsHotspotActive()
     {
         return NodeApi.CallMethod<bool>(Module, _isHotspotActive);
     }
 
     /// <summary>
-    /// getP2pLinkedInfo
+    /// Obtain information about the P2P connection.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<WifiManagerWifiP2pLinkedInfo> GetP2pLinkedInfoAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getP2pLinkedInfo, static h => new WifiManagerWifiP2pLinkedInfo(h));
     }
 
     /// <summary>
-    /// getCurrentGroup
+    /// Obtain information about the current p2p group.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<WifiManagerWifiP2pGroupInfo> GetCurrentGroupAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getCurrentGroup, static h => new WifiManagerWifiP2pGroupInfo(h));
     }
 
     /// <summary>
-    /// getP2pPeerDevices
+    /// Obtain the information about the found devices.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<WifiManagerWifiP2pDevice[]> GetP2pPeerDevicesAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getP2pPeerDevices, h => ValueConverter.ConvertArray(h, static e => new WifiManagerWifiP2pDevice(e)));
     }
 
     /// <summary>
-    /// getP2pLocalDevice
+    /// Obtain the information about own device information.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<WifiManagerWifiP2pDevice> GetP2pLocalDeviceAsync()
     {
         return NodeApi.CallMethodAsync(Module, _getP2pLocalDevice, static h => new WifiManagerWifiP2pDevice(h));
     }
 
     /// <summary>
-    /// createGroup
+    /// Create a P2P group.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void CreateGroup(WifiManagerWifiP2PConfig config)
     {
         NodeApi.CallMethodVoid(Module, _createGroup, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// removeGroup
+    /// Remove a P2P group.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void RemoveGroup()
     {
         NodeApi.CallMethodVoid(Module, _removeGroup);
     }
 
     /// <summary>
-    /// p2pConnect
+    /// Initiate a P2P connection to a device with the specified configuration.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void P2pConnect(WifiManagerWifiP2PConfig config)
     {
         NodeApi.CallMethodVoid(Module, _p2pConnect, NapiArg.Of(config));
     }
 
     /// <summary>
-    /// p2pCancelConnect
+    /// Stop an ongoing p2p connection that is being established.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void P2pCancelConnect()
     {
         NodeApi.CallMethodVoid(Module, _p2pCancelConnect);
     }
 
     /// <summary>
-    /// startDiscoverDevices
+    /// Start discover Wi-Fi P2P devices.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void StartDiscoverDevices()
     {
         NodeApi.CallMethodVoid(Module, _startDiscoverDevices);
     }
 
     /// <summary>
-    /// stopDiscoverDevices
+    /// Stop discover Wi-Fi P2P devices.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void StopDiscoverDevices()
     {
         NodeApi.CallMethodVoid(Module, _stopDiscoverDevices);
     }
 
     /// <summary>
-    /// on
+    /// Subscribe Wi-Fi status change events.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void On(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _on, type, callback);
     }
 
     /// <summary>
-    /// off
+    /// Unsubscribe Wi-Fi status change events.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static void Off(string type, IntPtr callback)
     {
         NodeApi.CallMethodVoid(Module, _off, type, callback);
     }
 
     /// <summary>
-    /// isWlanSupported
+    /// Query whether Wi-Fi is available
     /// </summary>
+    /// <remarks>@since 26.0.0</remarks>
     public static bool IsWlanSupported()
     {
         return NodeApi.CallMethod<bool>(Module, _isWlanSupported);

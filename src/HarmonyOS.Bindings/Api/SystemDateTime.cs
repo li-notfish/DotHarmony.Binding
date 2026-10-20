@@ -17,51 +17,8 @@ public static unsafe partial class SystemDateTime
 {
     private const string ModuleName = "@ohos.systemDateTime";
 
-    private static NapiReference? _moduleRef;
-    private static bool _loadAttempted;
-
     /// <summary>懒加载的 @ohos 模块对象（internal：同文件包装类的构造函数需要）</summary>
-    internal static IntPtr Module
-    {
-        get
-        {
-            if (_moduleRef != null) return _moduleRef.Value;
-            if (_loadAttempted)
-                throw new InvalidOperationException($"{ModuleName} module failed to load (previous attempt)");
-            _loadAttempted = true;
-
-            var env = NapiEnv.Current;
-            NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-            try
-            {
-                foreach (var name in new[] { "=" + ModuleName, ModuleName })
-                {
-                    var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
-                    fixed (byte* p = utf8)
-                    {
-                        var status = NativeNodeApi.napi_load_module(env, p, out var module);
-                        if (status == napi_status.napi_ok && module != IntPtr.Zero)
-                        {
-                            _moduleRef = new NapiReference(module);
-                            break;
-                        }
-                        NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
-                    }
-                }
-            }
-            finally
-            {
-                NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
-            }
-
-            if (_moduleRef == null)
-                throw new InvalidOperationException(
-                    $"failed to load {ModuleName} via napi_load_module (tried with and without '=' prefix)");
-
-            HiLog.Info("HarmonyHost", $"[systemDateTime] module loaded via napi_load_module");
-            return _moduleRef.Value;
-        }
-    }
+    internal static IntPtr Module => NapiModuleLoader.Load(ModuleName);
 
     private static ReadOnlySpan<byte> _getCurrentTime => "getCurrentTime"u8;
     private static ReadOnlySpan<byte> _getTime => "getTime"u8;
@@ -74,96 +31,108 @@ public static unsafe partial class SystemDateTime
     private static ReadOnlySpan<byte> _getAutoTimeStatus => "getAutoTimeStatus"u8;
 
     /// <summary>
-    /// getCurrentTime
+    /// Obtains the time elapsed since the Unix epoch. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetCurrentTimeAsync(bool isNano)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getCurrentTime, isNano);
     }
 
     /// <summary>
-    /// getCurrentTime
+    /// Obtains the time elapsed since the Unix epoch. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetCurrentTimeAsync()
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _getCurrentTime, null);
     }
 
     /// <summary>
-    /// getTime
+    /// Obtains the time elapsed since the Unix epoch. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static double GetTime(bool? isNanoseconds = null)
     {
         return NodeApi.CallMethod<double>(Module, _getTime, NapiArg.Of(isNanoseconds));
     }
 
     /// <summary>
-    /// getRealActiveTime
+    /// Obtains the time elapsed since system startup, excluding the deep sleep time. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetRealActiveTimeAsync(bool isNano)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getRealActiveTime, isNano);
     }
 
     /// <summary>
-    /// getRealActiveTime
+    /// Obtains the time elapsed since system startup, excluding the deep sleep time. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetRealActiveTimeAsync()
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _getRealActiveTime, null);
     }
 
     /// <summary>
-    /// getRealTime
+    /// Obtains the time elapsed since system startup, including the deep sleep time. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetRealTimeAsync(bool isNano)
     {
         return NodeApi.CallMethodAsync<double>(Module, _getRealTime, isNano);
     }
 
     /// <summary>
-    /// getRealTime
+    /// Obtains the time elapsed since system startup, including the deep sleep time. This API uses an asynchronous
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<double> GetRealTimeAsync()
     {
         return NodeApi.CallMethodAsyncCallback<double>(Module, _getRealTime, null);
     }
 
     /// <summary>
-    /// getUptime
+    /// Obtains the time elapsed since system startup. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static double GetUptime(global::HarmonyOS.ArkUI.TimeType timeType, bool? isNanoseconds = null)
     {
         return NodeApi.CallMethod<double>(Module, _getUptime, (int)timeType, NapiArg.Of(isNanoseconds));
     }
 
     /// <summary>
-    /// getDate
+    /// Obtains the current system date. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<IntPtr> GetDateAsync()
     {
         return NodeApi.CallMethodAsync<IntPtr>(Module, _getDate);
     }
 
     /// <summary>
-    /// getTimezone
+    /// Obtains the system time zone. This API uses an asynchronous callback to return the result.
     /// </summary>
+    /// <remarks>@since 9</remarks>
     public static Task<string> GetTimezoneAsync()
     {
         return NodeApi.CallMethodAsync<string>(Module, _getTimezone);
     }
 
     /// <summary>
-    /// getTimezoneSync
+    /// Obtains the system time zone in synchronous mode.
     /// </summary>
+    /// <remarks>@since 10</remarks>
     public static string GetTimezoneSync()
     {
         return NodeApi.CallMethod<string>(Module, _getTimezoneSync);
     }
 
     /// <summary>
-    /// getAutoTimeStatus
+    /// Obtains the switch status of the automatic time setting. This API returns the result synchronously.
     /// </summary>
+    /// <remarks>@since 21</remarks>
     public static bool GetAutoTimeStatus()
     {
         return NodeApi.CallMethod<bool>(Module, _getAutoTimeStatus);
