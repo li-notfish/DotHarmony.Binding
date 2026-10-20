@@ -94,7 +94,15 @@ internal static class HarmonyIpcReceiver
                 // 官方线协议：["AttachPage", baseUrl, startUrl] → 数组长度 3
                 if (arguments.GetArrayLength() < 3)
                     throw new InvalidOperationException("AttachPage requires baseUrl and startUrl.");
-                await InvokeAttachToPageAsync(manager, arguments[1].GetString() ?? string.Empty, arguments[2].GetString() ?? string.Empty);
+                var baseUrl = arguments[1].GetString() ?? string.Empty;
+                var pageStart = arguments[2].GetString() ?? string.Empty;
+                // 宿主页 URL 未必含 StartPath（多个 WebView 都以 / 加载时 location.href 相同），
+                // 因此以管理器声明的 StartUrl 为权威，避免 Router 初始导航落到 NotFound。
+                // AttachToPageAsync 要求 startUrl 为 baseUrl 内的绝对地址
+                var startUrl = string.IsNullOrEmpty(manager.StartUrl)
+                    ? pageStart
+                    : manager.ResolveStartUrl(baseUrl);
+                await InvokeAttachToPageAsync(manager, baseUrl, startUrl);
                 return;
             case "BeginInvokeDotNet":
                 if (arguments.GetArrayLength() < 6)

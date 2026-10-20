@@ -47,14 +47,16 @@ public sealed class HarmonyBlazorWebViewInitializingEventArgs : EventArgs
     /// <summary>背景色（ARGB），null 表示不设置。</summary>
     public uint? BackgroundColor { get; set; }
 
-    /// <summary>是否允许缩放（对应 ArkWeb zoomAccess）。null 表示沿用默认。</summary>
-    public bool? ZoomAccess { get; set; }
-
     /// <summary>是否启用 DOM 存储（对应 ArkWeb domStorageAccess）。null 表示沿用默认。</summary>
     public bool? DomStorageAccess { get; set; }
 
     /// <summary>是否启用文件访问（对应 ArkWeb fileAccess）。null 表示沿用默认。</summary>
     public bool? FileAccess { get; set; }
+
+    /// <summary>
+    /// 是否开启 ArkWeb 调试（Chrome DevTools 可连）。仅开发期使用，默认关闭。
+    /// </summary>
+    public bool? WebDebuggingAccess { get; set; }
 
     /// <summary>
     /// 是否允许混合内容（对应 ArkWeb mixedMode）。

@@ -22,6 +22,8 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
             [nameof(HarmonyBlazorWebView.HostPage)] = MapHostPage,
             [nameof(HarmonyBlazorWebView.RootComponents)] = MapRootComponents,
             [nameof(HarmonyBlazorWebView.StartPath)] = MapHostPage,
+            // 继承 WebView 后 Source 可用：与 Blazor 导航联动（同源走 Router，异源交给 UrlLoading）
+            [nameof(Microsoft.Maui.Controls.WebView.Source)] = MapSource,
         };
 
     public HarmonyBlazorWebViewHandler() : base(Mapper) { }
@@ -73,12 +75,49 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
     private static void MapRootComponents(HarmonyBlazorWebViewHandler handler, HarmonyBlazorWebView view)
         => handler.StartWebViewCoreIfPossible();
 
-    private void StartWebViewCoreIfPossible()
+    /// <summary>
+    /// Source 联动：Blazor 应用的导航由 Router 管理，直接改 WebView 的 URL 会绕过它。
+    /// 因此这里只处理「应用内路径」——转成 Blazor 的 NavigationManager.NavigateTo；
+    /// 绝对外部 URL 交给 UrlLoading 策略（与点击外链一致）。
+    /// </summary>
+    private static void MapSource(HarmonyBlazorWebViewHandler handler, HarmonyBlazorWebView view)
     {
+        var source = view.Source;
+        if (source is not UrlWebViewSource urlSource || string.IsNullOrWhiteSpace(urlSource.Url))
+            return;
+
+        var url = urlSource.Url!;
+        if (!handler.StartWebViewCoreIfPossible(alreadyStarted: true))
+            return;
+
+        handler.NavigateViaBlazor(url);
+    }
+
+    private void NavigateViaBlazor(string url)
+    {
+        var manager = _manager;
+        if (manager is null)
+            return;
+
+        // 相对路径或同源绝对 URL → Blazor 内部路由；其余交给导航策略
+        var isAppRelative = url.StartsWith('/') || (!Uri.TryCreate(url, UriKind.Absolute, out _));
+        if (isAppRelative)
+        {
+            _ = manager.NavigateViaNavigationManagerAsync(url);
+            return;
+        }
+
+        HiLog.Info("HarmonyWeb", $"[blazor-handler] Source '{url}' is external; deferring to UrlLoading");
+    }
+
+    private bool StartWebViewCoreIfPossible(bool alreadyStarted = false)
+    {
+        if (alreadyStarted)
+            return _manager is not null;
         if (_manager is not null || VirtualView is null)
-            return;
+            return _manager is not null;
         if (string.IsNullOrWhiteSpace(VirtualView.HostPage))
-            return;
+            return false;
 
         // 多实例：按实例 WebTag 取 surface；缺失时请求宿主按需创建（ArkTS 侧 BuilderNode）。
         // 创建是异步的，未就绪则挂到 surface 注册回调上等待。
@@ -89,7 +128,7 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
             HarmonyWebRuntime.SurfaceRegistered += OnSurfaceRegistered;
             _pendingTag = tag;
             HiLog.Info("HarmonyWeb", $"[blazor-handler] waiting for surface '{tag}'");
-            return;
+            return false;
         }
 
         var contentRoot = System.IO.Path.GetDirectoryName(VirtualView.HostPage) ?? "wwwroot";
@@ -103,6 +142,8 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
         VirtualView.RaiseBlazorWebViewInitializing(initializing);
         if (!string.IsNullOrEmpty(initializing.UserAgent))
             _surface.SetCustomUserAgent(initializing.UserAgent);
+        if (initializing.WebDebuggingAccess == true)
+            _surface.SetWebDebuggingAccess(true);
 
         var blazorDispatcher = new HarmonyBlazorDispatcher(HarmonyDispatcher.Instance);
         VirtualView.AttachDispatchContext(blazorDispatcher, services);
@@ -114,13 +155,13 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
             fileProvider,
             VirtualView.JSComponents,
             hostPageRelativePath,
-            VirtualView);
+            VirtualView)
+        {
+            StartUrl = VirtualView.StartPath,
+        };
 
         _rootComponents = VirtualView.RootComponents;
         _rootComponents.CollectionChanged += OnRootComponentsChanged;
-
-        foreach (var component in _rootComponents)
-            _ = component.AddToWebViewManagerAsync(_manager);
 
         // 启动确定性：主框架加载完成（PageEnded）即触发 Blazor.start，
         // __bwv 握手作为自确认；不再依赖 500ms 固定延迟。
@@ -132,12 +173,15 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
         // （替代宿主页全屏覆盖）。宿主未提供节点时保持全屏模式，行为与之前一致。
         TryAttachToPlatformContainer();
 
-        _manager.Navigate(VirtualView.StartPath);
+        // 先注册完根组件再导航：否则 Router 尚未挂载，StartPath 会渲染成 "Page not found"。
+        // 多实例下这个竞争必然发生（第二个 WebView 启动更慢），单实例只是碰巧躲过。
+        _ = RegisterRootComponentsThenNavigateAsync();
 
         VirtualView.RaiseBlazorWebViewInitialized(new HarmonyBlazorWebViewInitializedEventArgs
         {
             WebView = _surface,
         });
+        return true;
     }
 
     /// <summary>
@@ -166,6 +210,27 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
         TryAttachToPlatformContainer();
     }
 
+    private async Task RegisterRootComponentsThenNavigateAsync()
+    {
+        var manager = _manager;
+        var view = VirtualView;
+        if (manager is null || view is null)
+            return;
+
+        try
+        {
+            foreach (var component in view.RootComponents)
+                await component.AddToWebViewManagerAsync(manager).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            HiLog.Error("HarmonyWeb", $"[blazor-handler] root component registration failed: {ex.GetType().Name}: {ex.Message}");
+        }
+
+        if (_manager == manager)
+            _manager.Navigate(view.StartPath);
+    }
+
     private void OnSurfaceRegistered(string tag)
     {
         if (_pendingTag is null || !string.Equals(tag, _pendingTag, StringComparison.Ordinal))
@@ -180,12 +245,53 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
     {
         // 继承 WebView 后：把页面加载完成映射到 WebView.Navigated
         RaiseNavigated(url);
+        UpdateHistoryState();
         if (_manager is null)
             return;
         _ = _manager.OnPageLoadedAsync(url);
     }
 
     private void OnPageStarted(string url) => RaiseNavigating(url);
+
+    /// <summary>
+    /// 把 ArkWeb 的历史状态回写到 WebView.CanGoBack/CanGoForward。
+    /// 这两个属性是只读 BindableProperty（内部以 BindablePropertyKey 支撑），
+    /// 平台层必须经 SetValue(key, ...) 更新，否则调用方始终读到默认 false。
+    /// </summary>
+    private void UpdateHistoryState()
+    {
+        if (VirtualView is not WebView webView || _surface is null)
+            return;
+
+        var canGoBack = _surface.CanGoBack;
+        var canGoForward = _surface.CanGoForward;
+
+        if (webView.CanGoBack != canGoBack)
+            SetReadOnlyBindableProperty(webView, CanGoBackKey, canGoBack);
+        if (webView.CanGoForward != canGoForward)
+            SetReadOnlyBindableProperty(webView, CanGoForwardKey, canGoForward);
+    }
+
+    // CanGoBack/CanGoForward 是只读 BindableProperty：平台层只能经内部 BindablePropertyKey 写入。
+    // 键是 internal 静态字段，首次使用时反射解析并缓存（AOT 下 Suppress trimming 已由 Unconditional 覆盖）。
+    private static readonly BindablePropertyKey? CanGoBackKey =
+        ResolvePropertyKey(typeof(WebView), "CanGoBackPropertyKey");
+
+    private static readonly BindablePropertyKey? CanGoForwardKey =
+        ResolvePropertyKey(typeof(WebView), "CanGoForwardPropertyKey");
+
+    [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2075",
+        Justification = "WebView's key fields are part of the Controls assembly we always ship against.")]
+    private static BindablePropertyKey? ResolvePropertyKey(Type type, string fieldName)
+        => type.GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+            ?.GetValue(null) as BindablePropertyKey;
+
+    private static void SetReadOnlyBindableProperty(BindableObject target, BindablePropertyKey? key, bool value)
+    {
+        if (key is null)
+            return;
+        target.SetValue(key, value);
+    }
 
     private void RaiseNavigating(string url)
     {

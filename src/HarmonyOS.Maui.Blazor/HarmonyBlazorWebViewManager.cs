@@ -52,6 +52,30 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
 
     internal IHarmonyWebViewSurface Surface => _surface;
 
+    /// <summary>创建时声明的起始路径（AttachPage 以它为准，而非宿主页 location）。</summary>
+    internal string? StartUrl { get; set; }
+
+    /// <summary>
+    /// 把 StartPath 解析为可交给 WebViewManager.AttachToPageAsync 的绝对 URL。
+    /// 该方法要求 startUrl 是「包含在 baseUrl 内」的绝对地址，传相对路径会抛
+    /// ArgumentException: The URI '...' is not contained by the base URI '...'。
+    /// </summary>
+    internal string ResolveStartUrl(string baseUrl)
+    {
+        var startPath = StartUrl;
+        if (string.IsNullOrWhiteSpace(startPath))
+            return baseUrl;
+        // 注意：Uri.TryCreate("/counter", UriKind.Absolute) 会把根相对路径解析成 file:///counter，
+        // 必须要求 http(s) scheme 才算真正的绝对地址。
+        if (Uri.TryCreate(startPath, UriKind.Absolute, out var absolute)
+            && (absolute.Scheme == Uri.UriSchemeHttp || absolute.Scheme == Uri.UriSchemeHttps))
+        {
+            return absolute.ToString();
+        }
+        var root = baseUrl.EndsWith('/') ? baseUrl : baseUrl + "/";
+        return new Uri(new Uri(root), startPath.TrimStart('/')).ToString();
+    }
+
     protected override void NavigateCore(Uri absoluteUri)
     {
         _ = LoadPageAndStartAsync(absoluteUri);
@@ -118,6 +142,56 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
         }
     }
 
+    /// <summary>
+    /// 经 Blazor 的 NavigationManager 导航（保持 Router 参与），用于 WebView.Source 联动。
+    /// 页面尚未挂载时静默忽略。
+    /// </summary>
+    internal Task NavigateViaNavigationManagerAsync(string url)
+    {
+        return Dispatcher.InvokeAsync(() =>
+        {
+            try
+            {
+                var nav = GetPageContextService("NavigationManager");
+                if (nav is Microsoft.AspNetCore.Components.NavigationManager navigation)
+                    navigation.NavigateTo(url);
+                else
+                    HiLog.Warn("HarmonyWeb", "[blazor-manager] NavigationManager unavailable; Source navigation ignored");
+            }
+            catch (Exception ex)
+            {
+                HiLog.Error("HarmonyWeb", $"[blazor-manager] Source navigation failed: {ex.GetType().Name}: {ex.Message}");
+            }
+        });
+    }
+
+    /// <summary>
+    /// 反射读取 WebViewManager 的页面上下文服务（NavigationManager / JSRuntime 等）。
+    /// 官方把 PageContext 设为 internal，平台层只能这样取；与 HarmonyIpcReceiver 同一策略。
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2075")]
+    private object? GetPageContextService(string propertyName)
+    {
+        const System.Reflection.BindingFlags Flags =
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public;
+
+        try
+        {
+            var contextField = typeof(WebViewManager).GetField("_currentPageContext", Flags);
+            var pageContext = contextField?.GetValue(this);
+            if (pageContext is null)
+                return null;
+
+            var property = pageContext.GetType().GetProperty(propertyName, Flags);
+            return property?.GetValue(pageContext);
+        }
+        catch (Exception ex)
+        {
+            HiLog.Error("HarmonyWeb", $"[blazor-manager] page context '{propertyName}' failed: {ex.GetType().Name}");
+            return null;
+        }
+    }
+
     /// <summary>__bwv 任何消息到达即视为 blazor.webview.js 初始化完成。</summary>
     internal void NoteBlazorIpc() => _ipcConfirmed = true;
 
@@ -156,10 +230,25 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
                 out var stream,
                 out var headers))
         {
-            using var ms = stream.CanSeek
-                ? new MemoryStream((int)Math.Min(stream.Length, int.MaxValue))
-                : new MemoryStream();
-            stream.CopyTo(ms);
+            // 小文件直接读成字节（InterceptRequestCore 通道），大文件交给流式路径。
+            const int InlineBufferLimit = 256 * 1024;
+            byte[] body;
+            Stream? contentStream = null;
+
+            if (stream.CanSeek && stream.Length > InlineBufferLimit)
+            {
+                contentStream = stream;
+                body = Array.Empty<byte>();
+            }
+            else
+            {
+                using var ms = stream.CanSeek
+                    ? new MemoryStream((int)Math.Min(stream.Length, int.MaxValue))
+                    : new MemoryStream();
+                stream.CopyTo(ms);
+                body = ms.ToArray();
+            }
+
             var contentType = headers.TryGetValue("Content-Type", out var type)
                 ? type
                 : HarmonyBlazorMimeMap.Resolve(request.Url);
@@ -173,9 +262,10 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
                     headers["Cache-Control"] = cacheControl;
             }
 
-            return new HarmonyWebResponse(statusCode, contentType, ms.ToArray())
+            return new HarmonyWebResponse(statusCode, contentType, body)
             {
                 Headers = headers,
+                ContentStream = contentStream,
             };
         }
 
