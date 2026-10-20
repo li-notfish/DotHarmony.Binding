@@ -287,7 +287,12 @@ tests/                       jest（解析器/生成器 79 用例）
   时把该节点挂进自己的平台容器（`OH_ArkUI_NodeContent_AddNode`/`AddChild`），并在容器 `NODE_ON_SIZE_CHANGE`
   时同步尺寸，使 Web 随 MAUI 布局伸缩。控制器就绪由 `onControllerAttached` 精确驱动（不用延时启发式）。
   实测：`Grid` 中 Web 占 star 行、原生 `Button` 占 Auto 行，两者各自独立响应点击。
-  未对齐：`InputFile` 的 JS→.NET 大块字节流。
+- **多实例**：每个 `HarmonyBlazorWebView` 用 `WebTag` 标识（默认 `harmony-web`），对应宿主侧一个
+  `BuilderNode`。宿主注册 `registerWebViewFactory` 后，.NET 遇到未注册的 tag 会经
+  `HarmonyHostWebCreateView` 反向请求宿主按需创建，surface / scheme handler / IPC 消息全部按 tag 路由。
+  实测同页并排两个实例各自渲染 `/counter` 并可独立交互。
+- **InputFile**：无需额外实现。官方 `blazor.webview.js` 的 `getJSDataStreamChunk` 走标准 JSInterop，
+  分块经既有 `ReceiveByteArrayFromJS` 通道回传；实测 250 KB PDF 上传字节无损（`head=255044462D312E37`）。
 - **手势注入**：Metro Hub 场景此前现象为"注入/触摸滑动点击均无响应"，今已确认为 ContentPresenter 空槽命中测试黑洞所致（非模拟器注入限制），随 ContentPresenter/ContentView 宿主修复一并解决（`verify-zindex-probe.ps1` 的 `uitest uiInput click` 逐步走查在模拟器实测可用）；剩余限制：Pinch 多点触控注入通道，真机验收仍以实际触摸为准
 - **napi handle scope**：模块加载路径已显式 open/close；逐次调用仍依赖宿主线程已有 scope，统一 RAII 封装待补
 - **跨模块类型导入**：`Want` / `NetAddress` 等已生成为强类型包装并在跨模块签名中复用；仅未映射的复杂 options bag 仍退化为 `IntPtr`（生成后可在 `artifacts/generator/api-intptr-report.json` 查看清单）

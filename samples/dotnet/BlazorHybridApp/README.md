@@ -24,8 +24,9 @@ dotnet build samples/dotnet/BlazorHybridApp -t:HarmonyRun
 ## 说明
 
 - 使用 `HarmonyOS.Maui.Blazor` + NDK ArkWeb scheme handler。
-- 宿主目前为单个 BuilderNode 承载的 Web；.NET 侧 surface 已按 webTag 注册
-  （`HarmonyWebRuntime.GetSurface`），多实例能力待宿主提供多个 BuilderNode 后启用。
+- **多实例**：`MultiInstancePage` 演示同页并排两个 `HarmonyBlazorWebView`（不同 `WebTag`）。
+  宿主按需为未知 tag 创建 BuilderNode，两个实例各自渲染并可独立交互。
+- **InputFile**：`Upload.razor` 演示文件上传；分块走标准 JSInterop，实测 250 KB PDF 字节无损。
 - 内嵌模式要求 `WebviewController` 与 Web 组件完成关联（`onControllerAttached`）后才能调用其 API，
   宿主已按该事件驱动，不再使用延时。
 - 属于实验功能，稳定 API 以 MAUI/Controls 示例为准。

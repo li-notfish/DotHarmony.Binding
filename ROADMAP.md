@@ -281,6 +281,20 @@ Web 只能以宿主页全屏覆盖存在，与原生控件无法同页共存。M
 - `arkui_bindgen check` 在 `core.autocrlf=true` 的工作区会因 CRLF/LF 差异误报全文件漂移，
   属环境问题；用归一化比对确认生成物本身一致。
 
+### M4 后续：多实例与 InputFile（已完成）
+
+- **多实例**：surface 表本就按 webTag 键控，补齐了宿主侧闭环——`Index.ets` 用 `WebSlot` 管理
+  每个 tag 的 controller/bridge/BuilderNode；`registerWebViewFactory` 让 .NET 能反向请求创建；
+  `HarmonyHostWebCreateView` 经 TSFN 投递到 env 线程（直接 `napi_call_function` 会崩）。
+  scheme handler 改为每 tag 一个实例，tag 经 `OH_ArkWebSchemeHandler_SetUserData` 绑定，
+  回调据此路由；IPC 消息与 `HarmonyWebInterceptNative` 均带 tag。
+- **踩坑记录**：`HarmonyWebInterceptNative` 的 tag 参数是普通 C 字符串（不是 napi_value），
+  误用 `NodeApi.ToString` 会 SIGABRT；handler 首次挂载可能早于节点绑定，需监听
+  `PlatformNodeBound` 重试。
+- **InputFile**：经核实**无需实现**。官方 JS 的 `getJSDataStreamChunk` 是标准 JSInterop，
+  分块走既有 `ReceiveByteArrayFromJS`；实测 250 KB PDF 上传成功且字节完整。
+  此前"SDK 无 ArrayFileStore 协议需自行分块"的判断是错的。
+
 ---
 
 ## 平台铁律速查（实测沉淀，实现前必读）
