@@ -1,23 +1,23 @@
-# Performance baseline
+# 性能基线
 
-This baseline records six metrics for the NativeAOT HarmonyOS host:
+本基线记录 HarmonyOS NativeAOT 宿主的六项指标：
 
-- `libapp.so` size for `arm64-v8a` and `x86_64`
-- HAP package size
-- Cold start time reported by `aa start -W`
-- .NET runtime initialization time from `HarmonyInit` to the first page appearing
-- First-frame time from `HarmonyInit` to the first page's initial layout (`OnSizeAllocated`)
-- TSFN throughput, measured as queued background-thread calls processed on the JS thread
+- `libapp.so` 体积（`arm64-v8a` 与 `x86_64`）
+- HAP 包体积
+- `aa start -W` 报告的冷启动时间
+- .NET 运行时初始化时间（`HarmonyInit` → 首页出现）
+- 首帧时间（`HarmonyInit` → 首页首次布局 `OnSizeAllocated`）
+- TSFN 吞吐（后台线程投递、JS 线程处理的调用数）
 
-## Collect
+## 采集
 
-Run from the repository root:
+在仓库根目录执行：
 
 ```powershell
 ./scripts/perf/collect-baseline.ps1
 ```
 
-Useful options:
+常用参数：
 
 ```powershell
 ./scripts/perf/collect-baseline.ps1 -Runs 5
@@ -25,22 +25,24 @@ Useful options:
 ./scripts/perf/collect-baseline.ps1 -OutputPath scripts/perf/baseline.json
 ```
 
-The script:
+脚本流程：
 
-1. Builds `samples/dotnet/PerfApp` with `HarmonyBuildLibApp`.
-2. Builds and installs the resulting HAP.
-3. Launches the app and waits for `PERF_DONE` in `hilog`.
-4. Records the run data in `scripts/perf/baseline.json`.
+1. 以 `HarmonyBuildLibApp` 构建 `samples/dotnet/PerfApp`；
+2. 构建并安装产出的 HAP；
+3. 启动应用并等待 hilog 中的 `PERF_DONE`；
+4. 把本轮数据写入 `scripts/perf/baseline.json`。
 
-## Output
+多设备矩阵用 `scripts/perf/device-matrix.ps1`（参数同上，输出 `scripts/perf/device-matrix.json`）。
 
-`scripts/perf/baseline.json` contains:
+## 输出
 
-- The Git commit and UTC collection time
-- The target device or emulator
-- Arm64 and x64 `libapp.so` sizes
-- HAP size
-- Per-run cold start, runtime initialization, first-frame, and TSFN throughput values
-- Averaged cold start, runtime initialization, first-frame, and TSFN throughput values
+`scripts/perf/baseline.json` 包含：
 
-The baseline is informational only; it does not currently fail a build or emit alerts.
+- Git 提交与 UTC 采集时间
+- 目标设备或模拟器
+- arm64 与 x64 的 `libapp.so` 体积
+- HAP 体积
+- 每轮的冷启动、运行时初始化、首帧与 TSFN 吞吐
+- 上述四项的平均值
+
+基线仅作记录，不阻塞构建，也不发出告警。

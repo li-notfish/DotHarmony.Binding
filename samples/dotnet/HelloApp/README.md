@@ -17,7 +17,8 @@ dotnet build samples/dotnet/HelloApp -t:HarmonyRun
 
 默认根页是 `NavigationPage(MainPage)`（`Program.UseShell = false`）。把
 `samples/dotnet/HelloApp/Program.cs` 里的 `UseShell` 改为 `true` 可切到
-`VerificationShell`（Shell 路由/query/模态回归宿主，供脚本使用）。
+`AppShell`（`VerificationShell.cs`，Shell 路由/query/模态回归宿主，供脚本使用）。
+应用宿主为 `VerificationApp`（真实 `Application`，自带 Resources/UserAppTheme）。
 
 ## 覆盖内容
 

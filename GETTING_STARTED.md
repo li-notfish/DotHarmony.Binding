@@ -12,7 +12,7 @@
 | 应用工程 | Program.cs + XAML 页面 + Platforms/HarmonyOS 启动代码 | ✅ 本文的主角 |
 | HarmonyOS.Maui | 58 个具体 Handler（60 个工厂分派形态）、手势、导航、托管布局 | ❌ 引用即可 |
 | HarmonyOS.Essentials | MAUI Essentials 鸿蒙实现（22 服务） | ❌ 引用即可（`RunHarmony(MauiApp)` / `MauiHarmonyHost.Run` 自动安装） |
-| HarmonyOS.Bindings | ArkUI NDK 原生节点 + 438 个 @ohos.* 模块绑定 | ❌ 引用即可（仅声明用到的 @ohos 模块） |
+| HarmonyOS.Bindings | ArkUI NDK 原生节点 + 438 个 @ohos.* 模块绑定 | ❌ 引用即可（模块由生成器登记，无需手工声明） |
 | HarmonyOS.Interop | napi 互操作核心独立装 | ❌ 引用即可 |
 | HarmonyHost（ArkTS 宿主） | dlopen libapp.so 的壳工程模板 | ❌ 由 targets 自动生成按应用实例（见 §4） |
 
@@ -27,7 +27,7 @@
 | Git Bash（`bash`） | `deploy-hap.sh` / `check-harmony-env.sh` / 验证脚本 | Windows 安装 Git for Windows；也可全部改用 `.ps1` |
 | Node.js ≥ 18 + Python 3 | TS/NDK 生成器与本地工具 | 未安装生成器步骤会直接失败 |
 | PublishAotClang | Windows 本地 NativeAOT 交叉编译 libapp.so | 由 `Directory.Build.props` 自动引用；内置 Zig / clang / objcopy |
-| DevEco Studio 5.1+ + HarmonyOS/OpenHarmony SDK | hvigor 打 HAP、NDK、hdc 部署、模拟器 | 记住安装路径；宿主 `hvigor-config.json5` 使用 modelVersion 5.1.0，过旧的 DevEco 会报不透明的 hvigor 错误；SDK 按语义版本倒序选择，staging 会把探测到的版本写入宿主 `build-profile.json5`，不再固定 26 |
+| DevEco Studio 5.1+ + HarmonyOS/OpenHarmony SDK | hvigor 打 HAP、NDK、hdc 部署、模拟器 | 记住安装路径；宿主 `hvigor-config.json5` 使用 modelVersion 5.1.0，过旧的 DevEco 会报不透明的 hvigor 错误；SDK 按语义版本倒序选择，staging 会把探测到的版本写入宿主 `build-profile.json5` |
 | 模拟器或真机 | `HarmonyRun` 设备预检、安装、启动 | 设备必须先于 AOT 构建处于在线状态；真机需开启开发者模式与 USB 调试 |
 | 调试签名材料（仅真机） | 真机安装 | `.p12`、`.cer`、`.p7b`、keystore/证书别名、两组口令需成套；模拟器可用 unsigned HAP |
 | ohpm（DevEco 自带） | 安装宿主 ArkTS 依赖 | 首次构建或 `oh_modules` 缺失时需要；`build-hap.cmd` 会自动尝试 `ohpm install` |
@@ -132,14 +132,15 @@ Windows 交叉 NativeAOT 会报 Cross-OS native compilation is not supported）�
 
 ### Step 1：创建 .NET 类库工程
 
-`samples/dotnet/MyApp/MyApp.csproj`：
+`samples/dotnet/MyApp/MyApp.csproj`（仓库内工程由根 `Directory.Build.props` / `Directory.Build.targets` 提供
+公共属性与 `net10.0-harmonyos` 平台注册，无需重复声明）：
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- NativeAOT 共享库：宿主 dlopen 后调用导出函数 -->
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net10.0-harmonyos</TargetFramework>
     <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
     <PublishAot>true</PublishAot>
     <NativeLib>Shared</NativeLib>
@@ -267,15 +268,19 @@ private void OnPushClicked(object? sender, EventArgs e)
 
 ### Step 5：编译、运行
 
-```bash
+```powershell
 # Windows 本机先做编译期检查（秒级，不用等 AOT）
 dotnet build samples/dotnet/MyApp
 
 # 一键全链路（PublishAotClang AOT 双架构 → hvigor HAP → hdc 部署启动）
 dotnet build samples/dotnet/MyApp -t:HarmonyRun
+
+# 多设备在线时指定目标
+$env:HDC_TARGET = "192.168.1.6:8710"
+dotnet build samples/dotnet/MyApp -t:HarmonyRun
 ```
 
-部署目标默认模拟器；多设备在线时 `HDC_TARGET=192.168.1.6:8710 dotnet build -t:HarmonyRun`（或逐段手动跑三个脚本，见 §4）。
+逐段手动执行三个脚本的用法见 §4。
 
 ---
 
@@ -341,7 +346,7 @@ public static void Register()
 
 ---
 
-## 4. 构建链路详解（一键背后的三步）
+## 4. 构建链路详解（一键背后的步骤）
 
 | 步骤 | 脚本 / target | 做什么 | 关键环境变量 |
 |---|---|---|---|
@@ -353,10 +358,13 @@ public static void Register()
 
 其它 targets：`HarmonyDevicePreflight` / `HarmonyStageHost` / `HarmonyBuildLibApp` /
 `HarmonyBuildHap` / `HarmonyDeploy` 可单独执行。
-如果只想手动打某个样例的 HAP，可以用：
+
+如果只想手动打某个样例的 HAP：
+
 ```powershell
 .\scripts\build-hap.cmd WeatherTwentyOne
 ```
+
 该命令要求该样例已经过 `-t:HarmonyStageHost` / `-t:HarmonyRun` 暂存，并使用
 `samples/dotnet/WeatherTwentyOne/obj/harmony/host`；**不会回退到共享模板**。也可以传样例目录或
 staged host 目录；无暂存宿主时直接报错并给修复命令。
@@ -480,7 +488,7 @@ dotnet build samples/dotnet/MyApp -t:HarmonyPermissionCheck
 
 **真机**：arm64 云真机启动链路已验证；`HarmonyBuildLibApp` 会自动应用
 `patch-openharmony-nativeaot.ps1`，规避云真机 seccomp 对 `get_mempolicy` 的拦截。
-剩余工作是更广的真机矩阵与性能调参（ROADMAP 1.5），不是基本启动链路的阻塞项。
+剩余工作是更广的真机矩阵与性能调参（见 [ROADMAP §1.5](ROADMAP.md)），不是基本启动链路的阻塞项。
 
 ---
 
@@ -496,17 +504,16 @@ dotnet build samples/dotnet/MyApp -t:HarmonyPermissionCheck
 | 导航静默失败、后续导航全挂 | FireAndForget 吞了异常——确认已按 §2 改造 `FireAndForgetNavigation` 打 hilog（HelloApp 版可照抄） |
 | Windows 本地 AOT 失败 | 检查 `PublishAotClang` 包是否还原成功，以及 .NET 10 SDK 是否可用 |
 | hdc 命令路径被 Git Bash 吃掉 | 前缀 `MSYS_NO_PATHCONV=1` |
-| 更多坑 | [HANDLERS.md §7 速查表](HANDLERS.md) |
+| 更多坑 | [HANDLERS.md §7 速查表](HANDLERS.md#7-速查已踩过的坑) |
 
 ---
 
 ## 6. 当前能力边界（决定接入评估的细节）
 
-- **控件**：58 个具体 Handler / 60 个工厂分派形态（基础控件 + Picker/RefreshView/BoxView + CollectionView 虚拟化/CarouselView + Shape/GraphicsView 自绘 + Shell/Flyout/TabbedPage/WebView 等）
+- **控件**：58 个具体 Handler / 60 个工厂分派形态（基础控件 + Picker/RefreshView/BoxView + CollectionView 虚拟化/CarouselView + Shape/GraphicsView 自绘 + Shell/Flyout/TabbedPage/WebView 等），完整矩阵见 [docs/handler-coverage.md](docs/handler-coverage.md)
 - **手势**：Tap/Pan/Pinch/Swipe/Pointer/Drag&Drop；hover、鼠标按键区分待做
 - **布局**：StackLayout（flex 托管）+ Grid/AbsoluteLayout（MAUI 托管，对齐/ZIndex/Auto 轨道自适应已对齐）
 - **自绘**：Shape + GraphicsView（ArkUI 自绘节点 + OH_Drawing）
 - **服务**：438 个 @ohos.* 模块绑定（Promise→Task、.NET 事件、ArrayBuffer/Map）+ **Essentials 22 服务**
 - **证书/签名**：模拟器免签；真机需自行准备签名物料
-- 路线图：[ROADMAP.md](ROADMAP.md)（M1 与 M2 已完成；M3 工程化核心已落地，
-  最小 CI 门禁、性能基线脚本与 MAUI 权限自动推导已就绪）
+- 路线图与遗留项：[ROADMAP.md](ROADMAP.md)

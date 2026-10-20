@@ -1,4 +1,4 @@
-> **状态：已归档的历史设计稿（2026-09）。**
+> **状态：已归档的历史设计稿。**
 > 本文描述的“影子包 + Source Generator + libdotnet_core.so”路线已被 **ArkUI NDK C API**
 > 路线取代；现行架构与接入方式见 [README.md](../../README.md) 与 [GETTING_STARTED.md](../../GETTING_STARTED.md)。
 > 保留本文仅用于追溯早期决策，请勿按本文实现。
@@ -253,7 +253,7 @@ public partial class UserService
  
 ---
 
-## 架构决策记录（2026-09）
+## 架构决策记录
 
 > 本白皮书（"一阶段影子包、二阶段源生成器、三阶段 AOT 缝合"）为项目起点，其中 AOT 防裁剪、
 > UTF8 常量缓存、字符串枚举等工程实践已被采纳。但**核心互操作路线已变更**：
@@ -263,4 +263,4 @@ public partial class UserService
 > 2. 二阶段源生成器不再需要：一阶段解析器直接产出完整 NodeHandle 包装类（生成的即真身）。
 > 3. 非 UI 的 @ohos.* 服务保留 napi 路线，env 由宿主 shim 注入。
 >
-> 详见 README.md「关键架构决策」。
+> 详见 [README.md](../../README.md)「架构」与 [ROADMAP.md](../../ROADMAP.md)。

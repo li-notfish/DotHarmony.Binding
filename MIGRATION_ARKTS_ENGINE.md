@@ -29,7 +29,7 @@
 | 手势翻译层（`HarmonyGestureManager` 的 Send* 协议回送） | 平台无关 | ✅ 存活（仅事件源更换） |
 | `@ohos.*` 绑定、napi 运行时桥（TSFN/Promise） | Node-API（ArkTS 运行时稳定面） | ✅ 完全无关 |
 
-**漏斗纪律（P0，✅ 已执行，2026-09-12；2026-09-20 装拆后扫描面扩为 Maui+Essentials 双层）**：
+**漏斗纪律（P0，✅ 已执行；拆装后扫描面为 Maui+Essentials 双层）**：
 Handler 层禁止直接触碰 `ArkUI_NativeNodeAPI_*`。经审计，
 当前 Handler/Hosting/Essentials 层已无函数表直连（全部经包装类型）；纪律以
 `tests/dotnet/HarmonyGestureTests/FunnelDisciplineTests`（源码扫描 11 类禁用符号：函数表类、
@@ -83,8 +83,8 @@ VirtualNode（保留 id 句柄）             SceneGraph：@State 节点树
   （`Text(record.props.textContent)` / `Stack()` / `Scroll()` ...），属性经一层映射表从记录名转
   ArkUI 参数。组件树由 `@State`/`@ObjectLink` 数组驱动重建——ArkUI 最小 diff 到变化的组件。
 - **映射表**：属性映射（`position → .position({x,y})`、`widthPercent → .width('100%')` …）与
-  节点类型映射是引擎仅有的两份"知识"，以声明式配置存在（`mapping.ets`），与 M3 NDK 生成器的
-  产物可共用同一份源描述。
+  节点类型映射是引擎仅有的两份"知识"，以声明式配置存在（`mapping.ets`），与
+  `tools/arkui-bindgen` 的 `semantics.yaml` 可共用同一份源描述。
 - **事件**：引擎为组件挂回调 → 统一转发 `emitEvent(targetId, eventType, payload)` 到 napi 侧。
 - **手势**：`.gesture()` / `.parallelGesture()` 按指令挂接；Tap/Pan/Pinch/Swipe/LongPress 参数直映；
   保留两条实测铁律——按 (view, taps) 分组防 N² 触发；"不得在回调中销毁"语义由指令撤销替代。
@@ -195,12 +195,12 @@ B 在没有 A 的情况下只能做演示级静态页面。B 的价值在 A 跑�
 
 | 阶段 | 内容 | 出口标准 |
 |---|---|---|
-| **P0 对冲（✅ 已执行，持续保持）** | 漏斗纪律已落地并以 FunnelDisciplineTests 机械强制；uitest/单测保持后端无关；任何新节点能力先加包装 | 测试闸常绿（16 用例含漏斗扫描） |
+| **P0 对冲（✅ 已执行，持续保持）** | 漏斗纪律已落地并以 FunnelDisciplineTests 机械强制；uitest/单测保持后端无关；任何新节点能力先加包装 | 测试闸常绿（含漏斗扫描用例） |
 | **P1 抽象** | 定义 `IPlatformNode` 接口（现 `ArkUINodeBase` 公开面的子集）；宿主挂载点抽象为 `IHostMount` | 全部 Handler 编译于接口之上 |
 | **P2 引擎 MVP（A）** | ArkTS SceneGraph + 指令批合并 + 事件回流；Label/Button/StackLayout 跑通 | HelloApp 主页可跑，uitest 通过 |
-| **P3 语义完备（A）** | 影子量测缓存、托管布局收敛、手势挂接、动画、导航/模态 | 15 单测 + verify-m1-uitest.sh 全绿 |
+| **P3 语义完备（A）** | 影子量测缓存、托管布局收敛、手势挂接、动画、导航/模态 | 单测 + `scripts/verify-m1-uitest.sh` 全绿 |
 | **P4 静态层（B）** | §3.6 的 B1→B4 | 混合页 uitest + 性能对照报告 |
-| **回归策略** | 每阶段以 `tests/dotnet`（纯逻辑）+ `verify-m1-uitest.sh`（行为）为闸——两者均不引用节点 API 细节 | — |
+| **回归策略** | 每阶段以 `tests/dotnet`（纯逻辑）+ `scripts/verify-m1-uitest.sh`（行为）为闸——两者均不引用节点 API 细节 | — |
 
 **回退预案**：P1 的接口抽象使 C 后端与 ArkTS 后端可并存（按工程属性选择），旧 API 真被移除前
 始终有可用的 C 路径。
@@ -211,7 +211,7 @@ C NDK API 是 ArkUI-X 跨平台与游戏引擎接入的官方通道，整体移�
 （结构体加字段、函数表版本升级、属性枚举重组——gesture API 的 version 首成员已是这种痕迹）。
 漏斗层使这类演进同样只改一处。P0 对冲已执行（机械闸测试）；P1~P4 在触发条件出现时再启动。
 
-## 7. 实验层状态（P2 完整版，2026-09-14；种子 2026-09-12）
+## 7. 实验层状态（P2 完整版）
 
 方案 A 的实验已落地并推进到 P2 完整版（**未激活为产品路径**，与 C 后端并存，零改动现有 C 节点代码）：
 
@@ -227,7 +227,7 @@ C NDK API 是 ArkUI-X 跨平台与游戏引擎接入的官方通道，整体移�
 → C# 存桥引用、注入 onEvent 回调、开启 16ms tick 自动冲刷、冲刷积压指令——dlopen 时 ModuleInitializer
 即可构建场景（纯托管入队无需 env），握手在 ArkTS `aboutToAppear` 同步完成首帧渲染。
 
-**P2 完整版增量（相对种子，2026-09-14）**：
+**P2 完整版增量**：
 - **自动冲刷**：引擎侧 16ms `setInterval` 发 'tick' 回流（id=-1 哨兵），C# 在 napi 回调线程内
   冲刷积压指令——同帧属性写合并为单次 napi，事件处理内无需显式 Flush；显式 `Flush()` 保留为
   布局 pass 边界钩子（宿主层 arrange 收尾调用）。
@@ -239,7 +239,7 @@ C NDK API 是 ArkUI-X 跨平台与游戏引擎接入的官方通道，整体移�
 - **扩展节点/事件**：Stack/Scroll/Text/Entry/Image/Button 六类；事件 click/area/textChange
   （Entry onChange 载荷携带文本值）。
 
-**模拟器实测通过（种子，2026-09-12，127.0.0.1:5555）**：`dotnet build samples/dotnet/EngineLab -t:HarmonyRun`
+**模拟器实测通过（127.0.0.1:5555）**：`dotnet build samples/dotnet/EngineLab -t:HarmonyRun`
 全链路绿（Windows 本地 NativeAOT + hvigor 编译引擎 .ets 一次通过 + 部署）。hilog 证据：桥挂接后 21 条积压指令
 单次 napi 冲刷；4 节点 onAreaChange 量测回流（根 1320x2409px @3.50 密度，影子缓存生效）；
 uitest 点击按钮 → click 回流 → `flushed 1 commands`（单次 napi）→ dumpLayout 显示

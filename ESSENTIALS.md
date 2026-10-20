@@ -34,7 +34,7 @@ MAUI 的 Essentials 静态入口（`DeviceInfo.Current` / `Preferences.Default` 
 | `Xxx.Default` | `internal static void SetDefault(IXxx? impl)` | Clipboard / Preferences / SecureStorage / Vibration / Battery / Launcher / Share / Email / PhoneDialer / Flashlight / Map / MediaPicker / FilePicker / Screenshot / TextToSpeech / HapticFeedback / Browser / Geolocation |
 | 例外 | `internal static void SetCustomImplementation(Func<bool> isMainThread, Action<Action> beginInvokeOnMainThread)` | MainThread（两个委托，非接口实现）——**MAUI 10.0.11 尚无此注入点（.NET 11 main 才加），见下表 IMainThread 行** |
 
-现有四个实现可作为范式：同步属性型（HarmonyDeviceInfo）、事件转发型（HarmonyDeviceDisplay）、
+现有三个实现可作为范式：同步属性型（HarmonyDeviceInfo）、事件转发型（HarmonyDeviceDisplay）、
 异步 Promise 型（HarmonyClipboard）。
 
 ### Step 2：确认底层 @ohos 模块
@@ -72,7 +72,7 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 ```
 
 服务构造在 Install 时发生（napi 就绪）——构造函数里只做廉价初始化；任何一个服务构造抛错会
-中断整个 Install（暂无逐服务隔离，见 ROADMAP 2.4）。
+中断整个 Install（暂无逐服务隔离，见 [ROADMAP §2.4](ROADMAP.md)）。
 
 ### Step 5：示例 + 验证
 
@@ -99,30 +99,30 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 
 ## 3. 服务清单
 
-注入点签名以 MAUI 源码为准（上表）；底层模块转正状态随生成器漂移，动手前重查 §Step 2。
+注入点签名以 MAUI 源码为准（上表）；底层模块转正状态随生成器漂移，动手前重查「Step 2：确认底层 @ohos 模块」。
 
 | 服务 | 注入点 | 底层 @ohos | 状态 |
 |---|---|---|---|
-| IDeviceInfo | SetCurrent | deviceInfo（同步属性） | ✅ 2026-09-13 |
-| IDeviceDisplay | SetCurrent | display（同步 + Change 事件） | ✅ 2026-09-13 |
-| IAppInfo | SetCurrent | bundle.bundleManager（getBundleInfoForSelfSync） | ✅ 2026-09-13 |
-| IClipboard | SetDefault | pasteboard SystemPasteboard（user_grant 授权闭环） | ✅ 2026-09-13 |
-| IPreferences | SetDefault | data.preferences（值用类型标签字符串编码；getSync/putSync 经 NodeApi 直调——包装的 ValueType 签名被 distributedData 同名枚举污染） | ✅ 2026-09-13（43/44 测试含编解码 21 个） |
-| IBattery | SetDefault | batteryInfo（纯同步属性）+ @ohos.power.getPowerMode()（省电模式）；变化事件走 usual.event.BATTERY_CHANGED / POWER_SAVE_MODE_CHANGED commonEvent 订阅（回调内重读属性+去重） | ✅ 2026-09-13（模拟器实测 level/state/source/saver；chargingStatus=0 → 按 Discharging 处理） |
-| IVibration | SetDefault | vibrator（startVibration {type:'time'} + stopVibration() 同步重载；时长钳制 [0,5s] 对齐 MAUI）；VIBRATE 为 system_grant，宿主模板已声明 | ✅ 2026-09-13（后续批次已构建部署；真机触摸验证留待真机阶段） |
-| IConnectivity | SetCurrent | net.connection（2026-09-13 出灰度；HasDefaultNetSync + getNetCapabilitiesSync 的 NET_CAPABILITY_INTERNET=12/VALIDATED=16 判定；bearerTypes 映射；netAvailable/netLost/netConnectionChange 监听） | ✅ 2026-09-13（后续批次已构建部署；真机开关 Wi-Fi 验证留待真机阶段） |
-| IFileSystem | SetCurrent | 目录经 ability 上下文 filesDir/cacheDir；包内文件经 resourceManager.getRawFileContent（rawfile 相对路径）。file.fs（灰度）本接口不需要 | ✅ 2026-09-13（75/75 测试绿；后续批次已构建部署） |
-| ILauncher | SetDefault | want/startAbility（{uri}）；CanOpenAsync 经 bundleManager.canOpenLink（API 12；自定义 scheme 需 app.json5 声明 querySchemes 白名单）；OpenFileRequest 经 fileuri.getUriFromPath 折算 file:// | ✅ 2026-09-13 |
+| IDeviceInfo | SetCurrent | deviceInfo（同步属性） | ✅ 已实现 |
+| IDeviceDisplay | SetCurrent | display（同步 + Change 事件） | ✅ 已实现 |
+| IAppInfo | SetCurrent | bundle.bundleManager（getBundleInfoForSelfSync） | ✅ 已实现 |
+| IClipboard | SetDefault | pasteboard SystemPasteboard（user_grant 授权闭环） | ✅ 已实现 |
+| IPreferences | SetDefault | data.preferences（值用类型标签字符串编码；getSync/putSync 经 NodeApi 直调——包装的 ValueType 签名被 distributedData 同名枚举污染） | ✅ 已实现（43/44 测试，含编解码 21 个） |
+| IBattery | SetDefault | batteryInfo（纯同步属性）+ @ohos.power.getPowerMode()（省电模式）；变化事件走 usual.event.BATTERY_CHANGED / POWER_SAVE_MODE_CHANGED commonEvent 订阅（回调内重读属性+去重） | ✅ 已实现（模拟器实测 level/state/source/saver；chargingStatus=0 → 按 Discharging 处理） |
+| IVibration | SetDefault | vibrator（startVibration {type:'time'} + stopVibration() 同步重载；时长钳制 [0,5s] 对齐 MAUI）；VIBRATE 为 system_grant，宿主模板已声明 | ✅ 已实现（真机触摸验证待补） |
+| IConnectivity | SetCurrent | net.connection（HasDefaultNetSync + getNetCapabilitiesSync 的 NET_CAPABILITY_INTERNET=12/VALIDATED=16 判定；bearerTypes 映射；netAvailable/netLost/netConnectionChange 监听） | ✅ 已实现（真机开关 Wi-Fi 验证待补） |
+| IFileSystem | SetCurrent | 目录经 ability 上下文 filesDir/cacheDir；包内文件经 resourceManager.getRawFileContent（rawfile 相对路径）。file.fs（灰度）本接口不需要 | ✅ 已实现（75/75 测试绿） |
+| ILauncher | SetDefault | want/startAbility（{uri}）；CanOpenAsync 经 bundleManager.canOpenLink（API 12；自定义 scheme 需 app.json5 声明 querySchemes 白名单）；OpenFileRequest 经 fileuri.getUriFromPath 折算 file:// | ✅ 已实现 |
 | IMainThread | 不注入 | **MAUI 10.0.11 的 MainThread 没有注入点**——PlatformIsMainThread 直接 throw，`SetCustomImplementation(Func<bool>, Action<Action>)` 是 .NET 11 main 分支才加的 API（曾误判为 AOT 裁剪，反编译 net10.0 产物实锤：`CustomImplementation` 0 次）。本宿主 .NET 代码全在原生 UI 线程跑（TSFN 回调同线程），无需 MainThread 静态入口；升级到含 SetCustomImplementation 的 MAUI 版本后再接回。static MainThread 在 net10.0 TFM 抛 NotSupported | ❌ 暂缓（等 MAUI 升级） |
-| ISecureStorage | SetDefault | security.asset（**AssetMap = 真 JS Map\<Tag,Value\>——普通对象被拒，实测 "Expect Map type."，经 NativeValue.FromMap 构造**；数字 Tag 键：SECRET=BYTES\|0x01 / ALIAS=BYTES\|0x02 / ACCESSIBILITY=NUMBER\|0x03 等；BYTES 值要求 Uint8Array——Interop 补 FromUint8Array，非 ArrayBuffer；查询结果经 GetMapped（命名属性优先/Map.get 兜底）取值；**不走 preQuery/postQuery——那是用户认证流程的 challenge**，querySync 无结果直接抛 not found 捕获 → null） | ✅ 2026-09-13（模拟器实测 set/get roundtrip） |
-| IBrowser | SetDefault | want/startAbility（{uri} 拉起系统默认浏览器）；BrowserLaunchMode 的进程内模式无系统通道，统一系统浏览器 | ✅ 2026-09-13 |
-| IPhoneDialer | SetDefault | startAbility({uri:'tel:'+number})；IsSupported 经 sim.getSimStateSync（卡槽 0，无 SIM = 不支持） | ✅ 2026-09-13 |
+| ISecureStorage | SetDefault | security.asset（**AssetMap = 真 JS Map\<Tag,Value\>——普通对象被拒，实测 "Expect Map type."，经 NativeValue.FromMap 构造**；数字 Tag 键：SECRET=BYTES\|0x01 / ALIAS=BYTES\|0x02 / ACCESSIBILITY=NUMBER\|0x03 等；BYTES 值要求 Uint8Array——Interop 补 FromUint8Array，非 ArrayBuffer；查询结果经 GetMapped（命名属性优先/Map.get 兜底）取值；**不走 preQuery/postQuery——那是用户认证流程的 challenge**，querySync 无结果直接抛 not found 捕获 → null） | ✅ 已实现（模拟器实测 set/get roundtrip） |
+| IBrowser | SetDefault | want/startAbility（{uri} 拉起系统默认浏览器）；BrowserLaunchMode 的进程内模式无系统通道，统一系统浏览器 | ✅ 已实现 |
+| IPhoneDialer | SetDefault | startAbility({uri:'tel:'+number})；IsSupported 经 sim.getSimStateSync（卡槽 0，无 SIM = 不支持） | ✅ 已实现 |
 | IShare | SetDefault | 文本经 startAbility({action:'ohos.want.action.sendData', type:'text/plain', parameters:{text}})；文件分享经 fs.openSync(READ_ONLY) -> fd -> want { uri:'fd://fd', type:mime, parameters:{'ability.params.stream':fd} }；多文件 fd 用逗号分隔且 uri 取首个 | ✅ 已实现（文本/文件） |
-| IEmail | SetDefault | mailto: URI（to/cc/bcc/subject/body 编码进 query）+ startAbility；IsComposeSupported 尽力 true（mailto 由系统路由） | ✅ 2026-09-13 |
+| IEmail | SetDefault | mailto: URI（to/cc/bcc/subject/body 编码进 query）+ startAbility；IsComposeSupported 尽力 true（mailto 由系统路由） | ✅ 已实现 |
 | IAccelerometer / IMagnetometer / IGyroscope / ICompass / IOrientationSensor | SetDefault | @ohos.sensor on/off；SensorSpeed → interval 阶梯；Compass 走 Orientation，OrientationSensor 走 RotationVector；Accelerometer.ShakeDetected 由 `AccelerometerShakeQueue`（幅值阈值 + 时间窗）触发 | ✅ 已实现（专项设备验证待补） |
 | IGeolocation | SetDefault | @ohos.geoLocationManager：GetLastKnownLocation / getCurrentLocation + locationChange/locationError 事件；Cancellation 只取消托管等待（OHOS 当前定位无取消通道） | ✅ 已实现（专项设备验证待补） |
 | IMediaPicker | SetDefault | @ohos.file.picker（选图/选视频，支持多选）+ @ohos.multimedia.camera.picker（拍照/录像）；结果复制到 cache，失败时回退原 URI | ✅ 已实现（专项设备验证待补） |
 | ITextToSpeech / IHapticFeedback / IFlashlight | SetDefault | textToSpeech / vibrator / brightness | 远期 |
 | IMap / IFilePicker / IScreenshot | SetDefault | 各自子系统 | 远期 |
 
-已实现服务的成员级缺口（非阻塞、按价值补）：~~AppInfo.RequestedTheme/ShowSettingsUI~~（✅ 2026-09-13）、~~DeviceDisplay.KeepScreenOn~~（✅ 2026-09-13）、~~IShare 文件分享~~（✅ 已实现，见上表）、DeviceInfo.Idiom 平板判定。
+已实现服务的成员级缺口（非阻塞、按价值补）：DeviceInfo.Idiom 的平板判定。

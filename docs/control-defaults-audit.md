@@ -86,7 +86,7 @@
 
 ## 修复记录
 
-| 日期 | Handler | 修复内容 |
-|---|---|---|
-| 2026-10-01 | Button | ~~`MapFontSize` 移除硬编码 `16f` 兜底~~ → 实测回归（按钮文字零尺寸不可见）后**回滚**。最终验收标准：`FontSize=0` 显式映射到 `HarmonyControlDefaults.ButtonFontSize`（`16fp`）；ArkUI 原生 `16fp` 默认仅存在于 ArkTS 声明式 API，NDK C API 节点无样式表。结构回归使用 `dumpLayout` 验证按钮节点、bounds 与子 `Text` |
-| 2026-10-01 | Editor | `MapFontSize` 条件从 `>=0` 改为 `>0`，`FontSize=0` 不再传给 ArkUI |
+| Handler | 修复内容 |
+|---|---|
+| Button | ~~`MapFontSize` 移除硬编码 `16f` 兜底~~ → 实测回归（按钮文字零尺寸不可见）后**回滚**。最终验收标准：`FontSize=0` 显式映射到 `HarmonyControlDefaults.ButtonFontSize`（`16fp`）；ArkUI 原生 `16fp` 默认仅存在于 ArkTS 声明式 API，NDK C API 节点无样式表。结构回归使用 `dumpLayout` 验证按钮节点、bounds 与子 `Text` |
+| Editor | `MapFontSize` 条件从 `>=0` 改为 `>0`，`FontSize=0` 不再传给 ArkUI |

@@ -44,12 +44,13 @@ src/HarmonyOS.Bindings/Api/*  ──napi（经 HarmonyOS.Interop）──►  li
 
 ### Step 1：确认 ArkUI 节点类是否够用
 
-节点类在 `src/HarmonyOS.Bindings/Nodes/`，目前由 `tools/api-generator/nativeCodeGenerator.ts` 从 SDK `.d.ts` 自动产出（已有 button/checkbox/column/date_picker/flex/grid/image/list/progress/radio/refresh/row/scroll/slider/span/stack/swiper/text/text_area/text_input/text_picker/time_picker/toggle/xcomponent 共 24 个）。查两个地方：
+节点类在 `src/HarmonyOS.Bindings/Nodes/`，目前由 `tools/api-generator/nativeCodeGenerator.ts` 从 SDK `.d.ts` 自动产出
+（arc_list/arc_scroll_bar/button/calendar_picker/checkbox/checkbox_group/column/date_picker/flex/flow_item/grid/grid_item/image/list/list_item_group/loading_progress/progress/radio/refresh/relative_container/row/scroll/slider/span/stack/swiper/text/text_area/text_editor/text_input/text_picker/time_picker/toggle/water_flow/xcomponent 共 35 个）。查两个地方：
 
 - `src/HarmonyOS.Bindings/NativeNode/ArkUINodeTypes.g.cs` 里 `ARKUI_NODE_*` 枚举 —— 确认目标组件类型存在（如 `ARKUI_NODE_SLIDER`）；
 - `Nodes/native-gaps.json` —— 生成器登记的"属性存在但 shape 未注册"缺口。
 
-上述 24 个组件的节点类已由生成器自动产出（含属性、事件、构造参数），**无需手写**。对于不在 SDK `.d.ts` 中的自定义组件或生成器未覆盖的属性，可手写补充节点类：
+上述 35 个组件的节点类已由生成器自动产出（含属性、事件、构造参数），**无需手写**。对于不在 SDK `.d.ts` 中的自定义组件或生成器未覆盖的属性，可手写补充节点类：
 
 ```csharp
 // src/HarmonyOS.Bindings/Nodes/slider.cs —— 手写节点类模板
@@ -98,7 +99,7 @@ public unsafe class Slider : ArkUINodeBase
 
 ### Step 2：写 Handler
 
-模板（对照 `HarmonySliderHandler.cs`，当前代码风格）：
+模板（对照 `src/HarmonyOS.Maui/Handlers/HarmonySliderHandler.cs`）：
 
 ```csharp
 // src/HarmonyOS.Maui/Handlers/HarmonySliderHandler.cs
@@ -110,23 +111,27 @@ using ArkSlider = HarmonyOS.ArkUI.Slider;
 namespace HarmonyOS.Maui.Handlers;
 
 /// <summary>MAUI Slider 的 HarmonyOS Handler（ArkUI Slider 节点）。</summary>
-public class HarmonySliderHandler : ViewHandler<Microsoft.Maui.Controls.Slider, ArkSlider>
+public class HarmonySliderHandler : HarmonyViewHandler<ISlider, ArkSlider>, ISliderHandler
 {
-    public static PropertyMapper<Microsoft.Maui.Controls.Slider, HarmonySliderHandler> Mapper =
-        new(ViewMapper)
-        {
-            [nameof(Microsoft.Maui.Controls.Slider.Minimum)] = MapMinimum,
-            [nameof(Microsoft.Maui.Controls.Slider.Maximum)] = MapMaximum,
-            [nameof(Microsoft.Maui.Controls.Slider.Value)] = MapValue,
-        };
+    // 基座 HarmonyViewMapper.Base 已统一 WidthRequest/HeightRequest/Background/Padding
+    public static PropertyMapper<ISlider, HarmonySliderHandler> Mapper = new(HarmonyViewMapper.Base)
+    {
+        [nameof(ISlider.Minimum)] = MapMinimum,
+        [nameof(ISlider.Maximum)] = MapMaximum,
+        [nameof(ISlider.Value)] = MapValue,
+    };
 
     public HarmonySliderHandler() : base(Mapper) { }
+
+    ISlider ISliderHandler.VirtualView => VirtualView;
+
+    object ISliderHandler.PlatformView => PlatformView;
 
     protected override ArkSlider CreatePlatformView() => new();
 
     protected override void ConnectHandler(ArkSlider platformView)
     {
-        base.ConnectHandler(platformView);
+        base.ConnectHandler(platformView);      // 手势管理器在此挂载
         platformView.ValueChanged += OnValueChanged;
     }
 
@@ -136,42 +141,35 @@ public class HarmonySliderHandler : ViewHandler<Microsoft.Maui.Controls.Slider, 
         base.DisconnectHandler(platformView);
     }
 
-    public static void MapMinimum(HarmonySliderHandler h, Microsoft.Maui.Controls.Slider v)
-    {
-        h.PlatformView.MinValue = (float)v.Minimum;
-    }
+    public static void MapMinimum(HarmonySliderHandler h, ISlider v)
+        => h.PlatformView.MinValue = (float)v.Minimum;
 
-    public static void MapMaximum(HarmonySliderHandler h, Microsoft.Maui.Controls.Slider v)
-    {
-        h.PlatformView.MaxValue = (float)v.Maximum;
-    }
+    public static void MapMaximum(HarmonySliderHandler h, ISlider v)
+        => h.PlatformView.MaxValue = (float)v.Maximum;
 
-    public static void MapValue(HarmonySliderHandler h, Microsoft.Maui.Controls.Slider v)
-    {
-        var clamped = Math.Clamp(v.Value, v.Minimum, v.Maximum);
-        h.PlatformView.Value = (float)clamped;
-    }
+    public static void MapValue(HarmonySliderHandler h, ISlider v)
+        => h.PlatformView.Value = (float)Math.Clamp(v.Value, v.Minimum, v.Maximum);
 
     private void OnValueChanged(ArkUINodeEvent e)
     {
-        // data[0].f32 = current value（见 NODE_SLIDER_EVENT_ON_CHANGE 注释）
+        // data[0].f32 = 当前值（见 NODE_SLIDER_EVENT_ON_CHANGE 注释）
         var value = (double)e.ComponentData(0).f32;
         if (VirtualView.Value == value) return;
-        VirtualView.Value = value;
+        VirtualView.Value = value;   // 只读属性取值，不要在 Map 方法里回写 VirtualView
     }
 }
 ```
 
 **三条规则：**
 
-1. **属性进 `PropertyMapper`**：key 用 `nameof(控件属性)`，值是命名静态 `MapXxx` 方法（**不要**内联 lambda）；
+1. **属性进 `PropertyMapper`**：key 用 `nameof(控件属性)`，值是命名静态 `MapXxx` 方法（**不要**内联 lambda），
+   基类用 `HarmonyViewMapper.Base` 而不是 `ViewMapper`；
 2. **子树增删进 `CommandMapper`**：只有"容器型"控件需要（见 §3 布局三分法）；
-3. **事件在 `ConnectHandler` 订阅、在 `DisconnectHandler` 取消订阅**：ArkUI 事件 → 调 MAUI 控件的命令方法（如直接修改 `VirtualView.Value` 触发属性变更）。
+3. **事件在 `ConnectHandler` 订阅、在 `DisconnectHandler` 取消订阅**：ArkUI 事件 → 调 MAUI 控件的命令方法
+   （如修改 `VirtualView.Value` 触发属性变更）。
 
-**命名 Map 方法 vs 内联 lambda 的选择：**
-
-- 当前代码统一使用**命名静态 Map 方法**（`MapText`、`MapValue` 等），便于单元测试和日志追踪；
-- 如果属性只是简单一行赋值，也可写内联 lambda，但请保持与现有代码风格一致。
+**命名 Map 方法 vs 内联 lambda**：本仓库统一使用**命名静态 Map 方法**（`MapText`、`MapValue` 等），
+便于单元测试与日志追踪；可读性一致的简单赋值可用表达式体（`=>`）保持一行，但不要再引入内联 lambda。
 
 ### Step 3：注册到工厂
 
@@ -247,19 +245,19 @@ MCT 的 `UseMauiCommunityToolkit()` 扩展绑定官方 `MauiAppBuilder` 类型�
 
 ### Step 5：验证链路
 
-```bash
-# 0. 一键（宿主自动 stage → libapp.so → HAP → 部署，见 GETTING_STARTED §3）
-dotnet build samples/dotnet/HelloApp/HelloApp.csproj -t:HarmonyRun
+```powershell
+# 0. 一键（宿主自动 stage → libapp.so → HAP → 部署，见 GETTING_STARTED §0）
+dotnet build samples/dotnet/HelloApp -t:HarmonyRun
 
 # 或分步（必须使用该应用的暂存宿主，不能直接部署 samples/HarmonyHost）：
 # 1. 编译（Windows 本地即可验证 C#/XAML）
-dotnet build samples/dotnet/HelloApp/HelloApp.csproj
+dotnet build samples/dotnet/HelloApp
 # 2. stage 宿主 + NativeAOT 双架构 libapp.so（并复制到暂存宿主）
-dotnet build samples/dotnet/HelloApp/HelloApp.csproj -t:HarmonyStageHost
-dotnet build samples/dotnet/HelloApp/HelloApp.csproj -t:HarmonyBuildLibApp
+dotnet build samples/dotnet/HelloApp -t:HarmonyStageHost
+dotnet build samples/dotnet/HelloApp -t:HarmonyBuildLibApp
 # 3. 打包 HAP（targets 会设置 HOST_DIR；手工执行时需指向暂存宿主）
 $env:HOST_DIR = "samples/dotnet/HelloApp/obj/harmony/host"
-cmd //c "scripts\build-hap.cmd"
+.\scripts\build-hap.cmd
 # 4. 部署模拟器（按需）
 pwsh scripts/deploy-hap.ps1
 ```
@@ -295,7 +293,7 @@ public static CommandMapper<MLAYOUT, HarmonyLayoutHandler> LayoutCommandMapper =
 - `ConnectHandler` 里**全量同步已存在的 Children** —— Handler 连接之前加进 Controls 树的子节点不会补发 Add 命令；
 - MAUI 托管布局需要容器尺寸：订阅 `NODE_ON_SIZE_CHANGE`（vp 值在 `e.SizeChangeWidth/Height`），不要用 px 的 `MeasuredSize` 直接当 vp。
 
-MAUI 托管布局的对齐/ZIndex 约定（2026-09-12 落地）：
+MAUI 托管布局的对齐/ZIndex 约定：
 
 - **单元格内对齐**：读 `view.HorizontalLayoutAlignment/VerticalLayoutAlignment`（`IView` 接口属性，
   Controls 侧自动从 `HorizontalOptions/VerticalOptions` 的 Alignment 映射），非 Fill 调
@@ -310,14 +308,14 @@ MAUI 托管布局的对齐/ZIndex 约定（2026-09-12 落地）：
 
 ---
 
-## 4. `@ohos.*` API 绑定（生成器产出，M2 完成）
+## 4. `@ohos.*` API 绑定（生成器产出）
 
 UI 之外的系统服务（通知、振动、网络、设置项……）走 napi 通道。**模块绑定全部由生成器产出**（`src/HarmonyOS.Bindings/Api/`，438 个模块 / 438 个全量转正编译；`GRAYSCALE_MODULES` 当前为空），不要手写——下面的铁律是生成器与运行时已经实现的约束，排查问题时读。
 
 ### 4.1 生成与转正流程
 
 ```bash
-# 全量生成（449 个 d.ts → 438 模块）；不带 --all 只处理 PILOT_MODULES 白名单
+# 全量生成（SDK 全部 d.ts → 438 模块）；不带 --all 只处理 PILOT_MODULES 白名单
 npx ts-node tools/api-generator/index.ts --sdk "<SDK 路径>" --all
 
 # 转正策略：--all 模式默认全部转正，GRAYSCALE_MODULES（tools/api-generator/index.ts）里的回灰；
@@ -358,10 +356,10 @@ dotnet build ArkTsBinding.slnx
 | 项 | 规范 | 反例 |
 |---|---|---|
 | `ViewHandler` 泛型 | 核心接口优先（`ISlider`/`IEntry`）；**接口缺属性时回退具体类型**（`Label.HorizontalTextAlignment` 不在 `ILabel` 上） | `ViewHandler<Microsoft.Maui.Controls.Button, ...>`（冗长） |
-| PropertyMapper | `new(ViewHandler.ViewMapper)` | `new(ViewMapper)`（本仓当前未使用该写法） |
+| PropertyMapper | `new(HarmonyViewMapper.Base)`（基座已统一 WidthRequest/HeightRequest/Background/Padding） | `new(ViewMapper)` / 各 handler 重复映射基座属性 |
 | Mapper key | `[nameof(Button.Text)]` | `[("Text")]`（字符串硬编码） |
 | Mapper value | 命名静态方法 `MapText` | 内联 lambda `(h, v) => ...`（不利于测试和堆栈） |
-| Map 方法签名 | `MapText(HarmonyButtonHandler h, Button v)` | `MapText(IButtonHandler h, IButton v)`（接口不存在的属性访问不到） |
+| Map 方法签名 | `MapText(HarmonyButtonHandler h, IButton v)`（核心接口优先，接口缺属性时回退 Controls 具体类型） | `MapText(IButtonHandler h, IButton v)`（IButtonHandler 上没有控件属性） |
 | 颜色转换 | `(byte)(c.Red * 255), ...` | `new Color(r, g, b)`（与 ArkUI 值域不一致） |
 | Background（Brush） | `BrushHelper.ApplyBackground(h.PlatformView, v.Background)` | 只处理 Brush 忘了 BackgroundColor |
 | **BackgroundColor（Color）** | **直接读 `v.BackgroundColor` 走纯色路径**——XAML `BackgroundColor="X"` 只设置 `VisualElement.BackgroundColor`，**不会**同步到 `Background`（两者是独立 BindableProperty，读 `v.Background` 会拿到 null 静默丢色） | `BrushHelper.ApplyBackground(h.PlatformView, v.Background)`（BackgroundColor 映射里读 Brush） |
@@ -375,8 +373,9 @@ dotnet build ArkTsBinding.slnx
 
 ## 6. Handler 覆盖清单
 
-ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`）；下表是当前控件覆盖与完成度（不是"待办清单"）。
-完整清单由 `dotnet run --project tools/HandlerAudit` 重新生成到 [docs/handler-coverage.md](docs/handler-coverage.md)。
+ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`）；下表是按控件族归纳的覆盖情况，
+逐 Handler 的映射明细（已映射键数 / 基座覆盖 / 基线豁免 / 缺口）由
+`dotnet run --project tools/HandlerAudit` 重新生成到 [docs/handler-coverage.md](docs/handler-coverage.md)。
 
 | 优先 | MAUI 控件 | ArkUI 节点 | 难点 | 状态 |
 |---|---|---|---|---|
@@ -390,8 +389,8 @@ ArkUI 节点类型枚举已全部生成（`ArkUINodeTypes.g.cs`）；下表是�
 | ★★☆ | `Slider` | `ARKUI_NODE_SLIDER` | — | ✅ 已完成 |
 | ★★☆ | `Editor` | `ARKUI_NODE_TEXT_AREA` | 同 Entry | ✅ 已完成 |
 | ★★☆ | `Border`（含废弃的 `Frame`） | `ARKUI_NODE_STACK` | flex 托管；工厂只注册 `Border`（Frame 已废弃，XAML 用 Border） | ✅ 已完成 |
-| ★☆☆ | `CollectionView` | `ARKUI_NODE_LIST` + NodeAdapter | **虚拟化**：条目按可见范围物化（ON_ADD/ON_REMOVE 事件回调，ItemTemplate 经 CreateContent，AOT 安全）；ItemsSource 变更走 SetTotalCount+ReloadAllItems；2026-09-17 模拟器实测（200 条目仅物化可见 7 条，滚动按需前进/回滚复现） | ✅ 已完成 |
-| ★☆☆ | `CarouselView` | `ARKUI_NODE_SWIPER` | 全量物化子视图；需显式高度（HeightRequest）；Loop/位置回传暂略 | ✅ M1 已完成 |
+| ★☆☆ | `CollectionView` | `ARKUI_NODE_LIST` + NodeAdapter | **虚拟化**：条目按可见范围物化（ON_ADD/ON_REMOVE 事件回调，ItemTemplate 经 CreateContent，AOT 安全）；ItemsSource 变更走 SetTotalCount+ReloadAllItems；模拟器实测（200 条目仅物化可见 7 条，滚动按需前进/回滚复现） | ✅ 已完成 |
+| ★☆☆ | `CarouselView` | `ARKUI_NODE_SWIPER` | 全量物化子视图；需显式高度（HeightRequest）；Loop/位置回传暂略 | ✅ 已完成 |
 | ★☆☆ | `Picker`/`DatePicker`/`TimePicker` | `ARKUI_NODE_TEXT_PICKER`/`DATE_PICKER`/`TIME_PICKER` | ArkUI 是内嵌滚轮非弹窗，视觉有差异；节点类已入解析器生成管线（NODE_TYPE_NAME_FIXES + CONSTRUCTOR_OPTION_PROPS，PickerManual/TextPickerManual.cs 已删除）；MAUI 10 的 Date/Time 为可空类型 | ✅ 已完成 |
 | ★☆☆ | `RefreshView` | `ARKUI_NODE_REFRESH` | 下拉经 NODE_REFRESH_ON_REFRESH 置 IsRefreshing；刷新态 setter 已入生成管线（CONSTRUCTOR_OPTION_PROPS，RefreshManual.cs 已删除） | ✅ 已完成 |
 | ★☆☆ | `BoxView` | `ARKUI_NODE_STACK` | 纯色矩形（Color/BackgroundColor → 背景色） | ✅ 已完成 |
@@ -412,7 +411,7 @@ MAUI 的手势平台管线在 netstandard Controls 产物中是 internal 空实�
 - `ConnectHandler` 里如果自己还要订阅节点事件，放在 `base.ConnectHandler(platformView)` 之后即可，与手势管理器互不干扰；
 - `HarmonyGestureManager` 监听 `CompositeGestureRecognizers` 集合变化与 `IsEnabled/InputTransparent`，全量重建原生手势——不要在 Handler 里手工管理手势生命周期。
 
-分层文件：NDK 函数表 `src/HarmonyOS.Bindings/NativeNode/ArkUIGestureApi.cs`（镜像自 native_gesture.h，C bool 按字节用 `byte` 表达）、公共指针包装 `ArkUIPointerEvent.cs`（经 `ArkUINodeEvent.InputEvent` → `ArkUIPointerEvent.From(IntPtr)`，坐标 px）、托管包装 `src/HarmonyOS.Bindings/Nodes/Gestures/`、翻译层 `src/HarmonyOS.Maui/Handlers/HarmonyGestureManager.cs`、反射桥 `MauiGestureBridge.cs`（`TapGestureRecognizer.SendTapped` / `PointerGestureRecognizer.SendPointer*` 为 MAUI internal，`[DynamicDependency]` 收根 + `CreateDelegate` 缓存，**不得**改为逐次 `MethodInfo.Invoke`）。
+分层文件：NDK 函数表 `src/HarmonyOS.Bindings/NativeNode/ArkUIGestureApi.cs`（镜像自 native_gesture.h，C bool 按字节用 `byte` 表达）、公共指针包装 `ArkUIPointerEvent.cs`（经 `ArkUINodeEvent.InputEvent` → `ArkUIPointerEvent.From(IntPtr)`，坐标 vp）、托管包装 `src/HarmonyOS.Bindings/Nodes/Gestures/`、翻译层 `src/HarmonyOS.Maui/Handlers/HarmonyGestureManager.cs`、反射桥 `MauiGestureBridge.cs`（`TapGestureRecognizer.SendTapped` / `PointerGestureRecognizer.SendPointer*` 为 MAUI internal，`[DynamicDependency]` 收根 + `CreateDelegate` 缓存，**不得**改为逐次 `MethodInfo.Invoke`）。
 
 | MAUI 识别器 | 原生通道 | 说明 |
 |---|---|---|

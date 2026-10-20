@@ -1,6 +1,6 @@
 # arkui-bindgen
 
-HarmonyOS NDK 头文件（ArkUI /*.h*）→ C# 绑定生成器。取代已删除的
+HarmonyOS NDK 头文件（ArkUI `native_*.h`）→ C# 绑定生成器。取代已删除的
 `src/nativeBinding/extract_arkui_types.py`（正则抽枚举）与 `scripts/check-abi-mirror.ps1`
 （正则级函数表结构校验，由 `--check` 吞并）。
 
@@ -18,7 +18,7 @@ HarmonyOS NDK 头文件（ArkUI /*.h*）→ C# 绑定生成器。取代已删除
 python -m pip install -r requirements.txt   # libclang + PyYAML（+pytest 跑单测）
 
 # 生成（默认读取 config/semantics.yaml 的头文件集合；默认 out-dir 已是 NativeNode/）
-python -m arkui_bindgen gen --sdk D:\Harmony\OpenHarmony\Sdk `
+python -m arkui_bindgen gen --sdk "<OpenHarmony SDK 根>" \
     --out-dir src\HarmonyOS.Bindings\NativeNode
 
 # 漂移检查（本地门禁）：内存重出并与盘上产物逐字节比对；
@@ -30,9 +30,10 @@ python -m arkui_bindgen diff               # 全部声明 snapshot 的目标
 python -m arkui_bindgen diff --target animate
 ```
 
-`--sdk` 省略时按 `OHOS_SDK_BASE` → `OHSDK_HOME` → DevEco 内置
-（`D:\Program Files\Huawei\DevEco Studio\sdk\default\openharmony`）→ `D:\Harmony\OpenHarmony\Sdk`
-探测（与 TS 侧 api-generator 同序）。
+`--sdk` 省略时按 `OHOS_SDK_BASE` → `OHOS_SDK_HOME` → `OHSDK_HOME` → DevEco 内置
+（`D:\Program Files\Huawei\DevEco Studio\sdk\default\openharmony`）→ 历史默认路径
+（`D:\Harmony\OpenHarmony\Sdk`）探测，每个候选依次尝试「版本号子目录 / `openharmony` 子目录 / 根」三种形态。
+TS 侧 `api-generator` 走同一套解析（`--sdk` 优先），两侧无需分别记忆候选顺序。
 
 > `check` 依赖本机 OpenHarmony SDK 头文件，因此当前 GitHub Actions 最小 CI 不执行该步骤；
 > 本地合入前请先运行一次。

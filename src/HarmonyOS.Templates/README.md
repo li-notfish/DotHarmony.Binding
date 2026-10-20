@@ -1,17 +1,25 @@
-# HarmonyOS MAUI App Templates
+# HarmonyOS MAUI 应用模板
 
-This package contains two project templates. Both create a NativeAOT shared-library MAUI app, stage the shared HarmonyOS ArkTS host, build `libapp.so`, package a HAP, and deploy it to a connected device.
+本包提供两个项目模板。两者都生成 NativeAOT 共享库形式的 MAUI 应用：stage 共享的 HarmonyOS ArkTS 宿主、
+编译 `libapp.so`、打包 HAP 并部署到已连接的设备。
 
-- `harmony-maui` creates the standard app template. It references `HarmonyOS.Maui` and contains no WebView bridge files.
-- `harmony-maui-web` creates a WebView-enabled app template. It references `HarmonyOS.Maui.Web`, includes the WebView native export shim, and declares `ohos.permission.INTERNET`.
+- `harmony-maui`：标准应用模板，引用 `HarmonyOS.Maui`，不含 WebView 桥接文件。
+- `harmony-maui-web`：带 WebView 的应用模板，引用 `HarmonyOS.Maui.Web`，包含 WebView 导出薄转发层，
+  并声明 `ohos.permission.INTERNET`。
 
-After installing the template package, create an app with:
+安装模板包后创建应用：
 
 ```powershell
 dotnet new harmony-maui -n MyApp
 dotnet new harmony-maui-web -n MyWebApp
 ```
 
-Both generated projects target `net10.0-harmonyos` and support the normal HarmonyOS targets provided by `HarmonyOS.Maui`, including `HarmonyStageHost`, `HarmonyBuildLibApp`, `HarmonyBuildHap`, and `HarmonyDeploy`.
+两个模板都面向 `net10.0-harmonyos`，由 `HarmonyOS.Maui` 提供 `HarmonyStageHost`、`HarmonyBuildLibApp`、
+`HarmonyBuildHap`、`HarmonyDeploy`、`HarmonyRun` 等目标。
 
-The host core remains shared. `HarmonyStageHost` stages `samples/HarmonyHost` (or its packaged copy); when `HarmonyOS.Maui.Web` is present, its target then injects `host/Index.ets` as the WebView-capable overlay for that staged host.
+宿主核心保持共享：`HarmonyStageHost` 把 `samples/HarmonyHost`（或包内副本）实例化到应用工程的
+`obj/harmony/host`；引用 `HarmonyOS.Maui.Web` 时，其 target 会把 `host/Index.ets` 作为 WebView
+覆盖层注入该暂存宿主。
+
+包名默认由构建目标按工程名推导（`com.arktsbinding.<name-lower>`）；上架或云调试需要登记包名时显式指定：
+`dotnet new harmony-maui -n MyApp --bundleId com.example.myapp`。

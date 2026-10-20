@@ -22,3 +22,4 @@
 ```bash
 hdc shell uitest dumpLayout -p /data/local/tmp/layout_$(date +%s).json
 hdc file recv /data/local/tmp/layout_*.json ./tmp/layout.json
+```

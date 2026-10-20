@@ -15,7 +15,8 @@ dotnet build samples/dotnet/BlazorHybridApp -t:HarmonyRun
   `__bwv` 握手自确认（不再使用固定延迟）。
 - **API 面**（对齐官方 `BlazorWebView`）：BindableProperty 的 `HostPage`/`StartPath`、
   `RootComponents`、`AddRootComponentAsync`/`RemoveRootComponentAsync`、
-  `UrlLoading` + `UrlLoadingStrategy`、`BlazorWebViewInitializing`/`Initialized`。
+  `UrlLoading` + `HarmonyUrlLoadingStrategy`（`OpenExternally`/`OpenInWebView`/`CancelLoad`）、
+  `BlazorWebViewInitializing`/`Initialized`、`WebResourceRequested`，以及 `IHarmonyBlazorWebView` 接口。
 - **内嵌布局**：`BlazorApp` 把 WebView 放进 `Grid` 的 star 行、原生 `Label`/`Button` 放 Auto 行，
   验证 Web 与原生控件同页混排、各自独立响应点击（官方 `BlazorWebView` 的常规用法）。
 - **JS Interop**：`JsInterop.razor` 演示 .NET → JS（`IJSRuntime.InvokeAsync`）与
@@ -29,4 +30,6 @@ dotnet build samples/dotnet/BlazorHybridApp -t:HarmonyRun
 - **InputFile**：`Upload.razor` 演示文件上传；分块走标准 JSInterop，实测 250 KB PDF 字节无损。
 - 内嵌模式要求 `WebviewController` 与 Web 组件完成关联（`onControllerAttached`）后才能调用其 API，
   宿主已按该事件驱动，不再使用延时。
+- 继承 `Microsoft.Maui.Controls.WebView`，因此 `Navigating`/`Navigated`、`CanGoBack`/`GoBack`/`GoForward`、
+  `UserAgent`/`Source` 等既有能力照常可用（历史前进/后退走 ArkWeb 原生历史，不用脚本）。
 - 属于实验功能，稳定 API 以 MAUI/Controls 示例为准。
