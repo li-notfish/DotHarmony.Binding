@@ -180,6 +180,59 @@ public sealed class HarmonyBlazorWebViewTests
     }
 
     [Fact]
+    public void ImplementsIBlazorWebViewContract()
+    {
+        // 对齐官方 IBlazorWebView：组件库可只依赖接口完成根组件注册与 URL 策略接管
+        var view = new HarmonyBlazorWebView();
+        Assert.IsAssignableFrom<IHarmonyBlazorWebView>(view);
+
+        IHarmonyBlazorWebView contract = view;
+        Assert.Null(contract.HostPage);
+        Assert.Equal("/", contract.StartPath);
+        Assert.NotNull(contract.RootComponents);
+        Assert.NotNull(contract.JSComponents);
+    }
+
+    [Fact]
+    public void InheritsWebViewForNavigatingAndHistory()
+    {
+        // 对齐官方 BlazorWebView : WebView：继承导航事件与历史能力
+        var view = new HarmonyBlazorWebView();
+        Assert.IsAssignableFrom<Microsoft.Maui.Controls.WebView>(view);
+        Assert.IsAssignableFrom<Microsoft.Maui.IWebView>(view);
+    }
+
+    [Fact]
+    public async Task TryDispatchAsync_ReturnsFalseBeforeManagerAttached()
+    {
+        // 未初始化时不应抛错，而是返回 false（官方语义：调用方自行决定降级行为）
+        var view = new HarmonyBlazorWebView();
+        var called = false;
+
+        var dispatched = await view.TryDispatchAsync(_ => called = true);
+
+        Assert.False(dispatched);
+        Assert.False(called);
+    }
+
+    [Fact]
+    public void StaticContentCacheControlProvider_IsSettable()
+    {
+        var view = new HarmonyBlazorWebView();
+        Assert.Null(view.StaticContentCacheControlProvider);
+
+        view.StaticContentCacheControlProvider =
+            request => request.ContentType.StartsWith("image/", StringComparison.Ordinal)
+                ? "public, max-age=86400"
+                : null;
+
+        Assert.NotNull(view.StaticContentCacheControlProvider);
+        var header = view.StaticContentCacheControlProvider!(
+            new HarmonyStaticContentRequest(new Uri("https://localhost/img/a.png"), "image/png"));
+        Assert.Equal("public, max-age=86400", header);
+    }
+
+    [Fact]
     public void MimeMap_ResolvesCommonWebAssets()
     {
         Assert.Equal("text/html", HarmonyBlazorMimeMap.Resolve("index.html"));

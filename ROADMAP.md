@@ -295,6 +295,26 @@ Web 只能以宿主页全屏覆盖存在，与原生控件无法同页共存。M
   分块走既有 `ReceiveByteArrayFromJS`；实测 250 KB PDF 上传成功且字节完整。
   此前"SDK 无 ArrayFileStore 协议需自行分块"的判断是错的。
 
+### M4 后续：官方 API 形状对齐（已完成）
+
+补齐官方 `BlazorWebView` 的公开形状，使组件库与既有代码按接口/基类编程即可移植：
+
+- `IHarmonyBlazorWebView`：对齐官方 `IBlazorWebView`（HostPage / StartPath / RootComponents /
+  JSComponents / CreateFileProvider / UrlLoading / BlazorWebViewInitializing / Initialized）。
+  控件的事件与方法同名，接口用显式实现避免冲突。
+- 继承 `Microsoft.Maui.Controls.WebView`：获得 `Navigating`/`Navigated`（由宿主 `onPageBegin`/
+  `onPageEnd` 驱动）、`CanGoBack`/`CanGoForward`/`GoBack`/`GoForward`（走 ArkWeb `accessBackward`/
+  `backward` 原生历史，替换原先不可靠的 `history.back()` 脚本）。handler 注册按具体类型优先，
+  继承链解析不会误路由到 `HarmonyWebViewHandler`。
+- `TryDispatchAsync`：经 Blazor `Dispatcher` + scoped `IServiceProvider` 分发；未初始化时返回 false
+  而非抛错（官方语义）。
+- `StaticContentCacheControlProvider`：本地静态内容返回 `Cache-Control`，默认仍 `no-store`。
+- `BlazorWebViewInitializing` 扩充引擎级可配项（ZoomAccess / DomStorageAccess / FileAccess /
+  AllowMixedContent）。
+
+**平台面仍未对齐（已决定不做）**：热重载（rawfile 无文件监视，ArkUI 的 `NodeCustomEvent` 只有
+measure/layout/draw，不含文件变更通知）、流式静态资源（当前全量缓冲）、开发者工具接线。
+
 ---
 
 ## 平台铁律速查（实测沉淀，实现前必读）

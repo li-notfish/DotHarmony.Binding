@@ -287,6 +287,12 @@ tests/                       jest（解析器/生成器 79 用例）
   时把该节点挂进自己的平台容器（`OH_ArkUI_NodeContent_AddNode`/`AddChild`），并在容器 `NODE_ON_SIZE_CHANGE`
   时同步尺寸，使 Web 随 MAUI 布局伸缩。控制器就绪由 `onControllerAttached` 精确驱动（不用延时启发式）。
   实测：`Grid` 中 Web 占 star 行、原生 `Button` 占 Auto 行，两者各自独立响应点击。
+- **API 形状**：`HarmonyBlazorWebView` 实现 `IHarmonyBlazorWebView`（对齐官方 `IBlazorWebView`，
+  组件库可只依赖接口）；继承 `Microsoft.Maui.Controls.WebView`，因而具备 `Navigating`/`Navigated`、
+  `CanGoBack`/`GoBack`/`GoForward`（走 ArkWeb 原生历史，非脚本）、`UserAgent`/`Source` 等继承能力；
+  提供 `TryDispatchAsync`（原生 UI 访问 scoped services）与 `StaticContentCacheControlProvider`
+  （本地静态内容 `Cache-Control`，对齐 .NET 10）；`BlazorWebViewInitializing` 暴露 `ZoomAccess`/
+  `DomStorageAccess`/`FileAccess`/`AllowMixedContent` 等引擎级可配项。
 - **多实例**：每个 `HarmonyBlazorWebView` 用 `WebTag` 标识（默认 `harmony-web`），对应宿主侧一个
   `BuilderNode`。宿主注册 `registerWebViewFactory` 后，.NET 遇到未注册的 tag 会经
   `HarmonyHostWebCreateView` 反向请求宿主按需创建，surface / scheme handler / IPC 消息全部按 tag 路由。
