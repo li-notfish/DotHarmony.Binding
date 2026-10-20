@@ -21,6 +21,12 @@ public static class HarmonyWebRuntime
     private static readonly object Sync = new();
     private static readonly Dictionary<string, HarmonyArkWebViewSurface> Surfaces = new(StringComparer.Ordinal);
 
+    /// <summary>surface 注册完成通知（多实例时 handler 据此继续初始化）。</summary>
+    public static event Action<string>? SurfaceRegistered;
+
+    /// <summary>surface 完成平台节点绑定（内嵌模式就绪）——handler 可据此重试挂载。</summary>
+    public static event Action<string>? PlatformNodeBound;
+
     /// <summary>默认 tag 的 surface（单实例时代的兼容读取口）。</summary>
     public static IHarmonyWebViewSurface? Current
     {
@@ -29,6 +35,26 @@ public static class HarmonyWebRuntime
             lock (Sync)
                 return Surfaces.TryGetValue(DefaultTag, out var surface) ? surface : null;
         }
+    }
+
+    /// <summary>
+    /// 按 webTag 取 surface；未注册时先请求宿主按需创建（多实例）。
+    /// 创建是异步的（ArkTS 侧 BuilderNode → onControllerAttached → passWebView），
+    /// 因此返回值可能仍为 null，调用方可稍后重试 <see cref="GetSurface"/>。
+    /// </summary>
+    public static IHarmonyWebViewSurface? EnsureSurface(string? webTag)
+    {
+        var existing = GetSurface(webTag);
+        if (existing is not null)
+            return existing;
+
+        var tag = string.IsNullOrEmpty(webTag) ? DefaultTag : webTag;
+        if (HarmonyWebViewFactorySink.IsAvailable)
+            HarmonyWebViewFactorySink.TryCreate(tag);
+        else
+            HiLog.Warn("HarmonyWeb", $"[factory] no on-demand host; surface '{tag}' must be pre-created");
+
+        return GetSurface(tag);
     }
 
     /// <summary>按 webTag 取 surface；未注册返回 null。</summary>
@@ -68,6 +94,7 @@ public static class HarmonyWebRuntime
 
             lock (Sync)
                 Surfaces[tag] = surface;
+            SurfaceRegistered?.Invoke(tag);
             return 0;
         }
         catch (Exception ex)
@@ -100,6 +127,8 @@ public static class HarmonyWebRuntime
             var node = ArkUINativeApi.GetNodeHandleFromNapiValue(env, frameNodeValue);
             surface.SetPlatformNode(node);
             HiLog.Info("HarmonyWeb", $"[node] surface '{tag}' bound to web node 0x{node:X} (embedded mode)");
+            // 节点可能晚于 handler 的首次挂载尝试（factory 异步创建），通知其重试
+            PlatformNodeBound?.Invoke(tag);
             return 0;
         }
         catch (Exception ex)
@@ -159,6 +188,10 @@ public static class HarmonyWebRuntime
     }
 
     public static int ReceiveMessageCore(IntPtr env, IntPtr messageValue)
+        => ReceiveMessageCore(env, messageValue, IntPtr.Zero);
+
+    /// <summary>带 webTag 的消息入口：多实例时按 tag 路由到对应 surface。</summary>
+    public static int ReceiveMessageCore(IntPtr env, IntPtr messageValue, IntPtr tagValue)
     {
         try
         {
@@ -167,8 +200,12 @@ public static class HarmonyWebRuntime
             if (message is null)
                 return -1;
 
-            // 单 surface 时代消息无 tag 信息：优先默认 tag，其次唯一注册的 surface。
-            ((HarmonyArkWebViewSurface?)(Current ?? SingleSurface()))?.ReceiveMessage(message);
+            // tag 以 napi_value 传入（ArkTS 侧 bridge 的 webTag 字段）；缺省回落默认/唯一 surface。
+            var tag = tagValue == IntPtr.Zero ? null : NodeApi.ToString(tagValue);
+            var surface = string.IsNullOrEmpty(tag)
+                ? (HarmonyArkWebViewSurface?)(Current ?? SingleSurface())
+                : (HarmonyArkWebViewSurface?)GetSurface(tag);
+            surface?.ReceiveMessage(message);
             return 0;
         }
         catch (Exception ex)
@@ -245,6 +282,10 @@ public static class HarmonyWebRuntime
     /// 处理器内部允许 NAPI（rawfile 走 ResourceManager）；完成后经 HarmonyHostSink 回写 NDK 响应。
     /// </summary>
     public static unsafe int InterceptRequestNativeCore(IntPtr env, int requestId, sbyte* urlPtr)
+        => InterceptRequestNativeCore(env, requestId, urlPtr, null);
+
+    /// <summary>带 webTag 的拦截入口：多实例时按 tag 精确路由到对应 surface。</summary>
+    public static unsafe int InterceptRequestNativeCore(IntPtr env, int requestId, sbyte* urlPtr, string? webTag)
     {
         try
         {
@@ -256,7 +297,10 @@ public static class HarmonyWebRuntime
                 return -1;
             }
 
-            var response = ResolveSurfaceForRequest(url)?.InterceptRequest(new HarmonyWebRequest(url, "GET"));
+            var surface = string.IsNullOrEmpty(webTag)
+                ? ResolveSurfaceForRequest(url)
+                : (HarmonyArkWebViewSurface?)GetSurface(webTag);
+            var response = surface?.InterceptRequest(new HarmonyWebRequest(url, "GET"));
             if (response is null)
             {
                 // 无注册处理器（未来得及初始化或非 Blazor 场景）：按 404 完成，请求不得悬空

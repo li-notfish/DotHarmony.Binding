@@ -65,16 +65,20 @@ internal static class NativeExports
         => HarmonyWebRuntime.InterceptRequestCore(env, urlValue, createResponseValue);
 
     [UnmanagedCallersOnly(EntryPoint = "HarmonyWebReceiveMessage")]
-    private static int HarmonyWebReceiveMessage(nint env, nint messageValue)
-        => HarmonyWebRuntime.ReceiveMessageCore(env, messageValue);
+    private static int HarmonyWebReceiveMessage(nint env, nint messageValue, nint tagValue)
+        => HarmonyWebRuntime.ReceiveMessageCore(env, messageValue, tagValue);
 
     [UnmanagedCallersOnly(EntryPoint = "HarmonyWebProxyReady")]
     private static int HarmonyWebProxyReady(nint env)
         => HarmonyWebRuntime.NotifyProxyReadyCore(env);
 
     [UnmanagedCallersOnly(EntryPoint = "HarmonyWebInterceptNative")]
-    private static unsafe int HarmonyWebInterceptNative(nint env, int requestId, sbyte* url)
-        => HarmonyWebRuntime.InterceptRequestNativeCore(env, requestId, url);
+    private static unsafe int HarmonyWebInterceptNative(nint env, int requestId, sbyte* url, sbyte* webTag)
+        => HarmonyWebRuntime.InterceptRequestNativeCore(
+            env,
+            requestId,
+            url,
+            webTag is null ? null : System.Runtime.InteropServices.Marshal.PtrToStringUTF8((nint)webTag));
 }
 
 internal static class Bootstrap

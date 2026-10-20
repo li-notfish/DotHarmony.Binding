@@ -4,13 +4,19 @@ import native from 'libentry.so';
 
 class ExternalBridge {
   private receiveMessageCallback?: (message: string) => void;
+  // 多实例：每条消息带 webTag，.NET 侧据此路由到对应 surface。
+  private readonly webTag: string;
+
+  constructor(webTag: string) {
+    this.webTag = webTag;
+  }
 
   receiveMessage(callback: (message: string) => void): void {
     this.receiveMessageCallback = callback;
   }
 
   sendMessage(message: string): void {
-    native.receiveWebViewMessage(message);
+    native.receiveWebViewMessage(message, this.webTag);
   }
 
   dispatchMessage(message: string): void {
@@ -20,11 +26,6 @@ class ExternalBridge {
   }
 }
 
-/**
- * Web 的 BuilderNode 版本（内嵌模式）：Web 不再由页面 build() 直接声明，
- * 而是包成节点交给 .NET，由 MAUI 布局决定尺寸与位置。
- * 所有 Web 级回调（proxy / 导航拦截 / 页面事件）都挂在 Builder 内的 Web 上。
- */
 interface WebNodeArgs {
   controller: webview.WebviewController;
   bridge: ExternalBridge;
@@ -33,6 +34,11 @@ interface WebNodeArgs {
   onControllerReady: () => void;
 }
 
+/**
+ * Web 的 BuilderNode 版本（内嵌模式）：Web 不由页面 build() 直接声明，
+ * 而是包成节点交给 .NET，由 MAUI 布局决定尺寸与位置。
+ * 所有 Web 级回调（proxy / 导航拦截 / 页面事件）都挂在 Builder 内的 Web 上。
+ */
 @Builder
 function WebNodeBuilder(args: WebNodeArgs) {
   Web({ src: 'https://localhost/', controller: args.controller })
@@ -67,57 +73,90 @@ function WebNodeBuilder(args: WebNodeArgs) {
     })
 }
 
+/** 单个 Web 实例的宿主侧状态。 */
+class WebSlot {
+  readonly tag: string;
+  readonly controller: webview.WebviewController;
+  readonly bridge: ExternalBridge;
+  node?: BuilderNode<[WebNodeArgs]>;
+  frameNode: object | null = null;
+  controllerReady: boolean = false;
+  passed: boolean = false;
+
+  constructor(tag: string) {
+    this.tag = tag;
+    this.controller = new webview.WebviewController(tag);
+    this.bridge = new ExternalBridge(tag);
+  }
+}
+
 @Entry
 @Component
 struct Index {
   private nodeContent: NodeContent = new NodeContent();
-  // 固定 webTag：NDK ArkWeb API（SetJavaScriptProxyValidCallback / SetSchemeHandler）按 tag 寻址本组件
-  private readonly webTag: string = 'harmony-web';
-  private webController: webview.WebviewController = new webview.WebviewController(this.webTag);
-  private externalBridge: ExternalBridge = new ExternalBridge();
   private nodeContentPassed: boolean = false;
-  private webNode?: BuilderNode<[WebNodeArgs]>;
-  private controllerReady: boolean = false;
-  private pendingFrameNode: object | null = null;
+  // 多实例：每个 slot 一个 webTag → ArkWeb 按 tag 寻址；.NET 侧按 tag 注册独立 surface。
+  // 默认实例用 'harmony-web'，保持与单实例时代的兼容；其余由 .NET 侧按需声明。
+  private readonly slots: WebSlot[] = [new WebSlot('harmony-web')];
 
   aboutToAppear(): void {
     native.initDotnet();
 
-    // 内嵌模式：Web 由 BuilderNode 承载，节点交给 .NET 挂入 MAUI 布局容器。
-    const node: BuilderNode<[WebNodeArgs]> = new BuilderNode<[WebNodeArgs]>(this.getUIContext());
-    const args: WebNodeArgs = {
-      controller: this.webController,
-      bridge: this.externalBridge,
-      webTag: this.webTag,
-      onPageEnded: () => this.passNodeContentOnce(),
-      onControllerReady: () => this.onControllerReady(),
-    };
-    node.build(wrapBuilder(WebNodeBuilder), args);
-    this.webNode = node;
-
-    const frameNode = node.getFrameNode();
-    console.info(`[host] embedded web node=${frameNode === null ? 'null' : 'ok'}`);
-
-    // 等 onControllerAttached（控制器与 Web 组件关联完成）再交给 .NET；
-    // 提前调用 registerJavaScriptProxy 会抛 "must be associated with a Web component"。
-    this.pendingFrameNode = frameNode;
-    if (this.controllerReady) {
-      this.passWebViewToDotNet();
+    for (const slot of this.slots) {
+      this.mountSlot(slot);
     }
+
+    // .NET 侧可在任意 BlazorWebView 连接时按需请求新实例（WebTag 属性）
+    native.registerWebViewFactory((tag: string) => {
+      this.ensureSlot(tag);
+    });
   }
 
-  private onControllerReady(): void {
-    this.controllerReady = true;
-    this.passWebViewToDotNet();
-  }
-
-  private passWebViewToDotNet(): void {
-    if (!this.controllerReady || this.pendingFrameNode === null) {
+  /** 为一个 webTag 创建 BuilderNode 并把节点交给 .NET（幂等）。 */
+  private mountSlot(slot: WebSlot): void {
+    if (slot.node !== undefined) {
       return;
     }
-    const node = this.pendingFrameNode;
-    this.pendingFrameNode = null;
-    native.passWebView(this.webController, this.webTag, node);
+    const node: BuilderNode<[WebNodeArgs]> = new BuilderNode<[WebNodeArgs]>(this.getUIContext());
+    const args: WebNodeArgs = {
+      controller: slot.controller,
+      bridge: slot.bridge,
+      webTag: slot.tag,
+      onPageEnded: () => this.passNodeContentOnce(),
+      onControllerReady: () => this.onControllerReady(slot),
+    };
+    node.build(wrapBuilder(WebNodeBuilder), args);
+    slot.node = node;
+    slot.frameNode = node.getFrameNode();
+    console.info(`[host] web slot '${slot.tag}' node=${slot.frameNode === null ? 'null' : 'ok'}`);
+  }
+
+  /** 按 tag 查找或新增 slot 并挂载（供 .NET 侧按需请求）。 */
+  private ensureSlot(tag: string): void {
+    if (this.slots.some((s: WebSlot) => s.tag === tag)) {
+      return;
+    }
+    const slot = new WebSlot(tag);
+    this.slots.push(slot);
+    this.mountSlot(slot);
+  }
+
+  private onControllerReady(slot: WebSlot): void {
+    slot.controllerReady = true;
+    this.passWebViewToDotNet(slot);
+  }
+
+  /**
+   * 把某个 slot 的 controller + webTag + FrameNode 交给 .NET。
+   * 必须等 onControllerAttached：提前调用 registerJavaScriptProxy 会抛
+   * "must be associated with a Web component"。
+   */
+  private passWebViewToDotNet(slot: WebSlot): void {
+    if (slot.passed || !slot.controllerReady || slot.frameNode === null) {
+      return;
+    }
+    slot.passed = true;
+    native.passWebView(slot.controller, slot.tag, slot.frameNode);
   }
 
   // NodeContent 只需交接一次（.NET 侧据此构建原生节点树）
