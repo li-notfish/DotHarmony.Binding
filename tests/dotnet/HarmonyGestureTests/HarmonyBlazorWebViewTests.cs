@@ -233,6 +233,46 @@ public sealed class HarmonyBlazorWebViewTests
     }
 
     [Fact]
+    public void StreamingResponse_CarriesStreamAndHeaders()
+    {
+        // 流式静态资源：大文件走 ContentStream，Body 为空，避免全量进内存
+        using var stream = new MemoryStream(new byte[512 * 1024]);
+        var response = new HarmonyOS.Maui.Web.HarmonyWebResponse(200, "application/wasm", Array.Empty<byte>())
+        {
+            Headers = new Dictionary<string, string> { ["Cache-Control"] = "public, max-age=86400" },
+            ContentStream = stream,
+        };
+
+        Assert.Empty(response.Body);
+        Assert.Same(stream, response.ContentStream);
+        Assert.Equal("public, max-age=86400", response.Headers!["Cache-Control"]);
+    }
+
+    [Fact]
+    public void StreamingResponse_DefaultsToNullStream()
+    {
+        // 未设置时保持原有一次性缓冲语义（小文件路径）
+        var response = new HarmonyOS.Maui.Web.HarmonyWebResponse(200, "text/html", "hi"u8.ToArray());
+        Assert.Null(response.ContentStream);
+    }
+
+    [Fact]
+    public void InitializingArgs_ExposeEngineKnobs()
+    {
+        var args = new HarmonyBlazorWebViewInitializingEventArgs();
+
+        // 引擎级可配项默认不设置（沿用宿主/ArkWeb 默认）
+        Assert.Null(args.UserAgent);
+        Assert.Null(args.WebDebuggingAccess);
+        Assert.Null(args.DomStorageAccess);
+        Assert.Null(args.FileAccess);
+        Assert.Null(args.AllowMixedContent);
+
+        args.WebDebuggingAccess = true;
+        Assert.True(args.WebDebuggingAccess);
+    }
+
+    [Fact]
     public void MimeMap_ResolvesCommonWebAssets()
     {
         Assert.Equal("text/html", HarmonyBlazorMimeMap.Resolve("index.html"));

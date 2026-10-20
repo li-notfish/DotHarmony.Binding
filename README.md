@@ -291,8 +291,12 @@ tests/                       jest（解析器/生成器 79 用例）
   组件库可只依赖接口）；继承 `Microsoft.Maui.Controls.WebView`，因而具备 `Navigating`/`Navigated`、
   `CanGoBack`/`GoBack`/`GoForward`（走 ArkWeb 原生历史，非脚本）、`UserAgent`/`Source` 等继承能力；
   提供 `TryDispatchAsync`（原生 UI 访问 scoped services）与 `StaticContentCacheControlProvider`
-  （本地静态内容 `Cache-Control`，对齐 .NET 10）；`BlazorWebViewInitializing` 暴露 `ZoomAccess`/
-  `DomStorageAccess`/`FileAccess`/`AllowMixedContent` 等引擎级可配项。
+  （本地静态内容 `Cache-Control`，对齐 .NET 10）；`BlazorWebViewInitializing` 暴露 `WebDebuggingAccess`/
+  `DomStorageAccess`/`FileAccess`/`AllowMixedContent` 等引擎级可配项。`CanGoBack`/`CanGoForward`
+  由 surface 的 ArkWeb 历史状态回写（只读 BindableProperty 经内部 key 更新）。`Source` 与 Blazor 导航联动：
+  应用内路径走 `NavigationManager.NavigateTo`，外部 URL 交给 `UrlLoading`。
+- **流式静态资源**：超过 256 KB 的本地资源走 `ContentStream` 分块响应（NDK 通道
+  `HarmonyHostWebRespondBegin/Write/Finish`），避免全量进内存；小文件仍走一次性缓冲（ArkTS 通道）。
 - **多实例**：每个 `HarmonyBlazorWebView` 用 `WebTag` 标识（默认 `harmony-web`），对应宿主侧一个
   `BuilderNode`。宿主注册 `registerWebViewFactory` 后，.NET 遇到未注册的 tag 会经
   `HarmonyHostWebCreateView` 反向请求宿主按需创建，surface / scheme handler / IPC 消息全部按 tag 路由。

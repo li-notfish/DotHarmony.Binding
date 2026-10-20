@@ -312,8 +312,18 @@ Web 只能以宿主页全屏覆盖存在，与原生控件无法同页共存。M
 - `BlazorWebViewInitializing` 扩充引擎级可配项（ZoomAccess / DomStorageAccess / FileAccess /
   AllowMixedContent）。
 
-**平台面仍未对齐（已决定不做）**：热重载（rawfile 无文件监视，ArkUI 的 `NodeCustomEvent` 只有
-measure/layout/draw，不含文件变更通知）、流式静态资源（当前全量缓冲）、开发者工具接线。
+**平台面**：
+
+- **热重载：NativeAOT 架构下不可用**。Hot Reload 依赖 MetadataUpdate 替换 IL，NativeAOT 产物是机器码，
+  与该机制无关。此前记为"rawfile 无文件监视"是误判——即使有文件监视也无法实现。**已从待办移除。**
+- **流式静态资源：已完成**。`HarmonyWebResponse.ContentStream` + 宿主 `HarmonyHostWebRespondBegin/
+  Write/Finish` 三阶段；manager 对 >256 KB 的资源走流式，小文件保持一次性缓冲。
+- **开发者工具：已完成**。`BlazorWebViewInitializing.WebDebuggingAccess` → ArkWeb
+  `setWebDebuggingAccess`，仅开发期开启。
+
+**其余未完成**：`CanGoBack`/`CanGoForward` 已回写（经只读 BindableProperty 的内部 key）；
+多实例首帧时序已修（根组件注册改为 await 后再导航，`AttachPage` 以管理器声明的 `StartPath` 为准，
+且须解析为 baseUrl 内的绝对地址——`Uri.TryCreate("/x", Absolute)` 会误判成 `file:///x`）。
 
 ---
 
