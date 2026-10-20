@@ -14,6 +14,8 @@ public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface, IDisposab
 
     public event Action<string>? PageEnded;
 
+    public event Action<string>? PageStarted;
+
     public event Func<string, bool>? NavigationStarting;
 
     public bool IsProxyReady { get; private set; }
@@ -182,6 +184,42 @@ public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface, IDisposab
     internal void RaisePageEnded(string? url)
     {
         PageEnded?.Invoke(url ?? string.Empty);
+    }
+
+    internal void RaisePageStarted(string? url)
+    {
+        PageStarted?.Invoke(url ?? string.Empty);
+    }
+
+    public string? CurrentUrl
+    {
+        get
+        {
+            try { return _controller.GetUrl(); }
+            catch { return null; }
+        }
+    }
+
+    public bool CanGoBack
+    {
+        get { try { return _controller.AccessBackward(); } catch { return false; } }
+    }
+
+    public bool CanGoForward
+    {
+        get { try { return _controller.AccessForward(); } catch { return false; } }
+    }
+
+    public void GoBack()
+    {
+        try { _controller.Backward(); }
+        catch (Exception ex) { HiLog.Warn("HarmonyWeb", $"[nav] backward failed: {ex.GetType().Name}"); }
+    }
+
+    public void GoForward()
+    {
+        try { _controller.Forward(); }
+        catch (Exception ex) { HiLog.Warn("HarmonyWeb", $"[nav] forward failed: {ex.GetType().Name}"); }
     }
 
     /// <summary>返回 true 表示拦截导航（不加载）。</summary>

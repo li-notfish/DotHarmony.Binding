@@ -78,10 +78,11 @@ public sealed class HarmonyWebViewHandler : HarmonyViewHandler<WebView, ArkStack
     }
 
     public static void MapGoBack(HarmonyWebViewHandler handler, WebView view, object? args)
-        => _ = handler.Surface?.RunScriptAsync("history.back()");
+        // 走 ArkWeb 原生历史（history.back() 脚本在跨文档导航下不可靠）
+        => handler.Surface?.GoBack();
 
     public static void MapGoForward(HarmonyWebViewHandler handler, WebView view, object? args)
-        => _ = handler.Surface?.RunScriptAsync("history.forward()");
+        => handler.Surface?.GoForward();
 
     public static void MapReload(HarmonyWebViewHandler handler, WebView view, object? args)
         => _ = handler.Surface?.RunScriptAsync("location.reload()");

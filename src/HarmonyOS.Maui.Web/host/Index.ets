@@ -66,6 +66,10 @@ function WebNodeBuilder(args: WebNodeArgs) {
       const url = event.data.getRequestUrl();
       return native.shouldInterceptNavigation(url, args.webTag) as boolean;
     })
+    .onPageBegin((event) => {
+      // 主框架开始加载：驱动 WebView.Navigating
+      native.notifyWebPageStarted(event.url, args.webTag);
+    })
     .onPageEnd((event) => {
       // 主框架加载完成：Blazor 启动的确定性信号（.NET 侧以此触发 Blazor.start）
       native.notifyWebPageEnded(event.url, args.webTag);

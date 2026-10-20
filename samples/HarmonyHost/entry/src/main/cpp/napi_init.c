@@ -29,6 +29,7 @@ typedef int (*harmony_web_init_node_t)(void* env, void* webViewValue, void* tagV
 typedef void (*harmony_web_factory_t)(void* env, const char* webTag);
 typedef int (*harmony_web_shutdown_t)(void* env, const char* webTag);
 typedef int (*harmony_web_page_ended_t)(void* env, void* urlValue, void* tagValue);
+typedef int (*harmony_web_page_started_t)(void* env, void* urlValue, void* tagValue);
 typedef int (*harmony_web_should_intercept_t)(void* env, void* urlValue, void* tagValue);
 typedef int (*harmony_web_receive_t)(void* env, void* messageValue, void* tagValue);
 typedef int (*harmony_web_proxy_ready_t)(void* env);
@@ -84,6 +85,7 @@ static void OnWebFactoryDeliverJs(napi_env env, napi_value jsCb, void* ctx, void
 }
 static harmony_web_shutdown_t g_webShutdown = NULL;
 static harmony_web_page_ended_t g_webPageEnded = NULL;
+static harmony_web_page_started_t g_webPageStarted = NULL;
 static harmony_web_should_intercept_t g_webShouldIntercept = NULL;
 static bool g_webSymbolsResolved = false;
 
@@ -100,6 +102,7 @@ static void resolve_web_symbols(void)
     g_webInitNode = (harmony_web_init_node_t)dlsym(g_app, "HarmonyWebInitWithNode");
     g_webShutdown = (harmony_web_shutdown_t)dlsym(g_app, "HarmonyWebShutdown");
     g_webPageEnded = (harmony_web_page_ended_t)dlsym(g_app, "HarmonyWebPageEnded");
+    g_webPageStarted = (harmony_web_page_started_t)dlsym(g_app, "HarmonyWebPageStarted");
     g_webShouldIntercept = (harmony_web_should_intercept_t)dlsym(g_app, "HarmonyWebShouldInterceptNavigation");
 }
 
@@ -597,6 +600,22 @@ static napi_value NotifyWebPageEnded(napi_env env, napi_callback_info info)
     return NULL;
 }
 
+static napi_value NotifyWebPageStarted(napi_env env, napi_callback_info info)
+{
+    if (!ensure_runtime(env)) return NULL;
+
+    size_t argc = 2;
+    napi_value argv[2] = {NULL, NULL};
+    napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    resolve_web_symbols();
+    if (!g_webPageStarted) return NULL;
+
+    g_webPageStarted((void*)env,
+                     argc >= 1 ? (void*)argv[0] : NULL,
+                     argc >= 2 ? (void*)argv[1] : NULL);
+    return NULL;
+}
+
 static napi_value ShouldInterceptNavigation(napi_env env, napi_callback_info info)
 {
     if (!ensure_runtime(env)) return NULL;
@@ -779,6 +798,7 @@ static napi_value ModuleInit(napi_env env, napi_value exports)
         {"passWebView", NULL, PassWebView, NULL, NULL, NULL, napi_default, NULL},
         {"receiveWebViewMessage", NULL, ReceiveWebViewMessage, NULL, NULL, NULL, napi_default, NULL},
         {"notifyWebPageEnded", NULL, NotifyWebPageEnded, NULL, NULL, NULL, napi_default, NULL},
+        {"notifyWebPageStarted", NULL, NotifyWebPageStarted, NULL, NULL, NULL, napi_default, NULL},
         {"shouldInterceptNavigation", NULL, ShouldInterceptNavigation, NULL, NULL, NULL, napi_default, NULL},
         {"shutdownWebView", NULL, ShutdownWebView, NULL, NULL, NULL, napi_default, NULL},
         {"registerWebViewFactory", NULL, RegisterWebViewFactory, NULL, NULL, NULL, napi_default, NULL},

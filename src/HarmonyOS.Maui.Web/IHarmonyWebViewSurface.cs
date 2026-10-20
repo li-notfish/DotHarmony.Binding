@@ -22,6 +22,9 @@ public interface IHarmonyWebViewSurface
     /// <summary>主框架页面加载完成（Web 组件 onPageEnd）。Blazor 启动的确定性信号源。</summary>
     event Action<string>? PageEnded;
 
+    /// <summary>主框架开始加载（Web 组件 onPageBegin）。驱动 WebView.Navigating。</summary>
+    event Action<string>? PageStarted;
+
     /// <summary>导航请求开始（Web 组件 onLoadIntercept）；返回 true 表示拦截该请求。</summary>
     event Func<string, bool>? NavigationStarting;
 
@@ -37,6 +40,21 @@ public interface IHarmonyWebViewSurface
 
     /// <summary>把 MAUI 布局算出的容器尺寸同步给 Web 节点（vp）。</summary>
     void SetPlatformNodeSize(float widthVp, float heightVp);
+
+    /// <summary>当前页面 URL。</summary>
+    string? CurrentUrl { get; }
+
+    /// <summary>是否可后退。</summary>
+    bool CanGoBack { get; }
+
+    /// <summary>是否可前进。</summary>
+    bool CanGoForward { get; }
+
+    /// <summary>后退历史。</summary>
+    void GoBack();
+
+    /// <summary>前进历史。</summary>
+    void GoForward();
 
     Task InitializeAsync();
     Task LoadUrlAsync(string url);

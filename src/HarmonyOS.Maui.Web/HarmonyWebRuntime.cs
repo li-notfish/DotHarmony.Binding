@@ -255,6 +255,23 @@ public static class HarmonyWebRuntime
         }
     }
 
+    /// <summary>主框架开始加载（Web 组件 onPageBegin）：驱动 WebView.Navigating。</summary>
+    public static int NotifyPageStartedCore(IntPtr env, IntPtr urlValue, string? webTag)
+    {
+        try
+        {
+            Host.InitializeCore(env);
+            var url = urlValue == IntPtr.Zero ? null : NodeApi.ToString(urlValue);
+            (ResolveSurface(webTag) as HarmonyArkWebViewSurface)?.RaisePageStarted(url);
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            HiLog.Error("HarmonyWeb", $"NotifyPageStartedCore: {ex.GetType().Name}: {ex.Message}");
+            return -1;
+        }
+    }
+
     /// <summary>导航拦截（Web 组件 onLoadIntercept）：返回 1 表示拦截，0 表示放行。</summary>
     public static int ShouldInterceptNavigationCore(IntPtr env, IntPtr urlValue)
         => ShouldInterceptNavigationCore(env, urlValue, null);
