@@ -50,6 +50,7 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
         if (_surface is not null)
         {
             _surface.PageEnded -= OnPageEnded;
+            _surface.PageStarted -= OnPageStarted;
             _surface.NavigationStarting -= OnNavigationStarting;
             _surface.DetachPlatformNode();
             _surface = null;
@@ -103,10 +104,13 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
         if (!string.IsNullOrEmpty(initializing.UserAgent))
             _surface.SetCustomUserAgent(initializing.UserAgent);
 
+        var blazorDispatcher = new HarmonyBlazorDispatcher(HarmonyDispatcher.Instance);
+        VirtualView.AttachDispatchContext(blazorDispatcher, services);
+
         _manager = new HarmonyBlazorWebViewManager(
             _surface,
             services,
-            new HarmonyBlazorDispatcher(HarmonyDispatcher.Instance),
+            blazorDispatcher,
             fileProvider,
             VirtualView.JSComponents,
             hostPageRelativePath,
@@ -121,6 +125,7 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
         // 启动确定性：主框架加载完成（PageEnded）即触发 Blazor.start，
         // __bwv 握手作为自确认；不再依赖 500ms 固定延迟。
         _surface.PageEnded += OnPageEnded;
+        _surface.PageStarted += OnPageStarted;
         _surface.NavigationStarting += OnNavigationStarting;
 
         // 把 BuilderNode 的 Web 节点挂进 handler 的平台容器，使 Web 参与 MAUI 布局
@@ -173,9 +178,31 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
 
     private void OnPageEnded(string url)
     {
+        // 继承 WebView 后：把页面加载完成映射到 WebView.Navigated
+        RaiseNavigated(url);
         if (_manager is null)
             return;
         _ = _manager.OnPageLoadedAsync(url);
+    }
+
+    private void OnPageStarted(string url) => RaiseNavigating(url);
+
+    private void RaiseNavigating(string url)
+    {
+        if (VirtualView is not WebView webView)
+            return;
+        var navigating = (Microsoft.Maui.Controls.IWebViewController?)webView;
+        navigating?.SendNavigating(new WebNavigatingEventArgs(
+            WebNavigationEvent.NewPage, new UrlWebViewSource { Url = url }, url));
+    }
+
+    private void RaiseNavigated(string url)
+    {
+        if (VirtualView is not WebView webView)
+            return;
+        var navigating = (Microsoft.Maui.Controls.IWebViewController?)webView;
+        navigating?.SendNavigated(new WebNavigatedEventArgs(
+            WebNavigationEvent.NewPage, new UrlWebViewSource { Url = url }, url, WebNavigationResult.Success));
     }
 
     private bool OnNavigationStarting(string url)

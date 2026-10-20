@@ -35,7 +35,10 @@ public sealed class HarmonyUrlLoadingEventArgs : EventArgs
     public HarmonyUrlLoadingStrategy UrlLoadingStrategy { get; set; }
 }
 
-/// <summary>BlazorWebView 初始化前事件参数（宿主可在此完成 Web 引擎级配置）。</summary>
+/// <summary>
+/// BlazorWebView 初始化前事件参数：宿主可在此完成 Web 引擎级配置。
+/// 对应官方事件在 WKWebView/CoreWebView2 上暴露的配置对象；鸿蒙侧按 ArkWeb 可配项对齐。
+/// </summary>
 public sealed class HarmonyBlazorWebViewInitializingEventArgs : EventArgs
 {
     /// <summary>自定义 User-Agent；null 表示沿用默认。</summary>
@@ -43,6 +46,21 @@ public sealed class HarmonyBlazorWebViewInitializingEventArgs : EventArgs
 
     /// <summary>背景色（ARGB），null 表示不设置。</summary>
     public uint? BackgroundColor { get; set; }
+
+    /// <summary>是否允许缩放（对应 ArkWeb zoomAccess）。null 表示沿用默认。</summary>
+    public bool? ZoomAccess { get; set; }
+
+    /// <summary>是否启用 DOM 存储（对应 ArkWeb domStorageAccess）。null 表示沿用默认。</summary>
+    public bool? DomStorageAccess { get; set; }
+
+    /// <summary>是否启用文件访问（对应 ArkWeb fileAccess）。null 表示沿用默认。</summary>
+    public bool? FileAccess { get; set; }
+
+    /// <summary>
+    /// 是否允许混合内容（对应 ArkWeb mixedMode）。
+    /// null 表示沿用默认；true 允许 https 页面加载 http 资源。
+    /// </summary>
+    public bool? AllowMixedContent { get; set; }
 }
 
 /// <summary>BlazorWebView 初始化完成事件参数。</summary>

@@ -163,6 +163,16 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
             var contentType = headers.TryGetValue("Content-Type", out var type)
                 ? type
                 : HarmonyBlazorMimeMap.Resolve(request.Url);
+
+            // 本地静态内容的 Cache-Control（对齐官方 StaticContentCacheControlProvider）
+            if (Uri.TryCreate(request.Url, UriKind.Absolute, out var contentUri))
+            {
+                var cacheControl = _view.StaticContentCacheControlProvider?.Invoke(
+                    new HarmonyStaticContentRequest(contentUri, contentType));
+                if (!string.IsNullOrWhiteSpace(cacheControl))
+                    headers["Cache-Control"] = cacheControl;
+            }
+
             return new HarmonyWebResponse(statusCode, contentType, ms.ToArray())
             {
                 Headers = headers,

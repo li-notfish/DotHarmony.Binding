@@ -16,9 +16,12 @@ namespace HarmonyOS.Maui.Blazor;
 /// WebResourceRequested。
 /// </summary>
 [ContentProperty(nameof(RootComponents))]
-public sealed class HarmonyBlazorWebView : View
+public sealed class HarmonyBlazorWebView : WebView, IHarmonyBlazorWebView
 {
     private readonly JSComponentConfigurationStore _jsComponents = new();
+    // TryDispatchAsync 所需的调度上下文与 scoped services（由 handler 在管理器中转注入）
+    private Microsoft.AspNetCore.Components.Dispatcher? _dispatchDispatcher;
+    private IServiceProvider? _dispatchServices;
     private readonly HarmonyRootComponentsCollection _rootComponents;
 
     public static readonly BindableProperty HostPageProperty = BindableProperty.Create(
@@ -77,6 +80,31 @@ public sealed class HarmonyBlazorWebView : View
 
     public JSComponentConfigurationStore JSComponents => _jsComponents;
 
+    /// <summary>
+    /// 在 Blazor 的调度上下文里执行操作并传入 scoped services（对齐官方 TryDispatchAsync）。
+    /// 供原生 UI 代码访问 NavigationManager 等 scoped 服务；
+    /// 返回 false 表示 WebView 尚未初始化到可分发状态。
+    /// </summary>
+    public Task<bool> TryDispatchAsync(Action<IServiceProvider> workItem)
+    {
+        ArgumentNullException.ThrowIfNull(workItem);
+        var services = _dispatchServices;
+        var dispatcher = _dispatchDispatcher;
+        if (services is null || dispatcher is null)
+            return Task.FromResult(false);
+
+        return ExecuteAsync(dispatcher, services, workItem);
+    }
+
+    private static async Task<bool> ExecuteAsync(
+        Microsoft.AspNetCore.Components.Dispatcher dispatcher,
+        IServiceProvider services,
+        Action<IServiceProvider> workItem)
+    {
+        await dispatcher.InvokeAsync(() => workItem(services)).ConfigureAwait(false);
+        return true;
+    }
+
     /// <summary>动态添加根组件（等价官方 AddRootComponentAsync）。</summary>
     public Task AddRootComponentAsync(Type componentType, string selector, IDictionary<string, object?>? parameters = null)
     {
@@ -106,14 +134,41 @@ public sealed class HarmonyBlazorWebView : View
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// 为本地静态内容返回 Cache-Control 头（对齐官方 .NET 10 的 StaticContentCacheControlProvider）。
+    /// 返回 null/空表示保持默认 no-store。仅对本地（app origin）资源生效。
+    /// </summary>
+    public Func<HarmonyStaticContentRequest, string?>? StaticContentCacheControlProvider { get; set; }
+
     public IFileProvider CreateFileProvider(string contentRootDir)
         => new HarmonyBlazorFileProvider(contentRootDir);
+
+    // ---- IHarmonyBlazorWebView 显式实现 ----
+    // 接口方法名与事件同名，只能显式实现；对外仍以事件形式订阅。
+
+    void IHarmonyBlazorWebView.UrlLoading(HarmonyUrlLoadingEventArgs args)
+        => UrlLoading?.Invoke(this, args);
+
+    void IHarmonyBlazorWebView.BlazorWebViewInitializing(HarmonyBlazorWebViewInitializingEventArgs args)
+        => BlazorWebViewInitializing?.Invoke(this, args);
+
+    void IHarmonyBlazorWebView.BlazorWebViewInitialized(HarmonyBlazorWebViewInitializedEventArgs args)
+        => BlazorWebViewInitialized?.Invoke(this, args);
 
     internal void RaiseBlazorWebViewInitializing(HarmonyBlazorWebViewInitializingEventArgs args)
         => BlazorWebViewInitializing?.Invoke(this, args);
 
     internal void RaiseBlazorWebViewInitialized(HarmonyBlazorWebViewInitializedEventArgs args)
         => BlazorWebViewInitialized?.Invoke(this, args);
+
+    /// <summary>由 handler 在创建 WebViewManager 后调用，供 TryDispatchAsync 使用。</summary>
+    internal void AttachDispatchContext(
+        Microsoft.AspNetCore.Components.Dispatcher dispatcher,
+        IServiceProvider services)
+    {
+        _dispatchDispatcher = dispatcher;
+        _dispatchServices = services;
+    }
 
     internal void RaiseUrlLoading(HarmonyUrlLoadingEventArgs args)
         => UrlLoading?.Invoke(this, args);
@@ -126,6 +181,23 @@ public sealed class HarmonyBlazorWebView : View
         handler(this, args);
         return args.Handled;
     }
+}
+
+/// <summary>本地静态内容请求（对齐官方 BlazorWebViewStaticContentRequest）。</summary>
+public sealed class HarmonyStaticContentRequest
+{
+    public HarmonyStaticContentRequest(Uri uri, string contentType)
+    {
+        ArgumentNullException.ThrowIfNull(uri);
+        Uri = uri;
+        ContentType = contentType;
+    }
+
+    /// <summary>请求的绝对 URI。</summary>
+    public Uri Uri { get; }
+
+    /// <summary>已解析的内容类型。</summary>
+    public string ContentType { get; }
 }
 
 /// <summary>WebResourceRequested 事件参数。</summary>

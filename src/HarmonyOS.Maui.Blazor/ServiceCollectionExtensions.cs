@@ -13,6 +13,8 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         HarmonyIpcJsonOptions.Configure();
         services.AddMauiBlazorWebView();
+        // HarmonyBlazorWebView 继承 WebView：注册表沿继承链向上找，这里显式注册具体类型，
+        // 保证解析时命中 Blazor handler 而非 HarmonyWebViewHandler。
         HarmonyHandlerFactory.Register<HarmonyBlazorWebView>(() => new HarmonyBlazorWebViewHandler());
         return services;
     }
