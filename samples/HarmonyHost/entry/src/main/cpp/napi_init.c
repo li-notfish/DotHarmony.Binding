@@ -305,6 +305,61 @@ void HarmonyHostWebRespond(int requestId, int status, const char* statusText,
     }
 }
 
+// ---- 流式响应：Begin（响应头）→ 多次 Write（数据块）→ Finish ----
+// 与一次性 HarmonyHostWebRespond 共用条目生命周期；completed 只在 Finish/Fail 置位，
+// 保证 Write 阶段仍能查到 handler。
+
+__attribute__((visibility("default")))
+void HarmonyHostWebRespondBegin(int requestId, int status, const char* statusText, const char* mime)
+{
+    pthread_mutex_lock(&g_interceptLock);
+    WebInterceptEntry* e = intercept_find_locked(requestId);
+    if (e && !atomic_load(&e->completed)) {
+        pthread_mutex_unlock(&g_interceptLock);
+
+        ArkWeb_Response* resp = NULL;
+        OH_ArkWeb_CreateResponse(&resp);
+        OH_ArkWebResponse_SetStatus(resp, status);
+        OH_ArkWebResponse_SetStatusText(resp, statusText ? statusText : "OK");
+        OH_ArkWebResponse_SetMimeType(resp, mime ? mime : "application/octet-stream");
+        OH_ArkWebResponse_SetCharset(resp, "utf-8");
+        OH_ArkWebResponse_SetHeaderByName(resp, "Access-Control-Allow-Origin", "null", true);
+        OH_ArkWebResponse_SetHeaderByName(resp, "Access-Control-Allow-Credentials", "true", true);
+        OH_ArkWebResourceHandler_DidReceiveResponse(e->handler, resp);
+        OH_ArkWeb_DestroyResponse(resp);
+    } else {
+        pthread_mutex_unlock(&g_interceptLock);
+    }
+}
+
+__attribute__((visibility("default")))
+void HarmonyHostWebRespondWrite(int requestId, const uint8_t* data, int64_t len)
+{
+    if (data == NULL || len <= 0) return;
+    pthread_mutex_lock(&g_interceptLock);
+    WebInterceptEntry* e = intercept_find_locked(requestId);
+    if (e && !atomic_load(&e->completed)) {
+        pthread_mutex_unlock(&g_interceptLock);
+        OH_ArkWebResourceHandler_DidReceiveData(e->handler, data, len);
+    } else {
+        pthread_mutex_unlock(&g_interceptLock);
+    }
+}
+
+__attribute__((visibility("default")))
+void HarmonyHostWebRespondFinish(int requestId)
+{
+    pthread_mutex_lock(&g_interceptLock);
+    WebInterceptEntry* e = intercept_find_locked(requestId);
+    if (e && !atomic_load(&e->completed)) {
+        atomic_store(&e->completed, true);
+        pthread_mutex_unlock(&g_interceptLock);
+        OH_ArkWebResourceHandler_DidFinish(e->handler);
+    } else {
+        pthread_mutex_unlock(&g_interceptLock);
+    }
+}
+
 __attribute__((visibility("default")))
 void HarmonyHostWebRespondFail(int requestId)
 {

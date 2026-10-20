@@ -324,6 +324,19 @@ public static class HarmonyWebRuntime
                 HarmonyHostSink.Respond(requestId, 404, "Not Found", "text/plain", "Not Found"u8);
                 return 0;
             }
+            // 优先流式：大文件（wasm/dll/媒体）不必全量进内存
+            if (response.ContentStream is not null
+                && HarmonyHostSink.SupportsStreaming)
+            {
+                HarmonyHostSink.RespondStreaming(
+                    requestId,
+                    response.StatusCode,
+                    response.StatusCode == 200 ? "OK" : "Not Found",
+                    response.ContentType,
+                    response.ContentStream);
+                return 0;
+            }
+
             HarmonyHostSink.Respond(requestId, response.StatusCode,
                 response.StatusCode == 200 ? "OK" : "Not Found",
                 response.ContentType, response.Body);

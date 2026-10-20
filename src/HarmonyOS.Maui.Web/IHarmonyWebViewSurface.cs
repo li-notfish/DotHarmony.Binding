@@ -50,6 +50,9 @@ public interface IHarmonyWebViewSurface
     /// <summary>是否可前进。</summary>
     bool CanGoForward { get; }
 
+    /// <summary>开启 ArkWeb 调试（Chrome DevTools 可连，仅开发期使用）。</summary>
+    void SetWebDebuggingAccess(bool enabled);
+
     /// <summary>后退历史。</summary>
     void GoBack();
 
@@ -73,4 +76,11 @@ public sealed record HarmonyWebResponse(int StatusCode, string ContentType, byte
 {
     /// <summary>响应头（可为 null：仅 Content-Type 走 ContentType 字段）。</summary>
     public IDictionary<string, string>? Headers { get; init; }
+
+    /// <summary>
+    /// 流式响应体：设置后由调用方分块读取，避免大文件全量进内存。
+    /// ArkTS 侧（InterceptRequestCore）走一次性 Buffer，因此仅 NDK 通道
+    /// （InterceptRequestNativeCore）支持流式；两者都设置时优先 Body。
+    /// </summary>
+    public Stream? ContentStream { get; init; }
 }

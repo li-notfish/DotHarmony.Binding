@@ -210,6 +210,16 @@ public sealed class HarmonyArkWebViewSurface : IHarmonyWebViewSurface, IDisposab
         get { try { return _controller.AccessForward(); } catch { return false; } }
     }
 
+    public void SetWebDebuggingAccess(bool enabled)
+    {
+        try
+        {
+            _controller.SetWebDebuggingAccess(enabled);
+            HiLog.Info("HarmonyWeb", $"[web] debugging access = {enabled}");
+        }
+        catch (Exception ex) { HiLog.Warn("HarmonyWeb", $"[web] debugging access failed: {ex.GetType().Name}"); }
+    }
+
     public void GoBack()
     {
         try { _controller.Backward(); }
