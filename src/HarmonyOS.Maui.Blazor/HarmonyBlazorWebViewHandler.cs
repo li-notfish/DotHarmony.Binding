@@ -14,6 +14,7 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
     private HarmonyBlazorWebViewManager? _manager;
     private HarmonyRootComponentsCollection? _rootComponents;
     private IHarmonyWebViewSurface? _surface;
+    private string? _pendingTag;
 
     public static PropertyMapper<HarmonyBlazorWebView, HarmonyBlazorWebViewHandler> Mapper =
         new(HarmonyViewMapper.Base)
@@ -43,6 +44,9 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
 
     protected override void DisconnectHandler(ArkStack platformView)
     {
+        HarmonyWebRuntime.SurfaceRegistered -= OnSurfaceRegistered;
+        HarmonyWebRuntime.PlatformNodeBound -= OnPlatformNodeBound;
+        _pendingTag = null;
         if (_surface is not null)
         {
             _surface.PageEnded -= OnPageEnded;
@@ -75,9 +79,17 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
         if (string.IsNullOrWhiteSpace(VirtualView.HostPage))
             return;
 
-        _surface = HarmonyWebRuntime.GetSurface(HarmonyWebRuntime.DefaultTag)
-            ?? throw new InvalidOperationException(
-                "Harmony WebView surface is not initialized. Ensure the host Index.ets passes WebviewController via passWebView.");
+        // 多实例：按实例 WebTag 取 surface；缺失时请求宿主按需创建（ArkTS 侧 BuilderNode）。
+        // 创建是异步的，未就绪则挂到 surface 注册回调上等待。
+        var tag = VirtualView.WebTag;
+        _surface = HarmonyWebRuntime.EnsureSurface(tag);
+        if (_surface is null)
+        {
+            HarmonyWebRuntime.SurfaceRegistered += OnSurfaceRegistered;
+            _pendingTag = tag;
+            HiLog.Info("HarmonyWeb", $"[blazor-handler] waiting for surface '{tag}'");
+            return;
+        }
 
         var contentRoot = System.IO.Path.GetDirectoryName(VirtualView.HostPage) ?? "wwwroot";
         var hostPageRelativePath = System.IO.Path.GetFileName(VirtualView.HostPage);
@@ -113,8 +125,7 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
 
         // 把 BuilderNode 的 Web 节点挂进 handler 的平台容器，使 Web 参与 MAUI 布局
         // （替代宿主页全屏覆盖）。宿主未提供节点时保持全屏模式，行为与之前一致。
-        if (PlatformView is ArkUINodeBase container && _surface.TryAttachPlatformNode(container.Handle))
-            HiLog.Info("HarmonyWeb", "[blazor-handler] web node attached to MAUI layout container");
+        TryAttachToPlatformContainer();
 
         _manager.Navigate(VirtualView.StartPath);
 
@@ -122,6 +133,42 @@ public sealed class HarmonyBlazorWebViewHandler : HarmonyViewHandler<HarmonyBlaz
         {
             WebView = _surface,
         });
+    }
+
+    /// <summary>
+    /// 把 Web 节点挂进 handler 的平台容器。节点由宿主异步绑定（factory 创建路径），
+    /// 首次可能尚不可用；绑定完成后 <see cref="HarmonyWebRuntime.PlatformNodeBound"/> 会再次触发。
+    /// </summary>
+    private void TryAttachToPlatformContainer()
+    {
+        if (_surface is null || PlatformView is not ArkUINodeBase container)
+            return;
+        if (!_surface.TryAttachPlatformNode(container.Handle))
+        {
+            HiLog.Info("HarmonyWeb", $"[blazor-handler] node pending for tag '{VirtualView?.WebTag}'");
+            HarmonyWebRuntime.PlatformNodeBound -= OnPlatformNodeBound;
+            HarmonyWebRuntime.PlatformNodeBound += OnPlatformNodeBound;
+            return;
+        }
+        HarmonyWebRuntime.PlatformNodeBound -= OnPlatformNodeBound;
+        HiLog.Info("HarmonyWeb", $"[blazor-handler] web node attached (tag '{VirtualView?.WebTag}')");
+    }
+
+    private void OnPlatformNodeBound(string tag)
+    {
+        if (VirtualView is null || !string.Equals(tag, VirtualView.WebTag, StringComparison.Ordinal))
+            return;
+        TryAttachToPlatformContainer();
+    }
+
+    private void OnSurfaceRegistered(string tag)
+    {
+        if (_pendingTag is null || !string.Equals(tag, _pendingTag, StringComparison.Ordinal))
+            return;
+        HarmonyWebRuntime.SurfaceRegistered -= OnSurfaceRegistered;
+        _pendingTag = null;
+        // surface 就绪后继续初始化（回到本方法，此时 GetSurface 能取到）
+        StartWebViewCoreIfPossible();
     }
 
     private void OnPageEnded(string url)

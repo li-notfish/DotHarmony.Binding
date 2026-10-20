@@ -159,6 +159,27 @@ public sealed class HarmonyBlazorWebViewTests
     }
 
     [Fact]
+    public void WebTag_DefaultsToRuntimeDefaultAndIsBindable()
+    {
+        var view = new HarmonyBlazorWebView();
+
+        // 未显式设置时使用运行时默认 tag（单实例兼容）
+        Assert.Equal(HarmonyOS.Maui.Web.HarmonyWebRuntime.DefaultTag, view.WebTag);
+
+        // 多实例：每个实例可用不同 tag 对应宿主侧不同 BuilderNode
+        view.WebTag = "harmony-web-2";
+        Assert.Equal("harmony-web-2", view.WebTag);
+        Assert.NotNull(HarmonyBlazorWebView.WebTagProperty);
+    }
+
+    [Fact]
+    public void Runtime_GetSurface_ReturnsNullForUnknownTag()
+    {
+        // 未注册的 tag 不应误返回默认 surface（多实例路由正确性）
+        Assert.Null(HarmonyOS.Maui.Web.HarmonyWebRuntime.GetSurface("not-registered-tag"));
+    }
+
+    [Fact]
     public void MimeMap_ResolvesCommonWebAssets()
     {
         Assert.Equal("text/html", HarmonyBlazorMimeMap.Resolve("index.html"));

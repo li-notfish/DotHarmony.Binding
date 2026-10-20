@@ -54,10 +54,23 @@ public sealed class HarmonyBlazorWebView : View
         set => SetValue(HostPageProperty, value);
     }
 
+    public static readonly BindableProperty WebTagProperty = BindableProperty.Create(
+        nameof(WebTag), typeof(string), typeof(HarmonyBlazorWebView), HarmonyOS.Maui.Web.HarmonyWebRuntime.DefaultTag);
+
     public string StartPath
     {
         get => (string?)GetValue(StartPathProperty) ?? "/";
         set => SetValue(StartPathProperty, value);
+    }
+
+    /// <summary>
+    /// 实例标识：对应宿主 ArkTS 侧的 webTag。宿主为每个 BlazorWebView 提供一个 BuilderNode 时，
+    /// 用不同的 tag 区分各自的 surface（ArkWeb NDK API 按 tag 寻址）。默认 harmony-web。
+    /// </summary>
+    public string WebTag
+    {
+        get => (string?)GetValue(WebTagProperty) ?? HarmonyOS.Maui.Web.HarmonyWebRuntime.DefaultTag;
+        set => SetValue(WebTagProperty, value);
     }
 
     public HarmonyRootComponentsCollection RootComponents => _rootComponents;

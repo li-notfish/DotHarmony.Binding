@@ -1,50 +1,27 @@
 using HarmonyOS.Maui.Blazor;
+using HarmonyOS.Maui.Web;
 using Microsoft.Maui.Controls;
 
 namespace BlazorHybridApp;
 
 /// <summary>
-/// 内嵌模式演示：BlazorWebView 与原生 MAUI 控件同页混排。
+/// 内嵌 + 多实例演示。
 ///
-/// 与官方 .NET MAUI 的 BlazorWebView 语义对齐——Web 参与 MAUI 布局（这里占 Grid 的 star 行），
-/// 原生控件占据剩余空间并独立响应点击。实现路径：宿主 Index.ets 用 BuilderNode 把 Web 包成节点，
-/// 经 OH_ArkUI_GetNodeHandleFromNapiValue 映射为 ArkUI_NodeHandle 后由 handler 挂进 MAUI 节点树。
+/// 内嵌：BlazorWebView 参与 MAUI 布局（Grid star 行），原生控件占 Auto 行——与官方 BlazorWebView 语义一致。
+/// 多实例：每个实例一个 WebTag，对应宿主侧一个 BuilderNode；宿主对未知 tag 按需创建。
+/// 实现路径：宿主 Index.ets 用 BuilderNode 把 Web 包成节点，getFrameNode() 经
+/// OH_ArkUI_GetNodeHandleFromNapiValue 映射为 ArkUI_NodeHandle，由 handler 挂进 MAUI 节点树。
 /// </summary>
 public sealed class BlazorApp : Application
 {
     public BlazorApp()
     {
-        var webView = new HarmonyBlazorWebView
-        {
-            HostPage = "wwwroot/index.html",
-            StartPath = "/counter"
-        };
-        webView.RootComponents.Add(new HarmonyRootComponent
-        {
-            Selector = "#app",
-            ComponentType = typeof(Routes)
-        });
-
-        // 原生 MAUI 控件：与 Web 并列于同一页面，验证布局分区与命中测试互不干扰
+        var webView = CreateBlazorWebView(HarmonyWebRuntime.DefaultTag);
         var statusLabel = new Label
         {
             Text = "原生控件区（与 Blazor WebView 混排）",
             FontSize = 14,
             HorizontalTextAlignment = TextAlignment.Center,
-        };
-        var nativeButton = new Button
-        {
-            Text = "原生按钮（点击计数 0）",
-            BackgroundColor = Color.FromArgb("#5B8DEF"),
-            TextColor = Colors.White,
-        };
-
-        var clickCount = 0;
-        nativeButton.Clicked += (_, _) =>
-        {
-            clickCount++;
-            nativeButton.Text = $"原生按钮（点击计数 {clickCount}）";
-            statusLabel.Text = $"原生控件区 · 已点击 {clickCount} 次（Web 区域不受影响）";
         };
 
         MainPage = new ContentPage
@@ -53,15 +30,32 @@ public sealed class BlazorApp : Application
             {
                 RowDefinitions =
                 {
-                    new RowDefinition(GridLength.Star),   // Web 占据剩余空间
-                    new RowDefinition(GridLength.Auto),   // 原生控件区
+                    new RowDefinition(GridLength.Star),
+                    new RowDefinition(GridLength.Auto),
                 },
-                Children = { webView, statusLabel, nativeButton },
+                Children = { webView, statusLabel },
             },
         };
         Grid.SetRow(statusLabel, 1);
-        Grid.SetRow(nativeButton, 1);
-        statusLabel.Margin = new Thickness(0, 8, 0, 4);
-        nativeButton.Margin = new Thickness(12, 0, 12, 12);
+    }
+
+    /// <summary>
+    /// 构造一个 BlazorWebView 实例。<paramref name="webTag"/> 对应宿主侧一个 BuilderNode；
+    /// 宿主对未知 tag 会经 registerWebViewFactory 按需创建。
+    /// </summary>
+    public static HarmonyBlazorWebView CreateBlazorWebView(string webTag)
+    {
+        var view = new HarmonyBlazorWebView
+        {
+            HostPage = "wwwroot/index.html",
+            StartPath = "/counter",
+            WebTag = webTag,
+        };
+        view.RootComponents.Add(new HarmonyRootComponent
+        {
+            Selector = "#app",
+            ComponentType = typeof(Routes),
+        });
+        return view;
     }
 }
