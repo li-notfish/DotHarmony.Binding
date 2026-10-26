@@ -19,6 +19,7 @@ public static class MainThreadDispatcher
     private static readonly Lock Sync = new();
     private static ThreadSafeFunction? _tsfn;
     private static int _queueFullCount;
+    private static bool _shutdown;
 
     /// <summary>在 JS/UI 线程安装派发器（幂等；Host.InitializeCore 负责调用）</summary>
     public static void AttachUiThread()
@@ -30,6 +31,7 @@ public static class MainThreadDispatcher
             var tsfn = ThreadSafeFunction.Create();
             tsfn.OnCallJs = static _ => DrainQueue();
             _tsfn = tsfn;
+            _shutdown = false;
             // 挂接完成即冲刷停靠的动作（Attach 前 Post 的积压）
             if (Queue.Count > 0)
                 tsfn.Call(IntPtr.Zero);
@@ -74,6 +76,10 @@ public static class MainThreadDispatcher
         ThreadSafeFunction? tsfn;
         lock (Sync)
         {
+            // Shutdown 后不得再“成功入队但永不执行”：返回 false 让调用方知道通道已关。
+            if (_shutdown)
+                return false;
+
             if (Queue.Count >= MaxQueueSize)
             {
                 // 每 1000 次丢弃再报一次：只报首次会让长时间运行后的连续丢弃完全不可见，
@@ -108,6 +114,7 @@ public static class MainThreadDispatcher
         {
             tsfn = _tsfn;
             _tsfn = null;
+            _shutdown = true;
             abandoned = Queue.Count;
             Queue.Clear();
             _queueFullCount = 0;

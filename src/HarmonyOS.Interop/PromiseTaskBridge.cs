@@ -112,47 +112,52 @@ internal static class PromiseTaskBridge
 
         try
         {
-            NativeNodeApi.napi_get_named_property(env, promise, ThenUtf8, out var thenFn)
-                .ThrowIfFailed();
-
-            NativeNodeApi.napi_create_function(
-                env,
-                FulfilledUtf8,
-                (IntPtr)FulfilledUtf8.Length,
-                FulfilledPtr,
-                data,
-                out var fulfilledFn).ThrowIfFailed();
-            NativeNodeApi.napi_create_function(
-                env,
-                RejectedUtf8,
-                (IntPtr)RejectedUtf8.Length,
-                RejectedPtr,
-                data,
-                out var rejectedFn).ThrowIfFailed();
-
-            Span<IntPtr> argv = stackalloc IntPtr[2];
-            argv[0] = fulfilledFn;
-            argv[1] = rejectedFn;
-
-            var status = NativeNodeApi.napi_call_function(
-                env,
-                promise,
-                thenFn,
-                2,
-                argv,
-                out _);
-            if (status != napi_status.napi_ok)
+            // C#→napi 入口：then 回调由 Promise 持有，跨出本 scope 是安全的；
+            // 其余临时 napi_value 在本块结束时统一回收。
+            using (NapiHandleScope.Open(env))
             {
-                var clearStatus = NativeNodeApi.napi_get_and_clear_last_exception(
-                    env,
-                    out var jsError);
-                if (clearStatus == napi_status.napi_ok && jsError != IntPtr.Zero)
-                {
-                    var (code, message) = BusinessErrorReader.Read(env, jsError);
-                    throw CreateRichNapiException(status, "promise.then", code, message);
-                }
+                NativeNodeApi.napi_get_named_property(env, promise, ThenUtf8, out var thenFn)
+                    .ThrowIfFailed();
 
-                throw new NapiException(status, "promise.then");
+                NativeNodeApi.napi_create_function(
+                    env,
+                    FulfilledUtf8,
+                    (IntPtr)FulfilledUtf8.Length,
+                    FulfilledPtr,
+                    data,
+                    out var fulfilledFn).ThrowIfFailed();
+                NativeNodeApi.napi_create_function(
+                    env,
+                    RejectedUtf8,
+                    (IntPtr)RejectedUtf8.Length,
+                    RejectedPtr,
+                    data,
+                    out var rejectedFn).ThrowIfFailed();
+
+                Span<IntPtr> argv = stackalloc IntPtr[2];
+                argv[0] = fulfilledFn;
+                argv[1] = rejectedFn;
+
+                var status = NativeNodeApi.napi_call_function(
+                    env,
+                    promise,
+                    thenFn,
+                    2,
+                    argv,
+                    out _);
+                if (status != napi_status.napi_ok)
+                {
+                    var clearStatus = NativeNodeApi.napi_get_and_clear_last_exception(
+                        env,
+                        out var jsError);
+                    if (clearStatus == napi_status.napi_ok && jsError != IntPtr.Zero)
+                    {
+                        var (code, message) = BusinessErrorReader.Read(env, jsError);
+                        throw CreateRichNapiException(status, "promise.then", code, message);
+                    }
+
+                    throw new NapiException(status, "promise.then");
+                }
             }
 
             bridgeAttached = true;

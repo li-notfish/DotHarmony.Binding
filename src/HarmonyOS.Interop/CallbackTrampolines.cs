@@ -32,12 +32,13 @@ internal static class CallbackTrampolines
     {
         try
         {
-            NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
             NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
             return undefined;
         }
         catch (Exception ex)
         {
+            // 只有异常路径清除 pending exception：正常返回不再吞掉进入回调前已挂起的异常。
+            NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
             HiLog.Error("HarmonyHost", $"[callback] safe return failed: {ex.GetType().Name}: {ex.Message}");
             return IntPtr.Zero;
         }

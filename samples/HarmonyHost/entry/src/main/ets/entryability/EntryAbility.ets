@@ -57,6 +57,7 @@ export default class EntryAbility extends UIAbility {
   onDestroy(): void {
     hilog.info(0x0000, TAG, 'Ability onDestroy');
     native.notifyLifecycleChanged(3);
+    native.shutdownDotnet();
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -73,6 +74,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageDestroy(): void {
     hilog.info(0x0000, TAG, 'Ability onWindowStageDestroy');
     native.notifyLifecycleChanged(3);
+    native.shutdownDotnet();
   }
 
   onForeground(): void {

@@ -24,10 +24,15 @@ public class HarmonyGraphicsViewHandler : HarmonyViewHandler<MGraphicsView, ArkC
         [nameof(VisualElement.BackgroundColor)] = MapInvalidate,
     };
 
+    public static CommandMapper<MGraphicsView, HarmonyGraphicsViewHandler> Commands = new(ViewCommandMapper)
+    {
+        ["Invalidate"] = MapInvalidate,
+    };
+
     // 画布适配器复用（ON_DRAW 每帧 Bind 新画布指针，避免热路径分配）
     private HarmonyDrawingCanvas? _canvas;
 
-    public HarmonyGraphicsViewHandler() : base(Mapper) { }
+    public HarmonyGraphicsViewHandler() : base(Mapper, Commands) { }
 
     protected override ArkCustomDrawNode CreatePlatformView() => new();
 
@@ -35,11 +40,15 @@ public class HarmonyGraphicsViewHandler : HarmonyViewHandler<MGraphicsView, ArkC
     {
         base.ConnectHandler(platformView);
         platformView.SetDrawCallback(OnDraw);
+        platformView.SubscribeEvent(
+            HarmonyOS.Bindings.NativeNode.ArkUI_NodeEventType.NODE_TOUCH_EVENT, OnTouch);
         platformView.Invalidate();
     }
 
     protected override void DisconnectHandler(ArkCustomDrawNode platformView)
     {
+        platformView.UnsubscribeEvent(
+            HarmonyOS.Bindings.NativeNode.ArkUI_NodeEventType.NODE_TOUCH_EVENT, OnTouch);
         platformView.SetDrawCallback(null);
         _canvas?.Dispose(); // 画布持有的 Pen/Brush 原生对象显式释放
         _canvas = null;
@@ -48,6 +57,37 @@ public class HarmonyGraphicsViewHandler : HarmonyViewHandler<MGraphicsView, ArkC
 
     public static void MapInvalidate(HarmonyGraphicsViewHandler handler, MGraphicsView view)
         => handler.PlatformView.Invalidate();
+
+    public static void MapInvalidate(HarmonyGraphicsViewHandler handler, MGraphicsView view, object? args)
+        => handler.PlatformView.Invalidate();
+
+    private void OnTouch(HarmonyOS.Bindings.NativeNode.ArkUINodeEvent e)
+    {
+        if (VirtualView is not { } view)
+            return;
+
+        var pointer = HarmonyOS.Bindings.NativeNode.ArkUIPointerEvent.From(e.InputEvent);
+        if (pointer.IsNull)
+            return;
+
+        var point = new PointF(pointer.X, pointer.Y);
+        var touches = new[] { point };
+        if (view is not IGraphicsView graphicsView)
+            return;
+
+        switch (pointer.TouchAction)
+        {
+            case HarmonyOS.Bindings.NativeNode.ArkPointerTouchAction.Pressed:
+                graphicsView.StartInteraction(touches);
+                break;
+            case HarmonyOS.Bindings.NativeNode.ArkPointerTouchAction.Moved:
+                graphicsView.DragInteraction(touches);
+                break;
+            case HarmonyOS.Bindings.NativeNode.ArkPointerTouchAction.Released:
+                graphicsView.EndInteraction(touches, true);
+                break;
+        }
+    }
 
     private void OnDraw(Bindings.NativeNode.OHDrawingCanvas nativeCanvas, float width, float height)
     {

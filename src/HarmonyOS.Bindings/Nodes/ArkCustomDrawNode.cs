@@ -64,7 +64,7 @@ public sealed unsafe class ArkCustomDrawNode : ArkUINodeBase
     public void Invalidate()
     {
         EnsureAlive();
-        ArkUINativeApi.MarkDirty(Handle, ArkUI_NodeDirtyFlag.NODE_NEED_MEASURE | ArkUI_NodeDirtyFlag.NODE_NEED_LAYOUT);
+        ArkUINativeApi.MarkDirty(Handle, ArkUI_NodeDirtyFlag.NODE_NEED_RENDER);
     }
 
     /// <summary>Dispose 后句柄置空，用作守卫</summary>

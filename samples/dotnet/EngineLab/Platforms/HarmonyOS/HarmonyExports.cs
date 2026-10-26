@@ -15,6 +15,9 @@ internal static class NativeExports
     [UnmanagedCallersOnly(EntryPoint = "HarmonyInit")]
     private static int HarmonyInit(nint env) => Host.InitializeCore(env);
 
+    [UnmanagedCallersOnly(EntryPoint = "HarmonyShutdown")]
+    private static void HarmonyShutdown() => Host.Shutdown();
+
     // C shim initEngine 通道：引擎桥对象 → ArkTsEngine（存引用 + onEvent 注入 + 冲刷积压指令）
     [UnmanagedCallersOnly(EntryPoint = "HarmonyEngineInit")]
     private static int HarmonyEngineInit(nint env, nint bridgeValue)

@@ -45,6 +45,9 @@
                         <SwipeView.LeftItems>
                             <SwipeItems>
                                 <SwipeItem x:Name="ArchiveItem" Text="Archive" BackgroundColor="#2563EB" />
+                                <SwipeItemView x:Name="ArchiveViewItem" BackgroundColor="#0F766E">
+                                    <Label Text="View" TextColor="#FFFFFF" VerticalOptions="Center" HorizontalOptions="Center" />
+                                </SwipeItemView>
                             </SwipeItems>
                         </SwipeView.LeftItems>
                         <SwipeView.Content>

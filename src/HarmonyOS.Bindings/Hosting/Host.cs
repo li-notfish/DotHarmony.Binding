@@ -80,7 +80,8 @@ public static unsafe class Host
     }
 
     /// <summary>
-    /// 进程收尾：停止 UI 派发（丢弃未执行动作并记数）、释放派发 TSFN、清空待删的 napi 引用。
+    /// 进程收尾：停止 UI 派发（丢弃未执行动作并记数）、释放派发 TSFN、清空当前线程 env 的待删 napi 引用。
+    /// napi env 是 ThreadStatic；其他 env 的条目仍留在延迟队列中，由各自 env 线程清理。
     /// 符号：HarmonyShutdown（供 C shim 在页面/Ability 销毁时 dlsym 调用）。
     /// 不调用也不会崩——这些资源本来由进程退出统一回收；调用它主要是让
     /// 「队列里还有多少没执行」「有没有引用没删掉」在 hilog 里留一条凭据。

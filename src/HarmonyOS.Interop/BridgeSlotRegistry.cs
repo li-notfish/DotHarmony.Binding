@@ -27,6 +27,9 @@ internal static class BridgeSlotRegistry
     internal static IntPtr Register(object state)
     {
         ArgumentNullException.ThrowIfNull(state);
+        // long token 经 IntPtr 传回原生层；32 位截断会破坏“永不复用”的 ABA 防护。
+        if (IntPtr.Size < 8)
+            throw new PlatformNotSupportedException("BridgeSlotRegistry requires 64-bit napi_data slots");
 
         var token = Interlocked.Increment(ref _next);
         Slots[token] = state;

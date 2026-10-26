@@ -135,6 +135,7 @@ public static class MauiHarmonyHost
                     "Application.CreateWindow produced no root Page (set MainPage in the Application ctor)");
 
             HarmonyNavigation.Attach(container, app, window);
+            HarmonyNavigation.AttachWindow(window);
             HarmonyLifecycleController.Attach(window);
             HarmonyLifecycleController.Current?.Created();
             HarmonyNavigation.Push(rootPage);
