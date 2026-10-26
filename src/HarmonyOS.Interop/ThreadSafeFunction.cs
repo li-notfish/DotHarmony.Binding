@@ -95,8 +95,9 @@ internal sealed class ThreadSafeFunction : IDisposable
         lock (_sync)
         {
             if (_disposed) return;
-            if (ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_release))
-                _disposed = true;
+            ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_release);
+            // 句柄无论 release 成败都已作废（见 ReleaseHandle），此后不得再 Call
+            _disposed = true;
         }
         // GCHandle 由 FinalizeTrampoline 释放（勿在此 Free——见 Create 注释）
     }
@@ -109,23 +110,29 @@ internal sealed class ThreadSafeFunction : IDisposable
         lock (_sync)
         {
             if (_disposed) return;
-            if (ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_abort))
-                _disposed = true;
+            ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode.napi_tsfn_abort);
+            _disposed = true;
         }
     }
 
+    /// <summary>
+    /// 释放原生句柄。**先作废再调用**：release 返回非 ok 时句柄状态已不可信
+    /// （可能是 napi_closing），继续复用会拿一个正在销毁的 TSFN 去投递。
+    /// 失败只降级为日志——调用方已无法补救，但必须保证不会二次投递。
+    /// </summary>
     private bool ReleaseHandle(NativeNodeApi.napi_threadsafe_function_release_mode mode)
     {
-        if (_tsfnHandle != IntPtr.Zero)
-        {
-            var status = NativeNodeApi.napi_release_threadsafe_function(_tsfnHandle, mode);
-            if (status != napi_status.napi_ok)
-            {
-                HiLog.Error("TSFN", $"release failed: {status}");
-                return false;
-            }
-            _tsfnHandle = IntPtr.Zero;
+        var handle = _tsfnHandle;
+        if (handle == IntPtr.Zero)
             return true;
+
+        _tsfnHandle = IntPtr.Zero;
+
+        var status = NativeNodeApi.napi_release_threadsafe_function(handle, mode);
+        if (status != napi_status.napi_ok)
+        {
+            HiLog.Error("TSFN", $"release failed: {status}（句柄已作废，不再复用）");
+            return false;
         }
 
         return true;
@@ -159,7 +166,13 @@ internal sealed class ThreadSafeFunction : IDisposable
             var handle = GCHandle.FromIntPtr(context);
             if (handle.Target is not ThreadSafeFunction tsfn)
                 return;
-            tsfn.OnCallJs?.Invoke(data);
+
+            // 本回调不向引擎返回值：期间创建的临时 napi_value 在块结束时统一失效。
+            // 需要跨帧持有的值由调用方自行转 NapiReference（JsObject 已是这种形态）。
+            using (NapiHandleScope.Open(env))
+            {
+                tsfn.OnCallJs?.Invoke(data);
+            }
         }
         catch (Exception ex)
         {

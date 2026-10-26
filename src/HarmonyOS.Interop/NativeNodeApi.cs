@@ -451,48 +451,178 @@ internal static partial class NativeNodeApi
 
     #region 状态检查
 
+    /// <summary>ThrowIfFailed 内部读附加信息时的重入闸：任何辅助读取都不许再抛，也不许递归进入本方法。</summary>
+    [System.ThreadStatic] private static bool _readingErrorDetail;
+
     /// <summary>
     /// napi 调用失败时抛出异常。任何 napi_* 返回值都不允许静默忽略。
-    /// napi_pending_exception 时先取出并清除 JS 异常，把错误文本带进 NapiException——
-    /// 否则 JS 侧错误（如 param check 401）对调用方完全不可见。
+    /// 非 ok 状态一律先尝试取一次 JS 侧错误文本：状态码只说明"哪类 ABI 检查没过"，
+    /// 真正原因（"xxx is not a function"、param check 401）只在挂起异常或错误对象里。
+    /// 附加信息读不到时退回状态码语义提示，绝不用附加信息的失败覆盖原始 status。
     /// </summary>
     internal static void ThrowIfFailed(this napi_status status, [System.Runtime.CompilerServices.CallerMemberName] string op = "")
     {
         if (status == napi_status.napi_ok)
             return;
-        if (status == napi_status.napi_pending_exception)
+
+        string? message = null;
+        long? errorCode = null;
+
+        if (!_readingErrorDetail)
         {
-            var env = NapiEnv.Current;
-            if (napi_get_and_clear_last_exception(env, out var jsError) == napi_status.napi_ok &&
-                jsError != IntPtr.Zero)
+            _readingErrorDetail = true;
+            try
             {
-                // JS 异常通常是 Error 对象：优先读 .message，失败再按字符串读
-                string? message = null;
-                long? errorCode = null;
-                try
-                {
-                    var msgVal = NodeApi.GetProperty(jsError, "message"u8);
-                    message = NativeValue.ToString(msgVal);
-                }
-                catch (NapiException) { }
-                try
-                {
-                    var codeVal = NodeApi.GetProperty(jsError, "code"u8);
-                    errorCode = (long)NativeValue.ToDouble(codeVal);
-                }
-                catch (NapiException) { }
-                if (string.IsNullOrEmpty(message))
-                {
-                    try { message = NativeValue.ToString(jsError); }
-                    catch (NapiException) { }
-                }
-                if (!string.IsNullOrEmpty(message))
-                    throw new NapiException(status, $"{op}: {message}", errorCode);
-                if (errorCode is not null)
-                    throw new NapiException(status, $"{op}: code {errorCode}", errorCode);
+                ReadErrorDetail(out message, out errorCode);
+            }
+            catch
+            {
+                // 读附加信息本身失败（例如 env 不可用）：丢弃附加信息，保留原始 status
+            }
+            finally
+            {
+                _readingErrorDetail = false;
             }
         }
-        throw new NapiException(status, op);
+
+        throw new NapiException(status, op, errorCode, BuildDetail(status, errorCode, message));
+    }
+
+    /// <summary>
+    /// 尽力取出错误详情。辅助读取一律检查 status、绝不调用 ThrowIfFailed——
+    /// 否则「读 message 失败」会递归成「再读一次 message」。
+    /// </summary>
+    private static void ReadErrorDetail(out string? message, out long? errorCode)
+    {
+        message = null;
+        errorCode = null;
+
+        IntPtr env;
+        try
+        {
+            env = NapiEnv.Current;
+        }
+        catch (InvalidOperationException)
+        {
+            return;
+        }
+
+        // 无挂起异常时本调用返回 napi_generic_failure，无副作用（不会清掉别的东西）。
+        if (napi_get_and_clear_last_exception(env, out var pending) != napi_status.napi_ok ||
+            pending == IntPtr.Zero)
+        {
+            return;
+        }
+
+        if (napi_typeof(env, pending, out var type) != napi_status.napi_ok)
+            return;
+
+        if (type != napi_valuetype.napi_object)
+        {
+            // JS 侧 throw 常量：直接按字符串读
+            message = TryReadString(env, pending);
+            return;
+        }
+
+        message = TryReadNamedString(env, pending, "message"u8);
+        errorCode = TryReadNamedKey(env, pending, "code"u8);
+
+        // ArkTS 侧有把错误再包一层的形态：{ error: { code, message } }
+        if (string.IsNullOrEmpty(message) || errorCode is null)
+        {
+            if (napi_get_named_property(env, pending, "error"u8, out var inner) == napi_status.napi_ok &&
+                inner != IntPtr.Zero &&
+                napi_typeof(env, inner, out var innerType) == napi_status.napi_ok &&
+                innerType == napi_valuetype.napi_object)
+            {
+                message ??= TryReadNamedString(env, inner, "message"u8);
+                errorCode ??= TryReadNamedKey(env, inner, "code"u8);
+            }
+        }
+    }
+
+    /// <summary>状态码自身的语义提示：没有 JS 文本时，至少让调用方看出失败类别。</summary>
+    private static string? StatusHint(napi_status status) => status switch
+    {
+        napi_status.napi_invalid_arg => "实参非法（空句柄或类型不符）",
+        napi_status.napi_object_expected => "目标值不是对象",
+        napi_status.napi_string_expected => "目标值不是字符串",
+        napi_status.napi_name_expected => "属性名非法",
+        napi_status.napi_function_expected => "目标成员不是函数（方法不存在、名字拼错，或 JS 侧给了非函数值）",
+        napi_status.napi_number_expected => "目标值不是数字",
+        napi_status.napi_boolean_expected => "目标值不是布尔",
+        napi_status.napi_array_expected => "目标值不是数组",
+        napi_status.napi_generic_failure => "引擎返回通用失败",
+        napi_status.napi_pending_exception => "JS 侧抛出异常，但未能读出错误文本",
+        napi_status.napi_cancelled => "异步操作被取消",
+        napi_status.napi_queue_full => "原生队列已满",
+        napi_status.napi_closing => "资源正在关闭",
+        napi_status.napi_bigint_expected => "目标值不是 BigInt",
+        napi_status.napi_date_expected => "目标值不是 Date",
+        napi_status.napi_arraybuffer_expected => "目标值不是 ArrayBuffer",
+        napi_status.napi_handle_scope_mismatch => "handle scope 不配对",
+        napi_status.napi_callback_scope_mismatch => "callback scope 不配对",
+        napi_status.napi_would_deadlock => "会死锁，已拒绝",
+        _ => null,
+    };
+
+    private static string? BuildDetail(napi_status status, long? errorCode, string? message)
+    {
+        if (!string.IsNullOrEmpty(message))
+            return errorCode is null ? message : $"code {errorCode}: {message}";
+        if (errorCode is not null)
+            return $"code {errorCode}";
+        return StatusHint(status);
+    }
+
+    /// <summary>不抛的字符串读取：任何一步失败返回 null。仅用于错误路径。</summary>
+    internal static string? TryReadString(IntPtr env, IntPtr value)
+    {
+        if (napi_get_value_string_utf8(env, value, null, IntPtr.Zero, out var length) != napi_status.napi_ok ||
+            length == IntPtr.Zero)
+        {
+            return null;
+        }
+
+        var buffer = new byte[(int)length + 1];
+        if (napi_get_value_string_utf8(env, value, buffer, (IntPtr)buffer.Length, out var written) != napi_status.napi_ok)
+            return null;
+        return System.Text.Encoding.UTF8.GetString(buffer, 0, (int)written);
+    }
+
+    internal static string? TryReadNamedString(IntPtr env, IntPtr obj, ReadOnlySpan<byte> name)
+    {
+        if (napi_get_named_property(env, obj, name, out var value) != napi_status.napi_ok ||
+            value == IntPtr.Zero)
+        {
+            return null;
+        }
+        return TryReadString(env, value);
+    }
+
+    /// <summary>
+    /// 读 BusinessError.code：OHOS 侧数字与字符串两种形态都存在（"401" / 401），
+    /// 只认数字会把字符串 code 静默丢成 null。
+    /// </summary>
+    internal static long? TryReadNamedKey(IntPtr env, IntPtr obj, ReadOnlySpan<byte> name)
+    {
+        if (napi_get_named_property(env, obj, name, out var value) != napi_status.napi_ok ||
+            value == IntPtr.Zero ||
+            napi_typeof(env, value, out var type) != napi_status.napi_ok)
+        {
+            return null;
+        }
+
+        if (type == napi_valuetype.napi_number)
+            return napi_get_value_int64(env, value, out var number) == napi_status.napi_ok ? number : null;
+
+        if (type == napi_valuetype.napi_string)
+        {
+            var text = TryReadString(env, value);
+            return long.TryParse(text, out var parsed) ? parsed : null;
+        }
+
+        return null;
     }
 
     #endregion

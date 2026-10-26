@@ -22,6 +22,9 @@ public static class ArkTsEngine
 {
     private const string Tag = "ArkTsEngine";
 
+    /// <summary>applyCommands 方法名（进程内复用一份 UTF-8，Flush 每次都要用）</summary>
+    private static readonly byte[] ApplyCommandsUtf8 = "applyCommands"u8.ToArray();
+
     /// <summary>自动冲刷周期（ms，§2.1"布局 pass 边界或 16ms 定时冲刷"的兜底项）</summary>
     internal const int AutoFlushIntervalMs = 16;
 
@@ -32,7 +35,11 @@ public static class ArkTsEngine
     private static GCHandle _onEventHandle;
 
 #if HARMONYOS
-    private static NativeNodeApi.napi_ref _bridgeRef;
+    /// <summary>
+    /// 引擎桥的强引用。用 NapiReference 而不是裸 napi_ref：它记录创建时的 env、
+    /// 保证恰好释放一次、跨线程释放自动走延迟队列（平台铁律 #4 / docs/interop-rules.md）。
+    /// </summary>
+    private static NapiReference? _bridgeRef;
 #endif
 
     /// <summary>引擎桥是否已挂接（挂接前 Flush 仅保留队列）</summary>
@@ -41,7 +48,7 @@ public static class ArkTsEngine
         get
         {
 #if HARMONYOS
-            return _bridgeRef != default;
+            return _bridgeRef is not null;
 #else
             return false;
 #endif
@@ -85,11 +92,11 @@ public static class ArkTsEngine
     public static void Flush()
     {
 #if HARMONYOS
-        if (_bridgeRef == default || _queue.Count == 0) return;
+        if (_bridgeRef is null || _queue.Count == 0) return;
 
         var env = NapiEnv.Current;
-        NativeNodeApi.napi_get_reference_value(env, _bridgeRef, out var bridge).ThrowIfFailed();
-        NativeNodeApi.napi_get_named_property(env, bridge, "applyCommands"u8.ToArray(), out var fn).ThrowIfFailed();
+        var bridge = _bridgeRef.Value;
+        NativeNodeApi.napi_get_named_property(env, bridge, ApplyCommandsUtf8, out var fn).ThrowIfFailed();
 
         NativeNodeApi.napi_create_array_with_length(env, _queue.Count, out var arr).ThrowIfFailed();
         int count = _queue.Count;
@@ -169,7 +176,9 @@ public static class ArkTsEngine
         {
             NapiEnv.Initialize(env);
 #if HARMONYOS
-            NativeNodeApi.napi_create_reference(env, bridgeValue, 1, out _bridgeRef).ThrowIfFailed();
+            // 旧桥若存在先释放，避免重复挂接泄漏一条强引用
+            _bridgeRef?.Dispose();
+            _bridgeRef = new NapiReference(bridgeValue);
 
             // 把回流回调交给引擎（GCHandle 由进程生命周期持有）
             var (jsFunc, handle) = NodeApi.CreateCallbackFunction((Action<ReadOnlySpan<IntPtr>>)OnEventFromJs);

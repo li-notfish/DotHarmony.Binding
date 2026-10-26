@@ -6,7 +6,7 @@
 //   否则（BusinessError）  → SetException(ArkTSException，读 err.code/err.message)
 // TCS 同步续体（与 PromiseTaskBridge 一致）：await 续体在 JS 线程内联恢复，NapiEnv 可用。
 // AsyncCallback 契约只触发一次；若 API 违约多次触发，Done 标记保证只完成一次
-// （GCHandle 已释放，与 PromiseTaskBridge 相同的假设）。
+// （token 已注销，迟到回调解析不到状态，直接忽略）。
 #nullable enable
 using System;
 using System.Runtime.CompilerServices;
@@ -28,7 +28,8 @@ internal static class CallbackTaskBridge
         public Func<IntPtr, object?>? Convert;
         public required Action OnCancel;
         public readonly object Lock = new();
-        public GCHandle Handle;
+        /// <summary>桥在 <see cref="BridgeSlotRegistry"/> 里的 token；释放后置 0。</summary>
+        public IntPtr Slot;
         public bool Done;
         public CancellationTokenRegistration Registration;
 
@@ -45,15 +46,11 @@ internal static class CallbackTaskBridge
 
         public void Free()
         {
-            lock (Lock)
-            {
-                if (Handle.IsAllocated)
-                {
-                    var handle = Handle;
-                    Handle = default;
-                    handle.Free();
-                }
-            }
+            var slot = Slot;
+            if (slot == IntPtr.Zero)
+                return;
+            Slot = IntPtr.Zero;
+            BridgeSlotRegistry.Unregister(slot);
         }
 
         public void DisposeRegistration()
@@ -98,14 +95,14 @@ internal static class CallbackTaskBridge
             var conv = convert;
             state.Convert = v => conv(v)!;
         }
-        state.Handle = GCHandle.Alloc(state);
-        var data = GCHandle.ToIntPtr(state.Handle);
+        state.Slot = BridgeSlotRegistry.Register(state);
+        var data = state.Slot;
 
         var env = NapiEnv.Current;
         var nameBytes = "asyncCallback"u8.ToArray();
 
         // 中止通道：调用方在把回调交给 JS 之前失败（napi 调用抛错）时，
-        // 取消 Task（防止 await 永久挂起）并释放 GCHandle（Trampoline 永不会被调用）
+        // 取消 Task（防止 await 永久挂起）并注销 token（Trampoline 永不会被调用）
         Action abort = () =>
         {
             if (state.TryMarkDone())
@@ -147,54 +144,59 @@ internal static class CallbackTaskBridge
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static IntPtr CallbackTrampoline(IntPtr env, IntPtr info)
     {
-        GCHandle gch = default;
+        State? state = null;
         try
         {
-            var argc = (IntPtr)2;
-            Span<IntPtr> argv = stackalloc IntPtr[2];
-            NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
-                .ThrowIfFailed();
-            gch = GCHandle.FromIntPtr(data);
-            // 取消/中止后 GCHandle 已释放：迟到回调静默忽略（实现不抛），不得重新完成任务
-            if (gch.Target is not State state)
-                return CallbackTrampolines.SafeReturnUndefined(env);
-            if (!state.TryMarkDone())
-                return CallbackTrampolines.SafeReturnUndefined(env);
-
-            var err = argc > 0 ? argv[0] : IntPtr.Zero;
-            NativeNodeApi.napi_typeof(env, err, out var errType).ThrowIfFailed();
-            if (errType == NativeNodeApi.napi_valuetype.napi_undefined || errType == NativeNodeApi.napi_valuetype.napi_null)
+            // 只返回 undefined：本次回调创建的临时 napi_value 在 scope 结束时回收。
+            // 返回值在 scope 之外创建（末尾），所以 scope 内不得 return。
+            using (NapiHandleScope.Open(env))
             {
-                // 成功路径：AsyncCallback<T> 的 data 在第二位（void AsyncCallback 只有 err）
-                var dataArg = argc > 1 ? argv[1] : CallbackTrampolines.SafeReturnUndefined(env);
-                object? value = state.Convert != null
-                    ? state.Convert(dataArg)
-                    : ValueConverter.ConvertTo(state.InnerType, dataArg);
-                state.SetResult(value);
-            }
-            else
-            {
-                // BusinessError：{ code: number, message: string }
-                var (code, message) = BusinessErrorReader.Read(env, err);
-                state.SetException(new ArkTSException(
-                    $"ArkTS callback error (code {code?.ToString() ?? "unknown"}): {message ?? "unknown"}",
-                    message, err, code));
+                var argc = (IntPtr)2;
+                Span<IntPtr> argv = stackalloc IntPtr[2];
+                NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
+                    .ThrowIfFailed();
+                // 取消/中止后 token 已注销：迟到回调解析不到状态，静默忽略
+                state = BridgeSlotRegistry.Resolve(data) as State;
+                if (state is not null && state.TryMarkDone())
+                {
+                    var err = argc > 0 ? argv[0] : IntPtr.Zero;
+                    NativeNodeApi.napi_typeof(env, err, out var errType).ThrowIfFailed();
+                    if (errType == NativeNodeApi.napi_valuetype.napi_undefined || errType == NativeNodeApi.napi_valuetype.napi_null)
+                    {
+                        // 成功路径：AsyncCallback<T> 的 data 在第二位（void AsyncCallback 只有 err）。
+                        // argc<=1 时需要一个真实的 undefined 句柄（不能传 IntPtr.Zero：
+                        // 后续 NativeValue.ToXxx 会把 0 判成非法实参）。
+                        var dataArg = argc > 1 ? argv[1] : GetUndefined(env);
+                        object? value = state.Convert != null
+                            ? state.Convert(dataArg)
+                            : ValueConverter.ConvertTo(state.InnerType, dataArg);
+                        state.SetResult(value);
+                    }
+                    else
+                    {
+                        // BusinessError：{ code: number, message: string }
+                        var (code, message) = BusinessErrorReader.Read(env, err);
+                        state.SetException(new ArkTSException(
+                            $"ArkTS callback error (code {code?.ToString() ?? "unknown"}): {message ?? "unknown"}",
+                            message, code));
+                    }
+                }
             }
         }
         catch (Exception ex)
         {
-            if (gch.IsAllocated && gch.Target is State s && !s.Done)
+            if (state is not null && !state.Done)
             {
-                s.Done = true;
-                s.SetException(ex);
+                state.Done = true;
+                state.SetException(ex);
             }
         }
         finally
         {
-            if (gch.IsAllocated && gch.Target is State s)
+            if (state is not null)
             {
-                s.DisposeRegistration();
-                s.Free();
+                state.DisposeRegistration();
+                state.Free();
             }
         }
         return CallbackTrampolines.SafeReturnUndefined(env);

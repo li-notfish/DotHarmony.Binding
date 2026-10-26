@@ -42,6 +42,9 @@ public partial class MainPage : ContentPage
         try
         {
             await InteropStress.RunAsync();
+
+            // TSFN 吞吐测量必须在 JS/UI 线程上创建 TSFN（NapiEnv 是 ThreadStatic）：
+            // InteropStress 里的 await Task.Delay 已把续体甩到线程池，此处先回到 UI 线程。
             await ResumeOnUiAsync();
             var throughput = await MeasureTsfThroughputAsync(TsfnIterations);
             HiLog.Info("Perf", $"PERF_TSFN_THROUGHPUT_OPS_PER_SEC={throughput:F2}");
@@ -55,10 +58,18 @@ public partial class MainPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// 把续体送回 JS/UI 线程。返回的 Task 在 UI 线程内联完成，
+    /// 因此 await 之后的代码持有有效的 napi_env（桥的 TCS 不加
+    /// RunContinuationsAsynchronously，正是为了这个语义）。
+    /// </summary>
     private static Task ResumeOnUiAsync()
     {
         var completion = new TaskCompletionSource();
-        MainThreadDispatcher.Post(() => completion.TrySetResult());
+        var pending = MainThreadDispatcher.PendingCount;
+        if (!MainThreadDispatcher.TryPost(() => completion.TrySetResult()))
+            completion.TrySetException(new InvalidOperationException(
+                $"ResumeOnUiAsync: dispatcher queue is full (pending={pending}), cannot resume on UI thread"));
         return completion.Task;
     }
 

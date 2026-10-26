@@ -35,11 +35,16 @@ internal static class NapiModuleLoader
                 try
                 {
                     var env = NapiEnv.Current;
-                    NativeNodeApi.napi_open_handle_scope(env, out var scope).ThrowIfFailed();
-                    try
+                    // 模块对象必须在本 scope 内转成 napi_ref 才能跨帧持有——这正是
+                    // ROADMAP 平台铁律 #4 的形态；scope 关闭后裸句柄失效。
+                    using (NapiHandleScope.Open(env))
                     {
-                        // 先试 "=<module>"（Ability 上下文）再试裸模块名（普通上下文）
-                        foreach (var name in new[] { "=" + module, module })
+                        // 探测顺序：先裸模块名，失败再试 "=<module>"（Ability 上下文）。
+                        // 反过来的话，引擎每次都会先对 "=@ohos.xxx" 报
+                        // "The module name doesn't comply with the naming rules"，
+                        // 并在 hilog 打一整段 ReferenceError + backtrace——虽然随后回退成功，
+                        // 但每个模块首载都会留一条看起来像崩溃的日志，掩盖真正的错误。
+                        foreach (var name in new[] { module, "=" + module })
                         {
                             var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
                             unsafe
@@ -52,14 +57,11 @@ internal static class NapiModuleLoader
                                         _reference = new NapiReference(value);
                                         break;
                                     }
+                                    // 探测失败：清掉挂起异常，避免污染后续调用的 last exception
                                     NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
                                 }
                             }
                         }
-                    }
-                    finally
-                    {
-                        NativeNodeApi.napi_close_handle_scope(env, scope).ThrowIfFailed();
                     }
 
                     if (_reference is null)

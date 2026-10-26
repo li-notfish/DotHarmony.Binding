@@ -21,6 +21,18 @@ internal static class NapiEnv
     {
         if (env == IntPtr.Zero)
             throw new ArgumentException("napi_env must not be zero", nameof(env));
+
+        // 同一线程重复注入是正常入口（HarmonyInit 与 HarmonyBuildUI 各注入一次）。
+        // 但 env 变了说明本线程的 napi 上下文被换过：此前缓存的 napi_ref / 裸 napi_value
+        // 都绑定在旧 env 上，继续用会得到跨 env 的未定义行为。以前这种替换完全静默，
+        // 至少留一条日志，让"为什么句柄突然不好使"可查。
+        if (_currentEnv != IntPtr.Zero && _currentEnv != env)
+        {
+            HiLog.Error(
+                "NapiEnv",
+                $"env replaced on this thread: {_currentEnv:X} -> {env:X}; references created under the old env are no longer safe");
+        }
+
         _currentEnv = env;
     }
 
