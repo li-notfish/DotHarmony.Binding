@@ -125,9 +125,19 @@ internal static class CallbackTaskBridge
 
         if (cancellationToken.CanBeCanceled)
         {
-            state.Registration = cancellationToken.Register(static s => ((State)s!).Cancel(), state);
-            if (cancellationToken.IsCancellationRequested)
-                state.Cancel();
+            try
+            {
+                state.Registration = cancellationToken.Register(static s => ((State)s!).Cancel(), state);
+                if (cancellationToken.IsCancellationRequested)
+                    state.Cancel();
+            }
+            catch
+            {
+                // Register 自身可能抛（token 源已释放竞态）：调用方拿不到 Task，
+                // 走 abort 通道释放槽位并取消 Task，再把注册异常抛给调用方。
+                abort();
+                throw;
+            }
         }
         return (jsFunc, tcs.Task, abort);   // napi_value 隐式转换为 IntPtr
 #else
@@ -185,11 +195,9 @@ internal static class CallbackTaskBridge
         }
         catch (Exception ex)
         {
-            if (state is not null && !state.Done)
-            {
-                state.Done = true;
+            // 完成必须走 TryMarkDone 的锁协议：直写 Done 会绕过原子性约定。
+            if (state is not null && state.TryMarkDone())
                 state.SetException(ex);
-            }
         }
         finally
         {

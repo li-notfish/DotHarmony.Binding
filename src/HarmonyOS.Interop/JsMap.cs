@@ -4,8 +4,10 @@ using System.Collections.Generic;
 namespace HarmonyOS.Interop;
 
 /// <summary>
-/// JS Map 的 C# 活视图包装。方法经句柄调用底层 map.get/map.set/map.has/map.delete/map.entries，
-/// 读取/写入直接作用于 JS 侧 Map 对象（不是快照）。TKey/TValue 支持
+/// JS Map 的 C# 活视图包装。方法经 PinnedValue（napi 强引用取回的当前帧句柄）调用底层
+/// map.get/map.set/map.has/map.delete/map.entries，读取/写入直接作用于 JS 侧 Map 对象
+/// （不是快照）。不得直用构造时的裸 Handle——包装实例常跨回调帧存活（如 Task 结果），
+/// 裸句柄在创建它的 handle scope 关闭后即失效。TKey/TValue 支持
 /// 基元类型、string、IntPtr、JsBigInt、byte[] 及生成的 JsObject 派生包装类。
 /// </summary>
 public class JsMap<TKey, TValue> : JsObject where TKey : notnull
@@ -57,7 +59,7 @@ public class JsMap<TKey, TValue> : JsObject where TKey : notnull
     public TValue? Get(TKey key)
     {
 #if HARMONYOS
-        return ConvertValueBack(NodeApi.CallMethod<IntPtr>(Handle, _get, NativeValue.From(key!)));
+        return ConvertValueBack(NodeApi.CallMethod<IntPtr>(PinnedValue, _get, NativeValue.From(key!)));
 #else
         throw new PlatformNotSupportedException("JsMap requires HarmonyOS runtime");
 #endif
@@ -72,7 +74,7 @@ public class JsMap<TKey, TValue> : JsObject where TKey : notnull
             value = default!;
             return false;
         }
-        value = ConvertValueBack(NodeApi.CallMethod<IntPtr>(Handle, _get, NativeValue.From(key!)))!;
+        value = ConvertValueBack(NodeApi.CallMethod<IntPtr>(PinnedValue, _get, NativeValue.From(key!)))!;
         return true;
 #else
         throw new PlatformNotSupportedException("JsMap requires HarmonyOS runtime");
@@ -83,7 +85,7 @@ public class JsMap<TKey, TValue> : JsObject where TKey : notnull
     public JsMap<TKey, TValue> Set(TKey key, TValue value)
     {
 #if HARMONYOS
-        NodeApi.CallMethodVoid(Handle, _set, NativeValue.From(key!), NativeValue.From(value!));
+        NodeApi.CallMethodVoid(PinnedValue, _set, NativeValue.From(key!), NativeValue.From(value!));
         return this;
 #else
         throw new PlatformNotSupportedException("JsMap requires HarmonyOS runtime");
@@ -94,7 +96,7 @@ public class JsMap<TKey, TValue> : JsObject where TKey : notnull
     public bool Remove(TKey key)
     {
 #if HARMONYOS
-        return NodeApi.CallMethod<bool>(Handle, _delete, NativeValue.From(key!));
+        return NodeApi.CallMethod<bool>(PinnedValue, _delete, NativeValue.From(key!));
 #else
         throw new PlatformNotSupportedException("JsMap requires HarmonyOS runtime");
 #endif
@@ -104,7 +106,7 @@ public class JsMap<TKey, TValue> : JsObject where TKey : notnull
     public void Clear()
     {
 #if HARMONYOS
-        NodeApi.CallMethodVoid(Handle, _clear);
+        NodeApi.CallMethodVoid(PinnedValue, _clear);
 #else
         throw new PlatformNotSupportedException("JsMap requires HarmonyOS runtime");
 #endif
@@ -114,7 +116,7 @@ public class JsMap<TKey, TValue> : JsObject where TKey : notnull
     public KeyValuePair<TKey, TValue>[] Entries()
     {
 #if HARMONYOS
-        var iterator = NodeApi.CallMethod<IntPtr>(Handle, _entries);
+        var iterator = NodeApi.CallMethod<IntPtr>(PinnedValue, _entries);
         var result = new List<KeyValuePair<TKey, TValue>>();
         while (true)
         {

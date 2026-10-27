@@ -163,13 +163,23 @@ internal static class PromiseTaskBridge
             bridgeAttached = true;
             if (cancellationToken.CanBeCanceled)
             {
-                state.Registration = cancellationToken.Register(
-                    static stateObject => ((State)stateObject!).Cancel(),
-                    state);
-                // token 在注册前已取消时 Register 会同步触发回调（此时 Registration 仍是
-                // default，Release 只会注销 token）；补一次显式 Cancel 保证注册项也被释放。
-                if (cancellationToken.IsCancellationRequested)
-                    state.Cancel();
+                try
+                {
+                    state.Registration = cancellationToken.Register(
+                        static stateObject => ((State)stateObject!).Cancel(),
+                        state);
+                    // token 在注册前已取消时 Register 会同步触发回调（此时 Registration 仍是
+                    // default，Release 只会注销 token）；补一次显式 Cancel 保证注册项也被释放。
+                    if (cancellationToken.IsCancellationRequested)
+                        state.Cancel();
+                }
+                catch
+                {
+                    // Register 自身可能抛（token 源已释放竞态）：桥已挂上但外层 catch 因
+                    // bridgeAttached 不再释放，必须在此清掉槽位，否则 State 永久滞留。
+                    state.Release();
+                    throw;
+                }
             }
 
             return tcs.Task;

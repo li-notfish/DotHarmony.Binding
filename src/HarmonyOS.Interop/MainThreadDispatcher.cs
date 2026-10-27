@@ -97,7 +97,16 @@ public static class MainThreadDispatcher
             tsfn = _tsfn;
         }
 
-        tsfn?.Call(IntPtr.Zero);
+        try
+        {
+            tsfn?.Call(IntPtr.Zero);
+        }
+        catch (ObjectDisposedException)
+        {
+            // Shutdown 恰好插在入队与投递之间：动作已随队列清空，通道已关。
+            // 返回 false 而不是抛 ODE——TryPost 的契约是尽力而为的 bool。
+            return false;
+        }
         return true;
     }
 

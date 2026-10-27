@@ -432,7 +432,9 @@ public static class NodeApi
 
     /// <summary>
     /// 把带返回值的 C# 回调包装为 JS callback（返回值经 NativeValue.From 封送）。
-    /// GCHandle 经由 napi_add_finalizer 随 JS 函数 GC 释放，调用方无需自行回收。
+    /// GCHandle 经由 napi_add_finalizer 随 JS 函数 GC 释放，调用方**不得**再对返回的
+    /// Handle 调 FreeEventHandle——重复释放会在原生 finalizer 里引爆。返回的句柄仅
+    /// 供挂载用（与 CreateCallbackFunction 的「调用方负责释放」约定相反）。
     /// </summary>
     public static (IntPtr jsFunc, GCHandle Handle) CreateValueCallbackFunction(
         Func<ReadOnlySpan<IntPtr>, object?> adapted)

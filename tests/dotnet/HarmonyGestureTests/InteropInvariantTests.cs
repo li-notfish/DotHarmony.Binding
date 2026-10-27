@@ -324,6 +324,80 @@ public class InteropInvariantTests
             + string.Join("\n", offenders));
     }
 
+    /// <summary>
+    /// A8：JsObject 派生包装（JsMap 等）不得把构造时的裸 Handle 传给 NodeApi 调用。
+    /// 裸 napi_value 只在创建它的 handle scope 内有效，跨帧必须经 PinnedValue（napi_ref 取回）。
+    /// 历史缺陷：926272c 迁移了 JsObject 却漏掉 JsMap 的 Get/Set/Remove/Entries——
+    /// Task&lt;JsMap&gt; await 之后跨帧调用即悬空句柄。
+    /// </summary>
+    [Fact]
+    public void WrapperMethodsUsePinnedValueNotRawHandle()
+    {
+        var offender = new Regex(@"NodeApi\.\w+\s*(<[^>]*>)?\(\s*Handle\b", RegexOptions.Compiled);
+
+        var violations = new List<string>();
+        foreach (var file in EnumerateSources(Path.Combine(Root, "src", "HarmonyOS.Interop")))
+        {
+            var lines = File.ReadAllLines(file);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var trimmed = lines[i].TrimStart();
+                if (trimmed.StartsWith("//", StringComparison.Ordinal) || trimmed.StartsWith("*", StringComparison.Ordinal))
+                    continue;
+                if (offender.IsMatch(lines[i]))
+                    violations.Add($"{Path.GetRelativePath(Root, file)}:{i + 1}: {Compress(lines[i])}");
+            }
+        }
+
+        Assert.True(violations.Count == 0,
+            "包装类不得把裸 Handle 传给 NodeApi 调用（跨帧即悬空，必须走 PinnedValue）：\n"
+            + string.Join("\n", violations));
+    }
+
+    /// <summary>
+    /// A9：EventListenerRegistry.Remove 必须先校验字典里的 entry 仍是自己再移除并释放。
+    /// 历史缺陷（并发窗口）：off() 在锁外执行期间，并发 Remove 清掉本 entry、并发 Add
+    /// 登记新 entry，慢线程的第二把锁若无条件 Remove(key) 会把新 entry 拽出字典却不
+    /// 释放（孤儿 GCHandle + JS 侧监听残留），上层还拿到 false 误判「本来没订阅」。
+    /// </summary>
+    [Fact]
+    public void EventListenerRemoveVerifiesOwnershipBeforeFreeing()
+    {
+        var text = File.ReadAllText(InteropFile("EventListenerRegistry.cs"));
+
+        // 旧缺陷形态：无条件 Remove(key, out …) 再用 ReferenceEquals 事后校验
+        Assert.False(Regex.IsMatch(text, @"_listeners\.Remove\(key,\s*out\s+var"),
+            "EventListenerRegistry.Remove 不得先 Remove(key, out …) 再校验（会把并发 Add 的新 entry 拽成孤儿）");
+
+        // 修复形态：TryGetValue 校验 current 仍是本 entry 后才移除并释放
+        Assert.True(
+            Regex.IsMatch(text, @"TryGetValue\(key, out var current\)[\s\S]*?ReferenceEquals\(current\.JsFuncRef, entry\.JsFuncRef\)[\s\S]*?_listeners\.Remove\(key\);"),
+            "EventListenerRegistry.Remove 缺少「先校验后移除」的持有权检查");
+    }
+
+    /// <summary>
+    /// A10：CancellationToken.Register 自身可能抛（token 源已释放竞态），两条桥的注册段
+    /// 必须自带失败释放——外层 catch 在 bridgeAttached/调用方 try 之外不再兜底。
+    /// 另：trampoline 的异常完成必须走 TryMarkDone 锁协议，不得直写 state.Done。
+    /// </summary>
+    [Fact]
+    public void BridgeCancellationTokenRegistrationHasItsOwnFailureRelease()
+    {
+        var promise = File.ReadAllText(InteropFile("PromiseTaskBridge.cs"));
+        var callback = File.ReadAllText(InteropFile("CallbackTaskBridge.cs"));
+
+        Assert.True(
+            Regex.IsMatch(promise, @"cancellationToken\.Register\([\s\S]*?catch\s*\{[\s\S]*?state\.Release\(\);"),
+            "PromiseTaskBridge 的 Register 失败路径缺少 state.Release()（槽位会永久滞留）");
+
+        Assert.True(
+            Regex.IsMatch(callback, @"cancellationToken\.Register\([\s\S]*?catch\s*\{[\s\S]*?abort\(\);"),
+            "CallbackTaskBridge 的 Register 失败路径缺少 abort() 释放（槽位会永久滞留）");
+
+        // TryMarkDone 内部写 Done = true（无 state. 前缀）；带前缀的直写是绕过锁协议的形态
+        Assert.DoesNotContain("state.Done = true", callback);
+    }
+
     private static IEnumerable<string> EnumerateSources(string root)
     {
         if (!Directory.Exists(root))
