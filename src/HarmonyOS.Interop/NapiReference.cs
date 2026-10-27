@@ -47,11 +47,6 @@ internal class NapiReference : IDisposable
     }
 
     /// <summary>
-    /// 获取底层 napi_ref 句柄
-    /// </summary>
-    public IntPtr Handle => _ref;
-
-    /// <summary>
     /// 释放引用
     /// </summary>
     public void Dispose()

@@ -21,6 +21,7 @@
 
 typedef int (*harmony_init_t)(void* env);
 typedef int (*harmony_buildui_t)(void* env, void* nodeContentValue);
+typedef void (*harmony_shutdown_t)(void);
 typedef int (*harmony_poppage_t)(void* env);
 typedef int (*harmony_themechanged_t)(void* env, int colorMode);
 typedef int (*harmony_web_init_t)(void* env, void* webViewValue);
@@ -46,6 +47,7 @@ static bool g_engineResolved = false;
 #define HARMONY_WEB_ORIGIN "https://localhost/"
 
 static void* g_app = NULL;
+static harmony_shutdown_t g_shutdown = NULL;
 
 // Web 通道导出符号缓存：dlsym 仅在首次调用时解析（surface 可选，无导出时保持 NULL 并短路）
 static harmony_web_init_t g_webInit = NULL;
@@ -425,6 +427,29 @@ static bool load_dotnet(void)
 
 // 页面重建（恢复/多次 aboutToAppear）会让 TS 再走 passNodeContent；.NET 侧 UI 树只应该建一次
 static bool g_uiBuilt = false;
+
+static void ShutdownDotnetRuntime(void)
+{
+    // Ability teardown releases the UI root; a later Ability in this process must rebuild it.
+    g_uiBuilt = false;
+
+    if (g_app == NULL) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, LOG_TAG,
+                     "shutdownDotnet: runtime not loaded; nothing to do");
+        return;
+    }
+
+    if (g_shutdown == NULL) {
+        g_shutdown = (harmony_shutdown_t)dlsym(g_app, "HarmonyShutdown");
+    }
+    if (g_shutdown == NULL) {
+        OH_LOG_Print(LOG_APP, LOG_WARN, LOG_DOMAIN, LOG_TAG,
+                     "HarmonyShutdown export not found; relying on process teardown");
+        return;
+    }
+    g_shutdown();
+    g_shutdown = NULL;
+}
 
 static bool ensure_runtime(napi_env env)
 {
@@ -843,6 +868,15 @@ static napi_value NotifyLifecycleChanged(napi_env env, napi_callback_info info)
     return NULL;
 }
 
+static napi_value ShutdownDotnet(napi_env env, napi_callback_info info)
+{
+    (void)info;
+    (void)env;
+    // Don't initialize the runtime just to shut it down; only clean up if loaded.
+    ShutdownDotnetRuntime();
+    return NULL;
+}
+
 EXTERN_C_START
 static napi_value ModuleInit(napi_env env, napi_value exports)
 {
@@ -860,10 +894,12 @@ static napi_value ModuleInit(napi_env env, napi_value exports)
         {"initEngine", NULL, InitEngine, NULL, NULL, NULL, napi_default, NULL},
         {"notifyThemeChanged", NULL, NotifyThemeChanged, NULL, NULL, NULL, napi_default, NULL},
         {"notifyLifecycleChanged", NULL, NotifyLifecycleChanged, NULL, NULL, NULL, napi_default, NULL},
+        {"shutdownDotnet", NULL, ShutdownDotnet, NULL, NULL, NULL, napi_default, NULL},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;
 }
+
 EXTERN_C_END
 
 static napi_module harmonyHostModule = {

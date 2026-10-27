@@ -24,6 +24,8 @@ namespace HarmonyOS.Maui.Handlers;
 /// <summary>MAUI NavigationPage 的 HarmonyOS Handler（标题栏 + ArkUI Stack 承载页面栈）。</summary>
 public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColumn>
 {
+    private const float ToolbarHeightVp = 56f;
+
     public static readonly PropertyMapper<NavigationPage, HarmonyNavigationPageHandler> Mapper =
         new(HarmonyViewMapper.Base)
         {
@@ -45,6 +47,8 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
     private ArkText? _backButton;
     private ArkText? _titleLabel;
     private ArkStack? _content;
+    private float _lastRootHeight;
+    private bool _toolbarShown = true;
 
     protected override ArkColumn CreatePlatformView()
     {
@@ -55,7 +59,7 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
         // 标题栏：返回键 + 标题（高 56vp，HasNavigationBar=false 或栈深 1 时隐藏返回键/整栏）
         _toolbar = new ArkRow();
         _toolbar.SetWidthPercent(1.0f);
-        _toolbar.SetHeight(56f);
+        _toolbar.SetHeight(ToolbarHeightVp);
         _backButton = new ArkText();
         _backButton.Content = "←";
         _backButton.SetMarginEdges(0, 0, 0, 12f);
@@ -68,13 +72,30 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
         _toolbar.AddChild(_titleLabel);
         root.AddChild(_toolbar);
 
-        // 内容区：占满标题栏以下剩余空间
+        // 内容区：占满标题栏以下剩余空间。NODE_FLEX_GROW 在 Column 内不按剩余空间
+        // 收缩（与 Shell 同源问题），内容区会拿整根高并把 TabbedPage 底栏挤出可视区，
+        // 因此改由根尺寸事件显式回填高度。
         _content = new ArkStack();
         _content.SetWidthPercent(1.0f);
-        _content.SetFlexGrow(1f);
         root.AddChild(_content);
+        root.SubscribeEvent(ArkUI_NodeEventType.NODE_ON_SIZE_CHANGE, OnRootSizeChange);
 
         return root;
+    }
+
+    private void OnRootSizeChange(HarmonyOS.Bindings.NativeNode.ArkUINodeEvent e)
+    {
+        _lastRootHeight = e.SizeChangeHeight;
+        RelayoutContent();
+    }
+
+    private void RelayoutContent()
+    {
+        if (_content is null || _lastRootHeight <= 0)
+            return;
+        var contentHeight = _lastRootHeight - (_toolbarShown ? ToolbarHeightVp : 0f);
+        if (contentHeight > 0)
+            _content.SetHeight(contentHeight);
     }
 
     protected override void ConnectHandler(ArkColumn platformView)
@@ -205,10 +226,12 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
         var top = target.Count > 0 ? target[^1] : null;
 
         bool hasBar = top is null || NavigationPage.GetHasNavigationBar(top);
+        _toolbarShown = hasBar;
         _toolbar.Visible = hasBar;
         _backButton!.Visible = target.Count > 1;
         _titleLabel!.Content = top?.Title ?? string.Empty;
         _toolbar.SetZIndex(int.MaxValue); // 覆盖页面内容之上（模态在宿主层，不受影响）
+        RelayoutContent();
     }
 
     private void SubscribeTitleTracking(Page page)

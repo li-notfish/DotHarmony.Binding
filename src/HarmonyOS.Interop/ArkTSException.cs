@@ -4,7 +4,9 @@ using System;
 namespace HarmonyOS.Interop;
 
 /// <summary>
-/// ArkTS 运行时异常，当 Promise 被 reject 时抛出
+/// ArkTS 运行时异常，当 Promise 被 reject 或 AsyncCallback 报错时抛出。
+/// 只携带值语义字段（文本 + code）：异常会跨回调帧存活（存进 Task、被 await 方持有），
+/// 而 napi_value 只在产生它的 handle scope 内有效，把它放进异常等于带出一个悬空句柄。
 /// </summary>
 public sealed class ArkTSException : Exception
 {
@@ -17,40 +19,22 @@ public sealed class ArkTSException : Exception
     public long? ErrorCode { get; }
 
     /// <summary>
-    /// 原始 napi_value 句柄，用于调试时获取完整错误信息
-    /// </summary>
-    internal IntPtr NapiValue { get; }
-
-    /// <summary>
     /// 创建一个包含错误原因的 ArkTS 异常
     /// </summary>
     internal ArkTSException(string message, string? reason)
         : base(message)
     {
         Reason = reason;
-        NapiValue = IntPtr.Zero;
         ErrorCode = null;
     }
 
     /// <summary>
-    /// 创建一个包含 napi_value 句柄的 ArkTS 异常
+    /// 创建一个包含错误原因与 BusinessError.code 的 ArkTS 异常
     /// </summary>
-    internal ArkTSException(string message, IntPtr napiValue)
-        : base(message)
-    {
-        NapiValue = napiValue;
-        Reason = null;
-        ErrorCode = null;
-    }
-
-    /// <summary>
-    /// 创建一个包含错误原因和 napi_value 句柄的 ArkTS 异常
-    /// </summary>
-    internal ArkTSException(string message, string? reason, IntPtr napiValue, long? errorCode = null)
+    internal ArkTSException(string message, string? reason, long? errorCode)
         : base(message)
     {
         Reason = reason;
-        NapiValue = napiValue;
         ErrorCode = errorCode;
     }
 }

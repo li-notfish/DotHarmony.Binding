@@ -63,6 +63,48 @@ public static class HarmonyNavigation
         AttachCore(container, application, window);
     }
 
+    /// <summary>运行期替换 Window.Page 的导航语义接入点。</summary>
+    internal static void AttachWindow(MWindow window)
+    {
+        _window = window;
+        // MAUI Window 的 Page setter 会重建整棵平台树；本导航器以轻量栈承载根页切换，
+        // 订阅 PropertyChanged 是运行期根页替换的正式分发入口。
+        window.PropertyChanged += OnWindowPropertyChanged;
+    }
+
+    private static void OnWindowPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == MWindow.PageProperty.PropertyName &&
+            sender is MWindow window &&
+            window.Page is { } page &&
+            _currentPage?.Page != page)
+        {
+            ReplaceRoot(page);
+        }
+    }
+
+    // Window.Page 替换是“整根替换”，不是压栈：上一根页节点必须真正摘除，
+    // 否则后续 NavigationPage 内重建的 TabbedPage 会挂进两层树，底栏点击事件
+    // 命中不到新的 handler。
+    private static void ReplaceRoot(MPage page)
+    {
+        if (_container is null)
+            throw new InvalidOperationException("HarmonyNavigation not initialized (MauiHarmonyHost.Run first)");
+
+        if (_currentPage is { } current)
+        {
+            current.Page.SendDisappearing();
+            _container.RemoveChild(current.Node);
+            current.Page.Handler = null; // 触发根页 handler 的 DisconnectHandler 清理
+            current.Node.Dispose();
+            _currentPage = null;
+        }
+        BackStack.Clear();
+        Modals.Clear();
+
+        Push(page);
+    }
+
     // 两路 Attach 的公共体：连接后 reset 全部栈态；EnsureCurrent 由各自入口负责（不复调）
     private static void AttachCore(ArkStack container, MApplication? application, MWindow? window)
     {

@@ -27,13 +27,22 @@ internal static class NapiFinalizationQueue
         try
         {
             var currentEnv = NapiEnv.Current;
-            List<PendingReference>? deferred = null;
 
-            while (Pending.TryDequeue(out var pending))
+            // 只取本 env 的条目：非本 env 的原样留在队列里，等拥有它的线程来 drain。
+            // 原实现把其它 env 的条目取出再重新入队，等于每轮 drain 都把整个队列搬运一遍，
+            // 双 env 交替 drain 时会互相把对方的条目翻来翻去（活锁式重排，永不前进）。
+            // ConcurrentQueue 没有"条件出队"，用本地暂存 + 计数上限保证单轮有界。
+            List<PendingReference>? foreign = null;
+            var visited = 0;
+            var total = Pending.Count;
+
+            while (visited < total && Pending.TryDequeue(out var pending))
             {
+                visited++;
+
                 if (pending.Env != currentEnv)
                 {
-                    (deferred ??= new List<PendingReference>()).Add(pending);
+                    (foreign ??= new List<PendingReference>()).Add(pending);
                     continue;
                 }
 
@@ -45,13 +54,13 @@ internal static class NapiFinalizationQueue
                 {
                     HiLog.Error("NapiFinalizationQueue",
                         $"delete failed, retained: {ex.GetType().Name}: {ex.Message}");
-                    (deferred ??= new List<PendingReference>()).Add(pending);
+                    (foreign ??= new List<PendingReference>()).Add(pending);
                 }
             }
 
-            if (deferred is not null)
+            if (foreign is not null)
             {
-                foreach (var item in deferred)
+                foreach (var item in foreign)
                     Pending.Enqueue(item);
             }
         }

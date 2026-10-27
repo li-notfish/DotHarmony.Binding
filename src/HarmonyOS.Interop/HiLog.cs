@@ -32,6 +32,14 @@ public static unsafe partial class HiLog
     private static readonly byte[] FmtUtf8 = "%{public}s"u8.ToArray();
     private static readonly byte[] EmptyUtf8 = { 0 };
 
+    /// <summary>
+    /// tag 几乎全是编译期常量（"TSFN" / "MainThread" / "HarmonyHost" …），
+    /// 但每次 Write 都 Encoding.UTF8.GetBytes(tag) 会为每条日志多一次数组分配。
+    /// 按 tag 缓存其 UTF-8 字节（tag 取值集合很小且固定）。
+    /// </summary>
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, byte[]> TagUtf8 =
+        new(StringComparer.Ordinal);
+
     public static void Debug(string tag, string message) => Write(3, tag, message);
 
     public static void Info(string tag, string message) => Write(4, tag, message);
@@ -49,8 +57,11 @@ public static unsafe partial class HiLog
             var msgUtf8 = string.IsNullOrEmpty(message)
                 ? EmptyUtf8
                 : Encoding.UTF8.GetBytes(message);
+            var tagUtf8 = string.IsNullOrEmpty(tag)
+                ? EmptyUtf8
+                : TagUtf8.GetOrAdd(tag, static t => Encoding.UTF8.GetBytes(t));
             fixed (byte* f = FmtUtf8, m = msgUtf8)
-            fixed (byte* t = Encoding.UTF8.GetBytes(tag))
+            fixed (byte* t = tagUtf8)
             {
                 OH_LOG_Print(0, level, 0x0000, t, f, m);
             }

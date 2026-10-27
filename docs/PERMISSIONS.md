@@ -16,9 +16,12 @@
 
    ```xml
    <ItemGroup>
-     <HarmonyPermission Include="ohos.permission.READ_PASTEBOARD" When="inuse" />
+     <HarmonyPermission Include="ohos.permission.READ_PASTEBOARD" Usage="inuse" />
    </ItemGroup>
    ```
+
+   `Usage` 取 `inuse` 或 `always`（缺省 `always`）。不要把该元数据命名为 `When`：
+   新版 MSBuild（.NET SDK 10+）已把 `When` 列为保留项元数据名，解析即报 MSB4066/MSB4118。
 
 最终清单是三类来源的并集。`HarmonyPermissionCheck` 是显式 target（**不会**随普通 build 执行），
 用于校验 `permissions.json`、`module.json5` 与 `permissions.report.md` 描述的是同一份权限集合：

@@ -26,6 +26,9 @@ public static class NodeApi
     private static readonly byte[] GlueGlobalNameBytes = System.Text.Encoding.UTF8.GetBytes(GlueGlobalName);
     private static readonly byte[] CreateComponentNameBytes = System.Text.Encoding.UTF8.GetBytes("createComponent");
 
+    /// <summary>JS 回调函数的调试用函数名（napi_create_function 会拷贝，进程内复用一份）</summary>
+    private static readonly byte[] CallbackNameBytes = "callback"u8.ToArray();
+
     /// <summary>
     /// 获取宿主注入的 ArkUI 胶水模块
     /// </summary>
@@ -44,10 +47,14 @@ public static class NodeApi
     }
 
     /// <summary>
-    /// 创建无参组件
+    /// 创建无参组件（ArkTS 胶水路径，供 tools/api-generator 产出的组件包装使用）
     /// </summary>
     /// <param name="componentName">组件名称（如 "Text", "Button"）</param>
-    /// <returns>组件的 napi_value 句柄</returns>
+    /// <returns>
+    /// 组件的 napi_value 句柄。**注意**：返回值是当前回调帧内的 handle，
+    /// 跨帧持有（存字段、跨 Post）前必须先经 <see cref="NapiReference"/> 固定；
+    /// UI 主路径是 NDK（ArkUINodeBase），不经本方法。
+    /// </returns>
     public static IntPtr CreateComponent(string componentName)
     {
 #if HARMONYOS
@@ -197,7 +204,7 @@ public static class NodeApi
     }
 
     /// <summary>
-    /// 注册事件处理器（AOT 兼容版本）
+    /// 注册事件处理器（AOT 兼容版本；arktsengine 胶水组件包装使用）
     /// </summary>
     /// <param name="jsObject">组件句柄</param>
     /// <param name="eventName">事件名称</param>
@@ -244,26 +251,9 @@ public static class NodeApi
     }
 
     /// <summary>
-    /// 获取对象属性值（ReadOnlySpan&lt;byte&gt; 重载：生成器以 "name"u8 常量携带）
+    /// 获取对象属性值（ReadOnlySpan&lt;byte&gt; 重载：生成器以 "name"u8 常量携带，零拷贝）
     /// </summary>
     public static IntPtr GetProperty(IntPtr jsObject, ReadOnlySpan<byte> name)
-    {
-#if HARMONYOS
-        if (jsObject == IntPtr.Zero)
-            throw new ArgumentNullException(nameof(jsObject));
-        var env = NapiEnv.Current;
-        NativeNodeApi.napi_get_named_property(env, jsObject, name.ToArray(), out var result)
-            .ThrowIfFailed();
-        return result;
-#else
-        throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
-#endif
-    }
-
-    /// <summary>
-    /// 获取对象属性值（byte[] 重载）
-    /// </summary>
-    public static IntPtr GetProperty(IntPtr jsObject, byte[] name)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
@@ -278,6 +268,12 @@ public static class NodeApi
     }
 
     /// <summary>
+    /// 获取对象属性值（byte[] 重载）
+    /// </summary>
+    public static IntPtr GetProperty(IntPtr jsObject, byte[] name)
+        => GetProperty(jsObject, (ReadOnlySpan<byte>)name);
+
+    /// <summary>
     /// 获取对象属性值（string 重载）
     /// </summary>
     public static IntPtr GetProperty(IntPtr jsObject, string name)
@@ -287,7 +283,9 @@ public static class NodeApi
     public static bool IsNumber(IntPtr value)
     {
 #if HARMONYOS
-        NativeNodeApi.napi_typeof(NapiEnv.Current, value, out var type);
+        // 必须检查 status：napi_typeof 失败时 type 保持默认值 0（= napi_undefined），
+        // 静默返回 false 会让调用方把「读取失败」当成「字段不存在」（如定位字段）。
+        NativeNodeApi.napi_typeof(NapiEnv.Current, value, out var type).ThrowIfFailed();
         return type == NativeNodeApi.napi_valuetype.napi_number;
 #else
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
@@ -299,10 +297,6 @@ public static class NodeApi
     /// 本方法恒为单属性赋值——@ohos.* 服务对象的属性语义。
     /// </summary>
     public static void SetProperty(IntPtr jsObject, ReadOnlySpan<byte> name, object? value)
-        => SetProperty(jsObject, name.ToArray(), value);
-
-    /// <summary>写入对象属性（byte[] 属性名重载，供生成器 u8 常量使用）</summary>
-    public static void SetProperty(IntPtr jsObject, byte[] name, object? value)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
@@ -313,6 +307,10 @@ public static class NodeApi
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif
     }
+
+    /// <summary>写入对象属性（byte[] 属性名重载，供生成器 u8 常量使用）</summary>
+    public static void SetProperty(IntPtr jsObject, byte[] name, object? value)
+        => SetProperty(jsObject, (ReadOnlySpan<byte>)name, value);
 
     /// <summary>写入对象属性（string 属性名重载）</summary>
     public static void SetProperty(IntPtr jsObject, string name, object? value)
@@ -337,10 +335,6 @@ public static class NodeApi
     /// （JS `new obj.ClassName(args)`，供生成器为带构造函数的嵌套类产出包装）。
     /// </summary>
     public static IntPtr CreateInstance(IntPtr jsObject, ReadOnlySpan<byte> className, params ReadOnlySpan<NapiArg> args)
-        => CreateInstance(jsObject, className.ToArray(), args);
-
-    /// <summary>CreateInstance 的 byte[] 类名重载</summary>
-    public static IntPtr CreateInstance(IntPtr jsObject, byte[] className, params ReadOnlySpan<NapiArg> args)
     {
 #if HARMONYOS
         if (jsObject == IntPtr.Zero)
@@ -357,6 +351,10 @@ public static class NodeApi
         throw new PlatformNotSupportedException("NodeApi requires HarmonyOS runtime");
 #endif
     }
+
+    /// <summary>CreateInstance 的 byte[] 类名重载</summary>
+    public static IntPtr CreateInstance(IntPtr jsObject, byte[] className, params ReadOnlySpan<NapiArg> args)
+        => CreateInstance(jsObject, (ReadOnlySpan<byte>)className, args);
 
     /// <summary>
     /// 把 napi 数组值拆为元素句柄数组（生成代码的数组转换器基础件）。
@@ -403,7 +401,7 @@ public static class NodeApi
             throw new ArgumentNullException(nameof(adapted));
         var gch = GCHandle.Alloc(adapted);
         var env = NapiEnv.Current;
-        var nameBytes = "callback"u8.ToArray();
+        var nameBytes = CallbackNameBytes;
         NativeNodeApi.napi_create_function(
             env, nameBytes, (IntPtr)nameBytes.Length,
             CallbackTrampolines.ArgsTrampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc).ThrowIfFailed();
@@ -422,7 +420,7 @@ public static class NodeApi
         ArgumentNullException.ThrowIfNull(adapted);
         var gch = GCHandle.Alloc(adapted);
         var env = NapiEnv.Current;
-        var nameBytes = "callback"u8.ToArray();
+        var nameBytes = CallbackNameBytes;
         NativeNodeApi.napi_create_function(
             env, nameBytes, (IntPtr)nameBytes.Length,
             CallbackTrampolines.ArgsTrampolinePtr, GCHandle.ToIntPtr(gch), out var jsFunc).ThrowIfFailed();
@@ -434,7 +432,9 @@ public static class NodeApi
 
     /// <summary>
     /// 把带返回值的 C# 回调包装为 JS callback（返回值经 NativeValue.From 封送）。
-    /// GCHandle 经由 napi_add_finalizer 随 JS 函数 GC 释放，调用方无需自行回收。
+    /// GCHandle 经由 napi_add_finalizer 随 JS 函数 GC 释放，调用方**不得**再对返回的
+    /// Handle 调 FreeEventHandle——重复释放会在原生 finalizer 里引爆。返回的句柄仅
+    /// 供挂载用（与 CreateCallbackFunction 的「调用方负责释放」约定相反）。
     /// </summary>
     public static (IntPtr jsFunc, GCHandle Handle) CreateValueCallbackFunction(
         Func<ReadOnlySpan<IntPtr>, object?> adapted)
@@ -443,7 +443,7 @@ public static class NodeApi
         ArgumentNullException.ThrowIfNull(adapted);
         var gch = GCHandle.Alloc(adapted);
         var env = NapiEnv.Current;
-        var nameBytes = "callback"u8.ToArray();
+        var nameBytes = CallbackNameBytes;
         NativeNodeApi.napi_value jsFunc;
         try
         {
@@ -784,7 +784,15 @@ public static class NodeApi
         // 获取方法函数
         NativeNodeApi.napi_get_named_property(env, jsObject, methodName, out var jsFunc).ThrowIfFailed();
 
-        // 构建参数数组：小参数量走栈分配，避免每次调用的堆分配
+        // 构建参数数组：小参数量走栈分配，避免每次调用的堆分配。
+        // 0 参时不要白占 8 个槽的 stackalloc——高频无参调用（getXxx()）省掉整块清零。
+        if (args.Length == 0)
+        {
+            NativeNodeApi.napi_call_function(env, jsObject, jsFunc, 0, Span<IntPtr>.Empty, out var noArgResult)
+                .ThrowIfFailed();
+            return noArgResult;
+        }
+
         IntPtr[]? pooled = args.Length > StackArgvCapacity ? new IntPtr[args.Length] : null;
         Span<IntPtr> argv = pooled ?? stackalloc IntPtr[StackArgvCapacity];
         for (int i = 0; i < args.Length; i++)

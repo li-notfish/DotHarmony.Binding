@@ -38,7 +38,8 @@ public sealed class HarmonySynchronizationContext : SynchronizationContext
     }
 
     /// <summary>
-    /// 启动消息循环（在主线程上调用）
+    /// 已禁用：调度由 <see cref="MainThreadDispatcher"/> 负责（自建消息循环存在
+    /// 死锁路径，见 62eb58d）。调用即抛 <see cref="NotSupportedException"/>。
     /// </summary>
     public void Run()
     {
@@ -64,7 +65,7 @@ public sealed class HarmonySynchronizationContext : SynchronizationContext
     }
 
     /// <summary>
-    /// 同步发送回调到主线程（阻塞直到完成）
+    /// 已禁用：同步阻塞语义在本架构下不可用，调用即抛。
     /// </summary>
     public override void Send(SendOrPostCallback d, object? state)
     {
@@ -80,12 +81,11 @@ public sealed class HarmonySynchronizationContext : SynchronizationContext
     }
 
     /// <summary>
-    /// 在主线程执行 Func&lt;T&gt; 并等待结果
+    /// 已禁用：与 <see cref="Send(SendOrPostCallback, object?)"/> 同一语义，
+    /// 调用即抛。需要取回结果时用 MainThreadDispatcher.TryPost + TaskCompletionSource 编排。
     /// </summary>
     public T Send<T>(Func<T> func)
     {
-        T? result = default;
-        Send(_ => result = func(), null);
-        return result!;
+        throw new NotSupportedException("HarmonySynchronizationContext.Send is disabled. Use MainThreadDispatcher.");
     }
 }

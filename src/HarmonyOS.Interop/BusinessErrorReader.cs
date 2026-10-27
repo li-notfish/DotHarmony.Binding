@@ -6,37 +6,44 @@ namespace HarmonyOS.Interop;
 /// <summary>
 /// Reads the stable fields of an ArkTS BusinessError. Promise and callback task
 /// bridges share this implementation so error semantics cannot drift.
+///
+/// 读取是**全量 best-effort**：rejection 值可以是 Error 对象、{ code, message } 字面量、
+/// { error: { code, message } } 包装、或任意常量（字符串/数字/undefined）。任何一步
+/// 失败都只让对应字段为 null，绝不抛——否则「读错误信息失败」会顶掉真正的 rejection 原因。
 /// </summary>
 internal static class BusinessErrorReader
 {
     public static (long? Code, string? Message) Read(IntPtr env, IntPtr error)
     {
-        NativeNodeApi.napi_typeof(env, error, out var errorType).ThrowIfFailed();
+        if (error == IntPtr.Zero)
+            return (null, null);
+
+        if (NativeNodeApi.napi_typeof(env, error, out var errorType) != napi_status.napi_ok)
+            return (null, null);
+
         if (errorType != NativeNodeApi.napi_valuetype.napi_object)
         {
-            string? fallback = null;
-            try { fallback = NativeValue.ToString(error); }
-            catch { /* A rejection value does not have to be a string. */ }
-            return (null, fallback);
+            // rejection 值不一定是字符串（可以是数字/布尔/undefined），读不出来就是 null。
+            return (null, NativeNodeApi.TryReadString(env, error));
         }
 
-        return (ReadInt64(env, error, "code"u8), ReadString(env, error, "message"u8));
-    }
+        var code = NativeNodeApi.TryReadNamedKey(env, error, "code"u8);
+        var message = NativeNodeApi.TryReadNamedString(env, error, "message"u8);
 
-    private static long? ReadInt64(IntPtr env, IntPtr error, ReadOnlySpan<byte> key)
-    {
-        NativeNodeApi.napi_get_named_property(env, error, key, out var value).ThrowIfFailed();
-        NativeNodeApi.napi_typeof(env, value, out var type).ThrowIfFailed();
-        if (type != NativeNodeApi.napi_valuetype.napi_number) return null;
-        NativeNodeApi.napi_get_value_int64(env, value, out var result).ThrowIfFailed();
-        return result;
-    }
+        // ArkTS 侧有把错误再包一层的形态：{ error: { code, message } }
+        if (message is null || code is null)
+        {
+            if (NativeNodeApi.napi_get_named_property(env, error, "error"u8, out var inner) == napi_status.napi_ok &&
+                inner != IntPtr.Zero &&
+                NativeNodeApi.napi_typeof(env, inner, out var innerType) == napi_status.napi_ok &&
+                innerType == NativeNodeApi.napi_valuetype.napi_object)
+            {
+                message ??= NativeNodeApi.TryReadNamedString(env, inner, "message"u8);
+                code ??= NativeNodeApi.TryReadNamedKey(env, inner, "code"u8);
+            }
+        }
 
-    private static string? ReadString(IntPtr env, IntPtr error, ReadOnlySpan<byte> key)
-    {
-        NativeNodeApi.napi_get_named_property(env, error, key, out var value).ThrowIfFailed();
-        NativeNodeApi.napi_typeof(env, value, out var type).ThrowIfFailed();
-        return type == NativeNodeApi.napi_valuetype.napi_string ? NativeValue.ToString(value) : null;
+        return (code, message);
     }
 }
 #endif

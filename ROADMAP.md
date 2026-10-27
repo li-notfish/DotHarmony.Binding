@@ -263,7 +263,9 @@ code_target 条目 `tfm_guard: true` 开启，默认不包裹、check/diff 零�
 
 - 真机矩阵扩展与性能调参；hover / mouse ButtonsMask、Pinch 多点触控注入通道
 - 减少 `IntPtr` 降级：按 `artifacts/generator/api-intptr-report.json` 逐项补 TypeMapper 映射
-- 逐次调用级 napi handle scope 的 RAII 封装
+- 逐次调用级 napi handle scope：RAII 封装（`NapiHandleScope`）已就位并由 `NapiModuleLoader` 接入，
+  其余入口（trampoline / TSFN `CallJs` / `MainThreadDispatcher` drain）接入待办——
+  接入前须确认该入口没有把裸 `napi_value` 带出 scope 的路径
 - **远期**：真 workload 化（前置：`HARMONYOS` 桌面全量定义摘除（桌面桩体化，生成器 per-TFM 包裹逐目标
   开启）、KnownFrameworkReference/RuntimePack 注册与 RID 图策略、workload manifest 广告链；需真实
   多 RID 需求支撑）

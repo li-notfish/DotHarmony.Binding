@@ -32,12 +32,13 @@ internal static class CallbackTrampolines
     {
         try
         {
-            NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
             NativeNodeApi.napi_get_undefined(env, out var undefined).ThrowIfFailed();
             return undefined;
         }
         catch (Exception ex)
         {
+            // 只有异常路径清除 pending exception：正常返回不再吞掉进入回调前已挂起的异常。
+            NativeNodeApi.napi_get_and_clear_last_exception(env, out _);
             HiLog.Error("HarmonyHost", $"[callback] safe return failed: {ex.GetType().Name}: {ex.Message}");
             return IntPtr.Zero;
         }
@@ -47,39 +48,44 @@ internal static class CallbackTrampolines
     private static IntPtr ArgsTrampoline(IntPtr env, IntPtr info)
     {
         Span<IntPtr> argv = stackalloc IntPtr[MaxArgs];
-        int count;
-        IntPtr[]? wideArgs = null;
         try
         {
-            var argc = (IntPtr)MaxArgs;
-            NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
-                .ThrowIfFailed();
-            count = (int)argc;
-            if (count > MaxArgs)
+            // 本次回调创建的临时 napi_value 在块结束时统一失效，不堆到引擎的外层 scope 上。
+            // 返回值在 scope 之外创建（见 SafeReturnUndefined 调用点）——返回给引擎的句柄
+            // 必须属于调用方的 scope，否则关闭本 scope 后即失效。
+            using (NapiHandleScope.Open(env))
             {
-                wideArgs = new IntPtr[count];
-                var wideArgc = (IntPtr)count;
-                NativeNodeApi.napi_get_cb_info(env, info, ref wideArgc, wideArgs, out _, out _)
+                var argc = (IntPtr)MaxArgs;
+                NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
                     .ThrowIfFailed();
-                count = (int)wideArgc;
-            }
-
-            var target = GCHandle.FromIntPtr(data).Target;
-            if (target is Action<ReadOnlySpan<IntPtr>> spanAdapted)
-            {
-                spanAdapted(wideArgs is null ? argv.Slice(0, count) : wideArgs.AsSpan(0, count));
-            }
-            else if (target is Action<IntPtr[]> arrayAdapted)
-            {
-                if (wideArgs is not null)
+                var count = (int)argc;
+                IntPtr[]? wideArgs = null;
+                if (count > MaxArgs)
                 {
-                    arrayAdapted(wideArgs);
+                    wideArgs = new IntPtr[count];
+                    var wideArgc = (IntPtr)count;
+                    NativeNodeApi.napi_get_cb_info(env, info, ref wideArgc, wideArgs, out _, out _)
+                        .ThrowIfFailed();
+                    count = (int)wideArgc;
                 }
-                else
+
+                var target = GCHandle.FromIntPtr(data).Target;
+                if (target is Action<ReadOnlySpan<IntPtr>> spanAdapted)
                 {
-                    var args = new IntPtr[count];
-                    argv.Slice(0, count).CopyTo(args);
-                    arrayAdapted(args);
+                    spanAdapted(wideArgs is null ? argv.Slice(0, count) : wideArgs.AsSpan(0, count));
+                }
+                else if (target is Action<IntPtr[]> arrayAdapted)
+                {
+                    if (wideArgs is not null)
+                    {
+                        arrayAdapted(wideArgs);
+                    }
+                    else
+                    {
+                        var args = new IntPtr[count];
+                        argv.Slice(0, count).CopyTo(args);
+                        arrayAdapted(args);
+                    }
                 }
             }
         }
@@ -98,6 +104,8 @@ internal static class CallbackTrampolines
         IntPtr[]? wideArgs = null;
         try
         {
+            // 本入口**不包 handle scope**：返回值由 NativeValue.From 在当前 scope 内创建，
+            // 关闭 scope 会把要返回给引擎的句柄一起作废。
             var argc = (IntPtr)MaxArgs;
             NativeNodeApi.napi_get_cb_info(env, info, ref argc, argv, out _, out var data)
                 .ThrowIfFailed();

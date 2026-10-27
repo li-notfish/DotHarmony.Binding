@@ -66,15 +66,23 @@ public sealed class EventListenerRegistry
         {
             off(entry.JsFuncRef.Value);
         }
-        catch
+        catch (Exception ex)
         {
+            // 保留登记（不丢监听）是 docs/interop-rules.md 的要求，但失败原因必须可诊断：
+            // 调用方只看得到 false，无法区分「本来没订阅」与「off 抛错」。
+            // 典型来源是并发 Remove 后 NapiReference.Value 抛 ObjectDisposedException。
+            HiLog.Error("EventRegistry", $"off failed, listener kept: {ex.GetType().Name}: {ex.Message}");
             return false;
         }
 
         lock (_lock)
         {
-            if (!_listeners.Remove(key, out var removed) || !ReferenceEquals(removed.JsFuncRef, entry.JsFuncRef))
+            // 先校验后移除：并发 Remove 可能在本线程 off() 期间已把本 entry 清掉，
+            // 并发 Add 又可能登记了新 entry。若无条件 Remove(key)，会把新 entry 拽出
+            // 字典却不释放（孤儿 GCHandle + 仍挂着的 JS 监听），上层还拿到 false 误判。
+            if (!_listeners.TryGetValue(key, out var current) || !ReferenceEquals(current.JsFuncRef, entry.JsFuncRef))
                 return false;
+            _listeners.Remove(key);
             NodeApi.FreeEventHandle(entry.Gch);
             entry.JsFuncRef.Dispose();
         }

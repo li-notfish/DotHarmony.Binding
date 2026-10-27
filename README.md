@@ -212,8 +212,10 @@ docs/                        专项文档（权限、性能基线、覆盖矩阵
   internal 类型，用户代码无法声明（节点层 `SetBackgroundImage` 原语已就位）。
 - **导航**：NavigationPage、模态、Shell（TabBar / Flyout / 路由 / query / 主题色）均已接通。
 - **自绘**：Shape / GraphicsView 的文本、渐变、位图与测量路径仍在补齐。
-- **异步**：Promise 与 callback 桥的续体在 JS 线程内联恢复，长耗时工作需自行 `Task.Run`；
-  逐次调用的 napi handle scope 尚未统一 RAII 封装。
+- **异步**：Promise 与 callback 桥的续体在 JS 线程内联恢复（有意为之：续体需继续持有 `napi_env`），
+  长耗时工作需自行 `Task.Run`。逐次调用的 napi handle scope 已有 RAII 封装（`NapiHandleScope`），
+  目前仅 `NapiModuleLoader` 接入，其余入口（trampoline / TSFN CallJs / 派发 drain）仍依赖引擎为回调帧
+  准备的外层 scope；把裸 `napi_value` 带出这些帧前必须先转 `NapiReference`。
 - **类型映射**：未映射的复杂 options bag 仍退化为 `IntPtr`，清单见
   `artifacts/generator/api-intptr-report.json`；`object?` 参数转换点存在基元装箱。
 - **手势**：鼠标按键区分、hover 通道、Pinch 多点触控注入通道未覆盖。

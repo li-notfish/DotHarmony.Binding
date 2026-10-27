@@ -65,6 +65,8 @@
                                 <TextCell Text="Text cell" Detail="TableView item" TextColor="#111827" DetailColor="#6B7280" />
                                 <EntryCell Label="Entry cell" Placeholder="Type here" />
                                 <SwitchCell Text="Switch cell" On="True" />
+                                <ImageCell Text="Image cell" Detail="ImageCells render via view fallback"
+                                           ImageSource="https://example.invalid/icon.png" />
                                 <ViewCell>
                                     <StackLayout Padding="12">
                                         <Label Text="View cell" TextColor="#111827" />

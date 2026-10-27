@@ -11,7 +11,7 @@
           Outputs="$(HarmonyPermissionsJson)"
           AfterTargets="Compile">
     <PropertyGroup>
-      <_HarmonyExplicitProjectPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitProjectPermissions>
+      <_HarmonyExplicitProjectPermissions>@(HarmonyPermission->'%(Identity)|%(Usage)', ';')</_HarmonyExplicitProjectPermissions>
     </PropertyGroup>
     <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyPermissionScripts)export-harmony-permissions.ps1" -AssemblyPath "$(IntermediateOutputPath)$(TargetFileName)" -ExplicitPermissions "$(_HarmonyExplicitProjectPermissions)" -OutputPath "$(HarmonyPermissionsJson)"'
           WorkingDirectory="$(MSBuildProjectDirectory)" />

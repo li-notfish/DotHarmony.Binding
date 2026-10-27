@@ -17,7 +17,10 @@ namespace HarmonyOS.Maui.Handlers;
 public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkFlex>, IButtonHandler
 {
     /// <summary>点击事件日志开关（插值分配走在调用点，仅在排障时打开）</summary>
+    // ArkUI Scroll 可在手势仲裁中吞掉子节点 CLICK；开启日志便于回归确认 touch fallback 是否触发。
     private static readonly bool LogClick = false;
+    private bool _isPressed;
+    private bool _nativeClickDispatched;
 
     public static PropertyMapper<Button, HarmonyButtonHandler> Mapper = new(HarmonyViewMapper.Base)
     {
@@ -77,6 +80,9 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkFlex>, IButton
         _label.SetFontColor((byte)(tc.Red * 255), (byte)(tc.Green * 255), (byte)(tc.Blue * 255), (byte)(tc.Alpha * 255));
         // 纯展示节点必须透传命中：否则子 Text 挡住点击，Flex 的 CLICK 永远不触发
         _label.SetHitTestBehavior(ArkUI_HitTestMode.ARKUI_HIT_TEST_MODE_TRANSPARENT);
+        // ArkUI Scroll 的 click recognizer 会与子节点 CLICK 竞争；让 Flex 参与仲裁
+        // 才能赢下按钮命中链（DEFAULT 实测比 BLOCK 更高优先级）。
+        flex.SetHitTestBehavior(ArkUI_HitTestMode.ARKUI_HIT_TEST_MODE_DEFAULT);
         _childTracker = new NativeChildTracker<HarmonyOS.Bindings.NativeNode.ArkUINodeBase>(
             flex.AddChild, flex.RemoveAllChildren);
         _childTracker.Add(_label);
@@ -276,6 +282,8 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkFlex>, IButton
     private void OnClick(HarmonyOS.Bindings.NativeNode.ArkUINodeEvent _)
     {
         if (LogClick) HarmonyOS.Interop.HiLog.Debug("HarmonyHost", $"[Click] {VirtualView?.Text}");
+        _nativeClickDispatched = true;
+        _isPressed = false;
         VirtualView?.SendClicked();
     }
 
@@ -285,8 +293,39 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkFlex>, IButton
         if (pointer.IsNull)
             return;
 
+        if (pointer.TouchAction is ArkPointerTouchAction.Pressed)
+        {
+            _isPressed = true;
+            _nativeClickDispatched = false;
+        }
+
         if (VirtualView is { } button)
             ButtonTouchRouter.Route(button, pointer.TouchAction);
+
+        // CLICK 手势被父级 Scroll 拒绝时，TOUCH 事件仍会送达；用 RELEASE 恢复官方点击语义。
+        if (pointer.TouchAction is ArkPointerTouchAction.Released && _isPressed)
+        {
+            _isPressed = false;
+            if (_nativeClickDispatched)
+                return;
+
+            // 延迟一拍兜底：正常路径下原生 CLICK 会先到达并置位标记；
+            // Scroll 吞掉 CLICK 时，该调度点再恢复点击语义。
+            HarmonyOS.Interop.MainThreadDispatcher.TryPost(() =>
+            {
+                if (_nativeClickDispatched)
+                    return;
+
+                _nativeClickDispatched = true;
+                if (LogClick) HarmonyOS.Interop.HiLog.Debug("HarmonyHost", $"[ClickFallback] {VirtualView?.Text}");
+                VirtualView?.SendClicked();
+            });
+        }
+        else if (pointer.TouchAction is ArkPointerTouchAction.Canceled)
+        {
+            _isPressed = false;
+            _nativeClickDispatched = false;
+        }
     }
 
     private static string TransformText(Button v)

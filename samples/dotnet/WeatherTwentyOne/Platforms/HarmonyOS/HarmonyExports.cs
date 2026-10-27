@@ -15,6 +15,8 @@ internal static class NativeExports
     [UnmanagedCallersOnly(EntryPoint = "HarmonyBuildUI")]
     private static int HarmonyBuildUI(nint env, nint nodeContentValue)
         => Host.BuildUICore(env, nodeContentValue);
+    [UnmanagedCallersOnly(EntryPoint = "HarmonyShutdown")]
+    private static void HarmonyShutdown() => Host.Shutdown();
 
     [UnmanagedCallersOnly(EntryPoint = "HarmonyPopPage")]
     private static int HarmonyPopPage(nint env)

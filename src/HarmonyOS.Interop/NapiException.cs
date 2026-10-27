@@ -24,6 +24,9 @@ public sealed class NapiException : Exception
         Status = status;
         Operation = op;
         ErrorCode = errorCode;
+        // Detail 是 Message 里冒号之后的同一段文本，单独暴露给需要结构化取用的调用方
+        // （包装层不希望解析 Message 字符串）。
+        Detail = detail;
     }
 
     internal napi_status Status { get; }

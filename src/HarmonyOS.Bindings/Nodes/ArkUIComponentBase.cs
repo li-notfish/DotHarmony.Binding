@@ -9,6 +9,11 @@ namespace HarmonyOS.ArkUI;
 /// <summary>
 /// ArkUI 组件基类，包含 IDisposable 模板和属性访问方法。
 /// 防裁剪由 TrimmerRootAssembly + ILLink.Descriptors.xml 保证。
+///
+/// **句柄契约**：<c>_jsObject</c> 是创建帧内的裸 napi_value，不是 napi_ref。
+/// 跨帧使用（存字段后在下一次回调里读、或跨 Post 传递）前必须经
+/// <see cref="HarmonyOS.Interop.NapiReference"/> 固定，否则句柄已失效；
+/// 当前无生产调用方（仅 PerfApp 的压力测试子类），UI 主路径是 NDK。
 /// </summary>
 public abstract class ArkUIComponentBase : IDisposable
 {
