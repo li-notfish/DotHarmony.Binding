@@ -17,6 +17,8 @@ internal static unsafe partial class ArkUINativeApi
     {
         get
         {
+            // 全部手势函数表调用（含子类 ctor 的 create*）统一经此入口，主线程守卫放这里
+            NativeMainThread.Ensure();
             if (_gestureApi == null)
             {
                 var name = "ArkUI_NativeGestureAPI_1"u8;
