@@ -92,7 +92,7 @@
           Outputs="$(HarmonyPermissionsJson)"
           DependsOnTargets="Compile">
     <PropertyGroup>
-      <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitPermissions>
+      <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(Usage)', ';')</_HarmonyExplicitPermissions>
     </PropertyGroup>
     <ItemGroup>
       <_HarmonyReferencedPermissions Include="@(ProjectReference->'%(RootDir)%(Directory)obj\harmony\permissions.json')" />
@@ -107,7 +107,7 @@
           Outputs="$(HarmonyExplicitPermissionsJson)"
           BeforeTargets="CoreCompile">
     <PropertyGroup>
-      <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(When)', ';')</_HarmonyExplicitPermissions>
+      <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(Usage)', ';')</_HarmonyExplicitPermissions>
     </PropertyGroup>
     <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)write-explicit-permissions.ps1" -Permissions "$(_HarmonyExplicitPermissions)" -OutputPath "$(HarmonyExplicitPermissionsJson)"'
           WorkingDirectory="$(MSBuildProjectDirectory)" />

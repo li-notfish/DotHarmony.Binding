@@ -39,6 +39,13 @@
     <ProjectReference Include="..\..\..\src\HarmonyOS.Essentials\HarmonyOS.Essentials.csproj" />
   </ItemGroup>
 
+  <!-- ModuleVerifyPage 直接订阅生成的 @ohos 绑定（HarmonyOS.Bindings.Api.Sensor），
+       该用法不在权限推导的三类来源内（见 docs/PERMISSIONS-BINDING-DERIVATION-BACKLOG.md），
+       按文档第三类来源显式声明；缺失时 sensor.on 返回 BusinessError 201。 -->
+  <ItemGroup>
+    <HarmonyPermission Include="ohos.permission.ACCELEROMETER" Usage="inuse" />
+  </ItemGroup>
+
   <!-- MAUI 风格平台编排：dotnet build -t:HarmonyRun（libapp.so → HAP → 部署） -->
   <Import Project="$(MSBuildThisFileDirectory)../../../src/HarmonyOS.Maui/build/HarmonyOS.Maui.App.targets" />
 
