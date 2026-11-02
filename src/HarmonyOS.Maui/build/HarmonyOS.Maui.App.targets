@@ -101,10 +101,11 @@
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
+  <!-- 目标体注册 AdditionalFiles（explicit/custom/capabilities/XAML），因此不能按
+       Inputs/Outputs 跳过：跳过会让这些生成器输入在增量构建中整体消失。文件极小，
+       内容不变时 Roslyn 增量缓存仍命中，重复写入成本可忽略。 -->
   <Target Name="HarmonyGenerateExplicitPermissions"
           Condition="'$(HarmonyGenerateHost)' == 'true'"
-          Inputs="@(HarmonyPermission);@(MauiXaml)"
-          Outputs="$(HarmonyExplicitPermissionsJson)"
           BeforeTargets="CoreCompile">
     <PropertyGroup>
       <_HarmonyExplicitPermissions>@(HarmonyPermission->'%(Identity)|%(Usage)', ';')</_HarmonyExplicitPermissions>

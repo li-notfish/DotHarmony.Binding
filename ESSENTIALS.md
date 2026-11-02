@@ -96,6 +96,7 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | JS 报 401/must be Array 但错误文本不可见 | 旧版 ThrowIfFailed 丢 pending exception 消息 | 已修；手写封送数组用 `NativeValue.From(string[])` 或 `NodeApi.CreateInstance(global, "Array"u8, item)` |
 | 手改 csproj 转正被还原 | 转正状态归生成器所有 | 改 `tools/api-generator/index.ts` 的 GRAYSCALE_MODULES |
 | ability 上下文调用报 "The context is invalid" | 构造时缓存了 abilityContext 裸句柄，Install 到使用之间句柄失效 | 每次使用前重读 `NodeApi.GetProperty(global, "abilityContext"u8)`，勿缓存裸 napi 值（HarmonyPreferences 先例） |
+| 选择器能弹出、选图后回调抛 NotImplementedInReferenceAssemblyException（PICK FAILED） | `FileResult.OpenReadAsync` 在 net10.0 产物是桩（`FileBase.PlatformOpenReadAsync` throw、非 virtual 不可 override）——静态入口注入覆盖不到**结果对象**上的桩 | 消费方直读 `FullPath`（HarmonyMediaPicker 已把结果复制到 cache 真实路径）；ApiDemo HardwarePage 先例 |
 
 ## 3. 服务清单
 
@@ -121,8 +122,9 @@ SetImplementation(typeof(global::Microsoft.Maui.Storage.Preferences), "SetDefaul
 | IEmail | SetDefault | mailto: URI（to/cc/bcc/subject/body 编码进 query）+ startAbility；IsComposeSupported 尽力 true（mailto 由系统路由） | ✅ 已实现 |
 | IAccelerometer / IMagnetometer / IGyroscope / ICompass / IOrientationSensor | SetDefault | @ohos.sensor on/off；SensorSpeed → interval 阶梯；Compass 走 Orientation，OrientationSensor 走 RotationVector；Accelerometer.ShakeDetected 由 `AccelerometerShakeQueue`（幅值阈值 + 时间窗）触发 | ✅ 已实现（专项设备验证待补） |
 | IGeolocation | SetDefault | @ohos.geoLocationManager：GetLastKnownLocation / getCurrentLocation + locationChange/locationError 事件；Cancellation 只取消托管等待（OHOS 当前定位无取消通道） | ✅ 已实现（专项设备验证待补） |
-| IMediaPicker | SetDefault | @ohos.file.picker（选图/选视频，支持多选）+ @ohos.multimedia.camera.picker（拍照/录像）；结果复制到 cache，失败时回退原 URI | ✅ 已实现（专项设备验证待补） |
+| IMediaPicker | SetDefault | @ohos.file.picker（选图/选视频，支持多选）+ @ohos.multimedia.camera.picker（拍照/录像）；结果复制到 cache，失败时回退原 URI。**注意**：`FileResult.OpenReadAsync` 是 net10.0 产物桩，消费方直读 `FullPath` | ✅ 已实现（模拟器实测选图闭环；真机专项待补） |
 | ITextToSpeech / IHapticFeedback / IFlashlight | SetDefault | textToSpeech / vibrator / brightness | 远期 |
 | IMap / IFilePicker / IScreenshot | SetDefault | 各自子系统 | 远期 |
+| IGeocoding / IContacts / ISms / IAppActions / ISemanticScreenReader / IWebAuthenticator / IAppleSignIn | SetCurrent/SetDefault | 各自子系统 | 远期（未实现，调用即抛桩异常；当前 samples 未消费） |
 
 已实现服务的成员级缺口（非阻塞、按价值补）：DeviceInfo.Idiom 的平板判定。

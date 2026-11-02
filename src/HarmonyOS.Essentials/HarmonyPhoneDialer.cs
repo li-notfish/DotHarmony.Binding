@@ -12,6 +12,10 @@ public class HarmonyPhoneDialer : IPhoneDialer
     public bool IsSupported =>
         HSim.GetSimStateSync(0) is HSimState.SimStateReady or HSimState.SimStateLoaded;
 
-    public void Open(string number) =>
-        _ = HarmonyLauncher.StartAbilityAsync(new Uri("tel:" + Uri.EscapeDataString(number)));
+    public void Open(string number)
+    {
+        // tel: 的 '+' 是国家码前缀，EscapeDataString 会写成 %2B——仅还原该字符
+        var encoded = Uri.EscapeDataString(number).Replace("%2B", "+", StringComparison.Ordinal);
+        _ = HarmonyLauncher.StartAbilityAsync(new Uri("tel:" + encoded));
+    }
 }

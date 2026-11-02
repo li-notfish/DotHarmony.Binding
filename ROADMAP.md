@@ -156,7 +156,9 @@ Promise/AsyncCallback 回调桥接（`PromiseTaskBridge` / `CallbackTaskBridge`�
   用户长耗时工作须自行 `Task.Run` 切走——同步 getter 路径不允许 await promise，阻塞即死锁
 - GCHandle 异常兜底：成功后桥创建失败、调用失败路径均取消 Task 并释放句柄，避免 await 悬垂
 - 桥名字节经 u8 静态缓存；`MainThreadDispatcher`（`AttachUiThread`/`Post`）为通用 UI 投递通道，
-  `HarmonySynchronizationContext` 保留为 .NET 生态兼容面
+  `HarmonySynchronizationContext` 已接线（`HarmonyDispatcher.EnsureRegistered` 幂等安装）：
+  `Post` 转发 TSFN 回主线程，async/await 续体（文件 IO、Task.Delay 等纯 .NET 任务）回到
+  ArkUI 事件线程而不落线程池
 
 ### 2.2 codeGenerator 缺陷修复
 
@@ -187,11 +189,20 @@ Accelerometer / Magnetometer / Gyroscope / Compass / OrientationSensor + Geoloca
 - 事件类服务经 commonEvent / 模块事件订阅，回调内重读 + 去重缓存
 - 线程模型：JS 线程 == UI 线程 == Install 线程；`MainThreadDispatcher`/`HarmonySynchronizationContext`
   作为内部投递通道直接内联，不依赖 MAUI `MainThread` 静态入口
+- 结果对象桩：静态入口注入覆盖不到 Essentials **结果对象**上的桩——`FileResult.OpenReadAsync`
+  （`FileBase.PlatformOpenReadAsync`）在 net10.0 产物 throw 且非 virtual 不可 override，
+  消费侧直读 `FullPath`（MediaPicker 结果已复制到 cache 真实路径）
 
 适配指南见 [ESSENTIALS.md](ESSENTIALS.md)；验证应用为 `samples/dotnet/EssentialsApp`。
 
-**留白**：TextToSpeech / HapticFeedback / Flashlight、Map / FilePicker / Screenshot；
-传感器族与 Geolocation / MediaPicker 的真机专项验证；电池/网络/SecureStorage 事件的模拟器触发验证。
+**留白**：TextToSpeech / HapticFeedback / Flashlight、Map / FilePicker / Screenshot、
+Geocoding / Contacts / Sms / AppActions / SemanticScreenReader / WebAuthenticator / AppleSignIn
+（均未实现，调用即抛桩异常；samples 未消费）；传感器族与 Geolocation / MediaPicker 的真机专项验证；
+电池/网络/SecureStorage 事件的模拟器触发验证。
+
+**2026-11-03 模拟器实测**（ApiDemo HardwarePage，uitest 点击闭环）：File round-trip
+（`FILE ok · wrote 42, read 42 chars`）、Permissions（`LocationWhenInUse = Granted`）、
+Pick Photo 全链路（系统选择器 → 选图 → cache 复制 → `PICK ok · … · 567966 bytes`）通过。
 
 ---
 

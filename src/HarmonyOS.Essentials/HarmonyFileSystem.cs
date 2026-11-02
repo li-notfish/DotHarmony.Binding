@@ -29,8 +29,9 @@ public class HarmonyFileSystem : IFileSystem
             var bytes = await rm.GetRawFileContentBytesAsync(filename);
             return bytes is not null;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            HiLog.Warn("Essentials", $"[filesystem] package file probe failed for '{filename}': {ex.Message}");
             return false;
         }
     }

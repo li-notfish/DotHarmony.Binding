@@ -61,8 +61,9 @@ public class HarmonySecureStorage : ISecureStorage
             HAsset.RemoveSync(QueryMap((TagAlias, Alias(key))));
             return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            HiLog.Warn("Essentials", $"[secure-storage] remove '{key}' failed: {ex.Message}");
             return false;
         }
     }

@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using HarmonyOS.ArkUI;
+using HarmonyOS.Interop;
 
 namespace HarmonyOS.Maui.Hosting;
 
@@ -62,8 +63,9 @@ internal static class HarmonyApplication
             }
             return 0;
         }
-        catch
+        catch (Exception ex)
         {
+            HiLog.Error("HarmonyHost", $"theme changed callback failed: {ex.GetType().Name}: {ex.Message}");
             return -1;
         }
     }

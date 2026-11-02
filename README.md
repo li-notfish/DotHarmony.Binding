@@ -219,8 +219,10 @@ docs/                        专项文档（权限、性能基线、覆盖矩阵
 - **类型映射**：未映射的复杂 options bag 仍退化为 `IntPtr`，清单见
   `artifacts/generator/api-intptr-report.json`；`object?` 参数转换点存在基元装箱。
 - **手势**：鼠标按键区分、hover 通道、Pinch 多点触控注入通道未覆盖。
-- **Essentials**：TextToSpeech / HapticFeedback / Flashlight / Map / FilePicker / Screenshot 尚未实现；
-  传感器、Geolocation、MediaPicker 缺真机专项验证。
+- **Essentials**：TextToSpeech / HapticFeedback / Flashlight / Map / FilePicker / Screenshot / Geocoding /
+  Contacts / Sms / AppActions 等尚未实现；结果对象方法（如 `FileResult.OpenReadAsync`）是 net10.0
+  产物桩，消费侧直读 `FullPath`；传感器、Geolocation、MediaPicker 缺真机专项验证（MediaPicker
+  模拟器选图闭环已实测）。
 - **Blazor Hybrid** 属实验特性，公开 API 以 MAUI/Controls 示例为准。
 - **平台 TFM**：`net10.0-harmonyos` 目前是无 workload 的最小注册片段，未做真正的 workload 化。
 

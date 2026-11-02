@@ -64,6 +64,8 @@ public static class HarmonyHandlerFactory
     {
         if (element is Microsoft.Maui.Controls.Toolbar toolbar)
         {
+            if (toolbar.Handler is HarmonyToolbarHandler liveToolbar)
+                return liveToolbar;
             var toolbarHandler = new HarmonyToolbarHandler();
             toolbarHandler.SetMauiContext(Hosting.HarmonyMauiContext.Shared);
             toolbar.Handler = toolbarHandler;
@@ -155,6 +157,15 @@ public static class HarmonyHandlerFactory
         };
         }
         // 动画/服务解析口：ViewExtensions（FadeTo 等）经 Handler.MauiContext.Services 取 IAnimationManager
+        // 幂等防御：同一元素被重复 Create（RootBuilder 二次进入、布局重挂竞态等）时复用
+        // 既有 handler。放任新建会让第二棵平台节点树顶掉 element.Handler 却从未入窗，
+        // 形成"事件仍在旧树上可达、属性更新写入孤儿节点"的失效态。
+        if (element.Handler is { } live && live.GetType() == handler.GetType())
+        {
+            HarmonyOS.Interop.HiLog.Warn("HarmonyHost",
+                $"double-create guard: reusing live {live.GetType().Name} for {element.GetType().Name}");
+            return live;
+        }
         handler.SetMauiContext(Hosting.HarmonyMauiContext.Shared);
         // 必须回写 element.Handler：setter 内部完成 SetVirtualView（Connect），
         // 且只有经此建立 element→handler 反向链，后续清理路径的 element.Handler = null

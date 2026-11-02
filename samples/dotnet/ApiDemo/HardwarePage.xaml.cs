@@ -2,6 +2,7 @@
 // 与 ModuleVerifyPage 的模块加载探针不同，这里的按钮都会走完整调用路径并回报结果。
 using System.Text;
 using HarmonyOS.Bindings.Api.Net;
+using HarmonyOS.Essentials;
 using HarmonyOS.Interop;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Devices.Sensors;
@@ -64,7 +65,7 @@ public partial class HardwarePage : ContentPage
     {
         try
         {
-            var status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+            var status = await HarmonyPermissions.RequestAsync<Permissions.LocationWhenInUse>();
             Report($"PERMISSION LocationWhenInUse = {status}");
         }
         catch (Exception ex)
@@ -101,7 +102,9 @@ public partial class HardwarePage : ContentPage
                 Report("PICK canceled");
                 return;
             }
-            using var stream = await file.OpenReadAsync();
+            // FileResult.OpenReadAsync 在 net10.0 Essentials 产物里是桩（FileBase.PlatformOpenReadAsync
+            // throw，非 virtual 不可 override）；HarmonyMediaPicker 保证 FullPath 是真实沙箱路径，直读即可
+            using var stream = File.OpenRead(file.FullPath);
             Report($"PICK ok · {file.FileName} · {stream.Length} bytes");
         }
         catch (Exception ex)
@@ -120,7 +123,7 @@ public partial class HardwarePage : ContentPage
                 Report("CAMERA canceled");
                 return;
             }
-            using var stream = await file.OpenReadAsync();
+            using var stream = File.OpenRead(file.FullPath);
             Report($"CAMERA ok · {file.FileName} · {stream.Length} bytes");
         }
         catch (Exception ex)

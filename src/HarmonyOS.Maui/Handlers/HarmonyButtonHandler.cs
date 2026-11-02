@@ -281,9 +281,13 @@ public class HarmonyButtonHandler : HarmonyViewHandler<Button, ArkFlex>, IButton
 
     private void OnClick(HarmonyOS.Bindings.NativeNode.ArkUINodeEvent _)
     {
+        // 兜底（Released 延迟一拍）已派发后晚到的原生 CLICK 不再二次触发
+        if (_nativeClickDispatched)
+            return;
         if (LogClick) HarmonyOS.Interop.HiLog.Debug("HarmonyHost", $"[Click] {VirtualView?.Text}");
         _nativeClickDispatched = true;
         _isPressed = false;
+        // 异常由 ArkUINodeEvent.Dispatch 统一捕获，不在 handler 层重复防御
         VirtualView?.SendClicked();
     }
 

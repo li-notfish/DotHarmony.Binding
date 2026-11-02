@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using HarmonyOS.Bindings.NativeNode;
+using HarmonyOS.Interop;
 using HarmonyOS.Maui.Handlers;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Internals;
@@ -32,11 +33,15 @@ public sealed class HarmonyWebViewHandler : HarmonyViewHandler<WebView, ArkStack
 
     private IHarmonyWebViewSurface? Surface => HarmonyWebRuntime.GetSurface(HarmonyWebRuntime.DefaultTag);
 
+    // factory/embedded 模式 surface 可能晚于 handler 就绪：暂存 Source 待 SurfaceRegistered 重放
+    private string? _pendingNavigationUrl;
+
     protected override ArkStack CreatePlatformView() => new();
 
     protected override void ConnectHandler(ArkStack platformView)
     {
         base.ConnectHandler(platformView);
+        HarmonyWebRuntime.SurfaceRegistered += OnSurfaceRegistered;
 
         // 官方契约：Controls.WebView.EvaluateJavaScriptAsync 经 IWebViewController.EvaluateJavaScriptRequested
         // （委托签名 Task<string>(string script)）下发给平台层；平台层必须订阅并返回真实结果。
@@ -46,9 +51,19 @@ public sealed class HarmonyWebViewHandler : HarmonyViewHandler<WebView, ArkStack
 
     protected override void DisconnectHandler(ArkStack platformView)
     {
+        HarmonyWebRuntime.SurfaceRegistered -= OnSurfaceRegistered;
+        _pendingNavigationUrl = null;
         if (VirtualView is IWebViewController controller)
             controller.EvaluateJavaScriptRequested -= OnEvaluateJavaScriptRequested;
         base.DisconnectHandler(platformView);
+    }
+
+    private void OnSurfaceRegistered(string tag)
+    {
+        if (_pendingNavigationUrl is not { } url || tag != HarmonyWebRuntime.DefaultTag)
+            return;
+        _pendingNavigationUrl = null;
+        _ = Surface?.LoadUrlAsync(url);
     }
 
     private Task<string> OnEvaluateJavaScriptRequested(string script)
@@ -67,7 +82,15 @@ public sealed class HarmonyWebViewHandler : HarmonyViewHandler<WebView, ArkStack
             HtmlWebViewSource htmlSource => $"data:text/html;base64,{Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(htmlSource.Html ?? string.Empty))}",
             _ => view.Source?.ToString() ?? string.Empty
         };
-        _ = handler.Surface?.LoadUrlAsync(url);
+        var surface = handler.Surface;
+        if (surface is null)
+        {
+            handler._pendingNavigationUrl = url;
+            HiLog.Info("HarmonyWeb", $"[webview] surface not ready; source '{url}' deferred");
+            return;
+        }
+        handler._pendingNavigationUrl = null;
+        _ = surface.LoadUrlAsync(url);
     }
 
     public static void MapUserAgent(HarmonyWebViewHandler handler, WebView view)
