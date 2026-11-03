@@ -148,32 +148,98 @@
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
-  <!-- 1/3：Windows 本地 NativeAOT 交叉编译 libapp.so（PublishAotClang + Zig） -->
-  <Target Name="HarmonyBuildLibApp" DependsOnTargets="HarmonyStageHost">
-    <PropertyGroup>
-      <_HarmonyLibAppPublishRoot>$(MSBuildProjectDirectory)\obj\harmony\publish</_HarmonyLibAppPublishRoot>
-      <_HarmonyLibAppArm64Dir>$(_HarmonyLibAppPublishRoot)\linux-musl-arm64</_HarmonyLibAppArm64Dir>
-      <_HarmonyLibAppX64Dir>$(_HarmonyLibAppPublishRoot)\linux-musl-x64</_HarmonyLibAppX64Dir>
-    </PropertyGroup>
+  <!-- P1-6：libapp.so NUMA 补丁的 MSBuild task（优先）与跨平台脚本回退。
+       task 程序集在包内 tasks\，仓库内布局取 src\HarmonyOS.Maui.Tasks\bin。 -->
+  <PropertyGroup>
+    <_HarmonyTasksDll Condition="'$(_HarmonyIsPackage)' == 'true'">$(MSBuildThisFileDirectory)..\tasks\HarmonyOS.Maui.Tasks.dll</_HarmonyTasksDll>
+    <_HarmonyTasksDll Condition="'$(_HarmonyIsPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\..\src\HarmonyOS.Maui.Tasks\bin\$(Configuration)\netstandard2.0\HarmonyOS.Maui.Tasks.dll</_HarmonyTasksDll>
+    <_HarmonyTasksDll Condition="'$(_HarmonyTasksDll)' != '' AND !Exists('$(_HarmonyTasksDll)')" />
+  </PropertyGroup>
+  <UsingTask TaskName="HarmonyOS.Maui.Tasks.PatchOpenHarmonyNativeAot"
+             AssemblyFile="$(_HarmonyTasksDll)"
+             Condition="'$(_HarmonyTasksDll)' != ''" />
+
+  <PropertyGroup>
+    <HarmonyPatchStampRoot Condition="'$(HarmonyPatchStampRoot)' == ''">$(MSBuildProjectDirectory)\obj\harmony\patch\</HarmonyPatchStampRoot>
+    <_HarmonyLibAppPublishRoot>$(MSBuildProjectDirectory)\obj\harmony\publish</_HarmonyLibAppPublishRoot>
+    <_HarmonyLibAppArm64Dir>$(_HarmonyLibAppPublishRoot)\linux-musl-arm64</_HarmonyLibAppArm64Dir>
+    <_HarmonyLibAppX64Dir>$(_HarmonyLibAppPublishRoot)\linux-musl-x64</_HarmonyLibAppX64Dir>
+    <_HarmonyArm64HostLib>$(_HarmonyEffectiveHostDir)\entry\libs\arm64-v8a\libapp.so</_HarmonyArm64HostLib>
+    <_HarmonyArm64Stamp>$(HarmonyPatchStampRoot)linux-musl-arm64.patch.stamp</_HarmonyArm64Stamp>
+    <_HarmonyArm64HostStamp>$(HarmonyPatchStampRoot)linux-musl-arm64.host.stamp</_HarmonyArm64HostStamp>
+  </PropertyGroup>
+
+  <!-- 1/4：Windows 本地 NativeAOT 交叉编译 libapp.so（PublishAotClang + Zig） -->
+  <Target Name="HarmonyPublishLibApp" DependsOnTargets="HarmonyStageHost">
 
     <Exec Command='dotnet publish "$(MSBuildProjectDirectory)\$(MSBuildProjectFile)" -c Release -r linux-musl-arm64 -o "$(_HarmonyLibAppArm64Dir)" -p:MSBuildEnableWorkloadResolver=false'
           WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Exec Command='dotnet publish "$(MSBuildProjectDirectory)\$(MSBuildProjectFile)" -c Release -r linux-musl-x64 -o "$(_HarmonyLibAppX64Dir)" -p:MSBuildEnableWorkloadResolver=false'
           WorkingDirectory="$(MSBuildProjectDirectory)" />
 
-    <!-- OpenHarmony cloud devices block get_mempolicy; short-circuit NativeAOT NUMA probing. -->
-    <Exec Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)patch-openharmony-nativeaot.ps1" -Path "$(_HarmonyLibAppArm64Dir)\app.so"'
-          WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
 
+  <!-- 2/4：arm64 NUMA 补丁（OpenHarmony 云设备屏蔽 get_mempolicy，短路 NativeAOT NUMA 探测）。
+       stamp + Inputs/Outputs 增量：重复构建不重复扫描；删除 app.so 后 publish 重新产出
+       较新文件即重算。仅处理 linux-musl-arm64，x64 不动。补丁失败时 OnError 清理宿主
+       staging 的陈旧 arm64 libapp.so，保证失败不残留旧 so。 -->
+  <Target Name="HarmonyPatchLibAppArm64"
+          DependsOnTargets="HarmonyPublishLibApp"
+          Inputs="$(_HarmonyLibAppArm64Dir)\app.so"
+          Outputs="$(_HarmonyArm64Stamp)">
+    <PatchOpenHarmonyNativeAot Condition="'$(_HarmonyTasksDll)' != ''"
+                               LibraryFile="$(_HarmonyLibAppArm64Dir)\app.so"
+                               StampFile="$(_HarmonyArm64Stamp)" />
+    <Exec Condition="'$(_HarmonyTasksDll)' == ''"
+          Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)patch-openharmony-nativeaot.ps1" -Path "$(_HarmonyLibAppArm64Dir)\app.so"'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <WriteLinesToFile Condition="'$(_HarmonyTasksDll)' == ''"
+                      File="$(_HarmonyArm64Stamp)"
+                      Lines="$([System.DateTime]::UtcNow.ToString('O'))"
+                      Overwrite="true" />
+    <OnError ExecuteTargets="HarmonyCleanupStagedLibAppArm64" />
+  </Target>
+
+  <!-- 补丁失败清理：宿主 staging 的 arm64 libapp.so 与两级 stamp 一律删除，
+       不把旧的（可能未补丁）so 留给后续 HAP 打包。 -->
+  <Target Name="HarmonyCleanupStagedLibAppArm64">
+    <Delete Files="$(_HarmonyArm64HostLib);$(_HarmonyArm64Stamp);$(_HarmonyArm64HostStamp)" />
+  </Target>
+
+  <!-- 3/4：staging arm64/x64 libapp.so 到宿主 libs 目录 -->
+  <Target Name="HarmonyStageLibApp" DependsOnTargets="HarmonyPatchLibAppArm64">
     <ItemGroup>
       <_HarmonyArm64Lib Include="$(_HarmonyLibAppArm64Dir)\app.so" />
       <_HarmonyX64Lib Include="$(_HarmonyLibAppX64Dir)\app.so" />
     </ItemGroup>
     <Copy SourceFiles="@(_HarmonyArm64Lib)"
-          DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\libs\arm64-v8a\libapp.so" />
+          DestinationFiles="$(_HarmonyArm64HostLib)" />
     <Copy SourceFiles="@(_HarmonyX64Lib)"
           DestinationFiles="$(_HarmonyEffectiveHostDir)\entry\libs\x86_64\libapp.so" />
   </Target>
+
+  <!-- 4/4：宿主产物复核（复制后对宿主 staging 的同一份 so 再验签一次）。
+       输入是宿主 so 本身，so 变化（重新复制/重 stage）即重算。 -->
+  <Target Name="HarmonyVerifyStagedLibAppArm64"
+          DependsOnTargets="HarmonyStageLibApp"
+          Inputs="$(_HarmonyArm64HostLib)"
+          Outputs="$(_HarmonyArm64HostStamp)">
+    <PatchOpenHarmonyNativeAot Condition="'$(_HarmonyTasksDll)' != ''"
+                               LibraryFile="$(_HarmonyArm64HostLib)"
+                               StampFile="$(_HarmonyArm64HostStamp)"
+                               CheckOnly="true" />
+    <Exec Condition="'$(_HarmonyTasksDll)' == ''"
+          Command='"$(HarmonyPowerShell)" -NoProfile -File "$(_HarmonyScripts)patch-openharmony-nativeaot.ps1" -Path "$(_HarmonyArm64HostLib)" -CheckOnly'
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <WriteLinesToFile Condition="'$(_HarmonyTasksDll)' == ''"
+                      File="$(_HarmonyArm64HostStamp)"
+                      Lines="$([System.DateTime]::UtcNow.ToString('O'))"
+                      Overwrite="true" />
+  </Target>
+
+  <!-- 对外契约保留原 target 名；链路拆分为 publish -> patch -> stage -> verify。 -->
+  <Target Name="HarmonyBuildLibApp"
+          DependsOnTargets="HarmonyPublishLibApp;HarmonyPatchLibAppArm64;HarmonyStageLibApp;HarmonyVerifyStagedLibAppArm64" />
 
   <!-- 依赖 HarmonyBuildLibApp 而非仅 HarmonyStageHost：单独调用本目标也必须先重编 libapp.so，
        否则会打出包含宿主模板陈旧 so 的 HAP -->

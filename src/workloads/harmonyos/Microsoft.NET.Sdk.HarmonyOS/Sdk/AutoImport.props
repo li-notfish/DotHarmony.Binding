@@ -1,0 +1,17 @@
+<!--
+  props 阶段自动导入（Microsoft.NET.Sdk.props:155 -> ImportWorkloads.props ->
+  WorkloadAutoImportPropsLocator -> 本文件）。此时 TargetFramework 尚未定义，
+  因此只放与 TFM 无关的默认值与标记。
+
+  _HarmonyOSWorkloadInstalled 供仓库 Directory.Build.targets 的 fallback 平台注册
+  片段判断：workload 已安装时跳过 fallback，避免 SdkSupportedTargetPlatformVersion
+  重复项；workload 未安装时 fallback 继续生效（仓库内无 workload 也能构建）。
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_HarmonyOSWorkloadInstalled>true</_HarmonyOSWorkloadInstalled>
+    <HarmonyOSPlatformVersion Condition="'$(HarmonyOSPlatformVersion)' == ''">26.0</HarmonyOSPlatformVersion>
+  </PropertyGroup>
+
+</Project>

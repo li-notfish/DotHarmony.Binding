@@ -256,12 +256,13 @@ Roslyn source generator 扫描应用侧 MAUI/Essentials 调用，自动生成 `m
 - `harmony-permissions.custom.json` 自定义映射、XAML 事件来源定位、`HMP005`/`HMP006` 冲突与格式诊断；
   包消费者验收覆盖 XAML + 自定义映射 + ProjectReference
 
-### 3.8 平台 TFM `net10.0-harmonyos`
+### 3.8 平台 TFM `net10.0-harmonyos26.0`
 
-Interop/Bindings/Maui/Essentials 双目标（`net10.0;net10.0-harmonyos`），`HARMONYOS` 常量改为 TFM 驱动
+Interop/Bindings/Maui/Essentials/Maui.Web/Maui.Blazor 六个运行时平台包统一双目标
+（`net10.0;net10.0-harmonyos26.0`），`HARMONYOS` 常量改为 TFM 驱动
 （harmonyos TFM 由 SDK 按 TargetPlatformIdentifier 自动定义；桌面 `net10.0` 目标在库级 props 过渡性
 全量定义，`#else` 死代码语义与桌面测试资产不变）；无 workload 的最小平台注册片段
-（`TargetPlatformSupported` + `SdkSupportedTargetPlatformVersion` + `TargetPlatformVersion=1.0`
+（`TargetPlatformSupported` + `SdkSupportedTargetPlatformVersion` + `TargetPlatformVersion=26.0`
 + CA1418 静默）固化于根 `Directory.Build.targets` 与模板工程（必须内联或放 Directory.Build.targets——
 首次还原时 NuGet buildTransitive 导入尚不存在，包内片段无法生效，实测 NETSDK1139）；
 生成器 `arkui-bindgen` 支持 per-TFM `#if` 包裹（`semantics.yaml` 顶层 `tfm_guard` 声明常量名，
@@ -269,6 +270,11 @@ code_target 条目 `tfm_guard: true` 开启，默认不包裹、check/diff 零�
 
 另修复两个包分发缺口：`PublishAotClang` 需在应用工程显式引用（传递依赖 exclude=Build 导致交叉 AOT
 报错）、`patch-openharmony-nativeaot.ps1` 补入包内 scripts。
+
+第一阶段 TFM 分类与包资产矩阵见 `docs/TFM-MATRIX.md`；`scripts/verify-tfm-matrix.ps1`
+自动校验项目分类并检查六个运行时包的 `lib/net10.0/` 与
+`lib/net10.0-harmonyos26.0/` 资产，同时用隔离消费工程确认 NuGet 实际选择平台资产，
+不依赖设备验收。
 
 ### 3.9 仍待办
 

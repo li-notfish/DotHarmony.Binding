@@ -1,6 +1,12 @@
 <!--
-  Directory.Build.targets：net10.0-harmonyos 平台注册（无 workload 的最小片段，
-  SDK 10.0.401 spike 实测通过）。
+  Directory.Build.targets：net10.0-harmonyos26.0 平台注册的仓库内 fallback 片段
+  （无 workload 路径，SDK 10.0.401 spike 实测通过）。
+
+  P1-3 起，平台注册的首选路径是 microsoft.net.sdk.harmonyos workload 的
+  WorkloadManifest.targets（targets 求值早期、Directory.Build.targets 之前执行）。
+  workload 已安装时（props 阶段 AutoImport.props 置 _HarmonyOSWorkloadInstalled=true），
+  本文件跳过注册，避免 SdkSupportedTargetPlatformVersion 重复项；workload 未安装时
+  本片段继续兜底，仓库内工程不装 workload 也能构建。
 
   TargetPlatformSupported 跳过 NETSDK1139；SdkSupportedTargetPlatformVersion 提供合法
   平台版本（跳过 NETSDK1140/NU1012）；CA1418 对未知平台名的分析器警告静默。
@@ -10,17 +16,17 @@
   为什么放 .targets 而不是 .props：props（含 NuGet buildTransitive props）在工程主体
   之前求值，此时单目标工程的 $(TargetFramework) 尚未定义，条件会失效（模板消费方
   实测 NETSDK1139）；.targets 在工程主体之后、所有 target 运行之前求值，条件可靠。
-  包消费方经 HarmonyOS.Maui buildTransitive targets 获得同一片段。
+  仓库外消费方应安装 harmonyos workload（scripts/verify-workload.ps1）。
 -->
 <Project>
 
-  <PropertyGroup Condition="$(TargetFramework.EndsWith('-harmonyos'))">
+  <PropertyGroup Condition="'$(_HarmonyOSWorkloadInstalled)' != 'true' AND $(TargetFramework.Contains('-harmonyos'))">
     <TargetPlatformSupported>true</TargetPlatformSupported>
-    <TargetPlatformVersion Condition="'$(TargetPlatformVersion)' == ''">1.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition="'$(TargetPlatformVersion)' == ''">$(HarmonyOSPlatformVersion)</TargetPlatformVersion>
     <NoWarn>$(NoWarn);CA1418</NoWarn>
   </PropertyGroup>
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-harmonyos'))">
-    <SdkSupportedTargetPlatformVersion Include="1.0" />
+  <ItemGroup Condition="'$(_HarmonyOSWorkloadInstalled)' != 'true' AND $(TargetFramework.Contains('-harmonyos'))">
+    <SdkSupportedTargetPlatformVersion Include="$(HarmonyOSPlatformVersion)" />
   </ItemGroup>
 
 </Project>

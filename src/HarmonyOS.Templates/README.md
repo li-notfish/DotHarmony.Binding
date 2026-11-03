@@ -14,7 +14,7 @@ dotnet new harmony-maui -n MyApp
 dotnet new harmony-maui-web -n MyWebApp
 ```
 
-两个模板都面向 `net10.0-harmonyos`，由 `HarmonyOS.Maui` 提供 `HarmonyStageHost`、`HarmonyBuildLibApp`、
+两个模板都面向 `net10.0-harmonyos26.0`，由 `HarmonyOS.Maui` 提供 `HarmonyStageHost`、`HarmonyBuildLibApp`、
 `HarmonyBuildHap`、`HarmonyDeploy`、`HarmonyRun` 等目标。
 
 宿主核心保持共享：`HarmonyStageHost` 把 `samples/HarmonyHost`（或包内副本）实例化到应用工程的

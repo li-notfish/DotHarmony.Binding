@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- netstandard2.0：MSBuild task 约定（宿主 pwsh/MSBuild 均可加载） -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>HarmonyOS.Maui.Tasks</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <!-- MSBuild task 基础包与业务 CPM 版本无关（netstandard2.0 工具链） -->
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 版本只取编译下限：task 由宿主 MSBuild 加载，实际 Microsoft.Build.* 程序集来自宿主 -->
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.9.5" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

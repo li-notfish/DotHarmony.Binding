@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(HarmonyOSTargetFramework)</TargetFramework>
+    <!-- 运行时平台包：桌面测试保留 net10.0，HarmonyOS 消费端使用平台 TFM。 -->
+    <TargetFrameworks>$(HarmonyOSTargetFramework);$(HarmonyOSPlatformTargetFramework)</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

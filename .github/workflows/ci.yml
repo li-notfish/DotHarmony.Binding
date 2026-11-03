@@ -51,9 +51,13 @@ jobs:
             -o artifacts/harmony-arm64 `
             -p:MSBuildEnableWorkloadResolver=false
 
-      - name: Build dual-TFM bindings (net10.0 + net10.0-harmonyos)
+      - name: Build dual-TFM bindings (net10.0 + net10.0-harmonyos26.0)
         shell: pwsh
         run: dotnet build src/HarmonyOS.Bindings/HarmonyOS.Bindings.csproj -c Release
+
+      - name: Verify runtime package TFM matrix
+        shell: pwsh
+        run: pwsh -NoProfile -File scripts/verify-tfm-matrix.ps1
 
       - name: Apply and verify NativeAOT patch
         shell: pwsh
