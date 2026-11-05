@@ -131,6 +131,7 @@ internal static unsafe class NodeEventBus
     private static delegate* unmanaged<ArkUI_NodeEvent*, void> _receiverPtr;
     private static int _nextTargetId;
     private static bool _registered;
+    private static readonly object Gate = new();
 
     /// <summary>分配进程内唯一的 targetId</summary>
     internal static int NextTargetId() => Interlocked.Increment(ref _nextTargetId);
@@ -148,11 +149,15 @@ internal static unsafe class NodeEventBus
 
     private static void EnsureRegistered()
     {
-        if (_registered) return;
-        _receiverPtr = &Dispatch;
-        ArkUINativeApi.RegisterNodeEventReceiver(_receiverPtr);
-        _registered = true;
-        HiLog.Debug("HarmonyHost", $"[EventBus] receiver registered, fnPtr=0x{(long)_receiverPtr:X}");
+        // 注册是单例一次性：加锁保证并发首挂时原生 receiver 只注册一次（同 NodeCustomEventBus）
+        lock (Gate)
+        {
+            if (_registered) return;
+            _receiverPtr = &Dispatch;
+            ArkUINativeApi.RegisterNodeEventReceiver(_receiverPtr);
+            _registered = true;
+            HiLog.Debug("HarmonyHost", $"[EventBus] receiver registered, fnPtr=0x{(long)_receiverPtr:X}");
+        }
     }
 
     [UnmanagedCallersOnly]

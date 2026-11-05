@@ -104,15 +104,19 @@ internal static unsafe class HarmonyHostSink
                     _write(requestId, p, read);
                 }
             }
+
+            _finish(requestId);
         }
         catch (Exception ex)
         {
             HiLog.Error("HarmonyWeb", $"[scheme] stream write failed: {ex.GetType().Name}: {ex.Message}");
             _fail(requestId);
-            return true;
         }
-
-        _finish(requestId);
+        finally
+        {
+            // 流的所有权由调用方移交本方法：无论成败读毕即释放
+            content.Dispose();
+        }
         return true;
     }
 

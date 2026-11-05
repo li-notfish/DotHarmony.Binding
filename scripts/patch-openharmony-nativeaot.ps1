@@ -1,7 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$Path,
-    [switch]$NoBackup,
     [switch]$CheckOnly
 )
 
@@ -92,12 +91,6 @@ if ($matches.Count -gt 1) {
 }
 
 $offset = $matches[0] + $patchOffset
-if (-not $NoBackup) {
-    $backupPath = "$resolvedPath.bak"
-    Copy-Item -LiteralPath $resolvedPath -Destination $backupPath -Force
-    Write-Host "Backup created: $backupPath"
-}
-
 for ($i = 0; $i -lt $replacement.Length; $i++) {
     $bytes[$offset + $i] = $replacement[$i]
 }

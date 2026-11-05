@@ -156,7 +156,9 @@ Promise/AsyncCallback 回调桥接（`PromiseTaskBridge` / `CallbackTaskBridge`�
   用户长耗时工作须自行 `Task.Run` 切走——同步 getter 路径不允许 await promise，阻塞即死锁
 - GCHandle 异常兜底：成功后桥创建失败、调用失败路径均取消 Task 并释放句柄，避免 await 悬垂
 - 桥名字节经 u8 静态缓存；`MainThreadDispatcher`（`AttachUiThread`/`Post`）为通用 UI 投递通道，
-  `HarmonySynchronizationContext` 保留为 .NET 生态兼容面
+  `HarmonySynchronizationContext` 已接线（`HarmonyDispatcher.EnsureRegistered` 幂等安装）：
+  `Post` 转发 TSFN 回主线程，async/await 续体（文件 IO、Task.Delay 等纯 .NET 任务）回到
+  ArkUI 事件线程而不落线程池
 
 ### 2.2 codeGenerator 缺陷修复
 
@@ -187,11 +189,20 @@ Accelerometer / Magnetometer / Gyroscope / Compass / OrientationSensor + Geoloca
 - 事件类服务经 commonEvent / 模块事件订阅，回调内重读 + 去重缓存
 - 线程模型：JS 线程 == UI 线程 == Install 线程；`MainThreadDispatcher`/`HarmonySynchronizationContext`
   作为内部投递通道直接内联，不依赖 MAUI `MainThread` 静态入口
+- 结果对象桩：静态入口注入覆盖不到 Essentials **结果对象**上的桩——`FileResult.OpenReadAsync`
+  （`FileBase.PlatformOpenReadAsync`）在 net10.0 产物 throw 且非 virtual 不可 override，
+  消费侧直读 `FullPath`（MediaPicker 结果已复制到 cache 真实路径）
 
 适配指南见 [ESSENTIALS.md](ESSENTIALS.md)；验证应用为 `samples/dotnet/EssentialsApp`。
 
-**留白**：TextToSpeech / HapticFeedback / Flashlight、Map / FilePicker / Screenshot；
-传感器族与 Geolocation / MediaPicker 的真机专项验证；电池/网络/SecureStorage 事件的模拟器触发验证。
+**留白**：TextToSpeech / HapticFeedback / Flashlight、Map / FilePicker / Screenshot、
+Geocoding / Contacts / Sms / AppActions / SemanticScreenReader / WebAuthenticator / AppleSignIn
+（均未实现，调用即抛桩异常；samples 未消费）；传感器族与 Geolocation / MediaPicker 的真机专项验证；
+电池/网络/SecureStorage 事件的模拟器触发验证。
+
+**2026-11-03 模拟器实测**（ApiDemo HardwarePage，uitest 点击闭环）：File round-trip
+（`FILE ok · wrote 42, read 42 chars`）、Permissions（`LocationWhenInUse = Granted`）、
+Pick Photo 全链路（系统选择器 → 选图 → cache 复制 → `PICK ok · … · 567966 bytes`）通过。
 
 ---
 
@@ -245,12 +256,13 @@ Roslyn source generator 扫描应用侧 MAUI/Essentials 调用，自动生成 `m
 - `harmony-permissions.custom.json` 自定义映射、XAML 事件来源定位、`HMP005`/`HMP006` 冲突与格式诊断；
   包消费者验收覆盖 XAML + 自定义映射 + ProjectReference
 
-### 3.8 平台 TFM `net10.0-harmonyos`
+### 3.8 平台 TFM `net10.0-harmonyos26.0`
 
-Interop/Bindings/Maui/Essentials 双目标（`net10.0;net10.0-harmonyos`），`HARMONYOS` 常量改为 TFM 驱动
+Interop/Bindings/Maui/Essentials/Maui.Web/Maui.Blazor 六个运行时平台包统一双目标
+（`net10.0;net10.0-harmonyos26.0`），`HARMONYOS` 常量改为 TFM 驱动
 （harmonyos TFM 由 SDK 按 TargetPlatformIdentifier 自动定义；桌面 `net10.0` 目标在库级 props 过渡性
 全量定义，`#else` 死代码语义与桌面测试资产不变）；无 workload 的最小平台注册片段
-（`TargetPlatformSupported` + `SdkSupportedTargetPlatformVersion` + `TargetPlatformVersion=1.0`
+（`TargetPlatformSupported` + `SdkSupportedTargetPlatformVersion` + `TargetPlatformVersion=26.0`
 + CA1418 静默）固化于根 `Directory.Build.targets` 与模板工程（必须内联或放 Directory.Build.targets——
 首次还原时 NuGet buildTransitive 导入尚不存在，包内片段无法生效，实测 NETSDK1139）；
 生成器 `arkui-bindgen` 支持 per-TFM `#if` 包裹（`semantics.yaml` 顶层 `tfm_guard` 声明常量名，
@@ -258,6 +270,11 @@ code_target 条目 `tfm_guard: true` 开启，默认不包裹、check/diff 零�
 
 另修复两个包分发缺口：`PublishAotClang` 需在应用工程显式引用（传递依赖 exclude=Build 导致交叉 AOT
 报错）、`patch-openharmony-nativeaot.ps1` 补入包内 scripts。
+
+第一阶段 TFM 分类与包资产矩阵见 `docs/TFM-MATRIX.md`；`scripts/verify-tfm-matrix.ps1`
+自动校验项目分类并检查六个运行时包的 `lib/net10.0/` 与
+`lib/net10.0-harmonyos26.0/` 资产，同时用隔离消费工程确认 NuGet 实际选择平台资产，
+不依赖设备验收。
 
 ### 3.9 仍待办
 

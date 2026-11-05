@@ -26,8 +26,6 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
     private readonly HarmonyBlazorWebView _view;
 
     private volatile bool _ipcConfirmed;
-    private volatile bool _blazorStarted;
-    private bool _loadingHostPage;
 
     public HarmonyBlazorWebViewManager(
         IHarmonyWebViewSurface surface,
@@ -78,44 +76,43 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
 
     protected override void NavigateCore(Uri absoluteUri)
     {
-        _ = LoadPageAndStartAsync(absoluteUri);
+        _ = LoadPageAsync(absoluteUri);
     }
 
-    private async Task LoadPageAndStartAsync(Uri absoluteUri)
+    private async Task LoadPageAsync(Uri absoluteUri)
     {
         try
         {
-            _loadingHostPage = true;
             await _surface.LoadUrlAsync(absoluteUri.ToString()).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            _loadingHostPage = false;
             HiLog.Error("HarmonyWeb", $"[blazor-manager] load url failed: {ex.GetType().Name}: {ex.Message}");
         }
     }
 
     /// <summary>
     /// 主框架页面加载完成（宿主 Web onPageEnd → HarmonyWebRuntime.NotifyPageEndedCore）。
-    /// 这是 Blazor 启动的确定性信号：页面脚本（含 blazor.webview.js）已加载完毕。
-    /// 反复进入该方法只对宿主页首次导航生效；SPA 内部导航不重载页面。
+    /// 每次主框架文档加载（首次导航与整页 Reload 都是）都对应一个全新的 JS 运行时，
+    /// blazor.webview.js 会重新执行，因此每次都要重发 Blazor.start；SPA 路由（pushState）
+    /// 不触发 onPageEnd，不会误入。非 app origin 的完整文档直接忽略。
     /// </summary>
     internal async Task OnPageLoadedAsync(string url)
     {
-        if (!_loadingHostPage)
+        if (string.IsNullOrEmpty(url) ||
+            !Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
+            !IsAppOrigin(uri))
+        {
             return;
-        _loadingHostPage = false;
-
-        // 同一管理器只启动一次 Blazor 运行时
-        if (_blazorStarted)
-            return;
-        _blazorStarted = true;
+        }
 
         await StartUntilConfirmedAsync().ConfigureAwait(false);
     }
 
     private async Task StartUntilConfirmedAsync()
     {
+        // 旧文档的握手对本文档无效：重置后由 NoteBlazorIpc 收新握手
+        _ipcConfirmed = false;
         try
         {
             await _surface.RunScriptAsync("Blazor.start();").ConfigureAwait(false);
@@ -242,11 +239,19 @@ public sealed class HarmonyBlazorWebViewManager : WebViewManager
             }
             else
             {
-                using var ms = stream.CanSeek
-                    ? new MemoryStream((int)Math.Min(stream.Length, int.MaxValue))
-                    : new MemoryStream();
-                stream.CopyTo(ms);
-                body = ms.ToArray();
+                try
+                {
+                    using var ms = stream.CanSeek
+                        ? new MemoryStream((int)Math.Min(stream.Length, int.MaxValue))
+                        : new MemoryStream();
+                    stream.CopyTo(ms);
+                    body = ms.ToArray();
+                }
+                finally
+                {
+                    // 小文件路径读毕即释放；流式路径所有权移交 HarmonyHostSink.RespondStreaming
+                    stream.Dispose();
+                }
             }
 
             var contentType = headers.TryGetValue("Content-Type", out var type)

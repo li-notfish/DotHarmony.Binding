@@ -1,0 +1,65 @@
+<!--
+  microsoft.net.sdk.harmonyos workload manifest targets。
+
+  导入时机（对齐 MAUI workload 模式，实测 .NET SDK 10.0.403）：
+    Sdk.targets -> Microsoft.NET.Sdk.BeforeCommon.targets:76
+      -> Microsoft.NET.Sdk.ImportWorkloads.targets
+      -> WorkloadManifestTargetsLocator -> 本文件。
+  因此本文件运行在：
+    - 工程主体之后（$(TargetFramework) 已定义，可按 TFM 条件注册）；
+    - Microsoft.NETCoreSdk.BundledVersions.props（props 阶段的 SDK 默认项）之后，
+      Known* 条目以追加方式生效；
+    - Microsoft.Common.CurrentVersion.targets（含 Directory.Build.targets）之前，
+      本文件注册后 TargetPlatformSupported=true，仓库 fallback 片段自动跳过。
+  多目标（cross-targeting）外层评估不导入本文件；注册发生在设置 TargetFramework
+  的内层构建中（与 Directory.Build.targets fallback 的生效条件一致）。
+
+  workload 卸载后本文件随 sdk-manifests 目录一起消失，所有追加 item 随之失效。
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- HarmonyOS pack 版本：eng/Workloads/build-workload.ps1 戳定占位符；
+       用户可在工程中覆盖 HarmonyOSPackVersion。 -->
+  <PropertyGroup>
+    <HarmonyOSPackVersion Condition="'$(HarmonyOSPackVersion)' == ''">__HARMONYOS_PACK_VERSION__</HarmonyOSPackVersion>
+  </PropertyGroup>
+
+  <!-- net10.0-harmonyos26.0 平台注册（原 Directory.Build.targets:18-25 与模板内联片段迁入）：
+       TargetPlatformSupported 跳过 NETSDK1139；SdkSupportedTargetPlatformVersion 提供合法
+       平台版本（跳过 NETSDK1140/NU1012）；CA1418 静默未知平台名分析器警告。
+       HARMONYOS 常量由 SDK 自动定义（GenerateTargetPlatformDefineConstants）。 -->
+  <PropertyGroup Condition="$(TargetFramework.Contains('-harmonyos'))">
+    <TargetPlatformSupported>true</TargetPlatformSupported>
+    <TargetPlatformVersion Condition="'$(TargetPlatformVersion)' == ''">$(HarmonyOSPlatformVersion)</TargetPlatformVersion>
+    <NoWarn>$(NoWarn);CA1418</NoWarn>
+  </PropertyGroup>
+  <ItemGroup Condition="$(TargetFramework.Contains('-harmonyos'))">
+    <SdkSupportedTargetPlatformVersion Include="$(HarmonyOSPlatformVersion)" />
+  </ItemGroup>
+
+  <!-- HarmonyOS-owned targeting/runtime pack 条目（P1-4）。默认不被工程引用——工程继续用
+       PackageReference 消费 HarmonyOS.* 平台包；需要以 framework 方式消费时，工程显式
+       <FrameworkReference Include="Microsoft.HarmonyOS.App" />，条目才参与解析。
+       不自动注入的原因：Phase 1 官方 MAUI 资产仍走 net10.0，framework 注入会与
+       PackageReference 形成重复引用；自动注入属于 Phase 2（P2-3）。 -->
+  <ItemGroup Condition="$(TargetFramework.Contains('-harmonyos'))">
+    <KnownFrameworkReference Include="Microsoft.HarmonyOS.App"
+                             TargetFramework="net10.0"
+                             RuntimeFrameworkName="Microsoft.HarmonyOS.App"
+                             DefaultRuntimeFrameworkVersion="$(HarmonyOSPackVersion)"
+                             LatestRuntimeFrameworkVersion="$(HarmonyOSPackVersion)"
+                             TargetingPackName="Microsoft.HarmonyOS.App.Ref"
+                             TargetingPackVersion="$(HarmonyOSPackVersion)"
+                             RuntimePackNamePatterns="Microsoft.HarmonyOS.App.Runtime.NativeAOT.**RID**"
+                             RuntimePackRuntimeIdentifiers="linux-musl-arm64;linux-musl-x64"
+                             RuntimePackLabels="NativeAOT"
+                             />
+  </ItemGroup>
+
+  <!-- SDK pack 挂载：AutoImport.props 已在 props 阶段由 WorkloadAutoImportPropsLocator
+       自动导入（packs\Microsoft.NET.Sdk.HarmonyOS\<version>\Sdk\AutoImport.props）；
+       Sdk.targets 在此显式接入，作为后续 workload 级 targets 的入口。 -->
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.HarmonyOS"
+          Condition="$(TargetFramework.Contains('-harmonyos'))" />
+
+</Project>

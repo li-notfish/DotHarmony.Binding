@@ -168,17 +168,17 @@ Release 签名通过属性簇配置：`HarmonySigningKeystore` / `KeystorePasswo
 tools/api-generator/         .d.ts 解析器与 @ohos.* / 节点绑定生成器（TS Compiler API）
 tools/arkui-bindgen/         NDK 头文件 → C# 生成器（libclang，语义配置驱动）
 tools/HandlerAudit/          Handler 覆盖矩阵与工厂分派拓扑审计
-src/HarmonyOS.Interop/       napi 互操作核心（独立包）
-src/HarmonyOS.Bindings/      绑定库（net10.0 + net10.0-harmonyos）
+src/HarmonyOS.Interop/       napi 互操作核心（net10.0 + net10.0-harmonyos26.0）
+src/HarmonyOS.Bindings/      绑定库（net10.0 + net10.0-harmonyos26.0）
   ├─ NativeNode/             ArkUI C API 互操作 + ArkUINodeBase + 事件总线
   ├─ Nodes/                  生成的组件包装类 + native-gaps.json
   ├─ Api/                    438 个 @ohos.* 模块绑定
   ├─ Hosting/                libapp.so 导出入口
   └─ Experimental/           ArkTS 命令总线引擎实验层
-src/HarmonyOS.Maui/          Handler 包 + 宿主编排 targets
-src/HarmonyOS.Essentials/    Essentials 平台实现
-src/HarmonyOS.Maui.Web/      WebView surface
-src/HarmonyOS.Maui.Blazor/   Blazor Hybrid 集成
+src/HarmonyOS.Maui/          Handler 包 + 宿主编排 targets（net10.0 + net10.0-harmonyos26.0）
+src/HarmonyOS.Essentials/    Essentials 平台实现（net10.0 + net10.0-harmonyos26.0）
+src/HarmonyOS.Maui.Web/      WebView surface（net10.0 + net10.0-harmonyos26.0）
+src/HarmonyOS.Maui.Blazor/   Blazor Hybrid 集成（net10.0 + net10.0-harmonyos26.0）
 src/HarmonyOS.Maui.Permissions/              权限推导 source generator（打为 analyzer）
 src/HarmonyOS.Maui.Permissions.Abstractions/ generator 的公共抽象
 src/HarmonyOS.Templates/     dotnet new 模板包
@@ -197,6 +197,8 @@ docs/                        专项文档（权限、性能基线、覆盖矩阵
 | [HANDLERS.md](HANDLERS.md) | 控件 Handler 与 `@ohos.*` 绑定的开发指南、踩坑速查 |
 | [ESSENTIALS.md](ESSENTIALS.md) | 新增 Essentials 服务的五步流程与坑表 |
 | [docs/PERMISSIONS.md](docs/PERMISSIONS.md) | 权限推导的三类来源与 capability map schema |
+| [docs/TFM-MATRIX.md](docs/TFM-MATRIX.md) | 运行时平台包、平台无关包与第三方包的 TFM/资产边界 |
+| [docs/WORKLOAD-PLAN.md](docs/WORKLOAD-PLAN.md) | workload 化现状表与两阶段路线图 |
 | [docs/handler-coverage.md](docs/handler-coverage.md) | Handler 覆盖矩阵（由 `tools/HandlerAudit` 生成） |
 | [docs/control-defaults-audit.md](docs/control-defaults-audit.md) | MAUI 与 ArkUI 控件默认值差异审计 |
 | [docs/interop-rules.md](docs/interop-rules.md) | 互操作不变量（维护者契约） |
@@ -219,15 +221,20 @@ docs/                        专项文档（权限、性能基线、覆盖矩阵
 - **类型映射**：未映射的复杂 options bag 仍退化为 `IntPtr`，清单见
   `artifacts/generator/api-intptr-report.json`；`object?` 参数转换点存在基元装箱。
 - **手势**：鼠标按键区分、hover 通道、Pinch 多点触控注入通道未覆盖。
-- **Essentials**：TextToSpeech / HapticFeedback / Flashlight / Map / FilePicker / Screenshot 尚未实现；
-  传感器、Geolocation、MediaPicker 缺真机专项验证。
+- **Essentials**：TextToSpeech / HapticFeedback / Flashlight / Map / FilePicker / Screenshot / Geocoding /
+  Contacts / Sms / AppActions 等尚未实现；结果对象方法（如 `FileResult.OpenReadAsync`）是 net10.0
+  产物桩，消费侧直读 `FullPath`；传感器、Geolocation、MediaPicker 缺真机专项验证（MediaPicker
+  模拟器选图闭环已实测）。
 - **Blazor Hybrid** 属实验特性，公开 API 以 MAUI/Controls 示例为准。
-- **平台 TFM**：`net10.0-harmonyos` 目前是无 workload 的最小注册片段，未做真正的 workload 化。
+- **平台 TFM**：自有运行时平台包已统一为 `net10.0;net10.0-harmonyos26.0` 双目标；当前仍是无
+  workload 的最小平台注册片段，未做真正的 workload 化。详见
+  [docs/TFM-MATRIX.md](docs/TFM-MATRIX.md)。
 
 ## 参与开发
 
 ```powershell
 dotnet build ArkTsBinding.slnx          # 绑定库与样例
+pwsh -NoProfile -File scripts/verify-tfm-matrix.ps1  # TFM 分类与包资产验收
 npx jest --runInBand                    # 生成器单测
 python -m pytest tools/arkui-bindgen/tests -q   # NDK 生成器单测
 dotnet test tests/dotnet/HarmonyGestureTests/HarmonyGestureTests.csproj   # 行为与契约测试

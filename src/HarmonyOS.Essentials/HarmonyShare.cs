@@ -16,13 +16,17 @@ public class HarmonyShare : IShare
 {
     public Task RequestAsync(ShareTextRequest request)
     {
+        // MAUI 语义：Text 为空时回退分享 Uri；Subject/Title 无 sendData want 通道（系统按 text/plain 路由）
+        var text = !string.IsNullOrEmpty(request.Text)
+            ? request.Text!
+            : (request.Uri ?? string.Empty);
         var want = NativeValue.From(new Dictionary<string, object?>
         {
             ["action"] = "ohos.want.action.sendData",
             ["type"] = "text/plain",
             ["parameters"] = new Dictionary<string, object?>
             {
-                ["text"] = request.Text ?? string.Empty,
+                ["text"] = text,
             },
         });
         return NodeApi.CallMethodAsync<object?>(HarmonyPreferences.Context, "startAbility", want);

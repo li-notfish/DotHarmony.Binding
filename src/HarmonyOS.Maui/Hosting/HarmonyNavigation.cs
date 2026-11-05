@@ -99,8 +99,24 @@ public static class HarmonyNavigation
             current.Node.Dispose();
             _currentPage = null;
         }
-        BackStack.Clear();
+
+        // 整根替换把模态与回退栈一并废弃：模态节点仍挂在容器上（幽灵 UI），
+        // 栈页节点虽已摘除但持原生句柄 —— 都必须走 Handler 置空 + Dispose 释放
+        foreach (var (modal, node) in Modals)
+        {
+            modal.SendDisappearing();
+            _container.RemoveChild(node);
+            modal.Handler = null;
+            node.Dispose();
+        }
         Modals.Clear();
+
+        foreach (var (stacked, node) in BackStack)
+        {
+            stacked.Handler = null;
+            node.Dispose();
+        }
+        BackStack.Clear();
 
         Push(page);
     }
@@ -108,10 +124,34 @@ public static class HarmonyNavigation
     // 两路 Attach 的公共体：连接后 reset 全部栈态；EnsureCurrent 由各自入口负责（不复调）
     private static void AttachCore(ArkStack container, MApplication? application, MWindow? window)
     {
-        _container = container;
-        BackStack.Clear();
+        // RootBuilder 二次进入（Ability 重建 / 重复 passNodeContent）时，旧树必须显式拆链：
+        // 只清字段会让旧页面节点仍挂在旧容器上，形成"事件可达但树不可见"的孤儿态。
+        if (_currentPage is { } stale)
+        {
+            stale.Page.SendDisappearing();
+            _container?.RemoveChild(stale.Node);
+            stale.Page.Handler = null;
+            stale.Node.Dispose();
+            _currentPage = null;
+        }
+
+        foreach (var (modal, node) in Modals)
+        {
+            modal.SendDisappearing();
+            _container?.RemoveChild(node);
+            modal.Handler = null;
+            node.Dispose();
+        }
         Modals.Clear();
-        _currentPage = null;
+
+        foreach (var (stacked, node) in BackStack)
+        {
+            stacked.Handler = null;
+            node.Dispose();
+        }
+        BackStack.Clear();
+
+        _container = container;
 
         if (_window is null)
             _window = window ?? new MWindow { Parent = application };

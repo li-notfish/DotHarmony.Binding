@@ -5,6 +5,7 @@
 #nullable enable
 using System.Collections.Generic;
 using Microsoft.Maui.Devices;
+using HarmonyOS.Interop;
 using HarmonyOS.Bindings.Api.Util;
 using HarmonyOS.Bindings.Api;
 using HSensor = HarmonyOS.Bindings.Api.Sensor;
@@ -29,7 +30,11 @@ internal static class HarmonySensorSupport
                 foreach (var s in HSensor.GetSensorListSync())
                     set.Add(s.SensorName ?? string.Empty);
             }
-            catch { /* 模拟器/设备无列表时按不支持处理 */ }
+            catch (Exception ex)
+            {
+                // 模拟器/设备无列表时按不支持处理（空集合 → IsSupported 恒 true）
+                HiLog.Warn("Essentials", $"[sensor] sensor list unavailable: {ex.Message}");
+            }
             _supportedTypes = set;
             return set;
         }

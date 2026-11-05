@@ -1,0 +1,12 @@
+<!--
+  targets 阶段入口：由 WorkloadManifest.targets 经 <Import Sdk=...> 调入。
+  平台注册与 Known* 条目都在 WorkloadManifest.targets；本文件是 workload 级
+  targets 的挂载点（Phase 2 的 MAUI 平台资产与 HAP 发布链接入位）。
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <HarmonyOSWorkloadActive>true</HarmonyOSWorkloadActive>
+  </PropertyGroup>
+
+</Project>

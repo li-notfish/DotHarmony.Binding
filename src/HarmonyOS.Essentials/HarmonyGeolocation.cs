@@ -91,7 +91,18 @@ internal sealed class HarmonyGeolocation : IGeolocation
             Scenario: ScenarioOf(request.DesiredAccuracy),
             TimeInterval: request.MinimumTime.TotalMilliseconds,
             MaxAccuracy: MaxAccuracyOf(request.DesiredAccuracy)));
-        GeoLocationManager.On("locationError", _onLocationError);
+        try
+        {
+            GeoLocationManager.On("locationError", _onLocationError);
+        }
+        catch
+        {
+            // 第二通道注册失败必须回滚第一个：否则监听泄漏，且 _listening=false 的重试会重复注册
+            GeoLocationManager.Off("locationChange", _onLocationChange);
+            _onLocationChange = null;
+            _onLocationError = null;
+            throw;
+        }
         _listening = true;
         return true;
     }

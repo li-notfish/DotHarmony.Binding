@@ -54,6 +54,9 @@
        注意：libapp.so 等应用侧二进制一律不进包（各应用在自己 obj 下 AOT 产出）。 -->
   <ItemGroup>
     <None Include="build\HarmonyOS.Maui.App.targets" Pack="true" PackagePath="buildTransitive\HarmonyOS.Maui.targets" />
+    <!-- P1-6：MSBuild task 程序集（补丁链优先走 task，脚本回退保留） -->
+    <None Include="..\HarmonyOS.Maui.Tasks\bin\$(Configuration)\netstandard2.0\HarmonyOS.Maui.Tasks.dll"
+          Pack="true" PackagePath="tasks\" />
     <None Include="README.md" Pack="true" PackagePath="\" />
     <None Pack="true" PackagePath="harmonyos\scripts\"
           Include="..\..\scripts\stage-host.ps1;..\..\scripts\build-hap.cmd;..\..\scripts\deploy-hap.ps1;..\..\scripts\deploy-hap.sh;..\..\scripts\export-harmony-permissions.ps1;..\..\scripts\check-harmony-permissions.ps1;..\..\scripts\patch-openharmony-nativeaot.ps1" />

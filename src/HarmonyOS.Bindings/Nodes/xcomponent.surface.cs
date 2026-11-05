@@ -3,6 +3,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using HarmonyOS.Bindings.NativeNode;
+using HarmonyOS.Interop;
 
 namespace HarmonyOS.ArkUI;
 
@@ -73,7 +74,10 @@ public unsafe partial class XComponent
         SurfaceCallbackSetCreated(_surfaceCallback, &OnSurfaceCreated);
         SurfaceCallbackSetChanged(_surfaceCallback, &OnSurfaceChanged);
         SurfaceCallbackSetDestroyed(_surfaceCallback, &OnSurfaceDestroyed);
-        SurfaceHolderAddCallback(_surfaceHolder, _surfaceCallback);
+        var rc = SurfaceHolderAddCallback(_surfaceHolder, _surfaceCallback);
+        if (rc != 0)
+            HiLog.Error("HarmonyHost",
+                $"[XComponent] SurfaceHolderAddCallback failed: {rc} (surface events will not fire)");
     }
 
     internal void RemoveSurfaceCallbacks()
@@ -97,22 +101,43 @@ public unsafe partial class XComponent
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static void OnSurfaceCreated(void* surfaceHolder)
     {
-        if (FromSurfaceHolder(surfaceHolder) is { } x)
-            x.SurfaceCreated?.Invoke((nint)surfaceHolder);
+        try
+        {
+            if (FromSurfaceHolder(surfaceHolder) is { } x)
+                x.SurfaceCreated?.Invoke((nint)surfaceHolder);
+        }
+        catch (Exception ex)
+        {
+            HiLog.Error("HarmonyHost", $"[XComponent] surface created error: {ex.GetType().Name}: {ex.Message}");
+        }
     }
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static void OnSurfaceChanged(void* surfaceHolder, ulong width, ulong height)
     {
-        if (FromSurfaceHolder(surfaceHolder) is { } x)
-            x.SurfaceChanged?.Invoke((nint)surfaceHolder, width, height);
+        try
+        {
+            if (FromSurfaceHolder(surfaceHolder) is { } x)
+                x.SurfaceChanged?.Invoke((nint)surfaceHolder, width, height);
+        }
+        catch (Exception ex)
+        {
+            HiLog.Error("HarmonyHost", $"[XComponent] surface changed error: {ex.GetType().Name}: {ex.Message}");
+        }
     }
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static void OnSurfaceDestroyed(void* surfaceHolder)
     {
-        if (FromSurfaceHolder(surfaceHolder) is { } x)
-            x.SurfaceDestroyed?.Invoke((nint)surfaceHolder);
+        try
+        {
+            if (FromSurfaceHolder(surfaceHolder) is { } x)
+                x.SurfaceDestroyed?.Invoke((nint)surfaceHolder);
+        }
+        catch (Exception ex)
+        {
+            HiLog.Error("HarmonyHost", $"[XComponent] surface destroyed error: {ex.GetType().Name}: {ex.Message}");
+        }
     }
 
     private static XComponent? FromSurfaceHolder(void* surfaceHolder)

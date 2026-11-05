@@ -121,10 +121,8 @@ internal static class ImageSourceResolver
     {
         try
         {
-            var ctx = NodeApi.GetProperty(NodeApi.GetGlobal(), "abilityContext");
-            if (ctx == IntPtr.Zero)
-                return null;
-            var handle = NodeApi.GetProperty(ctx, "resourceManager");
+            // 经 Bindings 层入口取宿主 abilityContext.resourceManager（Handler 不直连 NodeApi）
+            var handle = HarmonyOS.Bindings.Hosting.AbilityResourceAccess.GetResourceManager();
             if (handle == IntPtr.Zero)
                 return null;
             return new global::HarmonyOS.Bindings.Api.ResourceManagerObject(handle);

@@ -21,6 +21,9 @@ public sealed class HarmonyDispatcher : IDispatcher
     public static void EnsureRegistered()
     {
         _uiThreadId = Environment.CurrentManagedThreadId;
+        // async/await 续接依赖 SynchronizationContext 回到 ArkUI 事件线程：纯 .NET 任务
+        // （文件 IO、Task.Delay）完成后，续接经 Post/TSFN 回主线程而不是落在线程池。
+        HarmonySynchronizationContext.Install();
         DispatcherProvider.SetCurrent(new Provider());
     }
 

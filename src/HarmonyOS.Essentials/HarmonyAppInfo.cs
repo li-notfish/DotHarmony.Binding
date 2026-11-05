@@ -70,8 +70,10 @@ public class HarmonyAppInfo : IAppInfo
                     ? AppTheme.Dark
                     : AppTheme.Light;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                // 低版本系统无 GetDarkMode 通道：回退 Unspecified（Debug 级避免热路径刷日志）
+                HiLog.Debug("Essentials", $"requested theme unavailable: {ex.Message}");
                 return AppTheme.Unspecified;
             }
         }
