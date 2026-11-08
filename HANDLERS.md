@@ -466,3 +466,4 @@ MAUI 的 Essentials 静态类（`DeviceInfo.Current`/`DeviceDisplay`/`AppInfo`/`
 | `requestPermissionsFromUser` 等 JS API 报 "must be Array"（401） | 字符串字面量联合别名（如 `Permissions`）跨模块不被 astParser 解析，元素退回 IntPtr 发射出无法封送的 `IntPtr[]` 签名 | 已修（生成器源上）：入口扫描全部 d.ts 顶层字面量联合别名登记为 `string` + `NativeValue.From(string[])` 封送（napi_create_array_with_length）；运行时临时绕过可用 `NodeApi.CreateInstance(global, "Array"u8, item)` |
 | user_grant 权限被拒读剪贴板"成功"但 recordCount=0 | API 26 被拒时系统返回空 PasteData 壳而非抛错，读请求根本不落到剪贴板服务 | 读前 `getSelfPermissionStatus` 主动查状态 → 未授权走授权弹窗 → 重试（HarmonyClipboard 完整实现） |
 | 宿主模板改了 EntryAbility.ets 但 HAP 里还是旧代码 | stage-host 的内容戳只比对 app.json5 的 mtime | 已修：脚本对全模板取最新 mtime 比对；改模板后任一文件都会触发重导出 |
+| 按钮单击触发两次 Clicked | 兜底派发（Released 延迟一拍）与原生 CLICK 事件双路径先后到达 | `HarmonyButtonHandler.OnClick` 以 `_nativeClickDispatched` 守卫去重；事件异常由 `ArkUINodeEvent.Dispatch` 统一捕获，handler 层勿再包防御 try/catch |

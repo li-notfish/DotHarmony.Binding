@@ -75,7 +75,8 @@ internal class HarmonyMediaPicker : IMediaPicker
             ["cameraPosition"] = 0,
         });
         using var profile = new PickerProfile(profilePtr);
-        var result = await CameraPicker.PickAsync(
+        // PickerResult 是持 napi 强引用的 JsObject——与 SelectAsync 同一纪律，用毕显式释放
+        using var result = await CameraPicker.PickAsync(
             HarmonyPreferences.Context,
             new[] { mediaType },
             profile);
@@ -96,6 +97,8 @@ internal class HarmonyMediaPicker : IMediaPicker
     /// picker URI → FileResult。picker 返回的 URI 是会话内临时授权（进程重启即失效），
     /// 复制到 cache 后以真实路径构造（FileResult.OpenRead 直接打开 FullPath）；
     /// 复制失败回退 URI 直接构造（向后兼容，读取期仍可能可用）。
+    /// 注意：FileResult.OpenReadAsync 在 net10.0 Essentials 产物里是桩（FileBase.PlatformOpenReadAsync
+    /// throw，非 virtual 不可 override，MainThread 同类）——消费方须直读 FullPath，勿调 OpenReadAsync。
     /// </summary>
     private static async Task<FileResult> ToFileResult(string uri)
     {

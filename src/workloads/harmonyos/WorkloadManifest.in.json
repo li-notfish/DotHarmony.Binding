@@ -1,0 +1,70 @@
+{
+  "version": "__WORKLOAD_MANIFEST_VERSION__",
+  "workloads": {
+    "harmonyos": {
+      "description": ".NET MAUI SDK for HarmonyOS: ArkUI handlers, NativeAOT libapp.so and HAP build orchestration",
+      "extends": [],
+      "platforms": [
+        "win-x64",
+        "win-arm64",
+        "linux-x64",
+        "linux-arm64",
+        "osx-x64",
+        "osx-arm64"
+      ],
+      "packs": [
+        "Microsoft.NET.Sdk.HarmonyOS"
+      ]
+    },
+    "harmonyos-nativeaot": {
+      "description": "Optional HarmonyOS NativeAOT packs: targeting pack, runtime packs and ILCompiler cross chain (linux-musl-arm64 / linux-musl-x64)",
+      "extends": [
+        "harmonyos"
+      ],
+      "platforms": [
+        "win-x64",
+        "win-arm64",
+        "linux-x64",
+        "linux-arm64",
+        "osx-x64",
+        "osx-arm64"
+      ],
+      "packs": [
+        "Microsoft.HarmonyOS.App.Ref",
+        "Microsoft.HarmonyOS.App.Runtime.NativeAOT.linux-musl-arm64",
+        "Microsoft.HarmonyOS.App.Runtime.NativeAOT.linux-musl-x64",
+        "Microsoft.HarmonyOS.ILCompiler"
+      ]
+    }
+  },
+  "packs": {
+    "Microsoft.NET.Sdk.HarmonyOS": {
+      "kind": "Sdk",
+      "version": "__WORKLOAD_MANIFEST_VERSION__"
+    },
+    "Microsoft.HarmonyOS.App.Ref": {
+      "kind": "framework",
+      "version": "__HARMONYOS_PACK_VERSION__"
+    },
+    "Microsoft.HarmonyOS.App.Runtime.NativeAOT.linux-musl-arm64": {
+      "kind": "framework",
+      "version": "__HARMONYOS_PACK_VERSION__"
+    },
+    "Microsoft.HarmonyOS.App.Runtime.NativeAOT.linux-musl-x64": {
+      "kind": "framework",
+      "version": "__HARMONYOS_PACK_VERSION__"
+    },
+    "Microsoft.HarmonyOS.ILCompiler": {
+      "kind": "Sdk",
+      "version": "__ILCOMPILER_PACK_VERSION__",
+      "alias-to": {
+        "win-x64": "runtime.win-x64.Microsoft.DotNet.ILCompiler",
+        "win-arm64": "runtime.win-arm64.Microsoft.DotNet.ILCompiler",
+        "linux-x64": "runtime.linux-x64.Microsoft.DotNet.ILCompiler",
+        "linux-arm64": "runtime.linux-arm64.Microsoft.DotNet.ILCompiler",
+        "osx-x64": "runtime.osx-x64.Microsoft.DotNet.ILCompiler",
+        "osx-arm64": "runtime.osx-arm64.Microsoft.DotNet.ILCompiler"
+      }
+    }
+  }
+}

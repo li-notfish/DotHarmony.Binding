@@ -398,6 +398,39 @@ public class InteropInvariantTests
         Assert.DoesNotContain("state.Done = true", callback);
     }
 
+    /// <summary>
+    /// A11：原生跳板防护与手势生命周期不变量。
+    /// 历史缺陷：① 手势「分发中」标志是 [ThreadStatic] 静态字段——同线程其他 recognizer
+    /// 分发期间 Dispose 本实例会被误延迟，延迟动作被丢弃时句柄永久泄漏；
+    /// ② XComponent surface 回调跳板无 try/catch——订阅者异常击穿原生帧直接崩溃进程；
+    /// ③ NodeEventBus.EnsureRegistered 无锁——并发首挂会重复注册原生 receiver。
+    /// </summary>
+    [Fact]
+    public void NativeTrampolinesGuardExceptionsAndGestureFlagIsInstanceScoped()
+    {
+        var gesture = File.ReadAllText(
+            Path.Combine(Root, "src", "HarmonyOS.Bindings", "Nodes", "Gestures", "ArkUIGestureRecognizer.cs"));
+        Assert.False(gesture.Contains("[ThreadStatic]", StringComparison.Ordinal),
+            "手势分发中标志必须是实例字段：[ThreadStatic] 会让同线程其他实例的 Dispose 被误延迟甚至永久挂起");
+        Assert.True(gesture.Contains("NativeMainThread.Ensure()", StringComparison.Ordinal),
+            "手势 recognizer 生命周期入口缺少主线程守卫（后台线程 Dispose 会绕过分发防护造成 UAF）");
+
+        var surface = File.ReadAllText(
+            Path.Combine(Root, "src", "HarmonyOS.Bindings", "Nodes", "xcomponent.surface.cs"));
+        foreach (var trampoline in new[] { "OnSurfaceCreated", "OnSurfaceChanged", "OnSurfaceDestroyed" })
+        {
+            var body = Regex.Match(surface, @"private static void " + trampoline + @"\([\s\S]*?\n    \}");
+            Assert.True(body.Success, $"xcomponent.surface.cs 找不到跳板 {trampoline}");
+            Assert.True(body.Value.Contains("try", StringComparison.Ordinal),
+                $"{trampoline} 缺少 try/catch：surface 订阅者异常会击穿原生帧（进程崩溃）");
+        }
+
+        var nodeEvent = File.ReadAllText(
+            Path.Combine(Root, "src", "HarmonyOS.Bindings", "NativeNode", "ArkUINodeEvent.cs"));
+        Assert.True(nodeEvent.Contains("lock (Gate)", StringComparison.Ordinal),
+            "NodeEventBus.EnsureRegistered 必须加锁（同 NodeCustomEventBus，防并发首挂重复注册）");
+    }
+
     private static IEnumerable<string> EnumerateSources(string root)
     {
         if (!Directory.Exists(root))

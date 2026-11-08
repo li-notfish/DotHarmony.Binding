@@ -117,6 +117,17 @@ public class HarmonyNavigationPageHandler : ViewHandler<NavigationPage, ArkColum
         if (_backButton is not null)
             _backButton.Click -= OnBackClicked;
         UnsubscribeTitleTracking();
+        // 整个 NavigationPage 断连：子页节点树一并释放（先摘除再 Dispose，DisposeContent 同款纪律）
+        _content?.RemoveAllChildren();
+        foreach (var page in _mounted)
+        {
+            if (_nodes.Remove(page, out var node))
+            {
+                page.Handler = null; // 触发子页 handler 的 DisconnectHandler 清理
+                node.Dispose();
+            }
+        }
+        _mounted.Clear();
         base.DisconnectHandler(platformView);
     }
 

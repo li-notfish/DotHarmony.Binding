@@ -63,7 +63,8 @@ public sealed partial class HarmonyPermissionGenerator
                 method.TypeArguments.Length == 1;
 
             if (!isPermissionTypeRequest &&
-                !containingType.StartsWith("Microsoft.Maui", StringComparison.Ordinal))
+                !containingType.StartsWith("Microsoft.Maui", StringComparison.Ordinal) &&
+                !containingType.StartsWith("HarmonyOS.Bindings.Api", StringComparison.Ordinal))
             {
                 return null;
             }
@@ -125,7 +126,8 @@ public sealed partial class HarmonyPermissionGenerator
             }
 
             if (string.IsNullOrEmpty(containingType) ||
-                !containingType.StartsWith("Microsoft.Maui", StringComparison.Ordinal))
+                (!containingType.StartsWith("Microsoft.Maui", StringComparison.Ordinal) &&
+                 !containingType.StartsWith("HarmonyOS.Bindings.Api", StringComparison.Ordinal)))
             {
                 return null;
             }

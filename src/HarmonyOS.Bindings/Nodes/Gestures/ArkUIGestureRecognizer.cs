@@ -22,10 +22,9 @@ public abstract unsafe class ArkUIGestureRecognizer : IDisposable
     private GCHandle _extraParams;
     private bool _disposed;
     private bool _disposePending;
+    /// <summary>本实例是否在原生分发回调帧内（实例级；Dispose 据此延迟以避免原生 UAF）</summary>
+    private bool _inDispatch;
     private Action<ArkUIGestureEvent>? _callback;
-
-    [ThreadStatic]
-    private static bool _inGestureDispatch;
 
     private static readonly delegate* unmanaged<ArkUI_GestureEvent*, void*, void> Trampoline = &Dispatch;
 
@@ -56,6 +55,7 @@ public abstract unsafe class ArkUIGestureRecognizer : IDisposable
         ArkGesturePriority priority = ArkGesturePriority.Parallel,
         ArkGestureMask mask = ArkGestureMask.Normal)
     {
+        NativeMainThread.Ensure();
         ThrowIfDisposed();
         if (!_attachedNode.IsNull)
             throw new InvalidOperationException(GetType().Name + " is already attached; Detach first");
@@ -83,6 +83,7 @@ public abstract unsafe class ArkUIGestureRecognizer : IDisposable
     /// <summary>从当前挂载节点摘除（保留 recognizer，可重新 Attach）</summary>
     public void Detach()
     {
+        NativeMainThread.Ensure();
         if (_attachedNode.IsNull || _disposed) return;
         ArkUINativeApi.Gesture->removeGestureFromNode(_attachedNode, _recognizer);
         _attachedNode = default;
@@ -90,15 +91,23 @@ public abstract unsafe class ArkUIGestureRecognizer : IDisposable
 
     public void Dispose()
     {
+        NativeMainThread.Ensure();
         if (_disposed) return;
 
-        if (_inGestureDispatch)
+        if (_inDispatch)
         {
             if (_disposePending)
                 return;
 
             _disposePending = true;
-            MainThreadDispatcher.Post(Dispose);
+            if (MainThreadDispatcher.Post(Dispose))
+                return;
+
+            // Post 失败（队列满/已 Shutdown）时延迟动作被丢弃：解除挂起标记允许调用方
+            // 稍后重试；分发帧内禁止同步 dispose（原生 UAF），对象保持存活并记错误日志
+            _disposePending = false;
+            HiLog.Error("HarmonyGestures",
+                "gesture dispose deferred action dropped (queue full/shutdown); retry Dispose after dispatch");
             return;
         }
 
@@ -124,14 +133,14 @@ public abstract unsafe class ArkUIGestureRecognizer : IDisposable
 
     internal void TestDisposeDuringDispatch()
     {
-        _inGestureDispatch = true;
+        _inDispatch = true;
         try
         {
             Dispose();
         }
         finally
         {
-            _inGestureDispatch = false;
+            _inDispatch = false;
         }
     }
 
@@ -145,20 +154,19 @@ public abstract unsafe class ArkUIGestureRecognizer : IDisposable
             if (target?._callback is not { } cb)
                 return;
 
-            _inGestureDispatch = true;
+            target._inDispatch = true;
             try
             {
                 cb(new ArkUIGestureEvent(eventPtr, target._attachedNode));
             }
             finally
             {
-                _inGestureDispatch = false;
+                target._inDispatch = false;
             }
         }
         catch (Exception ex)
         {
             HiLog.Error("HarmonyGestures", $"gesture dispatch error: {ex.GetType().Name}: {ex.Message}");
-            _inGestureDispatch = false;
         }
     }
 }

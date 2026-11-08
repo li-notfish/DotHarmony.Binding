@@ -25,16 +25,14 @@ public sealed class HarmonySynchronizationContext : SynchronizationContext
     public new static HarmonySynchronizationContext? Current => _instance;
 
     /// <summary>
-    /// 在主线程安装 SynchronizationContext。
-    /// 必须在宿主启动时调用一次。
+    /// 在当前线程安装 SynchronizationContext（幂等；重复调用不抛）。
+    /// 宿主 UI 引导点调用；Post 经 <see cref="MainThreadDispatcher"/> 回主线程。
     /// </summary>
     public static void Install()
     {
-        if (_instance != null)
-            throw new InvalidOperationException("HarmonySynchronizationContext already installed");
-
-        _instance = new HarmonySynchronizationContext();
-        SetSynchronizationContext(_instance);
+        _instance ??= new HarmonySynchronizationContext();
+        if (!ReferenceEquals(SynchronizationContext.Current, _instance))
+            SetSynchronizationContext(_instance);
     }
 
     /// <summary>

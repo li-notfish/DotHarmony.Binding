@@ -21,29 +21,34 @@ public sealed unsafe class OHDrawingPath : IDisposable
 
     public OHDrawingPath() => _path = OHDrawingApi.OH_Drawing_PathCreate();
 
-    internal OH_Drawing_Path* Native => _path;
+    internal OH_Drawing_Path* Native
+    {
+        get { ThrowIfDisposed(); return _path; }
+    }
 
-    public OHDrawingPath MoveTo(float x, float y) { OHDrawingApi.OH_Drawing_PathMoveTo(_path, x, y); return this; }
+    private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_path is null, this);
 
-    public OHDrawingPath LineTo(float x, float y) { OHDrawingApi.OH_Drawing_PathLineTo(_path, x, y); return this; }
+    public OHDrawingPath MoveTo(float x, float y) { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PathMoveTo(_path, x, y); return this; }
+
+    public OHDrawingPath LineTo(float x, float y) { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PathLineTo(_path, x, y); return this; }
 
     public OHDrawingPath QuadBezier(float ctrlX, float ctrlY, float endX, float endY)
-    { OHDrawingApi.OH_Drawing_PathQuadTo(_path, ctrlX, ctrlY, endX, endY); return this; }
+    { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PathQuadTo(_path, ctrlX, ctrlY, endX, endY); return this; }
 
     public OHDrawingPath CubicBezier(float ctrlX1, float ctrlY1, float ctrlX2, float ctrlY2, float endX, float endY)
-    { OHDrawingApi.OH_Drawing_PathCubicTo(_path, ctrlX1, ctrlY1, ctrlX2, ctrlY2, endX, endY); return this; }
+    { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PathCubicTo(_path, ctrlX1, ctrlY1, ctrlX2, ctrlY2, endX, endY); return this; }
 
     /// <summary>椭圆弧：（x1,y1,x2,y2）为弧所在椭圆的外接矩形，角度单位为度</summary>
     public OHDrawingPath ArcTo(float x1, float y1, float x2, float y2, float startAngle, float sweepAngle)
-    { OHDrawingApi.OH_Drawing_PathArcTo(_path, x1, y1, x2, y2, startAngle, sweepAngle); return this; }
+    { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PathArcTo(_path, x1, y1, x2, y2, startAngle, sweepAngle); return this; }
 
-    public OHDrawingPath Close() { OHDrawingApi.OH_Drawing_PathClose(_path); return this; }
+    public OHDrawingPath Close() { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PathClose(_path); return this; }
 
-    public OHDrawingPath Reset() { OHDrawingApi.OH_Drawing_PathReset(_path); return this; }
+    public OHDrawingPath Reset() { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PathReset(_path); return this; }
 
     /// <summary>设置填充规则（0 = WINDING，1 = EVEN_ODD，对应 OH_Drawing_PathFillType）——填充绘制前必须设置</summary>
     public OHDrawingPath SetFillStyle(int fillStyle)
-    { OHDrawingApi.OH_Drawing_PathSetFillType(_path, fillStyle); return this; }
+    { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PathSetFillType(_path, fillStyle); return this; }
 
     public void Dispose()
     {
@@ -62,21 +67,26 @@ public sealed unsafe class OHDrawingPen : IDisposable
 
     public OHDrawingPen() => _pen = OHDrawingApi.OH_Drawing_PenCreate();
 
-    internal OH_Drawing_Pen* Native => _pen;
+    internal OH_Drawing_Pen* Native
+    {
+        get { ThrowIfDisposed(); return _pen; }
+    }
+
+    private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_pen is null, this);
 
     /// <summary>颜色（0xAARRGGBB）</summary>
-    public void SetColor(uint argb) => OHDrawingApi.OH_Drawing_PenSetColor(_pen, argb);
+    public void SetColor(uint argb) { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PenSetColor(_pen, argb); }
 
     /// <summary>线宽（受画布缩放影响，调用方负责单位）</summary>
-    public void SetWidth(float width) => OHDrawingApi.OH_Drawing_PenSetWidth(_pen, width);
+    public void SetWidth(float width) { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PenSetWidth(_pen, width); }
 
     /// <summary>线帽：0 = FLAT，1 = ROUND，2 = SQUARE（OH_Drawing_PenCapStyle）</summary>
-    public void SetCap(int capStyle) => OHDrawingApi.OH_Drawing_PenSetCap(_pen, capStyle);
+    public void SetCap(int capStyle) { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PenSetCap(_pen, capStyle); }
 
     /// <summary>连接样式：0 = MITER，1 = ROUND，2 = BEVEL（OH_Drawing_PenJoinStyle）</summary>
-    public void SetJoin(int joinStyle) => OHDrawingApi.OH_Drawing_PenSetJoin(_pen, joinStyle);
+    public void SetJoin(int joinStyle) { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PenSetJoin(_pen, joinStyle); }
 
-    public void SetAntiAlias(bool antialias) => OHDrawingApi.OH_Drawing_PenSetAntiAlias(_pen, antialias);
+    public void SetAntiAlias(bool antialias) { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_PenSetAntiAlias(_pen, antialias); }
 
     public void Dispose()
     {
@@ -95,12 +105,17 @@ public sealed unsafe class OHDrawingBrush : IDisposable
 
     public OHDrawingBrush() => _brush = OHDrawingApi.OH_Drawing_BrushCreate();
 
-    internal OH_Drawing_Brush* Native => _brush;
+    internal OH_Drawing_Brush* Native
+    {
+        get { ThrowIfDisposed(); return _brush; }
+    }
+
+    private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_brush is null, this);
 
     /// <summary>颜色（0xAARRGGBB）</summary>
-    public void SetColor(uint argb) => OHDrawingApi.OH_Drawing_BrushSetColor(_brush, argb);
+    public void SetColor(uint argb) { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_BrushSetColor(_brush, argb); }
 
-    public void SetAntiAlias(bool antialias) => OHDrawingApi.OH_Drawing_BrushSetAntiAlias(_brush, antialias);
+    public void SetAntiAlias(bool antialias) { ThrowIfDisposed(); OHDrawingApi.OH_Drawing_BrushSetAntiAlias(_brush, antialias); }
 
     public void Dispose()
     {

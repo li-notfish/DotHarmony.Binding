@@ -50,6 +50,11 @@ samples/HarmonyHost（共享宿主模板）
 
 ## 第二阶段：按模块分块审查
 
+> 下列分块是**审查单元**而非分层：`HarmonyOS.Maui` 与 `HarmonyOS.Essentials` 同属
+> 应用框架层（互不依赖，都直接依赖 Bindings）；`HarmonyOS.Maui.Permissions*` 与
+> `HarmonyOS.Maui.Web` / `HarmonyOS.Maui.Blazor` 是 Maui 层的子模块，单列是因为
+> 审查标准不同（Source Generator 语义 / 混合 Web 链路），不是因为它们在更低的层。
+
 ### 1. `src/HarmonyOS.Interop`：NAPI 互操作核心
 
 重点检查：

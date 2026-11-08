@@ -115,9 +115,9 @@ dotnet build MyApp -t:HarmonyRun         # 全链路
 宿主编排 targets 由 `HarmonyOS.Maui` 包经 buildTransitive 自动导入，工程内无需手写 Import。
 release 签名通过属性簇配置（见 README「NuGet 包与模板」一节）。
 
-模板工程的目标框架是平台 TFM `net10.0-harmonyos`，其平台注册片段
+模板工程的目标框架是平台 TFM `net10.0-harmonyos26.0`，其平台注册片段
 （`TargetPlatformSupported` 等三行属性 + `SdkSupportedTargetPlatformVersion` 一项）
-已内联在模板 csproj 中。**若把 `HarmonyOS.Maui` 加到既有工程并改用 `net10.0-harmonyos`**，
+已内联在模板 csproj 中。**若把 `HarmonyOS.Maui` 加到既有工程并改用 `net10.0-harmonyos26.0`**，
 需把同一片段复制到该工程（或 Directory.Build.targets）——首次还原时 NuGet
 buildTransitive 导入尚不存在，包内片段无法生效（NETSDK1139/NU1012）；同时需显式
 `PackageReference Include="PublishAotClang"`（作为传递依赖时 build 资产被排除，
@@ -133,14 +133,14 @@ Windows 交叉 NativeAOT 会报 Cross-OS native compilation is not supported）�
 ### Step 1：创建 .NET 类库工程
 
 `samples/dotnet/MyApp/MyApp.csproj`（仓库内工程由根 `Directory.Build.props` / `Directory.Build.targets` 提供
-公共属性与 `net10.0-harmonyos` 平台注册，无需重复声明）：
+公共属性与 `net10.0-harmonyos26.0` 平台注册，无需重复声明）：
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- NativeAOT 共享库：宿主 dlopen 后调用导出函数 -->
-    <TargetFramework>net10.0-harmonyos</TargetFramework>
+    <TargetFramework>net10.0-harmonyos26.0</TargetFramework>
     <RuntimeIdentifier>linux-musl-arm64</RuntimeIdentifier>
     <PublishAot>true</PublishAot>
     <NativeLib>Shared</NativeLib>

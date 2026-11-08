@@ -1,6 +1,9 @@
 {
   "version": 3,
-  "mauiMethods": [],
+  "mauiMethods": [
+    { "containingType": "HarmonyOS.Bindings.Api.Net.Http", "methodName": "CreateHttp", "permission": "ohos.permission.INTERNET", "when": "inuse" },
+    { "containingType": "HarmonyOS.Bindings.Api.Net.HttpRequest", "methodName": "RequestAsync", "permission": "ohos.permission.INTERNET", "when": "inuse" }
+  ],
   "mauiMembers": [
     { "containingType": "Microsoft.Maui.Networking.Connectivity", "memberName": "Current", "memberKind": "property", "permission": "ohos.permission.GET_NETWORK_INFO", "when": "inuse" }
   ],

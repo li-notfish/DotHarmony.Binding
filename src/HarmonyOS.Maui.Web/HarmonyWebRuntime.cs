@@ -324,16 +324,29 @@ public static class HarmonyWebRuntime
                 HarmonyHostSink.Respond(requestId, 404, "Not Found", "text/plain", "Not Found"u8);
                 return 0;
             }
-            // 优先流式：大文件（wasm/dll/媒体）不必全量进内存
-            if (response.ContentStream is not null
-                && HarmonyHostSink.SupportsStreaming)
+            if (response.ContentStream is not null)
             {
-                HarmonyHostSink.RespondStreaming(
-                    requestId,
-                    response.StatusCode,
-                    response.StatusCode == 200 ? "OK" : "Not Found",
-                    response.ContentType,
-                    response.ContentStream);
+                var statusText = response.StatusCode == 200 ? "OK" : "Not Found";
+                // 优先流式：大文件（wasm/dll/媒体）不必全量进内存；流所有权移交 sink
+                if (HarmonyHostSink.SupportsStreaming)
+                {
+                    HarmonyHostSink.RespondStreaming(
+                        requestId,
+                        response.StatusCode,
+                        statusText,
+                        response.ContentType,
+                        response.ContentStream);
+                    return 0;
+                }
+
+                // 旧宿主无流式导出：整卷缓冲后一次性回写，不能拿空 Body 应付（会静默回 200/空内容）
+                using var buffered = new System.IO.MemoryStream();
+                using (var stream = response.ContentStream)
+                {
+                    stream.CopyTo(buffered);
+                }
+                HarmonyHostSink.Respond(requestId, response.StatusCode,
+                    statusText, response.ContentType, buffered.ToArray());
                 return 0;
             }
 

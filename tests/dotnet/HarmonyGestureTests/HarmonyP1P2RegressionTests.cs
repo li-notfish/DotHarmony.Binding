@@ -61,6 +61,27 @@ public sealed class HarmonyP1P2RegressionTests
     }
 
     [Fact]
+    public void ArkUINodeEventHub_HandlerExceptionDoesNotBreakOtherHandlers()
+    {
+        var hub = new ArkUINodeEventHub();
+        var counted = 0;
+
+        void Throwing(ArkUINodeEvent _) => throw new InvalidOperationException("boom");
+        void Counting(ArkUINodeEvent _) => counted++;
+
+        hub.Add(Throwing);
+        hub.Add(Counting);
+
+        hub.Invoke(default);
+        Assert.Equal(1, counted);
+
+        // 抛异常的订阅者被隔离后，退订与后续分发仍正常工作
+        Assert.True(hub.Remove(Throwing));
+        hub.Invoke(default);
+        Assert.Equal(2, counted);
+    }
+
+    [Fact]
     public void NativeChildTracker_ReplacesChildrenAndDisposesOnlyRemovedNodes()
     {
         var attached = new List<FakeNode>();

@@ -1,7 +1,7 @@
 #nullable enable
 using System;
-using System.Collections.Generic;
 using System.Threading;
+using HarmonyOS.Interop;
 
 namespace HarmonyOS.Bindings.NativeNode;
 
@@ -11,7 +11,9 @@ namespace HarmonyOS.Bindings.NativeNode;
 /// </summary>
 internal sealed class ArkUINodeEventHub
 {
-    private readonly List<Action<ArkUINodeEvent>> _handlers = new();
+    // 写时复制数组：Invoke 只读一个字段引用（原子），分发路径免锁免分配；
+    // NODE_TOUCH_EVENT 等热路径不应为每次分发付出 ToArray 拷贝
+    private Action<ArkUINodeEvent>[] _handlers = Array.Empty<Action<ArkUINodeEvent>>();
     private readonly Lock _gate = new();
 
     public bool IsEmpty
@@ -19,7 +21,7 @@ internal sealed class ArkUINodeEventHub
         get
         {
             lock (_gate)
-                return _handlers.Count == 0;
+                return _handlers.Length == 0;
         }
     }
 
@@ -27,7 +29,13 @@ internal sealed class ArkUINodeEventHub
     {
         ArgumentNullException.ThrowIfNull(handler);
         lock (_gate)
-            _handlers.Add(handler);
+        {
+            var old = _handlers;
+            var next = new Action<ArkUINodeEvent>[old.Length + 1];
+            Array.Copy(old, next, old.Length);
+            next[old.Length] = handler;
+            _handlers = next;
+        }
     }
 
     public bool Remove(Action<ArkUINodeEvent> handler)
@@ -36,22 +44,40 @@ internal sealed class ArkUINodeEventHub
             return false;
 
         lock (_gate)
-            return _handlers.Remove(handler);
+        {
+            var old = _handlers;
+            var index = Array.IndexOf(old, handler);
+            if (index < 0)
+                return false;
+            var next = new Action<ArkUINodeEvent>[old.Length - 1];
+            Array.Copy(old, 0, next, 0, index);
+            Array.Copy(old, index + 1, next, index, old.Length - index - 1);
+            _handlers = next;
+            return true;
+        }
     }
 
     public void Clear()
     {
         lock (_gate)
-            _handlers.Clear();
+            _handlers = Array.Empty<Action<ArkUINodeEvent>>();
     }
 
     public void Invoke(ArkUINodeEvent @event)
     {
-        Action<ArkUINodeEvent>[] snapshot;
-        lock (_gate)
-            snapshot = _handlers.ToArray();
+        var handlers = _handlers;
 
-        foreach (var handler in snapshot)
-            handler(@event);
+        foreach (var handler in handlers)
+        {
+            // 单订阅者异常不得中断其余订阅者（多播语义）；吞掉记日志，不穿透原生帧
+            try
+            {
+                handler(@event);
+            }
+            catch (Exception ex)
+            {
+                HiLog.Error("HarmonyHost", $"[EventHub] handler error: {ex.GetType().Name}: {ex.Message}");
+            }
+        }
     }
 }
